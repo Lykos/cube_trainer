@@ -9,5 +9,6 @@ app = Qt::Application.new(ARGV)
 b = Ui_BlindTrainer.new
 w = BlindTrainer.new
 b.setup_ui(w)
+w.init
 w.show
 app.exec
