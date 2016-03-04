@@ -1,33 +1,19 @@
 require 'Qt4'
 require 'ui_helpers'
+require 'stats_computer'
 
 class StatsModel < Qt::AbstractTableModel
 
   include UiHelpers
 
-  attr_reader :results
-
   def initialize
     super
+    @computer = StatsComputer.new
     compute_stats([])
   end
 
   def compute_stats(results)
-    @stats = [
-              ['Average Overall', compute_average(results)],
-             ]
-  end
-
-  def compute_average(results)
-    average(float_times_ms(results))
-  end
-
-  def average(values)
-    values.inject(0.0, :+) / values.length
-  end
-
-  def float_times_ms(results)
-    results.collect { |result| result.time_s }
+    @stats = @computer.compute_stats(results)
   end
 
   def format_stats(stats)

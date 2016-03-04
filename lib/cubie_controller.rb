@@ -21,11 +21,22 @@ class CubieController
 
   attr_reader :cubie
 
+  def random_new_cubie
+    return random_cubie unless @cubie
+    new_cubie = @cubie
+    while new_cubie.letter == @cubie.letter
+      new_cubie = random_cubie
+    end
+    new_cubie
+  end
+
   def select_cubie
     scene.clear
-    @cubie = random_cubie
-    colors = @cubie.colors
+
+    @cubie = random_new_cubie
+    colors = if cubie.class == Corner then @cubie.colors.rotate(2).reverse else @cubie.colors end
     colors.each_with_index { |c, i| add_to_scene(c, i, colors.length) }
+    @widget.viewport.update
   end
 
   def add_to_scene(c, i, n)
@@ -53,8 +64,8 @@ class CubieController
   end
 
   def rectangle(i)
-    outer_bound = [cubie_size, -cubie_size][i]
-    Qt::RectF.new(-cubie_size, 0, cubie_size, outer_bound)
+    sign = [-1, 1][i]
+    Qt::RectF.new(Qt::PointF.new(-cubie_size / 3, 0), Qt::PointF.new(cubie_size / 3, sign * cubie_size * 2 / 3))
   end
 
   def polygon(i, n)

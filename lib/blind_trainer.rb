@@ -11,16 +11,19 @@ class BlindTrainer < Qt::MainWindow
   include UiHelpers
 
   def start_stop_clicked
-    puts "LOL"
     if running?
       @stop_watch.stop
       start_stop_button.setText("Start")
     else
-      puts "start"
-      @cubie_controller.select_cubie
-      @stop_watch.start
       start_stop_button.setText("Stop")
+      start
     end
+  end
+
+  def start
+    @failed_attempts = 0
+    @cubie_controller.select_cubie
+    @stop_watch.start
   end
 
   def running?
@@ -28,14 +31,16 @@ class BlindTrainer < Qt::MainWindow
   end
 
   def event(e)
-    if @initialized && running? && e.type == Qt::Event::KeyPress && e.text == cubie.letter
-      @stop_watch.stop
-      @time_history.record_result(create_result)
-      @cubie_controller.select_cubie
-      @stop_watch.start
-    else
-      super(e)
+    if @initialized && running? && e.type == Qt::Event::KeyPress
+      if e.text == cubie.letter
+        @stop_watch.stop
+        @time_history.record_result(create_result)
+        start
+      elsif ALPHABET.include?(e.text)
+        @failed_attempts += 1
+      end
     end
+    super(e)
   end
 
   def start_stop_button
@@ -43,7 +48,7 @@ class BlindTrainer < Qt::MainWindow
   end
 
   def create_result
-    Result.new(@stop_watch.start_time, @stop_watch.time_s, cubie)
+    Result.new(@stop_watch.start_time, @stop_watch.time_s, cubie, @failed_attempts)
   end
 
   def cubie

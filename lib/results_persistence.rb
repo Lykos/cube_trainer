@@ -12,13 +12,13 @@ class ResultsPersistence
     if !File.exists?(results_file)
       []
     else
-      YAML::load(File.read(results_file)).collect { |r| Result.from_h(r) }
+      YAML::load(File.read(results_file))
     end
   end
 
   def store_results(results)
     File.open(results_file, 'w+') do |f|
-      YAML::dump(results.collect { |r| r.to_h }, f)
+      YAML::dump(results, f)
     end
   end
 

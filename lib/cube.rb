@@ -31,6 +31,10 @@ class Part
   def inspect
     self.class.to_s + "(" + @colors.collect { |c| c.to_s }.join(", ") + ")"
   end
+
+  def letter
+    @letter ||= ALPHABET[self.class::ELEMENTS.index(self)]
+  end
 end
 
 class Face < Part
@@ -57,6 +61,8 @@ class Face < Part
       opposite
     end
   end
+
+  ELEMENTS = generate_parts(self)
 end
 
 class Edge < Part
@@ -66,9 +72,7 @@ class Edge < Part
     !OPPOSITE_PAIRS.include?(@colors.sort)
   end
 
-  def letter
-    ALPHABET[EDGES.index(self)]
-  end
+  ELEMENTS = generate_parts(self)
 end
 
 class Corner < Part
@@ -90,11 +94,15 @@ class Corner < Part
   def rotate_color_up(c)
     index = @colors.index(c)
     raise "Corner #{self} doesn't have color #{c}." unless index
-    rotate_by(@colors.length - index)
+    rotate_by(index)
   end
 
   def rotate_by(n)
     Corner.new(@colors.rotate(n))
+  end
+
+  def invert
+    Corner.new(@colors.reverse)
   end
 
   def valid_chirality?
@@ -102,26 +110,25 @@ class Corner < Part
     # different from the ones used in the CHIRALITY_CORNER for the opposite face.
     canonical_colors = adjacent_faces.collect { |f| f.chirality_canonicalize.color }
     canonical_corner = Corner.new(canonical_colors)
+
     # Each time we swap a face for the opposite, the chirality direction should be inverted.
     no_swapped_faces = canonical_colors.zip(@colors).count { |a, b| a != b }
-    inverted = no_swapped_faces % 2 == 0
+    inverted = no_swapped_faces % 2 == 1
+    inverted_corner = if inverted then canonical_corner.invert else canonical_corner end
+
     # Rotate the same color up as the upside of the CHIRALITY_CORNER to make it comparable
-    rotated_corner = canonical_corner.rotate_color_up(CHIRALITY_CORNER[0])
+    rotated_corner = inverted_corner.rotate_color_up(CHIRALITY_CORNER[0])
+
     # If the corner is not equal to CHIRALITY_CORNER after these transformations,
     # the original corner had a bad chirality.
-    rotated_corner.colors != CHIRALITY_CORNER
+    rotated_corner.colors == CHIRALITY_CORNER
   end
 
-  def letter
-    ALPHABET[CORNERS.index(self)]
-  end
+  ELEMENTS = generate_parts(self)
 end
 
-FACES = generate_parts(Face)
-EDGES = generate_parts(Edge)
-CORNERS = generate_parts(Corner)
 ALPHABET = "a".upto("z").to_a
-CUBIES = CORNERS + EDGES
+CUBIES = Corner::ELEMENTS + Edge::ELEMENTS
 
 def random_cubie
   CUBIES.sample

@@ -2,15 +2,16 @@ require 'ui_helpers'
 
 class Result
 
-  def initialize(timestamp, time_s, cubie)
+  def initialize(timestamp, time_s, cubie, failed_attempts)
     @timestamp = timestamp
     @time_s = time_s
     @cubie = cubie
+    @failed_attempts = failed_attempts
   end
 
-  COLUMNS = 2
+  COLUMNS = 3
 
-  attr_reader :timestamp, :time_s, :cubie
+  attr_reader :timestamp, :time_s, :cubie, :failed_attempts
 
   include UiHelpers
 
@@ -23,14 +24,6 @@ class Result
   end
 
   def columns
-    [formatted_timestamp, formatted_time]
-  end
-
-  def to_h
-    {:timestamp => timestamp, :time_s => time_s, :cubie => cubie}
-  end
-
-  def self.from_h(h)
-    self.new(h[:timestamp], h[:time_s], h[:cubie])
+    [formatted_timestamp, formatted_time, failed_attempts.to_s]
   end
 end
