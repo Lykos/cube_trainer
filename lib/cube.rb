@@ -4,7 +4,7 @@ OPPOSITE_PAIRS = [[:yellow, :white], [:red, :orange], [:green, :blue]].collect {
 
 # We need to define one corner to determine the chirality. The other colors follow from this one.
 # This is in clockwise order.
-CHIRALITY_CORNER = [:yellow, :green, :red]
+CHIRALITY_COLORS = [:yellow, :green, :red]
 
 def generate_parts(clazz)
   COLORS.permutation(clazz::FACES).collect { |p| clazz.new(p) }.select { |p| p.valid? }.sort_by { |p| p.priorities }
@@ -22,6 +22,16 @@ class Part
     coder['colors'] = @colors
   end
 
+  def eql?(other)
+    self.class.equal?(other.class) && @colors == other.colors
+  end
+
+  alias == eql?
+
+  def hash
+    @colors.hash
+  end
+
   attr_reader :colors
 
   def priorities
@@ -34,6 +44,30 @@ class Part
 
   def letter
     @letter ||= ALPHABET[self.class::ELEMENTS.index(self)]
+  end
+
+  # Rotate a corner such that the given color is the first color.
+  def rotate_color_up(c)
+    index = @colors.index(c)
+    raise "Corner #{self} doesn't have color #{c}." unless index
+    rotate_by(index)
+  end
+
+  def rotate_by(n)
+    self.class.new(@colors.rotate(n))
+  end
+
+  def invert
+    self.class.new(@colors.reverse)
+  end
+
+  # Returns true if the corners are equal modulo rotation.
+  def turned_equals?(other)
+    rotate_color_up(other.colors[0]) == other
+  end
+
+  def rotations
+    (0...@colors.length).collect { |i| rotate_by(i) }
   end
 end
 
@@ -55,7 +89,7 @@ class Face < Part
 
   # Returns either the face or its opposite face, depending which one is used in CHIRALITY_CORNER.
   def chirality_canonicalize
-    if CHIRALITY_CORNER.include?(color)
+    if CHIRALITY_COLORS.include?(color)
       self
     else
       opposite
@@ -77,6 +111,7 @@ end
 
 class Corner < Part
   FACES = 3
+  CHIRALITY_CORNER = Corner.new(CHIRALITY_COLORS)
 
   def valid?
     adjacent_edges.all? { |e| e.valid? } && valid_chirality?
@@ -90,21 +125,6 @@ class Corner < Part
     @adjacent_faces ||= @colors.combination(1).collect { |f| Face.new(f) }
   end
 
-  # Rotate a corner such that the given color is the first color.
-  def rotate_color_up(c)
-    index = @colors.index(c)
-    raise "Corner #{self} doesn't have color #{c}." unless index
-    rotate_by(index)
-  end
-
-  def rotate_by(n)
-    Corner.new(@colors.rotate(n))
-  end
-
-  def invert
-    Corner.new(@colors.reverse)
-  end
-
   def valid_chirality?
     # To make it comparable to our CHIRALITY_CORNER, we switch each face used in c
     # different from the ones used in the CHIRALITY_CORNER for the opposite face.
@@ -116,18 +136,15 @@ class Corner < Part
     inverted = no_swapped_faces % 2 == 1
     inverted_corner = if inverted then canonical_corner.invert else canonical_corner end
 
-    # Rotate the same color up as the upside of the CHIRALITY_CORNER to make it comparable
-    rotated_corner = inverted_corner.rotate_color_up(CHIRALITY_CORNER[0])
-
-    # If the corner is not equal to CHIRALITY_CORNER after these transformations,
+    # If the corner is not equal modulo rotation to CHIRALITY_CORNER after this transformation,
     # the original corner had a bad chirality.
-    rotated_corner.colors == CHIRALITY_CORNER
+    inverted_corner.turned_equals?(CHIRALITY_CORNER)
   end
 
   ELEMENTS = generate_parts(self)
 end
 
-ALPHABET = "a".upto("z").to_a
+ALPHABET = "a".upto("x").to_a
 CUBIES = Corner::ELEMENTS + Edge::ELEMENTS
 
 def random_cubie

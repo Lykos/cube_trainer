@@ -1,5 +1,7 @@
 require 'yaml'
 require 'result'
+require 'cube'
+require 'letter_pair'
 
 class ResultsPersistence
 
@@ -10,7 +12,7 @@ class ResultsPersistence
 
   def load_results
     if !File.exists?(results_file)
-      []
+      {}
     else
       YAML::load(File.read(results_file))
     end

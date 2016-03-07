@@ -1,17 +1,19 @@
 require 'ui_helpers'
 
+# TODO refactor this to properly include the mode
 class Result
 
-  def initialize(timestamp, time_s, cubie, failed_attempts)
+  def initialize(timestamp, time_s, input, failed_attempts, word=nil)
     @timestamp = timestamp
     @time_s = time_s
-    @cubie = cubie
+    @input = input
     @failed_attempts = failed_attempts
+    @word = word
   end
 
   COLUMNS = 3
 
-  attr_reader :timestamp, :time_s, :cubie, :failed_attempts
+  attr_reader :timestamp, :time_s, :input, :failed_attempts, :word
 
   include UiHelpers
 

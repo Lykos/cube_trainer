@@ -1,23 +1,23 @@
 require 'Qt4'
-require 'results_persistence'
+require 'results_model'
 require 'result'
 
 class ResultsController
 
   def initialize(table)
     @table = table
-    @result_persistence = ResultsPersistence.new
-    @results = @result_persistence.load_results
-    @table.setRowCount(@results.length)
+    @model = ResultsModel.new(:cubie_to_letter)
+    @table.setRowCount(results.length)
     @table.setColumnCount(Result::COLUMNS)
-    @results.each_with_index { |r, i| set_result(i, r) }
+    results.each_with_index { |r, i| set_result(i, r) }
   end
 
-  attr_reader :results
+  def results
+    @model.results
+  end
 
   def record_result(result)
-    @results.unshift(result)
-    @result_persistence.store_results(@results)
+    @model.record_result(result)
     @table.insertRow(0)
     set_result(0, result)
   end
