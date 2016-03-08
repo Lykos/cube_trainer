@@ -25,4 +25,12 @@ class ResultsModel
     @result_persistence.store_results(@results)
   end
 
+  def words_for_input(input)
+    results.select { |r| r.input == input }.collect { |r| r.word }
+  end
+
+  def inputs_for_word(word)
+    results.select { |r| r.word == word }.collect { |r| r.input }
+  end
+
 end

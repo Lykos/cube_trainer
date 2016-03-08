@@ -34,4 +34,5 @@ class LettersToWord
   def random_letter_pair
     random_input(VALID_PAIRS, results)
   end
+
 end
