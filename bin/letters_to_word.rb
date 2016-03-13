@@ -20,8 +20,13 @@ loop do
   word = ''
   failed_attempts = -1
   until letter_pair.matches_word?(word)
-    word = gets.chomp
-    failed_attempts += 1
+    word = gets.chomp.downcase
+    if word == 'hint'
+      failed_attempts = 100
+      puts generator.hint(letter_pair)
+    else
+      failed_attempts += 1
+    end
   end
   time_s = Time.now - start
   puts "Time: #{format_time(time_s)}"

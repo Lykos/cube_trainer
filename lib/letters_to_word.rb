@@ -1,6 +1,7 @@
 require 'cube'
 require 'letter_pair'
 require 'sampling_helper'
+require 'dict'
 
 class LettersToWord
 
@@ -33,6 +34,23 @@ class LettersToWord
 
   def random_letter_pair
     random_input(VALID_PAIRS, results)
+  end
+
+  def dict
+    @dict = Dict.new
+  end
+
+  def hint(letter_pair)
+    words = @results_model.words_for_input(letter_pair)
+    if words.empty?
+      if letter_pair.letters.first.downcase == 'x'
+        dict.words_for_regexp(letter_pair.letters[1], Regexp.new(letter_pair.letters[1]))
+      else
+        dict.words_for_regexp(letter_pair.letters.first, letter_pair.regexp)
+      end
+    else
+      words
+    end
   end
 
 end
