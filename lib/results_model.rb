@@ -26,11 +26,11 @@ class ResultsModel
   end
 
   def words_for_input(input)
-    results.select { |r| r.input == input }.collect { |r| r.word }
+    results.select { |r| r.input == input }.collect { |r| r.word }.uniq
   end
 
   def inputs_for_word(word)
-    results.select { |r| r.word == word }.collect { |r| r.input }
+    results.select { |r| r.word == word }.collect { |r| r.input }.uniq
   end
 
 end

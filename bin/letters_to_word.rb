@@ -10,8 +10,24 @@ include UiHelpers
 
 # TODO Do this in the UI.
 
+def display_hints(hints)
+  if hints.length < 10
+    puts hints
+  else
+    IO.popen('cat | less', 'w') do |io|
+      io.puts(hints)
+    end
+  end
+end
+
 results_model = ResultsModel.new(:letters_to_word)
 generator = LettersToWord.new(results_model)
+
+found = results_model.results.length
+missing = LettersToWord::VALID_PAIRS.length - found
+if missing > 0
+  puts "#{found} words found, #{missing} missing."
+end
 
 loop do
   letter_pair = generator.random_letter_pair
@@ -19,21 +35,19 @@ loop do
   start = Time.now
   word = ''
   failed_attempts = -1
-  until letter_pair.matches_word?(word)
+  until generator.good_word?(letter_pair, word)
     word = gets.chomp.downcase
     if word == 'hint'
       failed_attempts = 100
-      puts generator.hint(letter_pair)
+      hints = generator.hint(letter_pair)
+      display_hints(hints)
+      word = ''
     else
       failed_attempts += 1
     end
   end
   time_s = Time.now - start
   puts "Time: #{format_time(time_s)}"
-  past_words = results_model.words_for_input(letter_pair) - [word]
-  puts "Past words: #{past_words.join(", ")}" unless past_words.empty?
-  other_combinations = results_model.inputs_for_word(word) - [letter_pair]
-  puts "Other combinations with this word: #{other_combinations.join(", ")}" unless other_combinations.empty?
-  result = Result.new(start, failed_attempts, letter_pair, failed_attempts, word)
+  result = Result.new(start, time_s, letter_pair, failed_attempts, word)
   results_model.record_result(result)
 end

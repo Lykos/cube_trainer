@@ -53,4 +53,17 @@ class LettersToWord
     end
   end
 
+  def good_word?(letter_pair, word)
+    return false unless letter_pair.matches_word?(word)
+    other_combinations = @results_model.inputs_for_word(word) - [letter_pair]
+    return false unless other_combinations.empty?
+    past_words = @results_model.words_for_input(letter_pair)
+    raise 'Invalid number of past words.' if past_words.length > 1
+    if past_words.length == 1
+      past_words[0] == word
+    else
+      true
+    end
+  end
+
 end

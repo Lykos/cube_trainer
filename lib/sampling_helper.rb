@@ -1,5 +1,10 @@
 module SamplingHelper
 
+  FAILED_SECONDS = 10
+  NEWER_WEIGHT = 2
+  INDEX_EXPONENT = 2
+  HIGH_BADNESS = 10000
+
   def sample_by(array, &block)
     weights = array.collect(&block)
     weight_sum = weights.reduce(:+)
@@ -12,28 +17,36 @@ module SamplingHelper
     array[index]
   end
 
+  def badness(result)
+    result.time_s + FAILED_SECONDS * result.failed_attempts
+  end
+
+  def badness_sum(badnesses)
+    badnesses.reverse.inject(HIGH_BADNESS) do |avg, b|
+      (avg + b * NEWER_WEIGHT) / (NEWER_WEIGHT + 1)
+    end
+  end
+
   def compute_history_scores(results)
-    # overall average
-    overall_average = results.collect { |r| r.time_s }.inject(0.0, :+)
-    # time sum per input
-    sums = {}
-    sums.default = 0.0
-    # occurrences per input
-    occurrences = {}
-    occurrences.default = 0
-    earliest_index = {}
+    # badness sum per input
+    badnesses = {}
+    badnesses.default_proc = proc { |h, k| h[k] = [] }
+    earliest_indices = {}
     results.each_with_index do |r, i|
-      sums[r.input] += r.time_s
-      occurrences[r.input] += 1
-      earliest_index[r.input] = i unless earliest_index.has_key?(r.input)
+      badnesses[r.input].push(badness(r))
+      earliest_indices[r.input] = i unless earliest_indices.has_key?(r.input)
     end
     scores = {}
     results.each_with_index do |r, i|
-      average = sums[r.input] / occurrences[r.input]
-      badness = average / overall_average
-      scores[r.input] = badness * earliest_index[r.input]
+      badness = badness_sum(badnesses[r.input])
+      index = earliest_indices[r.input]
+      scores[r.input] = score(badness, index)
     end
-    scores
+    [scores, badnesses, earliest_indices]
+  end
+
+  def score(badness, index)
+    (badness + 1) * index ** INDEX_EXPONENT
   end
 
   def random_input(inputs, results)
@@ -43,8 +56,10 @@ module SamplingHelper
       # If not all input has been seen, only choose items that haven't been seen yet
       unseen_input.sample
     else
-      history_scores = compute_history_scores
-      sample_by(inputs) { |p| history_scores[p] }
+      history_scores, badnesses, indices = compute_history_scores(results)
+      s = sample_by(inputs) { |p| history_scores[p] }
+      puts "Score: #{history_scores[s] / 1000000}; badness avg #{badness_sum(badnesses[s])}: ; index: #{indices[s]}; occurrences: #{badnesses[s].length}"
+      s
     end
   end
 
