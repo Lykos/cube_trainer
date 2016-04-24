@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>656</width>
-    <height>577</height>
+    <width>906</width>
+    <height>675</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,10 @@
      <widget class="QWidget" name="game" native="true">
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QGraphicsView" name="cubie_view"/>
+        <widget class="QGraphicsView" name="cube_view"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="input"/>
        </item>
        <item alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="stop_watch">
@@ -52,6 +55,40 @@
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>906</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuMode">
+    <property name="title">
+     <string>Mode</string>
+    </property>
+    <addaction name="actionLettes_to_words"/>
+    <addaction name="actionPiece_recognition"/>
+    <addaction name="action2_sided_PLL"/>
+   </widget>
+   <addaction name="menuMode"/>
+  </widget>
+  <action name="actionLettes_to_words">
+   <property name="text">
+    <string>lettes to words</string>
+   </property>
+  </action>
+  <action name="actionPiece_recognition">
+   <property name="text">
+    <string>piece recognition</string>
+   </property>
+  </action>
+  <action name="action2_sided_PLL">
+   <property name="text">
+    <string>2-sided PLL</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>

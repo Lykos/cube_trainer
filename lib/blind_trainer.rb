@@ -22,7 +22,7 @@ class BlindTrainer < Qt::MainWindow
 
   def start
     @failed_attempts = 0
-    @cubie_controller.select_cubie
+    @cube_controller.select_cubie
     @stop_watch.start
   end
 
@@ -52,7 +52,7 @@ class BlindTrainer < Qt::MainWindow
   end
 
   def cubie
-    @cubie_controller.cubie
+    @cube_controller.cubie
   end
 
   # TODO Find a better way to finalize the initialization.
@@ -63,8 +63,8 @@ class BlindTrainer < Qt::MainWindow
     time_history_widget = find_child(Qt::Widget, 'time_history') 
     @time_history = TimeHistory.new(time_history_widget)
 
-    cubie_view = find_child(Qt::GraphicsView, 'cubie_view')
-    @cubie_controller = CubieController.new(cubie_view)
+    cube_view = find_child(Qt::GraphicsView, 'cube_view')
+    @cube_controller = CubieController.new(cube_view)
 
     @initialized = true
   end
