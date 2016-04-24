@@ -68,23 +68,23 @@
     <property name="title">
      <string>Mode</string>
     </property>
-    <addaction name="actionLettes_to_words"/>
-    <addaction name="actionPiece_recognition"/>
-    <addaction name="action2_sided_PLL"/>
+    <addaction name="lettes_to_words"/>
+    <addaction name="cubie_recognition"/>
+    <addaction name="PLL_recognition"/>
    </widget>
    <addaction name="menuMode"/>
   </widget>
-  <action name="actionLettes_to_words">
+  <action name="lettes_to_words">
    <property name="text">
     <string>lettes to words</string>
    </property>
   </action>
-  <action name="actionPiece_recognition">
+  <action name="cubie_recognition">
    <property name="text">
     <string>piece recognition</string>
    </property>
   </action>
-  <action name="action2_sided_PLL">
+  <action name="PLL_recognition">
    <property name="text">
     <string>2-sided PLL</string>
    </property>
@@ -108,8 +108,59 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>lettes_to_words</sender>
+   <signal>triggered()</signal>
+   <receiver>BlindTrainer</receiver>
+   <slot>letters_to_word_triggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>452</x>
+     <y>337</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cubie_recognition</sender>
+   <signal>triggered()</signal>
+   <receiver>BlindTrainer</receiver>
+   <slot>cubie_recognition_triggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>452</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>452</x>
+     <y>337</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>PLL_recognition</sender>
+   <signal>triggered()</signal>
+   <receiver>BlindTrainer</receiver>
+   <slot>pll_recognition_triggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>452</x>
+     <y>337</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>start_stop_clicked()</slot>
+  <slot>pll_recognition_triggered()</slot>
+  <slot>cubie_recognition_triggered()</slot>
+  <slot>letters_to_word_triggered()</slot>
  </slots>
 </ui>
