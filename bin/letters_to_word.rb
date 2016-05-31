@@ -10,9 +10,14 @@ include UiHelpers
 
 # TODO Do this in the UI.
 
+def puts_and_say(stuff)
+  puts stuff
+  system("echo '#{stuff}' | espeak -v de -s 120")
+end
+
 def display_hints(hints)
   if hints.length < 10
-    puts hints
+    puts_and_say(hints)
   else
     IO.popen('cat | less', 'w') do |io|
       io.puts(hints)
@@ -31,11 +36,14 @@ end
 
 loop do
   letter_pair = generator.random_letter_pair
-  puts letter_pair
+  puts_and_say(letter_pair)
   start = Time.now
   word = ''
   failed_attempts = -1
   until generator.good_word?(letter_pair, word)
+    if word != '' && word != 'hint'
+      puts_and_say('Falsch!')
+    end
     word = gets.chomp.downcase
     if word == 'hint'
       failed_attempts = 100
