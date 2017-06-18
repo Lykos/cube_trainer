@@ -107,6 +107,8 @@ class Edge < Part
   end
 
   ELEMENTS = generate_parts(self)
+  BUFFER = Edge.new([:white, :red])
+  raise "Invalid buffer edge." unless BUFFER.valid?
 end
 
 class Corner < Part
@@ -142,6 +144,8 @@ class Corner < Part
   end
 
   ELEMENTS = generate_parts(self)
+  BUFFER = Corner.new([:yellow, :blue, :orange])
+  raise "Invalid buffer corner." unless BUFFER.valid?
 end
 
 ALPHABET = "a".upto("x").to_a
