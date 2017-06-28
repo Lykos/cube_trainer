@@ -1,30 +1,17 @@
-require 'cube'
-require 'letter_pair'
+require 'letter_pair_helper'
 require 'sampling_helper'
 require 'dict'
 
 class LettersToWord
 
   include SamplingHelper
+  include LetterPairHelper
   
   def initialize(results_model)
     @results_model = results_model
   end
 
-  def self.letter_pairs(c)
-    c.collect { |c| LetterPair.new(c) }
-  end
-
-  def self.generate_valid_pairs
-    buffer_letters = Corner::BUFFER.rotations.collect { |c| c.letter }
-    valid_letters = ALPHABET - buffer_letters
-    singles = letter_pairs(valid_letters.permutation(1))
-    pairs = letter_pairs(valid_letters.permutation(2))
-    pairs + singles
-  end
-
-  SHOOT_LETTERS = ['a', 'b', 'd', 'l', 'h', 't', 'p']
-  VALID_PAIRS = self.generate_valid_pairs
+  VALID_PAIRS = LETTER_PAIRS - REDUNDANT_TWISTS
 
   def results
     @results_model.results
