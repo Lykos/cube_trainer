@@ -21,6 +21,10 @@ class Result
     format_time(@time_s)
   end
 
+  def with_word(new_word)
+    Result.new(@timestamp, @time_s, @input, @failed_attempts, new_word)
+  end
+
   def formatted_timestamp
     @timestamp.to_s
   end

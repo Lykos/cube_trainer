@@ -22,6 +22,10 @@ class ResultsModel
 
   def record_result(result)
     results.unshift(result)
+    store
+  end
+  
+  def store
     @result_persistence.store_results(@results)
   end
 
@@ -31,6 +35,11 @@ class ResultsModel
 
   def inputs_for_word(word)
     results.select { |r| r.word == word }.collect { |r| r.input }.uniq
+  end
+
+  def replace_word(input, word)
+    results.collect! { |r| if r.input == input then r.with_word(word) else r end }
+    store
   end
 
 end

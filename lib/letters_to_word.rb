@@ -23,6 +23,7 @@ class LettersToWord
     pairs + singles
   end
 
+  SHOOT_LETTERS = ['a', 'b', 'd', 'l', 'h', 't', 'p']
   VALID_PAIRS = self.generate_valid_pairs
 
   def results

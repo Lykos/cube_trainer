@@ -10,9 +10,9 @@ include UiHelpers
 
 # TODO Do this in the UI.
 
-def puts_and_say(stuff)
+def puts_and_say(stuff, language='de')
   puts stuff
-  system("echo '#{stuff}' | espeak -v de -s 120")
+  system("echo '#{stuff}' | espeak -v #{language} -s 120")
 end
 
 def display_hints(hints)
@@ -42,14 +42,21 @@ loop do
   failed_attempts = -1
   until generator.good_word?(letter_pair, word)
     if word != '' && word != 'hint'
-      puts_and_say('Falsch!')
+      puts_and_say('Incorrect!', 'en')
     end
+    last_word = word
     word = gets.chomp.downcase
     if word == 'hint'
       failed_attempts = 100
       hints = generator.hint(letter_pair)
       display_hints(hints)
       word = ''
+    elsif last_word != '' && word == 'replace'
+      if letter_pair.matches_word?(last_word)
+        results_model.replace_word(letter_pair, last_word)
+      else
+        puts_and_say('Cannot replace word with an invalid word.', 'en')
+      end
     else
       failed_attempts += 1
     end
