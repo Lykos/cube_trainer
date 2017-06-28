@@ -15,7 +15,7 @@ def puts_and_say(stuff)
   system("echo '#{stuff}' | espeak -v de -s 120")
 end
 
-results_model = ResultsModel.new(:letters_to_word)
+results_model = ResultsModel.new(:corner_commutators)
 generator = CornerCommutators.new(results_model)
 
 loop do
