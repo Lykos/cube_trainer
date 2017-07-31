@@ -40,9 +40,14 @@ loop do
   start = Time.now
   word = ''
   failed_attempts = -1
+  replaced = false
   until generator.good_word?(letter_pair, word)
     if word != '' && word != 'hint'
-      puts_and_say('Incorrect!', 'en')
+      if !letter_pair.matches_word?(word)
+        puts_and_say('Bad word!', 'en')
+      else
+        puts_and_say('Incorrect!', 'en')
+      end
     end
     last_word = word
     word = gets.chomp.downcase
@@ -54,6 +59,7 @@ loop do
     elsif last_word != '' && word == 'replace'
       if letter_pair.matches_word?(last_word)
         results_model.replace_word(letter_pair, last_word)
+        replaced = true
       else
         puts_and_say('Cannot replace word with an invalid word.', 'en')
       end
@@ -61,6 +67,7 @@ loop do
       failed_attempts += 1
     end
   end
+  next if replaced
   time_s = Time.now - start
   puts "Time: #{format_time(time_s)}"
   result = Result.new(start, time_s, letter_pair, failed_attempts, word)

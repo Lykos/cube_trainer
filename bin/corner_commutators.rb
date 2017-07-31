@@ -18,6 +18,12 @@ end
 results_model = ResultsModel.new(:corner_commutators)
 generator = CornerCommutators.new(results_model)
 
+found = results_model.results.length
+missing = CornerCommutators::VALID_PAIRS.length - found
+if missing > 0
+  puts "#{found} words found, #{missing} missing."
+end
+
 loop do
   letter_pair = generator.random_letter_pair
   puts_and_say(letter_pair)
