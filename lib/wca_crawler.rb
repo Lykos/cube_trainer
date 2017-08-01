@@ -9,8 +9,8 @@ class WCACrawler
     @storer = WCAStorer.new
   end
 
-  WCA_HOST = 'www.worldcubeassociation.org'
-  WCA_BASE_URL = 'https://' + WCA_HOST
+  WCA_BASE_URL = 'https://www.worldcubeassociation.org'
+  REDIRECT_LIMIT = 5
   
   def get_latest_file_internal
     links_on_export_page = Wombat.crawl do
@@ -27,16 +27,32 @@ class WCACrawler
   end
 
   def construct_wca_export_url(filename)
-    (Pathname.new('/results/misc/') + filename).to_s
+    URI.parse((WCA_BASE_URL + '/results/misc/' + filename).to_s)
+  end
+
+  def extract_redirect_url(resp)
+    url = resp['location'] || resp.match(/<a href=\"([^>]+)\">/i)[1]
+    raise 'No redirect URL found.' unless url
+    raise "Redirect to foreign page #{url}." unless url[0...WCA_BASE_URL.length] == WCA_BASE_URL
+    URI.parse(url)
   end
 
   def download_wca_export(filename)
     @storer.ensure_base_directory_exists
-    Net::HTTP.start(WCA_HOST) do |http|
-      resp = http.get(construct_wca_export_url(filename))
-      File.open(@storer.wca_export_path(filename), 'wb') do |f|
-        f.write(resp.body)
+    REDIRECT_LIMIT.times do
+      url = construct_wca_export_url(filename)
+      puts "Downloading #{url}"
+      resp = Net::HTTP.get_response(url)
+      if resp.kind_of?(Net::HTTPRedirection)
+        url = extract_redirect_url(resp)
+      else
+        File.open(@storer.wca_export_path(filename), 'wb') do |f|
+          f.write(resp.body)
+          puts 'Download successful.'
+          return
+        end
       end
+      raise 'Too many redirects.'
     end
   end
 
@@ -44,7 +60,9 @@ class WCACrawler
   # and returns the filename.
   def get_latest_file
     filename = get_latest_file_internal
-    if !@storer.has_wca_export_file(filename)
+    if @storer.has_wca_export_file(filename)
+      puts "No download since we have #{filename} already."
+    else
       download_wca_export(filename)
     end
     @storer.wca_export_path(filename)
