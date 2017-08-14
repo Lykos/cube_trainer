@@ -7,14 +7,14 @@ module LetterPairHelper
     c.collect { |c| LetterPair.new(c) }
   end
 
-  def self.generate_twists
-    twists = Corner::ELEMENTS.flat_map do |c|
+  def self.generate_rotations(part_type)
+    part_type::ELEMENTS.flat_map do |c|
       letters = c.rotations.collect { |r| r.letter }
       letter_pairs(letters.permutation(2))
     end
   end
 
-  def self.generate_letter_pairs
+  def self.generate_letter_pairs(part_type)
     buffer_letters = Corner::BUFFER.rotations.collect { |c| c.letter }
     valid_letters = ALPHABET - buffer_letters
     letter_pairs(valid_letters.permutation(2))
@@ -26,8 +26,10 @@ module LetterPairHelper
 
   # Letters that we shoot to by default.
   SHOOT_LETTERS = ['a', 'b', 'd', 'l', 'h', 't', 'p']
-  LETTER_PAIRS = generate_letter_pairs
-  TWISTS = generate_twists
+  CORNER_LETTER_PAIRS = generate_letter_pairs(Corner)
+  EDGE_LETTER_PAIRS = generate_letter_pairs(Edge)
+  TWISTS = generate_rotations(Corner)
   REDUNDANT_TWISTS = generate_redundant_twists
+  FLIPS = generate_rotations(Edge)
 
 end
