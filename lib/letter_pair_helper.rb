@@ -15,7 +15,7 @@ module LetterPairHelper
   end
 
   def self.generate_letter_pairs(part_type)
-    buffer_letters = Corner::BUFFER.rotations.collect { |c| c.letter }
+    buffer_letters = part_type::BUFFER.rotations.collect { |c| c.letter }
     valid_letters = ALPHABET - buffer_letters
     letter_pairs(valid_letters.permutation(2))
   end
