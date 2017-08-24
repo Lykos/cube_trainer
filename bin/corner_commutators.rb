@@ -5,15 +5,12 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'commutators'
 require 'results_model'
 require 'ui_helpers'
+require 'console_helpers'
 
 include UiHelpers
+include ConsoleHelpers
 
 # TODO Do this in the UI.
-
-def puts_and_say(stuff)
-  puts stuff
-  system("echo '#{stuff}' | espeak -v de -s 120")
-end
 
 results_model = ResultsModel.new(:corner_commutators)
 generator = CornerCommutators.new(results_model)
@@ -28,7 +25,7 @@ loop do
   letter_pair = generator.random_letter_pair
   puts_and_say(letter_pair)
   start = Time.now
-  gets.chomp
+  wait_for_any_key
   time_s = Time.now - start
   puts "Time: #{format_time(time_s)}"
   result = Result.new(start, time_s, letter_pair, 0, nil)

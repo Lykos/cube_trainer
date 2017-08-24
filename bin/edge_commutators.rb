@@ -5,8 +5,10 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'commutators'
 require 'results_model'
 require 'ui_helpers'
+require 'console_helpers'
 
 include UiHelpers
+include ConsoleHelpers
 
 # TODO Do this in the UI.
 
@@ -28,7 +30,7 @@ loop do
   letter_pair = generator.random_letter_pair
   puts_and_say(letter_pair)
   start = Time.now
-  gets.chomp
+  wait_for_any_key
   time_s = Time.now - start
   puts "Time: #{format_time(time_s)}"
   result = Result.new(start, time_s, letter_pair, 0, nil)

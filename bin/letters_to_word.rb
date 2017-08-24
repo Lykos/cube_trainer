@@ -5,15 +5,12 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'letters_to_word'
 require 'results_model'
 require 'ui_helpers'
+require 'console_helpers'
 
 include UiHelpers
+include ConsoleHelpers
 
 # TODO Do this in the UI.
-
-def puts_and_say(stuff, language='de')
-  puts stuff
-  system("echo '#{stuff}' | espeak -v #{language} -s 120")
-end
 
 def display_hints(hints)
   if hints.length < 10
