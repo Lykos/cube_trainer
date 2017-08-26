@@ -1,5 +1,7 @@
 class StatsComputer
 
+  NEWER_WEIGHT = 2
+  
   def compute_stats(results)
     [
      ['Average Time', average_time(results)],
@@ -16,7 +18,9 @@ class StatsComputer
   end
 
   def average(values)
-    values.inject(0.0, :+) / values.length
+    values.reverse.reduce do |avg, b|
+      (avg + b * NEWER_WEIGHT) / (NEWER_WEIGHT + 1) 
+    end
   end
 
   def float_times_s(results)

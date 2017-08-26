@@ -8,7 +8,11 @@ require 'cube'
 
 results = ResultsPersistence.new.load_results
 computer = StatsComputer.new
-grouped_results = results.group_by { |c| c.cubie.inspect }
-grouped_averages = grouped_results.collect { |c, rs| [c, computer.average_time(rs)] }
-sorted_averages = grouped_averages.sort_by { |t| t[1] }
-sorted_averages.each { |c, t| puts "#{c} #{t}" }
+results.each do |k, v|
+  puts k
+  grouped_results = v.group_by { |c| c.input.to_s }
+  grouped_averages = grouped_results.collect { |c, rs| [c, computer.average_time(rs)] }
+  sorted_averages = grouped_averages.sort_by { |t| -t[1] }
+  sorted_averages.each { |c, t| puts "#{c} #{t}" }
+  puts
+end
