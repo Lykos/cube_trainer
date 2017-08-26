@@ -2,8 +2,8 @@ module SamplingHelper
 
   FAILED_SECONDS = 10
   NEWER_WEIGHT = 2
-  INDEX_EXPONENT = 1.2
-  TIME_EXPONENT = 2
+  INDEX_EXPONENT = 1.1
+  TIME_EXPONENT = 4
   HIGH_BADNESS = 10000
 
   def sample_by(array, &block)
