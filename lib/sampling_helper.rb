@@ -2,7 +2,7 @@ module SamplingHelper
 
   FAILED_SECONDS = 10
   NEWER_WEIGHT = 2
-  INDEX_EXPONENT = 1.1
+  INDEX_EXPONENT = 1.2
   TIME_EXPONENT = 4
   HIGH_BADNESS = 10000
 
@@ -46,8 +46,16 @@ module SamplingHelper
     [scores, badnesses, earliest_indices]
   end
 
+  # The index term is used to make sure that even if my badness formula is too strong and
+  # some items have a chance of 10**-10 to get picked, they eventually get picked again
+  # if their index gets too high.
+  def index_score(index)
+    index ** INDEX_EXPONENT / 10
+  end
+  
+
   def score(badness, index)
-    (badness + 1) * index ** INDEX_EXPONENT
+    badness + index_score(index)
   end
 
   def random_input(inputs, results)
@@ -59,7 +67,7 @@ module SamplingHelper
     else
       history_scores, badnesses, indices = compute_history_scores(results)
       s = sample_by(inputs) { |p| history_scores[p] }
-      puts "Score: #{history_scores[s] / 1000000}; badness avg #{badness_sum(badnesses[s])}: ; index: #{indices[s]}; occurrences: #{badnesses[s].length}"
+      puts "Score: #{history_scores[s] / 100}; badness avg #{badness_sum(badnesses[s]) / 100}: ; index: #{indices[s]}; index_score: #{index_score(indices[s]) / 100}; occurrences: #{badnesses[s].length}"
       s
     end
   end
