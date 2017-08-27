@@ -12,10 +12,7 @@ include ConsoleHelpers
 
 # TODO Do this in the UI.
 
-def puts_and_say(stuff)
-  puts stuff
-  system("echo '#{stuff}' | espeak -v de -s 120")
-end
+NUM_COMMS = 1
 
 results_model = ResultsModel.new(:edge_commutators)
 generator = EdgeCommutators.new(results_model)
@@ -27,12 +24,16 @@ if missing > 0
 end
 
 loop do
-  letter_pair = generator.random_letter_pair
-  puts_and_say(letter_pair)
+  letter_pairs = NUM_COMMS.times.collect { generator.random_letter_pair }
+  edge_memo = letter_pairs.collect { |l| l.to_s }.join(' ')
+  puts_and_say(edge_memo)
   start = Time.now
   wait_for_any_key
   time_s = Time.now - start
   puts "Time: #{format_time(time_s)}"
-  result = Result.new(start, time_s, letter_pair, 0, nil)
-  results_model.record_result(result)
+  individual_time = time_s / NUM_COMMS
+  letter_pairs.each_with_index do |l, i|
+    result = Result.new(start + i * individual_time, individual_time, l, 0, nil)
+    results_model.record_result(result)
+  end
 end

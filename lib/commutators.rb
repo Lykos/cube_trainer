@@ -24,10 +24,18 @@ class CornerCommutators < Commutators
   
   VALID_PAIRS = CORNER_LETTER_PAIRS - TWISTS
 
+  def goal_badness
+    2.0
+  end
+
 end
 
 class EdgeCommutators < Commutators
 
   VALID_PAIRS = EDGE_LETTER_PAIRS - FLIPS
+
+  def badness_exponent
+    6
+  end
   
 end
