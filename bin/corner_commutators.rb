@@ -13,10 +13,10 @@ include ConsoleHelpers
 # TODO Do this in the UI.
 
 results_model = ResultsModel.new(:corner_commutators)
-generator = CornerCommutators.new(results_model)
+generator = OneLetterCornerCommutators.new(results_model, 'D')
 
 found = results_model.results.length
-missing = CornerCommutators::VALID_PAIRS.length - found
+missing = generator.class::VALID_PAIRS.length - found
 if missing > 0
   puts "#{found} words found, #{missing} missing."
 end
