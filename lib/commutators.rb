@@ -32,21 +32,20 @@ class CornerCommutators < Commutators
   
   VALID_PAIRS = CORNER_LETTER_PAIRS - TWISTS
 
-  def goal_badness
-    2.0
+  def badness_exponent
+    6
   end
-
 end
 
-class OneLetterCornerCommutators < CornerCommutators
+class SomeLettersCornerCommutators < CornerCommutators
 
-  def initialize(results_model, letter)
+  def initialize(results_model, letters)
     super(results_model)
-    @letter = letter.downcase
+    @letters = letters.collect { |l| l.downcase }
   end
 
   def selector(pair)
-    pair.letters.include?(@letter)
+    !(pair.letters & @letters).empty?
   end
 
 end

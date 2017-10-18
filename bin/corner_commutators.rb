@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+# coding: utf-8
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
@@ -13,7 +14,7 @@ include ConsoleHelpers
 # TODO Do this in the UI.
 
 results_model = ResultsModel.new(:corner_commutators)
-generator = OneLetterCornerCommutators.new(results_model, 'D')
+generator = SomeLettersCornerCommutators.new(results_model, ['b'])
 
 found = results_model.results.length
 missing = generator.class::VALID_PAIRS.length - found
