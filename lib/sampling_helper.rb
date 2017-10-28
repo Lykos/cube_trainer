@@ -1,6 +1,6 @@
 module SamplingHelper
 
-  NEWER_WEIGHT = 1.2
+  NEWER_WEIGHT = 1.5
   INDEX_EXPONENT = 1.2
   READABILITY_FACTOR = 10
 

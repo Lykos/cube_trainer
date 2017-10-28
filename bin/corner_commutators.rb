@@ -14,7 +14,9 @@ include ConsoleHelpers
 # TODO Do this in the UI.
 
 results_model = ResultsModel.new(:corner_commutators)
-generator = SomeLettersCornerCommutators.new(results_model, ['b'])
+known_letters = ['a', 'b', 'd', 'e', 'j']
+new_letter = ['g']
+generator = SomeLettersCornerCommutators.new(results_model, known_letters)
 
 found = results_model.results.length
 missing = generator.class::VALID_PAIRS.length - found
