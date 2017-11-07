@@ -3,6 +3,7 @@ module SamplingHelper
   NEWER_WEIGHT = 1.5
   INDEX_EXPONENT = 1.2
   READABILITY_FACTOR = 10
+  REPETITION_BOUNDARY = 10
 
   def badness_exponent
     4
@@ -60,6 +61,10 @@ module SamplingHelper
   # some items have a chance of 10**-10 to get picked, they eventually get picked again
   # if their index gets too high.
   def index_score(index)
+    # Punish overly fast repetition
+    if index <= REPETITION_BOUNDARY
+      return -(10 ** (REPETITION_BOUNDARY - index))
+    end
     index ** INDEX_EXPONENT / 100
   end
 
@@ -69,7 +74,7 @@ module SamplingHelper
   end  
 
   def score(badness, index)
-    badness_score(badness) + index_score(index)
+    [badness_score(badness) + index_score(index), 0].max
   end
 
   def random_input(inputs, results)
