@@ -12,7 +12,7 @@ module ConsoleHelpers
 
   def espeak_process(language)
     espeak_processes[language] ||=
-      IO.popen("espeak -v #{language} -s 120", 'w+')
+      IO.popen("espeak -v #{language} -s 160", 'w+')
   end
     
   def puts_and_say(stuff, language='de')
