@@ -1,17 +1,14 @@
 module SamplingHelper
 
   NEWER_WEIGHT = 1.5
-  READABILITY_FACTOR = 10
+  READABILITY_FACTOR = 100000
   REPETITION_BOUNDARY = 10
   INDEX_EXPONENT = 1.2
+  BADNESS_BASE = 10
 
   # Fraction of the samples that use uniform samples to even occasionally cover easy cases.
   COVERAGE_FRACTION = 0.1
 
-  def badness_exponent
-    4
-  end
-  
   def failed_seconds
     10
   end
@@ -78,8 +75,7 @@ module SamplingHelper
   end
 
   def badness_score(badness)
-    return 0 if badness < goal_badness
-    (badness - goal_badness) ** badness_exponent
+    BADNESS_BASE ** (badness - goal_badness)
   end  
 
   def score(badness, index)
@@ -96,7 +92,7 @@ module SamplingHelper
       history_scores, coverage_scores, badnesses, indices = compute_history_scores(results)
       if rand(0) < COVERAGE_FRACTION
         s = sample_by (inputs) { |p| coverage_scores[p] }
-        puts "Coverage sample; Score: #{coverage_scores[s] / READABILITY_FACTOR}; index #{indices[s]}; occurrences: #{badnesses[s].length}"
+        puts "Coverage sample; Score: #{coverage_scores[s]}; index #{indices[s]}; occurrences: #{badnesses[s].length}"
         s
       else
         s = sample_by(inputs) { |p| history_scores[p] }
