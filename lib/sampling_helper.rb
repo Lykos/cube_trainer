@@ -1,6 +1,5 @@
 module SamplingHelper
 
-  NEWER_WEIGHT = 1.5
   READABILITY_FACTOR = 100000
   REPETITION_BOUNDARY = 10
   INDEX_EXPONENT = 1.2
@@ -15,6 +14,10 @@ module SamplingHelper
 
   def goal_badness
     1.0
+  end
+
+  def newer_weight
+    1.3
   end
 
   def sample_by(array, &block)
@@ -35,7 +38,7 @@ module SamplingHelper
 
   def badness_sum(badnesses)
     badnesses.reverse.reduce do |avg, b|
-      (avg + b * NEWER_WEIGHT) / (NEWER_WEIGHT + 1)
+      (avg + b * newer_weight) / (newer_weight + 1)
     end
   end
 
