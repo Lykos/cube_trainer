@@ -5,8 +5,9 @@ module SamplingHelper
   INDEX_EXPONENT = 1.2
   BADNESS_BASE = 10
 
-  # Fraction of the samples that use uniform samples to even occasionally cover easy cases.
-  COVERAGE_FRACTION = 0.1
+  # Fraction of the samples that use uniform samples to even occasionally cover
+  # easy cases.
+  COVERAGE_FRACTION = 0.2
 
   def failed_seconds
     10
