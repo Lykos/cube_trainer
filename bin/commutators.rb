@@ -19,9 +19,12 @@ results_model = ResultsModel.new(options.commutator_info.result_symbol)
 generator = options.commutator_info.generator_class.new(results_model, options.restrict_letters)
 
 found = results_model.results.length
-missing = generator.class::VALID_PAIRS.length - found
+total = generator.class::VALID_PAIRS.length
+missing = total - found
 if missing > 0
   puts "#{found} words found, #{missing} missing."
+else
+  puts "Historic data for all #{total} elements found."
 end
 
 loop do

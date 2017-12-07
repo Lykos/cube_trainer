@@ -136,9 +136,25 @@ class MoveableCenter < Part
   def inspect
     self.class.to_s + "(" + color.to_s + ", " + @corresponding_part.inspect + ")"
   end
+
+  def rotate_by(n)
+    self
+  end
+
+  def invert
+    self
+  end
   
   def valid?
     @corresponding_part.valid?
+  end
+
+  def neighbor?(other)
+    color == other.color
+  end
+
+  def neighbors
+    self.class::ELEMENTS.select { |p| neighbor?(p) }
   end
 
   def self.generate_moveable_centers(clazz)
@@ -229,7 +245,7 @@ end
 class TCenter < MoveableCenter
   CORRESPONDING_PART_CLASS = Edge
   ELEMENTS = generate_moveable_centers(self)
-  BUFFER = XCenter.new(Edge.new([:yellow, :orange]))
+  BUFFER = TCenter.new(Edge.new([:yellow, :orange]))
   raise "Invalid buffer TCenter." unless BUFFER.valid?
 end
 

@@ -5,7 +5,10 @@ class Options
   CommutatorInfo = Struct.new(:result_symbol, :generator_class)
   COMMUTATOR_TYPES = {
     "corners" => CommutatorInfo.new(:corner_commutators, CornerCommutators),
-    "edges" => CommutatorInfo.new(:edge_commutators, EdgeCommutators)
+    "edges" => CommutatorInfo.new(:edge_commutators, EdgeCommutators),
+    "wings" => CommutatorInfo.new(:wing_commutators, WingCommutators),
+    "xcenters" => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators),
+    "tcenters" => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators)
   }
   
   def self.parse(args)

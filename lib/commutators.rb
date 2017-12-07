@@ -32,24 +32,48 @@ class CornerCommutators < Commutators
   
   VALID_PAIRS = CORNER_LETTER_PAIRS - TWISTS
 
-  def badness_exponent
-    8
-  end
-
   def goal_badness
     1.5
   end
+  
 end
 
 class EdgeCommutators < Commutators
 
   VALID_PAIRS = EDGE_LETTER_PAIRS - FLIPS
 
-  def badness_exponent
-    6
-  end
-  
   def goal_badness
     1.0
   end
+  
+end
+
+class WingCommutators < Commutators
+
+  VALID_PAIRS = EDGE_LETTER_PAIRS
+
+  def goal_badness
+    2.0
+  end
+  
+end
+
+class XCenterCommutators < Commutators
+
+  VALID_PAIRS = XCENTER_LETTER_PAIRS - XCENTER_NEIGHBORS
+
+  def goal_badness
+    2.0
+  end
+  
+end
+
+class TCenterCommutators < Commutators
+
+  VALID_PAIRS = TCENTER_LETTER_PAIRS - TCENTER_NEIGHBORS
+
+  def goal_badness
+    2.0
+  end
+  
 end
