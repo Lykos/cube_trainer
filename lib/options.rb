@@ -14,11 +14,12 @@ class Options
     opt_parser = OptionParser.new do |opts|
       opts.separator ""
       opts.separator "Specific options:"      
-      opts.on("-c", "--commutator_type TYPE", COMMUTATOR_TYPES) do |info|
+      opts.on("-c", "--commutator_type TYPE", COMMUTATOR_TYPES, "Use the given type of commutators for training.") do |info|
         options.commutator_info = info
       end
 
-      opts.on("-r" "--restrict LETTERLIST", /[a-x]+/) do |letters|
+      opts.on("-r" "--restrict LETTERLIST", /[a-x]+/, "List of letters to which the commutators should be restricted.",
+              "  (Only uses commutators that contain at least one of the given letters)") do |letters|
         options.restrict_letters = letters.split("")
       end
       

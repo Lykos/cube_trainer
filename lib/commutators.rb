@@ -5,21 +5,21 @@ class Commutators
   
   include SamplingHelper
   include LetterPairHelper
-  
-  def initialize(results_model)
+
+  # If restrict_letters is not nil, only commutators for those letters are used.
+  def initialize(results_model, restrict_letters=nil)
     @results_model = results_model
+    @restrict_letters = restrict_letters
   end
-
-  def selector(pair)
-    true
-  end
-
+  
   def results
     @results_model.results
   end
 
   def selectable_pairs
-    @selectable_pairs ||= self.class::VALID_PAIRS.select { |p| selector(p) }
+    @selectable_pairs ||= self.class::VALID_PAIRS.select do |p|
+      @restrict_letters.nil? || !(p.letters & @restrict_letters).empty?
+    end
   end
 
   def random_letter_pair
@@ -39,19 +39,6 @@ class CornerCommutators < Commutators
   def goal_badness
     1.5
   end
-end
-
-class SomeLettersCornerCommutators < CornerCommutators
-
-  def initialize(results_model, letters)
-    super(results_model)
-    @letters = letters.collect { |l| l.downcase }
-  end
-
-  def selector(pair)
-    !(pair.letters & @letters).empty?
-  end
-
 end
 
 class EdgeCommutators < Commutators

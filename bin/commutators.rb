@@ -16,7 +16,7 @@ include ConsoleHelpers
 
 options = Options.parse(ARGV)
 results_model = ResultsModel.new(options.commutator_info.result_symbol)
-generator = options.commutator_info.generator_class.new(results_model)
+generator = options.commutator_info.generator_class.new(results_model, options.restrict_letters)
 
 found = results_model.results.length
 missing = generator.class::VALID_PAIRS.length - found
