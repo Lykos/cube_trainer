@@ -4,6 +4,7 @@
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'commutators'
+require 'options'
 require 'results_model'
 require 'ui_helpers'
 require 'console_helpers'
@@ -13,8 +14,9 @@ include ConsoleHelpers
 
 # TODO Do this in the UI.
 
-results_model = ResultsModel.new(:corner_commutators)
-generator = CornerCommutators.new(results_model)
+options = Options.parse(ARGV)
+results_model = ResultsModel.new(options.commutator_info.result_symbol)
+generator = options.commutator_info.generator_class.new(results_model)
 
 found = results_model.results.length
 missing = generator.class::VALID_PAIRS.length - found
