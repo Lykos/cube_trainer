@@ -13,7 +13,7 @@ end
 class Part
   def initialize(colors)
     clazz = self.class
-    raise "Colors contain invalid item: #{colors.inspect}" if colors.any? { |c| c.class != Symbol }
+    raise "Colors contain invalid item: #{colors.inspect}" if colors.any? { |c| c.class != Symbol || !COLORS.include?(c) }
     raise "Invalid number of colors #{colors.length} for #{clazz}. Must be #{clazz::FACES}. Got colors: #{colors.inspect}" if colors.length != clazz::FACES
     @colors = colors
   end
@@ -71,6 +71,7 @@ class Part
   end
 end
 
+# This is an unmoveable center piece, it's mostly used as a helper class for other pieces.
 class Face < Part
   FACES = 1
 
@@ -99,6 +100,52 @@ class Face < Part
   ELEMENTS = generate_parts(self)
 end
 
+class MoveableCenter < Part
+  FACES = 1
+
+  def initialize(corresponding_part)
+    raise "Invalid corresponding part #{corresponding_part}." unless corresponding_part.is_a?(Part)
+    super([corresponding_part.colors[0]])
+    @corresponding_part = corresponding_part
+  end
+
+  def color
+    @colors[0]
+  end
+
+  def encode_with(coder)
+    coder['corresponding_part'] = @corresponding_part
+  end
+
+  def eql?(other)
+    self.class.equal?(other.class) && color == other.color && @corresponding_part == other.corresponding_part
+  end
+  
+  alias == eql?
+
+  def hash
+    ([color, @index]).hash
+  end
+
+  attr_reader :colors, :corresponding_part
+
+  def priorities
+    @corresponding_part.priorities
+  end
+
+  def inspect
+    self.class.to_s + "(" + color.to_s + ", " + @corresponding_part.inspect + ")"
+  end
+  
+  def valid?
+    @corresponding_part.valid?
+  end
+
+  def self.generate_moveable_centers(clazz)
+    clazz::CORRESPONDING_PART_CLASS::ELEMENTS.collect { |p| clazz.new(p) }.sort_by { |p| p.priorities }
+  end
+end
+
 class Edge < Part
   FACES = 2
 
@@ -109,6 +156,30 @@ class Edge < Part
   ELEMENTS = generate_parts(self)
   BUFFER = Edge.new([:white, :red])
   raise "Invalid buffer edge." unless BUFFER.valid?
+end
+
+class Midge < Part
+  FACES = 2
+
+  def valid?
+    !OPPOSITE_PAIRS.include?(@colors.sort)
+  end
+
+  ELEMENTS = generate_parts(self)
+  BUFFER = Midge.new([:white, :red])
+  raise "Invalid buffer midge." unless BUFFER.valid?
+end
+
+class Wing < Part
+  FACES = 2
+
+  def valid?
+    true
+  end
+
+  ELEMENTS = generate_parts(self)
+  BUFFER = Wing.new([:white, :red])
+  raise "Invalid buffer wing." unless BUFFER.valid?
 end
 
 class Corner < Part
@@ -146,6 +217,20 @@ class Corner < Part
   ELEMENTS = generate_parts(self)
   BUFFER = Corner.new([:yellow, :blue, :orange])
   raise "Invalid buffer corner." unless BUFFER.valid?
+end
+
+class XCenter < MoveableCenter
+  CORRESPONDING_PART_CLASS = Corner
+  ELEMENTS = generate_moveable_centers(self)
+  BUFFER = XCenter.new(Corner.new([:yellow, :blue, :orange]))
+  raise "Invalid buffer XCenter." unless BUFFER.valid?
+end
+
+class TCenter < MoveableCenter
+  CORRESPONDING_PART_CLASS = Edge
+  ELEMENTS = generate_moveable_centers(self)
+  BUFFER = XCenter.new(Edge.new([:yellow, :orange]))
+  raise "Invalid buffer TCenter." unless BUFFER.valid?
 end
 
 ALPHABET = "a".upto("x").to_a
