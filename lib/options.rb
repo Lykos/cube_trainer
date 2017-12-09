@@ -21,9 +21,9 @@ class Options
         options.commutator_info = info
       end
 
-      opts.on("-r", "--restrict LETTERLIST", /[a-x]+/, "List of letters to which the commutators should be restricted.",
+      opts.on("-r", "--restrict LETTERLIST", /[a-xA-x]+/, "List of letters to which the commutators should be restricted.",
               "  (Only uses commutators that contain at least one of the given letters)") do |letters|
-        options.restrict_letters = letters.split("")
+        options.restrict_letters = letters.downcase.split("")
       end
       
       opts.on_tail("-h", "--help", "Show this message") do
