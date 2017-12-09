@@ -194,7 +194,7 @@ class Wing < Part
   end
 
   ELEMENTS = generate_parts(self)
-  BUFFER = Wing.new([:white, :red])
+  BUFFER = Wing.new([:red, :yellow])
   raise "Invalid buffer wing." unless BUFFER.valid?
 end
 
@@ -238,7 +238,7 @@ end
 class XCenter < MoveableCenter
   CORRESPONDING_PART_CLASS = Corner
   ELEMENTS = generate_moveable_centers(self)
-  BUFFER = XCenter.new(Corner.new([:yellow, :blue, :orange]))
+  BUFFER = XCenter.new(Corner.new([:yellow, :green, :red]))
   raise "Invalid buffer XCenter." unless BUFFER.valid?
 end
 
