@@ -18,7 +18,7 @@ options = Options.parse(ARGV)
 results_model = ResultsModel.new(options.commutator_info.result_symbol)
 generator = options.commutator_info.generator_class.new(results_model, options.restrict_letters)
 
-found = results_model.results.length
+found = results_model.results.collect { |r| r.input }.uniq.length
 total = generator.class::VALID_PAIRS.length
 missing = total - found
 if missing > 0
