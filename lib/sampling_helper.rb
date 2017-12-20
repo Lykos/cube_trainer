@@ -86,7 +86,7 @@ module SamplingHelper
     [badness_score(badness) + index_score(index), 0].max
   end
 
-  def random_input(inputs)
+  def random_input(inputs, results)
     seen_input = results.collect { |r| r.input }.uniq
     unseen_input = inputs - seen_input
     unless unseen_input.empty?
