@@ -3,8 +3,9 @@ require 'letter_pair'
 
 # TODO refactor this to properly include the mode
 class Result
-
-  def initialize(timestamp, time_s, input, failed_attempts, word=nil)
+  def initialize(mode, timestamp, time_s, input, failed_attempts, word)
+    raise unless mode.is_a?(Symbol)
+    @mode = mode
     raise unless timestamp.is_a?(Time)
     @timestamp = timestamp
     raise unless time_s.is_a?(Float)
@@ -19,19 +20,19 @@ class Result
 
   # Construct from data stored in the db.
   def self.from_raw_data(data)
-    timestamp, time_s, input, failed_attempts, word = data
-    Result.new(Time.at(timestamp), time_s, LetterPair.from_raw_data(input), failed_attempts, word)
+    mode, timestamp, time_s, input, failed_attempts, word = data
+    Result.new(mode.to_sym, Time.at(timestamp), time_s, LetterPair.from_raw_data(input), failed_attempts, word)
   end
 
   # Serialize to data stored in the db.
   def to_raw_data
-    [@timestamp.to_i, @time_s, @input.to_raw_data, @failed_attempts, @word]
+    [@mode.to_s, @timestamp.to_i, @time_s, @input.to_raw_data, @failed_attempts, @word]
   end
 
   # Number of columns in the UI.
   COLUMNS = 3
 
-  attr_reader :timestamp, :time_s, :input, :failed_attempts, :word
+  attr_reader :mode, :timestamp, :time_s, :input, :failed_attempts, :word
 
   include UiHelpers
 

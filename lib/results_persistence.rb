@@ -31,7 +31,10 @@ class ResultsPersistence
       old_results = YAML::load(File.read(old_results_file))
       old_results.each do |mode, results|
         puts "Storing #{results.length} results for #{mode}."
-        results.each { |r| record_result(mode, r) }
+        results.each do |old_r|
+          new_r = Result.new(mode, old_r.timestamp, old_r.time_s, old_r.input, old_r.failed_attempts, old_r.word)
+          record_result(new_r)
+        end
       end
     end
   end
@@ -41,7 +44,7 @@ class ResultsPersistence
     results = {}
     stm.execute.each do |r|
       mode = r[0].to_sym
-      result = Result.from_raw_data(r[1..-1])
+      result = Result.from_raw_data(r)
       results[mode] ||= []
       results[mode].push(result)
     end
@@ -60,8 +63,8 @@ class ResultsPersistence
     stm.execute(mode.to_s, time.to_i)
   end
 
-  def record_result(mode, result)
+  def record_result(result)
     stm = @db.prepare ('INSERT INTO Results(Mode, Timestamp, TimeS, Input, FailedAttempts, Word) Values(?, ?, ?, ?, ?, ?)')
-    stm.execute(mode.to_s, *result.to_raw_data)
+    stm.execute(result.to_raw_data)
   end
 end

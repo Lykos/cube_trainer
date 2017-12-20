@@ -48,7 +48,7 @@ class BlindTrainer < Qt::MainWindow
   end
 
   def create_result
-    Result.new(@stop_watch.start_time, @stop_watch.time_s, cubie, @failed_attempts)
+    raise NotImplementedError, "This doesn't work after we changed the format of the result: Result.new(@stop_watch.start_time, @stop_watch.time_s, cubie, @failed_attempts)"
   end
 
   def cubie

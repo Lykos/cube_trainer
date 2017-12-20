@@ -24,9 +24,10 @@ class ResultsModel
     @result_listeners.push(listener)
   end
 
-  def record_result(result)
+  def record_result(timestamp, time_s, input, failed_attempts=0, word=nil)
+    result = Result.new(@mode, timestamp, time_s, input, failed_attempts, word)
     results.unshift(result)
-    @results_listeners.each { |l| l.record_result(@mode, result) }
+    @results_listeners.each { |l| l.record_result(result) }
   end
 
   def delete_after_time(timestamp)

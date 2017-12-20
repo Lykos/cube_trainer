@@ -38,7 +38,6 @@ loop do
   else
     time_s = Time.now - start
     puts "Time: #{format_time(time_s)}"
-    result = Result.new(start, time_s, letter_pair, 0, nil)
-    results_model.record_result(result)
+    results_model.record_result(start, time_s, letter_pair)
   end
 end
