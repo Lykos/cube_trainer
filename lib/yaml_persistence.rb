@@ -4,7 +4,7 @@ require 'cube'
 require 'letter_pair'
 require 'xdg_helper'
 
-class ResultsPersistence
+class YamlPersistence
 
   include XDGHelper
 

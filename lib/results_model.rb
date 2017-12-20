@@ -1,11 +1,10 @@
-require 'results_persistence'
-
+require 'yaml_persistence'
 
 class ResultsModel
 
   def initialize(mode)
     @mode = mode
-    @result_persistence = ResultsPersistence.new
+    @result_persistence = YamlPersistence.new
     @results = @result_persistence.load_results
   end
 
@@ -22,7 +21,6 @@ class ResultsModel
 
   def record_result(result)
     results.unshift(result)
-    store
   end
   
   def store
