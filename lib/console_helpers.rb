@@ -20,8 +20,14 @@ module ConsoleHelpers
     espeak_process(language).puts(stuff)
   end
 
+  # Exits in the case of character q.
   def wait_for_any_key
-    exit if STDIN.getch == 'q'
+    char = STDIN.getch
+    if char.downcase == 'q'
+      puts 'Pressed q. Exiting.'
+      exit
+    end
+    char
   end
 
 end

@@ -52,6 +52,13 @@ class ResultsPersistence
     stm = @db.prepare 'UPDATE Results SET Word = ? WHERE Mode = ? and Input = ?';
     stm.execute(word, mode, input)
   end
+  
+  # Delete all results that happened after the given time.
+  # Useful if you screwed up and want to delete results of the last 10 seconds.
+  def delete_after_time(mode, time)
+    stm = @db.prepare 'DELETE FROM Results WHERE Mode = ? and Timestamp > ?';
+    stm.execute(mode.to_s, time.to_i)
+  end
 
   def record_result(mode, result)
     stm = @db.prepare ('INSERT INTO Results(Mode, Timestamp, TimeS, Input, FailedAttempts, Word) Values(?, ?, ?, ?, ?, ?)')

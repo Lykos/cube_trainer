@@ -31,9 +31,14 @@ loop do
   letter_pair = generator.random_letter_pair
   puts_and_say(letter_pair)
   start = Time.now
-  wait_for_any_key
-  time_s = Time.now - start
-  puts "Time: #{format_time(time_s)}"
-  result = Result.new(start, time_s, letter_pair, 0, nil)
-  results_model.record_result(result)
+  char = wait_for_any_key
+  if char.downcase == 'd'
+    puts 'Pressed d. Deleting results for the last 10 seconds.'
+    results_model.delete_after_time(Time.now - 10)
+  else
+    time_s = Time.now - start
+    puts "Time: #{format_time(time_s)}"
+    result = Result.new(start, time_s, letter_pair, 0, nil)
+    results_model.record_result(result)
+  end
 end
