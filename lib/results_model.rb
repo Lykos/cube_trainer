@@ -27,7 +27,7 @@ class ResultsModel
   def record_result(result)
     results.unshift(result)
     @result_persistence.record_result(@mode, result)
-    @results_listeners.record_result(result)
+    @results_listeners.each { |l| l.record_result(result) }
   end
   
   def words_for_input(input)
