@@ -6,6 +6,7 @@ class ResultsModel
     @mode = mode
     @result_persistence = ResultsPersistence.new
     @results = @result_persistence.load_results
+    @results_listeners = []
   end
 
   attr_reader :mode
@@ -19,9 +20,14 @@ class ResultsModel
                       end
   end
 
+  def add_result_listener(listener)
+    @result_listener.push(listener)
+  end
+
   def record_result(result)
     results.unshift(result)
     @result_persistence.record_result(@mode, result)
+    @results_listeners.record_result(result)
   end
   
   def words_for_input(input)

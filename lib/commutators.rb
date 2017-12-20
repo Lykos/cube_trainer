@@ -11,7 +11,7 @@ class Commutators
     @results_model = results_model
     @restrict_letters = restrict_letters
   end
-  
+
   def results
     @results_model.results
   end
