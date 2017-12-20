@@ -45,7 +45,6 @@ class ResultsPersistence
       results[mode] ||= []
       results[mode].push(result)
     end
-    results.each {|m,r| p m, r.length}
     results
   end
 
