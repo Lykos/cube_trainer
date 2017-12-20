@@ -1,10 +1,10 @@
-require 'yaml_persistence'
+require 'results_persistence'
 
 class ResultsModel
 
   def initialize(mode)
     @mode = mode
-    @result_persistence = YamlPersistence.new
+    @result_persistence = ResultsPersistence.new
     @results = @result_persistence.load_results
   end
 
