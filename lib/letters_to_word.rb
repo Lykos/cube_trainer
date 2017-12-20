@@ -1,24 +1,20 @@
 require 'letter_pair_helper'
-require 'sampling_helper'
+require 'input_sampler'
 require 'dict'
 
 class LettersToWord
 
-  include SamplingHelper
   include LetterPairHelper
   
   def initialize(results_model)
     @results_model = results_model
+    @input_sampler = InputSampler.new(VALID_PAIRS, results_model)
   end
 
   VALID_PAIRS = LETTER_PAIRS - REDUNDANT_TWISTS
 
-  def results
-    @results_model.results
-  end
-
   def random_letter_pair
-    random_input(VALID_PAIRS, results)
+    @input_sampler.random_input
   end
 
   def dict

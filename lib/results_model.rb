@@ -6,7 +6,7 @@ class ResultsModel
     @mode = mode
     @result_persistence = ResultsPersistence.new
     @results = @result_persistence.load_results
-    @results_listeners = [@result_persistence]
+    @result_listeners = [@result_persistence]
   end
 
   attr_reader :mode
@@ -27,12 +27,12 @@ class ResultsModel
   def record_result(timestamp, time_s, input, failed_attempts=0, word=nil)
     result = Result.new(@mode, timestamp, time_s, input, failed_attempts, word)
     results.unshift(result)
-    @results_listeners.each { |l| l.record_result(result) }
+    @result_listeners.each { |l| l.record_result(result) }
   end
 
   def delete_after_time(timestamp)
     results.delete_if { |r| r.timestamp > timestamp }
-    @results_listeners.each { |l| l.delete_after_time(@mode, timestamp) }
+    @result_listeners.each { |l| l.delete_after_time(@mode, timestamp) }
   end
   
   def words_for_input(input)
@@ -45,7 +45,7 @@ class ResultsModel
 
   def replace_word(input, word)
     results.collect! { |r| if r.input == input then r.with_word(word) else r end }
-    @results_listeners.each { |l| l.replace_word(@mode, input, word) }
+    @result_listeners.each { |l| l.replace_word(@mode, input, word) }
   end
 
 end

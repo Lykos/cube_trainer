@@ -1,29 +1,12 @@
 module SamplingHelper
-
-  READABILITY_FACTOR = 1000
-  REPETITION_BOUNDARY = 10
-  INDEX_EXPONENT = 1.2
-  BADNESS_BASE = 10
-
-  # Fraction of the samples that use uniform samples to even occasionally cover
-  # easy cases.
-  COVERAGE_FRACTION = 0.2
-
-  def failed_seconds
-    10
-  end
-
-  def goal_badness
-    1.0
-  end
-
-  def newer_weight
-    1.3
-  end
-
+  
+  # Draw a random sample from `array` and use `block` to calculate the weight of each item.
   def sample_by(array, &block)
+    raise "Cannot sample empty array." if array.empty?
     weights = array.collect(&block)
+    raise "Negative weights are not allowed for sampling." if weights.any? { |w| w < 0.0 }
     weight_sum = weights.reduce(:+)
+    raise "Can't sample for total weight 0.0." if weight_sum == 0.0
     number = rand(weight_sum)
     index = 0
     while weights[index] < number
@@ -31,79 +14,6 @@ module SamplingHelper
       index += 1
     end
     array[index]
-  end
-
-  def badness(result)
-    result.time_s + failed_seconds * result.failed_attempts
-  end
-
-  def badness_sum(badnesses)
-    badnesses.reverse.reduce do |avg, b|
-      (avg + b * newer_weight) / (newer_weight + 1)
-    end
-  end
-
-  def compute_history_scores(results)
-    # badness sum per input
-    badnesses = {}
-    badnesses.default_proc = proc { |h, k| h[k] = [] }
-    earliest_indices = {}
-    results.each_with_index do |r, i|
-      badnesses[r.input].push(badness(r))
-      earliest_indices[r.input] = i unless earliest_indices.has_key?(r.input)
-    end
-    scores = {}
-    coverage_scores = {}
-    results.each_with_index do |r, i|
-      badness = badness_sum(badnesses[r.input])
-      index = earliest_indices[r.input]
-      scores[r.input] = score(badness, index)
-      coverage_scores[r.input] = coverage_score(index)
-    end
-    [scores, coverage_scores, badnesses, earliest_indices]
-  end
-
-  # The index term is used to make sure that even if my badness formula is too strong and
-  # some items have a chance of 10**-10 to get picked, they eventually get picked again
-  # if their index gets too high.
-  def index_score(index)
-    # Punish overly fast repetition
-    if index <= REPETITION_BOUNDARY
-      return -(10 ** (REPETITION_BOUNDARY - index))
-    end
-    0
-  end
-
-  def coverage_score(index)
-    index ** INDEX_EXPONENT / 100
-  end
-
-  def badness_score(badness)
-    BADNESS_BASE ** (badness - goal_badness)
-  end  
-
-  def score(badness, index)
-    [badness_score(badness) + index_score(index), 0].max
-  end
-
-  def random_input(inputs, results)
-    seen_input = results.collect { |r| r.input }.uniq
-    unseen_input = inputs - seen_input
-    unless unseen_input.empty?
-      # If not all input has been seen, only choose items that haven't been seen yet
-      unseen_input.sample
-    else
-      history_scores, coverage_scores, badnesses, indices = compute_history_scores(results)
-      if rand(0) < COVERAGE_FRACTION
-        s = sample_by (inputs) { |p| coverage_scores[p] }
-        puts "Coverage sample; Score: #{coverage_scores[s]}; index #{indices[s]}; occurrences: #{badnesses[s].length}"
-        s
-      else
-        s = sample_by(inputs) { |p| history_scores[p] }
-        puts "Badness sample; Score: #{history_scores[s] / READABILITY_FACTOR}; badness avg #{badness_sum(badnesses[s])}; occurrences: #{badnesses[s].length}"
-        s
-      end
-    end
   end
 
 end
