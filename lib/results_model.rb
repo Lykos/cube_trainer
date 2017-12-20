@@ -21,12 +21,9 @@ class ResultsModel
 
   def record_result(result)
     results.unshift(result)
+    @result_persistence.record_result(@mode, result)
   end
   
-  def store
-    @result_persistence.store_results(@results)
-  end
-
   def words_for_input(input)
     results.select { |r| r.input == input }.collect { |r| r.word }.uniq
   end
@@ -37,7 +34,7 @@ class ResultsModel
 
   def replace_word(input, word)
     results.collect! { |r| if r.input == input then r.with_word(word) else r end }
-    store
+    @results_persistence.replace_word(@mode, input, word)
   end
 
 end
