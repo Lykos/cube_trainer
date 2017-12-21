@@ -189,23 +189,27 @@ class InputSampler
       if score > new_items_score
         new_items = [item]
         new_items_score = score
-      elsif score == new_items_score
+      elsif score == new_items_score && score > 0
         new_items.push(item)
       end
     end
     # If we have a new item that has to be shown, show it.
     if new_items && do_new_item(new_items_score)
       s = new_items.sample
-      puts "New item sample; Score: #{new_items_score}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
+      if new_items_score == 1
+        puts "Completely new item!"
+      else
+        puts "Relatively item sample; Score: #{new_items_score}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
+      end
       s
     else
       if do_coverage_sample
         s = sample_by (@items) { |p| coverage_score(p) }
-        puts "Coverage sample; Score: #{coverage_score(s)}; Badness score: #{badness_score(s)}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
+        puts "Coverage sample; Score: #{coverage_score(s)}; Badness avg: #{@badness_histories[s].average}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
         s
       else
         s = sample_by(@items) { |p| badness_score(p) }
-        puts "Badness sample; Score: #{badness_score(s)}; badness avg #{@badness_histories[s].average}; occurrences: #{@occurrences[s]}"
+        puts "Badness sample; Score: #{badness_score(s)}; Badness avg #{@badness_histories[s].average}; occurrences: #{@occurrences[s]}"
         s
       end
     end

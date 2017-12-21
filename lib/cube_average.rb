@@ -11,17 +11,23 @@ class CubeAverage
 
   attr_reader :average
 
+  def compute_average(array)
+    array.reduce(:+) / array.length
+  end
+                      
+
   def push(value)
     was_saturated = saturated?
     @values.push(value)
     if was_saturated
       @values.shift
     end
-    if @values.length >= 3
-      removal_part = (@values.length * 0.05).ceil
-      average_part = @values.sort[removal_part..@values.length - removal_part]
-      @average = average_part.reduce(:+) / average_part.length
-    end
+    @average = compute_average(if @values.length >= 3
+      removed_items = (@values.length * 0.05).ceil
+      @values.sort[removed_items..@values.length - removed_items]
+    else
+      @values
+    end)
     nil
   end
 
