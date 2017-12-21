@@ -25,8 +25,8 @@ class InputSampler
   # Occurrences longer ago have no effect on the sampling any more.
   BADNESS_MEMORY = 5
 
-  # Number of repetitions until we stop considering an item a "new item" that needs to be repeated occasionally.
-  NEW_ITEM_BOUNDARY = 6
+  # Number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.
+  NEW_ITEM_BOUNDARY = 8
 
   # Number of seconds that are equivalent to one failed attempt. (Used for calculating badness)
   FAILED_SECONDS = 60
