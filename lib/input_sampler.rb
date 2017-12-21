@@ -120,6 +120,21 @@ class InputSampler
     [repetition_adjusted_score(index, score), EPSILON_SCORE].max
   end
 
+  # Distort the given value randomly by up to the given factor.
+  def distort(value, factor)
+    raise unless factor > 0 && factor < 1
+    value * (1 - factor) + (factor * 2 * value * rand)
+  end
+
+  # After how many other items should this item be repeated.
+  def repetition_index(occ)
+    rep_index = 2 ** occ
+    # Do a bit of random distortion to avoid completely mechanic repetition.
+    distorted_rep_index = distort(rep_index, 0.2)
+    # At least 1 other item should always come in between.
+    [distorted_rep_index.to_i, 1].max
+  end
+
   # Score for items that are either completely new or have occurred less than NEW_ITEM_BOUNDARY times.
   # For all other items, it's 0.
   def new_item_score(item)
@@ -133,10 +148,10 @@ class InputSampler
     end
     # When the item is completely new, repeat often, then less and less often, but also
     # adjust to the total number of items.
-    repetition_index = [2 ** occ, @items.length / 2].min
+    rep_index = repetition_index(occ)
     index = items_since_last_occurrence(item)
-    if index >= repetition_index
-      if index < repetition_index + 10
+    if index >= rep_index
+      if index < rep_index + 10
         # Sweet spot to repeat items
         3
       else
