@@ -99,7 +99,7 @@ class InputSampler
   end
 
   # Adjusts a badness score in order to punish overly fast repetition, even for high badness.
-  def repetition_adjust_score(index, badness_score)
+  def repetition_adjusted_score(index, badness_score)
     if index < repetition_boundary
       # This starts out as EPSILON and grows exponentially until it reaches the
       # badness_score at index == REPETITION_BOUNDARY.
