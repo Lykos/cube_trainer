@@ -25,11 +25,7 @@ module ConsoleHelpers
 
   # Exits in the case of character q.
   def wait_for_any_key
-    if @last_time
-      sleep(@last_time + MINIMUM_WAIT_TIME - Time.now)
-    end
     char = STDIN.getch
-    @last_time = Time.now
     if char.downcase == 'q'
       puts 'Pressed q. Exiting.'
       exit
