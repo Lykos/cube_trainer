@@ -8,9 +8,6 @@ class InputSampler
   # Minimum score that we always give to each element in order not to screw up our sampling if all weights become 0 or so.
   EPSILON_SCORE = 0.000000001
 
-  # Factor we multiply the badnesses with for more readable debug output.
-  READABILITY_FACTOR = 1000
-
   # Boundary at which we don't punish repeating the same item again. But note that this will be adjusted in case of a small number of items.
   REPETITION_BOUNDARY = 10
 
@@ -36,10 +33,10 @@ class InputSampler
 
   # In case there are still completely new items available, this is the fraction of times that such an item will be chosen.
   # Note that completely new items will never be chosen if a relatively new item needs to be repeated.
-  COMPLETELY_NEW_ITEMS_FRACTION = 0.7
+  COMPLETELY_NEW_ITEMS_FRACTION = 0.6
 
   # In case there are still relatively new items that need to be repeated available, this is the fraction of times that such an item will be chosen.
-  REPEAT_NEW_ITEMS_FRACTION = 0.9
+  REPEAT_NEW_ITEMS_FRACTION = 0.8
 
   def initialize(items, results_model, goal_badness=1.0)
     @items = items
@@ -100,10 +97,10 @@ class InputSampler
 
   # Adjusts a badness score in order to punish overly fast repetition, even for high badness.
   def repetition_adjusted_score(index, badness_score)
-    if index < repetition_boundary
-      # This starts out as EPSILON and grows exponentially until it reaches the
+    if index < repetition_boundary && badness_score > Math::E
+      # This starts out as e and grows exponentially until it reaches the
       # badness_score at index == REPETITION_BOUNDARY.
-      EPSILON ** (Math.log(badness_score, EPSILON) * (index + 1) / (repetition_boundary + 1))
+      Math.exp(Math.log(badness_score) * (index + 1) / (repetition_boundary + 1))
     else
       badness_score
     end
@@ -189,11 +186,11 @@ class InputSampler
     else
       if do_coverage_sample
         s = sample_by (@items) { |p| coverage_score(p) }
-        puts "Coverage sample; Score: #{coverage_score(s)}; Badness score: #{badness_score(item)}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
+        puts "Coverage sample; Score: #{coverage_score(s)}; Badness score: #{badness_score(s)}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
         s
       else
         s = sample_by(@items) { |p| badness_score(p) }
-        puts "Badness sample; Score: #{badness_score(s)}; badness avg #{@badnesses_histories[s].average}; occurrences: #{@occurrences[s]}"
+        puts "Badness sample; Score: #{badness_score(s)}; badness avg #{@badness_histories[s].average}; occurrences: #{@occurrences[s]}"
         s
       end
     end
