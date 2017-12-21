@@ -33,7 +33,7 @@ class InputSampler
 
   # In case there are still completely new items available, this is the fraction of times that such an item will be chosen.
   # Note that completely new items will never be chosen if a relatively new item needs to be repeated.
-  COMPLETELY_NEW_ITEMS_FRACTION = 0.6
+  COMPLETELY_NEW_ITEMS_FRACTION = 0.4
 
   # In case there are still relatively new items that need to be repeated available, this is the fraction of times that such an item will be chosen.
   REPEAT_NEW_ITEMS_FRACTION = 0.8
@@ -151,8 +151,8 @@ class InputSampler
     rep_index = repetition_index(occ)
     index = items_since_last_occurrence(item)
     if index >= rep_index
-      if index < rep_index + 10
-        # Sweet spot to repeat items
+      if index < [rep_index * 1.5, rep_index + 10].max
+        # The sweet spot to repeat items is kind of close to the desired repetition index.
         3
       else
         # If we reach this branch, something went wrong and we didn't manage to repeat
@@ -196,7 +196,7 @@ class InputSampler
     # If we have a new item that has to be shown, show it.
     if new_items && do_new_item(new_items_score)
       s = new_items.sample
-      puts "New item sample; Score: #{new_items_score}; occurrences: #{@occurrences[s]}"
+      puts "New item sample; Score: #{new_items_score}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
       s
     else
       if do_coverage_sample
