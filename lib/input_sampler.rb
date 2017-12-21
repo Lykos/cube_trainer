@@ -26,12 +26,20 @@ class InputSampler
 
   # Number of occurrences that we go back to the past to compute the badness of a given item.
   # Occurrences longer ago have no effect on the sampling any more.
-  # Note that as long as some items don't have at least this many occurrences, normal sampling
-  # Cannot be done for those items.
   BADNESS_MEMORY = 5
+
+  # Number of repetitions until we stop considering an item a "new item" that needs to be repeated occasionally.
+  NEW_ITEM_BOUNDARY = 6
 
   # Number of seconds that are equivalent to one failed attempt. (Used for calculating badness)
   FAILED_SECONDS = 60
+
+  # In case there are still completely new items available, this is the fraction of times that such an item will be chosen.
+  # Note that completely new items will never be chosen if a relatively new item needs to be repeated.
+  COMPLETELY_NEW_ITEMS_FRACTION = 0.7
+
+  # In case there are still relatively new items that need to be repeated available, this is the fraction of times that such an item will be chosen.
+  REPEAT_NEW_ITEMS_FRACTION = 0.9
 
   def initialize(items, results_model, goal_badness=1.0)
     @items = items
@@ -46,7 +54,7 @@ class InputSampler
     @occurrence_indices = {}
     @occurrence_indices.default = 0
     @badness_histories = {}
-    @badness_histories.default_proc = proc { |h, k| h[k] = CubeAverage.new(BADNESS_MEMORY) }
+    @badness_histories.default_proc = proc { |h, k| h[k] = CubeAverage.new(BADNESS_MEMORY, EPSILON_SCORE) }
     @occurrences = {}
     @occurrences.default = 0
     @results_model.results.sort_by { |r| r.timestamp }.each do |r|
@@ -110,24 +118,16 @@ class InputSampler
   # Computes an exponentially growing score based on the given badness that
   # allows us to strongly prefer bad items.
   def badness_score(item)
-    # If we don't have enough samples to compute the badness average (i.e. it's not saturated),
-    # we just choose score epsilon in order to guarantee that our score sum is strictly positive.
-    # Note that it can actually happen that we reach this code even if not all items are saturated
-    # if the item doesn't need to be repeated because of the `new_item_score`.
-    badness = if badness_histories[item].saturated?
-                BADNESS_BASE ** (badness_histories[item].average - goal_badness)
-              else
-                EPSILON
-              end
+    score = BADNESS_BASE ** (@badness_histories[item].average - @goal_badness)
     index = items_since_last_occurrence(item)
-    [repetition_adjusted_score(index, badness_score), EPSILON_SCORE].max
+    [repetition_adjusted_score(index, score), EPSILON_SCORE].max
   end
 
-  # Score for items that are either completely new or have occurred less than BADNESS_MEMORY times.
+  # Score for items that are either completely new or have occurred less than NEW_ITEM_BOUNDARY times.
   # For all other items, it's 0.
   def new_item_score(item)
     occ = @occurrences[item]
-    if occ >= BADNESS_MEMORY
+    if occ >= NEW_ITEM_BOUNDARY
       return 0
     elsif occ == 0
       # Items that have never been seen get a positive score, but less than items that need
@@ -137,15 +137,35 @@ class InputSampler
     # When the item is completely new, repeat often, then less and less often, but also
     # adjust to the total number of items.
     repetition_index = [2 ** occ, @items.length / 2].min
-    # Do a random adjustment to avoid overly deterministic repetitions.
-    repetition_index = repetition_index / 2 + rand(repetition_index)
-    # Now give a score depending on how long a go this item should have been repeated.
-    [items_since_last_occurrence(item) - repetition_index, 0].max
+    index = items_since_last_occurrence(item)
+    if index >= repetition_index
+      if index < repetition_index + 10
+        # Sweet spot to repeat items
+        3
+      else
+        # If we reach this branch, something went wrong and we didn't manage to repeat
+        # this item in time. Probably we have too many items that we are trying to repeat,
+        # so we better give up on this one s.t. we can handle the others better.
+        2 + 1.0 / index
+      end
+    else
+      0
+    end
   end
 
-  # Decide randonly whether we should do a coverage sample. If not, we should do a badness sample.
+  # Decide randomly whether we should do a coverage sample. If not, we should do a badness sample.
   def do_coverage_sample
     rand(0) < COVERAGE_FRACTION
+  end
+
+  # Decide randomly whether we should handle a new item, i.e. a completely new or a relatively new
+  # one that needs to be repeated.
+  def do_new_item(new_items_score)
+    if new_items_score == 1
+      return rand(0) < COMPLETELY_NEW_ITEMS_FRACTION
+    else
+      return rand(0) < REPEAT_NEW_ITEMS_FRACTION
+    end
   end
 
   def random_item
@@ -162,7 +182,7 @@ class InputSampler
       end
     end
     # If we have a new item that has to be shown, show it.
-    if new_items
+    if new_items && do_new_item(new_items_score)
       s = new_items.sample
       puts "New item sample; Score: #{new_items_score}; occurrences: #{@occurrences[s]}"
       s
@@ -172,8 +192,8 @@ class InputSampler
         puts "Coverage sample; Score: #{coverage_score(s)}; Badness score: #{badness_score(item)}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
         s
       else
-        s = sample_by(items) { |p| badness_score(p) }
-        puts "Badness sample; Score: #{badness_score(item)}; badness avg #{@badnesses_histories[s].average}; occurrences: #{@occurrences[s]}"
+        s = sample_by(@items) { |p| badness_score(p) }
+        puts "Badness sample; Score: #{badness_score(s)}; badness avg #{@badnesses_histories[s].average}; occurrences: #{@occurrences[s]}"
         s
       end
     end
