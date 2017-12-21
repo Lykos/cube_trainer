@@ -49,7 +49,6 @@ class InputSampler
   def reset
     @current_occurrence_index = 0
     @occurrence_indices = {}
-    @occurrence_indices.default = 0
     @badness_histories = {}
     @badness_histories.default_proc = proc { |h, k| h[k] = CubeAverage.new(BADNESS_MEMORY, EPSILON_SCORE) }
     @occurrences = {}
@@ -78,7 +77,9 @@ class InputSampler
 
   # Returns how many items have occurred since the last occurrence of this item (0 if it was the last picked item).
   def items_since_last_occurrence(item)
-    @current_occurrence_index - @occurrence_indices[item]
+    occ = @occurrence_indices[item]
+    return nil if occ.nil?
+    @current_occurrence_index - occ
   end
 
   # Insert a new result.
@@ -97,7 +98,7 @@ class InputSampler
 
   # Adjusts a badness score in order to punish overly fast repetition, even for high badness.
   def repetition_adjusted_score(index, badness_score)
-    if index < repetition_boundary && badness_score > Math::E
+    if !index.nil? && index < repetition_boundary && badness_score > Math::E
       # This starts out as e and grows exponentially until it reaches the
       # badness_score at index == REPETITION_BOUNDARY.
       Math.exp(Math.log(badness_score) * (index + 1) / (repetition_boundary + 1))
@@ -109,7 +110,9 @@ class InputSampler
   # A score that prefers items that haven't been shown in a while.
   # We use this score only occasionally (see COVERAGE_FRACTION).
   def coverage_score(item)
-    [items_since_last_occurrence(item) ** INDEX_EXPONENT, EPSILON_SCORE].max
+    index = items_since_last_occurrence(item)
+    return EPSILON_SCORE if index.nil?
+    [index ** INDEX_EXPONENT, EPSILON_SCORE].max
   end
 
   # Computes an exponentially growing score based on the given badness that
@@ -150,6 +153,7 @@ class InputSampler
     # adjust to the total number of items.
     rep_index = repetition_index(occ)
     index = items_since_last_occurrence(item)
+    raise "Not completely new item has no index." if index.nil?
     if index >= rep_index
       if index < [rep_index * 1.5, rep_index + 10].max
         # The sweet spot to repeat items is kind of close to the desired repetition index.
