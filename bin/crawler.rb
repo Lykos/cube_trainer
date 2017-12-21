@@ -8,4 +8,4 @@ require 'wca_export_reader'
 crawler = WCACrawler.new
 filename = crawler.get_latest_file
 reader = WCAExportReader.new(filename)
-puts reader.nemeses('2016IHLE01')
+puts reader.nemeses('2017MINA04')
