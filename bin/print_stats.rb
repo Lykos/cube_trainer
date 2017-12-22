@@ -6,7 +6,7 @@ require 'results_persistence'
 require 'stats_computer'
 require 'cube'
 
-results = ResultsPersistence.new.load_results
+results = ResultsPersistence.create_for_production.load_results
 computer = StatsComputer.new
 results.each do |k, v|
   puts k

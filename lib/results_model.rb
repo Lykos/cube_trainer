@@ -4,7 +4,7 @@ class ResultsModel
 
   def initialize(mode)
     @mode = mode
-    @result_persistence = ResultsPersistence.new
+    @result_persistence = ResultsPersistence.create_for_production
     @results = @result_persistence.load_results
     @result_listeners = [@result_persistence]
   end
