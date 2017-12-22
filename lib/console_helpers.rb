@@ -23,14 +23,18 @@ module ConsoleHelpers
     espeak_process(language).puts(stuff)
   end
 
+  KeyPressWaitData = Struct.new(:char, :start, :time_s)
+
   # Exits in the case of character q.
-  def wait_for_any_key
+  def time_before_any_key_press
+    start = Time.now
     char = STDIN.getch
+    time = Time.now - start
     if char.downcase == 'q'
       puts 'Pressed q. Exiting.'
       exit
     end
-    char
+    KeyPressWaitData.new(char, start, time)
   end
 
 end
