@@ -31,11 +31,11 @@ loop do
   letter_pair = generator.random_letter_pair
   puts_and_say(letter_pair)
   data = time_before_any_key_press
-  if data.char.downcase == 'd'
+  if data.char == 'd'
     puts 'Pressed d. Deleting results for the last 10 seconds.'
     results_model.delete_after_time(Time.now - 10)
   else
-    puts "Time: #{format_time(time_s)}"
+    puts "Time: #{format_time(data.time_s)}"
     results_model.record_result(data.start, data.time_s, letter_pair)
   end
 end
