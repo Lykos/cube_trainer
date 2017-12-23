@@ -6,8 +6,8 @@ class LetterPair
   raise if ALPHABET.include?(SEPARATOR)
   
   def initialize(letters)
-    raise unless 1 <= letters.length and letters.length < 3
-    raise unless letters.all? { |l| ALPHABET.include?(l) }
+    raise "Invalid letter pair length for letter pair #{letters.join(" ")}." unless 1 <= letters.length and letters.length < 3
+    letters.each { |l| raise "Invalid letter #{l}." unless ALPHABET.include?(l) }
     @letters = letters
   end
 
@@ -48,5 +48,9 @@ class LetterPair
 
   def matches_word?(word)
     word =~ regexp
+  end
+
+  def invert
+    LetterPair.new(@letters.reverse)
   end
 end

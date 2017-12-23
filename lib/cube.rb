@@ -1,6 +1,7 @@
 # The order determines the priority of the faces.
 COLORS = [:yellow, :red, :green, :blue, :orange, :white]
 OPPOSITE_PAIRS = [[:yellow, :white], [:red, :orange], [:green, :blue]].collect { |e| e.sort }.sort
+FACE_NAMES = ['U', 'F', 'R', 'L', 'B', 'D']
 
 # We need to define one corner to determine the chirality. The other colors follow from this one.
 # This is in clockwise order.
@@ -69,6 +70,15 @@ class Part
   def rotations
     (0...@colors.length).collect { |i| rotate_by(i) }
   end
+
+  def self.create_for_colors(colors)
+    self.new(colors)
+  end
+
+  def self.parse(piece_description)
+    colors = piece_description.upcase.strip.split('').collect { |e| COLORS[FACE_NAMES.index(e)] }
+    create_for_colors(colors)
+  end
 end
 
 # This is an unmoveable center piece, it's mostly used as a helper class for other pieces.
@@ -107,6 +117,10 @@ class MoveableCenter < Part
     raise "Invalid corresponding part #{corresponding_part}." unless corresponding_part.is_a?(Part)
     super([corresponding_part.colors[0]])
     @corresponding_part = corresponding_part
+  end
+
+  def self.create_for_colors(colors)
+    self.new(self::CORRESPONDING_PART_CLASS.new(colors))
   end
 
   def color
@@ -190,7 +204,15 @@ class Wing < Part
   FACES = 2
 
   def valid?
-    true
+    !OPPOSITE_PAIRS.include?(@colors.sort)
+  end
+
+  def self.create_for_colors(colors)
+    if colors.length == 3
+      new(colors[0..1])
+    else
+      new(colors)
+    end
   end
 
   ELEMENTS = generate_parts(self)
@@ -201,6 +223,13 @@ end
 class Corner < Part
   FACES = 3
   CHIRALITY_CORNER = Corner.new(CHIRALITY_COLORS)
+
+  def self.create_for_colors(colors)
+    piece_candidates = colors[1..-1].permutation.collect { |cs| new([colors[0]] + cs) }
+    pieces = piece_candidates.select { |p| p.valid? }
+    raise "#{piece_description} is not unique to create a #{self}: #{pieces.inspect}" unless pieces.length == 1
+    pieces.first
+  end
 
   def valid?
     adjacent_edges.all? { |e| e.valid? } && valid_chirality?

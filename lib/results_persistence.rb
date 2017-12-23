@@ -18,10 +18,6 @@ class ResultsPersistence
 
   class DBConnectionHelper
     include XDGHelper
-      
-    def subdirectory
-      'cube_trainer'
-    end
     
     def old_results_file
       data_file('results.yml')

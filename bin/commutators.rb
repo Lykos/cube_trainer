@@ -30,7 +30,7 @@ end
 loop do
   letter_pair = generator.random_letter_pair
   puts_and_say(letter_pair)
-  data = time_before_any_key_press
+  data = time_before_any_key_press(generator.hint(letter_pair))
   if data.char == 'd'
     puts 'Pressed d. Deleting results for the last 10 seconds.'
     results_model.delete_after_time(Time.now - 10)

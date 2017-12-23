@@ -208,11 +208,11 @@ class InputSampler
       s
     else
       if do_coverage_sample
-        s = sample_by (@items) { |p| coverage_score(p) }
+        s = sample_by (@items) { |s| coverage_score(s) }
         puts "Coverage sample; Score: #{coverage_score(s)}; Badness avg: #{@badness_histories[s].average}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
         s
       else
-        s = sample_by(@items) { |p| badness_score(p) }
+        s = sample_by(@items) { |s| badness_score(s) }
         puts "Badness sample; Score: #{badness_score(s)}; Badness avg #{@badness_histories[s].average}; occurrences: #{@occurrences[s]}"
         s
       end
