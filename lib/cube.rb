@@ -110,6 +110,41 @@ class Face < Part
   ELEMENTS = generate_parts(self)
 end
 
+# One move on the cube
+class Move
+  DIRECTIONS = ['', '2', '\'']
+  ROTATIONS = ['x', 'y', 'z']
+  REGEXP = Regexp.new("([#{ROTATIONS.join}]|[#{FACE_NAMES.join}]w?|[#{FACE_NAMES.join.downcase}])([#{DIRECTIONS.join}])?")
+  
+  def initialize(move_string)
+    match = move_string[REGEXP]
+    raise "Invalid move #{move_string}." unless match
+    @face, @direction = match
+  end
+
+  attr_reader :face, :direction
+
+  def eql?(other)
+    self.class.equal?(other.class) && @face == other.face && @direction == other.direction
+  end
+
+  # Whether at least one move is cancelled if the current move and the other one are executed subsequently.
+  # Note that R R is considered to be cancelled to R2 and rotations and moves or moves with different width are considered to never cancel each other.
+  def cancels?(other)
+    @face == other.face
+  end
+
+  alias == eql?
+
+  def hash
+    [@face, @direction].hash
+  end
+
+  def to_s
+    @face + @direction
+  end
+end
+
 class MoveableCenter < Part
   FACES = 1
 

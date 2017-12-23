@@ -1,4 +1,5 @@
 require 'csv'
+require 'commutator'
 
 class HintParser
   def self.csv_file(part_class)
@@ -11,14 +12,18 @@ class HintParser
     hint_table = CSV.read(csv_file(part_class))
     # TODO make this more general to figure out other types of hint tables
     parts = hint_table[0][1..-1].collect { |p| part_class.parse(p) }
-    hint_table[1..-1].each do |row|
+    hint_table[1..-1].each_with_index do |row, row_index|
       break if row.first.nil? || row.first.empty?
       part1 = part_class.parse(row.first)
       row[1..-1].each_with_index do |e, i|
         next if e.nil? || e.empty?
         part0 = parts[i]
         letter_pair = LetterPair.new([part0.letter, part1.letter])
-        hints[letter_pair] = e
+        begin
+          hints[letter_pair] = parse_commutator(e)
+        rescue CommutatorParseError => e
+          raise "Couldn't parse commutator for #{letter_pair} (i.e. #{("A".."Z").to_a[i + 1]}#{row_index + 2}) couldn't be parsed: #{e}"
+        end
       end
     end
     hints
@@ -37,6 +42,9 @@ class HintParser
   end
 
   def hint(letter_pair)
-    @hints[letter_pair] || @hints[letter_pair.invert]
+    @hints[letter_pair] ||= begin
+                              inverse = @hints[letter_pair.invert]
+                              inverse.invert
+                            end
   end
 end
