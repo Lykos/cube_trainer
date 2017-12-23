@@ -18,6 +18,10 @@ class ResultsPersistence
 
   class DBConnectionHelper
     include XDGHelper
+
+    def initialize
+      ensure_base_directory_exists
+    end
     
     def old_results_file
       data_file('results.yml')
