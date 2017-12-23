@@ -44,7 +44,7 @@ class HintParser
   def hint(letter_pair)
     @hints[letter_pair] ||= begin
                               inverse = @hints[letter_pair.invert]
-                              inverse.invert
+                              if inverse then inverse.invert else nil end
                             end
   end
 end
