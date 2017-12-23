@@ -13,11 +13,11 @@ class PureCommutator
   attr_reader :first_part, :second_part
 
   def invert
-    PureCommutator.new(first_part, second_part)
+    PureCommutator.new(second_part, first_part)
   end
 
   def to_s
-    '[' + @first_part.join(' ') + ',' + @second_part.join(' ') + ']'
+    "[#{@first_part.join(' ')}, #{@second_part.join(' ')}]"
   end
 end
 
@@ -33,14 +33,8 @@ class SetupCommutator
     SetupCommutator.new(setup, @pure_commutator.invert)
   end
 
-  def cancels?
-    @setup.last.same_face?(@pure_commutator.first_part.first) ||
-      @setup.last.same_face?(@pure_commutator.second_part.last)
-  end
-
   def to_s
-    separator = if cancels? then ';' else ':' end
-    '[' + @setup.join(' ') + separator + @pure_commutator + ']'
+    "[#{@setup.join(' ')} : #{@pure_commutator}]"
   end
 end
 
