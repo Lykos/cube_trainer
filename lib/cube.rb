@@ -120,7 +120,7 @@ class MoveableCenter < Part
   end
 
   def self.create_for_colors(colors)
-    self.new(self::CORRESPONDING_PART_CLASS.new(colors))
+    self.new(self::CORRESPONDING_PART_CLASS.create_for_colors(colors))
   end
 
   def color
