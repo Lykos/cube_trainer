@@ -21,6 +21,10 @@ class Options
         options.commutator_info = info
       end
 
+      opts.on('-v', '--[no-]verbose', 'Give more verbose information.') do |v|
+        options.verbose = v
+      end
+
       opts.on('-r', '--restrict LETTERLIST', /[a-xA-x]+/, 'List of letters to which the commutators should be restricted.',
               '  (Only uses commutators that contain at least one of the given letters)') do |letters|
         options.restrict_letters = letters.downcase.split('')

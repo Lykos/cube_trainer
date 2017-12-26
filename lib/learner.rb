@@ -1,14 +1,17 @@
 class Learner
-  LEARN_RATE = 0.1
-  FORGET_RATE = 0.1
+  FORGET_RATE = 0.01
   
   class LearnStats
-    def initialize(optimal_time, initial_time)
-      @optimal_time = optimal_time
-      @initial_time = initial_time
-      @current_time = initial_time
+    def initialize(seed)
+      @rng = Random.new(seed)
+      @optimal_time = @rng.rand + 1
+      @initial_time = 50 + @rng.rand(50)
+      @current_time = @initial_time
+      @learning_rate = @rng.rand * 0.05 + 0.05
       @practiced = 0
     end
+
+    attr_reader :current_time
 
     def forget_rate
       FORGET_RATE ** @practiced
@@ -28,24 +31,33 @@ class Learner
     def execute
       time = execution_time
       @practiced += 1
-      @current_time = @current_time * (1 - LEARN_RATE) + @optimal_time * LEARN_RATE
+      @current_time = @current_time * (1 - @learning_rate) + @optimal_time * @learning_rate
       time
     end
   end
   
   def initialize
     @input_stats = {}
-    @input_stats.default_proc = { || LearnStats.new(1 + rand, 2 + rand * 100) }
+    @input_stats.default_proc = proc { |h, k| h[k] = LearnStats.new(k.hash) }
     @indices = {}
     @current_index = 0
   end
 
+  def items_learned
+    @input_stats.length
+  end
+
+  def average_time
+    current_times = @input_stats.values.collect { |v| v.current_time }
+    current_times.reduce(:+) / current_times.length
+  end
+
   def items_in_between(input)
-    @current_index - @indices[input]
+    @current_index - @indices[input] if @indices[input]
   end
 
   def execute(input)
-    stats = @input_stats(input)
+    stats = @input_stats[input]
     if n = items_in_between(input)
       stats.forget(n)
     end

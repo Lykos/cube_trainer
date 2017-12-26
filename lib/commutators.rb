@@ -7,24 +7,12 @@ class Commutators
   include LetterPairHelper
 
   # If restrict_letters is not nil, only commutators for those letters are used.
-  def initialize(results_model, restrict_letters=nil)
-    @results_model = results_model
-    @restrict_letters = restrict_letters
-    @input_sampler = InputSampler.new(selectable_pairs, results_model, goal_badness)
+  def initialize(results_model, verbose)
+    @input_sampler = InputSampler.new(self.class::VALID_PAIRS, results_model, goal_badness, verbose)
     @hinter = HintParser.maybe_create(self.class::PIECE_TYPE)
   end
 
-  attr_reader :hinter
-
-  def selectable_pairs
-    self.class::VALID_PAIRS.select do |p|
-      @restrict_letters.nil? || !(p.letters & @restrict_letters).empty?
-    end
-  end
-
-  def random_letter_pair
-    @input_sampler.random_item
-  end
+  attr_reader :hinter, :input_sampler
 
 end
 

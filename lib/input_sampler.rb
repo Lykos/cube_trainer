@@ -38,13 +38,16 @@ class InputSampler
   # In case there are still relatively new items that need to be repeated available, this is the fraction of times that such an item will be chosen.
   REPEAT_NEW_ITEMS_FRACTION = 0.8
 
-  def initialize(items, results_model, goal_badness=1.0)
+  def initialize(items, results_model, goal_badness=1.0, verbose=false)
     @items = items
     @results_model = results_model
     @goal_badness = goal_badness
     @results_model.add_result_listener(self)
+    @verbose = verbose
     reset
   end
+
+  attr_reader :items
   
   def reset
     @current_occurrence_index = 0
@@ -201,22 +204,34 @@ class InputSampler
     if new_items && do_new_item(new_items_score)
       s = new_items.sample
       if new_items_score == 1
-        puts "Completely new item!"
+        puts "Completely new item!" if @verbose
       else
-        puts "Relatively item sample; Score: #{new_items_score}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
+        puts "Relatively item sample; Score: #{new_items_score}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}" if @verbose
       end
       s
     else
       if do_coverage_sample
         s = sample_by (@items) { |s| coverage_score(s) }
-        puts "Coverage sample; Score: #{coverage_score(s)}; Badness avg: #{@badness_histories[s].average}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}"
+        puts "Coverage sample; Score: #{coverage_score(s)}; Badness avg: #{@badness_histories[s].average}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}" if @verbose
         s
       else
         s = sample_by(@items) { |s| badness_score(s) }
-        puts "Badness sample; Score: #{badness_score(s)}; Badness avg #{@badness_histories[s].average}; occurrences: #{@occurrences[s]}"
+        puts "Badness sample; Score: #{badness_score(s)}; Badness avg #{@badness_histories[s].average}; occurrences: #{@occurrences[s]}" if @verbose
         s
       end
     end
   end
 
+end
+
+class RandomSampler
+  def initialize(items)
+    @items = items
+  end
+
+  attr_reader :items
+  
+  def random_item
+    @items.sample
+  end
 end
