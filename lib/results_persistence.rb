@@ -33,23 +33,9 @@ class ResultsPersistence
   end
     
   def self.create_for_production
-
     helper = DBConnectionHelper.new
     db = SQLite3::Database.new(helper.db_file.to_s)
     db.execute 'CREATE TABLE IF NOT EXISTS Results(Id INTEGER PRIMARY KEY, Mode TEXT, Timestamp INTEGER, TimeS REAL, Input TEXT, FailedAttempts INTEGER, Word TEXT)'
-    
-    count = db.get_first_row('SELECT count(*) FROM Results')[0]
-    if count == 0 and File.exists?(helper.old_results_file)
-      puts "SQLite DB Empty, filling from YAML data."
-      old_results = YAML::load(File.read(old_results_file))
-      old_results.each do |mode, results|
-        puts "Storing #{results.length} results for #{mode}."
-        results.each do |old_r|
-          new_r = Result.new(mode, old_r.timestamp, old_r.time_s, old_r.input, old_r.failed_attempts, old_r.word)
-          record_result(new_r)
-        end
-      end
-    end
     ResultsPersistence.new(db)
   end
 
