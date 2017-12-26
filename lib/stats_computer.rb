@@ -1,6 +1,6 @@
-class StatsComputer
+require 'cube_average'
 
-  NEWER_WEIGHT = 2
+class StatsComputer
   
   def compute_stats(results)
     [
@@ -18,9 +18,9 @@ class StatsComputer
   end
 
   def average(values)
-    values.reverse.reduce do |avg, b|
-      (avg + b * NEWER_WEIGHT) / (NEWER_WEIGHT + 1) 
-    end
+    avg = CubeAverage.new(5, 0)
+    values.each { |v| avg.push(v) }
+    avg.average
   end
 
   def float_times_s(results)
