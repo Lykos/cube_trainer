@@ -11,8 +11,10 @@ class Commutators
     @results_model = results_model
     @restrict_letters = restrict_letters
     @input_sampler = InputSampler.new(selectable_pairs, results_model, goal_badness)
-    @hint_parser = HintParser.maybe_create(self.class::PIECE_TYPE)
+    @hinter = HintParser.maybe_create(self.class::PIECE_TYPE)
   end
+
+  attr_reader :hinter
 
   def selectable_pairs
     self.class::VALID_PAIRS.select do |p|
@@ -24,10 +26,6 @@ class Commutators
     @input_sampler.random_item
   end
 
-  def hint(letter_pair)
-    @hint_parser.hint(letter_pair)
-  end
-  
 end
 
 class CornerCommutators < Commutators

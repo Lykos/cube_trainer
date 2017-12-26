@@ -23,7 +23,7 @@ module ConsoleHelpers
     espeak_process(language).puts(stuff)
   end
 
-  KeyPressWaitData = Struct.new(:char, :start, :time_s)
+  KeyPressWaitData = Struct.new(:char, :time_s)
 
   HINT_SECONDS = 10
 
@@ -49,7 +49,7 @@ module ConsoleHelpers
       puts 'Pressed q. Exiting.'
       exit
     end
-    KeyPressWaitData.new(char, start, time_s)
+    KeyPressWaitData.new(char, time_s)
   end
 
 end
