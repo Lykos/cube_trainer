@@ -12,7 +12,7 @@ class InputSampler
   REPETITION_BOUNDARY = 10
 
   # Exponent that is applied to the time since the last occurrence to punish items that haven't been seen in a long time for coverage samples.
-  INDEX_EXPONENT = 1.2
+  INDEX_EXPONENT = 2
 
   # Base that is taken to the power of the badness to punish bad samples.
   BADNESS_BASE = 10
@@ -26,14 +26,14 @@ class InputSampler
   BADNESS_MEMORY = 5
 
   # Number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.
-  NEW_ITEM_BOUNDARY = 8
+  NEW_ITEM_BOUNDARY = 11
 
   # Number of seconds that are equivalent to one failed attempt. (Used for calculating badness)
   FAILED_SECONDS = 60
 
   # In case there are still completely new items available, this is the fraction of times that such an item will be chosen.
   # Note that completely new items will never be chosen if a relatively new item needs to be repeated.
-  COMPLETELY_NEW_ITEMS_FRACTION = 0.4
+  COMPLETELY_NEW_ITEMS_FRACTION = 0.8
 
   # In case there are still relatively new items that need to be repeated available, this is the fraction of times that such an item will be chosen.
   REPEAT_NEW_ITEMS_FRACTION = 0.8
