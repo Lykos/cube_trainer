@@ -2,9 +2,9 @@ require 'results_persistence'
 
 class ResultsModel
 
-  def initialize(mode)
+  def initialize(mode, results_persistence=ResultsPersistence.create_for_production)
     @mode = mode
-    @result_persistence = ResultsPersistence.create_for_production
+    @result_persistence = results_persistence
     @results = @result_persistence.load_results
     @result_listeners = [@result_persistence]
   end
