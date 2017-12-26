@@ -28,5 +28,5 @@ now = Time.now
 recent_results = results_model.results.select { |r| r.timestamp > now - 24 * 3600 }
 puts "#{results_model.results.length} results, #{recent_results.length} of them in the last 24 hours."
 
-Trainer.new(learner, results_model, generator).run
+Trainer.new(learner, results_model, generator.input_sampler).run
 
