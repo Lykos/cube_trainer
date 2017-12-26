@@ -1,20 +1,15 @@
 require 'cube_average'
 
 class StatsComputer
-  
+
   def compute_stats(results)
-    [
-     ['Average Time', average_time(results)],
-     ['Average Failed Attempts', average_failed_attempts(results)],
-    ]
+    grouped_results = results.group_by { |c| c.input.to_s }
+    grouped_averages = grouped_results.collect { |c, rs| [c, average_time(rs)] }
+    grouped_averages.sort_by { |t| -t[1] }
   end
 
   def average_time(results)
     average(float_times_s(results))
-  end
-
-  def average_failed_attempts(results)
-    average(failed_attempts(results))
   end
 
   def average(values)
@@ -25,10 +20,6 @@ class StatsComputer
 
   def float_times_s(results)
     results.collect { |result| result.time_s }
-  end
-
-  def failed_attempts(results)
-    results.collect { |result| result.failed_attempts }
   end
 
 end

@@ -10,9 +10,7 @@ results = ResultsPersistence.create_for_production.load_results
 computer = StatsComputer.new
 results.each do |k, v|
   puts k
-  grouped_results = v.group_by { |c| c.input.to_s }
-  grouped_averages = grouped_results.collect { |c, rs| [c, computer.average_time(rs)] }
-  sorted_averages = grouped_averages.sort_by { |t| -t[1] }
+  sorted_averages = computer.compute_stats(v)
   sorted_averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }
   avg = sorted_averages.collect { |c, t| t }.reduce(:+) / sorted_averages.length
   puts "Average #{avg.round(2)}"
