@@ -1,5 +1,6 @@
 require 'csv'
 require 'commutator'
+require 'move'
 
 class HintParser
   def self.csv_file(part_class)

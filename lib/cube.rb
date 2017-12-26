@@ -62,7 +62,7 @@ class Part
     self.class.new(@colors.reverse)
   end
 
-  # Returns true if the corners are equal modulo rotation.
+  # Returns true if the pieces are equal modulo rotation.
   def turned_equals?(other)
     rotate_color_up(other.colors[0]) == other
   end
@@ -78,6 +78,13 @@ class Part
   def self.parse(piece_description)
     colors = piece_description.upcase.strip.split('').collect { |e| COLORS[FACE_NAMES.index(e)] }
     create_for_colors(colors)
+  end
+
+  # All indices of such a piece on a on a NxN face.  
+  def face_indices(n)
+    raise "Asked for face indices of #{inspect} for a #{n}x#{n} cube." unless valid_for_cube_size?(n)
+    x, y = face_index
+    [[x, y], [n - x, y], [x, n - y], [n - x, n - y]]
   end
 end
 
@@ -108,35 +115,6 @@ class Face < Part
   end
 
   ELEMENTS = generate_parts(self)
-end
-
-# One move on the cube
-class Move
-  DIRECTIONS = ['', '2', '\'']
-  ROTATIONS = ['x', 'y', 'z']
-  REGEXP = Regexp.new("([#{ROTATIONS.join}]|\\d*[#{FACE_NAMES.join}]w|[#{FACE_NAMES.join}]|[#{FACE_NAMES.join.downcase}])([#{DIRECTIONS.join}]?)")
-  
-  def initialize(move_string)
-    match = move_string.match(REGEXP)
-    raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
-    @face, @direction = match.captures
-  end
-
-  attr_reader :face, :direction
-
-  def eql?(other)
-    self.class.equal?(other.class) && @face == other.face && @direction == other.direction
-  end
-
-  alias == eql?
-
-  def hash
-    [@face, @direction].hash
-  end
-
-  def to_s
-    @face + @direction
-  end
 end
 
 class MoveableCenter < Part
@@ -215,6 +193,15 @@ class Edge < Part
   ELEMENTS = generate_parts(self)
   BUFFER = Edge.new([:white, :red])
   raise "Invalid buffer edge." unless BUFFER.valid?
+
+  def valid_for_cube_size?(n)
+    n == 3
+  end
+
+  # One index of such a piece on a on a NxN face.
+  def face_index
+    [0, 1]
+  end
 end
 
 class Midge < Part
@@ -227,6 +214,15 @@ class Midge < Part
   ELEMENTS = generate_parts(self)
   BUFFER = Midge.new([:white, :red])
   raise "Invalid buffer midge." unless BUFFER.valid?
+
+  # One index of such a piece on a on a NxN face.
+  def face_index
+    [0, 3]
+  end
+
+  def valid_for_cube_size?(n)
+    n >= 5 && n % 2 == 1
+  end
 end
 
 class Wing < Part
@@ -244,9 +240,18 @@ class Wing < Part
     end
   end
 
+  def valid_for_cube_size?(n)
+    n >= 4
+  end
+
   ELEMENTS = generate_parts(self)
   BUFFER = Wing.new([:red, :yellow])
   raise "Invalid buffer wing." unless BUFFER.valid?
+
+  # One index of such a piece on a on a NxN face.
+  def face_index
+    [0, 2]
+  end
 end
 
 class Corner < Part
@@ -291,6 +296,15 @@ class Corner < Part
   ELEMENTS = generate_parts(self)
   BUFFER = Corner.new([:yellow, :blue, :orange])
   raise "Invalid buffer corner." unless BUFFER.valid?
+  
+  def valid_for_cube_size?(n)
+    n >= 2
+  end
+
+  # One index of such a piece on a on a NxN face.
+  def face_index
+    [0, 0]
+  end
 end
 
 class XCenter < MoveableCenter
@@ -298,6 +312,15 @@ class XCenter < MoveableCenter
   ELEMENTS = generate_moveable_centers(self)
   BUFFER = XCenter.new(Corner.new([:yellow, :green, :red]))
   raise "Invalid buffer XCenter." unless BUFFER.valid?
+
+  def valid_for_cube_size?(n)
+    n >= 4
+  end
+
+  # One index of such a piece on a on a NxN face.
+  def face_index
+    [1, 1]
+  end
 end
 
 class TCenter < MoveableCenter
@@ -305,6 +328,15 @@ class TCenter < MoveableCenter
   ELEMENTS = generate_moveable_centers(self)
   BUFFER = TCenter.new(Edge.new([:yellow, :orange]))
   raise "Invalid buffer TCenter." unless BUFFER.valid?
+
+  def valid_for_cube_size?(n)
+    n >= 5
+  end
+  
+  # One index of such a piece on a on a NxN face.
+  def face_index
+    [1, 2]
+  end
 end
 
 ALPHABET = "a".upto("x").to_a
