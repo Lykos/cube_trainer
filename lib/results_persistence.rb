@@ -9,6 +9,7 @@ class ResultsPersistence
 
   def initialize(db)
     @db = db
+    db.execute 'CREATE TABLE IF NOT EXISTS Results(Id INTEGER PRIMARY KEY, Mode TEXT, Timestamp INTEGER, TimeS REAL, Input TEXT, FailedAttempts INTEGER, Word TEXT)'
   end
 
   def self.create_in_memory
@@ -35,7 +36,6 @@ class ResultsPersistence
   def self.create_for_production
     helper = DBConnectionHelper.new
     db = SQLite3::Database.new(helper.db_file.to_s)
-    db.execute 'CREATE TABLE IF NOT EXISTS Results(Id INTEGER PRIMARY KEY, Mode TEXT, Timestamp INTEGER, TimeS REAL, Input TEXT, FailedAttempts INTEGER, Word TEXT)'
     ResultsPersistence.new(db)
   end
 
