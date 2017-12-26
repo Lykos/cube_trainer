@@ -20,4 +20,10 @@ rule(/^lib\/.*_ui\.rb$/ => lambda { |f| rb_to_ui(f) }) do |t|
   end
 end
 
-task :default => :uic
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec)
+rescue LoadError
+end
+
+task :default => :spec
