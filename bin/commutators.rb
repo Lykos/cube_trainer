@@ -14,7 +14,7 @@ require 'trainer'
 
 options = Options.parse(ARGV)
 results_model = ResultsModel.new(options.commutator_info.result_symbol)
-generator = options.commutator_info.generator_class.new(results_model, options.restrict_letters)
+generator = options.commutator_info.generator_class.new(results_model, options.verbose)
 learner = HumanLearner.new(generator.hinter, results_model)
 
 # Move the stats stuff to somewhere else.
