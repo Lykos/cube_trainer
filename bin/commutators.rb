@@ -8,6 +8,7 @@ require 'options'
 require 'results_model'
 require 'ui_helpers'
 require 'console_helpers'
+require 'input_sampler'
 
 include UiHelpers
 include ConsoleHelpers
@@ -18,14 +19,16 @@ options = Options.parse(ARGV)
 results_model = ResultsModel.new(options.commutator_info.result_symbol)
 generator = options.commutator_info.generator_class.new(results_model, options.restrict_letters)
 
-found = results_model.results.collect { |r| r.input }.uniq.length
+# Move the stats stuff to somewhere else.
+inputs = results_model.results.collect { |r| r.input }
+newish_elements = inputs.group_by { |e| e }.collect { |k, v| v.length }.count { |l| 1 <= l && l < InputSampler::NEW_ITEM_BOUNDARY }
+found = inputs.uniq.length
 total = generator.class::VALID_PAIRS.length
 missing = total - found
-if missing > 0
-  puts "#{found} words found, #{missing} missing."
-else
-  puts "Historic data for all #{total} elements found."
-end
+puts "#{found} words found, #{newish_elements} of them newish, #{missing} missing."
+now = Time.now
+recent_results = results_model.results.select { |r| r.timestamp > now - 24 * 3600 }
+puts "#{results_model.results.length} results, #{recent_results.length} of them in the last 24 hours."
 
 loop do
   letter_pair = generator.random_letter_pair
