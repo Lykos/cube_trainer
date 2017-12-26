@@ -25,21 +25,26 @@ module ConsoleHelpers
 
   KeyPressWaitData = Struct.new(:char, :start, :time_s)
 
+  HINT_SECONDS = 10
+
   # Exits in the case of character q.
   # Downcases the character before returning it.
   def time_before_any_key_press(hint=nil)
     # TODO Explain to the human what magic letters exist.
     start = Time.now
     char = nil
+    hints = 0
     loop do
       char = STDIN.getch.downcase
       if char == 'h' && hint
+        puts "#{HINT_SECONDS} time punishment added."
         puts hint
+        hints += 1
       else
         break
       end
     end
-    time_s = Time.now - start
+    time_s = Time.now - start + hints * HINT_SECONDS
     if char == 'q'
       puts 'Pressed q. Exiting.'
       exit
