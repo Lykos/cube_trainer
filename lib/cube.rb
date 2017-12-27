@@ -7,6 +7,7 @@ raise unless COLORS.length == FACE_NAMES.length
 
 # We need to define one corner to determine the chirality. The other colors follow from this one.
 # This is in clockwise order.
+# TODO get rid of this
 CHIRALITY_COLORS = [:yellow, :green, :red]
 
 def generate_parts(clazz)
@@ -242,7 +243,12 @@ class Wing < Part
 
   def self.create_for_colors(colors)
     if colors.length == 3
-      new(colors[0..1])
+      valid = Corner.new(colors).valid?
+      reordered_colors = colors.dup
+      reordered_colors[0], reordered_colors[1] = reordered_colors[1], reordered_colors[0]
+      reordered_valid = Corner.new(reordered_colors).valid?
+      raise "Couldn't determine chirality for #{colors.inspect} which is needed to parse a wing." if valid == reordered_valid
+      if valid then new(colors[0..1]) else new(reordered_colors[0..1]) end
     else
       new(colors)
     end
