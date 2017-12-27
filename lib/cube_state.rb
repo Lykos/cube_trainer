@@ -2,6 +2,7 @@ require 'cube'
 
 class CubeState
   SIDES = COLORS.length
+  
   def initialize(n, stickers)
     raise 'Cubes of size smaller than 2 are not supported.' if n < 2
     raise 'Cubes of size bigger than 5 are not supported.' if n > 5
@@ -125,7 +126,16 @@ class CubeState
     self[*cycle[0]] = last_piece
   end
 
+  def rotate_slice(face, slice, direction)
+    raise NotImplementedError
+  end
+
+  # Rotates the stickers on one face (not a real move, only stickers on one face!)
+  def rotate_face(face, direction)
+    raise NotImplementedError
+  end
+
   def apply_move(move)
-    raise
+    raise NotImplementedError
   end
 end
