@@ -2,6 +2,7 @@
 COLORS = [:yellow, :red, :green, :blue, :orange, :white]
 OPPOSITE_PAIRS = [[:yellow, :white], [:red, :orange], [:green, :blue]].collect { |e| e.sort }.sort
 FACE_NAMES = ['U', 'F', 'R', 'L', 'B', 'D']
+ALPHABET = "a".upto("x").to_a
 raise unless COLORS.length == FACE_NAMES.length
 
 # We need to define one corner to determine the chirality. The other colors follow from this one.
@@ -9,7 +10,9 @@ raise unless COLORS.length == FACE_NAMES.length
 CHIRALITY_COLORS = [:yellow, :green, :red]
 
 def generate_parts(clazz)
-  COLORS.permutation(clazz::FACES).collect { |p| clazz.new(p) }.select { |p| p.valid? }.sort_by { |p| p.priorities }
+  parts = COLORS.permutation(clazz::FACES).collect { |p| clazz.new(p) }.select { |p| p.valid? }.sort_by { |p| p.priorities }
+  raise unless parts.length <= ALPHABET.length
+  parts
 end
 
 class Part
@@ -18,6 +21,10 @@ class Part
     raise "Colors contain invalid item: #{colors.inspect}" if colors.any? { |c| c.class != Symbol || !COLORS.include?(c) }
     raise "Invalid number of colors #{colors.length} for #{clazz}. Must be #{clazz::FACES}. Got colors: #{colors.inspect}" if colors.length != clazz::FACES
     @colors = colors
+  end
+
+  def self.for_letter(letter)
+    self::ELEMENTS.find { |e| e.letter == letter }
   end
 
   def encode_with(coder)
@@ -48,7 +55,7 @@ class Part
     @letter ||= ALPHABET[self.class::ELEMENTS.index(self)]
   end
 
-  # Rotate a corner such that the given color is the first color.
+  # Rotate a piece such that the given color is the first color.
   def rotate_color_up(c)
     index = @colors.index(c)
     raise "Corner #{self} doesn't have color #{c}." unless index
@@ -338,11 +345,4 @@ class TCenter < MoveableCenter
   def face_index
     [1, 2]
   end
-end
-
-ALPHABET = "a".upto("x").to_a
-CUBIES = Corner::ELEMENTS + Edge::ELEMENTS
-
-def random_cubie
-  CUBIES.sample
 end
