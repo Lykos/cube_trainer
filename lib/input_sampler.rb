@@ -8,8 +8,8 @@ class InputSampler
   # Minimum score that we always give to each element in order not to screw up our sampling if all weights become 0 or so.
   EPSILON_SCORE = 0.000000001
 
-  # Boundary at which we don't punish repeating the same item again. But note that this will be adjusted in case of a small number of items.
-  REPETITION_BOUNDARY = 10
+  # Boundary at which we don't punish repeating the same item again. But note that this will be adjusted in case of a small total number of items.
+  REPETITION_BOUNDARY = 4
 
   # Exponent that is applied to the time since the last occurrence to punish items that haven't been seen in a long time for coverage samples.
   INDEX_EXPONENT = 2
@@ -19,7 +19,7 @@ class InputSampler
 
   # Fraction of the samples that use uniform samples to even occasionally cover
   # easy cases.
-  COVERAGE_FRACTION = 0.2
+  COVERAGE_FRACTION = 0.15
 
   # Number of occurrences that we go back to the past to compute the badness of a given item.
   # Occurrences longer ago have no effect on the sampling any more.
@@ -101,10 +101,8 @@ class InputSampler
 
   # Adjusts a badness score in order to punish overly fast repetition, even for high badness.
   def repetition_adjusted_score(index, badness_score)
-    if !index.nil? && index < repetition_boundary && badness_score > Math::E
-      # This starts out as e and grows exponentially until it reaches the
-      # badness_score at index == REPETITION_BOUNDARY.
-      Math.exp(Math.log(badness_score) * (index + 1) / (repetition_boundary + 1))
+    if !index.nil? && index < repetition_boundary && badness_score > EPSILON_SCORE
+      EPSILON_SCORE
     else
       badness_score
     end
