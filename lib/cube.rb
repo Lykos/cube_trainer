@@ -2,6 +2,7 @@
 COLORS = [:yellow, :red, :green, :blue, :orange, :white]
 OPPOSITE_PAIRS = [[:yellow, :white], [:red, :orange], [:green, :blue]].collect { |e| e.sort }.sort
 FACE_NAMES = ['U', 'F', 'R', 'L', 'B', 'D']
+raise unless COLORS.length == FACE_NAMES.length
 
 # We need to define one corner to determine the chirality. The other colors follow from this one.
 # This is in clockwise order.

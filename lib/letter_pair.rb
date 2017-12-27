@@ -50,7 +50,7 @@ class LetterPair
     word =~ regexp
   end
 
-  def invert
+  def inverse
     LetterPair.new(@letters.reverse)
   end
 end

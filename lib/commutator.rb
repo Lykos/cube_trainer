@@ -12,7 +12,17 @@ class PureCommutator
 
   attr_reader :first_part, :second_part
 
-  def invert
+  def eql?(other)
+    self.class.equal?(other.class) && @first_part == other.first_part && @second_part == other.second_part
+  end
+
+  alias == eql?
+
+  def hash
+    [@first_part, @second_part].hash
+  end
+  
+  def inverse
     PureCommutator.new(second_part, first_part)
   end
 
@@ -29,8 +39,18 @@ class SetupCommutator
 
   attr_reader :setup, :pure_commutator
 
-  def invert
-    SetupCommutator.new(setup, @pure_commutator.invert)
+  def eql?(other)
+    self.class.equal?(other.class) && @setup == other.setup && @pure_commutator == other.pure_commutator
+  end
+
+  alias == eql?
+
+  def hash
+    [@setup, @pure_commutator].hash
+  end
+
+  def inverse
+    SetupCommutator.new(setup, @pure_commutator.inverse)
   end
 
   def to_s
@@ -47,7 +67,7 @@ class CommutatorParser
   # Parses at least one move.
   def parse_moves
     moves = []
-    while m = begin skip_spaces; parse_move end
+    while m = begin skip_spaces; parse_move2 end
       moves.push(m)
     end
     complain('move') if moves.empty?
@@ -96,10 +116,10 @@ class CommutatorParser
   end
     
 
-  def parse_move
-    move = @scanner.scan(Move::REGEXP)
+  def parse_move2
+    move = @scanner.scan(MOVE_REGEXP)
     return nil unless move
-    Move.new(move)
+    parse_move(move)
   end
 
   def skip_spaces
