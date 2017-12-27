@@ -191,8 +191,12 @@ class InputSampler
     # First check whether there are any new items that we have to show to the user.
     new_items = nil
     new_items_score = 0
+    items_with_score = 0
     @items.each do |item|
       score = new_item_score(item)
+      if score > 1
+        items_with_score += 1
+      end
       if score > new_items_score
         new_items = [item]
         new_items_score = score
@@ -200,13 +204,14 @@ class InputSampler
         new_items.push(item)
       end
     end
+    puts "#{items_with_score} items need repetition." if @verbose and items_with_score > 0
     # If we have a new item that has to be shown, show it.
     if new_items && do_new_item(new_items_score)
       s = new_items.sample
       if new_items_score == 1
         puts "Completely new item!" if @verbose
       else
-        puts "Relatively item sample; Score: #{new_items_score}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}" if @verbose
+        puts "Repeat new item sample; Score: #{new_items_score}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}" if @verbose
       end
       s
     else
