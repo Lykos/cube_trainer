@@ -72,7 +72,7 @@ class Part
 
   # Returns true if the pieces are equal modulo rotation.
   def turned_equals?(other)
-    rotate_color_up(other.colors[0]) == other
+    @colors.include?(other.colors.first) && rotate_color_up(other.colors.first) == other
   end
 
   def rotations
@@ -92,7 +92,7 @@ class Part
   def face_indices(n)
     raise "Asked for face indices of #{inspect} for a #{n}x#{n} cube." unless valid_for_cube_size?(n)
     x, y = face_index
-    [[x, y], [n - x, y], [x, n - y], [n - x, n - y]]
+    [[x, y], [n - 1 - x, y], [x, n - 1 - y], [n - 1 - x, n - 1 - y]]
   end
 end
 
