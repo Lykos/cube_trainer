@@ -36,10 +36,14 @@ module ConsoleHelpers
     hints = 0
     loop do
       char = STDIN.getch.downcase
-      if char == 'h' && hint
-        puts "#{HINT_SECONDS} time punishment added."
-        puts hint
-        hints += 1
+      if char == 'h'
+        if hint
+          puts "#{HINT_SECONDS} time punishment added."
+          puts hint
+          hints += 1
+        else
+          puts "No hint available."
+        end
       else
         break
       end

@@ -254,6 +254,14 @@ class Wing < Part
     end
   end
 
+  def rotations
+    [self]
+  end
+
+  def rotate_by(n)
+    self
+  end
+
   def valid_for_cube_size?(n)
     n >= 4
   end

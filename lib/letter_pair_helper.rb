@@ -35,6 +35,7 @@ module LetterPairHelper
   SHOOT_LETTERS = ['a', 'b', 'd', 'l', 'h', 't', 'p']
   CORNER_LETTER_PAIRS = generate_letter_pairs(Corner)
   EDGE_LETTER_PAIRS = generate_letter_pairs(Edge)
+  WING_LETTER_PAIRS = generate_letter_pairs(Wing)
   XCENTER_LETTER_PAIRS = generate_letter_pairs(XCenter)
   TCENTER_LETTER_PAIRS = generate_letter_pairs(TCenter)
   XCENTER_NEIGHBORS = generate_neighbors(XCenter)

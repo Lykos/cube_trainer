@@ -41,7 +41,7 @@ end
 class WingCommutators < Commutators
 
   PIECE_TYPE = Wing
-  VALID_PAIRS = EDGE_LETTER_PAIRS
+  VALID_PAIRS = WING_LETTER_PAIRS
 
   def goal_badness
     2.0
