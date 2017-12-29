@@ -1,5 +1,6 @@
 require 'optparse'
 require 'ostruct'
+require 'commutators'
   
 class Options
   CommutatorInfo = Struct.new(:result_symbol, :generator_class)
@@ -13,7 +14,6 @@ class Options
   
   def self.parse(args)
     options = OpenStruct.new
-    options.commutator_info = COMMUTATOR_TYPES['corners'] 
     opt_parser = OptionParser.new do |opts|
       opts.separator ''
       opts.separator 'Specific options:'      

@@ -5,12 +5,11 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'results_persistence'
 require 'stats_computer'
 require 'cube'
+require 'options'
 
-results = ResultsPersistence.create_for_production.load_results
-computer = StatsComputer.new
-results.each do |k, v|
-  puts k
-  sorted_averages = computer.compute_stats(v)
+def print_stats(results)
+  computer = StatsComputer.new
+  sorted_averages = computer.compute_stats(results)
   sorted_averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }
   avg = sorted_averages.collect { |c, t| t }.reduce(:+) / sorted_averages.length
   puts "Average #{avg.round(2)}"
@@ -22,5 +21,16 @@ results.each do |k, v|
       puts "#{above_cutoff} are sup #{cutoff} s"
     end
   end
-  puts
+end
+
+options = Options.parse(ARGV)
+results = ResultsPersistence.create_for_production.load_results
+if options.commutator_info
+  print_stats(results[options.commutator_info.result_symbol])
+else
+  results.each do |k, v|
+    puts k
+    print_stats(v)
+    puts
+  end
 end
