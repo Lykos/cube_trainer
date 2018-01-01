@@ -7,8 +7,8 @@ class Commutators
   include LetterPairHelper
 
   # If restrict_letters is not nil, only commutators for those letters are used.
-  def initialize(results_model, verbose)
-    @input_sampler = InputSampler.new(self.class::VALID_PAIRS, results_model, goal_badness, verbose)
+  def initialize(results_model, verbose, new_item_boundary)
+    @input_sampler = InputSampler.new(self.class::VALID_PAIRS, results_model, goal_badness, verbose, new_item_boundary)
     @hinter = HintParser.maybe_create(self.class::PIECE_TYPE)
   end
 

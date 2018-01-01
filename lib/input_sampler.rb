@@ -25,9 +25,6 @@ class InputSampler
   # Occurrences longer ago have no effect on the sampling any more.
   BADNESS_MEMORY = 5
 
-  # Number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.
-  NEW_ITEM_BOUNDARY = 11
-
   # Number of seconds that are equivalent to one failed attempt. (Used for calculating badness)
   FAILED_SECONDS = 60
 
@@ -38,12 +35,18 @@ class InputSampler
   # In case there are still relatively new items that need to be repeated available, this is the fraction of times that such an item will be chosen.
   REPEAT_NEW_ITEMS_FRACTION = 0.8
 
-  def initialize(items, results_model, goal_badness=1.0, verbose=false)
+  # `items` are the items from which we get samples.
+  # `results_model` is a helper object that retrieves results to get historic scores.
+  # `new_item_bounary` is the number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.
+  def initialize(items, results_model, goal_badness=1.0, verbose=false, new_item_boundary=11)
+    raise unless results_model.respond_to?(:results)
+    raise unless goal_badness.is_a?(Float)
     @items = items
     @results_model = results_model
     @goal_badness = goal_badness
     @results_model.add_result_listener(self)
     @verbose = verbose
+    @new_item_boundary = new_item_boundary
     reset
   end
 
@@ -139,16 +142,17 @@ class InputSampler
     [distorted_rep_index.to_i, 1].max
   end
 
-  # Score for items that are either completely new or have occurred less than NEW_ITEM_BOUNDARY times.
+  # Score for items that are either completely new or have occurred less than `@new_item_boundary` times.
   # For all other items, it's 0.
   def new_item_score(item)
     occ = @occurrences[item]
-    if occ >= NEW_ITEM_BOUNDARY
-      return 0
-    elsif occ == 0
+    if occ == 0
       # Items that have never been seen get a positive score, but less than items that need
       # to be repeated urgently.
       return 1
+    elsif occ >= @new_item_boundary
+      # No repetitions necessary any more.
+      return 0
     end
     # When the item is completely new, repeat often, then less and less often, but also
     # adjust to the total number of items.

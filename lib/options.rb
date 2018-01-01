@@ -14,11 +14,16 @@ class Options
   
   def self.parse(args)
     options = OpenStruct.new
+    options.new_item_boundary = 11
     opt_parser = OptionParser.new do |opts|
       opts.separator ''
       opts.separator 'Specific options:'      
       opts.on('-c', '--commutator_type TYPE', COMMUTATOR_TYPES, 'Use the given type of commutators for training.') do |info|
         options.commutator_info = info
+      end
+
+      opts.on('-n', '--new_item_boundary INTEGER', Integer, 'Number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.') do |int|
+        options.new_item_boundary = int
       end
 
       opts.on('-v', '--[no-]verbose', 'Give more verbose information.') do |v|
