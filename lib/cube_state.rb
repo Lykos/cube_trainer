@@ -132,13 +132,24 @@ class CubeState
     self[*cycle[0]] = last_piece
   end
 
-  def rotate_slice(face, slice, direction)
+  def rotate_slice(i, slice, direction)
     raise NotImplementedError
   end
 
   # Rotates the stickers on one face (not a real move, only stickers on one face!)
-  def rotate_face(face, direction)
-    raise NotImplementedError
+  def rotate_face(i, direction)
+    canonical_direction = (direction % 4 + 4) % 4
+    return if canonical_direction == 0
+    0.upto(@n - @n/2) do |x|
+      0.upto(@n - @n/2) do |y|
+        if canonical_direction == 2
+          apply_index_cycle([i, x, y], [i, @n - x, @n - y])
+          apply_index_cycle([i, @n - x, y], [i, x, @n - y])
+        else
+          raise NotImplementedError
+        end
+      end
+    end
   end
 
   def apply_move(move)
