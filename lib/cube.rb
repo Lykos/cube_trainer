@@ -111,6 +111,14 @@ class Face < Part
     true
   end
 
+  def name
+    @name ||= FACE_NAMES[ELEMENTS.index(self)]
+  end
+
+  def self.by_name(name)
+    ELEMENTS[FACE_NAMES.index(name)]
+  end
+
   def color
     @colors[0]
   end
