@@ -89,7 +89,8 @@ class Part
     create_for_colors(colors)
   end
 
-  # All indices of such a piece on a on a NxN face.  
+  # All indices of such a piece on a on a NxN face.
+  # TODO remove
   def face_indices(n)
     raise "Asked for face indices of #{inspect} for a #{n}x#{n} cube." unless valid_for_cube_size?(n)
     x, y = face_index
