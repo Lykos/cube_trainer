@@ -132,28 +132,35 @@ class CubeState
     self[*cycle[0]] = last_piece
   end
 
-  def rotate_slice(face, slice, canonical_direction)
+  def rotate_slice(face, slice, direction)
     neighbors = face.neighbors
     y = if close_to_smaller_indices?(face) then slice else @n - slice end
     0.upto(@n - 1) do |x|
-      apply_index_cycle(neighbors.collect.with_index do |neighbor, i|
+      cycle = neighbors.collect.with_index do |neighbor, i|
         previous_neighbor = (i + 1) % 4
         real_x = if close_to_smaller_indices?(previous_neighbor) then x else -x end
         coordinates = [real_x]
         coordinates.insert(coordinate_indicating_closeness_to(neighbor, face), y)
         [face_index] + coordinates
-      end)
+      end
+      if direction == 2
+        apply_index_cycle(cycle[0], cycle[2])
+        apply_index_cycle(cycle[1], cycle[3])
+      else
+        cycle.reverse! if direction == -1
+        apply_index_cycle(cycle)
+      end
     end
   end
 
   # Rotates the stickers on one face (not a real move, only stickers on one face!)
-  def rotate_face(face, canonical_direction)
+  def rotate_face(face, direction)
     neighbors = face.neighbors
     inverse_order_face = coordinate_indicating_closeness_to(face, neighbors[0]) > coordinate_indicating_closeness_to(face, neighbors[1])
-    reverse = (canonical_direction == -1) != inverse_order_face
+    reverse = (direction == -1) != inverse_order_face
     0.upto(@n - @n/2) do |x|
       0.upto(@n - @n/2) do |y|
-        if canonical_direction == 2
+        if direction == 2
           apply_index_cycle([[i, @n - 1 - x, y], [i, x, @n - 1 - y]])
           apply_index_cycle([[i, x, y], [i, @n - 1 - x, @n - 1 - y]])
         else
@@ -166,6 +173,6 @@ class CubeState
   end
 
   def apply_move(move)
-    raise NotImplementedError
+    move.apply_to(self)
   end
 end

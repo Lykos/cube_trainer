@@ -27,6 +27,14 @@ class Rotation
   def to_s
     "#{AXES[Face::ELEMENTS.index(@axis_face)]}#{DIRECTION_NAMES[@direction - 1]}"
   end
+
+  def apply_to(cube_state)
+    0.upto(cube_state.n - 1) do |s|
+      cube_state.rotate_slice(@axis_face, s, @direction)
+    end
+    cube_state.rotate_face(@axis_face, @direction)
+    cube_state.rotate_face(@axis_face.opposite, 4 - @direction)
+  end
 end
 
 class FatMove
@@ -54,6 +62,14 @@ class FatMove
   def to_s
     "#{if @width > 1 then @width else '' end}#{@face.name}#{if @width > 1 then 'w' else '' end}#{DIRECTION_NAMES[@direction - 1]}"
   end
+
+  def apply_to(cube_state)
+    raise if @width >= cube_state.n
+    0.upto(@width - 1) do |s|
+      cube_state.rotate_slice(@face, s, @direction)
+    end
+    cube_state.rotate_face(@face, @direction)
+  end
 end
 
 class SliceMove
@@ -78,6 +94,10 @@ class SliceMove
 
   def to_s
     "#{@slice_face.name.downcase}#{DIRECTION_NAMES[@direction - 1]}"
+  end
+
+  def apply_to(cube_state)
+    cube_state.rotate_slice(@slice_face, 2, @direction)
   end
 end
 
