@@ -1,3 +1,5 @@
+require 'coordinate_helper'
+
 # The order determines the priority of the faces.
 COLORS = [:yellow, :red, :green, :blue, :orange, :white]
 OPPOSITE_PAIRS = [[:yellow, :white], [:red, :orange], [:green, :blue]].collect { |e| e.sort }.sort
@@ -24,8 +26,14 @@ class Part
     @colors = colors
   end
 
+  include CoordinateHelper
+
   def self.for_letter(letter)
     self::ELEMENTS.find { |e| e.letter == letter }
+  end
+
+  def self.for_colors(colors)
+    self::ELEMENTS.find { |e| e.colors == colors }
   end
 
   def encode_with(coder)
@@ -90,17 +98,25 @@ class Part
   end
 
   # All indices of such a piece on a on a NxN face.
-  # TODO remove
   def face_indices(n)
     raise "Asked for face indices of #{inspect} for a #{n}x#{n} cube." unless valid_for_cube_size?(n)
     x, y = face_index
-    [[x, y], [n - 1 - x, y], [x, n - 1 - y], [n - 1 - x, n - 1 - y]]
+    coordinate_rotations(x, y, n)
+  end
+
+  # Only overridden by moveable centers, but returns self for convenience.
+  def corresponding_part
+    self
   end
 end
 
 # This is an unmoveable center piece, it's mostly used as a helper class for other pieces.
 class Face < Part
   FACES = 1
+
+  def self.for_color(color)
+    for_colors([color])
+  end
 
   def opposite
     pair = OPPOSITE_PAIRS.find { |p| p.include?(color) }
@@ -250,11 +266,12 @@ class Midge < Part
 
   # One index of such a piece on a on a NxN face.
   def face_index
-    [0, 3]
+    [0, 2]
   end
 
   def valid_for_cube_size?(n)
-    n >= 5 && n % 2 == 1
+    # In theory works for every uneven n, but we need to adjust face_index for that.
+    n == 5
   end
 end
 
@@ -278,6 +295,14 @@ class Wing < Part
     end
   end
 
+  def corresponding_part
+    @corresponding_part ||= begin
+                              corners = COLORS.collect { |c| Corner.new(@colors + [c]) }.select { |c| c.valid? }
+                              raise "Couldn't determine corresponding corner for #{inspect}." if corners.length != 1
+                              corners.first
+                            end
+  end
+
   def rotations
     [self]
   end
@@ -287,7 +312,8 @@ class Wing < Part
   end
 
   def valid_for_cube_size?(n)
-    n >= 4
+    # In theory works for every n >= 4, but we need to adjust face_index for that.
+    n == 4 || n == 5
   end
 
   ELEMENTS = generate_parts(self)
@@ -296,7 +322,7 @@ class Wing < Part
 
   # One index of such a piece on a on a NxN face.
   def face_index
-    [0, 2]
+    [0, 1]
   end
 end
 
@@ -364,7 +390,8 @@ class XCenter < MoveableCenter
   raise "Invalid buffer XCenter." unless BUFFER.valid?
 
   def valid_for_cube_size?(n)
-    n >= 4
+    # In theory works for every n >= 4, but we need to adjust face_index for that.
+    n == 4 || n == 5
   end
 
   # One index of such a piece on a on a NxN face.
@@ -380,7 +407,8 @@ class TCenter < MoveableCenter
   raise "Invalid buffer TCenter." unless BUFFER.valid?
 
   def valid_for_cube_size?(n)
-    n >= 5
+    # In theory works for every uneven n, but we need to adjust face_index for that.
+    n == 5
   end
   
   # One index of such a piece on a on a NxN face.
