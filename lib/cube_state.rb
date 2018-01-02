@@ -138,16 +138,12 @@ class CubeState
 
   # Rotates the stickers on one face (not a real move, only stickers on one face!)
   def rotate_face(i, direction)
-    canonical_direction = (direction % 4 + 4) % 4
-    return if canonical_direction == 0
+    face = face_index(i)
+    neighbors = face.neighbors
+    rotated_neighbors = neighbors.rotate(direction)
     0.upto(@n - @n/2) do |x|
       0.upto(@n - @n/2) do |y|
-        if canonical_direction == 2
-          apply_index_cycle([i, x, y], [i, @n - x, @n - y])
-          apply_index_cycle([i, @n - x, y], [i, x, @n - y])
-        else
-          raise NotImplementedError
-        end
+        raise NotImplementedError
       end
     end
   end
