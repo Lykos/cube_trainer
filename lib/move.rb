@@ -1,13 +1,13 @@
 require 'cube'
 
-DIRECTIONS = ['', '2', '\'']
+DIRECTION_NAMES = ['', '2', '\'']
 AXES = ['x', 'y', 'z']
-MOVE_REGEXP = Regexp.new("(?:([#{AXES.join}])|(\\d*)([#{FACE_NAMES.join}])w|([#{FACE_NAMES.join}])|([#{FACE_NAMES.join.downcase}]))([#{DIRECTIONS.join}]?)")
+MOVE_REGEXP = Regexp.new("(?:([#{AXES.join}])|(\\d*)([#{FACE_NAMES.join}])w|([#{FACE_NAMES.join}])|([#{FACE_NAMES.join.downcase}]))([#{DIRECTION_NAMES.join}]?)")
 
 class Rotation
   def initialize(axis, direction)
     raise unless AXES.include?(axis)
-    raise unless DIRECTIONS.include?(direction)
+    raise unless direction.is_a?(Integer) && 0 <= direction && direction < 4
     @axis = axis
     @direction = direction
   end
@@ -25,40 +25,15 @@ class Rotation
   end
 
   def to_s
-    @axis + @direction
-  end
-end
-
-class NormalMove
-  def initialize(face_name, direction)
-    raise unless FACE_NAMES.include?(face_name)
-    raise unless DIRECTIONS.include?(direction)
-    @face_name = face_name
-    @direction = direction
-  end
-
-  attr_reader :face_name, :direction
-
-  def eql?(other)
-    self.class.equal?(other.class) && @face_name == other.face_name && @direction == other.direction
-  end
-
-  alias == eql?
-
-  def hash
-    [@face_name, @direction].hash
-  end
-
-  def to_s
-    @face_name + @direction
+    "#{@axis}#{DIRECTIONS[@direction - 1]}"
   end
 end
 
 class FatMove
   def initialize(face_name, width, direction)
     raise "Invalid face name #{face_name} for fat move." unless FACE_NAMES.include?(face_name)
-    raise "Invalid width #{width} for fat move." unless width.is_a?(Integer) and width > 1
-    raise unless DIRECTIONS.include?(direction)
+    raise "Invalid width #{width} for fat move." unless width.is_a?(Integer) and width >= 1
+    raise unless direction.is_a?(Integer) && 0 <= direction && direction < 4
     @face_name = face_name
     @width = width
     @direction = direction
@@ -77,7 +52,7 @@ class FatMove
   end
 
   def to_s
-    "#{@width}#{@face_name}w#{@direction}"
+    "#{if @width > 1 then @width else '' end}#{@face_name}#{if @width > 1 then 'w' else '' end}#{DIRECTION_NAMES[@direction - 1]}"
   end
 end
 
@@ -85,7 +60,7 @@ class SliceMove
   def initialize(slice_name, direction)
     raise unless slice_name.downcase == slice_name
     raise unless FACE_NAMES.include?(slice_name.upcase)
-    raise unless DIRECTIONS.include?(direction)
+    raise unless direction.is_a?(Integer) && 0 <= direction && direction < 4
     @slice_name = slice_name
     @direction = direction
   end
@@ -103,14 +78,15 @@ class SliceMove
   end
 
   def to_s
-    @slice_name + @direction
+    "#{@slice_name}#{DIRECTION_NAMES[@direction - 1]}"
   end
 end
 
 def parse_move(move_string)
   match = move_string.match(MOVE_REGEXP)
   raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
-  rotation, width, fat_face_name, face_name, slice_name, direction = match.captures
+  rotation, width, fat_face_name, face_name, slice_name, direction_string = match.captures
+  direction = DIRECTION_NAMES.index(direction_string) + 1
   if rotation
     raise unless width.nil? && fat_face_name.nil? && face_name.nil? && slice_name.nil?
     Rotation.new(rotation, direction)
@@ -120,7 +96,7 @@ def parse_move(move_string)
     FatMove.new(fat_face_name, width, direction)
   elsif face_name
     raise unless rotation.nil? && width.nil? && fat_face_name.nil? && slice_name.nil?
-    NormalMove.new(face_name, direction)
+    FatMove.new(face_name, 1, direction)
   elsif slice_name
     raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
     SliceMove.new(slice_name, direction)
