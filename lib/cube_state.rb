@@ -20,24 +20,29 @@ class CubeState
     CubeState.new(n, stickers)
   end
 
+  def face_index(face)
+    COLORS.index(face.color)
+  end
+
+  def face_by_index(i)
+    Face::ELEMENTS.find { |face| face_index(face) == i }
+  end
+
   # Priority of the closeness to this face.
   # This is used to index the stickers on other faces.
-  def face_priority(i)
+  def face_priority(face)
+    i = face_index(face)
     [i, SIDES - 1 - i].min
   end
 
   # Whether closeness to this face results in smaller indices for the stickers of other faces.
-  def close_to_smaller_indices?(i)
-    i < 3
-  end
-
-  def neighbor_faces(i)
-    (0...SIDES).select { |j| face_priority(j) != face_priority(i) }
+  def close_to_smaller_indices?(face)
+    face_index(face) < 3
   end
 
   # Returns the index of the coordinate that is used to determine how close a sticker on `on_face` is to `to_face`.
   def coordinate_indicating_closeness_to(on_face, to_face)
-    raise unless neighbor_faces(on_face).include?(to_face)
+    raise unless on_face.neighbors.include?(to_face)
     on_priority = face_priority(on_face)
     to_priority = face_priority(to_face)
     if on_priority < to_priority then
@@ -52,8 +57,9 @@ class CubeState
     colors = [self[i, x, y]]
     coordinates = [x, y]
     # Try to jump to each neighbor face across each coordinate.
-    neighbor_faces(i).each do |neighbor_face|
-      jump_coordinate_index = coordinate_indicating_closeness_to(i, neighbor_face)
+    face = face_by_index(i)
+    face.neighbors.each do |neighbor_face|
+      jump_coordinate_index = coordinate_indicating_closeness_to(face, neighbor_face)
       jump_coordinate = coordinates[jump_coordinate_index]
       # Check whether we are actually at the boundary to the neighbor_face
       unless jump_coordinate == 0 && close_to_smaller_indices?(neighbor_face) ||
@@ -62,10 +68,10 @@ class CubeState
       end
       other_coordinates = coordinates.dup
       other_coordinates.delete_at(jump_coordinate_index)
-      new_coordinate = if close_to_smaller_indices?(i) then 0 else @n - 1 end
-      new_coordinate_index = coordinate_indicating_closeness_to(neighbor_face, i)
+      new_coordinate = if close_to_smaller_indices?(face) then 0 else @n - 1 end
+      new_coordinate_index = coordinate_indicating_closeness_to(neighbor_face, face)
       other_coordinates.insert(new_coordinate_index, new_coordinate)
-      colors.push(self[neighbor_face, *other_coordinates])
+      colors.push(self[face_index(neighbor_face), *other_coordinates])
     end
     colors
   end

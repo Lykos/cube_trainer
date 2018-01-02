@@ -114,6 +114,21 @@ class Face < Part
     @colors[0]
   end
 
+  # Neighbor faces in clockwise order.
+  def neighbors
+    @neighbors ||= begin
+                     partial_neighbors = self.class::ELEMENTS.select { |e| e != chirality_canonicalize && e == e.chirality_canonicalize }
+                     ordered_partial_neighbors = if Corner.between_faces([self] + partial_neighbors).valid?
+                                                   partial_neighbors
+                                                 elsif Corner.between_faces([self] + partial_neighbors.reverse).valid?
+                                                   partial_neighbors.reverse
+                                                 else
+                                                   raise "Couldn't find a proper order for the neighbor faces #{partial_neighbors.inspect} of #{inspect}."
+                                                 end
+                     ordered_partial_neighbors + ordered_partial_neighbors.collect { |e| e.opposite }
+                   end
+  end
+
   # Returns either the face or its opposite face, depending which one is used in CHIRALITY_CORNER.
   def chirality_canonicalize
     if CHIRALITY_COLORS.include?(color)
@@ -285,6 +300,10 @@ class Corner < Part
     pieces = piece_candidates.select { |p| p.valid? }
     raise "#{piece_description} is not unique to create a #{self}: #{pieces.inspect}" unless pieces.length == 1
     pieces.first
+  end
+
+  def self.between_faces(faces)
+    new(faces.collect { |e| e.color })
   end
 
   def valid?

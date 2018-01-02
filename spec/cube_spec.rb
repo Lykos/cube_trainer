@@ -1,5 +1,11 @@
 require 'cube'
 
+RSpec::Matchers.define :be_rotationally_equivalent_to do |expected|
+  match do |actual|
+    expected.length == actual.length && (0...expected.length).any? { |i| actual.rotate(i) == expected }
+  end
+end
+
 RSpec.shared_examples 'Part' do |clazz|
   let(:letter) { ALPHABET.sample }
   
@@ -64,6 +70,24 @@ end
 
 describe Corner do
   it_behaves_like 'Part', Corner
+end
+
+describe Face do
+  let (:white_face) { Face.new([:white]) }
+  let (:yellow_face) { Face.new([:yellow]) }
+  let (:red_face) { Face.new([:red]) }
+  let (:orange_face) { Face.new([:orange]) }
+  let (:green_face) { Face.new([:green]) }
+  let (:blue_face) { Face.new([:blue]) }
+  
+  it 'should return the right neighbor faces' do  
+    expect(yellow_face.neighbors).to be_rotationally_equivalent_to [green_face, red_face, blue_face, orange_face]
+    expect(white_face.neighbors).to be_rotationally_equivalent_to [red_face, green_face, orange_face, blue_face]
+    expect(red_face.neighbors).to be_rotationally_equivalent_to [yellow_face, green_face, white_face, blue_face]
+    expect(orange_face.neighbors).to be_rotationally_equivalent_to [green_face, yellow_face, blue_face, white_face]
+    expect(green_face.neighbors).to be_rotationally_equivalent_to [red_face, yellow_face, orange_face, white_face]
+    expect(blue_face.neighbors).to be_rotationally_equivalent_to [yellow_face, red_face, white_face, orange_face]
+  end
 end
 
 describe TCenter do
