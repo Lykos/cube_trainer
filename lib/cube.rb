@@ -97,13 +97,6 @@ class Part
     create_for_colors(colors)
   end
 
-  # All indices of such a piece on a on a NxN face.
-  def face_indices(n)
-    raise "Asked for face indices of #{inspect} for a #{n}x#{n} cube." unless valid_for_cube_size?(n)
-    x, y = face_index
-    coordinate_rotations(x, y, n)
-  end
-
   # Only overridden by moveable centers, but returns self for convenience.
   def corresponding_part
     self

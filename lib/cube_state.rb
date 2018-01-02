@@ -21,6 +21,13 @@ class CubeState
 
   attr_reader :n, :stickers
 
+  # All indices of such a piece on a on a face.
+  def face_indices(piece)
+    raise "Asked for face indices of #{inspect} for a #{n}x#{n} cube." unless piece.valid_for_cube_size?(n)
+    x, y = piece.face_index
+    coordinate_rotations(x, y)
+  end
+
   def encode_with(coder)
     coder['stickers'] = @stickers
     coder['n'] = @n
@@ -63,8 +70,14 @@ class CubeState
     face_index(face) < 3
   end
 
+  # Whether the given coordinate is closer than half to the given face.
+  def close_to_face?(coordinate, to_face)
+    (coordinate < middle_or_after && close_to_smaller_indices?(to_face)) ||
+      (coordinate > middle_or_before && !close_to_smaller_indices?(to_face))
+  end
+
   # Returns the index of the coordinate that is used to determine how close a sticker on `on_face` is to `to_face`.
-  def coordinate_indicating_closeness_to(on_face, to_face)
+  def coordinate_index_close_to(on_face, to_face)
     raise unless on_face.neighbors.include?(to_face)
     on_priority = face_priority(on_face)
     to_priority = face_priority(to_face)
@@ -75,7 +88,7 @@ class CubeState
     end
   end
 
-  # Returns the neighbor faces that are close to the given sticker.
+  # Returns equivalent coordinates on neighbor faces that are close to the given sticker.
   # A face is considered close to the given sticker if it's closer than its opposite face.
   # The result are continguous neighbors in clockwise order.
   def closest_faces(face, x, y)
@@ -83,12 +96,15 @@ class CubeState
     coordinates = [x, y]
     # Try to jump to each neighbor face.
     face.neighbors.each do |neighbor_face|
-      jump_coordinate_index = coordinate_indicating_closeness_to(face, neighbor_face)
+      jump_coordinate_index = coordinate_index_close_to(face, neighbor_face)
       jump_coordinate = coordinates[jump_coordinate_index]
       # Check whether we are actually close to the neighbor_face
-      if (jump_coordinate < @n / 2 && close_to_smaller_indices?(neighbor_face)) ||
-         (jump_coordinate >= @n - @n / 2 && !close_to_smaller_indices?(neighbor_face))
-        faces.push(neighbor_face)
+      if close_to_face?(jump_coordinate, neighbor_face)
+        new_coordinates = coordinates.dup
+        removed_coordinate = new_coordinates.delete_at(jump_coordinate_index)
+        new_coordinate = make_coordinate_close_to(removed_coordinate, face)
+        new_coordinates.insert(coordinate_index_close_to(neighbor_face, face), new_coordinate)
+        faces.push([neighbor_face] + new_coordinates)
       else
         faces.push(nil)
       end
@@ -96,13 +112,17 @@ class CubeState
     rotate_out_nils(faces)
   end
 
-  def solved_position(piece)
+  # The indices of stickers that this piece occupies on the solved cube.
+  def solved_positions(piece)
     face = Face.for_color(piece.colors.first)
     representative_piece = piece.corresponding_part
     raise unless representative_piece.colors.first == face.color
     other_colors = representative_piece.colors[1..-1]
-    piece.face_indices(@n).each do |x, y|
-      return [face, x, y] if closest_faces(face, x, y).collect { |f| f.color } == other_colors
+    face_indices(piece).each do |x, y|
+      friendly_neighbors = closest_faces(face, x, y)
+      if friendly_neighbors.collect { |f| f[0].color } == other_colors
+        return [[face, x, y]] + friendly_neighbors
+      end
     end
     raise "Couldn't find piece #{piece.inspect} in the solved position."
   end
@@ -125,14 +145,11 @@ class CubeState
   end
 
   def find_cycles(pieces)
-    cycles = []
-    pieces[0].rotations.length.times do |i|
-      cycles.push([])
-      pieces.each do |p|
-        cycles.last.push(solved_position(p.rotate_by(i)))
-      end
+    piece_positions = []
+    pieces.each do |p|
+      piece_positions.push(solved_positions(p))
     end
-    cycles
+    piece_positions[0].zip(*piece_positions[1..-1])
   end
 
   # Cycles the given positions. Note that it does NOT search for the given pieces and cycle them, rather, it cycles
@@ -156,15 +173,13 @@ class CubeState
 
   def [](face, b, c)
     raise unless face.is_a?(Face)
-    raise if b < 0 || b >= @n
-    raise if c < 0 || c >= @n
+    raise unless valid_coordinate?(b) && valid_coordinate?(c)
     @stickers[face_index(face)][b][c]
   end
 
   def []=(face, b, c, d)
     raise unless face.is_a?(Face)
-    raise if b < 0 || b >= @n
-    raise if c < 0 || c >= @n
+    raise unless valid_coordinate?(b) && valid_coordinate?(c)
     raise "All stickers on the cube must have a valid color." unless COLORS.include?(d)
     @stickers[face_index(face)][b][c] = d
   end
@@ -188,15 +203,24 @@ class CubeState
     end
   end
 
+  def make_coordinate_relative_to(coordinate, face)
+    if close_to_smaller_indices?(face) then coordinate else invert_coordinate(coordinate) end
+  end
+
+  def make_coordinate_close_to(coordinate, face)
+    is_small_coordinate = coordinate <= middle_or_before
+    if close_to_smaller_indices?(face) == is_small_coordinate then coordinate else invert_coordinate(coordinate) end
+  end
+
   def rotate_slice(face, slice, direction)
     neighbors = face.neighbors
-    y = if close_to_smaller_indices?(face) then slice else @n - 1 - slice end
-    0.upto(@n - 1) do |x|
+    y = make_coordinate_relative_to(slice, face)
+    0.upto(highest_coordinate) do |x|
       cycle = neighbors.collect.with_index do |neighbor, i|
         next_neighbor = neighbors[(i + 1) % 4]
-        real_x = if close_to_smaller_indices?(next_neighbor) then x else @n - 1 - x end
+        real_x = make_coordinate_relative_to(x, next_neighbor)
         coordinates = [real_x]
-        coordinates.insert(coordinate_indicating_closeness_to(neighbor, face), y)
+        coordinates.insert(coordinate_index_close_to(neighbor, face), y)
         [neighbor] + coordinates
       end
       apply_4sticker_cycle(cycle, direction)
@@ -206,11 +230,11 @@ class CubeState
   # Rotates the stickers on one face (not a real move, only stickers on one face!)
   def rotate_face(face, direction)
     neighbors = face.neighbors
-    inverse_order_face = coordinate_indicating_closeness_to(face, neighbors[0]) < coordinate_indicating_closeness_to(face, neighbors[1])
+    inverse_order_face = coordinate_index_close_to(face, neighbors[0]) < coordinate_index_close_to(face, neighbors[1])
     direction = 4 - direction if inverse_order_face
-    0.upto(@n/2 - 1) do |x|
-      0.upto(@n - @n/2 - 1) do |y|
-        cycle = coordinate_rotations(x, y, @n).collect { |x, y| [face, x, y] }
+    0.upto(middle_or_after) do |x|
+      0.upto(last_before_middle) do |y|
+        cycle = coordinate_rotations(x, y).collect { |x, y| [face, x, y] }
         apply_4sticker_cycle(cycle, direction)
       end
     end
