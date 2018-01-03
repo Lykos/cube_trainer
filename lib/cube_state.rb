@@ -137,7 +137,7 @@ class CubeState
     face.neighbors.each do |neighbor_face|
       jump_coordinate_index = coordinate_index_close_to(face, neighbor_face)
       jump_coordinate = coordinates[jump_coordinate_index]
-      p neighbor_face, jump_coordinate_index, jump_coordinate, can_jump_to?(jump_coordinate, neighbor_face)
+      p neighbor_face, jump_coordinate_index, jump_coordinate, jump_coordinate == highest_coordinate, !close_to_smaller_indices?(neighbor_face), can_jump_to?(jump_coordinate, neighbor_face)
       # Check whether we are actually at the boundary to the neighbor_face
       if can_jump_to?(jump_coordinate, neighbor_face)
         indices.push([neighbor_face] + jump_to_face(new_face))
