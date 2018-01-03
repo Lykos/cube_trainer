@@ -25,6 +25,7 @@ class CubeState
   def face_indices(piece)
     raise "Asked for face indices of #{inspect} for a #{n}x#{n} cube." unless piece.valid_for_cube_size?(n)
     x, y = piece.face_index
+    p "face_index", piece, piece.face_index
     coordinate_rotations(x, y)
   end
 
@@ -87,7 +88,7 @@ class CubeState
       to_priority
     end
   end
-
+  
   # Returns equivalent coordinates on neighbor faces that are close to the given sticker.
   # A face is considered close to the given sticker if it's closer than its opposite face.
   # The result are continguous neighbors in clockwise order.
@@ -100,11 +101,7 @@ class CubeState
       jump_coordinate = coordinates[jump_coordinate_index]
       # Check whether we are actually close to the neighbor_face
       if close_to_face?(jump_coordinate, neighbor_face)
-        new_coordinates = coordinates.dup
-        removed_coordinate = new_coordinates.delete_at(jump_coordinate_index)
-        new_coordinate = make_coordinate_close_to(removed_coordinate, face)
-        new_coordinates.insert(coordinate_index_close_to(neighbor_face, face), new_coordinate)
-        faces.push([neighbor_face] + new_coordinates)
+        faces.push(neighbor_face)
       else
         faces.push(nil)
       end
@@ -112,19 +109,61 @@ class CubeState
     rotate_out_nils(faces)
   end
 
+  def can_jump_to?(to_face, coordinate)
+    (coordinate == 0 && close_to_smaller_indices?(to_face)) ||
+      (coordinate == highest_coordinate && !close_to_smaller_indices?(to_face))
+  end
+
+  # Make a coordinate on `new_face` that is close to the given old coordinates and belongs to an equivalent piece type.
+  def jump_to_face(old_face, coordinates, new_face)
+    raise unless old_face.neighbors.include?(new_face)
+    new_coordinates = coordinates.dup
+    jump_coordinate_index = coordinate_index_close_to(old_face, new_face)
+    jump_coordinate = new_coordinates.delete_at(jump_coordinate_index)
+    raise unless can_jump_to?(new_face, jump_coordinate)
+    new_coordinate_index = coordinate_index_close_to(new_face, old_face)
+    new_coordinate = make_coordinate_close_to(new_face, old_face)
+    raise unless can_jump_to?(old_face, new_coordinate)
+    new_coordinates.insert(new_coordinate_index, new_coordinate)
+    new_coordinates
+  end
+
+  def piece_indices(face, x, y)
+    puts "piece_indices"
+    indices = [[face, x, y]]
+    coordinates = [x, y]
+    # Try to jump to each neighbor face across each coordinate.
+    p face, coordinates
+    face.neighbors.each do |neighbor_face|
+      jump_coordinate_index = coordinate_index_close_to(face, neighbor_face)
+      jump_coordinate = coordinates[jump_coordinate_index]
+      p neighbor_face, jump_coordinate_index, jump_coordinate, can_jump_to?(jump_coordinate, neighbor_face)
+      # Check whether we are actually at the boundary to the neighbor_face
+      if can_jump_to?(jump_coordinate, neighbor_face)
+        indices.push([neighbor_face] + jump_to_face(new_face))
+      end
+    end
+    indices
+  end
+
   # The indices of stickers that this piece occupies on the solved cube.
   def solved_positions(piece)
+    puts "solved_positions"
     face = Face.for_color(piece.colors.first)
     representative_piece = piece.corresponding_part
     raise unless representative_piece.colors.first == face.color
     other_colors = representative_piece.colors[1..-1]
-    face_indices(piece).each do |x, y|
+    p face, piece, representative_piece, other_colors
+    face_index_candidates = face_indices(piece).select do |x, y|
       friendly_neighbors = closest_faces(face, x, y)
-      if friendly_neighbors.collect { |f| f[0].color } == other_colors
-        return [[face, x, y]] + friendly_neighbors
-      end
+      friendly_neighbors.collect { |f| f.color } == other_colors
     end
-    raise "Couldn't find piece #{piece.inspect} in the solved position."
+    puts "final index"
+    p face_index_candidates
+    raise "Couldn't find piece #{piece.inspect} in the solved position." if face_index_candidates.empty?
+    raise "Found piece #{piece.inspect} multiple times in the solved position." if face_index_candidates.length > 1
+    puts "lol"
+    p piece_indices(face, *face_index_candidates.first)
   end
 
   def face_lines(face, reverse_lines, reverse_columns)

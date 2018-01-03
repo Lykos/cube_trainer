@@ -295,12 +295,18 @@ describe CubeState do
   it 'should do the T perm properly' do
     parse_alg('R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\'').each do |move|
       cube_state5.apply_move(move)
+      puts move
+      puts cube_state5.to_s.split('\n')
     end
     expected_cube_state = CubeState.solved(5)
     expected_cube_state.apply_piece_cycle([Corner.for_letter('b'), Corner.for_letter('d')])
     expected_cube_state.apply_piece_cycle([Midge.for_letter('b'), Midge.for_letter('c')])
     expected_cube_state.apply_piece_cycle([Wing.for_letter('b'), Wing.for_letter('c')])
     expected_cube_state.apply_piece_cycle([Wing.for_letter('m'), Wing.for_letter('i')])
+    puts expected_cube_state.to_s.split('\n')
+    p Wing.for_letter('i')
+    p Wing.for_letter('i').corresponding_part
+    p expected_cube_state.solved_positions(Wing.for_letter('i'))
     expect(cube_state5).to be == expected_cube_state
   end
 
