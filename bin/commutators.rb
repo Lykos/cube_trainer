@@ -10,6 +10,7 @@ require 'human_learner'
 require 'trainer'
 
 # TODO Do this in the UI.
+include CubeTrainer
 
 options = Options.parse(ARGV)
 results_model = ResultsModel.new(options.commutator_info.result_symbol)

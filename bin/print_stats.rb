@@ -7,6 +7,8 @@ require 'stats_computer'
 require 'cube'
 require 'options'
 
+include CubeTrainer
+
 def print_stats(results)
   computer = StatsComputer.new
   sorted_averages = computer.compute_stats(results)
