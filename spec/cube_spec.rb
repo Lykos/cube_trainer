@@ -1,5 +1,7 @@
 require 'cube'
 
+include CubeTrainer
+
 RSpec::Matchers.define :be_rotationally_equivalent_to do |expected|
   match do |actual|
     expected.length == actual.length && (0...expected.length).any? { |i| actual.rotate(i) == expected }

@@ -1,5 +1,7 @@
 require 'array_helper'
 
+include CubeTrainer
+
 describe ArrayHelper do
   include ArrayHelper
 
