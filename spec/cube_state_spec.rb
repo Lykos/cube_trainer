@@ -2,6 +2,8 @@ require 'cube_state'
 require 'cube'
 require 'rspec/expectations'
 
+include CubeTrainer
+
 describe CubeState do
   let (:cube_state5) { CubeState.solved(5) }
   let (:white_face) { Face.new([:white]) }

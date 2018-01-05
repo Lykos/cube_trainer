@@ -1,5 +1,7 @@
 require 'coordinate_helper'
 
+include CubeTrainer
+
 describe CoordinateHelper do
   context 'for an uneven n' do
     let (:n) { 7 }

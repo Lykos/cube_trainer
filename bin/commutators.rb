@@ -9,6 +9,8 @@ require 'results_model'
 require 'human_learner'
 require 'trainer'
 
+include CubeTrainer
+
 # TODO Do this in the UI.
 
 options = Options.parse(ARGV)
