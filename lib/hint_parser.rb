@@ -11,8 +11,10 @@ module CubeTrainer
     end
     
     def self.parse_hints(part_class)
+      # TODO do this properly
+      name = part_class.name.split('::').last
       hints = {}
-      hint_table = CSV.read(csv_file(part_class))
+      hint_table = CSV.read(csv_file(name))
       # TODO make this more general to figure out other types of hint tables
       parts = hint_table[0][1..-1].collect { |p| part_class.parse(p) }
       hint_table[1..-1].each_with_index do |row, row_index|
@@ -33,11 +35,13 @@ module CubeTrainer
     end
   
     def self.maybe_create(part_class)
-      new(if File.exists?(csv_file(part_class))
-        parse_hints(part_class)
-      else
-        {}
-      end)
+      # TODO do this properly
+      name = part_class.name.split('::').last
+      new(if File.exists?(csv_file(name))
+            parse_hints(part_class)
+          else
+            {}
+          end)
     end
   
     def initialize(hints)
