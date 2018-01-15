@@ -1,5 +1,7 @@
 require 'commutator'
 
+include CubeTrainer
+
 describe PureCommutator do
   let (:commutator) { parse_commutator('[R, U\' L\' U]') }
   
