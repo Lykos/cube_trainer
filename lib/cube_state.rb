@@ -91,12 +91,12 @@ module CubeTrainer
   
     # Cycles the given positions. Note that it does NOT search for the given pieces and cycle them, rather, it cycles
     # the pieces that are at the position that those pieces would take in a solved state.
-    def apply_piece_cycle(pieces)
+    def apply_piece_cycle(pieces, incarnation_index=0)
       raise 'Cycles of length smaller than 2 are not supported.' if pieces.length < 2
       raise 'Cycles of heterogenous piece types are not supported.' if pieces.any? { |p| p.class != pieces[0].class }
       raise 'Cycles of weird piece types are not supported.' unless pieces.all? { |p| p.is_a?(Part) }
       raise 'Cycles of invalid pieces are not supported.' unless pieces.all? { |p| p.valid? }
-      raise 'Cycles of invalid pieces are not supported.' unless pieces.all? { |p| p.valid_for_cube_size?(@n) }
+      raise "Invalid incarnation index #{incarnation_index}." unless incarnation_index.is_a?(Integer) && incarnation_index >- 0 && pieces.all? { |p| incarnation_index < p.num_incarnations(@n) }
       pieces.each_with_index do |p, i|
         pieces.each_with_index do |q, j|
           if i != j && p.turned_equals?(q)
