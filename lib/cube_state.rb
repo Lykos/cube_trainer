@@ -51,17 +51,17 @@ module CubeTrainer
       coordinates = [x, y]
       # Try to jump to each neighbor face.
       face.neighbors.each do |neighbor_face|
-        if can_jump_to?(face, neighbor_face, coordinates)
-          indices.push([neighbor_face] + face.jump_to_neighbor(coordinates, neighbor_face))
+        if face.can_jump_to?(neighbor_face, coordinates, @n)
+          indices.push([neighbor_face] + face.jump_to_neighbor(coordinates, neighbor_face, @n))
         end
       end
       p indices
     end
           
     # The indices of stickers that this piece occupies on the solved cube.
-    def solved_positions(piece)
+    def solved_positions(piece, incarnation_index)
       face = Face.for_color(piece.colors.first)
-      piece_indices(face, *piece.index_on_face)
+      piece_indices(face, *piece.index_on_face(@n, incarnation_index))
     end
   
     def face_lines(face, reverse_lines, reverse_columns)
@@ -81,10 +81,10 @@ module CubeTrainer
       lines.join('\n')
     end
   
-    def find_cycles(pieces)
+    def find_cycles(pieces, incarnation_index)
       piece_positions = []
       pieces.each do |p|
-        piece_positions.push(solved_positions(p))
+        piece_positions.push(solved_positions(p, incarnation_index))
       end
       piece_positions[0].zip(*piece_positions[1..-1])
     end
@@ -96,7 +96,7 @@ module CubeTrainer
       raise 'Cycles of heterogenous piece types are not supported.' if pieces.any? { |p| p.class != pieces[0].class }
       raise 'Cycles of weird piece types are not supported.' unless pieces.all? { |p| p.is_a?(Part) }
       raise 'Cycles of invalid pieces are not supported.' unless pieces.all? { |p| p.valid? }
-      raise "Invalid incarnation index #{incarnation_index}." unless incarnation_index.is_a?(Integer) && incarnation_index >- 0 && pieces.all? { |p| incarnation_index < p.num_incarnations(@n) }
+      raise "Invalid incarnation index #{incarnation_index}." unless incarnation_index.is_a?(Integer) && incarnation_index >= 0 && pieces.all? { |p| incarnation_index < p.num_incarnations(@n) }
       pieces.each_with_index do |p, i|
         pieces.each_with_index do |q, j|
           if i != j && p.turned_equals?(q)
@@ -104,7 +104,7 @@ module CubeTrainer
           end
         end
       end
-      cycles = find_cycles(pieces)
+      cycles = find_cycles(pieces, incarnation_index)
       cycles.each { |c| apply_index_cycle(c) }
     end
   

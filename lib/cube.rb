@@ -178,19 +178,19 @@ module CubeTrainer
     end
 
     # Are the given `coordinates` on this face at the edge to `to_face`?
-    def can_jump_to?(to_face, coordinates)
+    def can_jump_to?(to_face, coordinates, cube_size)
       raise unless to_face.is_a?(Face)
       raise unless coordinates.is_a?(Array) and coordinates.all? { |c| c.is_a?(Integer) }
       jump_coordinate_index = coordinate_index_close_to(to_face)
       jump_coordinate = coordinates[jump_coordinate_index]
-      (coordinate_at_lower_end?(jump_coordinate) && close_to_smaller_indices?(to_face)) ||
-        (coordinate_at_higher_end?(jump_coordinate) && !close_to_smaller_indices?(to_face))
+      (coordinate_at_lower_end?(jump_coordinate, cube_size) && to_face.close_to_smaller_indices?) ||
+        (coordinate_at_higher_end?(jump_coordinate, cube_size) && !to_face.close_to_smaller_indices?)
     end
   
     # Jump from `coordinates` over the edge to `to_face`.
-    def jump_to_neighbor(coordinates, to_face)
+    def jump_to_neighbor(coordinates, to_face, cube_size)
       raise unless neighbors.include?(to_face)
-      raise unless can_jump_to?(to_face, coordinates)
+      raise unless can_jump_to?(to_face, coordinates, cube_size)
       raise unless to_face.is_a?(Face)
       raise unless coordinates.is_a?(Array) and coordinates.all? { |c| c.is_a?(Integer) }
       new_coordinates = coordinates.dup
