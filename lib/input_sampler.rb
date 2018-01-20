@@ -106,7 +106,7 @@ module CubeTrainer
   
     # Adjusts a badness score in order to punish overly fast repetition, even for high badness.
     def repetition_adjusted_score(index, badness_score)
-      if !index.nil? && index < repetition_boundary && badness_score > EPSILON_SCORE
+      if !index.nil? && index < repetition_boundary
         EPSILON_SCORE
       else
         badness_score
@@ -128,7 +128,7 @@ module CubeTrainer
       index = items_since_last_occurrence(item)
       [repetition_adjusted_score(index, score), EPSILON_SCORE].max
     end
-  
+    
     # Distort the given value randomly by up to the given factor.
     def distort(value, factor)
       raise unless factor > 0 && factor < 1

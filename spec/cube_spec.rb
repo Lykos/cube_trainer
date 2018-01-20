@@ -8,6 +8,13 @@ RSpec::Matchers.define :be_rotationally_equivalent_to do |expected|
   end
 end
 
+RSpec::Matchers.define :have_equivalent_coordinates_to do |expected|
+  include CoordinateHelper
+  match do |actual|
+    equivalent_coordinates(actual, expected, cube_size)
+  end
+end
+
 RSpec.shared_examples 'Part' do |clazz|
   let(:letter) { ALPHABET.sample }
   
@@ -18,14 +25,74 @@ end
 
 describe Edge do
   it_behaves_like 'Part', Edge
+
+  let(:cube_size) { 3 }
+  
+  it 'returns the right index_on_face' do
+    expect(Edge.for_letter('a').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 1])
+    expect(Edge.for_letter('b').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 0])
+    expect(Edge.for_letter('c').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -1])
+    expect(Edge.for_letter('d').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 1])
+    expect(Edge.for_letter('e').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 1])
+    expect(Edge.for_letter('f').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 0])
+    expect(Edge.for_letter('g').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -1])
+    expect(Edge.for_letter('h').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 1])
+    expect(Edge.for_letter('i').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 1])
+    expect(Edge.for_letter('j').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 0])
+    expect(Edge.for_letter('k').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -1])
+    expect(Edge.for_letter('l').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 1])
+    expect(Edge.for_letter('m').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 1])
+    expect(Edge.for_letter('n').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 0])
+    expect(Edge.for_letter('o').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -1])
+    expect(Edge.for_letter('p').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 1])
+    expect(Edge.for_letter('q').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 1])
+    expect(Edge.for_letter('r').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 0])
+    expect(Edge.for_letter('s').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -1])
+    expect(Edge.for_letter('t').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 1])
+    expect(Edge.for_letter('u').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 1])
+    expect(Edge.for_letter('v').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 0])
+    expect(Edge.for_letter('w').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -1])
+    expect(Edge.for_letter('x').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 1])
+  end
 end
 
 describe Midge do
   it_behaves_like 'Part', Midge
+
+  let(:cube_size) { 5 }
+
+  it 'returns the right index_on_face' do
+    expect(Midge.for_letter('a').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 2])
+    expect(Midge.for_letter('b').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 0])
+    expect(Midge.for_letter('c').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -1])
+    expect(Midge.for_letter('d').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 2])
+    expect(Midge.for_letter('e').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 2])
+    expect(Midge.for_letter('f').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 0])
+    expect(Midge.for_letter('g').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -1])
+    expect(Midge.for_letter('h').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 2])
+    expect(Midge.for_letter('i').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 2])
+    expect(Midge.for_letter('j').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 0])
+    expect(Midge.for_letter('k').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -1])
+    expect(Midge.for_letter('l').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 2])
+    expect(Midge.for_letter('m').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 2])
+    expect(Midge.for_letter('n').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 0])
+    expect(Midge.for_letter('o').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -1])
+    expect(Midge.for_letter('p').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 2])
+    expect(Midge.for_letter('q').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 2])
+    expect(Midge.for_letter('r').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 0])
+    expect(Midge.for_letter('s').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -1])
+    expect(Midge.for_letter('t').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 2])
+    expect(Midge.for_letter('u').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 2])
+    expect(Midge.for_letter('v').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 0])
+    expect(Midge.for_letter('w').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -1])
+    expect(Midge.for_letter('x').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 2])
+  end
 end
 
 describe Wing do
   it_behaves_like 'Part', Wing
+
+  let(:cube_size) { 4 }
 
   it 'should parse wings in UB correctly' do
     expect(Wing.parse('UBl')).to be == Wing.new([:orange, :yellow])
@@ -68,10 +135,66 @@ describe Wing do
     expect(Wing.parse('RFu')).to be == Wing.new([:green, :red])
     expect(Wing.parse('RFd')).to be == Wing.new([:red, :green])
   end
+
+  it 'returns the right index_on_face' do
+    expect(Wing.for_letter('a').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 2])
+    expect(Wing.for_letter('b').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 0])
+    expect(Wing.for_letter('c').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 3])
+    expect(Wing.for_letter('d').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([3, 1])
+    expect(Wing.for_letter('e').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 1])
+    expect(Wing.for_letter('f').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 0])
+    expect(Wing.for_letter('g').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 3])
+    expect(Wing.for_letter('h').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([3, 2])
+    expect(Wing.for_letter('i').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 2])
+    expect(Wing.for_letter('j').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 0])
+    expect(Wing.for_letter('k').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 3])
+    expect(Wing.for_letter('l').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([3, 1])
+    expect(Wing.for_letter('m').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 1])
+    expect(Wing.for_letter('n').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 0])
+    expect(Wing.for_letter('o').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 3])
+    expect(Wing.for_letter('p').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([3, 2])
+    expect(Wing.for_letter('q').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 2])
+    expect(Wing.for_letter('r').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 0])
+    expect(Wing.for_letter('s').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 3])
+    expect(Wing.for_letter('t').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([3, 1])
+    expect(Wing.for_letter('u').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 1])
+    expect(Wing.for_letter('v').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 0])
+    expect(Wing.for_letter('w').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 3])
+    expect(Wing.for_letter('x').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([3, 2])
+  end
 end
 
 describe Corner do
   it_behaves_like 'Part', Corner
+
+  let(:cube_size) { 3 }
+
+  it 'returns the right index_on_face' do
+    expect(Corner.for_letter('a').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, -1])
+    expect(Corner.for_letter('b').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 0])
+    expect(Corner.for_letter('c').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, -1])
+    expect(Corner.for_letter('d').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 0])
+    expect(Corner.for_letter('e').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 0])
+    expect(Corner.for_letter('f').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 0])
+    expect(Corner.for_letter('g').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, -1])
+    expect(Corner.for_letter('h').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, -1])
+    expect(Corner.for_letter('i').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, -1])
+    expect(Corner.for_letter('j').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 0])
+    expect(Corner.for_letter('k').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, -1])
+    expect(Corner.for_letter('l').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 0])
+    expect(Corner.for_letter('m').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 0])
+    expect(Corner.for_letter('n').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 0])
+    expect(Corner.for_letter('o').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, -1])
+    expect(Corner.for_letter('p').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, -1])
+    expect(Corner.for_letter('q').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, -1])
+    expect(Corner.for_letter('r').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 0])
+    expect(Corner.for_letter('s').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, -1])
+    expect(Corner.for_letter('t').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 0])
+    expect(Corner.for_letter('u').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, 0])
+    expect(Corner.for_letter('v').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, 0])
+    expect(Corner.for_letter('w').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([0, -1])
+    expect(Corner.for_letter('x').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-1, -1])
+  end
 end
 
 describe Face do
@@ -94,8 +217,66 @@ end
 
 describe TCenter do
   it_behaves_like 'Part', TCenter
+
+  let(:cube_size) { 5 }
+
+  it 'returns the right index_on_face' do
+    expect(TCenter.for_letter('a').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 2])
+    expect(TCenter.for_letter('b').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 1])
+    expect(TCenter.for_letter('c').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -2])
+    expect(TCenter.for_letter('d').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 2])
+    expect(TCenter.for_letter('e').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 2])
+    expect(TCenter.for_letter('f').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 1])
+    expect(TCenter.for_letter('g').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -2])
+    expect(TCenter.for_letter('h').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 2])
+    expect(TCenter.for_letter('i').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 2])
+    expect(TCenter.for_letter('j').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 1])
+    expect(TCenter.for_letter('k').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -2])
+    expect(TCenter.for_letter('l').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 2])
+    expect(TCenter.for_letter('m').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 2])
+    expect(TCenter.for_letter('n').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 1])
+    expect(TCenter.for_letter('o').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -2])
+    expect(TCenter.for_letter('p').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 2])
+    expect(TCenter.for_letter('q').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 2])
+    expect(TCenter.for_letter('r').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 1])
+    expect(TCenter.for_letter('s').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -2])
+    expect(TCenter.for_letter('t').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 2])
+    expect(TCenter.for_letter('u').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 2])
+    expect(TCenter.for_letter('v').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, 1])
+    expect(TCenter.for_letter('w').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([2, -2])
+    expect(TCenter.for_letter('x').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 2])
+  end
 end
 
 describe XCenter do
   it_behaves_like 'Part', XCenter
+  
+  let(:cube_size) { 4 }
+
+  it 'returns the right index_on_face' do
+    expect(XCenter.for_letter('a').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -2])
+    expect(XCenter.for_letter('b').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 1])
+    expect(XCenter.for_letter('c').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, -2])
+    expect(XCenter.for_letter('d').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 1])
+    expect(XCenter.for_letter('e').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 1])
+    expect(XCenter.for_letter('f').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 1])
+    expect(XCenter.for_letter('g').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -2])
+    expect(XCenter.for_letter('h').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, -2])
+    expect(XCenter.for_letter('i').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -2])
+    expect(XCenter.for_letter('j').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 1])
+    expect(XCenter.for_letter('k').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, -2])
+    expect(XCenter.for_letter('l').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 1])
+    expect(XCenter.for_letter('m').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 1])
+    expect(XCenter.for_letter('n').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 1])
+    expect(XCenter.for_letter('o').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -2])
+    expect(XCenter.for_letter('p').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, -2])
+    expect(XCenter.for_letter('q').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -2])
+    expect(XCenter.for_letter('r').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 1])
+    expect(XCenter.for_letter('s').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, -2])
+    expect(XCenter.for_letter('t').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 1])
+    expect(XCenter.for_letter('u').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, 1])
+    expect(XCenter.for_letter('v').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, 1])
+    expect(XCenter.for_letter('w').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([1, -2])
+    expect(XCenter.for_letter('x').index_on_face(cube_size, 0)).to have_equivalent_coordinates_to([-2, -2])
+  end
 end

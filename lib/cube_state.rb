@@ -22,15 +22,7 @@ module CubeTrainer
     end
   
     attr_reader :n, :stickers
-  
-    # All indices of such a piece on a on a face.
-    def face_indices(piece)
-      raise "Asked for face indices of #{inspect} for a #{n}x#{n} cube." unless piece.valid_for_cube_size?(n)
-      x, y = piece.face_index
-      p "face_index", piece, piece.face_index
-      coordinate_rotations(x, y)
-    end
-  
+    
     def encode_with(coder)
       coder['stickers'] = @stickers
       coder['n'] = @n
@@ -53,123 +45,27 @@ module CubeTrainer
       CubeState.new(n, stickers)
     end
   
-    def face_index(face)
-      COLORS.index(face.color)
-    end
-  
-    def face_by_index(i)
-      Face::ELEMENTS.find { |face| face_index(face) == i }
-    end
-  
-    # Priority of the closeness to this face.
-    # This is used to index the stickers on other faces.
-    def face_priority(face)
-      i = face_index(face)
-      [i, SIDES - 1 - i].min
-    end
-  
-    # Whether closeness to this face results in smaller indices for the stickers of other faces.
-    def close_to_smaller_indices?(face)
-      face_index(face) < 3
-    end
-  
-    # Whether the given coordinate is closer than half to the given face.
-    def close_to_face?(coordinate, to_face)
-      (coordinate < middle_or_after && close_to_smaller_indices?(to_face)) ||
-        (coordinate > middle_or_before && !close_to_smaller_indices?(to_face))
-    end
-  
-    # Returns the index of the coordinate that is used to determine how close a sticker on `on_face` is to `to_face`.
-    def coordinate_index_close_to(on_face, to_face)
-      raise unless on_face.neighbors.include?(to_face)
-      on_priority = face_priority(on_face)
-      to_priority = face_priority(to_face)
-      if on_priority < to_priority then
-        to_priority - 1
-      else
-        to_priority
-      end
-    end
-
-    # Returns equivalent coordinates on neighbor faces that are close to the given sticker.
-    # A face is considered close to the given sticker if it's closer than its opposite face.
-    # The result are continguous neighbors in clockwise order.
-    def closest_faces(face, x, y)
-      faces = []
+    def piece_indices(face, x, y)
+      puts "piece indices #{face.inspect} (#{x}, #{y})"
+      indices = [[face, x, y]]
       coordinates = [x, y]
       # Try to jump to each neighbor face.
       face.neighbors.each do |neighbor_face|
-        jump_coordinate_index = coordinate_index_close_to(face, neighbor_face)
-        jump_coordinate = coordinates[jump_coordinate_index]
-        # Check whether we are actually close to the neighbor_face
-        if close_to_face?(jump_coordinate, neighbor_face)
-          faces.push(neighbor_face)
-        else
-          faces.push(nil)
+        if can_jump_to?(face, neighbor_face, coordinates)
+          indices.push([neighbor_face] + face.jump_to_neighbor(coordinates, neighbor_face))
         end
       end
-      rotate_out_nils(faces)
-    end
-  
-    def can_jump_to?(to_face, coordinate)
-      (coordinate == 0 && close_to_smaller_indices?(to_face)) ||
-        (coordinate == highest_coordinate && !close_to_smaller_indices?(to_face))
-    end
-  
-    # Make a coordinate on `new_face` that is close to the given old coordinates and belongs to an equivalent piece type.
-    def jump_to_face(old_face, coordinates, new_face)
-      raise unless old_face.neighbors.include?(new_face)
-      new_coordinates = coordinates.dup
-      jump_coordinate_index = coordinate_index_close_to(old_face, new_face)
-      jump_coordinate = new_coordinates.delete_at(jump_coordinate_index)
-      raise unless can_jump_to?(new_face, jump_coordinate)
-      new_coordinate_index = coordinate_index_close_to(new_face, old_face)
-      new_coordinate = make_coordinate_close_to(new_face, old_face)
-      raise unless can_jump_to?(old_face, new_coordinate)
-      new_coordinates.insert(new_coordinate_index, new_coordinate)
-      new_coordinates
-    end
-  
-    def piece_indices(face, x, y)
-      puts "piece_indices"
-      indices = [[face, x, y]]
-      coordinates = [x, y]
-      # Try to jump to each neighbor face across each coordinate.
-      p face, coordinates
-      face.neighbors.each do |neighbor_face|
-        jump_coordinate_index = coordinate_index_close_to(face, neighbor_face)
-        jump_coordinate = coordinates[jump_coordinate_index]
-        p neighbor_face, jump_coordinate_index, jump_coordinate, jump_coordinate == highest_coordinate, !close_to_smaller_indices?(neighbor_face), can_jump_to?(jump_coordinate, neighbor_face)
-        # Check whether we are actually at the boundary to the neighbor_face
-        if can_jump_to?(jump_coordinate, neighbor_face)
-          indices.push([neighbor_face] + jump_to_face(new_face))
-        end
-      end
-      rotate_out_nils(faces)
+      p indices
     end
           
     # The indices of stickers that this piece occupies on the solved cube.
     def solved_positions(piece)
-      puts "solved_positions"
       face = Face.for_color(piece.colors.first)
-      representative_piece = piece.corresponding_part
-      raise unless representative_piece.colors.first == face.color
-      other_colors = representative_piece.colors[1..-1]
-      p face, piece, representative_piece, other_colors
-      face_index_candidates = face_indices(piece).select do |x, y|
-        friendly_neighbors = closest_faces(face, x, y)
-        friendly_neighbors.collect { |f| f.color } == other_colors
-      end
-      puts "final index"
-      p face_index_candidates
-      raise "Couldn't find piece #{piece.inspect} in the solved position." if face_index_candidates.empty?
-      raise "Found piece #{piece.inspect} multiple times in the solved position." if face_index_candidates.length > 1
-      puts "lol"
-      p piece_indices(face, *face_index_candidates.first)
+      piece_indices(face, *piece.index_on_face)
     end
   
     def face_lines(face, reverse_lines, reverse_columns)
-      stickers_to_lines(@stickers[face_index(face)], reverse_lines, reverse_columns)
+      stickers_to_lines(@stickers[face.piece_index], reverse_lines, reverse_columns)
     end
   
     def to_s
@@ -215,14 +111,14 @@ module CubeTrainer
     def [](face, b, c)
       raise unless face.is_a?(Face)
       raise unless valid_coordinate?(b) && valid_coordinate?(c)
-      @stickers[face_index(face)][b][c]
+      @stickers[face.piece_index][b][c]
     end
   
     def []=(face, b, c, d)
       raise unless face.is_a?(Face)
       raise unless valid_coordinate?(b) && valid_coordinate?(c)
       raise "All stickers on the cube must have a valid color." unless COLORS.include?(d)
-      @stickers[face_index(face)][b][c] = d
+      @stickers[face.piece_index][b][c] = d
     end
   
     def apply_index_cycle(cycle)
@@ -244,24 +140,15 @@ module CubeTrainer
       end
     end
   
-    def make_coordinate_relative_to(coordinate, face)
-      if close_to_smaller_indices?(face) then coordinate else invert_coordinate(coordinate) end
-    end
-  
-    def make_coordinate_close_to(coordinate, face)
-      is_small_coordinate = coordinate <= middle_or_before
-      if close_to_smaller_indices?(face) == is_small_coordinate then coordinate else invert_coordinate(coordinate) end
-    end
-  
     def rotate_slice(face, slice, direction)
       neighbors = face.neighbors
-      y = make_coordinate_relative_to(slice, face)
+      y = face.make_coordinate_relative_to(slice)
       0.upto(highest_coordinate) do |x|
         cycle = neighbors.collect.with_index do |neighbor, i|
           next_neighbor = neighbors[(i + 1) % 4]
-          real_x = make_coordinate_relative_to(x, next_neighbor)
+          real_x = next_neighbor.make_coordinate_relative_to(x)
           coordinates = [real_x]
-          coordinates.insert(coordinate_index_close_to(neighbor, face), y)
+          coordinates.insert(neighbor.coordinate_index_close_to(face), y)
           [neighbor] + coordinates
         end
         apply_4sticker_cycle(cycle, direction)
@@ -271,7 +158,7 @@ module CubeTrainer
     # Rotates the stickers on one face (not a real move, only stickers on one face!)
     def rotate_face(face, direction)
       neighbors = face.neighbors
-      inverse_order_face = coordinate_index_close_to(face, neighbors[0]) < coordinate_index_close_to(face, neighbors[1])
+      inverse_order_face = face.coordinate_index_close_to(neighbors[0]) < face.coordinate_index_close_to(neighbors[1])
       direction = 4 - direction if inverse_order_face
       0.upto(middle_or_after) do |x|
         0.upto(last_before_middle) do |y|

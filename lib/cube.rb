@@ -4,6 +4,7 @@ module CubeTrainer
 
   # The order determines the priority of the faces.
   COLORS = [:yellow, :red, :green, :blue, :orange, :white]
+  SIDES = COLORS.length
   OPPOSITE_PAIRS = [[:yellow, :white], [:red, :orange], [:green, :blue]].collect { |e| e.sort }.sort
   FACE_NAMES = ['U', 'F', 'R', 'L', 'B', 'D']
   ALPHABET = "a".upto("x").to_a
@@ -37,6 +38,10 @@ module CubeTrainer
     def self.for_colors(colors)
       self::ELEMENTS.find { |e| e.colors == colors }
     end
+
+    def self.for_index(i)
+      self::ELEMENTS[i]
+    end
   
     def encode_with(coder)
       coder['colors'] = @colors
@@ -61,9 +66,13 @@ module CubeTrainer
     def inspect
       self.class.to_s + "(" + @colors.collect { |c| c.to_s }.join(", ") + ")"
     end
+
+    def piece_index
+      self.class::ELEMENTS.index(self)
+    end
   
     def letter
-      @letter ||= ALPHABET[self.class::ELEMENTS.index(self)]
+      @letter ||= ALPHABET[piece_index]
     end
   
     # Rotate a piece such that the given color is the first color.
@@ -103,6 +112,29 @@ module CubeTrainer
     def corresponding_part
       self
     end
+
+    # The primary face that this piece is in in the solved state.
+    def solved_face
+      @solved_face ||= Face.for_color(@colors.first)
+    end
+
+    # Index of this piece on its face in the solved state.
+    def index_on_face(cube_size, incarnation_index)
+      @face_index ||= begin
+                        raise unless self.class::ELEMENTS.length == 24
+                        raise unless incarnation_index >= 0 && incarnation_index < num_incarnations(cube_size)
+                        base_coordinates = base_index_on_face(cube_size, incarnation_index)
+                        other_colors = corresponding_part.colors[1..-1].sort
+                        all_coordinates = coordinate_rotations(base_coordinates)
+                        coordinates = all_coordinates.find do |coordinates|
+                          faces_closeby = solved_face.neighbors_close_to(coordinates, cube_size)
+                          colors_closeby = faces_closeby.map { |f| f.color }
+                          colors_closeby.sort == other_colors
+                        end
+                        raise if coordinates.nil?
+                        coordinates
+                      end
+    end
   end
   
   # This is an unmoveable center piece, it's mostly used as a helper class for other pieces.
@@ -112,10 +144,76 @@ module CubeTrainer
     def self.for_color(color)
       for_colors([color])
     end
+    
+    # Whether closeness to this face results in smaller indices for the stickers of other faces.
+    def close_to_smaller_indices?
+      piece_index < 3
+    end
   
     def opposite
       pair = OPPOSITE_PAIRS.find { |p| p.include?(color) }
       Face.new([pair.find { |f| f != color }])
+    end
+
+    def neighbors_close_to(coordinates, cube_size)
+      neighbors.select do |neighbor|
+        coordinate = coordinates[coordinate_index_close_to(neighbor)]
+        if neighbor.close_to_smaller_indices?
+          is_before_middle?(coordinate, cube_size)
+        else
+          is_after_middle?(coordinate, cube_size)
+        end
+      end
+    end
+          
+    # Returns the index of the coordinate that is used to determine how close a sticker on `on_face` is to `to_face`.
+    def coordinate_index_close_to(to_face)
+      raise unless neighbors.include?(to_face)
+      to_priority = to_face.axis_priority
+      if axis_priority < to_priority then
+        to_priority - 1
+      else
+        to_priority
+      end
+    end
+
+    # Are the given `coordinates` on this face at the edge to `to_face`?
+    def can_jump_to?(to_face, coordinates)
+      raise unless to_face.is_a?(Face)
+      raise unless coordinates.is_a?(Array) and coordinates.all? { |c| c.is_a?(Integer) }
+      jump_coordinate_index = coordinate_index_close_to(to_face)
+      jump_coordinate = coordinates[jump_coordinate_index]
+      (coordinate_at_lower_end?(jump_coordinate) && close_to_smaller_indices?(to_face)) ||
+        (coordinate_at_higher_end?(jump_coordinate) && !close_to_smaller_indices?(to_face))
+    end
+  
+    # Jump from `coordinates` over the edge to `to_face`.
+    def jump_to_neighbor(coordinates, to_face)
+      raise unless neighbors.include?(to_face)
+      raise unless can_jump_to?(to_face, coordinates)
+      raise unless to_face.is_a?(Face)
+      raise unless coordinates.is_a?(Array) and coordinates.all? { |c| c.is_a?(Integer) }
+      new_coordinates = coordinates.dup
+      jump_coordinate_index = coordinate_index_close_to(to_face)
+      jump_coordinate = new_coordinates.delete_at(jump_coordinate_index)
+      new_coordinate_index = to_face.coordinate_index_close_to(self)
+      new_coordinate = make_coordinate_at_edge_to
+      new_coordinates.insert(new_coordinate_index, new_coordinate)
+      new_coordinates
+    end
+
+    def make_coordinate_relative_to(coordinate, cube_size)
+      if close_to_smaller_indices? then coordinate else invert_coordinate(coordinate, cube_size) end
+    end
+  
+    def make_coordinate_at_edge_to
+      if close_to_smaller_indices? then 0 else -1 end
+    end
+  
+    # Priority of the closeness to this face.
+    # This is used to index the stickers on other faces.
+    def axis_priority
+      [piece_index, SIDES - 1 - piece_index].min
     end
   
     def valid?
@@ -238,12 +336,12 @@ module CubeTrainer
     BUFFER = Edge.new([:white, :red])
     raise "Invalid buffer edge." unless BUFFER.valid?
   
-    def valid_for_cube_size?(n)
-      n == 3
+    def num_incarnations(cube_size)
+      if cube_size == 3 then 1 else 0 end
     end
-  
+
     # One index of such a piece on a on a NxN face.
-    def face_index
+    def base_index_on_face(cube_size, incarnation_index)
       [0, 1]
     end
   end
@@ -260,13 +358,12 @@ module CubeTrainer
     raise "Invalid buffer midge." unless BUFFER.valid?
   
     # One index of such a piece on a on a NxN face.
-    def face_index
-      [0, 2]
+    def base_index_on_face(cube_size, incarnation_index)
+      [0, middle(cube_size)]
     end
   
-    def valid_for_cube_size?(n)
-      # In theory works for every uneven n, but we need to adjust face_index for that.
-      n == 5
+    def num_incarnations(cube_size)
+      if cube_size >= 5 && cube_size % 2 == 1 then 1 else 0 end
     end
   end
   
@@ -305,10 +402,9 @@ module CubeTrainer
     def rotate_by(n)
       self
     end
-  
-    def valid_for_cube_size?(n)
-      # In theory works for every n >= 4, but we need to adjust face_index for that.
-      n == 4 || n == 5
+
+    def num_incarnations(cube_size)
+      [cube_size / 2 - 1, 0].max
     end
   
     ELEMENTS = generate_parts
@@ -316,8 +412,10 @@ module CubeTrainer
     raise "Invalid buffer wing." unless BUFFER.valid?
   
     # One index of such a piece on a on a NxN face.
-    def face_index
-      [0, 1]
+    def base_index_on_face(cube_size, incarnation_index)
+      invert = solved_face.piece_index % 2 == 0
+      coordinates = [0, 1 + incarnation_index]
+      if invert then coordinates.reverse else coordinates end
     end
   end
   
@@ -368,12 +466,12 @@ module CubeTrainer
     BUFFER = Corner.new([:yellow, :blue, :orange])
     raise "Invalid buffer corner." unless BUFFER.valid?
     
-    def valid_for_cube_size?(n)
-      n >= 2
+    def num_incarnations(cube_size)
+      if cube_size >= 2 then 1 else 0 end
     end
   
     # One index of such a piece on a on a NxN face.
-    def face_index
+    def base_index_on_face(cube_size, incarnation_index)
       [0, 0]
     end
   end
@@ -384,14 +482,13 @@ module CubeTrainer
     BUFFER = XCenter.new(Corner.new([:yellow, :green, :red]))
     raise "Invalid buffer XCenter." unless BUFFER.valid?
   
-    def valid_for_cube_size?(n)
-      # In theory works for every n >= 4, but we need to adjust face_index for that.
-      n == 4 || n == 5
+    def num_incarnations(cube_size)
+      [cube_size / 2 - 1, 0].max
     end
   
     # One index of such a piece on a on a NxN face.
-    def face_index
-      [1, 1]
+    def base_index_on_face(cube_size, incarnation_index)
+      [1 + incarnation_index, 1 + incarnation_index]
     end
   end
   
@@ -401,14 +498,17 @@ module CubeTrainer
     BUFFER = TCenter.new(Edge.new([:yellow, :orange]))
     raise "Invalid buffer TCenter." unless BUFFER.valid?
   
-    def valid_for_cube_size?(n)
-      # In theory works for every uneven n, but we need to adjust face_index for that.
-      n == 5
+    def num_incarnations(cube_size)
+      if cube_size % 2 == 0
+        0
+      else
+        [cube_size / 2 - 1, 0].max
+      end
     end
     
     # One index of such a piece on a on a NxN face.
-    def face_index
-      [1, 2]
+    def base_index_on_face(cube_size, incarnation_index)
+      [1 + incarnation_index, cube_size / 2]
     end
   end
 
