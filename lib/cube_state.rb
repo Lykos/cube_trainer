@@ -46,7 +46,6 @@ module CubeTrainer
     end
   
     def piece_indices(face, x, y)
-      puts "piece indices #{face.inspect} (#{x}, #{y})"
       indices = [[face, x, y]]
       coordinates = [x, y]
       # Try to jump to each neighbor face.
@@ -55,7 +54,7 @@ module CubeTrainer
           indices.push([neighbor_face] + face.jump_to_neighbor(coordinates, neighbor_face, @n))
         end
       end
-      p indices
+      indices
     end
           
     # The indices of stickers that this piece occupies on the solved cube.
