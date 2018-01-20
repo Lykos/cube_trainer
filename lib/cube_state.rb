@@ -1,5 +1,6 @@
 require 'cube'
 require 'array_helper'
+require 'coordinate'
 require 'coordinate_helper'
 require 'cube_print_helper'
 
@@ -44,24 +45,20 @@ module CubeTrainer
       end
       CubeState.new(n, stickers)
     end
-  
-    def piece_indices(face, x, y)
-      coordinates = [x, y]
+          
+    # The indices of stickers that this piece occupies on the solved cube.
+    def solved_positions(piece, incarnation_index)
+      coordinate = piece.solved_coordinate(@n, incarnation_index)
       # Try to jump to each neighbor face.
-      neighbor_indices = face.neighbors.collect do |neighbor_face|
-        if face.can_jump_to?(neighbor_face, coordinates, @n)
-          [neighbor_face] + face.jump_to_neighbor(coordinates, neighbor_face, @n)
+      neighbor_coordinates = coordinate.face.neighbors.collect do |neighbor_face|
+        if coordinate.can_jump_to?(neighbor_face)
+          coordinate.jump_to_neighbor(neighbor_face)
         else
           # It's important that we put a nil because it shows us how we need to rotate the data in the end.
           nil
         end
       end
-      [[face, x, y]] + rotate_out_nils(neighbor_indices)
-    end
-          
-    # The indices of stickers that this piece occupies on the solved cube.
-    def solved_positions(piece, incarnation_index)
-      piece_indices(piece.solved_face, *piece.index_on_face(@n, incarnation_index))
+      [coordinate] + rotate_out_nils(neighbor_coordinates)
     end
   
     def face_lines(face, reverse_lines, reverse_columns)
@@ -108,25 +105,21 @@ module CubeTrainer
       cycles.each { |c| apply_index_cycle(c) }
     end
   
-    def [](face, b, c)
-      raise unless face.is_a?(Face)
-      raise unless valid_coordinate?(b) && valid_coordinate?(c)
-      @stickers[face.piece_index][b][c]
+    def [](coordinate)
+      @stickers[coordinate.face.piece_index][coordinate.x][coordinate.y]
     end
   
-    def []=(face, b, c, d)
-      raise unless face.is_a?(Face)
-      raise unless valid_coordinate?(b) && valid_coordinate?(c)
-      raise "All stickers on the cube must have a valid color." unless COLORS.include?(d)
-      @stickers[face.piece_index][b][c] = d
+    def []=(coordinate, color)
+      raise "All stickers on the cube must have a valid color." unless COLORS.include?(color)
+      @stickers[coordinate.face.piece_index][coordinate.x][coordinate.y] = color
     end
   
     def apply_index_cycle(cycle)
-      last_sticker = self[*cycle[-1]]
+      last_sticker = self[cycle[-1]]
       (cycle.length - 1).downto(1) do |i|
-        self[*cycle[i]] = self[*cycle[i - 1]]
+        self[cycle[i]] = self[cycle[i - 1]]
       end
-      self[*cycle[0]] = last_sticker
+      self[cycle[0]] = last_sticker
     end
   
     def apply_4sticker_cycle(cycle, direction)
@@ -141,16 +134,7 @@ module CubeTrainer
     end
   
     def rotate_slice(face, slice, direction)
-      neighbors = face.neighbors
-      y = face.make_coordinate_relative_to(slice, @n)
-      0.upto(highest_coordinate) do |x|
-        cycle = neighbors.collect.with_index do |neighbor, i|
-          next_neighbor = neighbors[(i + 1) % 4]
-          real_x = next_neighbor.make_coordinate_relative_to(x, @n)
-          coordinates = [real_x]
-          coordinates.insert(neighbor.coordinate_index_close_to(face), y)
-          [neighbor] + coordinates
-        end
+      Coordinate.on_slice(face, slice, @n).each do |cycle|
         apply_4sticker_cycle(cycle, direction)
       end
     end
@@ -160,11 +144,8 @@ module CubeTrainer
       neighbors = face.neighbors
       inverse_order_face = face.coordinate_index_close_to(neighbors[0]) < face.coordinate_index_close_to(neighbors[1])
       direction = 4 - direction if inverse_order_face
-      0.upto(middle_or_after) do |x|
-        0.upto(last_before_middle) do |y|
-          cycle = coordinate_rotations([x, y]).collect { |x, y| [face, x, y] }
-          apply_4sticker_cycle(cycle, direction)
-        end
+      Coordinate.on_face(face, @n).each do |cycle|
+        apply_4sticker_cycle(cycle, direction)
       end
     end
   

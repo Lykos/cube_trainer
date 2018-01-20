@@ -1,4 +1,5 @@
 require 'coordinate_helper'
+require 'coordinate'
 
 module CubeTrainer
 
@@ -118,22 +119,25 @@ module CubeTrainer
       @solved_face ||= Face.for_color(@colors.first)
     end
 
-    # Index of this piece on its face in the solved state.
-    def index_on_face(cube_size, incarnation_index)
-      @face_index ||= begin
-                        raise unless self.class::ELEMENTS.length == 24
-                        raise unless incarnation_index >= 0 && incarnation_index < num_incarnations(cube_size)
-                        base_coordinates = base_index_on_face(cube_size, incarnation_index)
-                        other_colors = corresponding_part.colors[1..-1].sort
-                        all_coordinates = coordinate_rotations(base_coordinates)
-                        coordinates = all_coordinates.find do |coordinates|
-                          faces_closeby = solved_face.neighbors_close_to(coordinates, cube_size)
-                          colors_closeby = faces_closeby.map { |f| f.color }
-                          colors_closeby.sort == other_colors
-                        end
-                        raise if coordinates.nil?
-                        coordinates
-                      end
+    def solved_coordinates
+      @solved_coordinates ||= {}
+    end
+
+    # Coordinate in the solved state.
+    def solved_coordinate(cube_size, incarnation_index)
+      solved_coordinates[[cube_size, incarnation_index]] ||=
+        begin
+          raise unless self.class::ELEMENTS.length == 24
+          raise unless incarnation_index >= 0 && incarnation_index < num_incarnations(cube_size)
+          base_coordinate = Coordinate.new(solved_face, cube_size, *base_index_on_face(cube_size, incarnation_index))
+          other_colors = corresponding_part.colors[1..-1].sort
+          coordinate = base_coordinate.rotations.find do |coordinate|
+            colors_closeby = coordinate.close_neighbor_faces.map { |f| f.color }
+            colors_closeby.sort == other_colors
+          end
+          raise "Couldn't find a fitting coordinate on the solved face." if coordinate.nil?
+          coordinate
+        end
     end
   end
   
@@ -155,59 +159,15 @@ module CubeTrainer
       Face.new([pair.find { |f| f != color }])
     end
 
-    def neighbors_close_to(coordinates, cube_size)
-      neighbors.select do |neighbor|
-        coordinate = coordinates[coordinate_index_close_to(neighbor)]
-        if neighbor.close_to_smaller_indices?
-          is_before_middle?(coordinate, cube_size)
-        else
-          is_after_middle?(coordinate, cube_size)
-        end
-      end
-    end
-          
     # Returns the index of the coordinate that is used to determine how close a sticker on `on_face` is to `to_face`.
     def coordinate_index_close_to(to_face)
-      raise unless neighbors.include?(to_face)
+      raise ArgumentError, "Cannot get the coordinate index close to #{to_face.inspect} on #{inspect} because they are not neighbors." unless neighbors.include?(to_face)
       to_priority = to_face.axis_priority
       if axis_priority < to_priority then
         to_priority - 1
       else
         to_priority
       end
-    end
-
-    # Are the given `coordinates` on this face at the edge to `to_face`?
-    def can_jump_to?(to_face, coordinates, cube_size)
-      raise unless to_face.is_a?(Face)
-      raise unless coordinates.is_a?(Array) and coordinates.all? { |c| c.is_a?(Integer) }
-      jump_coordinate_index = coordinate_index_close_to(to_face)
-      jump_coordinate = coordinates[jump_coordinate_index]
-      (coordinate_at_lower_end?(jump_coordinate, cube_size) && to_face.close_to_smaller_indices?) ||
-        (coordinate_at_higher_end?(jump_coordinate, cube_size) && !to_face.close_to_smaller_indices?)
-    end
-  
-    # Jump from `coordinates` over the edge to `to_face`.
-    def jump_to_neighbor(coordinates, to_face, cube_size)
-      raise unless neighbors.include?(to_face)
-      raise unless can_jump_to?(to_face, coordinates, cube_size)
-      raise unless to_face.is_a?(Face)
-      raise unless coordinates.is_a?(Array) and coordinates.all? { |c| c.is_a?(Integer) }
-      new_coordinates = coordinates.dup
-      jump_coordinate_index = coordinate_index_close_to(to_face)
-      jump_coordinate = new_coordinates.delete_at(jump_coordinate_index)
-      new_coordinate_index = to_face.coordinate_index_close_to(self)
-      new_coordinate = make_coordinate_at_edge_to
-      new_coordinates.insert(new_coordinate_index, new_coordinate)
-      new_coordinates
-    end
-
-    def make_coordinate_relative_to(coordinate, cube_size)
-      if close_to_smaller_indices? then coordinate else invert_coordinate(coordinate, cube_size) end
-    end
-  
-    def make_coordinate_at_edge_to
-      if close_to_smaller_indices? then 0 else -1 end
     end
   
     # Priority of the closeness to this face.

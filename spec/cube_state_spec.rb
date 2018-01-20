@@ -1,6 +1,6 @@
 require 'cube_state'
 require 'cube'
-require 'rspec/expectations'
+require 'coordinate'
 
 include CubeTrainer
 
@@ -18,7 +18,8 @@ describe CubeState do
       5.times do |x|
         5.times do |y|
           expected_color = changed_parts[[c, x, y]] || c
-          expect(cube_state5[Face.for_color(c), x, y]).to be == expected_color
+          coordinate = Coordinate.new(Face.for_color(c), 5, x, y)
+          expect(cube_state5[coordinate]).to be == expected_color
         end
       end
     end
