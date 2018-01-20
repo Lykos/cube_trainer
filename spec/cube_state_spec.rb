@@ -312,22 +312,4 @@ describe CubeState do
     #p expected_cube_state.solved_positions(Wing.for_letter('i'))
     expect(cube_state5).to be == expected_cube_state
   end
-
-  it 'should return the right face priority' do
-    expect(cube_state5.face_priority(yellow_face)).to be == 0
-    expect(cube_state5.face_priority(white_face)).to be == 0
-    expect(cube_state5.face_priority(red_face)).to be == 1
-    expect(cube_state5.face_priority(orange_face)).to be == 1
-    expect(cube_state5.face_priority(green_face)).to be == 2
-    expect(cube_state5.face_priority(blue_face)).to be == 2
-  end
-
-  it 'should answer which faces are close to smaller indices' do
-    expect(cube_state5.close_to_smaller_indices?(yellow_face)).to be true
-    expect(cube_state5.close_to_smaller_indices?(white_face)).to be false
-    expect(cube_state5.close_to_smaller_indices?(red_face)).to be true
-    expect(cube_state5.close_to_smaller_indices?(orange_face)).to be false
-    expect(cube_state5.close_to_smaller_indices?(green_face)).to be true
-    expect(cube_state5.close_to_smaller_indices?(blue_face)).to be false
-  end
 end

@@ -142,11 +142,11 @@ module CubeTrainer
   
     def rotate_slice(face, slice, direction)
       neighbors = face.neighbors
-      y = face.make_coordinate_relative_to(slice)
+      y = face.make_coordinate_relative_to(slice, @n)
       0.upto(highest_coordinate) do |x|
         cycle = neighbors.collect.with_index do |neighbor, i|
           next_neighbor = neighbors[(i + 1) % 4]
-          real_x = next_neighbor.make_coordinate_relative_to(x)
+          real_x = next_neighbor.make_coordinate_relative_to(x, @n)
           coordinates = [real_x]
           coordinates.insert(neighbor.coordinate_index_close_to(face), y)
           [neighbor] + coordinates
@@ -162,7 +162,7 @@ module CubeTrainer
       direction = 4 - direction if inverse_order_face
       0.upto(middle_or_after) do |x|
         0.upto(last_before_middle) do |y|
-          cycle = coordinate_rotations(x, y).collect { |x, y| [face, x, y] }
+          cycle = coordinate_rotations([x, y]).collect { |x, y| [face, x, y] }
           apply_4sticker_cycle(cycle, direction)
         end
       end

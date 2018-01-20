@@ -62,8 +62,8 @@ module CubeTrainer
       size / 2
     end
   
-    def invert_coordinate(coordinate)
-      highest_coordinate - coordinate
+    def invert_coordinate(coordinate, size=n)
+      highest_coordinate(size) - coordinate
     end
   
     # On a nxn grid with integer coordinates between 0 and n - 1, give the 4 points that point (x, y) hits if you rotate by 90 degrees.

@@ -213,6 +213,25 @@ describe Face do
     expect(green_face.neighbors).to be_rotationally_equivalent_to [red_face, yellow_face, orange_face, white_face]
     expect(blue_face.neighbors).to be_rotationally_equivalent_to [yellow_face, red_face, white_face, orange_face]
   end
+
+  it 'should return the right axis priority' do
+    expect(yellow_face.axis_priority).to be == 0
+    expect(white_face.axis_priority).to be == 0
+    expect(red_face.axis_priority).to be == 1
+    expect(orange_face.axis_priority).to be == 1
+    expect(green_face.axis_priority).to be == 2
+    expect(blue_face.axis_priority).to be == 2
+  end
+
+  it 'should answer which faces are close to smaller indices' do
+    expect(yellow_face.close_to_smaller_indices?).to be true
+    expect(white_face.close_to_smaller_indices?).to be false
+    expect(red_face.close_to_smaller_indices?).to be true
+    expect(orange_face.close_to_smaller_indices?).to be false
+    expect(green_face.close_to_smaller_indices?).to be true
+    expect(blue_face.close_to_smaller_indices?).to be false
+  end
+
 end
 
 describe TCenter do
