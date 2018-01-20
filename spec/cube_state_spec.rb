@@ -28,7 +28,21 @@ describe CubeState do
     alg_string.split(' ').collect { |move_string| parse_move(move_string) }
   end
 
-  it 'should have the right state after applying a corner commutator' do
+  it 'should have the right state after applying a nice corner commutator' do
+    cube_state5.apply_piece_cycle([Corner.for_letter('c'), Corner.for_letter('d'), Corner.for_letter('k')])
+    changed_parts = {
+      [:yellow, 4, 4] => :green,
+      [:green, 0, 4] => :orange,
+      [:green, 4, 4] => :yellow,
+      [:orange, 0, 0] => :blue,
+      [:orange, 0, 4] => :white,
+      [:blue, 0, 4] => :orange,
+      [:white, 4, 0] => :green,
+    }
+    expect_stickers_changed(cube_state5, changed_parts)
+  end
+  
+  it 'should have the right state after applying a nasty corner commutator' do
     cube_state5.apply_piece_cycle([Corner.for_letter('c'), Corner.for_letter('h'), Corner.for_letter('g')])
     changed_parts = {
       [:yellow, 4, 4] => :red,
@@ -39,7 +53,6 @@ describe CubeState do
       [:orange, 0, 4] => :yellow,
       [:red, 4, 4] => :yellow,
     }
-    puts cube_state5.to_s.split('\n')
     expect_stickers_changed(cube_state5, changed_parts)
   end
 
@@ -286,7 +299,7 @@ describe CubeState do
     expect_stickers_changed(cube_state5, changed_parts)
   end
 
-  it 'should do a Niklas properly' do
+  it 'should do a Niklas alg properly' do
     parse_alg('U\' L\' U R U\' L U R\'').each do |move|
       cube_state5.apply_move(move)
     end
@@ -298,18 +311,12 @@ describe CubeState do
   it 'should do the T perm properly' do
     parse_alg('R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\'').each do |move|
       cube_state5.apply_move(move)
-      #puts move
-      #puts cube_state5.to_s.split('\n')
     end
     expected_cube_state = CubeState.solved(5)
     expected_cube_state.apply_piece_cycle([Corner.for_letter('b'), Corner.for_letter('d')])
     expected_cube_state.apply_piece_cycle([Midge.for_letter('b'), Midge.for_letter('c')])
     expected_cube_state.apply_piece_cycle([Wing.for_letter('b'), Wing.for_letter('c')])
     expected_cube_state.apply_piece_cycle([Wing.for_letter('m'), Wing.for_letter('i')])
-    #puts expected_cube_state.to_s.split('\n')
-    #p Wing.for_letter('i')
-    #p Wing.for_letter('i').corresponding_part
-    #p expected_cube_state.solved_positions(Wing.for_letter('i'))
     expect(cube_state5).to be == expected_cube_state
   end
 end

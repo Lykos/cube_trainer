@@ -46,21 +46,22 @@ module CubeTrainer
     end
   
     def piece_indices(face, x, y)
-      indices = [[face, x, y]]
       coordinates = [x, y]
       # Try to jump to each neighbor face.
-      face.neighbors.each do |neighbor_face|
+      neighbor_indices = face.neighbors.collect do |neighbor_face|
         if face.can_jump_to?(neighbor_face, coordinates, @n)
-          indices.push([neighbor_face] + face.jump_to_neighbor(coordinates, neighbor_face, @n))
+          [neighbor_face] + face.jump_to_neighbor(coordinates, neighbor_face, @n)
+        else
+          # It's important that we put a nil because it shows us how we need to rotate the data in the end.
+          nil
         end
       end
-      indices
+      [[face, x, y]] + rotate_out_nils(neighbor_indices)
     end
           
     # The indices of stickers that this piece occupies on the solved cube.
     def solved_positions(piece, incarnation_index)
-      face = Face.for_color(piece.colors.first)
-      piece_indices(face, *piece.index_on_face(@n, incarnation_index))
+      piece_indices(piece.solved_face, *piece.index_on_face(@n, incarnation_index))
     end
   
     def face_lines(face, reverse_lines, reverse_columns)
@@ -77,7 +78,7 @@ module CubeTrainer
       white_face = face_lines(Face.for_color(:white), false, true)
       middle_belt = zip_concat_lines(blue_face, red_face, green_face, orange_face)
       lines = pad_lines(yellow_face, @n) + middle_belt + pad_lines(white_face, @n)
-      lines.join('\n')
+      lines.join("\n")
     end
   
     def find_cycles(pieces, incarnation_index)
