@@ -1,6 +1,6 @@
 module CubeTrainer
 
-  # TODO Create a class coordinate instead.
+  # TODO Migrate everything to use class Coordinate instead.
   module CoordinateHelper
     def n
       raise NotImplementedError, "Either implement function n or pass the size explicitly."
