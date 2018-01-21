@@ -1,4 +1,3 @@
-require 'coordinate_helper'
 require 'coordinate'
 
 module CubeTrainer
@@ -29,8 +28,6 @@ module CubeTrainer
       raise unless parts.length <= ALPHABET.length
       parts
     end
-  
-    include CoordinateHelper
   
     def self.for_letter(letter)
       self::ELEMENTS.find { |e| e.letter == letter }
@@ -319,7 +316,7 @@ module CubeTrainer
   
     # One index of such a piece on a on a NxN face.
     def base_index_on_face(cube_size, incarnation_index)
-      [0, middle(cube_size)]
+      [0, Coordinate.middle(cube_size)]
     end
   
     def num_incarnations(cube_size)

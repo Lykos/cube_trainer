@@ -1,14 +1,12 @@
 require 'cube'
 require 'array_helper'
 require 'coordinate'
-require 'coordinate_helper'
 require 'cube_print_helper'
 
 module CubeTrainer
 
   class CubeState
     include ArrayHelper
-    include CoordinateHelper
     include CubePrintHelper
     SIDES = COLORS.length
     

@@ -2,13 +2,17 @@ require 'cube'
 
 module CubeTrainer
   # Coordinate of a sticker on the cube
-  class Coordinate
+  class Coordinate 
+    def self.highest_coordinate(cube_size)
+      cube_size - 1
+    end
+
     def self.invert_coordinate(x, cube_size)
-      cube_size - 1 - x
+      highest_coordinate(cube_size) - x
     end
 
     def self.coordinate_range(cube_size)
-      0.upto(cube_size - 1)
+      0.upto(highest_coordinate(cube_size))
     end
 
     def self.middle(cube_size)
@@ -29,6 +33,11 @@ module CubeTrainer
     # The last coordinate that is strictly before the middle
     def self.last_before_middle(cube_size)
       cube_size / 2 - 1
+    end
+
+    def self.canonicalize(x, cube_size)
+      raise ArgumentError unless x.is_a?(Integer) && -cube_size <= x && x < cube_size
+      if x >= 0 then x else cube_size + x end
     end
 
     # Returns arrays of arrays of 4 stickers that have to be interchanged to turn
@@ -72,7 +81,7 @@ module CubeTrainer
       raise ArgumentError unless cube_size.is_a?(Integer) && cube_size > 0
       @face = face
       @cube_size = cube_size
-      @coordinates = [x, y].map { |c| canonicalize_coordinate(c) }
+      @coordinates = [x, y].map { |c| Coordinate.canonicalize(c, cube_size) }
     end
 
     attr_reader :face, :cube_size, :coordinates
@@ -95,17 +104,12 @@ module CubeTrainer
       [@face, @cube_size, @coordinates].hash
     end
 
-    def canonicalize_coordinate(x)
-      raise ArgumentError unless x.is_a?(Integer) && -@cube_size <= x && x < @cube_size
-      if x >= 0 then x else @cube_size + x end
-    end
-
     def can_jump_to?(to_face)
       raise ArgumentError unless to_face.is_a?(Face)
       jump_coordinate_index = @face.coordinate_index_close_to(to_face)
       jump_coordinate = @coordinates[jump_coordinate_index]
       (jump_coordinate == 0 && to_face.close_to_smaller_indices?) ||
-        (jump_coordinate == highest_coordinate && !to_face.close_to_smaller_indices?)
+        (jump_coordinate == Coordinate.highest_coordinate(cube_size) && !to_face.close_to_smaller_indices?)
     end
 
     def jump_to_neighbor(to_face)
@@ -125,12 +129,8 @@ module CubeTrainer
       Coordinate.new(@face, @cube_size, *new_coordinates)
     end
 
-    def highest_coordinate
-      @cube_size - 1
-    end
-
     def make_coordinate_at_edge_to(face)
-      if face.close_to_smaller_indices? then 0 else highest_coordinate end
+      if face.close_to_smaller_indices? then 0 else Coordinate.highest_coordinate(@cube_size) end
     end
 
     # Returns neighbor faces that are closer to this coordinate than their opposite face.
@@ -146,11 +146,11 @@ module CubeTrainer
     end
 
     def is_after_middle?(x)
-      x > Coordinate.middle_or_before(@cube_size)
+      Coordinate.canonicalize(x, @cube_size) > Coordinate.middle_or_before(@cube_size)
     end
 
     def is_before_middle?(x)
-      x <= Coordinate.last_before_middle(@cube_size)
+      Coordinate.canonicalize(x, @cube_size) <= Coordinate.last_before_middle(@cube_size)
     end
 
 
