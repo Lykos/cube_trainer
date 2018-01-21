@@ -5,13 +5,13 @@ require 'commutators'
 module CubeTrainer
 
   class Options
-    CommutatorInfo = Struct.new(:result_symbol, :generator_class)
+    CommutatorInfo = Struct.new(:result_symbol, :generator_class, :default_cube_size)
     COMMUTATOR_TYPES = {
-      'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators),
-      'edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators),
-      'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators),
-      'xcenters' => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators),
-      'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators)
+      'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, 3),
+      'edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, 3),
+      'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, 4),
+      'xcenters' => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators, 4),
+      'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators, 5)
     }
     
     def self.parse(args)
@@ -22,6 +22,11 @@ module CubeTrainer
         opts.separator 'Specific options:'      
         opts.on('-c', '--commutator_type TYPE', COMMUTATOR_TYPES, 'Use the given type of commutators for training.') do |info|
           options.commutator_info = info
+          if options.cube_size.nil? then options.cube_size = info.default_cube_size end
+        end
+
+        opts.on('-s', '--size SIZE', Integer, 'Use the given cube size.') do |size|
+          options.cube_size = size
         end
   
         opts.on('-n', '--new_item_boundary INTEGER', Integer, 'Number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.') do |int|

@@ -1,4 +1,10 @@
+require 'colorize'
+
 module CubePrintHelper
+  def colorize_color(color)
+    if color == :orange then :light_red else color end
+  end
+  
   def color_name(color)
     color.to_s[0].upcase
   end

@@ -5,11 +5,13 @@ module CubeTrainer
   DIRECTION_NAMES = ['', '2', '\'']
   AXES = ['x', 'y', 'z']
   MOVE_REGEXP = Regexp.new("(?:([#{AXES.join}])|(\\d*)([#{FACE_NAMES.join}])w|([#{FACE_NAMES.join}])|([#{FACE_NAMES.join.downcase}]))([#{DIRECTION_NAMES.join}]?)")
+
+  # TODO class direction
   
   class Rotation
     def initialize(axis_face, direction)
-      raise unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
-      raise unless direction.is_a?(Integer) && 0 <= direction && direction < 4
+      raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
+      raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
       @axis_face = axis_face
       @direction = direction
     end
@@ -37,13 +39,17 @@ module CubeTrainer
       cube_state.rotate_face(@axis_face, @direction)
       cube_state.rotate_face(@axis_face.opposite, 4 - @direction)
     end
+
+    def invert
+      Rotation.new(@axis_face, 3 - @direction)
+    end
   end
   
   class FatMove
     def initialize(face, width, direction)
-      raise unless face.is_a?(Face)
-      raise "Invalid width #{width} for fat move." unless width.is_a?(Integer) and width >= 1
-      raise unless direction.is_a?(Integer) && 0 <= direction && direction < 4
+      raise ArgumentError unless face.is_a?(Face)
+      raise ArgumentError, "Invalid width #{width} for fat move." unless width.is_a?(Integer) and width >= 1
+      raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
       @face = face
       @width = width
       @direction = direction
@@ -72,12 +78,16 @@ module CubeTrainer
       end
       cube_state.rotate_face(@face, @direction)
     end
+
+    def invert
+      FatMove.new(@face, @width, 3 - @direction)
+    end
   end
   
   class SliceMove
     def initialize(slice_face, direction)
-      raise unless slice_face.is_a?(Face)
-      raise unless direction.is_a?(Integer) && 0 <= direction && direction < 4
+      raise ArgumentError unless slice_face.is_a?(Face)
+      raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
       @slice_face = slice_face
       @direction = direction
     end
@@ -99,7 +109,46 @@ module CubeTrainer
     end
   
     def apply_to(cube_state)
-      cube_state.rotate_slice(@slice_face, 2, @direction)
+      cube_state.rotate_slice(@slice_face, 1, @direction)
+    end
+
+    def invert
+      SliceMove.new(@slice_face, 3 - @direction)
+    end
+  end
+
+  class Algorithm
+    def initialize(moves)
+      raise ArgumetError unless moves.is_a?(Array)
+      @moves = moves
+    end
+
+    attr_reader :moves
+
+    def eql?(other)
+      self.class.equal?(other.class) && @moves == other.moves
+    end
+  
+    alias == eql?
+  
+    def hash
+      @moves.hash
+    end
+  
+    def to_s
+      @moves.join(' ')
+    end
+
+    def apply_to(cube_state)
+      @moves.each { |m| m.apply_to(cube_state) }
+    end
+
+    def invert
+      Algorithm.new(@moves.reverse.collect { |m| m.invert })
+    end
+
+    def +(other)
+      Algorithm.new(@moves + other.moves)
     end
   end
   

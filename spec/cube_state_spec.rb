@@ -309,6 +309,15 @@ describe CubeState do
     expect(cube_state5).to be == expected_cube_state
   end
 
+  it 'should do a TK center alg properly' do
+    parse_alg('U\' R\' U r2 U\' R U r2').each do |move|
+      cube_state5.apply_move(move)
+    end
+    expected_cube_state = CubeState.solved(5)
+    expected_cube_state.apply_piece_cycle([Wing.for_letter('e'), Wing.for_letter('t'), Wing.for_letter('k')])
+    expect(cube_state5).to be == expected_cube_state
+  end
+
   it 'should do the T perm properly' do
     parse_alg('R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\'').each do |move|
       cube_state5.apply_move(move)
