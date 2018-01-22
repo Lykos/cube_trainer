@@ -44,7 +44,7 @@ module CubeTrainer
     # `face`.
     def self.on_face(face, cube_size)
       cycles = []
-      0.upto(middle_or_after(cube_size)) do |x|
+      0.upto(middle_or_before(cube_size)) do |x|
         0.upto(last_before_middle(cube_size)) do |y|
           cycles.push(new(face, cube_size, x, y).rotations)
         end

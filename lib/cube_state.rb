@@ -12,7 +12,6 @@ module CubeTrainer
     
     def initialize(n, stickers)
       raise 'Cubes of size smaller than 2 are not supported.' if n < 2
-      raise 'Cubes of size bigger than 5 are not supported.' if n > 5
       raise "Cubes must have #{SIDES} sides." unless stickers.length == SIDES
       raise "All sides of a #{n}x#{n} must be #{n}x#{n}." unless stickers.all? { |p| p.length == n && p.all? { |q| q.length == n } }
       raise 'All stickers on the cube must have a valid color.' unless stickers.all? { |p| p.all? { |q| q.all? { |c| COLORS.include?(c) } } }
@@ -88,10 +87,11 @@ module CubeTrainer
     # the pieces that are at the position that those pieces would take in a solved state.
     def apply_piece_cycle(pieces, incarnation_index=0)
       raise 'Cycles of length smaller than 2 are not supported.' if pieces.length < 2
-      raise 'Cycles of heterogenous piece types are not supported.' if pieces.any? { |p| p.class != pieces[0].class }
+      raise 'Cycles of heterogenous piece types are not supported.' if pieces.any? { |p| p.class != pieces.first.class }
       raise 'Cycles of weird piece types are not supported.' unless pieces.all? { |p| p.is_a?(Part) }
       raise 'Cycles of invalid pieces are not supported.' unless pieces.all? { |p| p.valid? }
-      raise "Invalid incarnation index #{incarnation_index}." unless incarnation_index.is_a?(Integer) && incarnation_index >= 0 && pieces.all? { |p| incarnation_index < p.num_incarnations(@n) }
+      raise "Invalid incarnation index #{incarnation_index}." unless incarnation_index.is_a?(Integer) && incarnation_index >= 0
+      raise "Incarnation index #{incarnation_index} for cube size #{@n} is not supported for #{pieces.first.inspect}." unless incarnation_index < pieces.first.num_incarnations(@n)
       pieces.each_with_index do |p, i|
         pieces.each_with_index do |q, j|
           if i != j && p.turned_equals?(q)

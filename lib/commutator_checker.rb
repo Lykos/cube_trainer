@@ -21,14 +21,17 @@ module CubeTrainer
     end
     
     def check_alg(letter_pair, commutator)
+      return true unless letter_pair == LetterPair.new(['k', 'p'])
       desired_state = new_cube_state
       desired_state.apply_piece_cycle(cycle(letter_pair), @incarnation_index)
       actual_state = new_cube_state
       commutator.algorithm.apply_to(actual_state)
       correct = actual_state == desired_state
       unless correct
-        puts "Algorithm for #{@piece_name} #{letter_pair} #{commutator} doesn't do what it's expected to do."  
+        puts "Algorithm for #{@piece_name} #{letter_pair} #{commutator.algorithm} doesn't do what it's expected to do."
+        puts "actual"
         puts actual_state
+        puts "expected"
         puts desired_state
       end
       correct

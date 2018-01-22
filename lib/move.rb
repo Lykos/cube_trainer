@@ -7,6 +7,9 @@ module CubeTrainer
   MOVE_REGEXP = Regexp.new("(?:([#{AXES.join}])|(\\d*)([#{FACE_NAMES.join}])w|([#{FACE_NAMES.join}])|([#{FACE_NAMES.join.downcase}]))([#{DIRECTION_NAMES.join}]?)")
 
   # TODO class direction
+  def invert_direction(direction)
+    4 - direction
+  end
   
   class Rotation
     def initialize(axis_face, direction)
@@ -37,11 +40,11 @@ module CubeTrainer
         cube_state.rotate_slice(@axis_face, s, @direction)
       end
       cube_state.rotate_face(@axis_face, @direction)
-      cube_state.rotate_face(@axis_face.opposite, 4 - @direction)
+      cube_state.rotate_face(@axis_face.opposite, invert_direction(@direction))
     end
 
     def invert
-      Rotation.new(@axis_face, 3 - @direction)
+      Rotation.new(@axis_face, invert_direction(@direction))
     end
   end
   
@@ -80,7 +83,7 @@ module CubeTrainer
     end
 
     def invert
-      FatMove.new(@face, @width, 3 - @direction)
+      FatMove.new(@face, @width, invert_direction(@direction))
     end
   end
   
@@ -113,7 +116,7 @@ module CubeTrainer
     end
 
     def invert
-      SliceMove.new(@slice_face, 3 - @direction)
+      SliceMove.new(@slice_face, invert_direction(@direction))
     end
   end
 
