@@ -170,7 +170,7 @@ module CubeTrainer
     # Priority of the closeness to this face.
     # This is used to index the stickers on other faces.
     def axis_priority
-      [piece_index, SIDES - 1 - piece_index].min
+      @axis_priority ||= [piece_index, SIDES - 1 - piece_index].min
     end
   
     def valid?

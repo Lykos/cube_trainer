@@ -40,28 +40,37 @@ module CubeTrainer
       if x >= 0 then x else cube_size + x end
     end
 
+    ON_SLICE_CACHE = {}
+    ON_FACE_CACHE = {}
+
     # Returns arrays of arrays of 4 stickers that have to be interchanged to turn
     # `face`.
     def self.on_face(face, cube_size)
-      cycles = []
-      0.upto(middle_or_before(cube_size)) do |x|
-        0.upto(last_before_middle(cube_size)) do |y|
-          cycles.push(new(face, cube_size, x, y).rotations)
+      ON_FACE_CACHE[[face, cube_size]] ||=
+        begin
+          cycles = []
+          0.upto(middle_or_before(cube_size)) do |x|
+            0.upto(last_before_middle(cube_size)) do |y|
+              cycles.push(new(face, cube_size, x, y).rotations)
+            end
+          end
+          cycles
         end
-      end
-      cycles
     end
 
     # Returns arrays of arrays of 4 stickers that have to be interchanged to do
     # the slice move defined by `slice_face` and `slice_number`.
     def self.on_slice(slice_face, slice_number, cube_size)
-      neighbors = slice_face.neighbors
-      coordinate_range(cube_size).collect do |x|
-        slice_face.neighbors.collect.with_index do |neighbor, i|
-          next_neighbor = neighbors[(i + 1) % 4]
-          from_face_distances(neighbor, cube_size, {slice_face => slice_number, next_neighbor => x})
+      ON_SLICE_CACHE[[slice_face, slice_number, cube_size]] ||=
+        begin
+          neighbors = slice_face.neighbors
+          coordinate_range(cube_size).collect do |x|
+            slice_face.neighbors.collect.with_index do |neighbor, i|
+              next_neighbor = neighbors[(i + 1) % 4]
+              from_face_distances(neighbor, cube_size, [[slice_face, slice_number], [next_neighbor, x]])
+            end
+          end
         end
-      end
     end
 
     def self.from_face_distances(face, cube_size, face_distances)

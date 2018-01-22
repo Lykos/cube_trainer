@@ -121,13 +121,14 @@ module CubeTrainer
     end
   
     def apply_4sticker_cycle(cycle, direction)
-      raise unless cycle.length == 4
+      raise ArgumentError unless cycle.length == 4
       if direction == 2
         apply_index_cycle([cycle[0], cycle[2]])
         apply_index_cycle([cycle[1], cycle[3]])
       else
-        cycle.reverse! if direction == 3
-        apply_index_cycle(cycle)
+        # Note that we cannot do reverse! because the values are cached.
+        actual_cycle = if direction == 3 then cycle.reverse else cycle end
+        apply_index_cycle(actual_cycle)
       end
     end
   
