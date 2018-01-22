@@ -12,7 +12,12 @@ module CubeTrainer
       @incarnation_index = incarnation_index
       @alg_cube_state = CubeState.solved(@cube_size)
       @cycle_cube_state = CubeState.solved(@cube_size)
+      @total_algs = 0
+      @broken_algs = 0
+      @unfixable_algs = 0
     end
+
+    attr_reader :total_algs, :broken_algs, :unfixable_algs
 
     def construct_cycle(letter_pair)
       [@piece_type::BUFFER] + letter_pair.letters.map { |l| @piece_type.for_letter(l) }
@@ -65,12 +70,14 @@ module CubeTrainer
       @cycle_cube_state.apply_piece_cycle(cycle, @incarnation_index)
       alg = commutator.algorithm
       alg.apply_to(@alg_cube_state)
+      @total_algs += 1
 
       # compare
       correct = @cycle_cube_state == @alg_cube_state
       fix_found = false
       unless correct
         puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} doesn't do what it's expected to do."
+        @broken_algs += 1
 
         # Try to find a fix.
         fix_comm = nil
@@ -87,6 +94,7 @@ module CubeTrainer
         if fix_found
           puts "Found fix #{fix_comm}."
         else
+          @unfixable_algs += 1
           puts "Couldn't find a fix for this alg."
           puts "actual"
           puts @alg_cube_state

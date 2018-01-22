@@ -25,6 +25,10 @@ module CubeTrainer
           if options.cube_size.nil? then options.cube_size = info.default_cube_size end
         end
 
+        opts.on('-t', '--[no-]test_comms', 'Test commutators at startup.') do |test|
+          options.test_comms = test
+        end
+
         opts.on('-s', '--size SIZE', Integer, 'Use the given cube size.') do |size|
           options.cube_size = size
         end

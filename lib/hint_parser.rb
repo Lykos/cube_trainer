@@ -11,10 +11,10 @@ module CubeTrainer
       "data/#{part_class.to_s}.csv"
     end
     
-    def self.parse_hints(part_class, cube_size)
+    def self.parse_hints(part_class, cube_size, check_comms)
       # TODO do this properly
       name = part_class.name.split('::').last
-      checker = CommutatorChecker.new(part_class, name, cube_size)
+      checker = CommutatorChecker.new(part_class, name, cube_size) if check_comms
       hints = {}
       hint_table = CSV.read(csv_file(name))
       # TODO make this more general to figure out other types of hint tables
@@ -34,23 +34,21 @@ module CubeTrainer
             commutator = parse_commutator(e)
             hints[letter_pair] = commutator
             total_algs += 1
-            check_status = checker.check_alg(row_description, letter_pair, commutator)
-            broken_algs += 1 unless check_status == :correct
-            unfixable_algs += 1 if check_status == :unfixable
+            checker.check_alg(row_description, letter_pair, commutator) if check_comms
           rescue CommutatorParseError => e
             raise "Couldn't parse commutator for #{letter_pair} (i.e. #{row_description}) couldn't be parsed: #{e}"
           end
         end
       end
-      puts "#{broken_algs} broken algs of #{total_algs}. #{unfixable_algs} were unfixable." if broken_algs > 0
+      puts "#{comm_checker.broken_algs} broken algs of #{comm_checker.total_algs}. #{comm_checker.unfixable_algs} were unfixable." if check_comms && broken_algs > 0
       hints
     end
   
-    def self.maybe_create(part_class, cube_size)
+    def self.maybe_create(part_class, cube_size, check_comms)
       # TODO do this properly
       name = part_class.name.split('::').last
       new(if File.exists?(csv_file(name))
-            parse_hints(part_class, cube_size)
+            parse_hints(part_class, cube_size, check_comms)
           else
             {}
           end)
