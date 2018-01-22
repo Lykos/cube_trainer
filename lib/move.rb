@@ -3,15 +3,18 @@ require 'cube'
 module CubeTrainer
 
   DIRECTION_NAMES = ['', '2', '\'']
-  AXES = ['x', 'y', 'z']
+  AXES = ['y', 'z', 'x']
   MOVE_REGEXP = Regexp.new("(?:([#{AXES.join}])|(\\d*)([#{FACE_NAMES.join}])w|([#{FACE_NAMES.join}])|([#{FACE_NAMES.join.downcase}]))([#{DIRECTION_NAMES.join}]?)")
 
   # TODO class direction
   def invert_direction(direction)
     4 - direction
   end
+
+  class Move
+  end
   
-  class Rotation
+  class Rotation < Move
     def initialize(axis_face, direction)
       raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
       raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
@@ -48,7 +51,7 @@ module CubeTrainer
     end
   end
   
-  class FatMove
+  class FatMove < Move
     def initialize(face, width, direction)
       raise ArgumentError unless face.is_a?(Face)
       raise ArgumentError, "Invalid width #{width} for fat move." unless width.is_a?(Integer) and width >= 1
@@ -87,7 +90,7 @@ module CubeTrainer
     end
   end
   
-  class SliceMove
+  class SliceMove < Move
     def initialize(slice_face, direction)
       raise ArgumentError unless slice_face.is_a?(Face)
       raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
@@ -122,7 +125,9 @@ module CubeTrainer
 
   class Algorithm
     def initialize(moves)
-      raise ArgumetError unless moves.is_a?(Array)
+      moves.each do |m|
+        raise ArgumentError, "#{m.inspect} is not a suitable move." unless m.is_a?(Move)
+      end
       @moves = moves
     end
 

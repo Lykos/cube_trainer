@@ -21,6 +21,7 @@ module CubeTrainer
       parts = hint_table[0][1..-1].collect { |p| part_class.parse(p) }
       total_algs = 0
       broken_algs = 0
+      unfixable_algs = 0
       hint_table[1..-1].each_with_index do |row, row_index|
         break if row.first.nil? || row.first.empty?
         part1 = part_class.parse(row.first)
@@ -28,17 +29,20 @@ module CubeTrainer
           next if e.nil? || e.empty?
           part0 = parts[i]
           letter_pair = LetterPair.new([part0.letter, part1.letter])
+          row_description = "#{("A".."Z").to_a[i + 1]}#{row_index + 2}"
           begin
             commutator = parse_commutator(e)
             hints[letter_pair] = commutator
             total_algs += 1
-            broken_algs += 1 unless checker.check_alg(letter_pair, commutator)
+            check_status = checker.check_alg(row_description, letter_pair, commutator)
+            broken_algs += 1 unless check_status == :correct
+            unfixable_algs += 1 if check_status == :unfixable
           rescue CommutatorParseError => e
-            raise "Couldn't parse commutator for #{letter_pair} (i.e. #{("A".."Z").to_a[i + 1]}#{row_index + 2}) couldn't be parsed: #{e}"
+            raise "Couldn't parse commutator for #{letter_pair} (i.e. #{row_description}) couldn't be parsed: #{e}"
           end
         end
       end
-      puts "#{broken_algs} broken algs of #{total_algs}." if broken_algs > 0
+      puts "#{broken_algs} broken algs of #{total_algs}. #{unfixable_algs} were unfixable." if broken_algs > 0
       hints
     end
   
