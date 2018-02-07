@@ -1,3 +1,5 @@
+require 'result'
+
 module CubeTrainer
 
   class Learner
@@ -65,7 +67,7 @@ module CubeTrainer
       end
       @indices[input] = @current_index
       @current_index += 1
-      stats.execute
+      PartialResult.new(stats.execute, 0, nil)
     end
   end
 

@@ -1,4 +1,5 @@
 require 'results_persistence'
+require 'result'
 
 module CubeTrainer
 
@@ -27,6 +28,7 @@ module CubeTrainer
     end
   
     def record_result(timestamp, partial_result, input)
+      raise ArgumentError unless partial_result.is_a?(PartialResult)
       result = Result.from_partial(@mode, timestamp, partial_result, input)
       results.unshift(result)
       @result_listeners.each { |l| l.record_result(result) }
