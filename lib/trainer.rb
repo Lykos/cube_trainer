@@ -10,8 +10,8 @@ module CubeTrainer
     def one_iteration
       input = @generator.random_item
       timestamp = Time.now
-      time_s = @learner.execute(input)
-      @results_model.record_result(timestamp, time_s, input)
+      partial_result = @learner.execute(input)
+      @results_model.record_result(timestamp, partial_result, input)
     end
   
     def run

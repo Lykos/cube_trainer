@@ -4,21 +4,29 @@ require 'letter_pair'
 
 module CubeTrainer
 
+  # The part of the result that basically comes from the input of whoever is
+  # learning.
+  PartialResult = Struct.new(:time_s, :failed_attempts, :word)
+
   # TODO refactor this to properly include the mode
   class Result
     def initialize(mode, timestamp, time_s, input, failed_attempts, word)
-      raise unless mode.is_a?(Symbol)
+      raise ArgumentError, "Invalid mode #{mode}." unless mode.is_a?(Symbol)
       @mode = mode
-      raise unless timestamp.is_a?(Time)
+      raise ArgumentError, "Invalid timestamp #{timestamp}." unless timestamp.is_a?(Time)
       @timestamp = timestamp
-      raise unless time_s.is_a?(Float)
+      raise ArgumentError, "Invalid time_s #{time_s}." unless time_s.is_a?(Float)
       @time_s = time_s
-      raise unless input.is_a?(LetterPair) || input.is_a?(PaoLetterPair)
+      raise ArgumentError, "Invalid input #{input}." unless input.is_a?(LetterPair) || input.is_a?(PaoLetterPair)
       @input = input
-      raise unless failed_attempts.is_a?(Integer)
+      raise ArgumentError, "Invalid failed attempts #{failed_attempts}." unless failed_attempts.is_a?(Integer)
       @failed_attempts = failed_attempts
-      raise unless word.nil? || word.is_a?(String)
+      raise ArgumentError, "Invalid word #{word}." unless word.nil? || word.is_a?(String)
       @word = word
+    end
+
+    def self.from_partial(mode, timestamp, partial_result, input)
+      new(mode, timestamp, partial_result.time_s, input, partial_result.failed_attempts, partial_result.word)
     end
   
     # Construct from data stored in the db.

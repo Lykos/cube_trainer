@@ -6,7 +6,6 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'commutators'
 require 'options'
 require 'results_model'
-require 'human_learner'
 require 'trainer'
 
 include CubeTrainer
@@ -17,7 +16,7 @@ include CubeTrainer
 options = Options.parse(ARGV)
 results_model = ResultsModel.new(options.commutator_info.result_symbol)
 generator = options.commutator_info.generator_class.new(results_model, options)
-learner = HumanLearner.new(generator.hinter, results_model)
+learner = options.commutator_info.learner_class.new(generator.hinter, results_model)
 
 # Move the stats stuff to somewhere else.
 inputs = results_model.results.collect { |r| r.input }

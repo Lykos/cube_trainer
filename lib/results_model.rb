@@ -26,8 +26,8 @@ module CubeTrainer
       @result_listeners.push(listener)
     end
   
-    def record_result(timestamp, time_s, input, failed_attempts=0, word=nil)
-      result = Result.new(@mode, timestamp, time_s, input, failed_attempts, word)
+    def record_result(timestamp, partial_result, input)
+      result = Result.from_partial(@mode, timestamp, partial_result, input)
       results.unshift(result)
       @result_listeners.each { |l| l.record_result(result) }
     end
@@ -37,17 +37,13 @@ module CubeTrainer
       @result_listeners.each { |l| l.delete_after_time(@mode, timestamp) }
     end
     
-    def words_for_input(input)
-      results.select { |r| r.input == input }.collect { |r| r.word }.uniq
+    def last_word_for_input(input)
+      result = results.select { |r| r.input == input }.max_by { |r| r.timestamp }
+      if result.nil? then nil else result.word end
     end
   
     def inputs_for_word(word)
       results.select { |r| r.word == word }.collect { |r| r.input }.uniq
-    end
-  
-    def replace_word(input, word)
-      results.collect! { |r| if r.input == input then r.with_word(word) else r end }
-      @result_listeners.each { |l| l.replace_word(@mode, input, word) }
     end
   
   end

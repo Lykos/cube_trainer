@@ -1,17 +1,21 @@
 require 'optparse'
 require 'ostruct'
 require 'commutators'
+require 'human_word_learner'
+require 'human_time_learner'
+require 'letters_to_word'
   
 module CubeTrainer
 
   class Options
-    CommutatorInfo = Struct.new(:result_symbol, :generator_class, :default_cube_size)
+    CommutatorInfo = Struct.new(:result_symbol, :generator_class, :learner_class, :default_cube_size)
     COMMUTATOR_TYPES = {
-      'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, 3),
-      'edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, 3),
-      'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, 4),
-      'xcenters' => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators, 4),
-      'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators, 5)
+      'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, HumanTimeLearner, 3),
+      'edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, HumanTimeLearner, 3),
+      'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, HumanTimeLearner, 4),
+      'xcenters' => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators, HumanTimeLearner, 4),
+      'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators, HumanTimeLearner, 5),
+      'words' => CommutatorInfo.new(:letters_to_word, LettersToWord, HumanWordLearner, nil)
     }
     
     def self.parse(args)
@@ -22,7 +26,7 @@ module CubeTrainer
         opts.separator 'Specific options:'      
         opts.on('-c', '--commutator_type TYPE', COMMUTATOR_TYPES, 'Use the given type of commutators for training.') do |info|
           options.commutator_info = info
-          if options.cube_size.nil? then options.cube_size = info.default_cube_size end
+          if options.cube_size.nil? and not info.default_cube_size.nil? then options.cube_size = info.default_cube_size end
         end
 
         opts.on('-t', '--[no-]test_comms', 'Test commutators at startup.') do |test|

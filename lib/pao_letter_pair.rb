@@ -22,6 +22,10 @@ module CubeTrainer
       coder['pao_type'] = @pao_type
       coder['letter_pair'] = @letter_pair
     end
+
+    def matches_word?(word)
+      @letter_pair.matches_word?(word)
+    end
   
     # Construct from data stored in the db.
     def self.from_raw_data(data)

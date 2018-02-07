@@ -1,9 +1,10 @@
 require 'ui_helpers'
 require 'console_helpers'
+require 'result'
 
 module CubeTrainer
 
-  class HumanLearner
+  class HumanTimeLearner
     include ConsoleHelpers
     include UiHelpers
     
@@ -22,7 +23,7 @@ module CubeTrainer
       else
         puts "Time: #{format_time(data.time_s)}"
       end
-      data.time_s
+      PartialResult.new(data.time_s, 0, nil)
     end
   end
 
