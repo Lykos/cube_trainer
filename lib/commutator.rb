@@ -1,5 +1,6 @@
 require 'strscan'
 require 'cube'
+require 'move'
 
 module CubeTrainer
 
@@ -8,6 +9,8 @@ module CubeTrainer
   
   class PureCommutator
     def initialize(first_part, second_part)
+      raise ArgumentError unless first_part.is_a?(Algorithm)
+      raise ArgumentError unless second_part.is_a?(Algorithm)
       @first_part = first_part
       @second_part = second_part
     end
@@ -29,12 +32,18 @@ module CubeTrainer
     end
   
     def to_s
-      "[#{@first_part.join(' ')}, #{@second_part.join(' ')}]"
+      "[#{@first_part}, #{@second_part}]"
+    end
+
+    def algorithm
+      first_part + second_part + first_part.invert + second_part.invert
     end
   end
   
   class SetupCommutator
     def initialize(setup, pure_commutator)
+      raise ArgumentError unless setup.is_a?(Algorithm)
+      raise ArgumentError unless pure_commutator.is_a?(PureCommutator)
       @setup = setup
       @pure_commutator = pure_commutator
     end
@@ -56,7 +65,11 @@ module CubeTrainer
     end
   
     def to_s
-      "[#{@setup.join(' ')} : #{@pure_commutator}]"
+      "[#{@setup} : #{@pure_commutator}]"
+    end
+
+    def algorithm
+      setup + pure_commutator.algorithm + setup.invert
     end
   end
   
@@ -73,7 +86,7 @@ module CubeTrainer
         moves.push(m)
       end
       complain('move') if moves.empty?
-      moves
+      Algorithm.new(moves)
     end
   
     def complain(parsed_object)

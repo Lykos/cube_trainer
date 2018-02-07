@@ -28,6 +28,9 @@ module CubeTrainer
     KeyPressWaitData = Struct.new(:char, :time_s)
   
     HINT_SECONDS = 10
+
+    #  Minimum time s.t. it is not considered an accidental double click.
+    MIN_SECONDS = 0.05
   
     # Exits in the case of character q.
     # Downcases the character before returning it.
@@ -46,7 +49,7 @@ module CubeTrainer
           else
             puts "No hint available."
           end
-        else
+        elsif Time.now - start >= MIN_SECONDS
           break
         end
       end

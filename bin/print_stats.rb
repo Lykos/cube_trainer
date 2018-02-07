@@ -10,18 +10,12 @@ require 'options'
 include CubeTrainer
 
 def print_stats(results)
-  computer = StatsComputer.new
-  sorted_averages = computer.compute_stats(results)
-  sorted_averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }
-  avg = sorted_averages.collect { |c, t| t }.reduce(:+) / sorted_averages.length
+  computer = StatsComputer.new(results)
+  computer.averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }
+  avg = computer.total_average
   puts "Average #{avg.round(2)}"
-  if sorted_averages.length > 20 then
-    # TODO cutoff uses 0.5 step length, do something smarter that depends on the values.
-    base_cutoff = (sorted_averages[9][1] * 2).floor / 2.0
-    base_cutoff.step(base_cutoff + 1.5, 0.5) do |cutoff|
-      above_cutoff = sorted_averages.count { |v| v[1] > cutoff }
-      puts "#{above_cutoff} are sup #{cutoff} s"
-    end
+  computer.bad_results.each do |cutoff, number|
+    puts "#{number} are sup #{cutoff} s"
   end
 end
 

@@ -6,21 +6,26 @@ module CubeTrainer
 
   class LettersToWord
   
-    include LetterPairHelper
-    
     def initialize(results_model)
       @results_model = results_model
       @input_sampler = InputSampler.new(VALID_PAIRS, results_model)
     end
-  
-    VALID_PAIRS = LETTER_PAIRS - REDUNDANT_TWISTS
+
+    attr_reader :input_sampler
+
+    VALID_PAIRS = LetterPairHelper.letter_pairs(ALPHABET.permutation(2)) - LetterPairHelper.letter_pairs(ALPHABET.collect { |c| [c, c] }) + LetterPairHelper.letter_pairs(ALPHABET.permutation(1))
   
     def random_letter_pair
       @input_sampler.random_input
     end
+
+    # TODO move this to the dict
+    def hinter
+      self
+    end
   
     def dict
-      @dict = Dict.new
+      @dict ||= Dict.new
     end
   
     def hint(letter_pair)

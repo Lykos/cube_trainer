@@ -1,6 +1,12 @@
+require 'colorize'
+
 module CubePrintHelper
+  def colorize_color(color)
+    if color == :orange then :light_red else color end
+  end
+  
   def color_name(color)
-    color.to_s[0].upcase
+    color.to_s[0].upcase#.colorize(colorize_color(color))
   end
 
   def stickers_to_lines(stickers, reverse_lines, reverse_columns)

@@ -9,12 +9,14 @@ require 'results_model'
 require 'human_learner'
 require 'trainer'
 
+include CubeTrainer
+
 # TODO Do this in the UI.
 include CubeTrainer
 
 options = Options.parse(ARGV)
 results_model = ResultsModel.new(options.commutator_info.result_symbol)
-generator = options.commutator_info.generator_class.new(results_model, options.verbose, options.new_item_boundary)
+generator = options.commutator_info.generator_class.new(results_model, options)
 learner = HumanLearner.new(generator.hinter, results_model)
 
 # Move the stats stuff to somewhere else.

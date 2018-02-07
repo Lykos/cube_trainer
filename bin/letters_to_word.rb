@@ -7,6 +7,7 @@ require 'results_model'
 require 'ui_helpers'
 require 'console_helpers'
 
+include CubeTrainer
 include UiHelpers
 include ConsoleHelpers
 
@@ -32,7 +33,7 @@ if missing > 0
 end
 
 loop do
-  letter_pair = generator.random_letter_pair
+  letter_pair = generator.input_sampler.random_item
   puts_and_say(letter_pair)
   start = Time.now
   word = ''
