@@ -58,21 +58,12 @@ module CubeTrainer
       [coordinate] + rotate_out_nils(neighbor_coordinates)
     end
   
-    def face_lines(face, reverse_lines, reverse_columns)
-      stickers_to_lines(@stickers[face.piece_index], reverse_lines, reverse_columns)
+    def sticker_array(face)
+      @stickers[face.piece_index]
     end
   
     def to_s
-      # TODO Push more functionality into CubePrintHelper in order to not pollute this class
-      yellow_face = face_lines(Face.for_color(:yellow), true, true)
-      blue_face = face_lines(Face.for_color(:blue), false, true)
-      red_face = face_lines(Face.for_color(:red), false, true)
-      green_face = face_lines(Face.for_color(:green), false, false)
-      orange_face = face_lines(Face.for_color(:orange), false, false)
-      white_face = face_lines(Face.for_color(:white), false, true)
-      middle_belt = zip_concat_lines(blue_face, red_face, green_face, orange_face)
-      lines = pad_lines(yellow_face, @n) + middle_belt + pad_lines(white_face, @n)
-      lines.join("\n")
+      cube_string(self, :nocolor)
     end
   
     def find_cycles(pieces, incarnation_index)
@@ -104,12 +95,12 @@ module CubeTrainer
     end
   
     def [](coordinate)
-      @stickers[coordinate.face.piece_index][coordinate.x][coordinate.y]
+      sticker_array(coordinate.face)[coordinate.x][coordinate.y]
     end
   
     def []=(coordinate, color)
       raise "All stickers on the cube must have a valid color." unless COLORS.include?(color)
-      @stickers[coordinate.face.piece_index][coordinate.x][coordinate.y] = color
+      sticker_array(coordinate.face)[coordinate.x][coordinate.y] = color
     end
   
     def apply_index_cycle(cycle)
