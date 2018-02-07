@@ -1,5 +1,6 @@
 require 'letter_pair_helper'
 require 'input_sampler'
+require 'pao_letter_pair'
 require 'dict'
 
 module CubeTrainer
@@ -11,9 +12,15 @@ module CubeTrainer
       @input_sampler = InputSampler.new(VALID_PAIRS, results_model)
     end
 
-    attr_reader :input_sampler
+    VALID_PAIRS = begin
+                    pairs = LetterPairHelper.letter_pairs(ALPHABET.permutation(2))
+                    duplicates = LetterPairHelper.letter_pairs(ALPHABET.collect { |c| [c, c] })
+                    singles = LetterPairHelper.letter_pairs(ALPHABET.permutation(1))
+                    valid_pairs = pairs - duplicates + singles
+                    PaoLetterPair::PAO_TYPES.product(valid_pairs)
+                  end
 
-    VALID_PAIRS = LetterPairHelper.letter_pairs(ALPHABET.permutation(2)) - LetterPairHelper.letter_pairs(ALPHABET.collect { |c| [c, c] }) + LetterPairHelper.letter_pairs(ALPHABET.permutation(1))
+    attr_reader :input_sampler
   
     def random_letter_pair
       @input_sampler.random_input
@@ -28,7 +35,8 @@ module CubeTrainer
       @dict ||= Dict.new
     end
   
-    def hint(letter_pair)
+    def hint(pao_letter_pair)
+      letter_pair = pao_letter_pair.letter_pair
       words = @results_model.words_for_input(letter_pair)
       if words.empty?
         if letter_pair.letters.first.downcase == 'x'
@@ -41,7 +49,8 @@ module CubeTrainer
       end
     end
   
-    def good_word?(letter_pair, word)
+    def good_word?(pao_letter_pair, word)
+      letter_pair = pao_letter_pair.letter_pair
       return false unless letter_pair.matches_word?(word)
       other_combinations = @results_model.inputs_for_word(word) - [letter_pair]
       return false unless other_combinations.empty?

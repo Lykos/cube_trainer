@@ -1,4 +1,5 @@
 require 'ui_helpers'
+require 'pao_letter_pair'
 require 'letter_pair'
 
 module CubeTrainer
@@ -12,7 +13,7 @@ module CubeTrainer
       @timestamp = timestamp
       raise unless time_s.is_a?(Float)
       @time_s = time_s
-      raise unless input.is_a?(LetterPair)
+      raise unless input.is_a?(LetterPair) || input.is_a?(PaoLetterPair)
       @input = input
       raise unless failed_attempts.is_a?(Integer)
       @failed_attempts = failed_attempts
@@ -22,8 +23,18 @@ module CubeTrainer
   
     # Construct from data stored in the db.
     def self.from_raw_data(data)
-      mode, timestamp, time_s, input, failed_attempts, word = data
-      Result.new(mode.to_sym, Time.at(timestamp), time_s, LetterPair.from_raw_data(input), failed_attempts, word)
+      raw_mode, timestamp, time_s, raw_input, failed_attempts, word = data
+      mode = raw_mode.to_sym
+      Result.new(mode, Time.at(timestamp), time_s, parse_input(mode, raw_input), failed_attempts, word)
+    end
+
+    def self.parse_input(mode, input)
+      case mode
+      when :letters_to_word
+        PaoLetterPair.from_raw_data(input)
+      else
+        LetterPair.from_raw_data(input)
+      end
     end
   
     # Serialize to data stored in the db.
