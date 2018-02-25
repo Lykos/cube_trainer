@@ -4,7 +4,8 @@ require 'commutators'
 require 'human_word_learner'
 require 'human_time_learner'
 require 'letters_to_word'
-  
+require 'alg_sets'
+
 module CubeTrainer
 
   class Options
@@ -15,7 +16,9 @@ module CubeTrainer
       'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, HumanTimeLearner, 4),
       'xcenters' => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators, HumanTimeLearner, 4),
       'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators, HumanTimeLearner, 5),
-      'words' => CommutatorInfo.new(:letters_to_word, LettersToWord, HumanWordLearner, nil)
+      'words' => CommutatorInfo.new(:letters_to_word, LettersToWord, HumanWordLearner, nil),
+      'oh_plls' => CommutatorInfo.new(:oh_plls_by_name, PllsByName, HumanTimeLearner, 3),
+      'plls' => CommutatorInfo.new(:plls_by_name, PllsByName, HumanTimeLearner, 3)
     }
     
     def self.parse(args)
