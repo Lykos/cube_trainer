@@ -455,7 +455,7 @@ RSpec.shared_examples "cube_state" do |cube_size|
     end
   end
   
-  it 'should do an E move properly if the cube size is odd' do
+  it 'should do an S move properly if the cube size is odd' do
     if cube_size % 2 == 1
       cube_state.apply_move(parse_move('S'))
       expected_cube_state = create_interesting_cube_state(cube_size)
@@ -466,12 +466,45 @@ RSpec.shared_examples "cube_state" do |cube_size|
     end
   end
   
-  it 'should do an E move properly if the cube size is odd' do
+  it 'should do an M move properly if the cube size is odd' do
     if cube_size % 2 == 1
       cube_state.apply_move(parse_move('M'))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
       equivalent_alg = parse_alg("#{half_size}Lw' #{half_size}Rw x'")
+      equivalent_alg.apply_to(expected_cube_state)
+      expect(cube_state).to be == expected_cube_state
+    end
+  end
+  
+  it 'should do an E\' move properly if the cube size is odd' do
+    if cube_size % 2 == 1
+      cube_state.apply_move(parse_move('E\''))
+      expected_cube_state = create_interesting_cube_state(cube_size)
+      half_size = cube_size / 2
+      equivalent_alg = parse_alg("#{half_size}Dw #{half_size}Uw' y")
+      equivalent_alg.apply_to(expected_cube_state)
+      expect(cube_state).to be == expected_cube_state
+    end
+  end
+  
+  it 'should do an S\' move properly if the cube size is odd' do
+    if cube_size % 2 == 1
+      cube_state.apply_move(parse_move('S\''))
+      expected_cube_state = create_interesting_cube_state(cube_size)
+      half_size = cube_size / 2
+      equivalent_alg = parse_alg("#{half_size}Fw #{half_size}Bw' z'")
+      equivalent_alg.apply_to(expected_cube_state)
+      expect(cube_state).to be == expected_cube_state
+    end
+  end
+  
+  it 'should do an M\' move properly if the cube size is odd' do
+    if cube_size % 2 == 1
+      cube_state.apply_move(parse_move('M\''))
+      expected_cube_state = create_interesting_cube_state(cube_size)
+      half_size = cube_size / 2
+      equivalent_alg = parse_alg("#{half_size}Lw #{half_size}Rw' x")
       equivalent_alg.apply_to(expected_cube_state)
       expect(cube_state).to be == expected_cube_state
     end

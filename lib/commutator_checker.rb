@@ -106,7 +106,7 @@ module CubeTrainer
       # cleanup
       @cycle_cube_state.apply_piece_cycle(cycle.reverse)
       alg.invert.apply_to(@alg_cube_state)
-      raise unless @alg_cube_state == @cycle_cube_state
+      raise "Cleanup failed" unless @alg_cube_state == @cycle_cube_state
 
       if correct
         :correct

@@ -20,7 +20,7 @@ module CubeTrainer
       raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
       raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
       @axis_face = axis_face
-      @direction = if axis_face == Face.by_name('F') then direction else invert_direction(direction) end
+      @direction = direction
     end
   
     attr_reader :axis_face, :direction
@@ -216,7 +216,8 @@ module CubeTrainer
       SliceMove.new(Face.by_name(slice_name.upcase), direction)
     elsif mslice_name
       raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
-      MSliceMove.new(Face::ELEMENTS[SLICES.index(mslice_name)], direction)
+      fixed_direction = if mslice_name == 'S' then direction else invert_direction(direction) end
+      MSliceMove.new(Face::ELEMENTS[SLICES.index(mslice_name)], fixed_direction)
     else
       raise
     end
