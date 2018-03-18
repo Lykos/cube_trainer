@@ -452,7 +452,7 @@ module CubeTrainer
   class TCenter < MoveableCenter
     CORRESPONDING_PART_CLASS = Edge
     ELEMENTS = generate_parts
-    BUFFER = TCenter.new(Edge.new([:yellow, :orange]))
+    BUFFER = TCenter.new(Edge.new([:yellow, :red]))
     raise "Invalid buffer TCenter." unless BUFFER.valid?
   
     def num_incarnations(cube_size)
