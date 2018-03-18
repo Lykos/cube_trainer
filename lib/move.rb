@@ -4,7 +4,8 @@ module CubeTrainer
 
   DIRECTION_NAMES = ['', '2', '\'']
   AXES = ['y', 'z', 'x']
-  MOVE_REGEXP = Regexp.new("(?:([#{AXES.join}])|(\\d*)([#{FACE_NAMES.join}])w|([#{FACE_NAMES.join}])|([#{FACE_NAMES.join.downcase}]))([#{DIRECTION_NAMES.join}]?)")
+  SLICES = ['E', 'S', 'M']
+  MOVE_REGEXP = Regexp.new("(?:([#{AXES.join}])|(\\d*)([#{FACE_NAMES.join}])w|([#{FACE_NAMES.join}])|([#{FACE_NAMES.join.downcase}])|([#{SLICES.join}]))([#{DIRECTION_NAMES.join}]?)")
 
   # TODO class direction
   def invert_direction(direction)
@@ -12,6 +13,41 @@ module CubeTrainer
   end
 
   class Move
+  end
+
+  class MSliceMove
+    def initialize(axis_face, direction)
+      raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
+      raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
+      @axis_face = axis_face
+      @direction = if axis_face == Face.by_name('F') then direction else invert_direction(direction) end
+    end
+  
+    attr_reader :axis_face, :direction
+  
+    def eql?(other)
+      self.class.equal?(other.class) && @axis_face == other.axis_face && @direction == other.direction
+    end
+  
+    alias == eql?
+  
+    def hash
+      [@axis_face, @direction].hash
+    end
+  
+    def to_s
+      "#{AXES[Face::ELEMENTS.index(@axis_face)]}#{DIRECTION_NAMES[@direction - 1]}"
+    end
+  
+    def apply_to(cube_state)
+      raise ArgumentError if cube_state.n % 2 == 0
+      s = cube_state.n / 2
+      cube_state.rotate_slice(@axis_face, s, @direction)
+    end
+
+    def invert
+      MSliceMove.new(@axis_face, invert_direction(@direction))
+    end
   end
   
   class Rotation < Move
@@ -163,7 +199,7 @@ module CubeTrainer
   def parse_move(move_string)
     match = move_string.match(MOVE_REGEXP)
     raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
-    rotation, width, fat_face_name, face_name, slice_name, direction_string = match.captures
+    rotation, width, fat_face_name, face_name, slice_name, mslice_name, direction_string = match.captures
     direction = DIRECTION_NAMES.index(direction_string) + 1
     if rotation
       raise unless width.nil? && fat_face_name.nil? && face_name.nil? && slice_name.nil?
@@ -178,6 +214,9 @@ module CubeTrainer
     elsif slice_name
       raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
       SliceMove.new(Face.by_name(slice_name.upcase), direction)
+    elsif mslice_name
+      raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
+      MSliceMove.new(Face::ELEMENTS[SLICES.index(mslice_name)], direction)
     else
       raise
     end
