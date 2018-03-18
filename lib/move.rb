@@ -15,7 +15,7 @@ module CubeTrainer
   class Move
   end
 
-  class MSliceMove
+  class MSliceMove < Move
     def initialize(axis_face, direction)
       raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
       raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
@@ -36,7 +36,7 @@ module CubeTrainer
     end
   
     def to_s
-      "#{AXES[Face::ELEMENTS.index(@axis_face)]}#{DIRECTION_NAMES[@direction - 1]}"
+      "#{SLICES[Face::ELEMENTS.index(@axis_face)]}#{DIRECTION_NAMES[@direction - 1]}"
     end
   
     def apply_to(cube_state)
