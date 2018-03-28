@@ -101,6 +101,8 @@ module CubeTrainer
       @direction = direction
     end
 
+    ALL = [new('U', 1), new('U', 2), new('R', 1), new('R', 2), new('L', 1), new('L', 2), new('B', 1), new('B', 2)]
+
     attr_reader :move, :direction
   
     def eql?(other)
