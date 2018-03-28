@@ -181,4 +181,19 @@ module CubeTrainer
     end  
   end
 
+  class SkewbCoordinate    
+    def initialize(face, coordinate)
+      raise ArgumentError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
+      raise ArgumentError unless coordinate.is_a?(Integer) && 0 <= coordinate && coordinate < SKEWB_STICKERS
+      @face = face
+      @coordinate = coordinate
+    end
+
+    def self.center(face)
+      SkewbCoordinate.new(face, 0)
+    end
+
+    attr_reader :face, :coordinate
+  end
+
 end

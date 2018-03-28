@@ -1,6 +1,16 @@
 module CubeTrainer
 
   module ArrayHelper
+
+    def apply_permutation(array, permutation)
+      raise ArgumentError unless array.length == permutation.length
+      raise ArgumentError unless permutation.uniq.length == permutation.length
+      permutation.collect do |i|
+        raise ArgumentError unless i.is_a?(Integer) && 0 <= i && i < array.length
+        array[i]
+      end
+    end
+
     def rotate_out_nils(array)
       first_part = []
       second_part = []

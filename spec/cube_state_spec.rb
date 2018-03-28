@@ -1,5 +1,6 @@
 require 'cube_state'
 require 'cube'
+require 'move'
 require 'coordinate'
 
 include CubeTrainer

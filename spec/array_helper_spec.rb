@@ -5,6 +5,18 @@ include CubeTrainer
 describe ArrayHelper do
   include ArrayHelper
 
+  it 'should permute empty arrays' do
+    expect(apply_permutation([], [])).to be == []
+  end
+
+  it 'should permute singleton arrays' do
+    expect(apply_permutation([2], [0])).to be == [2]
+  end
+
+  it 'should permute letter arrays' do
+    expect(apply_permutation(['a', 'b', 'c', 'd'], [0, 2, 1, 3])).to be == ['a', 'c', 'b', 'd']
+  end
+
   it 'should do nothing if there are no nils' do
     expect(rotate_out_nils([1, 2, 3])).to be == [1, 2, 3]
   end

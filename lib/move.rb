@@ -1,11 +1,14 @@
 require 'cube'
+require 'cube_state'
 
 module CubeTrainer
 
+  SKEWB_MOVES = ['U', 'R', 'L', 'B']
   DIRECTION_NAMES = ['', '2', '\'']
   AXES = ['y', 'z', 'x']
   SLICES = ['E', 'S', 'M']
   MOVE_REGEXP = Regexp.new("(?:([#{AXES.join}])|(\\d*)([#{FACE_NAMES.join}])w|([#{FACE_NAMES.join}])|([#{FACE_NAMES.join.downcase}])|([#{SLICES.join}]))([#{DIRECTION_NAMES.join}]?)")
+  SKEWB_MOVE_REGEXP = Regexp.new("([#{SKEWB_MOVES.join}])([#{DIRECTION_NAMES.join}]?)")
 
   # TODO class direction
   def invert_direction(direction)
@@ -18,7 +21,7 @@ module CubeTrainer
   class MSliceMove < Move
     def initialize(axis_face, direction)
       raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
-      raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
+      raise ArgumentError unless direction.is_a?(Integer) && 1 <= direction && direction < 4
       @axis_face = axis_face
       @direction = direction
     end
@@ -40,6 +43,7 @@ module CubeTrainer
     end
   
     def apply_to(cube_state)
+      raise ArgumentError unless cube_state.is_a?(CubeState)
       raise ArgumentError if cube_state.n % 2 == 0
       s = cube_state.n / 2
       cube_state.rotate_slice(@axis_face, s, @direction)
@@ -53,7 +57,7 @@ module CubeTrainer
   class Rotation < Move
     def initialize(axis_face, direction)
       raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
-      raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
+      raise ArgumentError unless direction.is_a?(Integer) && 1 <= direction && direction < 4
       @axis_face = axis_face
       @direction = direction
     end
@@ -75,6 +79,8 @@ module CubeTrainer
     end
   
     def apply_to(cube_state)
+      # TODO Skewb
+      raise ArgumentErorr unless cube_state.is_a?(CubeState)
       0.upto(cube_state.n - 1) do |s|
         cube_state.rotate_slice(@axis_face, s, @direction)
       end
@@ -86,12 +92,98 @@ module CubeTrainer
       Rotation.new(@axis_face, invert_direction(@direction))
     end
   end
+
+  class SkewbMove < Move
+    def initialize(move, direction)
+      raise ArgumentError unless SKEWB_MOVES.include?(move)
+      raise ArgumentError unless direction.is_a?(Integer) && 1 <= direction && direction < 3
+      @move = move
+      @direction = direction
+    end
+
+    attr_reader :move, :direction
+  
+    def eql?(other)
+      self.class.equal?(other.class) && @move == other.move && @direction == other.direction
+    end
+  
+    alias == eql?
+  
+    def hash
+      [@move, @direction].hash
+    end
+
+    def skewb_direction_name(direction)
+      if direction == 1
+        DIRECTION_NAMES[0]
+      elsif direction == 2
+        DIRECTION_NAMES[-1]
+      else
+        raise ArugmentError
+      end
+    end
+
+    def invert_skewb_direction(direction)
+      2 - direction
+    end
+
+    def to_s
+      "#{@move}#{skewb_direction_name(@direction)}"
+    end
+
+    def apply_to(cube_state)
+      raise ArgumentError unless cube_state.is_a?(SkewbState)
+      # I haven't found a better way for Skewb than to hardcode what each move does.
+      cycles = case @move
+               when 'U'
+                 [[SkewbCoordinate.center(Face.for_color(:blue)), SkewbCoordinate.center(Face.for_color(:white)), SkewbCoordinate.center(Face.for_color(:orange))],
+                  [SkewbCoordinate.new(Face.for_color(:blue), 2), SkewbCoordinate.new(Face.for_color(:white), 2), SkewbCoordinate.new(Face.for_color(:orange), 1)],
+                  [SkewbCoordinate.new(Face.for_color(:blue), 3), SkewbCoordinate.new(Face.for_color(:white), 3), SkewbCoordinate.new(Face.for_color(:orange), 4)],
+                  [SkewbCoordinate.new(Face.for_color(:blue), 4), SkewbCoordinate.new(Face.for_color(:white), 4), SkewbCoordinate.new(Face.for_color(:orange), 3)],
+                  [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:red), 4), SkewbCoordinate.new(Face.for_color(:green), 3)]]
+               when 'R'
+                 [[SkewbCoordinate.center(Face.for_color(:yellow)), SkewbCoordinate.center(Face.for_color(:red)), SkewbCoordinate.center(Face.for_color(:blue))],
+                  [SkewbCoordinate.new(Face.for_color(:yellow), 1), SkewbCoordinate.new(Face.for_color(:red), 3), SkewbCoordinate.new(Face.for_color(:blue), 1)],
+                  [SkewbCoordinate.new(Face.for_color(:yellow), 2), SkewbCoordinate.new(Face.for_color(:red), 4), SkewbCoordinate.new(Face.for_color(:blue), 3)],
+                  [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:red), 1), SkewbCoordinate.new(Face.for_color(:blue), 2)],
+                  [SkewbCoordinate.new(Face.for_color(:green), 2), SkewbCoordinate.new(Face.for_color(:white), 3), SkewbCoordinate.new(Face.for_color(:orange), 1)]]
+               when 'L'
+                 [[SkewbCoordinate.center(Face.for_color(:yellow)), SkewbCoordinate.center(Face.for_color(:orange)), SkewbCoordinate.center(Face.for_color(:green))],
+                  [SkewbCoordinate.new(Face.for_color(:yellow), 2), SkewbCoordinate.new(Face.for_color(:orange), 1), SkewbCoordinate.new(Face.for_color(:green), 3)],
+                  [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:orange), 4), SkewbCoordinate.new(Face.for_color(:green), 2)],
+                  [SkewbCoordinate.new(Face.for_color(:yellow), 4), SkewbCoordinate.new(Face.for_color(:orange), 2), SkewbCoordinate.new(Face.for_color(:green), 1)],
+                  [SkewbCoordinate.new(Face.for_color(:red), 1), SkewbCoordinate.new(Face.for_color(:blue), 3), SkewbCoordinate.new(Face.for_color(:white), 2)]]
+               when 'B'
+                 [[SkewbCoordinate.center(Face.for_color(:yellow)), SkewbCoordinate.center(Face.for_color(:blue)), SkewbCoordinate.center(Face.for_color(:orange))],
+                  [SkewbCoordinate.new(Face.for_color(:yellow), 1), SkewbCoordinate.new(Face.for_color(:blue), 4), SkewbCoordinate.new(Face.for_color(:orange), 2)],
+                  [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:blue), 3), SkewbCoordinate.new(Face.for_color(:orange), 1)],
+                  [SkewbCoordinate.new(Face.for_color(:yellow), 4), SkewbCoordinate.new(Face.for_color(:blue), 1), SkewbCoordinate.new(Face.for_color(:orange), 3)],
+                  [SkewbCoordinate.new(Face.for_color(:red), 3), SkewbCoordinate.new(Face.for_color(:white), 4), SkewbCoordinate.new(Face.for_color(:green), 1)]]
+               else
+                 raise
+               end
+      cycles.each do |c|
+        if @direction == 1
+          cube_state.apply_index_cycle(c)
+        elsif @direction == 2
+          cube_state.apply_index_cycle(c.reverse)
+        else
+          raise
+        end
+      end
+    end
+
+    def invert
+      SkewbMove.new(@move, invert_skewb_direction(@direction))
+    end
+  
+  end
   
   class FatMove < Move
     def initialize(face, width, direction)
       raise ArgumentError unless face.is_a?(Face)
       raise ArgumentError, "Invalid width #{width} for fat move." unless width.is_a?(Integer) and width >= 1
-      raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
+      raise ArgumentError unless direction.is_a?(Integer) && 1 <= direction && direction < 4
       @face = face
       @width = width
       @direction = direction
@@ -114,6 +206,7 @@ module CubeTrainer
     end
   
     def apply_to(cube_state)
+      raise ArgumentError unless cube_state.is_a?(CubeState)
       raise if @width >= cube_state.n
       0.upto(@width - 1) do |s|
         cube_state.rotate_slice(@face, s, @direction)
@@ -129,7 +222,7 @@ module CubeTrainer
   class SliceMove < Move
     def initialize(slice_face, direction)
       raise ArgumentError unless slice_face.is_a?(Face)
-      raise ArgumentError unless direction.is_a?(Integer) && 0 <= direction && direction < 4
+      raise ArgumentError unless direction.is_a?(Integer) && 1 <= direction && direction < 4
       @slice_face = slice_face
       @direction = direction
     end
@@ -151,6 +244,7 @@ module CubeTrainer
     end
   
     def apply_to(cube_state)
+      raise ArgumentError unless cube_state.is_a?(CubeState)
       cube_state.rotate_slice(@slice_face, 1, @direction)
     end
 
@@ -221,6 +315,15 @@ module CubeTrainer
     else
       raise
     end
+  end
+
+  # Parses WCA Skewb moves.
+  def parse_skewb_move(move_string)
+    match = move_string.match(SKEWB_MOVE_REGEXP)
+    raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
+    skewb_move_string, direction_string = match.captures
+    direction = if direction_string == DIRECTION_NAMES[0] then 1 elsif direction_string == DIRECTION_NAMES[-1] then 2 else raise end
+    SkewbMove.new(skewb_move_string, direction)
   end
 
 end

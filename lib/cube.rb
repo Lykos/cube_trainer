@@ -8,6 +8,7 @@ module CubeTrainer
   OPPOSITE_PAIRS = [[:yellow, :white], [:red, :orange], [:green, :blue]].collect { |e| e.sort }.sort
   FACE_NAMES = ['U', 'F', 'R', 'L', 'B', 'D']
   ALPHABET = "a".upto("x").to_a
+  SKEWB_STICKERS = 5
   raise unless COLORS.length == FACE_NAMES.length
   
   # We need to define one corner to determine the chirality. The other colors follow from this one.
