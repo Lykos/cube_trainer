@@ -65,7 +65,12 @@ module CubeTrainer
     end
 
     def any_layer_solved?
-      Face::ELEMENTS.any? { |f| layer_solved_internal?(f) }      
+      !solved_layers.empty?
+    end
+
+    # Returns the color of all solved layers. Empty if there is none.
+    def solved_layers
+      Face::ELEMENTS.select { |f| layer_solved_internal?(f) }.collect { |f| self[SkewbCoordinate.center(f)] }
     end
     
     def layer_solved?(color)

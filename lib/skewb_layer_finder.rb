@@ -22,8 +22,16 @@ module CubeTrainer
   end
 
   class AlreadySolvedSolutionSet < SolutionSet
+    def initialize(colors)
+      raise ArgumentError if colors.empty?
+      raise ArgumentError unless colors.all? { |c| COLORS.include?(c) }
+      @colors = colors
+    end
+    
     def extract_algorithms
-      [Algorithm.empty]
+      algs = {}
+      @colors.each { |c| algs[c] = [Algorithm.empty] }
+      algs
     end
 
     def length
@@ -51,7 +59,13 @@ module CubeTrainer
     attr_reader :length
 
     def extract_algorithms
-      @internal_solution_sets.collect_concat { |s| s.extract_algorithms }
+      algs = {}
+      @internal_solution_sets.each do |s|
+        algs.update(s.extract_algorithms) do |k, v0, v1|
+          (v0 + v1).sort_by { |a| a.to_s }
+        end
+      end
+      algs
     end
   end
 
@@ -65,20 +79,19 @@ module CubeTrainer
     attr_reader :length
 
     def extract_algorithms
-      @internal_solution_set.extract_algorithms.collect { |s| Algorithm.new([@extra_move]) + s }
+      algs = @internal_solution_set.extract_algorithms
+      algs.each do |k, v|
+        v.collect! { |s| Algorithm.new([@extra_move]) + s }
+      end
+      algs
     end
   end
 
   NO_SOLUTIONS = UnionSolutionSet.new([])
-  ALREADY_SOLVED_SOLUTIONS = AlreadySolvedSolutionSet.new
 
   class SkewbLayerFinder
     def layer_score(skewb_state)
       Face::ELEMENTS.collect { |f| layer_score_on_face(skewb_state, f) }.max
-    end
-
-    def random_sequence(n)
-      Algorithm.new((0...n).collect { SkewbMove::ALL.sample })
     end
 
     def layer_score_on_face(skewb_state, face)
@@ -88,8 +101,9 @@ module CubeTrainer
 
     def find_layer(skewb_state, limit)
       raise ArgumentError unless limit.is_a?(Integer) && limit >= 0
-      if skewb_state.any_layer_solved?
-        return ALREADY_SOLVED_SOLUTIONS
+      solved_layers = skewb_state.solved_layers
+      if !solved_layers.empty?
+        return AlreadySolvedSolutionSet.new(solved_layers)
       end
       if limit == 0
         return NO_SOLUTIONS
