@@ -124,7 +124,7 @@ module CubeTrainer
     end
 
     def invert_skewb_direction(direction)
-      2 - direction
+      3 - direction
     end
 
     def to_s
@@ -261,6 +261,12 @@ module CubeTrainer
       @moves = moves
     end
 
+    EMPTY_ALGORITHM = Algorithm.new([])
+
+    def self.empty
+      EMPTY_ALGORITHM
+    end
+
     attr_reader :moves
 
     def eql?(other)
@@ -271,6 +277,10 @@ module CubeTrainer
   
     def hash
       @moves.hash
+    end
+
+    def length
+      @moves.length
     end
   
     def to_s
