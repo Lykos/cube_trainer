@@ -309,7 +309,6 @@ EOS
   
   it 'should have the blue layer solved after a L\' R B U\' sledge' do
     parse_skewb_alg('L\' R B U\'').apply_to(cube_state)
-    expect(cube_state.any_layer_solved?).to be true
     expect(cube_state.solved_layers).to be == [:blue]
     expect(cube_state.layer_solved?(:yellow)).to be false
     expect(cube_state.layer_solved?(:red)).to be false
@@ -317,11 +316,22 @@ EOS
     expect(cube_state.layer_solved?(:blue)).to be true
     expect(cube_state.layer_solved?(:orange)).to be false
     expect(cube_state.layer_solved?(:white)).to be false
+    expect(cube_state.any_layer_solved?).to be true
+  end
+    it 'should have the orange layer solved after a R L\' B\' U sledge' do
+    parse_skewb_alg('R L\' B\' U').apply_to(cube_state)
+    expect(cube_state.solved_layers).to be == [:orange]
+    expect(cube_state.layer_solved?(:yellow)).to be false
+    expect(cube_state.layer_solved?(:red)).to be false
+    expect(cube_state.layer_solved?(:green)).to be false
+    expect(cube_state.layer_solved?(:blue)).to be false
+    expect(cube_state.layer_solved?(:orange)).to be true
+    expect(cube_state.layer_solved?(:white)).to be false
+    expect(cube_state.any_layer_solved?).to be true
   end
   
   it 'should have the yellow layer solved after a U R\' B\' L sledge' do
     parse_skewb_alg('U R\' B\' L').apply_to(cube_state)
-    expect(cube_state.any_layer_solved?).to be true
     expect(cube_state.solved_layers).to be == [:yellow]
     expect(cube_state.layer_solved?(:yellow)).to be true
     expect(cube_state.layer_solved?(:red)).to be false
@@ -329,6 +339,7 @@ EOS
     expect(cube_state.layer_solved?(:blue)).to be false
     expect(cube_state.layer_solved?(:orange)).to be false
     expect(cube_state.layer_solved?(:white)).to be false
+    expect(cube_state.any_layer_solved?).to be true
   end
   
   it 'should have the orange layer solved after a R\' U B L\' sledge' do
@@ -340,6 +351,18 @@ EOS
     expect(cube_state.layer_solved?(:green)).to be false
     expect(cube_state.layer_solved?(:blue)).to be false
     expect(cube_state.layer_solved?(:orange)).to be true
+    expect(cube_state.layer_solved?(:white)).to be false
+  end
+  
+  it 'should have the blue layer solved after a L U\' B\' R sledge' do
+    parse_skewb_alg('L U\' B\' R').apply_to(cube_state)
+    expect(cube_state.any_layer_solved?).to be true
+    expect(cube_state.solved_layers).to be == [:blue]
+    expect(cube_state.layer_solved?(:yellow)).to be false
+    expect(cube_state.layer_solved?(:red)).to be false
+    expect(cube_state.layer_solved?(:green)).to be false
+    expect(cube_state.layer_solved?(:blue)).to be true
+    expect(cube_state.layer_solved?(:orange)).to be false
     expect(cube_state.layer_solved?(:white)).to be false
   end
   

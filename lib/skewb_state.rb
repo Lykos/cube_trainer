@@ -77,25 +77,50 @@ module CubeTrainer
       Face::ELEMENTS.any? { |f| self[SkewbCoordinate.center(f)] == color && layer_solved_internal?(f) }
     end
 
-    # Two coordinates that can be used to check whether the "outside" of a layer on the given face is
+    # Pairs of stickers that can be used to check whether the "outside" of a layer on the given face is
     # a proper layer
+    LAYER_CHECK_NEIGHBORS = {
+      :white => [
+        [SkewbCoordinate.new(Face.for_color(:red), 2), SkewbCoordinate.new(Face.for_color(:red), 4)],
+        [SkewbCoordinate.new(Face.for_color(:blue), 2), SkewbCoordinate.new(Face.for_color(:blue), 4)],
+        [SkewbCoordinate.new(Face.for_color(:green), 3), SkewbCoordinate.new(Face.for_color(:green), 4)],
+        [SkewbCoordinate.new(Face.for_color(:orange), 3), SkewbCoordinate.new(Face.for_color(:orange), 4)],
+      ],
+      :yellow => [
+        [SkewbCoordinate.new(Face.for_color(:red), 1), SkewbCoordinate.new(Face.for_color(:red), 3)],
+        [SkewbCoordinate.new(Face.for_color(:blue), 1), SkewbCoordinate.new(Face.for_color(:blue), 3)],
+        [SkewbCoordinate.new(Face.for_color(:green), 1), SkewbCoordinate.new(Face.for_color(:green), 2)],
+        [SkewbCoordinate.new(Face.for_color(:orange), 1), SkewbCoordinate.new(Face.for_color(:orange), 2)],
+      ],
+      :red => [
+        [SkewbCoordinate.new(Face.for_color(:yellow), 1), SkewbCoordinate.new(Face.for_color(:yellow), 2)],
+        [SkewbCoordinate.new(Face.for_color(:green), 2), SkewbCoordinate.new(Face.for_color(:green), 4)],
+        [SkewbCoordinate.new(Face.for_color(:blue), 1), SkewbCoordinate.new(Face.for_color(:blue), 2)],
+        [SkewbCoordinate.new(Face.for_color(:white), 1), SkewbCoordinate.new(Face.for_color(:white), 3)],
+      ],
+      :green => [
+        [SkewbCoordinate.new(Face.for_color(:yellow), 2), SkewbCoordinate.new(Face.for_color(:yellow), 4)],
+        [SkewbCoordinate.new(Face.for_color(:red), 1), SkewbCoordinate.new(Face.for_color(:red), 2)],
+        [SkewbCoordinate.new(Face.for_color(:orange), 2), SkewbCoordinate.new(Face.for_color(:orange), 4)],
+        [SkewbCoordinate.new(Face.for_color(:white), 1), SkewbCoordinate.new(Face.for_color(:white), 2)],
+      ],
+      :blue => [
+        [SkewbCoordinate.new(Face.for_color(:yellow), 1), SkewbCoordinate.new(Face.for_color(:yellow), 3)],
+        [SkewbCoordinate.new(Face.for_color(:red), 3), SkewbCoordinate.new(Face.for_color(:red), 4)],
+        [SkewbCoordinate.new(Face.for_color(:orange), 1), SkewbCoordinate.new(Face.for_color(:orange), 3)],
+        [SkewbCoordinate.new(Face.for_color(:white), 3), SkewbCoordinate.new(Face.for_color(:white), 4)],
+      ],
+      :orange => [
+        [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:yellow), 4)],
+        [SkewbCoordinate.new(Face.for_color(:green), 1), SkewbCoordinate.new(Face.for_color(:green), 3)],
+        [SkewbCoordinate.new(Face.for_color(:blue), 3), SkewbCoordinate.new(Face.for_color(:blue), 4)],
+        [SkewbCoordinate.new(Face.for_color(:white), 2), SkewbCoordinate.new(Face.for_color(:white), 4)],
+      ]
+    }
+
     def layer_check_neighbors(face)
-      case face.color
-      when :white
-        [SkewbCoordinate.new(Face.for_color(:red), 2), SkewbCoordinate.new(Face.for_color(:red), 4)]
-      when :yellow
-        [SkewbCoordinate.new(Face.for_color(:red), 1), SkewbCoordinate.new(Face.for_color(:red), 3)]
-      when :red
-        [SkewbCoordinate.new(Face.for_color(:yellow), 1), SkewbCoordinate.new(Face.for_color(:yellow), 2)]
-      when :green
-        [SkewbCoordinate.new(Face.for_color(:yellow), 2), SkewbCoordinate.new(Face.for_color(:yellow), 4)]
-      when :blue
-        [SkewbCoordinate.new(Face.for_color(:yellow), 1), SkewbCoordinate.new(Face.for_color(:yellow), 3)]
-      when :orange
-        [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:yellow), 4)]
-      else
-        raise
-      end
+      # We take the first one, but it doesn't matter, we could take any.
+      LAYER_CHECK_NEIGHBORS[face.color][0]
     end
 
     # Note that this does NOT say that the layer corresponding to the given face is solved.
