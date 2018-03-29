@@ -193,6 +193,10 @@ module CubeTrainer
       new(face, 0)
     end
 
+    def self.corners_on_face(face)
+      (1...SKEWB_STICKERS).collect { |i| new(face, i) }
+    end
+
     def self.for_corner(corner)
       new(Face.for_color(corner.colors.first), corner.piece_index % 4 + 1)
     end
@@ -204,6 +208,8 @@ module CubeTrainer
         @coordinate <=> other.coordinate
       end
     end
+
+    include Comparable
 
     attr_reader :face, :coordinate
   end
