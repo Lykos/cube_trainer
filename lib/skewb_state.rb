@@ -77,50 +77,42 @@ module CubeTrainer
       Face::ELEMENTS.any? { |f| self[SkewbCoordinate.center(f)] == color && layer_solved_internal?(f) }
     end
 
+    # Pairs of coordinate pairs that should match in case of solved layers.
+    MATCHING_CORNERS =
+      begin
+        matching_corners = []
+        Corner::ELEMENTS.each do |c1|
+          Corner::ELEMENTS.each do |c2|
+            # Take corner pairs that have a common edge.
+            next if (c1.colors & c2.colors).length != 2
+            check_parts = []
+            c1.rotations.each do |c1_rot|
+              next unless c2.colors.include?(c1_rot.colors.first)
+              c2_rot = c2.rotate_color_up(c1_rot.colors.first)
+              check_parts.push([SkewbCoordinate.for_corner(c1_rot), SkewbCoordinate.for_corner(c2_rot)])
+            end
+            matching_corners.push(check_parts)
+          end
+        end
+        matching_corners
+      end
+
     # Pairs of stickers that can be used to check whether the "outside" of a layer on the given face is
-    # a proper layer
-    LAYER_CHECK_NEIGHBORS = {
-      :white => [
-        [SkewbCoordinate.new(Face.for_color(:red), 2), SkewbCoordinate.new(Face.for_color(:red), 4)],
-        [SkewbCoordinate.new(Face.for_color(:blue), 2), SkewbCoordinate.new(Face.for_color(:blue), 4)],
-        [SkewbCoordinate.new(Face.for_color(:green), 3), SkewbCoordinate.new(Face.for_color(:green), 4)],
-        [SkewbCoordinate.new(Face.for_color(:orange), 3), SkewbCoordinate.new(Face.for_color(:orange), 4)],
-      ],
-      :yellow => [
-        [SkewbCoordinate.new(Face.for_color(:red), 1), SkewbCoordinate.new(Face.for_color(:red), 3)],
-        [SkewbCoordinate.new(Face.for_color(:blue), 1), SkewbCoordinate.new(Face.for_color(:blue), 3)],
-        [SkewbCoordinate.new(Face.for_color(:green), 1), SkewbCoordinate.new(Face.for_color(:green), 2)],
-        [SkewbCoordinate.new(Face.for_color(:orange), 1), SkewbCoordinate.new(Face.for_color(:orange), 2)],
-      ],
-      :red => [
-        [SkewbCoordinate.new(Face.for_color(:yellow), 1), SkewbCoordinate.new(Face.for_color(:yellow), 2)],
-        [SkewbCoordinate.new(Face.for_color(:green), 2), SkewbCoordinate.new(Face.for_color(:green), 4)],
-        [SkewbCoordinate.new(Face.for_color(:blue), 1), SkewbCoordinate.new(Face.for_color(:blue), 2)],
-        [SkewbCoordinate.new(Face.for_color(:white), 1), SkewbCoordinate.new(Face.for_color(:white), 3)],
-      ],
-      :green => [
-        [SkewbCoordinate.new(Face.for_color(:yellow), 2), SkewbCoordinate.new(Face.for_color(:yellow), 4)],
-        [SkewbCoordinate.new(Face.for_color(:red), 1), SkewbCoordinate.new(Face.for_color(:red), 2)],
-        [SkewbCoordinate.new(Face.for_color(:orange), 2), SkewbCoordinate.new(Face.for_color(:orange), 4)],
-        [SkewbCoordinate.new(Face.for_color(:white), 1), SkewbCoordinate.new(Face.for_color(:white), 2)],
-      ],
-      :blue => [
-        [SkewbCoordinate.new(Face.for_color(:yellow), 1), SkewbCoordinate.new(Face.for_color(:yellow), 3)],
-        [SkewbCoordinate.new(Face.for_color(:red), 3), SkewbCoordinate.new(Face.for_color(:red), 4)],
-        [SkewbCoordinate.new(Face.for_color(:orange), 1), SkewbCoordinate.new(Face.for_color(:orange), 3)],
-        [SkewbCoordinate.new(Face.for_color(:white), 3), SkewbCoordinate.new(Face.for_color(:white), 4)],
-      ],
-      :orange => [
-        [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:yellow), 4)],
-        [SkewbCoordinate.new(Face.for_color(:green), 1), SkewbCoordinate.new(Face.for_color(:green), 3)],
-        [SkewbCoordinate.new(Face.for_color(:blue), 3), SkewbCoordinate.new(Face.for_color(:blue), 4)],
-        [SkewbCoordinate.new(Face.for_color(:white), 2), SkewbCoordinate.new(Face.for_color(:white), 4)],
-      ]
-    }
+    # a proper layer.
+    LAYER_CHECK_NEIGHBORS =
+      begin
+        layer_check_neighbors = {}
+        MATCHING_CORNERS.each do |a, b|
+          [[a.first.face, b], [b.first.face, a]].each do |face, coordinates|
+            # We take the first one we encounter, but it doesn't matter, we could take any.
+            layer_check_neighbors[face] ||= coordinates
+          end
+        end
+        layer_check_neighbors
+      end
 
     def layer_check_neighbors(face)
-      # We take the first one, but it doesn't matter, we could take any.
-      LAYER_CHECK_NEIGHBORS[face.color][0]
+      LAYER_CHECK_NEIGHBORS[face]
     end
 
     # Note that this does NOT say that the layer corresponding to the given face is solved.

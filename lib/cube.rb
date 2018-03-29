@@ -45,6 +45,12 @@ module CubeTrainer
     def encode_with(coder)
       coder['colors'] = @colors
     end
+
+    def <=>(other)
+      @piece_index <=> other.piece_index
+    end
+
+    include Comparable
   
     def eql?(other)
       self.class.equal?(other.class) && @colors == other.colors

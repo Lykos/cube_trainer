@@ -190,7 +190,19 @@ module CubeTrainer
     end
 
     def self.center(face)
-      SkewbCoordinate.new(face, 0)
+      new(face, 0)
+    end
+
+    def self.for_corner(corner)
+      new(Face.for_color(corner.colors.first), corner.piece_index % 4 + 1)
+    end
+
+    def <=>(other)
+      if @face != other.face
+        @face <=> other.face
+      else
+        @coordinate <=> other.coordinate
+      end
     end
 
     attr_reader :face, :coordinate
