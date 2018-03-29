@@ -23,7 +23,9 @@ module CubeTrainer
     
     def self.parse(args)
       options = OpenStruct.new
+      # Default options
       options.new_item_boundary = 11
+      options.restrict_colors = COLORS
       opt_parser = OptionParser.new do |opts|
         opts.separator ''
         opts.separator 'Specific options:'      
@@ -34,6 +36,10 @@ module CubeTrainer
 
         opts.on('-t', '--[no-]test_comms', 'Test commutators at startup.') do |test|
           options.test_comms = test
+        end
+
+        opts.on('-x', '--restrict_colors COLORLIST', /[yrbgow]+/, 'Restrict colors to find a layer for.') do |colors|
+          options.restrict_colors = colors.each_char.collect { |c| COLORS.find { |o| o.to_s[0] == c } }
         end
 
         opts.on('-s', '--size SIZE', Integer, 'Use the given cube size.') do |size|
@@ -48,7 +54,7 @@ module CubeTrainer
           options.verbose = v
         end
   
-        opts.on('-r', '--restrict LETTERLIST', /[a-xA-x]+/, 'List of letters to which the commutators should be restricted.',
+        opts.on('-r', '--restrict_letters LETTERLIST', /[a-xA-x]+/, 'List of letters to which the commutators should be restricted.',
                 '  (Only uses commutators that contain at least one of the given letters)') do |letters|
           options.restrict_letters = letters.downcase.split('')
         end

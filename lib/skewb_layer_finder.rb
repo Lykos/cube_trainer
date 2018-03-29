@@ -99,27 +99,27 @@ module CubeTrainer
       skewb_state.sticker_array(face)[1..-1].count { |c| c == face_color }
     end
 
-    def find_layer(skewb_state, limit)
+    def find_layer(skewb_state, limit, color_restrictions=COLORS)
       raise ArgumentError unless limit.is_a?(Integer) && limit >= 0
-      solved_layers = skewb_state.solved_layers
+      solved_layers = skewb_state.solved_layers & color_restrictions
       if !solved_layers.empty?
         return AlreadySolvedSolutionSet.new(solved_layers)
       end
       if limit == 0
         return NO_SOLUTIONS
       end
-      moves = SkewbMove::ALL.dup.sort_by do |m|
+      moves = SkewbMove::ALL.dup.collect do |m|
         m.apply_to(skewb_state)
         score = layer_score(skewb_state)
         m.invert.apply_to(skewb_state)
-        score
-      end.reverse
+        [m, score]
+      end.select { |m, score| score + limit >= 4 }.collect { |m, score| m }.reverse
       best_solutions = NO_SOLUTIONS
       inner_limit = limit - 1
       moves.each do |m|
         m.apply_to(skewb_state)
         # Note that limit is updated s.t. this solution helps us.
-        solutions = find_layer(skewb_state, inner_limit)
+        solutions = find_layer(skewb_state, inner_limit, color_restrictions)
         m.invert.apply_to(skewb_state)
         if solutions.solved? then
           adjusted_solutions = FirstMovePlusSolutions.new(m, solutions)
