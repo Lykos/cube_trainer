@@ -91,7 +91,7 @@ module CubeTrainer
   NO_SOLUTIONS = UnionSolutionSet.new([])
 
   class SkewbLayerFinder
-    def layer_score(skewb_state)
+    def self.layer_score(skewb_state)
       Face::ELEMENTS.collect { |f| layer_score_on_face(skewb_state, f) }.max
     end
 
@@ -105,7 +105,7 @@ module CubeTrainer
         {}
       end
 
-    def mismatch_on_outside(skewb_state, coordinates)
+    def self.mismatch_on_outside(skewb_state, coordinates)
       raise ArgumentError unless coordinates.length == 2
       raise ArgumentError unless coordinates.all? { |c| c.is_a?(SkewbCoordinate) }
       friends = MATCHING_CORNERS_HASH[coordinates.sort]
@@ -113,34 +113,42 @@ module CubeTrainer
       skewb_state[friends[0]] != skewb_state[friends[1]]
     end
 
-    def layer_score_on_face(skewb_state, face)
+    def self.layer_score_on_face(skewb_state, face)
       face_color = skewb_state[SkewbCoordinate.center(face)]
       matching_coordinates = SkewbCoordinate.corners_on_face(face).select do |c|
         skewb_state[c] == face_color
       end
       naive_score = matching_coordinates.length
       has_mismatch = matching_coordinates.combination(2).all? do |cs|
-        mismatch_on_outside(skewb_state, cs)
+        SkewbLayerFinder.mismatch_on_outside(skewb_state, cs)
       end
       if has_mismatch then naive_score - naive_score / 2 else naive_score end
+    end
+
+    def self.score_after_move(skewb_state, move)
+      move.apply_to(skewb_state)
+      score = layer_score(skewb_state)
+      move.invert.apply_to(skewb_state)
+      score
     end
 
     def find_layer(skewb_state, limit, color_restrictions=COLORS)
       raise ArgumentError unless limit.is_a?(Integer) && limit >= 0
       solved_layers = skewb_state.solved_layers & color_restrictions
       if !solved_layers.empty?
-        raise unless layer_score(skewb_state) == 4
+        raise unless SkewbLayerFinder.layer_score(skewb_state) == 4
         return AlreadySolvedSolutionSet.new(solved_layers)
       end
       if limit == 0
         return NO_SOLUTIONS
       end
       moves = SkewbMove::ALL.dup.collect do |m|
-        m.apply_to(skewb_state)
-        score = layer_score(skewb_state)
-        m.invert.apply_to(skewb_state)
-        [m, score]
-      end.select { |m, score| score + limit >= 4 }.collect { |m, score| m }.reverse
+        [m, SkewbLayerFinder.score_after_move(skewb_state, m)]
+      end.select do |m, score|
+        score + limit >= 4
+      end.sort_by do |m, score|
+        -score
+      end.collect { |m, score| m }
       best_solutions = NO_SOLUTIONS
       inner_limit = limit - 1
       moves.each do |m|
