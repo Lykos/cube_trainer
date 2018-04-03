@@ -9,7 +9,7 @@ def parse_alg(alg_string)
   Algorithm.new(alg_string.split(' ').collect { |move_string| parse_move(move_string) })
 end
 
-RSpec.shared_examples "cube_state" do |cube_size|
+RSpec.shared_examples 'cube_state' do |cube_size|
   def expect_stickers_changed(cube_state, changed_parts)
     original_state = create_interesting_cube_state(cube_state.n)
     COLORS.each do |c|

@@ -3,10 +3,10 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
+require 'move'
 require 'skewb_layer_finder'
 require 'skewb_scrambler'
 require 'skewb_state'
-require 'move'
 require 'thread'
 
 include CubeTrainer
