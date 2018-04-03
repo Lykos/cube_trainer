@@ -25,6 +25,7 @@ def inserting_second_piece_is_not_optimal(skewb_state, layer_solutions)
   elsif max_score_after_one_move(skewb_state) < 2
     false
   else
+    return true
     layer_solutions.extract_algorithm.all? do |a|
       SkewbLayerFinder.score_after_move(skewb_state, a.moves[0]) < 2      
     end
