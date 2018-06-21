@@ -190,6 +190,8 @@ module CubeTrainer
       @width = width
       @direction = direction
     end
+
+    OUTER_MOVES = Face::ELEMENTS.product([1, 2, 3]).map { |f, d| FatMove.new(f, 1, d) }
   
     attr_reader :face, :width, :direction
   
