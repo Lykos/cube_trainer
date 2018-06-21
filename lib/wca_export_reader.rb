@@ -16,6 +16,7 @@ module CubeTrainer
     COMPETITIONS_FILE = 'WCA_export_Competitions.tsv'  
     FORMATS_FILE = 'WCA_export_Formats.tsv'
     RESULTS_FILE = 'WCA_export_Results.tsv'
+    SCRAMBLES_FILE = 'WCA_export_Scrambles.tsv'
     COL_SEP = "\t"
 
     def result(eventid, result_string)
@@ -141,6 +142,23 @@ module CubeTrainer
       end
     end
     
+    def parse_alg(alg_string)
+      Algorithm.new(alg_string.split(' ').collect { |move_string| parse_move(move_string) })
+    end
+
+    def read_scrambles_file(input_stream)
+      @3x3scrambles = []
+      CSV.parse(input_stream, col_sep: COL_SEP) do |row|
+        scrambleid = row[0]
+        next if scrambleid == 'scrambleId'
+        eventid = row[2]
+        next unless eventid == '333'
+        @3x3scrambles.push({scrambleid: scrambleid, competitionid: row[1], eventid: eventid,
+                            roundtypeid: row[2], groupid: row[3], isextra: row[4].to_i == 1,
+                            scramblenum: row[5].to_i, parse_alg(row[6])})
+      end
+    end
+    
     def initialize(filename)
       @ranks = {}
       Zip::ZipFile.open(filename) do |z|
@@ -154,6 +172,7 @@ module CubeTrainer
         read_people_file(z.get_input_stream(PEOPLE_FILE))
         read_ranks_file(z.get_input_stream(RANKS_AVERAGE_FILE), 'Average')
         read_ranks_file(z.get_input_stream(RANKS_SINGLE_FILE), 'Single')
+        read_scrambles_file(z.get_input_stream(SCRAMBLES_FILE))
       end
     end
 
