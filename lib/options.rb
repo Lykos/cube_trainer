@@ -26,6 +26,7 @@ module CubeTrainer
       # Default options
       options.new_item_boundary = 11
       options.restrict_colors = COLORS
+      options.restrict_letters = ALPHABET
       opt_parser = OptionParser.new do |opts|
         opts.separator ''
         opts.separator 'Specific options:'      
