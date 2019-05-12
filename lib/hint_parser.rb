@@ -2,6 +2,7 @@ require 'csv'
 require 'commutator'
 require 'move'
 require 'commutator_checker'
+require 'cube'
 
 module CubeTrainer
 
@@ -9,6 +10,13 @@ module CubeTrainer
     def self.csv_file(part_class)
       # TODO Filename construction sucks
       "data/#{part_class.to_s}.csv"
+    end
+
+    FACE_REGEXP = "[#{FACE_NAMES.join("")}]{2}"
+
+    def self.parse_part(s)
+      lol = s[FACE_REGEXP]
+      part_class.parse(lol)
     end
     
     def self.parse_hints(part_class, cube_size, check_comms)
@@ -18,7 +26,7 @@ module CubeTrainer
       hints = {}
       hint_table = CSV.read(csv_file(name))
       # TODO make this more general to figure out other types of hint tables
-      parts = hint_table[0][1..-1].collect { |p| part_class.parse(p) }
+      parts = hint_table[0][1..-1].collect { |p| parse_part(p) }
       total_algs = 0
       broken_algs = 0
       unfixable_algs = 0
