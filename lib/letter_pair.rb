@@ -5,11 +5,10 @@ module CubeTrainer
   class LetterPair
   
     SEPARATOR = " "
-    raise if ALPHABET.include?(SEPARATOR)
     
     def initialize(letters)
       raise "Invalid letter pair length for letter pair #{letters.join(" ")}." unless 1 <= letters.length and letters.length < 3
-      letters.each { |l| raise "Invalid letter #{l}." unless ALPHABET.include?(l) }
+      raise "Invalid letter '#{SEPARATOR}' in letter pair #{letters.join(" ")}." if letters.include?(SEPARATOR)
       @letters = letters
     end
   

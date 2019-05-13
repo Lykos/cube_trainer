@@ -12,16 +12,18 @@ module CubeTrainer
   
     def initialize(results_model, options)
       @results_model = results_model
-      @input_sampler = InputSampler.new(VALID_PAIRS, results_model, GOAL_BADNESS, options.verbose, options.new_item_boundary)
+      @alphabet = options.letter_scheme.alphabet
+      @input_sampler = InputSampler.new(valid_pairs, results_model, GOAL_BADNESS, options.verbose, options.new_item_boundary)
     end
 
-    VALID_PAIRS = begin
-                    pairs = LetterPairHelper.letter_pairs(ALPHABET.permutation(2))
-                    duplicates = LetterPairHelper.letter_pairs(ALPHABET.collect { |c| [c, c] })
-                    singles = LetterPairHelper.letter_pairs(ALPHABET.permutation(1))
-                    valid_pairs = pairs - duplicates + singles
-                    PaoLetterPair::PAO_TYPES.product(valid_pairs).collect { |c| PaoLetterPair.new(*c) }
-                  end
+    def valid_pairs
+      
+      pairs = LetterPairHelper.letter_pairs(@alphabet.permutation(2))
+      duplicates = LetterPairHelper.letter_pairs(@alphabet.collect { |c| [c, c] })
+      singles = LetterPairHelper.letter_pairs(@alphabet.permutation(1))
+      valid_pairs = pairs - duplicates + singles
+      PaoLetterPair::PAO_TYPES.product(valid_pairs).collect { |c| PaoLetterPair.new(*c) }
+    end
 
     attr_reader :input_sampler
 

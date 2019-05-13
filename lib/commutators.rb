@@ -11,13 +11,17 @@ module CubeTrainer
     # If restrict_letters is not nil, only commutators for those letters are used.
     def initialize(results_model, options, buffer)
       @buffer = buffer
-      pieces = valid_pairs.select { |p| p.letters.any? { |l| options.restrict_letters.include?(l) } }
+      @letter_scheme = options.letter_scheme
+      pieces = if options.restrict_letters and not options.restrict_letters.empty?
+                 valid_pairs.select { |p| p.letters.any? { |l| options.restrict_letters.include?(l) } }
+               else
+                 valid_pairs
+               end
       @input_sampler = InputSampler.new(pieces, results_model, goal_badness, options.verbose, options.new_item_boundary)
       @hinter = HintParser.maybe_create(part_type, options.cube_size, options.test_comms)
     end
   
-    attr_reader :hinter, :input_sampler
-    attr_reader :buffer
+    attr_reader :hinter, :input_sampler, :buffer, :letter_scheme
   
   end
   

@@ -2,6 +2,7 @@ require 'cube_state'
 require 'cube'
 require 'move'
 require 'coordinate'
+require 'letter_scheme'
 
 include CubeTrainer
 
@@ -10,6 +11,12 @@ def parse_alg(alg_string)
 end
 
 RSpec.shared_examples 'cube_state' do |cube_size|
+  let(:letter_scheme) { DefaultLetterScheme.new }
+
+  def for_letter(part_type, letter)
+    letter_scheme.for_letter(part_type, letter)
+  end
+
   def expect_stickers_changed(cube_state, changed_parts)
     original_state = create_interesting_cube_state(cube_state.n)
     COLORS.each do |c|
@@ -51,7 +58,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   let (:cube_state) { create_interesting_cube_state(cube_size) }
   
   it 'should have the right state after applying a nice corner commutator' do
-    cube_state.apply_piece_cycle([Corner.for_letter('c'), Corner.for_letter('d'), Corner.for_letter('k')])
+    cube_state.apply_piece_cycle([for_letter(Corner, 'c'), for_letter(Corner, 'd'), for_letter(Corner, 'k')])
     changed_parts = {
       [:yellow, cube_size - 1, cube_size - 1] => :green,
       [:green, 0, cube_size - 1] => :orange,
@@ -65,7 +72,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   end
   
   it 'should have the right state after applying a nasty corner commutator' do
-    cube_state.apply_piece_cycle([Corner.for_letter('c'), Corner.for_letter('h'), Corner.for_letter('g')])
+    cube_state.apply_piece_cycle([for_letter(Corner, 'c'), for_letter(Corner, 'h'), for_letter(Corner, 'g')])
     changed_parts = {
       [:yellow, cube_size - 1, cube_size - 1] => :red,
       [:yellow, 0, cube_size - 1] => :blue,
@@ -413,7 +420,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should do a Niklas alg properly' do
     parse_alg('U\' L\' U R U\' L U R\'').apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
-    expected_cube_state.apply_piece_cycle([Corner.for_letter('c'), Corner.for_letter('i'), Corner.for_letter('j')])
+    expected_cube_state.apply_piece_cycle([for_letter(Corner, 'c'), for_letter(Corner, 'i'), for_letter(Corner, 'j')])
     expect(cube_state).to be == expected_cube_state
   end
   
@@ -421,7 +428,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     if cube_size >= 4
       parse_alg('U\' R\' U r2 U\' R U r2').apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
-      expected_cube_state.apply_piece_cycle([Wing.for_letter('e'), Wing.for_letter('t'), Wing.for_letter('k')])
+      expected_cube_state.apply_piece_cycle([for_letter(Wing, 'e'), for_letter(Wing, 't'), for_letter(Wing, 'k')])
       expect(cube_state).to be == expected_cube_state
     end
   end
@@ -430,17 +437,17 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     cube_state = CubeState.solved(cube_size)
     parse_alg('R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\'').apply_to(cube_state)
     expected_cube_state = CubeState.solved(cube_size)
-    expected_cube_state.apply_piece_cycle([Corner.for_letter('b'), Corner.for_letter('d')])
+    expected_cube_state.apply_piece_cycle([for_letter(Corner, 'b'), for_letter(Corner, 'd')])
     if cube_size % 2 == 1 && cube_size >= 5
-      expected_cube_state.apply_piece_cycle([Midge.for_letter('b'), Midge.for_letter('c')])
+      expected_cube_state.apply_piece_cycle([for_letter(Midge, 'b'), for_letter(Midge, 'c')])
     end
     if cube_size == 3
-      expected_cube_state.apply_piece_cycle([Edge.for_letter('b'), Edge.for_letter('c')])
+      expected_cube_state.apply_piece_cycle([for_letter(Edge, 'b'), for_letter(Edge, 'c')])
     end
-    wing_incarnations = Wing.for_letter('e').num_incarnations(cube_size)
+    wing_incarnations = for_letter(Wing, 'e').num_incarnations(cube_size)
     wing_incarnations.times do |incarnation_index|
-      expected_cube_state.apply_piece_cycle([Wing.for_letter('b'), Wing.for_letter('c')], incarnation_index)
-      expected_cube_state.apply_piece_cycle([Wing.for_letter('m'), Wing.for_letter('i')], incarnation_index)
+      expected_cube_state.apply_piece_cycle([for_letter(Wing, 'b'), for_letter(Wing, 'c')], incarnation_index)
+      expected_cube_state.apply_piece_cycle([for_letter(Wing, 'm'), for_letter(Wing, 'i')], incarnation_index)
     end
     expect(cube_state).to be == expected_cube_state
   end

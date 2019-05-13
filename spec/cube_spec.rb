@@ -1,5 +1,6 @@
 require 'cube'
 require 'coordinate'
+require 'letter_scheme'
 
 include CubeTrainer
 
@@ -9,17 +10,8 @@ RSpec::Matchers.define :be_rotationally_equivalent_to do |expected|
   end
 end
 
-RSpec.shared_examples 'Part' do |clazz|
-  let(:letter) { ALPHABET.sample }
-  
-  it 'should find the piece with the right letter' do
-    expect(clazz.for_letter(letter).letter).to be == letter
-  end
-end
-
 describe Edge do
-  it_behaves_like 'Part', Edge
-
+  let(:letter_scheme) { DefaultLetterScheme.new }
   let(:cube_size) { 3 }
   let(:white_face) { Face.for_color(:white) }
   let(:yellow_face) { Face.for_color(:yellow) }
@@ -29,36 +21,35 @@ describe Edge do
   let(:blue_face) { Face.for_color(:blue) }
     
   it 'returns the right solved_coordinate' do
-    expect(Edge.for_letter('a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 0, 1)
-    expect(Edge.for_letter('b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, 0)
-    expect(Edge.for_letter('c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, -1)
-    expect(Edge.for_letter('d').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -1, 1)
-    expect(Edge.for_letter('e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 0, 1)
-    expect(Edge.for_letter('f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, 0)
-    expect(Edge.for_letter('g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, -1)
-    expect(Edge.for_letter('h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -1, 1)
-    expect(Edge.for_letter('i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 0, 1)
-    expect(Edge.for_letter('j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, 0)
-    expect(Edge.for_letter('k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, -1)
-    expect(Edge.for_letter('l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -1, 1)
-    expect(Edge.for_letter('m').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 0, 1)
-    expect(Edge.for_letter('n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, 0)
-    expect(Edge.for_letter('o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, -1)
-    expect(Edge.for_letter('p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -1, 1)
-    expect(Edge.for_letter('q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 0, 1)
-    expect(Edge.for_letter('r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, 0)
-    expect(Edge.for_letter('s').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, -1)
-    expect(Edge.for_letter('t').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -1, 1)
-    expect(Edge.for_letter('u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 0, 1)
-    expect(Edge.for_letter('v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, 0)
-    expect(Edge.for_letter('w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, -1)
-    expect(Edge.for_letter('x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -1, 1)
+    expect(letter_scheme.for_letter(Edge, 'a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 0, 1)
+    expect(letter_scheme.for_letter(Edge, 'b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, 0)
+    expect(letter_scheme.for_letter(Edge, 'c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, -1)
+    expect(letter_scheme.for_letter(Edge, 'd').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -1, 1)
+    expect(letter_scheme.for_letter(Edge, 'e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 0, 1)
+    expect(letter_scheme.for_letter(Edge, 'f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, 0)
+    expect(letter_scheme.for_letter(Edge, 'g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, -1)
+    expect(letter_scheme.for_letter(Edge, 'h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -1, 1)
+    expect(letter_scheme.for_letter(Edge, 'i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 0, 1)
+    expect(letter_scheme.for_letter(Edge, 'j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, 0)
+    expect(letter_scheme.for_letter(Edge, 'k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, -1)
+    expect(letter_scheme.for_letter(Edge, 'l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -1, 1)
+    expect(letter_scheme.for_letter(Edge, 'm').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 0, 1)
+    expect(letter_scheme.for_letter(Edge, 'n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, 0)
+    expect(letter_scheme.for_letter(Edge, 'o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, -1)
+    expect(letter_scheme.for_letter(Edge, 'p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -1, 1)
+    expect(letter_scheme.for_letter(Edge, 'q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 0, 1)
+    expect(letter_scheme.for_letter(Edge, 'r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, 0)
+    expect(letter_scheme.for_letter(Edge, 's').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, -1)
+    expect(letter_scheme.for_letter(Edge, 't').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -1, 1)
+    expect(letter_scheme.for_letter(Edge, 'u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 0, 1)
+    expect(letter_scheme.for_letter(Edge, 'v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, 0)
+    expect(letter_scheme.for_letter(Edge, 'w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, -1)
+    expect(letter_scheme.for_letter(Edge, 'x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -1, 1)
   end
 end
 
 describe Midge do
-  it_behaves_like 'Part', Midge
-
+  let(:letter_scheme) { DefaultLetterScheme.new }
   let(:cube_size) { 5 }
   let(:white_face) { Face.for_color(:white) }
   let(:yellow_face) { Face.for_color(:yellow) }
@@ -68,36 +59,35 @@ describe Midge do
   let(:blue_face) { Face.for_color(:blue) }
 
   it 'returns the right solved_coordinate' do
-    expect(Midge.for_letter('a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 0, 2)
-    expect(Midge.for_letter('b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 2, 0)
-    expect(Midge.for_letter('c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 2, -1)
-    expect(Midge.for_letter('d').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -1, 2)
-    expect(Midge.for_letter('e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 0, 2)
-    expect(Midge.for_letter('f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 2, 0)
-    expect(Midge.for_letter('g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 2, -1)
-    expect(Midge.for_letter('h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -1, 2)
-    expect(Midge.for_letter('i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 0, 2)
-    expect(Midge.for_letter('j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 2, 0)
-    expect(Midge.for_letter('k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 2, -1)
-    expect(Midge.for_letter('l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -1, 2)
-    expect(Midge.for_letter('m').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 0, 2)
-    expect(Midge.for_letter('n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 2, 0)
-    expect(Midge.for_letter('o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 2, -1)
-    expect(Midge.for_letter('p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -1, 2)
-    expect(Midge.for_letter('q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 0, 2)
-    expect(Midge.for_letter('r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 2, 0)
-    expect(Midge.for_letter('s').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 2, -1)
-    expect(Midge.for_letter('t').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -1, 2)
-    expect(Midge.for_letter('u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 0, 2)
-    expect(Midge.for_letter('v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 2, 0)
-    expect(Midge.for_letter('w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 2, -1)
-    expect(Midge.for_letter('x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -1, 2)
+    expect(letter_scheme.for_letter(Midge, 'a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 0, 2)
+    expect(letter_scheme.for_letter(Midge, 'b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 2, 0)
+    expect(letter_scheme.for_letter(Midge, 'c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 2, -1)
+    expect(letter_scheme.for_letter(Midge, 'd').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -1, 2)
+    expect(letter_scheme.for_letter(Midge, 'e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 0, 2)
+    expect(letter_scheme.for_letter(Midge, 'f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 2, 0)
+    expect(letter_scheme.for_letter(Midge, 'g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 2, -1)
+    expect(letter_scheme.for_letter(Midge, 'h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -1, 2)
+    expect(letter_scheme.for_letter(Midge, 'i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 0, 2)
+    expect(letter_scheme.for_letter(Midge, 'j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 2, 0)
+    expect(letter_scheme.for_letter(Midge, 'k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 2, -1)
+    expect(letter_scheme.for_letter(Midge, 'l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -1, 2)
+    expect(letter_scheme.for_letter(Midge, 'm').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 0, 2)
+    expect(letter_scheme.for_letter(Midge, 'n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 2, 0)
+    expect(letter_scheme.for_letter(Midge, 'o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 2, -1)
+    expect(letter_scheme.for_letter(Midge, 'p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -1, 2)
+    expect(letter_scheme.for_letter(Midge, 'q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 0, 2)
+    expect(letter_scheme.for_letter(Midge, 'r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 2, 0)
+    expect(letter_scheme.for_letter(Midge, 's').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 2, -1)
+    expect(letter_scheme.for_letter(Midge, 't').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -1, 2)
+    expect(letter_scheme.for_letter(Midge, 'u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 0, 2)
+    expect(letter_scheme.for_letter(Midge, 'v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 2, 0)
+    expect(letter_scheme.for_letter(Midge, 'w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 2, -1)
+    expect(letter_scheme.for_letter(Midge, 'x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -1, 2)
   end
 end
 
 describe Wing do
-  it_behaves_like 'Part', Wing
-
+  let(:letter_scheme) { DefaultLetterScheme.new }
   let(:cube_size) { 4 }
   let(:white_face) { Face.for_color(:white) }
   let(:yellow_face) { Face.for_color(:yellow) }
@@ -149,36 +139,35 @@ describe Wing do
   end
 
   it 'returns the right solved_coordinate' do
-    expect(Wing.for_letter('a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 0, 2)
-    expect(Wing.for_letter('b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, 0)
-    expect(Wing.for_letter('c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 2, 3)
-    expect(Wing.for_letter('d').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 3, 1)
-    expect(Wing.for_letter('e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 0, 1)
-    expect(Wing.for_letter('f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 2, 0)
-    expect(Wing.for_letter('g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, 3)
-    expect(Wing.for_letter('h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 3, 2)
-    expect(Wing.for_letter('i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 0, 2)
-    expect(Wing.for_letter('j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, 0)
-    expect(Wing.for_letter('k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 2, 3)
-    expect(Wing.for_letter('l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 3, 1)
-    expect(Wing.for_letter('m').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 0, 1)
-    expect(Wing.for_letter('n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 2, 0)
-    expect(Wing.for_letter('o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, 3)
-    expect(Wing.for_letter('p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 3, 2)
-    expect(Wing.for_letter('q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 0, 2)
-    expect(Wing.for_letter('r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, 0)
-    expect(Wing.for_letter('s').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 2, 3)
-    expect(Wing.for_letter('t').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 3, 1)
-    expect(Wing.for_letter('u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 0, 1)
-    expect(Wing.for_letter('v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 2, 0)
-    expect(Wing.for_letter('w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, 3)
-    expect(Wing.for_letter('x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 3, 2)
+    expect(letter_scheme.for_letter(Wing, 'a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 0, 2)
+    expect(letter_scheme.for_letter(Wing, 'b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, 0)
+    expect(letter_scheme.for_letter(Wing, 'c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 2, 3)
+    expect(letter_scheme.for_letter(Wing, 'd').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 3, 1)
+    expect(letter_scheme.for_letter(Wing, 'e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 0, 1)
+    expect(letter_scheme.for_letter(Wing, 'f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 2, 0)
+    expect(letter_scheme.for_letter(Wing, 'g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, 3)
+    expect(letter_scheme.for_letter(Wing, 'h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 3, 2)
+    expect(letter_scheme.for_letter(Wing, 'i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 0, 2)
+    expect(letter_scheme.for_letter(Wing, 'j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, 0)
+    expect(letter_scheme.for_letter(Wing, 'k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 2, 3)
+    expect(letter_scheme.for_letter(Wing, 'l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 3, 1)
+    expect(letter_scheme.for_letter(Wing, 'm').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 0, 1)
+    expect(letter_scheme.for_letter(Wing, 'n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 2, 0)
+    expect(letter_scheme.for_letter(Wing, 'o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, 3)
+    expect(letter_scheme.for_letter(Wing, 'p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 3, 2)
+    expect(letter_scheme.for_letter(Wing, 'q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 0, 2)
+    expect(letter_scheme.for_letter(Wing, 'r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, 0)
+    expect(letter_scheme.for_letter(Wing, 's').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 2, 3)
+    expect(letter_scheme.for_letter(Wing, 't').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 3, 1)
+    expect(letter_scheme.for_letter(Wing, 'u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 0, 1)
+    expect(letter_scheme.for_letter(Wing, 'v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 2, 0)
+    expect(letter_scheme.for_letter(Wing, 'w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, 3)
+    expect(letter_scheme.for_letter(Wing, 'x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 3, 2)
   end
 end
 
 describe Corner do
-  it_behaves_like 'Part', Corner
-
+  let(:letter_scheme) { DefaultLetterScheme.new }
   let(:cube_size) { 3 }
   let(:white_face) { Face.for_color(:white) }
   let(:yellow_face) { Face.for_color(:yellow) }
@@ -188,34 +177,35 @@ describe Corner do
   let(:blue_face) { Face.for_color(:blue) }
 
   it 'returns the right solved_coordinate' do
-    expect(Corner.for_letter('a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 0, -1)
-    expect(Corner.for_letter('b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 0, 0)
-    expect(Corner.for_letter('c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -1, -1)
-    expect(Corner.for_letter('d').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -1, 0)
-    expect(Corner.for_letter('e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 0, 0)
-    expect(Corner.for_letter('f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -1, 0)
-    expect(Corner.for_letter('g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 0, -1)
-    expect(Corner.for_letter('h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -1, -1)
-    expect(Corner.for_letter('i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 0, -1)
-    expect(Corner.for_letter('j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 0, 0)
-    expect(Corner.for_letter('k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -1, -1)
-    expect(Corner.for_letter('l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -1, 0)
-    expect(Corner.for_letter('m').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 0, 0)
-    expect(Corner.for_letter('n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -1, 0)
-    expect(Corner.for_letter('o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 0, -1)
-    expect(Corner.for_letter('p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -1, -1)
-    expect(Corner.for_letter('q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 0, -1)
-    expect(Corner.for_letter('r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 0, 0)
-    expect(Corner.for_letter('s').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -1, -1)
-    expect(Corner.for_letter('t').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -1, 0)
-    expect(Corner.for_letter('u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 0, 0)
-    expect(Corner.for_letter('v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -1, 0)
-    expect(Corner.for_letter('w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 0, -1)
-    expect(Corner.for_letter('x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -1, -1)
+    expect(letter_scheme.for_letter(Corner, 'a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 0, -1)
+    expect(letter_scheme.for_letter(Corner, 'b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 0, 0)
+    expect(letter_scheme.for_letter(Corner, 'c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -1, -1)
+    expect(letter_scheme.for_letter(Corner, 'd').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -1, 0)
+    expect(letter_scheme.for_letter(Corner, 'e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 0, 0)
+    expect(letter_scheme.for_letter(Corner, 'f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -1, 0)
+    expect(letter_scheme.for_letter(Corner, 'g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 0, -1)
+    expect(letter_scheme.for_letter(Corner, 'h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -1, -1)
+    expect(letter_scheme.for_letter(Corner, 'i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 0, -1)
+    expect(letter_scheme.for_letter(Corner, 'j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 0, 0)
+    expect(letter_scheme.for_letter(Corner, 'k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -1, -1)
+    expect(letter_scheme.for_letter(Corner, 'l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -1, 0)
+    expect(letter_scheme.for_letter(Corner, 'm').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 0, 0)
+    expect(letter_scheme.for_letter(Corner, 'n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -1, 0)
+    expect(letter_scheme.for_letter(Corner, 'o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 0, -1)
+    expect(letter_scheme.for_letter(Corner, 'p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -1, -1)
+    expect(letter_scheme.for_letter(Corner, 'q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 0, -1)
+    expect(letter_scheme.for_letter(Corner, 'r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 0, 0)
+    expect(letter_scheme.for_letter(Corner, 's').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -1, -1)
+    expect(letter_scheme.for_letter(Corner, 't').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -1, 0)
+    expect(letter_scheme.for_letter(Corner, 'u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 0, 0)
+    expect(letter_scheme.for_letter(Corner, 'v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -1, 0)
+    expect(letter_scheme.for_letter(Corner, 'w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 0, -1)
+    expect(letter_scheme.for_letter(Corner, 'x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -1, -1)
   end
 end
 
 describe Face do
+  let(:letter_scheme) { DefaultLetterScheme.new }
   let(:white_face) { Face.for_color(:white) }
   let(:yellow_face) { Face.for_color(:yellow) }
   let(:red_face) { Face.for_color(:red) }
@@ -253,8 +243,7 @@ describe Face do
 end
 
 describe TCenter do
-  it_behaves_like 'Part', TCenter
-
+  let(:letter_scheme) { DefaultLetterScheme.new }
   let(:cube_size) { 5 }
   let(:white_face) { Face.for_color(:white) }
   let(:yellow_face) { Face.for_color(:yellow) }
@@ -264,36 +253,35 @@ describe TCenter do
   let(:blue_face) { Face.for_color(:blue) }
 
   it 'returns the right solved_coordinate' do
-    expect(TCenter.for_letter('a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, 2)
-    expect(TCenter.for_letter('b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 2, 1)
-    expect(TCenter.for_letter('c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 2, -2)
-    expect(TCenter.for_letter('d').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -2, 2)
-    expect(TCenter.for_letter('e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, 2)
-    expect(TCenter.for_letter('f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 2, 1)
-    expect(TCenter.for_letter('g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 2, -2)
-    expect(TCenter.for_letter('h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -2, 2)
-    expect(TCenter.for_letter('i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, 2)
-    expect(TCenter.for_letter('j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 2, 1)
-    expect(TCenter.for_letter('k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 2, -2)
-    expect(TCenter.for_letter('l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -2, 2)
-    expect(TCenter.for_letter('m').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, 2)
-    expect(TCenter.for_letter('n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 2, 1)
-    expect(TCenter.for_letter('o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 2, -2)
-    expect(TCenter.for_letter('p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -2, 2)
-    expect(TCenter.for_letter('q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, 2)
-    expect(TCenter.for_letter('r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 2, 1)
-    expect(TCenter.for_letter('s').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 2, -2)
-    expect(TCenter.for_letter('t').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -2, 2)
-    expect(TCenter.for_letter('u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, 2)
-    expect(TCenter.for_letter('v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 2, 1)
-    expect(TCenter.for_letter('w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 2, -2)
-    expect(TCenter.for_letter('x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -2, 2)
+    expect(letter_scheme.for_letter(TCenter, 'a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, 2)
+    expect(letter_scheme.for_letter(TCenter, 'b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 2, 1)
+    expect(letter_scheme.for_letter(TCenter, 'c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 2, -2)
+    expect(letter_scheme.for_letter(TCenter, 'd').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -2, 2)
+    expect(letter_scheme.for_letter(TCenter, 'e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, 2)
+    expect(letter_scheme.for_letter(TCenter, 'f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 2, 1)
+    expect(letter_scheme.for_letter(TCenter, 'g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 2, -2)
+    expect(letter_scheme.for_letter(TCenter, 'h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -2, 2)
+    expect(letter_scheme.for_letter(TCenter, 'i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, 2)
+    expect(letter_scheme.for_letter(TCenter, 'j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 2, 1)
+    expect(letter_scheme.for_letter(TCenter, 'k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 2, -2)
+    expect(letter_scheme.for_letter(TCenter, 'l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -2, 2)
+    expect(letter_scheme.for_letter(TCenter, 'm').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, 2)
+    expect(letter_scheme.for_letter(TCenter, 'n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 2, 1)
+    expect(letter_scheme.for_letter(TCenter, 'o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 2, -2)
+    expect(letter_scheme.for_letter(TCenter, 'p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -2, 2)
+    expect(letter_scheme.for_letter(TCenter, 'q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, 2)
+    expect(letter_scheme.for_letter(TCenter, 'r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 2, 1)
+    expect(letter_scheme.for_letter(TCenter, 's').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 2, -2)
+    expect(letter_scheme.for_letter(TCenter, 't').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -2, 2)
+    expect(letter_scheme.for_letter(TCenter, 'u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, 2)
+    expect(letter_scheme.for_letter(TCenter, 'v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 2, 1)
+    expect(letter_scheme.for_letter(TCenter, 'w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 2, -2)
+    expect(letter_scheme.for_letter(TCenter, 'x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -2, 2)
   end
 end
 
 describe XCenter do
-  it_behaves_like 'Part', XCenter
-  
+  let(:letter_scheme) { DefaultLetterScheme.new }  
   let(:cube_size) { 4 }
   let(:white_face) { Face.for_color(:white) }
   let(:yellow_face) { Face.for_color(:yellow) }
@@ -303,29 +291,29 @@ describe XCenter do
   let(:blue_face) { Face.for_color(:blue) }
   
   it 'returns the right solved_coordinate' do
-    expect(XCenter.for_letter('a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, -2)
-    expect(XCenter.for_letter('b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, 1)
-    expect(XCenter.for_letter('c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -2, -2)
-    expect(XCenter.for_letter('d').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -2, 1)
-    expect(XCenter.for_letter('e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, 1)
-    expect(XCenter.for_letter('f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -2, 1)
-    expect(XCenter.for_letter('g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, -2)
-    expect(XCenter.for_letter('h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -2, -2)
-    expect(XCenter.for_letter('i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, -2)
-    expect(XCenter.for_letter('j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, 1)
-    expect(XCenter.for_letter('k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -2, -2)
-    expect(XCenter.for_letter('l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -2, 1)
-    expect(XCenter.for_letter('m').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, 1)
-    expect(XCenter.for_letter('n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -2, 1)
-    expect(XCenter.for_letter('o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, -2)
-    expect(XCenter.for_letter('p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -2, -2)
-    expect(XCenter.for_letter('q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, -2)
-    expect(XCenter.for_letter('r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, 1)
-    expect(XCenter.for_letter('s').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -2, -2)
-    expect(XCenter.for_letter('t').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -2, 1)
-    expect(XCenter.for_letter('u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, 1)
-    expect(XCenter.for_letter('v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -2, 1)
-    expect(XCenter.for_letter('w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, -2)
-    expect(XCenter.for_letter('x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -2, -2)
+    expect(letter_scheme.for_letter(XCenter, 'a').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, -2)
+    expect(letter_scheme.for_letter(XCenter, 'b').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, 1, 1)
+    expect(letter_scheme.for_letter(XCenter, 'c').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -2, -2)
+    expect(letter_scheme.for_letter(XCenter, 'd').solved_coordinate(cube_size, 0)).to be == Coordinate.new(yellow_face, cube_size, -2, 1)
+    expect(letter_scheme.for_letter(XCenter, 'e').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, 1)
+    expect(letter_scheme.for_letter(XCenter, 'f').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -2, 1)
+    expect(letter_scheme.for_letter(XCenter, 'g').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, 1, -2)
+    expect(letter_scheme.for_letter(XCenter, 'h').solved_coordinate(cube_size, 0)).to be == Coordinate.new(red_face, cube_size, -2, -2)
+    expect(letter_scheme.for_letter(XCenter, 'i').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, -2)
+    expect(letter_scheme.for_letter(XCenter, 'j').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, 1, 1)
+    expect(letter_scheme.for_letter(XCenter, 'k').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -2, -2)
+    expect(letter_scheme.for_letter(XCenter, 'l').solved_coordinate(cube_size, 0)).to be == Coordinate.new(green_face, cube_size, -2, 1)
+    expect(letter_scheme.for_letter(XCenter, 'm').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, 1)
+    expect(letter_scheme.for_letter(XCenter, 'n').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -2, 1)
+    expect(letter_scheme.for_letter(XCenter, 'o').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, 1, -2)
+    expect(letter_scheme.for_letter(XCenter, 'p').solved_coordinate(cube_size, 0)).to be == Coordinate.new(blue_face, cube_size, -2, -2)
+    expect(letter_scheme.for_letter(XCenter, 'q').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, -2)
+    expect(letter_scheme.for_letter(XCenter, 'r').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, 1, 1)
+    expect(letter_scheme.for_letter(XCenter, 's').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -2, -2)
+    expect(letter_scheme.for_letter(XCenter, 't').solved_coordinate(cube_size, 0)).to be == Coordinate.new(orange_face, cube_size, -2, 1)
+    expect(letter_scheme.for_letter(XCenter, 'u').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, 1)
+    expect(letter_scheme.for_letter(XCenter, 'v').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -2, 1)
+    expect(letter_scheme.for_letter(XCenter, 'w').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, 1, -2)
+    expect(letter_scheme.for_letter(XCenter, 'x').solved_coordinate(cube_size, 0)).to be == Coordinate.new(white_face, cube_size, -2, -2)
   end
 end

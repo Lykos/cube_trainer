@@ -7,7 +7,7 @@ module CubeTrainer
   SIDES = COLORS.length
   OPPOSITE_PAIRS = [[:yellow, :white], [:red, :orange], [:green, :blue]].collect { |e| e.sort }.sort
   FACE_NAMES = ['U', 'F', 'R', 'L', 'B', 'D']
-  ALPHABET = "a".upto("x").to_a
+  ALPHABET_SIZE = 24
   SKEWB_STICKERS = 5
   raise unless COLORS.length == FACE_NAMES.length
   
@@ -26,12 +26,8 @@ module CubeTrainer
   
     def self.generate_parts
       parts = COLORS.permutation(self::FACES).collect { |p| new(p) }.select { |p| p.valid? }.sort_by { |p| p.priorities }
-      raise unless parts.length <= ALPHABET.length
+      raise unless parts.length <= ALPHABET_SIZE
       parts
-    end
-  
-    def self.for_letter(letter)
-      self::ELEMENTS.find { |e| e.letter == letter }
     end
   
     def self.for_colors(colors)
@@ -74,10 +70,6 @@ module CubeTrainer
 
     def piece_index
       self.class::ELEMENTS.index(self)
-    end
-  
-    def letter
-      @letter ||= ALPHABET[piece_index]
     end
   
     # Rotate a piece such that the given color is the first color.
@@ -230,6 +222,11 @@ module CubeTrainer
       raise "Invalid corresponding part #{corresponding_part}." unless corresponding_part.is_a?(Part)
       super([corresponding_part.colors[0]])
       @corresponding_part = corresponding_part
+    end
+
+    def self.for_colors(colors)
+      corresponding_part = self::CORRESPONDING_PART_CLASS.for_colors(colors)
+      self::ELEMENTS.find { |e| e.corresponding_part == corresponding_part }
     end
   
     def self.create_for_colors(colors)
