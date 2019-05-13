@@ -9,8 +9,8 @@ module CubeTrainer
     include LetterPairHelper
   
     # If restrict_letters is not nil, only commutators for those letters are used.
-    def initialize(results_model, options)
-      @buffer = options.buffer
+    def initialize(results_model, options, buffer)
+      @buffer = buffer
       pieces = valid_pairs.select { |p| p.letters.any? { |l| options.restrict_letters.include?(l) } }
       @input_sampler = InputSampler.new(pieces, results_model, goal_badness, options.verbose, options.new_item_boundary)
       @hinter = HintParser.maybe_create(self.class::PIECE_TYPE, options.cube_size, options.test_comms)
