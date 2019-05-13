@@ -12,7 +12,8 @@ module CubeTrainer
     CommutatorInfo = Struct.new(:result_symbol, :generator_class, :learner_class, :default_cube_size)
     COMMUTATOR_TYPES = {
       'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, HumanTimeLearner, 3),
-      'edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, HumanTimeLearner, 3),
+      'df_edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, HumanTimeLearner, 3),
+      'fu_edges' => CommutatorInfo.new(:fu_edge_commutators, EdgeCommutators, HumanTimeLearner, 3),
       'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, HumanTimeLearner, 4),
       'xcenters' => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators, HumanTimeLearner, 4),
       'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators, HumanTimeLearner, 5),
