@@ -10,19 +10,26 @@ module CubeTrainer
   
     # If restrict_letters is not nil, only commutators for those letters are used.
     def initialize(results_model, options)
-      pieces = self.class::VALID_PAIRS.select { |p| p.letters.any? { |l| options.restrict_letters.include?(l) } }
+      @buffer = options.buffer
+      pieces = valid_pairs.select { |p| p.letters.any? { |l| options.restrict_letters.include?(l) } }
       @input_sampler = InputSampler.new(pieces, results_model, goal_badness, options.verbose, options.new_item_boundary)
       @hinter = HintParser.maybe_create(self.class::PIECE_TYPE, options.cube_size, options.test_comms)
     end
   
     attr_reader :hinter, :input_sampler
+    attr_reader :buffer
   
   end
   
   class CornerCommutators < Commutators
-  
-    PIECE_TYPE = Corner
-    VALID_PAIRS = CORNER_LETTER_PAIRS - TWISTS
+
+    def part_type
+      Corner
+    end
+
+    def valid_pairs
+      @valid_pairs ||= letter_pairs - rotations
+    end
   
     def goal_badness
       1.5
@@ -32,8 +39,13 @@ module CubeTrainer
   
   class EdgeCommutators < Commutators
   
-    PIECE_TYPE = Edge
-    VALID_PAIRS = EDGE_LETTER_PAIRS - FLIPS
+    def part_type
+      Edge
+    end
+
+    def valid_pairs
+      @valid_pairs ||= letter_pairs - rotations
+    end
   
     def goal_badness
       1.0
@@ -43,8 +55,13 @@ module CubeTrainer
   
   class WingCommutators < Commutators
   
-    PIECE_TYPE = Wing
-    VALID_PAIRS = WING_LETTER_PAIRS
+    def part_type
+      Wing
+    end
+
+    def valid_pairs
+      @valid_pairs ||= letter_pairs - rotations
+    end
   
     def goal_badness
       2.0
@@ -54,9 +71,14 @@ module CubeTrainer
   
   class XCenterCommutators < Commutators
   
-    PIECE_TYPE = XCenter
-    VALID_PAIRS = XCENTER_LETTER_PAIRS - XCENTER_NEIGHBORS
-  
+    def part_type
+      XCenter
+    end
+
+    def valid_pairs
+      @valid_pairs ||= letter_pairs - neighbors
+    end
+    
     def goal_badness
       4.0
     end
@@ -65,9 +87,14 @@ module CubeTrainer
   
   class TCenterCommutators < Commutators
   
-    PIECE_TYPE = TCenter
-    VALID_PAIRS = TCENTER_LETTER_PAIRS - TCENTER_NEIGHBORS
-  
+    def part_type
+      TCenter
+    end
+
+    def valid_pairs
+      @valid_pairs ||= letter_pairs - neighbors
+    end
+    
     def goal_badness
       4.0
     end

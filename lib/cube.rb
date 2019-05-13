@@ -297,8 +297,6 @@ module CubeTrainer
     end
   
     ELEMENTS = generate_parts
-    BUFFER = Edge.new([:white, :red])
-    raise "Invalid buffer edge." unless BUFFER.valid?
   
     def num_incarnations(cube_size)
       if cube_size == 3 then 1 else 0 end
@@ -318,8 +316,6 @@ module CubeTrainer
     end
   
     ELEMENTS = generate_parts
-    BUFFER = Midge.new([:white, :red])
-    raise "Invalid buffer midge." unless BUFFER.valid?
   
     # One index of such a piece on a on a NxN face.
     def base_index_on_face(cube_size, incarnation_index)
@@ -372,8 +368,6 @@ module CubeTrainer
     end
   
     ELEMENTS = generate_parts
-    BUFFER = Wing.new([:red, :yellow])
-    raise "Invalid buffer wing." unless BUFFER.valid?
   
     # One index of such a piece on a on a NxN face.
     def base_index_on_face(cube_size, incarnation_index)
@@ -427,8 +421,6 @@ module CubeTrainer
     end
   
     ELEMENTS = generate_parts
-    BUFFER = Corner.new([:yellow, :blue, :orange])
-    raise "Invalid buffer corner." unless BUFFER.valid?
     
     def num_incarnations(cube_size)
       if cube_size >= 2 then 1 else 0 end
@@ -443,8 +435,6 @@ module CubeTrainer
   class XCenter < MoveableCenter
     CORRESPONDING_PART_CLASS = Corner
     ELEMENTS = generate_parts
-    BUFFER = XCenter.new(Corner.new([:yellow, :green, :red]))
-    raise "Invalid buffer XCenter." unless BUFFER.valid?
   
     def num_incarnations(cube_size)
       [cube_size / 2 - 1, 0].max
@@ -459,8 +449,6 @@ module CubeTrainer
   class TCenter < MoveableCenter
     CORRESPONDING_PART_CLASS = Edge
     ELEMENTS = generate_parts
-    BUFFER = TCenter.new(Edge.new([:yellow, :red]))
-    raise "Invalid buffer TCenter." unless BUFFER.valid?
   
     def num_incarnations(cube_size)
       if cube_size % 2 == 0

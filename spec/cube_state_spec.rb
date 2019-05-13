@@ -437,7 +437,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     if cube_size == 3
       expected_cube_state.apply_piece_cycle([Edge.for_letter('b'), Edge.for_letter('c')])
     end
-    wing_incarnations = Wing::BUFFER.num_incarnations(cube_size)
+    wing_incarnations = Wing.for_letter('e').num_incarnations(cube_size)
     wing_incarnations.times do |incarnation_index|
       expected_cube_state.apply_piece_cycle([Wing.for_letter('b'), Wing.for_letter('c')], incarnation_index)
       expected_cube_state.apply_piece_cycle([Wing.for_letter('m'), Wing.for_letter('i')], incarnation_index)
