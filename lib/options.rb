@@ -9,14 +9,14 @@ require 'alg_sets'
 module CubeTrainer
 
   class Options
-    CommutatorInfo = Struct.new(:result_symbol, :generator_class, :learner_class, :buffer, :default_cube_size)
+    CommutatorInfo = Struct.new(:result_symbol, :generator_class, :buffer, :learner_class, :default_cube_size)
     COMMUTATOR_TYPES = {
-      'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, Edge.for_letter('q'), HumanTimeLearner, 3),
-      'df_edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, Edge.for_letter('q'), HumanTimeLearner, 3),
-      'fu_edges' => CommutatorInfo.new(:fu_edge_commutators, EdgeCommutators, Edge.for_letter('q'), HumanTimeLearner, 3),
-      'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, Edge.for_letter('q'), HumanTimeLearner, 4),
-      'xcenters' => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators, XCenter.for_letter('q'), HumanTimeLearner, 4),
-      'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators, TCenter.for_letter('q'), HumanTimeLearner, 5),
+      'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, Corner.for_letter('q'), HumanTimeLearner, 3),
+      'df_edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, Edge.for_letter('u'), HumanTimeLearner, 3),
+      'fu_edges' => CommutatorInfo.new(:fu_edge_commutators, EdgeCommutators, Edge.for_letter('a'), HumanTimeLearner, 3),
+      'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, Edge.for_letter('e'), HumanTimeLearner, 4),
+      'xcenters' => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators, XCenter.for_letter('b'), HumanTimeLearner, 4),
+      'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators, TCenter.for_letter('a'), HumanTimeLearner, 5),
       'words' => CommutatorInfo.new(:letters_to_word, LettersToWord, nil, HumanWordLearner, nil),
       'oh_plls' => CommutatorInfo.new(:oh_plls_by_name, PllsByName, nil, HumanTimeLearner, 3),
       'plls' => CommutatorInfo.new(:plls_by_name, PllsByName, nil, HumanTimeLearner, 3)

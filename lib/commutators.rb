@@ -13,7 +13,7 @@ module CubeTrainer
       @buffer = buffer
       pieces = valid_pairs.select { |p| p.letters.any? { |l| options.restrict_letters.include?(l) } }
       @input_sampler = InputSampler.new(pieces, results_model, goal_badness, options.verbose, options.new_item_boundary)
-      @hinter = HintParser.maybe_create(self.class::PIECE_TYPE, options.cube_size, options.test_comms)
+      @hinter = HintParser.maybe_create(part_type, options.cube_size, options.test_comms)
     end
   
     attr_reader :hinter, :input_sampler
