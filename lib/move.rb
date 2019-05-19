@@ -4,11 +4,21 @@ require 'cube_state'
 module CubeTrainer
 
   SKEWB_MOVES = ['U', 'R', 'L', 'B']
-  DIRECTION_NAMES = ['', '2', '\'']
+  POSSIBLE_DIRECTION_NAMES = [[''], ['2', '2\''], ['\'', '3']]
+  SIMPLE_DIRECTION_NAMES = POSSIBLE_DIRECTION_NAMES.map { |d| d.first }
   AXES = ['y', 'z', 'x']
   SLICES = ['E', 'S', 'M']
-  MOVE_REGEXP = Regexp.new("(?:([#{AXES.join}])|(\\d*)([#{FACE_NAMES.join}])w|([#{FACE_NAMES.join}])|([#{FACE_NAMES.join.downcase}])|([#{SLICES.join}]))([#{DIRECTION_NAMES.join}]?)")
-  SKEWB_MOVE_REGEXP = Regexp.new("([#{SKEWB_MOVES.join}])([#{DIRECTION_NAMES.join}]?)")
+  MOVE_REGEXP = begin
+                  axes_part = "([#{AXES.join}])"
+                  fat_move_part = "(\\d*)([#{FACE_NAMES.join}])w"
+                  normal_move_part = "([#{FACE_NAMES.join}])"
+                  small_move_part = "([#{FACE_NAMES.join.downcase}])"
+                  slice_move_part = "([#{SLICES.join}])"
+                  move_part = "(?:#{axes_part}|#{fat_move_part}|#{normal_move_part}|#{small_move_part}|#{slice_move_part})"
+                  direction_part = "(#{POSSIBLE_DIRECTION_NAMES.flatten.sort_by { |e| -e.length }.join("|")})"
+                  Regexp.new("#{move_part}#{direction_part}")
+                end
+  SKEWB_MOVE_REGEXP = Regexp.new("([#{SKEWB_MOVES.join}])([#{POSSIBLE_DIRECTION_NAMES.flatten.join}]?)")
 
   # TODO class direction
   def invert_direction(direction)
@@ -39,14 +49,23 @@ module CubeTrainer
     end
   
     def to_s
-      "#{SLICES[Face::ELEMENTS.index(@axis_face)]}#{DIRECTION_NAMES[@direction - 1]}"
+      slice_name = SLICES[Face::ELEMENTS.index(@axis_face)]
+      broken_direction = if slice_name == 'S' then direction else invert_direction(direction) end
+      "#{slice_name}#{SIMPLE_DIRECTION_NAMES[broken_direction - 1]}"
     end
   
     def apply_to(cube_state)
       raise ArgumentError unless cube_state.is_a?(CubeState)
-      raise ArgumentError if cube_state.n % 2 == 0
-      s = cube_state.n / 2
-      cube_state.rotate_slice(@axis_face, s, @direction)
+      # For even layered cubes, m slice moves are meant as very fat moves where only the outer layers stay.
+      # For odd layered cubes, we only move the very middle.
+      if cube_state.n % 2 == 0
+        1.upto(cube_state.n - 2) do |s|
+          cube_state.rotate_slice(@axis_face, s, @direction)
+        end
+      else
+        s = cube_state.n / 2
+        cube_state.rotate_slice(@axis_face, s, @direction)
+      end
     end
 
     def invert
@@ -75,7 +94,7 @@ module CubeTrainer
     end
   
     def to_s
-      "#{AXES[Face::ELEMENTS.index(@axis_face)]}#{DIRECTION_NAMES[@direction - 1]}"
+      "#{AXES[Face::ELEMENTS.index(@axis_face)]}#{SIMPLE_DIRECTION_NAMES[@direction - 1]}"
     end
   
     def apply_to(cube_state)
@@ -117,9 +136,9 @@ module CubeTrainer
 
     def skewb_direction_name(direction)
       if direction == 1
-        DIRECTION_NAMES[0]
+        SIMPLE_DIRECTION_NAMES[0]
       elsif direction == 2
-        DIRECTION_NAMES[-1]
+        SIMPLE_DIRECTION_NAMES[-1]
       else
         raise ArugmentError
       end
@@ -206,7 +225,7 @@ module CubeTrainer
     end
   
     def to_s
-      "#{if @width > 1 then @width else '' end}#{@face.name}#{if @width > 1 then 'w' else '' end}#{DIRECTION_NAMES[@direction - 1]}"
+      "#{if @width > 1 then @width else '' end}#{@face.name}#{if @width > 1 then 'w' else '' end}#{SIMPLE_DIRECTION_NAMES[@direction - 1]}"
     end
   
     def apply_to(cube_state)
@@ -244,12 +263,20 @@ module CubeTrainer
     end
   
     def to_s
-      "#{@slice_face.name.downcase}#{DIRECTION_NAMES[@direction - 1]}"
+      "#{@slice_face.name.downcase}#{SIMPLE_DIRECTION_NAMES[@direction - 1]}"
     end
   
     def apply_to(cube_state)
       raise ArgumentError unless cube_state.is_a?(CubeState)
-      cube_state.rotate_slice(@slice_face, 1, @direction)
+      # We handle the annoying inconsistency that u is a slice move for bigger cubes, but a fat move for 3x3.
+      if cube_state.n == 3
+        0.upto(1) do |s|
+          cube_state.rotate_slice(@slice_face, s, @direction)
+        end
+        cube_state.rotate_face(@slice_face, @direction)
+      else
+        cube_state.rotate_slice(@slice_face, 1, @direction)
+      end
     end
 
     def invert
@@ -286,6 +313,10 @@ module CubeTrainer
     def length
       @moves.length
     end
+
+    def empty?
+      @moves.empty?
+    end
   
     def to_s
       @moves.join(' ')
@@ -302,13 +333,21 @@ module CubeTrainer
     def +(other)
       Algorithm.new(@moves + other.moves)
     end
+
+    def *(factor)
+      Algorithm.new(@moves * factor)
+    end
+  end
+
+  def parse_direction(direction_string)
+    POSSIBLE_DIRECTION_NAMES.index { |ds| ds.include?(direction_string) } + 1
   end
   
   def parse_move(move_string)
     match = move_string.match(MOVE_REGEXP)
     raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
     rotation, width, fat_face_name, face_name, slice_name, mslice_name, direction_string = match.captures
-    direction = DIRECTION_NAMES.index(direction_string) + 1
+    direction = parse_direction(direction_string)
     if rotation
       raise unless width.nil? && fat_face_name.nil? && face_name.nil? && slice_name.nil?
       Rotation.new(Face::ELEMENTS[AXES.index(rotation)], direction)
@@ -331,12 +370,22 @@ module CubeTrainer
     end
   end
 
+  def parse_skewb_direction(direction_string)
+    if POSSIBLE_DIRECTION_NAMES[0].include?(direction_string)
+      1
+    elsif POSSIBLE_DIRECTION_NAMES[-1].include?(direction_string)
+      2
+    else
+      raise
+    end
+  end
+
   # Parses WCA Skewb moves.
   def parse_skewb_move(move_string)
     match = move_string.match(SKEWB_MOVE_REGEXP)
     raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
     skewb_move_string, direction_string = match.captures
-    direction = if direction_string == DIRECTION_NAMES[0] then 1 elsif direction_string == DIRECTION_NAMES[-1] then 2 else raise end
+    direction = direction_string
     SkewbMove.new(skewb_move_string, direction)
   end
 

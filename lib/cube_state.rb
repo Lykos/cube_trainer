@@ -78,8 +78,8 @@ module CubeTrainer
     # the pieces that are at the position that those pieces would take in a solved state.
     def apply_piece_cycle(pieces, incarnation_index=0)
       raise 'Cycles of length smaller than 2 are not supported.' if pieces.length < 2
-      raise 'Cycles of heterogenous piece types are not supported.' if pieces.any? { |p| p.class != pieces.first.class }
       raise 'Cycles of weird piece types are not supported.' unless pieces.all? { |p| p.is_a?(Part) }
+      raise "Cycles of heterogenous piece types #{pieces.inspect} are not supported." if pieces.any? { |p| p.class != pieces.first.class }
       raise 'Cycles of invalid pieces are not supported.' unless pieces.all? { |p| p.valid? }
       raise "Invalid incarnation index #{incarnation_index}." unless incarnation_index.is_a?(Integer) && incarnation_index >= 0
       raise "Incarnation index #{incarnation_index} for cube size #{@n} is not supported for #{pieces.first.inspect}." unless incarnation_index < pieces.first.num_incarnations(@n)

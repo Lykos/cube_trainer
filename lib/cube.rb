@@ -30,8 +30,13 @@ module CubeTrainer
       parts
     end
   
-    def self.for_colors(colors)
+    def self.for_colors_internal(colors)
+      raise unless colors.length == self::FACES
       self::ELEMENTS.find { |e| e.colors == colors }
+    end
+
+    def self.for_colors(colors)
+      for_colors_internal(colors)
     end
 
     def self.for_index(i)
@@ -75,7 +80,7 @@ module CubeTrainer
     # Rotate a piece such that the given color is the first color.
     def rotate_color_up(c)
       index = @colors.index(c)
-      raise "Corner #{self} doesn't have color #{c}." unless index
+      raise "Part #{self} doesn't have color #{c}." unless index
       rotate_by(index)
     end
   
@@ -102,7 +107,7 @@ module CubeTrainer
   
     def self.parse(piece_description)
       colors = piece_description.upcase.strip.split('').collect { |e| COLORS[FACE_NAMES.index(e)] }
-      create_for_colors(colors)
+      for_colors(colors)
     end
   
     # Only overridden by moveable centers, but returns self for convenience.
@@ -225,7 +230,9 @@ module CubeTrainer
     end
 
     def self.for_colors(colors)
+      raise unless colors.length == self::CORRESPONDING_PART_CLASS::FACES
       corresponding_part = self::CORRESPONDING_PART_CLASS.for_colors(colors)
+      nil unless corresponding_part
       self::ELEMENTS.find { |e| e.corresponding_part == corresponding_part }
     end
   
@@ -331,16 +338,18 @@ module CubeTrainer
       !OPPOSITE_PAIRS.include?(@colors.sort)
     end
   
-    def self.create_for_colors(colors)
+    def self.for_colors(colors)
+      # One additional color is usually  mentioned for wings.
+      raise unless colors.length == FACES || colors.length == FACES + 1
       if colors.length == 3
         valid = Corner.new(colors).valid?
         reordered_colors = colors.dup
         reordered_colors[0], reordered_colors[1] = reordered_colors[1], reordered_colors[0]
         reordered_valid = Corner.new(reordered_colors).valid?
         raise "Couldn't determine chirality for #{colors.inspect} which is needed to parse a wing." if valid == reordered_valid
-        if valid then new(colors[0..1]) else new(reordered_colors[0..1]) end
+        if valid then for_colors(colors[0..1]) else for_colors_internal(reordered_colors[0..1]) end
       else
-        new(colors)
+        for_colors_internal(colors)
       end
     end
   
@@ -383,6 +392,11 @@ module CubeTrainer
       pieces = piece_candidates.select { |p| p.valid? }
       raise "#{piece_description} is not unique to create a #{self}: #{pieces.inspect}" unless pieces.length == 1
       pieces.first
+    end
+
+    def self.for_colors(colors)
+      raise unless colors.length == FACES
+      for_colors_internal(colors) || for_colors_internal([colors[0], colors[2], colors[1]])
     end
   
     def self.between_faces(faces)

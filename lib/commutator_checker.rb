@@ -3,10 +3,12 @@ require 'commutator'
 
 module CubeTrainer
   class CommutatorChecker
-    def initialize(piece_type, piece_name, cube_size, incarnation_index=0)
-      raise ArgumentError unless piece_type.is_a?(Class) && piece_type.ancestors.include?(Part)
+    def initialize(part_type, buffer, piece_name, cube_size, incarnation_index=0)
+      raise ArgumentError unless part_type.is_a?(Class) && part_type.ancestors.include?(Part)
+      raise ArgumentError unless buffer.class == part_type
       raise ArgumentError, "Unsuitable cube size #{cube_size}." unless cube_size.is_a?(Integer) && cube_size > 0
-      @piece_type = piece_type
+      @part_type = part_type
+      @buffer = buffer
       @piece_name = piece_name
       @cube_size = cube_size
       @incarnation_index = incarnation_index
@@ -19,16 +21,24 @@ module CubeTrainer
 
     attr_reader :total_algs, :broken_algs, :unfixable_algs
 
-    def construct_cycle(letter_pair)
-      [@piece_type::BUFFER] + letter_pair.letters.map { |l| @piece_type.for_letter(l) }
+    def construct_cycle(parts)
+      [@buffer] + parts
     end
 
     def move_modifications(move)
       [move, move.invert].uniq
     end
 
+    def permutation_modifications(alg)
+      if alg.length <= 3
+        alg.moves.permutation.collect { |p| Algorithm.new(p) }
+      else
+        [alg]
+      end
+    end
+
     def alg_modifications(alg)
-      perms = alg.moves.permutation.collect { |p| Algorithm.new(p) }
+      perms = permutation_modifications(alg)
       a, *as = alg.moves.map { |m| move_modifications(m) }
       perms + a.product(*as).map { |ms| Algorithm.new(ms) }
     end
@@ -56,17 +66,19 @@ module CubeTrainer
 
     def fixes(commutator)
       if commutator.is_a?(SetupCommutator) then
-        alg_modifications(commutator.setup).product(fixes(commutator.pure_commutator)).map { |setup, comm| SetupCommutator.new(setup, comm) }
+        alg_modifications(commutator.setup).product(fixes(commutator.inner_commutator)).map { |setup, comm| SetupCommutator.new(setup, comm) }
       elsif commutator.is_a?(PureCommutator)
         comm_part_modifications(commutator.first_part).product(comm_part_modifications(commutator.second_part)).flat_map { |a, b| [PureCommutator.new(a, b), PureCommutator.new(b, a)].uniq }
+      elsif commutator.is_a?(FakeCommutator)
+        alg_modifications(commutator.algorithm).map { |a| FakeCommutator.new(a) }
       else
         raise ArgumentError
       end
     end
 
-    def check_alg(row_description, letter_pair, commutator)
+    def check_alg(row_description, letter_pair, parts, commutator)
       # Apply alg and cycle
-      cycle = construct_cycle(letter_pair)
+      cycle = construct_cycle(parts)
       @cycle_cube_state.apply_piece_cycle(cycle, @incarnation_index)
       alg = commutator.algorithm
       alg.apply_to(@alg_cube_state)

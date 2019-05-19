@@ -6,62 +6,114 @@ require 'cube'
 
 module CubeTrainer
 
-  class HintParser
-    def self.csv_file(part_class)
-      # TODO Filename construction sucks
-      "data/#{part_class.to_s}.csv"
-    end
-
-    FACE_REGEXP = "[#{FACE_NAMES.join("")}]{2}"
-
-    def self.parse_part(s)
-      lol = s[FACE_REGEXP]
-      part_class.parse(lol)
+  class CommutatorCheckerStub
+    def initialize
+      @total_algs = 0
     end
     
-    def self.parse_hints(part_class, cube_size, check_comms)
-      # TODO do this properly
-      name = part_class.name.split('::').last
-      checker = CommutatorChecker.new(part_class, name, cube_size) if check_comms
+    attr_reader :total_algs
+    
+    def check_alg(*args)
+      @total_algs += 1
+      :correct
+    end
+
+    def broken_algs
+      0
+    end
+  end
+
+  class HintParser
+    def csv_file
+      "data/#{name}.csv"
+    end
+
+    FACE_REGEXP = Regexp.new("[#{(FACE_NAMES + FACE_NAMES.map { |f| f.downcase }).join("")}]{2,3}")
+
+    def parse_part(s)
+      # Try to parse it as a letter.
+      if parse_letter_scheme.has_letter?(s)
+        return parse_letter_scheme.for_letter(part_type, s)
+      end
+      # Try to parse it as a description like UBL.
+      faces = s[FACE_REGEXP]
+      raise "Couldn't figure out which part #{s} is. It doesn't look like a letter or a combination of faces." unless faces
+      part = part_type.parse(faces)
+      raise "Couldn't figure out which part #{s} is. Couldn't find the right part." unless part
+      part
+    end
+
+    def letter_pair(part0, part1)
+      LetterPair.new([part0, part1].map { |p| letter_scheme.letter(p) })
+    end
+
+    BLACKLIST = ['flip']
+
+    # Recognizes special cell values that are blacklisted because they are not commutators
+    def blacklisted?(value)
+      BLACKLIST.include?(value.downcase)
+    end
+    
+    def parse_hints(cube_size, check_comms)
+      checker = if check_comms
+                  CommutatorChecker.new(part_type, buffer, name, cube_size)
+                else
+                  CommutatorCheckerStub.new
+                end
       hints = {}
-      hint_table = CSV.read(csv_file(name))
+      hint_table = CSV.read(csv_file)
       # TODO make this more general to figure out other types of hint tables
       parts = hint_table[0][1..-1].collect { |p| parse_part(p) }
-      total_algs = 0
-      broken_algs = 0
-      unfixable_algs = 0
       hint_table[1..-1].each_with_index do |row, row_index|
         break if row.first.nil? || row.first.empty?
-        part1 = part_class.parse(row.first)
+        part1 = parse_part(row.first)
         row[1..-1].each_with_index do |e, i|
-          next if e.nil? || e.empty?
+          next if e.nil? || e.empty? || blacklisted?(e)
           part0 = parts[i]
-          letter_pair = LetterPair.new([part0.letter, part1.letter])
+          letter_pair = letter_pair(part0, part1)
           row_description = "#{("A".."Z").to_a[i + 1]}#{row_index + 2}"
           begin
             commutator = parse_commutator(e)
-            hints[letter_pair] = commutator
-            total_algs += 1
-            checker.check_alg(row_description, letter_pair, commutator) if check_comms
+            check_result = checker.check_alg(row_description, letter_pair, [part0, part1], commutator)
+            hints[letter_pair] = commutator if check_result == :correct
           rescue CommutatorParseError => e
-            raise "Couldn't parse commutator for #{letter_pair} (i.e. #{row_description}) couldn't be parsed: #{e}"
+            puts "Couldn't parse commutator for #{letter_pair} (i.e. #{row_description}) couldn't be parsed: #{e}" if verbose
           end
         end
       end
-      puts "#{comm_checker.broken_algs} broken algs of #{comm_checker.total_algs}. #{comm_checker.unfixable_algs} were unfixable." if check_comms && broken_algs > 0
+      if checker.broken_algs > 0
+        puts "#{checker.broken_algs} broken algs of #{checker.total_algs}. #{checker.unfixable_algs} were unfixable."
+      elsif verbose
+        puts "Parsed #{checker.total_algs} algs."
+      end
       hints
     end
-  
-    def self.maybe_create(part_class, cube_size, check_comms)
+
+    def initialize(part_type, buffer, letter_scheme, verbose)
+      @part_type = part_type
+      @buffer = buffer
       # TODO do this properly
-      name = part_class.name.split('::').last
-      new(if File.exists?(csv_file(name))
-            parse_hints(part_class, cube_size, check_comms)
-          else
-            {}
-          end)
+      @name = part_type.name.split('::').last
+      @parse_letter_scheme = @letter_scheme = letter_scheme
+      @verbose = verbose
     end
-  
+
+    attr_reader :name, :part_type, :buffer, :letter_scheme, :parse_letter_scheme, :verbose
+
+  end
+   
+  class Hinter
+    def self.maybe_create(part_type, buffer, options)
+      hint_parser = HintParser.new(part_type, buffer, options.letter_scheme, options.verbose)
+      hints = if File.exists?(hint_parser.csv_file)
+                hint_parser.parse_hints(options.cube_size, options.test_comms)
+              else
+                puts "Failed to find hint CSV file #{hint_parser.csv_file}." if options.verbose
+                {}
+              end
+      new(hints)
+    end
+ 
     def initialize(hints)
       @hints = hints
     end
