@@ -5,6 +5,7 @@ require 'move'
 
 module CubeTrainer
 
+  # Helper class that finds how to solve a given layer on the Skewb.
   class SkewbLayerFinder < LayerSubsetFinder
     alias :find_layer :find_solutions
 

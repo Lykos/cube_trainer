@@ -395,7 +395,7 @@ module CubeTrainer
     end
 
     def self.for_colors(colors)
-      raise unless colors.length == FACES
+      raise "Invalid number of colors to create a corner: #{colors.inspect}" unless colors.length == FACES
       for_colors_internal(colors) || for_colors_internal([colors[0], colors[2], colors[1]])
     end
   
