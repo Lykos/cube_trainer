@@ -126,4 +126,10 @@ module CubeTrainer
     end
   end
 
+  class NoHinter
+    def hint(*args)
+      'No hints available'
+    end
+  end
+
 end

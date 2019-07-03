@@ -1,5 +1,6 @@
 require 'input_sampler'
 require 'alg_name'
+require 'hint_parser'
 
 module CubeTrainer
 
@@ -10,12 +11,6 @@ module CubeTrainer
 
     attr_reader :input_sampler
 
-    class NoHinter
-      def hint(*args)
-        'No hints available'
-      end
-    end
-    
     def hinter
       # TODO implement this
       NoHinter.new
@@ -24,5 +19,5 @@ module CubeTrainer
     VALID_PAIRS = ['Ja', 'Jb', 'Ua', 'Ub', 'Na', 'Nb', 'Ra', 'Rb', 'Z', 'H', 'T', 'Y', 'V', 'Ga', 'Gb', 'Gc', 'Gd', 'F', 'E', 'Aa', 'Ab'].map { |a| AlgName.new(a) }
 
   end
-  
+
 end
