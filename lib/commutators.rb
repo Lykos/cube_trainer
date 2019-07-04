@@ -8,7 +8,9 @@ module CubeTrainer
 
     include LetterPairHelper
   
-    def initialize(results_model, options)
+    def initialize(results_model, options, buffer)
+      raise ArgumentError, "Buffer has an invalid type." unless buffer.class == part_type
+      @buffer = buffer
       @letter_scheme = options.letter_scheme
       pieces = if options.restrict_letters and not options.restrict_letters.empty?
                  valid_pairs.select { |p| p.letters.any? { |l| options.restrict_letters.include?(l) } }
@@ -18,7 +20,7 @@ module CubeTrainer
       @input_sampler = InputSampler.new(pieces, results_model, goal_badness, options.verbose, options.new_item_boundary)
     end
 
-    attr_reader :input_sampler, :letter_scheme
+    attr_reader :input_sampler, :letter_scheme, :buffer
 
     def part_type
       raise NotImplementedError
@@ -39,11 +41,12 @@ module CubeTrainer
 
   class FloatingCornerTwists < LetterPairAlgSet
     def initialize(result_model, options, buffer)
-      super(result_model, options)
+      super
       @hinter = NoHinter.new
-      raise "Floating corner twists shouldn't have a buffer." if buffer
     end
 
+    attr_reader :hinter
+    
     def goal_badness
       1.0
     end
@@ -55,21 +58,21 @@ module CubeTrainer
     ORIENTATION_FACES = [Face.by_name('U'), Face.by_name('D')]
 
     def valid_pairs
-      correctly_oriented_corners = part_type::ELEMENTS.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
+      non_buffer_corners = part_type::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
+      correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       twisted_corner_pairs = correctly_oriented_corners.permutation(2).map { |c1, c2| [c1.rotate_by(1), c2.rotate_by(2)] }
-      twisted_corner_pairs.map { |cs| LetterPair.new(cs.map { |c| letter_scheme.letter(c) }) }
+      two_twists = twisted_corner_pairs.map { |cs| LetterPair.new(cs.map { |c| letter_scheme.letter(c) }) }
+      one_twists = twisted_corner_pairs.flatten.map { |c| LetterPair.new([letter_scheme.letter(c)]) }.uniq
+      two_twists + one_twists
     end
-
-    attr_reader :hinter
+ 
   end
 
   class Commutators < LetterPairAlgSet
     
     # If restrict_letters is not nil, only commutators for those letters are used.
     def initialize(results_model, options, buffer)
-      raise ArgumentError, "Buffer has an invalid type." unless buffer.class == part_type
-      @buffer = buffer
-      super(results_model, options)
+      super
       @hinter = Hinter.maybe_create(part_type, buffer, options)
     end
   
