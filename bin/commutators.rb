@@ -19,7 +19,7 @@ generator = options.commutator_info.generator_class.new(results_model, options, 
 learner = options.commutator_info.learner_class.new(generator.hinter, results_model)
 
 # Move the stats stuff to somewhere else.
-inputs = results_model.results.collect { |r| r.input }
+inputs = results_model.results.collect { |r| r.input } & generator.valid_pairs
 newish_elements = inputs.group_by { |e| e }.collect { |k, v| v.length }.count { |l| 1 <= l && l < options.new_item_boundary }
 found = inputs.uniq.length
 total = generator.valid_pairs.length
