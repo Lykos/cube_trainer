@@ -18,8 +18,9 @@ results_model = ResultsModel.new(options.commutator_info.result_symbol)
 generator = options.commutator_info.generator_class.new(results_model, options, options.commutator_info.buffer)
 learner = options.commutator_info.learner_class.new(generator.hinter, results_model)
 
-# Move the stats stuff to somewhere else.
-inputs = results_model.results.collect { |r| r.input } & generator.valid_pairs
+# TODO Move the stats stuff to somewhere else.
+valid_pairs = generator.valid_pairs.collect { |e| e.hash }
+inputs = results_model.results.collect { |r| r.input }.select { |e| valid_pairs.include?(e.hash) }
 newish_elements = inputs.group_by { |e| e }.collect { |k, v| v.length }.count { |l| 1 <= l && l < options.new_item_boundary }
 found = inputs.uniq.length
 total = generator.valid_pairs.length
