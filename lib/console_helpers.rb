@@ -19,10 +19,16 @@ module CubeTrainer
       espeak_processes[language] ||=
         IO.popen("espeak -v #{language} -s 160", 'w+')
     end
+
+    def say(stuff, language)
+      unless muted
+        espeak_process(language).puts(stuff)
+      end
+    end
       
     def puts_and_say(stuff, language='de')
       puts stuff
-      espeak_process(language).puts(stuff)
+      say(stuff, language)
     end
   
     KeyPressWaitData = Struct.new(:char, :time_s)

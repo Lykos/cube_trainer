@@ -8,10 +8,13 @@ module CubeTrainer
     include ConsoleHelpers
     include UiHelpers
     
-    def initialize(hinter, results_model)
+    def initialize(hinter, results_model, muted)
       @hinter = hinter
       @results_model = results_model
+      @muted = muted
     end
+
+    attr_reader :muted
 
     def display_hints(hints)
       if hints.length < 10

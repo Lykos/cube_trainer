@@ -48,7 +48,7 @@ module CubeTrainer
     attr_reader :hinter
     
     def goal_badness
-      1.0
+      1.5
     end
 
     def part_type
@@ -77,7 +77,7 @@ module CubeTrainer
     attr_reader :hinter
     
     def goal_badness
-      1.0
+      2.0
     end
 
     def part_type

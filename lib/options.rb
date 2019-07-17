@@ -33,6 +33,7 @@ module CubeTrainer
       options.commutator_info = COMMUTATOR_TYPES['corners']
       options.restrict_letters = nil
       options.letter_scheme = DefaultLetterScheme.new
+      options.mute = false
       opt_parser = OptionParser.new do |opts|
         opts.separator ''
         opts.separator 'Specific options:'      
@@ -59,6 +60,10 @@ module CubeTrainer
   
         opts.on('-v', '--[no-]verbose', 'Give more verbose information.') do |v|
           options.verbose = v
+        end
+
+        opts.on('-m', '--[no-]mute', 'Mute (i.e. no audio).') do |v|
+          options.mute = v
         end
   
         opts.on('-r', '--restrict_letters LETTERLIST', /\w+/, 'List of letters to which the commutators should be restricted.',
