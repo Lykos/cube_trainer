@@ -9,7 +9,7 @@ module CubeTrainer
     include LetterPairHelper
   
     def initialize(results_model, options, buffer)
-      raise ArgumentError, "Buffer has an invalid type." unless buffer.class == part_type
+      raise ArgumentError, "Buffer has an invalid type." if buffer and not buffer.class == part_type
       @buffer = buffer
       @letter_scheme = options.letter_scheme
       pieces = if options.restrict_letters and not options.restrict_letters.empty?
@@ -64,6 +64,29 @@ module CubeTrainer
       two_twists = twisted_corner_pairs.map { |cs| LetterPair.new(cs.map { |c| letter_scheme.letter(c) }) }
       one_twists = twisted_corner_pairs.flatten.map { |c| LetterPair.new([letter_scheme.letter(c)]) }.uniq
       two_twists + one_twists
+    end
+ 
+  end
+
+  class FloatingEdgeFlips < LetterPairAlgSet
+    def initialize(result_model, options, buffer)
+      super
+      @hinter = NoHinter.new
+    end
+
+    attr_reader :hinter
+    
+    def goal_badness
+      1.0
+    end
+
+    def part_type
+      Edge
+    end
+
+    def valid_pairs
+      edge_letters = part_type::ELEMENTS.map { |c| c.rotations.map { |r| letter_scheme.letter(r) }.min }.uniq.sort
+      edge_letters.combination(2).map { |cs| LetterPair.new(cs) }
     end
  
   end

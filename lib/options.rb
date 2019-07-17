@@ -14,6 +14,7 @@ module CubeTrainer
     COMMUTATOR_TYPES = {
       'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, Corner.for_colors([:yellow, :blue, :orange]), HumanTimeLearner, 3),
       'floating_twists' => CommutatorInfo.new(:floating_twists, FloatingCornerTwists, Corner.for_colors([:yellow, :blue, :orange]), HumanTimeLearner, 3),
+      'floating_flips' => CommutatorInfo.new(:floating_flips, FloatingEdgeFlips, nil, HumanTimeLearner, 3),
       'df_edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, Edge.for_colors([:white, :red]), HumanTimeLearner, 3),
       'fu_edges' => CommutatorInfo.new(:fu_edge_commutators, EdgeCommutators, Edge.for_colors([:yellow, :red]), HumanTimeLearner, 3),
       'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, Wing.for_colors([:red, :yellow]), HumanTimeLearner, 4),
