@@ -3,7 +3,7 @@ module CubeTrainer
   class ProcessedTerm
     def initialize(term)
       @term = term
-      @normalized_parts = term.chomp.downcase.split(/s+/)
+      @normalized_parts = term.chomp.downcase.split(/\s+/)
     end
 
     attr_reader :term
