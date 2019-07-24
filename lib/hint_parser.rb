@@ -43,11 +43,20 @@ module CubeTrainer
     end
 
     class AlgEntry
-      def initialize(algorithm)
+      def initialize(maybe_letter_pair, algorithm)
+        @maybe_letter_pair = maybe_letter_pair
         @algorithm = algorithm
       end
 
-      attr_reader :algorithm
+      attr_reader :maybe_letter_pair, :algorithm
+    end
+
+    class ErrorEntry
+      def initialize(error_message)
+        @error_message = error_message
+      end
+
+      attr_reader :error_message
     end
 
     def parse_hints(cube_size, check_comms)
@@ -55,13 +64,15 @@ module CubeTrainer
 
       # First parse whatever we can
       alg_table = hint_table.map { |row| row.map { nil } }
+      reverse_engineer = CommutatorReverseEngineer.new(part_type, buffer, name, cube_size)
       hint_table.each_with_index do |row, row_index|
         row.each_with_index do |cell, col_index|
           next if cell.nil? || cell.empty? || blacklisted?(cell)
           #cell_description = "#{("A".."Z").to_a[col_index]}#{row_index + 1}"
           begin
             alg = parse_commutator(e)
-            alg_table[row_index][col_index] = alg
+            maybe_letter_pair = reverse_engineer.find_letter_pair(alg)
+            alg_table[row_index][col_index] = AlgEntry.new(maybe_letter_pair, alg)
             # check_result = checker.check_alg(row_description, letter_pair, [part0, part1], commutator)
             # hints[letter_pair] = commutator if check_result == :correct
           rescue CommutatorParseError => e
@@ -71,6 +82,7 @@ module CubeTrainer
       end
 
       # Now figure out whether rows are the first piece or the second piece.
+      
       checker = if check_comms
                   CommutatorChecker.new(part_type, buffer, name, cube_size)
                 else
