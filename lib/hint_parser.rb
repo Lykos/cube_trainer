@@ -31,19 +31,6 @@ module CubeTrainer
 
     FACE_REGEXP = Regexp.new("[#{(FACE_NAMES + FACE_NAMES.map { |f| f.downcase }).join("")}]{2,3}")
 
-    def parse_part(s)
-      # Try to parse it as a letter.
-      if parse_letter_scheme.has_letter?(s)
-        return parse_letter_scheme.for_letter(part_type, s)
-      end
-      # Try to parse it as a description like UBL.
-      faces = s[FACE_REGEXP]
-      raise "Couldn't figure out which part #{s} is. It doesn't look like a letter or a combination of faces." unless faces
-      part = part_type.parse(faces)
-      raise "Couldn't figure out which part #{s} is. Couldn't find the right part." unless part
-      part
-    end
-
     def letter_pair(part0, part1)
       LetterPair.new([part0, part1].map { |p| letter_scheme.letter(p) })
     end
@@ -54,34 +41,42 @@ module CubeTrainer
     def blacklisted?(value)
       BLACKLIST.include?(value.downcase)
     end
-    
+
+    class AlgEntry
+      def initialize(algorithm)
+        @algorithm = algorithm
+      end
+
+      attr_reader :algorithm
+    end
+
     def parse_hints(cube_size, check_comms)
+      hint_table = CSV.read(csv_file)
+
+      # First parse whatever we can
+      alg_table = hint_table.map { |row| row.map { nil } }
+      hint_table.each_with_index do |row, row_index|
+        row.each_with_index do |cell, col_index|
+          next if cell.nil? || cell.empty? || blacklisted?(cell)
+          #cell_description = "#{("A".."Z").to_a[col_index]}#{row_index + 1}"
+          begin
+            alg = parse_commutator(e)
+            alg_table[row_index][col_index] = alg
+            # check_result = checker.check_alg(row_description, letter_pair, [part0, part1], commutator)
+            # hints[letter_pair] = commutator if check_result == :correct
+          rescue CommutatorParseError => e
+            alg_table[row_index][col_index] = ErrorEntry.new("Couldn't parse commutator for #{letter_pair} (i.e. #{row_description}) couldn't be parsed: #{e}")
+          end
+        end
+      end
+
+      # Now figure out whether rows are the first piece or the second piece.
       checker = if check_comms
                   CommutatorChecker.new(part_type, buffer, name, cube_size)
                 else
                   CommutatorCheckerStub.new
                 end
       hints = {}
-      hint_table = CSV.read(csv_file)
-      # TODO make this more general to figure out other types of hint tables
-      parts = hint_table[0][1..-1].collect { |p| parse_part(p) }
-      hint_table[1..-1].each_with_index do |row, row_index|
-        break if row.first.nil? || row.first.empty?
-        part1 = parse_part(row.first)
-        row[1..-1].each_with_index do |e, i|
-          next if e.nil? || e.empty? || blacklisted?(e)
-          part0 = parts[i]
-          letter_pair = letter_pair(part0, part1)
-          row_description = "#{("A".."Z").to_a[i + 1]}#{row_index + 2}"
-          begin
-            commutator = parse_commutator(e)
-            check_result = checker.check_alg(row_description, letter_pair, [part0, part1], commutator)
-            hints[letter_pair] = commutator if check_result == :correct
-          rescue CommutatorParseError => e
-            puts "Couldn't parse commutator for #{letter_pair} (i.e. #{row_description}) couldn't be parsed: #{e}" if verbose
-          end
-        end
-      end
       if checker.broken_algs > 0
         puts "#{checker.broken_algs} broken algs of #{checker.total_algs}. #{checker.unfixable_algs} were unfixable."
       elsif verbose
