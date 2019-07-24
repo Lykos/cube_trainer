@@ -93,8 +93,7 @@ module CubeTrainer
     def initialize(part_type, buffer, letter_scheme, verbose)
       @part_type = part_type
       @buffer = buffer
-      # TODO do this properly
-      @name = part_type.name.split('::').last
+      @name = buffer.to_s.downcase + '_' + part_type.name.split('::').last.downcase
       @parse_letter_scheme = @letter_scheme = letter_scheme
       @verbose = verbose
     end

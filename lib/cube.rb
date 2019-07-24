@@ -312,7 +312,8 @@ module CubeTrainer
     end
   
     ELEMENTS = generate_parts
-  
+
+    # Edges on uneven bigger cubes are midges, so edges only exist for 3x3.
     def num_incarnations(cube_size)
       if cube_size == 3 then 1 else 0 end
     end
