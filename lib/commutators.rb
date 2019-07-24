@@ -6,6 +6,8 @@ require 'letter_pair_alg_set'
 module CubeTrainer
 
   class FloatingCornerTwists < LetterPairAlgSet
+    PART_TYPE = Corner
+
     def initialize(result_model, options)
       super
       @hinter = NoHinter.new
@@ -15,10 +17,6 @@ module CubeTrainer
     
     def goal_badness
       1.5
-    end
-
-    def part_type
-      Corner
     end
 
     ORIENTATION_FACES = [Face.by_name('U'), Face.by_name('D')]
@@ -35,6 +33,8 @@ module CubeTrainer
   end
 
   class FloatingEdgeFlips < LetterPairAlgSet
+    PART_TYPE = Edge
+
     def initialize(result_model, options)
       super
       @hinter = NoHinter.new
@@ -44,10 +44,6 @@ module CubeTrainer
     
     def goal_badness
       2.0
-    end
-
-    def part_type
-      Edge
     end
 
     def generate_letter_pairs
@@ -62,7 +58,7 @@ module CubeTrainer
     # If restrict_letters is not nil, only commutators for those letters are used.
     def initialize(results_model, options)
       super
-      @hinter = Hinter.maybe_create(part_type, options)
+      @hinter = Hinter.maybe_create(self.class::PART_TYPE, options)
     end
   
     attr_reader :hinter
@@ -71,9 +67,7 @@ module CubeTrainer
   
   class CornerCommutators < Commutators
 
-    def part_type
-      Corner
-    end
+    PART_TYPE = Corner
 
     def generate_letter_pairs
       letter_pairs_for_piece - rotations
@@ -87,9 +81,7 @@ module CubeTrainer
   
   class EdgeCommutators < Commutators
   
-    def part_type
-      Edge
-    end
+    PART_TYPE = Edge
 
     def generate_letter_pairs
       letter_pairs_for_piece - rotations
@@ -103,9 +95,7 @@ module CubeTrainer
   
   class WingCommutators < Commutators
   
-    def part_type
-      Wing
-    end
+    PART_TYPE = Wing
 
     def generate_letter_pairs
       letter_pairs_for_piece - rotations
@@ -119,9 +109,7 @@ module CubeTrainer
   
   class XCenterCommutators < Commutators
   
-    def part_type
-      XCenter
-    end
+    PART_TYPE = XCenter
 
     def generate_letter_pairs
       letter_pairs_for_piece - neighbors
@@ -135,9 +123,7 @@ module CubeTrainer
   
   class TCenterCommutators < Commutators
   
-    def part_type
-      TCenter
-    end
+    PART_TYPE = TCenter
 
     def generate_letter_pairs
       letter_pairs_for_piece - neighbors

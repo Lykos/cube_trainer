@@ -10,19 +10,18 @@ require 'alg_sets'
 module CubeTrainer
 
   class Options
-    CommutatorInfo = Struct.new(:result_symbol, :generator_class, :learner_class, :default_cube_size)
+    CommutatorInfo = Struct.new(:result_symbol, :generator_class, :learner_class, :default_cube_size, :has_buffer?)
     COMMUTATOR_TYPES = {
-      'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, HumanTimeLearner, 3),
-      'floating_twists' => CommutatorInfo.new(:floating_twists, FloatingCornerTwists, HumanTimeLearner, 3),
-      'floating_flips' => CommutatorInfo.new(:floating_flips, FloatingEdgeFlips, HumanTimeLearner, 3),
-      'df_edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, HumanTimeLearner, 3),
-      'fu_edges' => CommutatorInfo.new(:fu_edge_commutators, EdgeCommutators, HumanTimeLearner, 3),
-      'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, HumanTimeLearner, 4),
-      'xcenters' => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators, HumanTimeLearner, 4),
-      'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators, HumanTimeLearner, 5),
-      'words' => CommutatorInfo.new(:letters_to_word, LettersToWord, HumanWordLearner, nil),
-      'oh_plls' => CommutatorInfo.new(:oh_plls_by_name, PllsByName, HumanTimeLearner, 3),
-      'plls' => CommutatorInfo.new(:plls_by_name, PllsByName, HumanTimeLearner, 3)
+      'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, HumanTimeLearner, 3, true),
+      'floating_twists' => CommutatorInfo.new(:floating_twists, FloatingCornerTwists, HumanTimeLearner, 3, false),
+      'floating_flips' => CommutatorInfo.new(:floating_flips, FloatingEdgeFlips, HumanTimeLearner, 3, false),
+      'edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, HumanTimeLearner, 3, true),
+      'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, HumanTimeLearner, 4, true),
+      'xcenters' => CommutatorInfo.new(:xcenter_commutators, XCenterCommutators, HumanTimeLearner, 4, true),
+      'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators, HumanTimeLearner, 5, true),
+      'words' => CommutatorInfo.new(:letters_to_word, LettersToWord, HumanWordLearner, nil, false),
+      'oh_plls' => CommutatorInfo.new(:oh_plls_by_name, PllsByName, HumanTimeLearner, 3, false),
+      'plls' => CommutatorInfo.new(:plls_by_name, PllsByName, HumanTimeLearner, 3, false)
     }
     
     def self.parse(args)

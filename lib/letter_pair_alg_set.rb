@@ -16,12 +16,8 @@ module CubeTrainer
 
     attr_reader :input_sampler, :letter_scheme, :options
 
-    def part_type
-      raise NotImplementedError
-    end
-
     def buffer
-      @buffer ||= BufferHelper.determine_buffer(part_type, options)
+      @buffer ||= BufferHelper.determine_buffer(self.class::PART_TYPE, options)
     end
 
     def goal_badness

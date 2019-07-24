@@ -7,11 +7,12 @@ require 'commutators'
 require 'options'
 require 'results_model'
 require 'trainer'
+require 'buffer_helper'
 
 include CubeTrainer
 
 options = Options.parse(ARGV)
-results_model = ResultsModel.new(options.commutator_info.result_symbol)
+results_model = ResultsModel.new(BufferHelper.mode_for_buffer(options))
 generator = options.commutator_info.generator_class.new(results_model, options)
 learner = options.commutator_info.learner_class.new(generator.hinter, results_model, options.mute)
 

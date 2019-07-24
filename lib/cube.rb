@@ -73,6 +73,13 @@ module CubeTrainer
       self.class.to_s + "(" + @colors.collect { |c| c.to_s }.join(", ") + ")"
     end
 
+    def to_s
+      self.corresponding_part.colors.collect.with_index do |c, i|
+        face_name = FACE_NAMES[COLORS.index(c)]
+        if i < self.class::FACES then face_name else face_name.downcase end
+      end.join
+    end
+
     def piece_index
       self.class::ELEMENTS.index(self)
     end
