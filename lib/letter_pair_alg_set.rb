@@ -1,5 +1,6 @@
 require 'letter_pair_helper'
 require 'input_sampler'
+require 'buffer_helper'
 
 module CubeTrainer
 
@@ -7,18 +8,20 @@ module CubeTrainer
 
     include LetterPairHelper
   
-    def initialize(results_model, options, buffer)
-      raise ArgumentError, "Buffer has an invalid type." if buffer and not buffer.class == part_type
-      @buffer = buffer
+    def initialize(results_model, options)
       @letter_scheme = options.letter_scheme
       @options = options
       @input_sampler = InputSampler.new(letter_pairs, results_model, goal_badness, options.verbose, options.new_item_boundary)
     end
 
-    attr_reader :input_sampler, :letter_scheme, :buffer, :options
+    attr_reader :input_sampler, :letter_scheme, :options
 
     def part_type
       raise NotImplementedError
+    end
+
+    def buffer
+      @buffer ||= BufferHelper.determine_buffer(part_type, options)
     end
 
     def goal_badness

@@ -24,6 +24,17 @@ module CubeTrainer
     def canonicalize_letter(letter)
       raise NotImplementedError
     end
+
+    def parse_part(part_type, part_string)
+      if has_letter?(part_string)
+        for_letter(part_type, part_string)
+      else
+        part_type.parse(part_string)
+      end
+    end
+
+    alias parse_buffer parse_part
+
   end
 
   class DefaultLetterScheme < LetterScheme
@@ -38,6 +49,18 @@ module CubeTrainer
     # Letters that we shoot to by default.
     def shoot_letters(part_type)
       ['a', 'b', 'd', 'l', 'h', 't', 'p']
+    end
+
+    PART_TYPE_BUFFERS = {
+      Corner => Corner.for_colors([:yellow, :blue, :orange]),
+      Edge => Edge.for_colors([:yellow, :red]),
+      Wing => Wing.for_colors([:red, :yellow]),
+      XCenter => XCenter.for_colors([:yellow, :green, :red]),
+      TCenter => TCenter.for_colors([:yellow, :red])
+    }
+
+    def default_buffer(part_type)
+      PART_TYPE_BUFFERS[part_type]
     end
   end
 end

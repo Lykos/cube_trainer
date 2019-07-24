@@ -16,6 +16,10 @@ module CubeTrainer
     end
 
     attr_reader :pao_type, :letter_pair
+
+    def letters
+      @letter_pair.letters
+    end
   
     # Encoding for YAML (and possibly others)
     def encode_with(coder)

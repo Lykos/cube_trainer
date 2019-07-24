@@ -12,7 +12,7 @@ include CubeTrainer
 
 options = Options.parse(ARGV)
 results_model = ResultsModel.new(options.commutator_info.result_symbol)
-generator = options.commutator_info.generator_class.new(results_model, options, options.commutator_info.buffer)
+generator = options.commutator_info.generator_class.new(results_model, options)
 learner = options.commutator_info.learner_class.new(generator.hinter, results_model, options.mute)
 
 # TODO Move the stats stuff to somewhere else.

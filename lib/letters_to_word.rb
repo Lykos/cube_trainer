@@ -8,29 +8,26 @@ module CubeTrainer
 
   class LettersToWord < LetterPairAlgSet
 
-    # TODO The setup with badness makes much less sense here and should be revised.
-    GOAL_BADNESS = 5.0
-  
     def initialize(results_model, options)
+      super
       @results_model = results_model
-      @alphabet = options.letter_scheme.alphabet
-      @input_sampler = InputSampler.new(letter_pairs, results_model, GOAL_BADNESS, options.verbose, options.new_item_boundary)
     end
 
+    # TODO The setup with badness makes much less sense here and should be revised.
+    def goal_badness
+      5.0
+    end
+  
     def generate_letter_pairs
-      pairs = LetterPairHelper.letter_pairs(@alphabet.permutation(2))
-      duplicates = LetterPairHelper.letter_pairs(@alphabet.collect { |c| [c, c] })
-      singles = LetterPairHelper.letter_pairs(@alphabet.permutation(1))
+      alphabet = letter_scheme.alphabet
+      pairs = LetterPairHelper.letter_pairs(alphabet.permutation(2))
+      duplicates = LetterPairHelper.letter_pairs(alphabet.collect { |c| [c, c] })
+      singles = LetterPairHelper.letter_pairs(alphabet.permutation(1))
       valid_pairs = pairs - duplicates + singles
       PaoLetterPair::PAO_TYPES.product(valid_pairs).collect { |c| PaoLetterPair.new(*c) }
     end
 
     attr_reader :input_sampler
-
-    # TODO remove once we migrated it to the other sampler class
-    def random_letter_pair
-      @input_sampler.random_input
-    end
 
     # TODO move this to the dict
     def hinter

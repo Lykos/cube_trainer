@@ -1,6 +1,7 @@
 require 'csv'
 require 'commutator'
 require 'move'
+require 'buffer_helper'
 require 'commutator_checker'
 require 'cube'
 
@@ -103,7 +104,8 @@ module CubeTrainer
   end
    
   class Hinter
-    def self.maybe_create(part_type, buffer, options)
+    def self.maybe_create(part_type, options)
+      buffer = BufferHelper.determine_buffer(part_type, options)
       hint_parser = HintParser.new(part_type, buffer, options.letter_scheme, options.verbose)
       hints = if File.exists?(hint_parser.csv_file)
                 hint_parser.parse_hints(options.cube_size, options.test_comms)

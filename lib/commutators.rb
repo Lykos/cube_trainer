@@ -6,7 +6,7 @@ require 'letter_pair_alg_set'
 module CubeTrainer
 
   class FloatingCornerTwists < LetterPairAlgSet
-    def initialize(result_model, options, buffer)
+    def initialize(result_model, options)
       super
       @hinter = NoHinter.new
     end
@@ -35,7 +35,7 @@ module CubeTrainer
   end
 
   class FloatingEdgeFlips < LetterPairAlgSet
-    def initialize(result_model, options, buffer)
+    def initialize(result_model, options)
       super
       @hinter = NoHinter.new
     end
@@ -60,12 +60,12 @@ module CubeTrainer
   class Commutators < LetterPairAlgSet
     
     # If restrict_letters is not nil, only commutators for those letters are used.
-    def initialize(results_model, options, buffer)
+    def initialize(results_model, options)
       super
-      @hinter = Hinter.maybe_create(part_type, buffer, options)
+      @hinter = Hinter.maybe_create(part_type, options)
     end
   
-    attr_reader :hinter, :buffer
+    attr_reader :hinter
   
   end
   

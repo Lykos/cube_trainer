@@ -106,7 +106,9 @@ module CubeTrainer
     end
   
     def self.parse(piece_description)
-      colors = piece_description.upcase.strip.split('').collect { |e| COLORS[FACE_NAMES.index(e)] }
+      colors = piece_description.upcase.strip.split('').collect do |e|
+        COLORS[FACE_NAMES.index(e)] || (raise "Invalid #{self.name} #{piece_description}: #{e} is not a valid face name.")
+      end
       for_colors(colors)
     end
   
@@ -186,7 +188,9 @@ module CubeTrainer
     end
   
     def self.by_name(name)
-      ELEMENTS[FACE_NAMES.index(name)]
+      index = FACE_NAMES.index(name.upcase)
+      raise "#{name} is not a valid #{self.class.name}." unless index
+      ELEMENTS[index]
     end
   
     def color
