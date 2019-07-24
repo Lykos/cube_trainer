@@ -47,7 +47,7 @@ module CubeTrainer
           options.test_comms = test
         end
 
-        opts.on('-b', '--buffer', /\w+/, 'Buffer to use instead of the default one.') do |b|
+        opts.on('-b', '--buffer BUFFER', /\w+/, 'Buffer to use instead of the default one.') do |b|
           options.buffer = b
         end
 
