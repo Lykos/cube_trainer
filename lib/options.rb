@@ -32,6 +32,7 @@ module CubeTrainer
       options.restrict_colors = COLORS
       options.commutator_info = COMMUTATOR_TYPES['corners']
       options.restrict_letters = nil
+      options.exclude_letters = []
       options.letter_scheme = DefaultLetterScheme.new
       options.mute = false
       opt_parser = OptionParser.new do |opts|
@@ -69,6 +70,11 @@ module CubeTrainer
         opts.on('-r', '--restrict_letters LETTERLIST', /\w+/, 'List of letters to which the commutators should be restricted.',
                 '  (Only uses commutators that contain at least one of the given letters)') do |letters|
           options.restrict_letters = letters.downcase.split('')
+        end
+
+        opts.on('-e', '--exclude_letters LETTERLIST', /\w+/,  'List of letters which should be excluded for commutators.',
+                '  (Only uses commutators that contain none of the given letters)') do |letters|
+          options.exclude_letters = letters.downcase.split('')
         end
         
         opts.on_tail('-h', '--help', 'Show this message') do

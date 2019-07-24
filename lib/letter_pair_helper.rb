@@ -27,12 +27,12 @@ module CubeTrainer
                      end
     end
   
-    def letter_pairs
-      @letter_pairs ||= begin
-                          buffer_letters = buffer.rotations.collect { |c| letter_scheme.letter(c) }
-                          valid_letters = letter_scheme.alphabet - buffer_letters
-                          LetterPairHelper.letter_pairs(valid_letters.permutation(2))
-                        end
+    def letter_pairs_for_piece
+      @letter_pairs_for_piece ||= begin
+                                    buffer_letters = buffer.rotations.collect { |c| letter_scheme.letter(c) }
+                                    valid_letters = letter_scheme.alphabet - buffer_letters
+                                    LetterPairHelper.letter_pairs(valid_letters.permutation(2))
+                                  end
     end
   
     def redundant_twists

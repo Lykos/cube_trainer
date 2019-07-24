@@ -4,14 +4,19 @@
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'letter_pair_word_finder'
+require 'dict'
 
 include CubeTrainer
 
-if ARGV.length != 1
-  raise 'Exactly one argument (namely the file to read words from) should be given.'
+if ARGV.length > 1
+  raise 'At most one argument (namely the file to read words from) should be given.'
 end
 
-terms = File.readlines(ARGV.first)
+terms = if ARGV.empty?
+          Dict.new.words
+        else
+          File.readlines(ARGV.first)
+        end
 finder = LetterPairWordFinder.new(terms)
 
 open('/dev/tty') do |f|

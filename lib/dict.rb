@@ -4,7 +4,8 @@ module CubeTrainer
 
   class Dict
   
-    DICT_PATHS = ['/usr/share/dict/words', '/usr/share/dict/swiss']
+    UNUSED_DICT_PATHS = ['/usr/share/dict/words']
+    DICT_PATHS = ['/usr/share/dict/swiss']
   
     def words
       @words ||= read_words
@@ -17,7 +18,7 @@ module CubeTrainer
     def read_words
       lines = DICT_PATHS.collect_concat { |p| File.readlines(p) }
       words = Set[]
-      lines.each do |l|
+      lines.sort.each do |l|
         prefix_exists = 3.upto(l.length).any? { |i| words.include? l[0...i] }
         words.add(l.chomp) unless prefix_exists
       end

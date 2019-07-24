@@ -1,11 +1,12 @@
 require 'letter_pair_helper'
 require 'input_sampler'
+require 'letter_pair_alg_set'
 require 'pao_letter_pair'
 require 'dict'
 
 module CubeTrainer
 
-  class LettersToWord
+  class LettersToWord < LetterPairAlgSet
 
     # TODO The setup with badness makes much less sense here and should be revised.
     GOAL_BADNESS = 5.0
@@ -13,11 +14,10 @@ module CubeTrainer
     def initialize(results_model, options)
       @results_model = results_model
       @alphabet = options.letter_scheme.alphabet
-      @input_sampler = InputSampler.new(valid_pairs, results_model, GOAL_BADNESS, options.verbose, options.new_item_boundary)
+      @input_sampler = InputSampler.new(letter_pairs, results_model, GOAL_BADNESS, options.verbose, options.new_item_boundary)
     end
 
-    def valid_pairs
-      
+    def generate_letter_pairs
       pairs = LetterPairHelper.letter_pairs(@alphabet.permutation(2))
       duplicates = LetterPairHelper.letter_pairs(@alphabet.collect { |c| [c, c] })
       singles = LetterPairHelper.letter_pairs(@alphabet.permutation(1))
