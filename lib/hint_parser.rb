@@ -64,13 +64,20 @@ module CubeTrainer
       hints = {}
       hint_table = CSV.read(csv_file)
       # TODO make this more general to figure out other types of hint tables
-      parts = hint_table[0][1..-1].collect { |p| parse_part(p) }
+      parts = hint_table[0][1..-1].collect do |p|
+        if p.nil? or p.empty?
+          nil
+        else
+          parse_part(p)
+        end
+      end
       hint_table[1..-1].each_with_index do |row, row_index|
-        break if row.first.nil? || row.first.empty?
+        break if row.first.nil? or row.first.empty?
         part1 = parse_part(row.first)
         row[1..-1].each_with_index do |e, i|
           next if e.nil? || e.empty? || blacklisted?(e)
           part0 = parts[i]
+          next if part0.nil?
           letter_pair = letter_pair(part0, part1)
           row_description = "#{("A".."Z").to_a[i + 1]}#{row_index + 2}"
           begin
