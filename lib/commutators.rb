@@ -22,7 +22,7 @@ module CubeTrainer
     ORIENTATION_FACES = [Face.by_name('U'), Face.by_name('D')]
 
     def generate_letter_pairs
-      non_buffer_corners = part_type::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
+      non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       twisted_corner_pairs = correctly_oriented_corners.permutation(2).map { |c1, c2| [c1.rotate_by(1), c2.rotate_by(2)] }
       two_twists = twisted_corner_pairs.map { |cs| LetterPair.new(cs.map { |c| letter_scheme.letter(c) }) }
@@ -47,7 +47,7 @@ module CubeTrainer
     end
 
     def generate_letter_pairs
-      edge_letters = part_type::ELEMENTS.map { |c| c.rotations.map { |r| letter_scheme.letter(r) }.min }.uniq.sort
+      edge_letters = PART_TYPE::ELEMENTS.map { |c| c.rotations.map { |r| letter_scheme.letter(r) }.min }.uniq.sort
       edge_letters.combination(2).map { |cs| LetterPair.new(cs) }
     end
  
