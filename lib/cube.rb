@@ -90,7 +90,11 @@ module CubeTrainer
       raise "Part #{self} doesn't have color #{c}." unless index
       rotate_by(index)
     end
-  
+
+    def rotate_face_up(f)
+      rotate_color_up(f.color)
+    end
+
     def rotate_by(n)
       self.class.new(@colors.rotate(n))
     end
@@ -415,6 +419,18 @@ module CubeTrainer
       new(faces.collect { |e| e.color })
     end
   
+    # Rotate such that neither the current color nor the given color are at the position of the letter.
+    def rotate_other_color_up(color)
+      index = @colors.index(color)
+      raise "Part #{self} doesn't have color #{color}." unless index
+      raise "Part #{self} already has color #{color} up, so `rotate_other_color_up(#{color}) is invalid." if index == 0
+      rotate_by(3 - index)
+    end
+  
+    def rotate_other_face_up(f)
+      rotate_other_color_up(f.color)
+    end
+
     def valid?
       adjacent_edges.all? { |e| e.valid? } && valid_chirality?
     end

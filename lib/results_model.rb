@@ -5,24 +5,15 @@ module CubeTrainer
 
   class ResultsModel
   
-    def initialize(mode, results_persistence=ResultsPersistence.create_for_production)
+    def initialize(mode, results_persistence)
       @mode = mode
       @result_persistence = results_persistence
-      @results = @result_persistence.load_results
+      @results = @result_persistence.load_results(mode)
       @result_listeners = [@result_persistence]
     end
-  
-    attr_reader :mode
-  
-    def results
-      @mode_results ||= begin
-                          unless @results.has_key?(@mode)
-                            @results[@mode] = []
-                          end
-                          @results[@mode]
-                        end
-    end
-  
+
+    attr_reader :mode, :results, :result_persistence
+    
     def add_result_listener(listener)
       @result_listeners.push(listener)
     end

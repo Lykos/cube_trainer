@@ -16,7 +16,6 @@ module CubeTrainer
     def compute_average(array)
       array.reduce(:+) * 1.0 / array.length
     end
-                        
   
     def push(value)
       was_saturated = saturated?

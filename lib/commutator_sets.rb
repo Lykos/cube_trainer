@@ -1,11 +1,12 @@
 require 'letter_pair_helper'
 require 'input_sampler'
 require 'hint_parser'
+require 'combination_based_hinter'
 require 'letter_pair_alg_set'
 
 module CubeTrainer
 
-  class FloatingCornerTwists < LetterPairAlgSet
+  class FloatingCorner2Twists < LetterPairAlgSet
     PART_TYPE = Corner
 
     def initialize(result_model, options)
@@ -32,6 +33,80 @@ module CubeTrainer
  
   end
 
+  class Corner3Twists < LetterPairAlgSet
+    PART_TYPE = Corner
+
+    def initialize(result_model, options)
+      super
+      corner_options = options.dup
+      corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
+      corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_buffer(options))
+      @hinter = Corner3TwistHinter.new(corner_results, options)
+    end
+
+    attr_reader :hinter
+    
+    def goal_badness
+      1.5
+    end
+
+    ORIENTATION_FACES = [Face.by_name('U'), Face.by_name('D')]
+
+    def generate_letter_pairs
+      non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
+      correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
+      1.upto(2).collect_concat do |twist_number|
+        correctly_oriented_corners.permutation(2).collect_concat do |c1, c2|
+          twisted_corner_pair = [c1.rotate_by(twist_number), c2.rotate_by(twist_number)]
+          LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) })
+        end
+      end
+
+    end
+ 
+    class Corner3TwistHinter < CombinationBasedHinter
+
+      # Note that this should be the results for corner comms, not for corner 3 twists.
+      def initialize(corner_results, options)
+        super(corner_results)
+        @letter_scheme = options.letter_scheme
+      end
+
+      def orientation_face(part)
+        faces = ORIENTATION_FACES.select { |f| part.colors.include?(f.color) }
+        raise "Couldn't determine unique orientation face for #{part}: #{faces}" unless faces.length == 1
+        faces.first
+      end
+
+      def rotate_orientation_face_up(part)
+        part.rotate_face_up(orientation_face(part))
+      end
+
+      def rotate_other_face_up(part)
+        part.rotate_other_face_up(orientation_face(part))
+      end
+
+      def generate_directed_solutions(parts)
+        raise unless parts.length == 2
+        first_part, second_part = parts
+        solution_parts = [
+          # Parts for first comm
+          [first_part, second_part],
+          # Parts for second comm
+          [rotate_orientation_face_up(second_part), rotate_other_face_up(first_part)]
+        ]
+        extended_solutions = 0.upto(2).collect { |rot| solution_parts.map { |comm| comm.map { |p| p.rotate_by(rot) } } }
+        extended_solutions.map { |s| solution_parts.map { |comm| LetterPair.new(comm.map { |p| @letter_scheme.letter(p) }) } }
+      end
+
+      def generate_combinations(letter_pair)
+        pieces = letter_pair.letters.map { |l| @letter_scheme.for_letter(PART_TYPE, l) }
+        generate_directed_solutions(pieces) + generate_directed_solutions(pieces.reverse)
+      end
+    
+    end
+  end
+
   class FloatingEdgeFlips < LetterPairAlgSet
     PART_TYPE = Edge
 
@@ -53,7 +128,7 @@ module CubeTrainer
  
   end
 
-  class Commutators < LetterPairAlgSet
+  class CommutatorSet < LetterPairAlgSet
     
     # If restrict_letters is not nil, only commutators for those letters are used.
     def initialize(results_model, options)
@@ -65,7 +140,7 @@ module CubeTrainer
   
   end
   
-  class CornerCommutators < Commutators
+  class CornerCommutators < CommutatorSet
 
     PART_TYPE = Corner
 
@@ -79,7 +154,7 @@ module CubeTrainer
     
   end
   
-  class EdgeCommutators < Commutators
+  class EdgeCommutators < CommutatorSet
   
     PART_TYPE = Edge
 
@@ -93,7 +168,7 @@ module CubeTrainer
     
   end
   
-  class WingCommutators < Commutators
+  class WingCommutators < CommutatorSet
   
     PART_TYPE = Wing
 
@@ -107,7 +182,7 @@ module CubeTrainer
     
   end
   
-  class XCenterCommutators < Commutators
+  class XCenterCommutators < CommutatorSet
   
     PART_TYPE = XCenter
 
@@ -121,7 +196,7 @@ module CubeTrainer
     
   end
   
-  class TCenterCommutators < Commutators
+  class TCenterCommutators < CommutatorSet
   
     PART_TYPE = TCenter
 
