@@ -1,6 +1,6 @@
 require 'optparse'
 require 'ostruct'
-require 'commutators'
+require 'commutator_sets'
 require 'human_word_learner'
 require 'human_time_learner'
 require 'letters_to_word'

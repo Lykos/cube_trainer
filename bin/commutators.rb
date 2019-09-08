@@ -3,7 +3,7 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'commutators'
+require 'commutator_sets'
 require 'options'
 require 'results_model'
 require 'trainer'
