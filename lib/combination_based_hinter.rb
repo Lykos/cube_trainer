@@ -12,7 +12,7 @@ module CubeTrainer
       results.group_by { |r| r.input }.each do |l, rs|
         avg = CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
         rs.sort_by { |r| r.timestamp }.each { |r| avg.push(r.time_s) }
-        @values[l] = ActualScore.new(avg.average)
+        @values[l] = ActualScore.new(avg.average).round(2)
       end
       @hints = {}
     end
@@ -85,7 +85,7 @@ module CubeTrainer
       end
 
       def to_s
-        "#{description}: #{value.round(2).to_s}"
+        "#{description}: #{value}"
       end
     end
 
