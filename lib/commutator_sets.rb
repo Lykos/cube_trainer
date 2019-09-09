@@ -47,7 +47,7 @@ module CubeTrainer
     attr_reader :hinter
     
     def goal_badness
-      1.5
+      2.0
     end
 
     ORIENTATION_FACES = [Face.by_name('U'), Face.by_name('D')]
@@ -56,9 +56,9 @@ module CubeTrainer
       non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       1.upto(2).collect_concat do |twist_number|
-        correctly_oriented_corners.permutation(2).collect_concat do |c1, c2|
+        correctly_oriented_corners.combination(2).collect_concat do |c1, c2|
           twisted_corner_pair = [c1.rotate_by(twist_number), c2.rotate_by(twist_number)]
-          LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) })
+          LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
         end
       end
 
@@ -86,16 +86,49 @@ module CubeTrainer
         part.rotate_other_face_up(orientation_face(part))
       end
 
+      def rotate_comm_target(comm, target_index, rotation)
+        raise ArgumentError unless comm.length == 2
+        raise ArgumentError unless [0, 1].include?(target_index)
+        comm.map.with_index do |c, i|
+          if i == target_index
+            c.rotate_by(rotation)
+          else
+            c
+          end
+        end
+      end
+
       def generate_directed_solutions(parts)
         raise unless parts.length == 2
-        first_part, second_part = parts
-        solution_parts = [
+        first_corner, second_corner = parts
+
+        # We define one solution explicitly
+        solution_corners = [
           # Parts for first comm
-          [first_part, second_part],
+          [first_corner, second_corner],
           # Parts for second comm
-          [rotate_orientation_face_up(second_part), rotate_other_face_up(first_part)]
+          [rotate_orientation_face_up(second_corner), rotate_other_face_up(first_corner)]
         ]
-        extended_solutions = 0.upto(2).collect { |rot| solution_parts.map { |comm| comm.map { |p| p.rotate_by(rot) } } }
+
+        # Now we generate additional solutions by rotating both colors in one direction.
+        extended_solutions = Corner::FACES.times.collect do |rot|
+          solution_corners.map do |comm|
+            comm.map { |p| p.rotate_by(rot) }
+          end
+        end
+
+        # Now we generate even more additional solutions by rotating the second corner of the first
+        # comm and the first corner of the second comm in opposite directions.
+        extended_solutions = Corner::FACES.times.collect_concat do |rot|
+          extended_solutions.map do |solution|
+            raise unless solution.length == 2
+            first_comm, second_comm = solution
+            [rotate_comm_target(first_comm, 1, rot),
+             rotate_comm_target(second_comm, 0, rot)]
+          end
+        end
+
+        # Now we generate letter pairs
         extended_solutions.map { |s| s.map { |comm| LetterPair.new(comm.map { |p| @letter_scheme.letter(p) }) } }
       end
 
@@ -149,7 +182,7 @@ module CubeTrainer
     end
   
     def goal_badness
-      1.5
+      1.0
     end
     
   end
