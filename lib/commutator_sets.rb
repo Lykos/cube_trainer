@@ -40,7 +40,7 @@ module CubeTrainer
       super
       corner_options = options.dup
       corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
-      corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_buffer(options))
+      corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_buffer(corner_options))
       @hinter = Corner3TwistHinter.new(corner_results, options)
     end
 
@@ -96,7 +96,7 @@ module CubeTrainer
           [rotate_orientation_face_up(second_part), rotate_other_face_up(first_part)]
         ]
         extended_solutions = 0.upto(2).collect { |rot| solution_parts.map { |comm| comm.map { |p| p.rotate_by(rot) } } }
-        extended_solutions.map { |s| solution_parts.map { |comm| LetterPair.new(comm.map { |p| @letter_scheme.letter(p) }) } }
+        extended_solutions.map { |s| s.map { |comm| LetterPair.new(comm.map { |p| @letter_scheme.letter(p) }) } }
       end
 
       def generate_combinations(letter_pair)
