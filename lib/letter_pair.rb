@@ -2,12 +2,13 @@ require 'cube'
 
 module CubeTrainer
 
+  # Called LetterPair for historical reasons, but actually can contain any number of letters.
   class LetterPair
   
     SEPARATOR = " "
     
     def initialize(letters)
-      raise "Invalid letter pair length for letter pair #{letters.join(" ")}." unless 1 <= letters.length and letters.length < 3
+      raise "Invalid letter pair length for letter pair #{letters.join(" ")}." unless 1 <= letters.length
       raise "Invalid letter '#{SEPARATOR}' in letter pair #{letters.join(" ")}." if letters.include?(SEPARATOR)
       @letters = letters
     end

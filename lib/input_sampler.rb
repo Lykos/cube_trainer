@@ -32,7 +32,7 @@ module CubeTrainer
   
     # In case there are still completely new items available, this is the fraction of times that such an item will be chosen.
     # Note that completely new items will never be chosen if a relatively new item needs to be repeated.
-    COMPLETELY_NEW_ITEMS_FRACTION = 0.5
+    COMPLETELY_NEW_ITEMS_FRACTION = 0.1
   
     # In case there are still relatively new items that need to be repeated available, this is the fraction of times that such an item will be chosen.
     REPEAT_NEW_ITEMS_FRACTION = 0.8

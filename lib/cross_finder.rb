@@ -9,7 +9,7 @@ module CubeTrainer
 
     def score_on_face(state, face)
       base = no_auf_score_on_face(state, face)
-      adjusted = [1, 2, 3].max_by do |d|
+      adjusted = CubeDirection::NON_ZERO_DIRECTIONS.max_by do |d|
         move = FatMove.new(face, 1, d)
         move.apply_to(state)
         score = no_auf_score_on_face(state, face)

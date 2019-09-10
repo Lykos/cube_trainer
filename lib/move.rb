@@ -20,24 +20,124 @@ module CubeTrainer
                 end
   SKEWB_MOVE_REGEXP = Regexp.new("([#{SKEWB_MOVES.join}])([#{POSSIBLE_DIRECTION_NAMES.flatten.join}]?)")
 
-  # TODO class direction
-  def invert_direction(direction)
-    4 - direction
+  def check_move_metric(metric)
+    raise ArgumentError unless MOVE_METRICS.include?(metric)    
   end
 
+  class AbstractDirection    
+    def initialize(value)
+      raise ArgumentError unless value.is_a?(Integer) && 0 <= value && value < self.class::NUM_DIRECTIONS
+      @value = value
+    end
+
+    attr_reader :value
+
+    def is_non_zero?
+      @value > 0
+    end
+
+    def invert
+      self::class.new(self.class::NUM_DIRECTIONS - @value)
+    end
+
+    def +(other)
+      self::class.new(@value + other.value % self.class::NUM_DIRECTIONS)
+    end
+    
+    def eql?(other)
+      self.class.equal?(other.class) && @value == other.value
+    end
+  
+    alias == eql?
+  
+    def hash
+      @value.hash
+    end
+  end
+
+  class SkewbDirection < AbstractDirection
+    NUM_DIRECTIONS = 3
+    NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }
+    FORWARD = new(1)
+    BACKWARD = new(2)
+
+    def name
+      case self
+      when FORWARD
+        SIMPLE_DIRECTION_NAMES[0]
+      when BACKWARD
+        SIMPLE_DIRECTION_NAMES[-1]
+      else
+        raise ArgumentError
+      end
+    end
+
+    def is_double_move?
+      false
+    end
+  end
+  
+  class CubeDirection < AbstractDirection
+    NUM_DIRECTIONS = 4
+    NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }
+
+    def name
+      raise ArgumentError unless is_non_zero?
+      SIMPLE_DIRECTION_NAMES[@value - 1]
+    end
+
+    def is_double_move?
+      @value == 2
+    end
+  end
+  
   class Move
+    MOVE_METRICS = [:qtm, :htm, :stm, :qstm]
+    
+    def move_count(metric=:htm)
+      check_move_metric(metric)
+      slice_factor = if is_slice_move? then 2 else 1 end
+      direction_factor = if direction.is_double_move? then 2 else 1 end
+      case metric
+      when :qtm
+        slice_factor * direction_factor
+      when :htm
+        slice_factor
+      when :stm
+        1
+      when :qstm
+        direction_factor
+      end
+    end
+
+    def is_slice_move?
+      raise NotImplementedError
+    end
+
+    def direction
+      raise NotImplementedError
+    end
+
+    def invert
+      raise NotImplementedError
+    end
+
+    # Returns true if this move can be cancelled with the other one with nothing left after cancellation (not even rotations).
+    def cancels_totally?(other)
+      invert == other
+    end
   end
 
   class MSliceMove < Move
     def initialize(axis_face, direction)
       raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
-      raise ArgumentError unless direction.is_a?(Integer) && 1 <= direction && direction < 4
+      raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
       @axis_face = axis_face
       @direction = direction
     end
   
     attr_reader :axis_face, :direction
-  
+
     def eql?(other)
       self.class.equal?(other.class) && @axis_face == other.axis_face && @direction == other.direction
     end
@@ -50,8 +150,8 @@ module CubeTrainer
   
     def to_s
       slice_name = SLICES[Face::ELEMENTS.index(@axis_face)]
-      broken_direction = if slice_name == 'S' then direction else invert_direction(direction) end
-      "#{slice_name}#{SIMPLE_DIRECTION_NAMES[broken_direction - 1]}"
+      broken_direction = if slice_name == 'S' then direction else direction.invert end
+      "#{slice_name}#{broken_direction.name}"
     end
   
     def apply_to(cube_state)
@@ -69,20 +169,34 @@ module CubeTrainer
     end
 
     def invert
-      MSliceMove.new(@axis_face, invert_direction(@direction))
+      MSliceMove.new(@axis_face, @direction.invert)
+    end
+
+    def is_slice_move?
+      true
+    end
+
+    def cancels_partially?(other)
+      other.is_a?(MSliceMove) && @axis_face == other.axis_face
+    end
+
+    def cancel_partially(other)
+      raise ArgumentError unless cancels_partially?(other)
+      raise ArgumentError if cancels_totally?(other)
+      MSliceMove.new(@direction)
     end
   end
   
   class Rotation < Move
     def initialize(axis_face, direction)
       raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
-      raise ArgumentError unless direction.is_a?(Integer) && 1 <= direction && direction < 4
+      raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
       @axis_face = axis_face
       @direction = direction
     end
   
     attr_reader :axis_face, :direction
-  
+
     def eql?(other)
       self.class.equal?(other.class) && @axis_face == other.axis_face && @direction == other.direction
     end
@@ -94,7 +208,7 @@ module CubeTrainer
     end
   
     def to_s
-      "#{AXES[Face::ELEMENTS.index(@axis_face)]}#{SIMPLE_DIRECTION_NAMES[@direction - 1]}"
+      "#{AXES[Face::ELEMENTS.index(@axis_face)]}#{@direction.name}"
     end
   
     def apply_to(cube_state)
@@ -104,23 +218,31 @@ module CubeTrainer
         cube_state.rotate_slice(@axis_face, s, @direction)
       end
       cube_state.rotate_face(@axis_face, @direction)
-      cube_state.rotate_face(@axis_face.opposite, invert_direction(@direction))
+      cube_state.rotate_face(@axis_face.opposite, @direction.invert)
     end
 
     def invert
-      Rotation.new(@axis_face, invert_direction(@direction))
+      Rotation.new(@axis_face, @direction.invert)
+    end
+
+    def is_slice_move?
+      false
+    end
+
+    def move_count(metric=:htm)
+      0
     end
   end
 
   class SkewbMove < Move
     def initialize(move, direction)
       raise ArgumentError unless SKEWB_MOVES.include?(move)
-      raise ArgumentError unless direction.is_a?(Integer) && 1 <= direction && direction < 3
+      raise ArgumentError unless direction.is_a?(SkewbDirection) && direction.is_non_zero?
       @move = move
       @direction = direction
     end
 
-    ALL = [new('U', 1), new('U', 2), new('R', 1), new('R', 2), new('L', 1), new('L', 2), new('B', 1), new('B', 2)]
+    ALL = SKEWB_MOVES.product(SkewbDirection::NON_ZERO_DIRECTIONS).map { |m, d| new(m, d) }
 
     attr_reader :move, :direction
   
@@ -132,20 +254,6 @@ module CubeTrainer
   
     def hash
       [@move, @direction].hash
-    end
-
-    def skewb_direction_name(direction)
-      if direction == 1
-        SIMPLE_DIRECTION_NAMES[0]
-      elsif direction == 2
-        SIMPLE_DIRECTION_NAMES[-1]
-      else
-        raise ArugmentError
-      end
-    end
-
-    def invert_skewb_direction(direction)
-      3 - direction
     end
 
     def to_s
@@ -184,36 +292,40 @@ module CubeTrainer
                  raise
                end
       cycles.each do |c|
-        if @direction == 1
+        case @direction
+        when SkewbDirection::FORWARD
           cube_state.apply_index_cycle(c)
-        elsif @direction == 2
+        when SkewbDirection::BACKWARD
           cube_state.apply_index_cycle(c.reverse)
         else
-          raise
+          raise ArgumentError
         end
       end
     end
 
     def invert
-      SkewbMove.new(@move, invert_skewb_direction(@direction))
+      SkewbMove.new(@move, @direction.invert)
     end
-  
+
+    def is_slice_move?
+      false
+    end
   end
   
   class FatMove < Move
     def initialize(face, width, direction)
       raise ArgumentError unless face.is_a?(Face)
       raise ArgumentError, "Invalid width #{width} for fat move." unless width.is_a?(Integer) and width >= 1
-      raise ArgumentError unless direction.is_a?(Integer) && 1 <= direction && direction < 4
+      raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
       @face = face
       @width = width
       @direction = direction
     end
 
-    OUTER_MOVES = Face::ELEMENTS.product([1, 2, 3]).map { |f, d| FatMove.new(f, 1, d) }
+    OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map { |f, d| FatMove.new(f, 1, d) }
   
     attr_reader :face, :width, :direction
-  
+
     def eql?(other)
       self.class.equal?(other.class) && @face == other.face && @width == other.width && @direction == other.direction
     end
@@ -225,7 +337,7 @@ module CubeTrainer
     end
   
     def to_s
-      "#{if @width > 1 then @width else '' end}#{@face.name}#{if @width > 1 then 'w' else '' end}#{SIMPLE_DIRECTION_NAMES[@direction - 1]}"
+      "#{if @width > 1 then @width else '' end}#{@face.name}#{if @width > 1 then 'w' else '' end}#{@direction.name}"
     end
   
     def apply_to(cube_state)
@@ -238,20 +350,24 @@ module CubeTrainer
     end
 
     def invert
-      FatMove.new(@face, @width, invert_direction(@direction))
+      FatMove.new(@face, @width, @direction.invert)
+    end
+
+    def is_slice_move?
+      false
     end
   end
   
   class SliceMove < Move
     def initialize(slice_face, direction)
       raise ArgumentError unless slice_face.is_a?(Face)
-      raise ArgumentError unless direction.is_a?(Integer) && 1 <= direction && direction < 4
+      raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
       @slice_face = slice_face
       @direction = direction
     end
   
     attr_reader :slice_face, :direction
-  
+
     def eql?(other)
       self.class.equal?(other.class) && @slice_face == other.slice_face && @direction == other.direction
     end
@@ -263,7 +379,7 @@ module CubeTrainer
     end
   
     def to_s
-      "#{@slice_face.name.downcase}#{SIMPLE_DIRECTION_NAMES[@direction - 1]}"
+      "#{@slice_face.name.downcase}#{@direction.name}"
     end
   
     def apply_to(cube_state)
@@ -280,7 +396,11 @@ module CubeTrainer
     end
 
     def invert
-      SliceMove.new(@slice_face, invert_direction(@direction))
+      SliceMove.new(@slice_face, @direction.invert)
+    end
+
+    def is_slice_move?
+      true
     end
   end
 
@@ -334,13 +454,33 @@ module CubeTrainer
       Algorithm.new(@moves + other.moves)
     end
 
+    # Returns the number of moves that cancel if you concat the algorithm to the right of self.
+    # Doesn't support cancellation over rotations or fat move tricks.
+    def cancels(other, metric=:htm)
+      cancellations = 0
+      0.upto([@moves.length, other.moves.length].min - 1) do |i|
+        move = @moves[-i - 1]
+        other_move = other.moves[i]
+        if move.invert == other_move
+          cancellations += move.move_count(metric) + other_move.move_count(metric)
+        else
+        end
+      end
+    end
+
+    def move_count(metric=:htm)
+      check_move_metric(metric)
+      @moves.map { |m| m.move_count(metric) }.reduce(:+)
+    end
+
     def *(factor)
       Algorithm.new(@moves * factor)
     end
   end
 
   def parse_direction(direction_string)
-    POSSIBLE_DIRECTION_NAMES.index { |ds| ds.include?(direction_string) } + 1
+    value = POSSIBLE_DIRECTION_NAMES.index { |ds| ds.include?(direction_string) } + 1
+    CubeDirection.new(value)
   end
   
   def parse_move(move_string)
@@ -363,7 +503,7 @@ module CubeTrainer
       SliceMove.new(Face.by_name(slice_name.upcase), direction)
     elsif mslice_name
       raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
-      fixed_direction = if mslice_name == 'S' then direction else invert_direction(direction) end
+      fixed_direction = if mslice_name == 'S' then direction else direction.invert end
       MSliceMove.new(Face::ELEMENTS[SLICES.index(mslice_name)], fixed_direction)
     else
       raise
@@ -372,11 +512,11 @@ module CubeTrainer
 
   def parse_skewb_direction(direction_string)
     if POSSIBLE_DIRECTION_NAMES[0].include?(direction_string)
-      1
+      SkewbDirection::FORWARD
     elsif POSSIBLE_DIRECTION_NAMES[-1].include?(direction_string)
-      2
+      SkewbDirection::BACKWARD
     else
-      raise
+      raise ArgumentError
     end
   end
 
@@ -385,7 +525,7 @@ module CubeTrainer
     match = move_string.match(SKEWB_MOVE_REGEXP)
     raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
     skewb_move_string, direction_string = match.captures
-    direction = direction_string
+    direction = parse_skewb_direction(direction_string)
     SkewbMove.new(skewb_move_string, direction)
   end
 
