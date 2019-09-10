@@ -1,4 +1,5 @@
 require 'move'
+require 'algorithm'
 
 module CubeTrainer
 

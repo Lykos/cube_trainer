@@ -1,3 +1,4 @@
+require 'algorithm'
 
 module CubeTrainer
 

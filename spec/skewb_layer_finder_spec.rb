@@ -1,5 +1,6 @@
 require 'skewb_layer_finder'
 require 'move'
+require 'algorithm'
 
 include CubeTrainer
 

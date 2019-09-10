@@ -1,4 +1,5 @@
 require 'strscan'
+require 'algorithm'
 require 'cube'
 require 'move'
 

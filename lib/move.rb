@@ -8,17 +8,6 @@ module CubeTrainer
   SIMPLE_DIRECTION_NAMES = POSSIBLE_DIRECTION_NAMES.map { |d| d.first }
   AXES = ['y', 'z', 'x']
   SLICES = ['E', 'S', 'M']
-  MOVE_REGEXP = begin
-                  axes_part = "([#{AXES.join}])"
-                  fat_move_part = "(\\d*)([#{FACE_NAMES.join}])w"
-                  normal_move_part = "([#{FACE_NAMES.join}])"
-                  small_move_part = "([#{FACE_NAMES.join.downcase}])"
-                  slice_move_part = "([#{SLICES.join}])"
-                  move_part = "(?:#{axes_part}|#{fat_move_part}|#{normal_move_part}|#{small_move_part}|#{slice_move_part})"
-                  direction_part = "(#{POSSIBLE_DIRECTION_NAMES.flatten.sort_by { |e| -e.length }.join("|")})"
-                  Regexp.new("#{move_part}#{direction_part}")
-                end
-  SKEWB_MOVE_REGEXP = Regexp.new("([#{SKEWB_MOVES.join}])([#{POSSIBLE_DIRECTION_NAMES.flatten.join}]?)")
 
   class AbstractDirection    
     def initialize(value)
@@ -449,55 +438,84 @@ module CubeTrainer
     end
   end
 
-  def parse_direction(direction_string)
-    value = POSSIBLE_DIRECTION_NAMES.index { |ds| ds.include?(direction_string) } + 1
-    CubeDirection.new(value)
-  end
+  class CubeMoveParser
+    REGEXP = begin
+               axes_part = "([#{AXES.join}])"
+               fat_move_part = "(\\d*)([#{FACE_NAMES.join}])w"
+               normal_move_part = "([#{FACE_NAMES.join}])"
+               small_move_part = "([#{FACE_NAMES.join.downcase}])"
+               slice_move_part = "([#{SLICES.join}])"
+               move_part = "(?:#{axes_part}|#{fat_move_part}|#{normal_move_part}|#{small_move_part}|#{slice_move_part})"
+               direction_part = "(#{POSSIBLE_DIRECTION_NAMES.flatten.sort_by { |e| -e.length }.join("|")})"
+               Regexp.new("#{move_part}#{direction_part}")
+             end
+
+    def regexp
+      REGEXP
+    end
+
+    def parse_direction(direction_string)
+      value = POSSIBLE_DIRECTION_NAMES.index { |ds| ds.include?(direction_string) } + 1
+      CubeDirection.new(value)
+    end
   
-  def parse_move(move_string)
-    match = move_string.match(MOVE_REGEXP)
-    raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
-    rotation, width, fat_face_name, face_name, slice_name, mslice_name, direction_string = match.captures
-    direction = parse_direction(direction_string)
-    if rotation
-      raise unless width.nil? && fat_face_name.nil? && face_name.nil? && slice_name.nil?
-      Rotation.new(Face::ELEMENTS[AXES.index(rotation)], direction)
-    elsif fat_face_name
-      raise unless rotation.nil? && face_name.nil? && slice_name.nil?
-      width = if width == '' then 2 else width.to_i end
-      FatMove.new(Face.by_name(fat_face_name), width, direction)
-    elsif face_name
-      raise unless rotation.nil? && width.nil? && fat_face_name.nil? && slice_name.nil?
-      FatMove.new(Face.by_name(face_name), 1, direction)
-    elsif slice_name
-      raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
-      SliceMove.new(Face.by_name(slice_name.upcase), direction)
-    elsif mslice_name
-      raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
-      fixed_direction = if mslice_name == 'S' then direction else direction.invert end
-      MSliceMove.new(Face::ELEMENTS[SLICES.index(mslice_name)], fixed_direction)
-    else
-      raise
+    def parse_move(move_string)
+      match = move_string.match(REGEXP)
+      raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
+      rotation, width, fat_face_name, face_name, slice_name, mslice_name, direction_string = match.captures
+      direction = parse_direction(direction_string)
+      if rotation
+        raise unless width.nil? && fat_face_name.nil? && face_name.nil? && slice_name.nil?
+        Rotation.new(Face::ELEMENTS[AXES.index(rotation)], direction)
+      elsif fat_face_name
+        raise unless rotation.nil? && face_name.nil? && slice_name.nil?
+        width = if width == '' then 2 else width.to_i end
+        FatMove.new(Face.by_name(fat_face_name), width, direction)
+      elsif face_name
+        raise unless rotation.nil? && width.nil? && fat_face_name.nil? && slice_name.nil?
+        FatMove.new(Face.by_name(face_name), 1, direction)
+      elsif slice_name
+        raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
+        SliceMove.new(Face.by_name(slice_name.upcase), direction)
+      elsif mslice_name
+        raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
+        fixed_direction = if mslice_name == 'S' then direction else direction.invert end
+        MSliceMove.new(Face::ELEMENTS[SLICES.index(mslice_name)], fixed_direction)
+      else
+        raise
+      end
     end
+
+    INSTANCE = CubeMoveParser.new
   end
 
-  def parse_skewb_direction(direction_string)
-    if POSSIBLE_DIRECTION_NAMES[0].include?(direction_string)
-      SkewbDirection::FORWARD
-    elsif POSSIBLE_DIRECTION_NAMES[-1].include?(direction_string)
-      SkewbDirection::BACKWARD
-    else
-      raise ArgumentError
-    end
-  end
+  class SkewbMoveParser
+    REGEXP = Regexp.new("([#{SKEWB_MOVES.join}])([#{POSSIBLE_DIRECTION_NAMES.flatten.join}]?)")
 
-  # Parses WCA Skewb moves.
-  def parse_skewb_move(move_string)
-    match = move_string.match(SKEWB_MOVE_REGEXP)
-    raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
-    skewb_move_string, direction_string = match.captures
-    direction = parse_skewb_direction(direction_string)
-    SkewbMove.new(skewb_move_string, direction)
+    def regexp
+      REGEXP
+    end
+
+    def parse_skewb_direction(direction_string)
+      if POSSIBLE_DIRECTION_NAMES[0].include?(direction_string)
+        SkewbDirection::FORWARD
+      elsif POSSIBLE_DIRECTION_NAMES[-1].include?(direction_string)
+        SkewbDirection::BACKWARD
+      else
+        raise ArgumentError
+      end
+    end
+
+    # Parses WCA Skewb moves.
+    def parse_move(move_string)
+      match = move_string.match(REGEXP)
+      raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
+      skewb_move_string, direction_string = match.captures
+      direction = parse_skewb_direction(direction_string)
+      SkewbMove.new(skewb_move_string, direction)
+    end
+
+    INSTANCE = SkewbMoveParser.new
   end
 
 end

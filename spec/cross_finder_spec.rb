@@ -1,6 +1,7 @@
 require 'cross_finder'
 require 'move'
 require 'parser'
+require 'algorithm'
 
 include CubeTrainer
 

@@ -4,6 +4,7 @@
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'move'
+require 'algorithm'
 require 'options'
 require 'skewb_layer_finder'
 require 'skewb_state'
