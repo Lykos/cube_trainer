@@ -7,13 +7,14 @@ module CubeTrainer
   # Hinter that gives hints on how to solve a certain case based on a combination of primitive cases,
   # e.g. solving a corner 3 twist by 2 comms.
   class CombinationBasedHinter
-    def initialize(results)
+    def initialize(results, hinter)
       @values = {}
       results.group_by { |r| r.input }.each do |l, rs|
         avg = CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
         rs.sort_by { |r| r.timestamp }.each { |r| avg.push(r.time_s) }
         @values[l] = ActualScore.new(avg.average)
       end
+      @hinter = hinter
       @hints = {}
     end
 
@@ -21,6 +22,8 @@ module CubeTrainer
       def <=>(score)
         -score.unknown_compare
       end
+
+      include Comparable
 
       def +(score)
         self
@@ -41,6 +44,10 @@ module CubeTrainer
       def to_s
         'unknown'
       end
+
+      def known?
+        false
+      end
     end
 
     UNKNOWN_SCORE = UnknownScore.new
@@ -53,6 +60,8 @@ module CubeTrainer
       def <=>(score)
         -score.actual_compare(@value)
       end
+
+      include Comparable
 
       def +(score)
         score.plus_actual(@value)
@@ -71,7 +80,15 @@ module CubeTrainer
       end
 
       def to_s
-        @value.round(2).to_s
+        if @value.is_a?(Float)
+          @value.round(2).to_s
+        else
+          @value.to_s
+        end
+      end
+
+      def known?
+        true
       end
     end
 
@@ -79,25 +96,41 @@ module CubeTrainer
       @values[letter_pair] ||= UNKNOWN_SCORE
     end
 
-    class DescriptionAndValue < Struct.new(:description, :value)
+    class DescriptionAndValue < Struct.new(:description, :value, :cancellations)
       def <=>(other)
-        [value, description] <=> [other.value, other.description]
+        [value, other.cancellations, description] <=> [other.value, other.cancellations, other.description]
       end
 
       def to_s
-        "#{description}: #{value}"
+        cancellations_string = if cancellations > ActualScore.new(0)
+                                 " (cancels #{cancellations})"
+                               else
+                                 ""
+                               end
+        "#{description}: #{value}#{cancellations_string}"
       end
     end
 
     def hint(letter_pair)
       @hints[letter_pair] ||= begin
+                                combinations = generate_combinations(letter_pair)
                                 descriptions_and_values = 
-                                  generate_combinations(letter_pair).map do |ls|
+                                  combinations.map do |ls|
                                   value = ls.map { |l| value(l) }.reduce(:+)
+                                  cancellations = 0.upto(ls.length - 2).map do |i|
+                                    left = @hinter.hint(ls[0])
+                                    right = @hinter.hint(ls[1])
+                                    if left && right
+                                      ActualScore.new(left.cancellations(right, :sqtm))
+                                    else
+                                      UNKNOWN_SCORE
+                                    end
+                                  end.reduce(:+)
                                   description = ls.join(', ')
-                                  DescriptionAndValue.new(description, value)
+                                  DescriptionAndValue.new(description, value, cancellations)
                                 end
-                                descriptions_and_values.sort.join("\n")
+                                base_hints = combinations.flatten.uniq.map { |l| "#{l}: #{@hinter.hint(l)}" }
+                                (descriptions_and_values.sort + base_hints.sort).join("\n")
                               end
     end
 

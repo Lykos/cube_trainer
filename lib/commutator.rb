@@ -8,6 +8,9 @@ module CubeTrainer
   end
 
   class Commutator
+    def cancellations(other, metric=:htm)
+      algorithm.cancellations(other.algorithm, metric)
+    end
   end
 
   # Algorithm that is used like a commutator but actually isn't one.

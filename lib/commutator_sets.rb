@@ -41,7 +41,8 @@ module CubeTrainer
       corner_options = options.dup
       corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
       corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_buffer(corner_options))
-      @hinter = Corner3TwistHinter.new(corner_results, options)
+      corner_hinter = Hinter.maybe_create(PART_TYPE, corner_options)
+      @hinter = Corner3TwistHinter.new(corner_results, corner_hinter, options)
     end
 
     attr_reader :hinter
@@ -61,14 +62,12 @@ module CubeTrainer
           LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
         end
       end
-
     end
  
     class Corner3TwistHinter < CombinationBasedHinter
-
       # Note that this should be the results for corner comms, not for corner 3 twists.
-      def initialize(corner_results, options)
-        super(corner_results)
+      def initialize(corner_results, corner_hinter, options)
+        super(corner_results, corner_hinter)
         @letter_scheme = options.letter_scheme
       end
 

@@ -20,13 +20,10 @@ module CubeTrainer
                 end
   SKEWB_MOVE_REGEXP = Regexp.new("([#{SKEWB_MOVES.join}])([#{POSSIBLE_DIRECTION_NAMES.flatten.join}]?)")
 
-  def check_move_metric(metric)
-    raise ArgumentError unless MOVE_METRICS.include?(metric)    
-  end
-
   class AbstractDirection    
     def initialize(value)
-      raise ArgumentError unless value.is_a?(Integer) && 0 <= value && value < self.class::NUM_DIRECTIONS
+      raise ArgumentError, "Direction value #{value} isn't an integer." unless value.is_a?(Integer)
+      raise ArgumentError, "Invalid direction value #{value}." unless 0 <= value && value < self.class::NUM_DIRECTIONS
       @value = value
     end
 
@@ -41,7 +38,7 @@ module CubeTrainer
     end
 
     def +(other)
-      self::class.new(@value + other.value % self.class::NUM_DIRECTIONS)
+      self::class.new((@value + other.value) % self.class::NUM_DIRECTIONS)
     end
     
     def eql?(other)
@@ -92,10 +89,14 @@ module CubeTrainer
   end
   
   class Move
-    MOVE_METRICS = [:qtm, :htm, :stm, :qstm]
+    MOVE_METRICS = [:qtm, :htm, :stm, :sqtm, :qstm]
+
+    def self.check_move_metric(metric)
+      raise ArgumentError, "Invalid move metric #{metric}." unless MOVE_METRICS.include?(metric)    
+    end
     
     def move_count(metric=:htm)
-      check_move_metric(metric)
+      Move.check_move_metric(metric)
       slice_factor = if is_slice_move? then 2 else 1 end
       direction_factor = if direction.is_double_move? then 2 else 1 end
       case metric
@@ -107,6 +108,10 @@ module CubeTrainer
         1
       when :qstm
         direction_factor
+      when :sqtm
+        direction_factor
+      else
+        raise
       end
     end
 
@@ -183,7 +188,7 @@ module CubeTrainer
     def cancel_partially(other)
       raise ArgumentError unless cancels_partially?(other)
       raise ArgumentError if cancels_totally?(other)
-      MSliceMove.new(@direction)
+      MSliceMove.new(@axis_face, @direction + other.direction)
     end
   end
   
@@ -227,6 +232,16 @@ module CubeTrainer
 
     def is_slice_move?
       false
+    end
+
+    def cancels_partially?(other)
+      other.is_a?(Rotation) && @axis_face == other.axis_face
+    end
+
+    def cancel_partially(other)
+      raise ArgumentError unless cancels_partially?(other)
+      raise ArgumentError if cancels_totally?(other)
+      Rotation.new(@axis_face, @direction + other.direction)
     end
 
     def move_count(metric=:htm)
@@ -310,6 +325,16 @@ module CubeTrainer
     def is_slice_move?
       false
     end
+    
+    def cancels_partially?(other)
+      other.is_a?(SkewbMove) && @axis_face == other.axis_face
+    end
+
+    def cancel_partially(other)
+      raise ArgumentError unless cancels_partially?(other)
+      raise ArgumentError if cancels_totally?(other)
+      SkewbMove.new(@axis_face, @direction + other.direction)
+    end
   end
   
   class FatMove < Move
@@ -356,6 +381,16 @@ module CubeTrainer
     def is_slice_move?
       false
     end
+
+    def cancels_partially?(other)
+      other.is_a?(FatMove) && @face == other.face && @width == other.width
+    end
+
+    def cancel_partially(other)
+      raise ArgumentError unless cancels_partially?(other)
+      raise ArgumentError if cancels_totally?(other)
+      FatMove.new(@face, @width, @direction + other.direction)
+    end
   end
   
   class SliceMove < Move
@@ -401,6 +436,16 @@ module CubeTrainer
 
     def is_slice_move?
       true
+    end
+
+    def cancels_partially?(other)
+      other.is_a?(SliceMove) && @axis_face == other.axis_face
+    end
+
+    def cancel_partially(other)
+      raise ArgumentError unless cancels_partially?(other)
+      raise ArgumentError if cancels_totally?(other)
+      SliceMove.new(@axis_face, @direction + other.direction)
     end
   end
 
@@ -456,16 +501,23 @@ module CubeTrainer
 
     # Returns the number of moves that cancel if you concat the algorithm to the right of self.
     # Doesn't support cancellation over rotations or fat move tricks.
-    def cancels(other, metric=:htm)
+    def cancellations(other, metric=:htm)
+      Move.check_move_metric(metric)
       cancellations = 0
       0.upto([@moves.length, other.moves.length].min - 1) do |i|
         move = @moves[-i - 1]
         other_move = other.moves[i]
-        if move.invert == other_move
+        if move.cancels_totally?(other_move)
           cancellations += move.move_count(metric) + other_move.move_count(metric)
         else
+          if move.cancels_partially?(other_move)
+            cancelled = move.cancel_partially(other_move)
+            cancellations += move.move_count(metric) + other_move.move_count(metric) - cancelled.move_count(metric)
+          end
+          break
         end
       end
+      cancellations
     end
 
     def move_count(metric=:htm)
