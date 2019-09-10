@@ -51,23 +51,65 @@ module CubeTrainer
     def +(other)
       Algorithm.new(@moves + other.moves)
     end
-
+ 
     # Returns the number of moves that cancel if you concat the algorithm to the right of self.
     # Doesn't support cancellation over rotations or fat move tricks.
     def cancellations(other, metric=:htm)
       Move.check_move_metric(metric)
+      Algorithm.cancellations_internal(@moves.reverse, other.moves, metric, 0, 0)
+    end
+
+    def self.switch_potential(moves, index, unmodifiable_part)
+      if index < unmodifiable_part || index + 1 >= moves.length
+        return 0
+      end
+      axis_face = moves[index].axis_face
+      same_axis_moves = 1
+      while index + same_axis_moves < moves.length && moves[index + same_axis_moves].axis_face.same_axis(axis_face)
+        same_axis_moves += 1
+      end
+      same_axis_moves == 1 ? 0 : same_axis_moves
+    end
+
+    def self.split_switchable_part(moves, index, switch_potential)
+      split_index = index + switch_potential
+      switchable_part = moves[index...split_index]
+      rest = moves[split_index..-1]
+      [switchable_part, rest]
+    end
+
+    def self.cancellations_internal(reversed_moves, other_moves, metric, unmodifiable_part, other_unmodifiable_part)
       cancellations = 0
-      0.upto([@moves.length, other.moves.length].min - 1) do |i|
-        move = @moves[-i - 1]
-        other_move = other.moves[i]
+      0.upto([reversed_moves.length, other_moves.length].min - 1) do |i|
+        move = reversed_moves[i]
+        other_move = other_moves[i]
         if move.cancels_totally?(other_move)
           cancellations += move.move_count(metric) + other_move.move_count(metric)
         else
-          if move.cancels_partially?(other_move)
-            cancelled = move.cancel_partially(other_move)
-            cancellations += move.move_count(metric) + other_move.move_count(metric) - cancelled.move_count(metric)
+          # Try to switch moves around to get better cancellations
+          left_switch_potential = switch_potential(reversed_moves, i, unmodifiable_part)
+          right_switch_potential = switch_potential(other_moves, i, other_unmodifiable_part)
+          if move.axis_face.same_axis(other_move.axis_face) && (left_switch_potential > 1 || right_switch_potential > 1)
+            left_switchable_part, left_rest = split_switchable_part(reversed_moves, i, left_switch_potential)
+            right_switchable_part, right_rest = split_switchable_part(other_moves, i, right_switch_potential)
+            new_unmodifiable_part = [unmodifiable_part, left_switch_potential].max
+            new_other_unmodifiable_part = [other_unmodifiable_part, right_switch_potential].max
+            best_switched_cancellations = left_switchable_part.permutation.map do |left_switched|
+              right_switchable_part.permutation.map do |right_switched|
+                left = left_switched + left_rest
+                right = right_switched + right_rest
+                cancellations_internal(left, right, metric, new_unmodifiable_part, new_other_unmodifiable_part)
+              end.max
+            end.max
+            return best_switched_cancellations + cancellations
+          else
+            # We can do one last partial cancellation
+            if move.cancels_partially?(other_move)
+              cancelled = move.cancel_partially(other_move)
+              cancellations += move.move_count(metric) + other_move.move_count(metric) - cancelled.move_count(metric)
+            end
+            break
           end
-          break
         end
       end
       cancellations

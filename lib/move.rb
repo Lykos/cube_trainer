@@ -327,44 +327,44 @@ module CubeTrainer
   end
   
   class FatMove < Move
-    def initialize(face, width, direction)
-      raise ArgumentError unless face.is_a?(Face)
+    def initialize(axis_face, width, direction)
+      raise ArgumentError unless axis_face.is_a?(Face)
       raise ArgumentError, "Invalid width #{width} for fat move." unless width.is_a?(Integer) and width >= 1
       raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
-      @face = face
+      @axis_face = axis_face
       @width = width
       @direction = direction
     end
 
     OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map { |f, d| FatMove.new(f, 1, d) }
   
-    attr_reader :face, :width, :direction
+    attr_reader :axis_face, :width, :direction
 
     def eql?(other)
-      self.class.equal?(other.class) && @face == other.face && @width == other.width && @direction == other.direction
+      self.class.equal?(other.class) && @axis_face == other.axis_face && @width == other.width && @direction == other.direction
     end
   
     alias == eql?
   
     def hash
-      [@face, @width, @direction].hash
+      [@axis_face, @width, @direction].hash
     end
   
     def to_s
-      "#{if @width > 1 then @width else '' end}#{@face.name}#{if @width > 1 then 'w' else '' end}#{@direction.name}"
+      "#{if @width > 1 then @width else '' end}#{@axis_face.name}#{if @width > 1 then 'w' else '' end}#{@direction.name}"
     end
   
     def apply_to(cube_state)
       raise ArgumentError unless cube_state.is_a?(CubeState)
       raise if @width >= cube_state.n
       0.upto(@width - 1) do |s|
-        cube_state.rotate_slice(@face, s, @direction)
+        cube_state.rotate_slice(@axis_face, s, @direction)
       end
-      cube_state.rotate_face(@face, @direction)
+      cube_state.rotate_face(@axis_face, @direction)
     end
 
     def invert
-      FatMove.new(@face, @width, @direction.invert)
+      FatMove.new(@axis_face, @width, @direction.invert)
     end
 
     def is_slice_move?
@@ -372,38 +372,38 @@ module CubeTrainer
     end
 
     def cancels_partially?(other)
-      other.is_a?(FatMove) && @face == other.face && @width == other.width
+      other.is_a?(FatMove) && @axis_face == other.axis_face && @width == other.width
     end
 
     def cancel_partially(other)
       raise ArgumentError unless cancels_partially?(other)
       raise ArgumentError if cancels_totally?(other)
-      FatMove.new(@face, @width, @direction + other.direction)
+      FatMove.new(@axis_face, @width, @direction + other.direction)
     end
   end
   
   class SliceMove < Move
-    def initialize(slice_face, direction)
-      raise ArgumentError unless slice_face.is_a?(Face)
+    def initialize(axis_face, direction)
+      raise ArgumentError unless axis_face.is_a?(Face)
       raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
-      @slice_face = slice_face
+      @axis_face = axis_face
       @direction = direction
     end
   
-    attr_reader :slice_face, :direction
+    attr_reader :axis_face, :direction
 
     def eql?(other)
-      self.class.equal?(other.class) && @slice_face == other.slice_face && @direction == other.direction
+      self.class.equal?(other.class) && @axis_face == other.axis_face && @direction == other.direction
     end
   
     alias == eql?
   
     def hash
-      [@slice_face, @direction].hash
+      [@axis_face, @direction].hash
     end
   
     def to_s
-      "#{@slice_face.name.downcase}#{@direction.name}"
+      "#{@axis_face.name.downcase}#{@direction.name}"
     end
   
     def apply_to(cube_state)
@@ -411,16 +411,16 @@ module CubeTrainer
       # We handle the annoying inconsistency that u is a slice move for bigger cubes, but a fat move for 3x3.
       if cube_state.n == 3
         0.upto(1) do |s|
-          cube_state.rotate_slice(@slice_face, s, @direction)
+          cube_state.rotate_slice(@axis_face, s, @direction)
         end
-        cube_state.rotate_face(@slice_face, @direction)
+        cube_state.rotate_face(@axis_face, @direction)
       else
-        cube_state.rotate_slice(@slice_face, 1, @direction)
+        cube_state.rotate_slice(@axis_face, 1, @direction)
       end
     end
 
     def invert
-      SliceMove.new(@slice_face, @direction.invert)
+      SliceMove.new(@axis_face, @direction.invert)
     end
 
     def is_slice_move?

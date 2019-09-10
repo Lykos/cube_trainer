@@ -173,6 +173,10 @@ module CubeTrainer
       Face.new([pair.find { |f| f != color }])
     end
 
+    def same_axis(other)
+      axis_priority == other.axis_priority
+    end
+
     # Returns the index of the coordinate that is used to determine how close a sticker on `on_face` is to `to_face`.
     def coordinate_index_close_to(to_face)
       raise ArgumentError, "Cannot get the coordinate index close to #{to_face.inspect} on #{inspect} because they are not neighbors." unless neighbors.include?(to_face)

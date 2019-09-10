@@ -16,4 +16,11 @@ describe Algorithm do
     expect(algorithm.move_count(:qstm)).to be 8
     expect(algorithm.move_count(:sqtm)).to be 8
   end
+
+  it 'should compute cancellations  of algorithms correctly' do
+    #expect(parse_algorithm('R U').cancellations(parse_algorithm('U\' R\''))).to be 4
+    #expect(parse_algorithm('R U2').cancellations(parse_algorithm('U2 R\''))).to be 4
+    expect(parse_algorithm('D U').cancellations(parse_algorithm('D\''))).to be 2
+    #expect(parse_algorithm('D U').cancellations(parse_algorithm('D\' U\''))).to be 2
+  end
 end
