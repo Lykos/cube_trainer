@@ -21,7 +21,8 @@ module CubeTrainer
     end
   end
 
-  class CombinedHinter
+  # Hinter that gives hint for the disjoint union of subhinters.
+  class DisjointUnionHinter
 
     def initialize(restricted_hinters)
       restricted_hinters.combination(2).each do |r, s|

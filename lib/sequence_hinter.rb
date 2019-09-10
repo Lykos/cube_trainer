@@ -4,9 +4,9 @@ require 'ostruct'
 
 module CubeTrainer
 
-  # Hinter that gives hints on how to solve a certain case based on a combination of primitive cases,
+  # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
   # e.g. solving a corner 3 twist by 2 comms.
-  class CombinationBasedHinter
+  class SequenceHinter
     def initialize(results, hinter)
       @values = {}
       results.group_by { |r| r.input }.each do |l, rs|

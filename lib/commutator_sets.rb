@@ -1,7 +1,7 @@
 require 'letter_pair_helper'
 require 'input_sampler'
 require 'hint_parser'
-require 'combination_based_hinter'
+require 'sequence_hinter'
 require 'letter_pair_alg_set'
 
 module CubeTrainer
@@ -64,7 +64,7 @@ module CubeTrainer
       end
     end
  
-    class Corner3TwistHinter < CombinationBasedHinter
+    class Corner3TwistHinter < SequenceHinter
       # Note that this should be the results for corner comms, not for corner 3 twists.
       def initialize(corner_results, corner_hinter, options)
         super(corner_results, corner_hinter)

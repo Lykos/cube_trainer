@@ -2,7 +2,7 @@ require 'letter_pair_alg_set'
 
 module CubeTrainer
 
-  class CombinedLetterPairAlgSet < LetterPairAlgSet
+  class DisjointUnionLetterPairAlgSet < LetterPairAlgSet
 
     def initialize(results_model, options, *alg_sets)
       super
@@ -10,7 +10,7 @@ module CubeTrainer
     end
 
     def hinter
-      @hinter ||= CombinedHinter.new(@alg_sets.map { |a| RestrictedHinter.new(a.letter_pairs, a.hinter) })
+      @hinter ||= DisjointUnionHinter.new(@alg_sets.map { |a| RestrictedHinter.new(a.letter_pairs, a.hinter) })
     end
 
     def generate_letter_pairs
