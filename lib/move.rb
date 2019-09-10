@@ -257,7 +257,7 @@ module CubeTrainer
     end
 
     def to_s
-      "#{@move}#{skewb_direction_name(@direction)}"
+      "#{@move}#{@direction.name}"
     end
 
     def apply_to(cube_state)
