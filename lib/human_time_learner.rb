@@ -17,7 +17,6 @@ module CubeTrainer
     attr_reader :muted
     
     def execute(input)
-      # TODO Mute
       puts_and_say(input)
       data = time_before_any_key_press(@hinter.hint(input))
       if data.char == 'd'
