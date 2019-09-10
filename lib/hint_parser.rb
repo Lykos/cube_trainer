@@ -1,5 +1,5 @@
 require 'csv'
-require 'commutator'
+require 'parser'
 require 'move'
 require 'buffer_helper'
 require 'commutator_checker'

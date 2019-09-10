@@ -3,6 +3,7 @@ require 'cube_average'
 
 module CubeTrainer
 
+  # TODO factor out subcomponents that do different types of sampling.
   class InputSampler
   
     include SamplingHelper

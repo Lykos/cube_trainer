@@ -1,11 +1,8 @@
 require 'cross_finder'
 require 'move'
+require 'parser'
 
 include CubeTrainer
-
-def parse_alg(alg_string)
-  Algorithm.new(alg_string.split(' ').collect { |move_string| parse_move(move_string) })
-end
 
 describe CrossFinder do
   let (:cube_state) { CubeState.solved(3) }
@@ -22,14 +19,14 @@ describe CrossFinder do
   end
 
   it 'should not find a cross that takes too many moves' do
-    parse_alg('U R F').apply_to(cube_state)
+    parse_algorithm('U R F').apply_to(cube_state)
     expect(cross_finder.find_cross(cube_state, 1).extract_algorithms).to be == {}
   end
 
   it 'should find a one move cross' do
-    parse_alg('U R').apply_to(cube_state)
+    parse_algorithm('U R').apply_to(cube_state)
     expect(cross_finder.find_cross(cube_state, 1).extract_algorithms).to be == {
-      :blue => [parse_alg('U\'')],
-      :white => [parse_alg('R\'')]}
+      :blue => [parse_algorithm('U\'')],
+      :white => [parse_algorithm('R\'')]}
   end
 end

@@ -1,4 +1,5 @@
 require 'commutator'
+require 'parser'
 
 include CubeTrainer
 
