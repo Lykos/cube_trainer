@@ -35,6 +35,17 @@ module CubeTrainer
       results = results_persistence.load_results(mode)
       @grouped_results = results.group_by { |c| c.input }
       grouped_averages = @grouped_results.collect { |c, rs| [c, average_time(rs)] }
+      @averages = grouped_averages.sort_by { |t| -t[1] }
+
+      now = Time.now
+
+      old_grouped_results = results.select { |r| r.timestamp < now - 24 * 3600 }.group_by { |c| c.input }
+      old_grouped_averages = old_grouped_results.collect { |c, rs| [c, average_time(rs)] }
+      @old_averages = old_grouped_averages.sort_by { |t| -t[1] }
+
+      @num_results = results.length
+      @num_recent_results = results.count { |r| r.timestamp > now - 24 * 3600 }
+
       result_symbol = options.commutator_info.result_symbol
       probabilities_key = PROBABILITIES_KEY_MAP[result_symbol]
       if probabilities_key
@@ -44,13 +55,9 @@ module CubeTrainer
         transformer = EXPECTED_ALG_LAMBDAS[result_symbol]
         @expected_targets = relevant_probabilities.collect(&transformer).reduce(:+)
       end
-      @averages = grouped_averages.sort_by { |t| -t[1] }
-      @num_results = results.length
-      now = Time.now
-      @num_recent_results = results.count { |r| r.timestamp > now - 24 * 3600 }
     end
 
-    attr_reader :averages, :expected_targets, :num_results, :num_recent_results
+    attr_reader :averages, :old_averages, :expected_targets, :num_results, :num_recent_results
 
     def input_stats(inputs)
       hashes = inputs.collect { |e| e.hash }
@@ -88,6 +95,10 @@ module CubeTrainer
 
     def total_average
       @total_average ||= @averages.collect { |c, t| t }.reduce(:+) / @averages.length
+    end
+      
+    def old_total_average
+      @old_total_average ||= @old_averages.collect { |c, t| t }.reduce(:+) / @old_averages.length
     end
       
     def average_time(results)
