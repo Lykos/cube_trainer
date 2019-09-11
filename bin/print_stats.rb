@@ -26,5 +26,5 @@ puts "Average time spent in total: #{avg_total.round(2)} s"
 
 # Stats on bad results
 computer.bad_results.each do |cutoff, number|
-  puts "#{number} are sup #{cutoff} s"
+  puts "#{number} are sup #{cutoff.round(2)} s"
 end
