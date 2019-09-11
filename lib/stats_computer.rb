@@ -30,10 +30,11 @@ module CubeTrainer
     end
     
     def initialize(options, results_persistence=ResultsPersistence.create_for_production)
+      @options = options
       mode = BufferHelper.mode_for_buffer(options)
       results = results_persistence.load_results(mode)
-      grouped_results = results.group_by { |c| c.input.to_s }
-      grouped_averages = grouped_results.collect { |c, rs| [c, average_time(rs)] }
+      @grouped_results = results.group_by { |c| c.input }
+      grouped_averages = @grouped_results.collect { |c, rs| [c, average_time(rs)] }
       result_symbol = options.commutator_info.result_symbol
       probabilities_key = PROBABILITIES_KEY_MAP[result_symbol]
       if probabilities_key
@@ -44,9 +45,27 @@ module CubeTrainer
         @expected_targets = relevant_probabilities.collect(&transformer).reduce(:+)
       end
       @averages = grouped_averages.sort_by { |t| -t[1] }
+      @num_results = results.length
+      now = Time.now
+      @num_recent_results = results.count { |r| r.timestamp > now - 24 * 3600 }
     end
 
-    attr_reader :averages, :expected_targets
+    attr_reader :averages, :expected_targets, :num_results, :num_recent_results
+
+    def input_stats(inputs)
+      hashes = inputs.collect { |e| e.hash }
+      filtered_results = @grouped_results.select { |input, rs| hashes.include?(input.hash) }
+      newish_elements = filtered_results.collect { |input, rs| rs.length }.count { |l| 1 <= l && l < @options.new_item_boundary }
+      found = filtered_results.keys.uniq.length
+      total = inputs.length
+      missing = total - found
+      {
+        found: found,
+        total: total,
+        newish_elements: newish_elements,
+        missing: missing
+      }
+    end
 
     # Interesting time boundaries to see the number of bad results above that boundary. It allows to display things like "9 results are above 4.5 and one result is above 5"
     def cutoffs
