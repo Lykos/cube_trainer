@@ -18,8 +18,8 @@ computer.averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }
 # Summaries
 avg = computer.total_average
 expected_targets = computer.expected_targets
-puts "Average time per target: #{avg.round(2)}s"
-puts "Average number of targets: #{expected_targets.round(2)}"
+puts "Average time per alg: #{avg.round(2)}s"
+puts "Average number of algs: #{expected_targets.round(2)}"
 avg_total = avg * expected_targets
 puts "Average time spent in total: #{avg_total.round(2)}s"
 
