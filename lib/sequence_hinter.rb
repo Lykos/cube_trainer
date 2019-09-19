@@ -111,15 +111,15 @@ module CubeTrainer
       end
     end
 
-    def hint(letter_pair)
+    def hints(letter_pair)
       @hints[letter_pair] ||= begin
                                 combinations = generate_combinations(letter_pair)
                                 descriptions_and_values = 
                                   combinations.map do |ls|
                                   value = ls.map { |l| value(l) }.reduce(:+)
                                   cancellations = 0.upto(ls.length - 2).map do |i|
-                                    left = @hinter.hint(ls[0])
-                                    right = @hinter.hint(ls[1])
+                                    left = @hinter.hints(ls[0])
+                                    right = @hinter.hints(ls[1])
                                     if left && right
                                       ActualScore.new(left.cancellations(right, :sqtm))
                                     else
@@ -129,8 +129,9 @@ module CubeTrainer
                                   description = ls.join(', ')
                                   DescriptionAndValue.new(description, value, cancellations)
                                 end
-                                base_hints = combinations.flatten.uniq.map { |l| "#{l}: #{@hinter.hint(l)}" }
-                                (descriptions_and_values.sort + base_hints.sort).join("\n")
+                                base_hints = combinations.flatten.uniq.map { |l| "#{l}: #{@hinter.hints(l)}" }
+                                [descriptions_and_values.sort.join("\n"),
+                                 base_hints.sort.join("\n")]
                               end
     end
 

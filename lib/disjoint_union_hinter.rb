@@ -11,12 +11,12 @@ module CubeTrainer
 
     attr_reader :letter_pairs
 
-    def hint(letter_pair)
-      raise unless has_hint?(letter_pair)
+    def hints(letter_pair)
+      raise unless in_domain?(letter_pair)
       @hinter.hint(letter_pair)
     end
 
-    def has_hint?(letter_pair)
+    def in_domain?(letter_pair)
       @letter_pairs.include?(letter_pair)
     end
   end
@@ -34,9 +34,9 @@ module CubeTrainer
       @restricted_hinters = restricted_hinters
     end
 
-    def hint(letter_pair)
+    def hints(letter_pair)
       @restricted_hinters.each do |r|
-        return r.hint(letter_pair) if r.has_hint?(letter_pair)
+        return r.hints(letter_pair) if r.in_domain?(letter_pair)
       end
       raise
     end

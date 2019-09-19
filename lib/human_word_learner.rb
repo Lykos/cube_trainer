@@ -52,7 +52,7 @@ module CubeTrainer
         when 'hint'
           # Brutal punishment for failed attempts
           failed_attempts += 100
-          hints = @hinter.hint(input)
+          hints = @hinter.hints(input)
           display_hints(hints)
         when 'delete'
           puts 'Deleting results for the last 30 seconds and exiting.'

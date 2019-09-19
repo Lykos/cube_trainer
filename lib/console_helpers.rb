@@ -40,26 +40,26 @@ module CubeTrainer
   
     # Exits in the case of character q.
     # Downcases the character before returning it.
-    def time_before_any_key_press(hint=nil)
+    def time_before_any_key_press(hints=[])
       # TODO Explain to the human what magic letters exist.
       start = Time.now
       char = nil
-      hints = 0
+      num_hints = 0
       loop do
         char = STDIN.getch.downcase
         if char == 'h'
-          if hint
+          if hints.length > num_hints
             puts "#{HINT_SECONDS} time punishment added."
-            puts hint
-            hints += 1
+            puts hints[num_hints]
+            num_hints += 1
           else
-            puts "No hint available."
+            puts 'No hint available.'
           end
         elsif Time.now - start >= MIN_SECONDS
           break
         end
       end
-      time_s = Time.now - start + hints * HINT_SECONDS
+      time_s = Time.now - start + num_hints * HINT_SECONDS
       if char == 'q'
         puts 'Pressed q. Exiting.'
         exit

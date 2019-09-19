@@ -123,20 +123,20 @@ module CubeTrainer
     end
  
     def initialize(hints)
-      @hints = hints
+      @hints = hints.map { |k, v| [k, [v]] }.to_h
     end
   
-    def hint(letter_pair)
+    def hints(letter_pair)
       @hints[letter_pair] ||= begin
                                 inverse = @hints[letter_pair.inverse]
-                                if inverse then inverse.inverse else nil end
+                                if inverse then [inverse.inverse] else [] end
                               end
     end
   end
 
   class NoHinter
-    def hint(*args)
-      'No hints available'
+    def hints(*args)
+      []
     end
   end
 
