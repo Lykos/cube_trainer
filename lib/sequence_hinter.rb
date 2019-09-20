@@ -24,6 +24,10 @@ module CubeTrainer
       @hints = {}
     end
 
+    def length
+      @hinters.length
+    end
+
     class UnknownScore
       def <=>(score)
         -score.unknown_compare
@@ -118,7 +122,7 @@ module CubeTrainer
     end
 
     def base_hint(index, input)
-      raise IndexError unless index >= 0 && index < input.length
+      raise IndexError unless index >= 0 && index < length
       hints = @hinters[index].hints(input)
       if hints.empty? then nil else only(hints) end
     end

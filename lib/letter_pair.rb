@@ -14,10 +14,6 @@ module CubeTrainer
     end
   
     attr_reader :letters
-
-    def length
-      @letters.length
-    end
   
     # Encoding for YAML (and possibly others)
     def encode_with(coder)
