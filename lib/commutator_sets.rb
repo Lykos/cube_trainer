@@ -64,7 +64,7 @@ module CubeTrainer
       end
     end
  
-    class Corner3TwistHinter < SequenceHinter
+    class Corner3TwistHinter < HomogenousSequenceHinter
       # Note that this should be the results for corner comms, not for corner 3 twists.
       def initialize(corner_results, corner_hinter, options)
         super(corner_results, corner_hinter)
@@ -238,6 +238,28 @@ module CubeTrainer
     
     def goal_badness
       4.0
+    end
+    
+  end
+
+  class CornerParities < LetterPairAlgSet
+    
+    PART_TYPE = Corner
+
+    def initialize(result_model, options)
+      super
+      @hinter = NoHinter.new
+    end
+
+    attr_reader :hinter
+    
+    def goal_badness
+      2.0
+    end
+
+    def generate_letter_pairs
+      non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
+      non_buffer_corners.map { |c| LetterPair.new([letter_scheme.letter(c)]) }
     end
     
   end

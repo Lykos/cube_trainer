@@ -13,6 +13,7 @@ module CubeTrainer
     CommutatorInfo = Struct.new(:result_symbol, :generator_class, :learner_class, :default_cube_size, :has_buffer?)
     COMMUTATOR_TYPES = {
       'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, HumanTimeLearner, 3, true),
+      'corner_parities_ul_ub' => CommutatorInfo.new(:corner_parities, CornerParities, HumanTimeLearner, 3, true),
       'floating_2twists' => CommutatorInfo.new(:floating_2twists, FloatingCorner2Twists, HumanTimeLearner, 3, false),
       'corner_3twists' => CommutatorInfo.new(:corner_3twists, Corner3Twists, HumanTimeLearner, 3, false),
       'floating_2flips' => CommutatorInfo.new(:floating_2flips, FloatingEdgeFlips, HumanTimeLearner, 3, false),

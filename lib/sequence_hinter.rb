@@ -1,20 +1,26 @@
 require 'cube_average'
 require 'input_sampler'
 require 'ostruct'
+require 'utils'
 
 module CubeTrainer
 
   # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
-  # e.g. solving a corner 3 twist by 2 comms.
-  class SequenceHinter
-    def initialize(results, hinter)
-      @values = {}
-      results.group_by { |r| r.input }.each do |l, rs|
-        avg = CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
-        rs.sort_by { |r| r.timestamp }.each { |r| avg.push(r.time_s) }
-        @values[l] = ActualScore.new(avg.average)
+  # e.g. solving a corner twist and a parity by a comm and a parity.
+  class HeterogenousSequenceHinter
+    def initialize(resultss, hinters)
+      raise ArgumentError if resultss.length != hinters.length
+      raise ArgumentError if resultss.empty?
+      @valuess = resultss.map do |results|
+        values = {}
+        results.group_by { |r| r.input }.each do |l, rs|
+          avg = CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
+          rs.sort_by { |r| r.timestamp }.each { |r| avg.push(r.time_s) }
+          values[l] = ActualScore.new(avg.average)
+        end
+        values
       end
-      @hinter = hinter
+      @hinters = hinters
       @hints = {}
     end
 
@@ -92,8 +98,8 @@ module CubeTrainer
       end
     end
 
-    def value(letter_pair)
-      @values[letter_pair] ||= UNKNOWN_SCORE
+    def value(index, input)
+      @valuess[index][input] ||= UNKNOWN_SCORE
     end
 
     class DescriptionAndValue < Struct.new(:description, :value, :cancellations)
@@ -111,34 +117,48 @@ module CubeTrainer
       end
     end
 
-    def hints(letter_pair)
-      @hints[letter_pair] ||= begin
-                                combinations = generate_combinations(letter_pair)
-                                descriptions_and_values = 
-                                  combinations.map do |ls|
-                                  value = ls.map { |l| value(l) }.reduce(:+)
-                                  cancellations = 0.upto(ls.length - 2).map do |i|
-                                    left = @hinter.hints(ls[0])
-                                    right = @hinter.hints(ls[1])
-                                    if left && right
-                                      ActualScore.new(left.cancellations(right, :sqtm))
-                                    else
-                                      UNKNOWN_SCORE
-                                    end
-                                  end.reduce(:+)
-                                  description = ls.join(', ')
-                                  DescriptionAndValue.new(description, value, cancellations)
-                                end
-                                base_hints = combinations.flatten.uniq.map { |l| "#{l}: #{@hinter.hints(l)}" }
-                                [descriptions_and_values.sort.join("\n"),
-                                 base_hints.sort.join("\n")]
-                              end
+    def base_hint(index, input)
+      raise IndexError unless index >= 0 && index < input.length
+      hints = @hinters[index].hints(input)
+      if hints.empty? then nil else only(hints) end
     end
 
-    def generate_combinations(letter_pair)
+    def hints(input)
+      @hints[input] ||= begin
+                          combinations = generate_combinations(input)
+                          base_hints = combinations.map { |ls| ls.map.with_index { |l, i| base_hint(i, l) } }
+                          descriptions_and_values = combinations.zip(base_hints).map do |ls, hs|
+                            description = ls.join(', ')
+                            value = ls.map.with_index { |l, i| value(i, l) }.reduce(:+)
+                            cancellations = hs[0..-2].zip(hs[1..-1]).map do |left, right|
+                              if left && right
+                                ActualScore.new(left.cancellations(right, :sqtm))
+                              else
+                                UNKNOWN_SCORE
+                              end
+                            end.reduce(:+)
+                            DescriptionAndValue.new(description, value, cancellations)
+                          end
+                          base_hints_descriptions = combinations.zip(base_hints).map { |ls, hs| ls.zip(hs).map { |l, h| "#{l}: #{h}" } }
+                          [
+                            descriptions_and_values.sort.join("\n"),
+                            base_hints_descriptions.sort.join("\n")
+                          ]
+                        end
+    end
+
+    def generate_combinations(input)
       raise NotImplementedError
     end
 
+  end
+
+  # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
+  # where the primitive cases are all of the same type, e.g. solving 3 twists by 2 comms.
+  class HomogenousSequenceHinter < HeterogenousSequenceHinter
+    def initialize(results, hinter, multiplicity=2)
+      super([results] * multiplicity, [hinter] * multiplicity)
+    end
   end
   
 end

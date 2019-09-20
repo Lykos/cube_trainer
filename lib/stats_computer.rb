@@ -1,6 +1,7 @@
 require 'cube_average'
 require 'buffer_helper'
 require 'results_persistence'
+require 'probabilities'
 require 'math_helper'
 
 module CubeTrainer
@@ -9,30 +10,11 @@ module CubeTrainer
 
     include MathHelper
 
-    PROBABILITIES_KEY_MAP = {
-      corner_commutators: :corner_targets,
-      corner_3twists: :twists,
-      floating_2twists: :twists,
-      edge_commutators: :edge_targets_no_parity,
-      floating_2flips: :flips,
-    }
-
-    EXPECTED_ALG_LAMBDAS = {
-      corner_commutators: lambda { |t, p| t / 2 * p },  # The parity alg is not a corner comm.
-      corner_3twists: lambda { |t, p| (t / 2) * 0.5 * p },  # We only need one alg for 2 targets and only half of the times it's a 3 twist.
-      floating_2twists: lambda { |t, p| ((t + 1) / 2) * 0.5 * p },  # We only need one alg for 2 targets and only half of the times it's a 2 flip.
-      edge_commutators: lambda { |t, p| (t / 2) * p },  # We need one alg for 2 targets
-      floating_2flips: lambda { |t, p| ((t + 1) / 2) * 0.5 * p },  # We only need one alg for 2 targets.
-    }
-
-    def probabilities
-      @probabilities ||= YAML::load_file('data/probabilities.yml')
-    end
-    
     def initialize(options, results_persistence=ResultsPersistence.create_for_production)
       @options = options
+      @results_persistence = results_persistence
       mode = BufferHelper.mode_for_buffer(options)
-      results = results_persistence.load_results(mode)
+      results = @results_persistence.load_results(mode)
       @grouped_results = results.group_by { |c| c.input }
       grouped_averages = @grouped_results.collect { |c, rs| [c, average_time(rs)] }
       @averages = grouped_averages.sort_by { |t| -t[1] }
@@ -45,19 +27,9 @@ module CubeTrainer
 
       @num_results = results.length
       @num_recent_results = results.count { |r| r.timestamp > now - 24 * 3600 }
-
-      result_symbol = options.commutator_info.result_symbol
-      probabilities_key = PROBABILITIES_KEY_MAP[result_symbol]
-      if probabilities_key
-        relevant_probabilities = probabilities[probabilities_key]
-        probabilities_sum = relevant_probabilities.values.reduce(:+)
-        raise if (probabilities_sum - 1.0).abs > 0.001
-        transformer = EXPECTED_ALG_LAMBDAS[result_symbol]
-        @expected_targets = relevant_probabilities.collect(&transformer).reduce(:+)
-      end
     end
 
-    attr_reader :averages, :old_averages, :expected_targets, :num_results, :num_recent_results
+    attr_reader :averages, :old_averages, :num_results, :num_recent_results
 
     def input_stats(inputs)
       hashes = inputs.collect { |e| e.hash }
@@ -72,6 +44,10 @@ module CubeTrainer
         newish_elements: newish_elements,
         missing: missing
       }
+    end
+
+    def expected_time_per_type_stats
+      @expected_time_per_type_stats ||= ExpectedTimeComputer.new(@options, @results_persistence).compute_expected_time_per_type_stats
     end
 
     # Interesting time boundaries to see the number of bad results above that boundary. It allows to display things like "9 results are above 4.5 and one result is above 5"
@@ -93,12 +69,16 @@ module CubeTrainer
                      end
     end
 
+    def compute_total_average(averages)
+      if averages.empty? then Float::INFINITY else averages.collect { |c, t| t }.reduce(:+) / averages.length end
+    end
+
     def total_average
-      @total_average ||= @averages.collect { |c, t| t }.reduce(:+) / @averages.length
+      @total_average ||= compute_total_average(@averages)
     end
       
     def old_total_average
-      @old_total_average ||= @old_averages.collect { |c, t| t }.reduce(:+) / @old_averages.length
+      @old_total_average ||= compute_total_average(@old_averages)
     end
       
     def average_time(results)
