@@ -28,11 +28,11 @@ module CubeTrainer
       @letter_pairs ||= begin
                           generated_letter_pairs = generate_letter_pairs
                           restricted_letter_pairs = if options.restrict_letters and not options.restrict_letters.empty?
-                                                      generated_letter_pairs.select { |p| p.letters.any? { |l| options.restrict_letters.include?(l) } }
+                                                      generated_letter_pairs.select { |p| p.has_any_letter?(options.restrict_letters) }
                                                     else
                                                       generated_letter_pairs
                                                     end
-                          restricted_letter_pairs.reject { |p| p.letters.any? { |l| options.exclude_letters.include?(l) } }
+                          restricted_letter_pairs.reject { |p| p.has_any_letter?(options.exclude_letters) }
                         end
     end
     

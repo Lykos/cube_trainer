@@ -14,7 +14,7 @@ module CubeTrainer
       @letter_pairs = letter_pairs
     end
 
-      attr_reader :letters
+    attr_reader :letter_pairs
   
     # Encoding for YAML (and possibly others)
     def encode_with(coder)
@@ -23,16 +23,20 @@ module CubeTrainer
   
     # Construct from data stored in the db.
     def self.from_raw_data(data)
-      LetterPair.new(data.split(SEPARATOR))
+      LetterSequence.new(data.split(SEPARATOR).map { |d| LetterSequence.from_raw_data(d) })
+    end
+
+    def has_any_letter?(letters)
+      @letter_pairs.any? { |ls| ls.has_any_letter?(letters) }
     end
   
     # Serialize to data stored in the db.
     def to_raw_data
-      @letters.join(SEPARATOR)
+      @letter_pairs.join(SEPARATOR)
     end
   
     def eql?(other)
-      self.class.equal?(other.class) && @letters == other.letters
+      self.class.equal?(other.class) && @letter_pairs == other.letter_pairs
     end
   
     alias == eql?
@@ -42,7 +46,7 @@ module CubeTrainer
     end
   
     def to_s
-      @to_s ||= letter_pairs.join(SEPARATOR)
+      @to_s ||= @letter_pairs.join(SEPARATOR)
     end
   
   end

@@ -143,7 +143,7 @@ module CubeTrainer
                             end.reduce(:+)
                             DescriptionAndValue.new(description, value, cancellations)
                           end
-                          base_hints_descriptions = combinations.zip(base_hints).map { |ls, hs| ls.zip(hs).map { |l, h| "#{l}: #{h}" } }
+                          base_hints_descriptions = combinations.zip(base_hints).map { |ls, hs| ls.zip(hs).select { |l, h| h }.map { |l, h| "#{l}: #{h}" } }
                           [
                             descriptions_and_values.sort.join("\n"),
                             base_hints_descriptions.sort.join("\n")

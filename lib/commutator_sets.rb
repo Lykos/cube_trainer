@@ -1,10 +1,24 @@
 require 'letter_pair_helper'
 require 'input_sampler'
 require 'hint_parser'
+require 'letter_pair_sequence'
+require 'utils'
 require 'sequence_hinter'
 require 'letter_pair_alg_set'
 
 module CubeTrainer
+
+  ORIENTATION_FACES = [Face.by_name('U'), Face.by_name('D')]
+
+  def orientation_face(part)
+    faces = ORIENTATION_FACES.select { |f| part.colors.include?(f.color) }
+    raise "Couldn't determine unique orientation face for #{part}: #{faces}" unless faces.length == 1
+    faces.first
+  end
+
+  def rotate_orientation_face_up(part)
+    part.rotate_face_up(orientation_face(part))
+  end
 
   class FloatingCorner2Twists < LetterPairAlgSet
     PART_TYPE = Corner
@@ -20,8 +34,6 @@ module CubeTrainer
       1.5
     end
 
-    ORIENTATION_FACES = [Face.by_name('U'), Face.by_name('D')]
-
     def generate_letter_pairs
       non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
@@ -31,6 +43,65 @@ module CubeTrainer
       two_twists + one_twists
     end
  
+  end
+
+  class CornerTwistsPlusParities < LetterPairAlgSet
+    PART_TYPE = Corner
+
+    def initialize(result_model, options)
+      super
+      corner_options = options.dup
+      corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
+      corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_buffer(corner_options))
+      corner_hinter = Hinter.maybe_create(PART_TYPE, corner_options)
+
+      parity_options = options.dup
+      parity_options.commutator_info = Options::COMMUTATOR_TYPES['corner_parities'] || raise
+      parity_results = result_model.result_persistence.load_results(BufferHelper.mode_for_buffer(parity_options))
+      parity_hinter = Hinter.maybe_create(PART_TYPE, parity_options)
+
+      @hinter = CornerTwistPlusParityHinter.new(corner_results, parity_results, corner_hinter, parity_hinter, options)
+    end
+
+    attr_reader :hinter
+    
+    def goal_badness
+      2.0
+    end
+
+    def generate_letter_pairs
+      non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
+      incorrectly_oriented_corners = non_buffer_corners.select { |c| !ORIENTATION_FACES.include?(c.solved_face) }
+      incorrectly_oriented_corners.product(non_buffer_corners).select do |twist, parity|
+        !twist.turned_equals?(parity)
+      end.map do |targets|
+        LetterPairSequence.new(targets.map { |t| LetterPair.new([letter_scheme.letter(t)]) })
+      end
+    end
+
+    class CornerTwistPlusParityHinter < HeterogenousSequenceHinter
+      def initialize(corner_results, parity_results, corner_hinter, parity_hinter, options)
+        super([corner_results, parity_results], [corner_hinter, parity_hinter])
+        @letter_scheme = options.letter_scheme
+      end
+
+      def generate_combinations(letter_sequence)
+        raise ArgumentError unless letter_sequence.letter_pairs.length == 2
+        parity_letter_pair = letter_sequence.letter_pairs.first
+        parity_letter = only(parity_letter_pair.letters)
+        twist_letter_pair = letter_sequence.letter_pairs.last
+        twist_letter = only(twist_letter_pair.letters)
+        twisted_part = @letter_scheme.for_letter(PART_TYPE, twist_letter)
+        solved_twist_part = rotate_orientation_face_up(twisted_part)
+        Corner::FACES.times.map do |rot|
+          twist_entry_letter = @letter_scheme.letter(twisted_part.rotate_by(rot))
+          twist_exit_letter = @letter_scheme.letter(solved_twist_part.rotate_by(rot))
+          comm = LetterPair.new([parity_letter, twist_entry_letter])
+          parity = LetterPair.new([twist_exit_letter])
+          [comm, parity]
+        end
+      end
+    end
   end
 
   class Corner3Twists < LetterPairAlgSet
@@ -51,8 +122,6 @@ module CubeTrainer
       2.0
     end
 
-    ORIENTATION_FACES = [Face.by_name('U'), Face.by_name('D')]
-
     def generate_letter_pairs
       non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
@@ -69,16 +138,6 @@ module CubeTrainer
       def initialize(corner_results, corner_hinter, options)
         super(corner_results, corner_hinter)
         @letter_scheme = options.letter_scheme
-      end
-
-      def orientation_face(part)
-        faces = ORIENTATION_FACES.select { |f| part.colors.include?(f.color) }
-        raise "Couldn't determine unique orientation face for #{part}: #{faces}" unless faces.length == 1
-        faces.first
-      end
-
-      def rotate_orientation_face_up(part)
-        part.rotate_face_up(orientation_face(part))
       end
 
       def rotate_other_face_up(part)

@@ -8,6 +8,7 @@ module CubeTrainer
     SEPARATOR = ' '
 
     def initialize(letters)
+      raise ArgumentError unless letters.is_a?(Array)
       raise ArgumentError, "Invalid letter pair length for letter pair #{letters.join(" ")}." unless 1 <= letters.length
       raise ArgumentError, "Invalid letter '#{SEPARATOR}' in letter pair #{letters.join(" ")}." if letters.include?(SEPARATOR)
       @letters = letters
@@ -18,6 +19,10 @@ module CubeTrainer
     # Encoding for YAML (and possibly others)
     def encode_with(coder)
       coder['letters'] = @letters
+    end
+
+    def has_any_letter?(letters)
+      !(@letters & letters).empty?
     end
   
     # Construct from data stored in the db.

@@ -1,6 +1,7 @@
 require 'ui_helpers'
 require 'pao_letter_pair'
 require 'letter_pair'
+require 'letter_pair_sequence'
 require 'alg_name'
 
 module CubeTrainer
@@ -18,7 +19,7 @@ module CubeTrainer
       @timestamp = timestamp
       raise ArgumentError, "Invalid time_s #{time_s}." unless time_s.is_a?(Float)
       @time_s = time_s
-      raise ArgumentError, "Invalid input #{input}." unless input.is_a?(LetterPair) || input.is_a?(PaoLetterPair) || input.is_a?(AlgName)
+      raise ArgumentError, "Invalid input #{input}." unless input.is_a?(LetterPair) || input.is_a?(PaoLetterPair) || input.is_a?(AlgName) || input.is_a?(LetterPairSequence)
       @input = input
       raise ArgumentError, "Invalid failed attempts #{failed_attempts}." unless failed_attempts.is_a?(Integer)
       @failed_attempts = failed_attempts
@@ -43,6 +44,8 @@ module CubeTrainer
         PaoLetterPair.from_raw_data(input)
       when :plls_by_name, :oh_plls_by_name
         AlgName.from_raw_data(input)
+      when :corner_twists_plus_parities_ul_ub
+        LetterPairSequence.from_raw_data(input)
       else
         LetterPair.from_raw_data(input)
       end
