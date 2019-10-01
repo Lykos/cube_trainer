@@ -72,8 +72,8 @@ module CubeTrainer
     def generate_letter_pairs
       non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       incorrectly_oriented_corners = non_buffer_corners.select { |c| !ORIENTATION_FACES.include?(c.solved_face) }
-      incorrectly_oriented_corners.product(non_buffer_corners).select do |twist, parity|
-        !twist.turned_equals?(parity)
+      non_buffer_corners.product(incorrectly_oriented_corners).select do |parity, twist|
+        !parity.turned_equals?(twist)
       end.map do |targets|
         LetterPairSequence.new(targets.map { |t| LetterPair.new([letter_scheme.letter(t)]) })
       end

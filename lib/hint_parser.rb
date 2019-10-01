@@ -129,7 +129,7 @@ module CubeTrainer
     def hints(letter_pair)
       @hints[letter_pair] ||= begin
                                 inverse = @hints[letter_pair.inverse]
-                                if inverse then [inverse.inverse] else [] end
+                                inverse.map { |e| e.inverse }
                               end
     end
   end
