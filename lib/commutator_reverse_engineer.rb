@@ -2,6 +2,7 @@ module CubeTrainer
 
   class CommutatorReverseEngineer
     def initialize(part_type, buffer, letter_scheme, cube_size)
+      raise ArgumentError unless cube_size.is_a?(Integer)
       @part_type = part_type
       @buffer = buffer
       @letter_scheme = letter_scheme
@@ -17,8 +18,10 @@ module CubeTrainer
 
     def find_stuff
       piece0 = piece_at_coordinates(@buffer_coordinates)
+      return nil if piece0 == @buffer
       solved_coordinates_of_piece0 = @state.solved_positions(piece0, 0)
       piece1 = piece_at_coordinates(solved_coordinates_of_piece0)
+      return nil if piece1 == @buffer
       solved_coordinates_of_piece1 = @state.solved_positions(piece1, 0)
       piece2 = piece_at_coordinates(solved_coordinates_of_piece1)
       if piece2 == @buffer

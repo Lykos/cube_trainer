@@ -29,6 +29,7 @@ module CubeTrainer
   class HintParser
 
     def initialize(part_type, buffer, letter_scheme, verbose, cube_size, test_comms)
+      raise ArgumentError unless cube_size.is_a?(Integer)
       @part_type = part_type
       @buffer = buffer
       @name = buffer.to_s.downcase + '_' + part_type.name.split('::').last.downcase
@@ -85,8 +86,13 @@ module CubeTrainer
       attr_accessor :maybe_letter_pair
     end
 
+    def add_nils_to_table(table)
+      max_row_length = table.map { |row| row.length }.max
+      table.map { |row| row + [nil] * (max_row_length - row.length) }
+    end
+
     def parse_hints
-      parse_hint_table(CSV.read(csv_file))
+      parse_hint_table(add_nils_to_table(CSV.read(csv_file)))
     end
     
     def parse_hint_table(hint_table)
@@ -96,15 +102,13 @@ module CubeTrainer
       hint_table.each_with_index do |row, row_index|
         row.each_with_index do |cell, col_index|
           next if cell.nil? || cell.empty? || blacklisted?(cell)
+          row_description = "#{("A".."Z").to_a[col_index]}#{row_index + 1}"
           begin
             alg = parse_commutator(cell)
+            # Ignore very short algorithms. They are never valid and they can be things like piece types.
+            next if alg.algorithm.length <= 3
             maybe_letter_pair = reverse_engineer.find_letter_pair(alg.algorithm)
-            entry = if maybe_letter_pair
-                      AlgEntry.new(maybe_letter_pair, alg)
-                    else
-                      ErrorEntry.new("Couldn't figure out letter pair of alg #{alg}.")
-                    end
-            alg_table[row_index][col_index] = entry
+            alg_table[row_index][col_index] = AlgEntry.new(maybe_letter_pair, alg)
           rescue CommutatorParseError => e
             alg_table[row_index][col_index] = ErrorEntry.new("Couldn't parse commutator: #{e}")
           end
@@ -128,12 +132,12 @@ module CubeTrainer
           row_description = "#{("A".."Z").to_a[col_index]}#{row_index}"
           if letter_pair.nil?
             if cell.is_a?(AlgEntry)
-              puts "Algorithm #{cell.algorithm} at #{row_description} is outside of the valid part of the table."
+              puts "Algorithm #{cell.algorithm} at #{row_description} is outside of the valid part of the table." if test_comms
             else
               # Ignore this. Any invalid stuff can be outside the interesting part of the table.
             end
           elsif cell.is_a?(ErrorEntry)
-            puts "Algorithm for #{letter_pair} at #{row_description} has a problem: cell.error_message."
+            puts "Algorithm for #{letter_pair} at #{row_description} has a problem: cell.error_message." if test_comms
           elsif cell.is_a?(AlgEntry)
             commutator = cell.algorithm
             parts = letter_pair.letters.map { |l| letter_scheme.for_letter(part_type, l) }

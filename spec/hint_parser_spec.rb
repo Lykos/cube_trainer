@@ -29,4 +29,15 @@ describe HintParser do
       LetterPair.new(['t', 'i']) => parse_commutator("[D U R U' : [R' U R, D']]"),
     }
   end
+
+  it "should parse a hint table with single entries per row/column correctly" do
+    table = [
+      ["[L', U R U']", ""], 
+      ["", "[U R U', L']"]
+    ]
+    expect(hint_parser.parse_hint_table(table)).to be == {
+      LetterPair.new(['i', 'g']) => parse_commutator("[L', U R U']"),
+      LetterPair.new(['g', 'i']) => parse_commutator("[U R U', L']"),
+    }
+  end
 end
