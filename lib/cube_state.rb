@@ -113,12 +113,12 @@ module CubeTrainer
   
     def apply_4sticker_cycle(cycle, direction)
       raise ArgumentError unless cycle.length == 4
-      if direction == 2
+      if direction.is_double_move?
         apply_index_cycle([cycle[0], cycle[2]])
         apply_index_cycle([cycle[1], cycle[3]])
       else
         # Note that we cannot do reverse! because the values are cached.
-        actual_cycle = if direction == 3 then cycle.reverse else cycle end
+        actual_cycle = if direction.value == 3 then cycle.reverse else cycle end
         apply_index_cycle(actual_cycle)
       end
     end
@@ -133,7 +133,7 @@ module CubeTrainer
     def rotate_face(face, direction)
       neighbors = face.neighbors
       inverse_order_face = face.coordinate_index_close_to(neighbors[0]) < face.coordinate_index_close_to(neighbors[1])
-      direction = 4 - direction if inverse_order_face
+      direction = direction.invert if inverse_order_face
       Coordinate.on_face(face, @n).each do |cycle|
         apply_4sticker_cycle(cycle, direction)
       end

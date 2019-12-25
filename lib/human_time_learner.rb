@@ -17,9 +17,8 @@ module CubeTrainer
     attr_reader :muted
     
     def execute(input)
-      # TODO Mute
       puts_and_say(input)
-      data = time_before_any_key_press(@hinter.hint(input))
+      data = time_before_any_key_press(@hinter.hints(input))
       if data.char == 'd'
         puts 'Pressed d. Deleting results for the last 10 seconds and exiting.'
         @results_model.delete_after_time(Time.now - 10)

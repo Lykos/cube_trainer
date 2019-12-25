@@ -1,5 +1,6 @@
 require 'cube_state'
 require 'commutator'
+require 'algorithm'
 
 module CubeTrainer
   class CommutatorChecker

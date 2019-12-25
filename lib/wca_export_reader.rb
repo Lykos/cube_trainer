@@ -1,6 +1,7 @@
 require 'csv'
 require 'zip'
 require 'wca_result'
+require 'parser'
 
 module CubeTrainer
 
@@ -142,10 +143,6 @@ module CubeTrainer
       end
     end
     
-    def parse_alg(alg_string)
-      Algorithm.new(alg_string.split(' ').collect { |move_string| parse_move(move_string) })
-    end
-
     def read_scrambles_file(input_stream)
       @3x3scrambles = []
       CSV.parse(input_stream, col_sep: COL_SEP) do |row|
@@ -155,7 +152,7 @@ module CubeTrainer
         next unless eventid == '333'
         @3x3scrambles.push({scrambleid: scrambleid, competitionid: row[1], eventid: eventid,
                             roundtypeid: row[2], groupid: row[3], isextra: row[4].to_i == 1,
-                            scramblenum: row[5].to_i, parse_alg(row[6])})
+                            scramblenum: row[5].to_i, parse_algorithm(row[6])})
       end
     end
     

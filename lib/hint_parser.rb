@@ -1,5 +1,5 @@
 require 'csv'
-require 'commutator'
+require 'parser'
 require 'move'
 require 'buffer_helper'
 require 'commutator_checker'
@@ -61,7 +61,6 @@ module CubeTrainer
 
     def parse_hints(cube_size, check_comms)
       hint_table = CSV.read(csv_file)
-
       # First parse whatever we can
       alg_table = hint_table.map { |row| row.map { nil } }
       reverse_engineer = CommutatorReverseEngineer.new(part_type, buffer, name, cube_size)
@@ -123,20 +122,20 @@ module CubeTrainer
     end
  
     def initialize(hints)
-      @hints = hints
+      @hints = hints.map { |k, v| [k, [v]] }.to_h
     end
   
-    def hint(letter_pair)
+    def hints(letter_pair)
       @hints[letter_pair] ||= begin
                                 inverse = @hints[letter_pair.inverse]
-                                if inverse then inverse.inverse else nil end
+                                inverse.map { |e| e.inverse }
                               end
     end
   end
 
   class NoHinter
-    def hint(*args)
-      'No hints available'
+    def hints(*args)
+      []
     end
   end
 

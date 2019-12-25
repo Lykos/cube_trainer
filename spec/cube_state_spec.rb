@@ -2,13 +2,10 @@ require 'cube_state'
 require 'cube'
 require 'move'
 require 'coordinate'
+require 'parser'
 require 'letter_scheme'
 
 include CubeTrainer
-
-def parse_alg(alg_string)
-  Algorithm.new(alg_string.split(' ').collect { |move_string| parse_move(move_string) })
-end
 
 RSpec.shared_examples 'cube_state' do |cube_size|
   let(:letter_scheme) { DefaultLetterScheme.new }
@@ -397,7 +394,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     fat_move = (cube_size - 1).to_s + 'Uw'
     cube_state.apply_move(parse_move(fat_move))
     expected_cube_state = create_interesting_cube_state(cube_size)
-    parse_alg('D y').apply_to(expected_cube_state)
+    parse_algorithm('D y').apply_to(expected_cube_state)
     expect(cube_state).to be == expected_cube_state
   end
 
@@ -405,7 +402,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     fat_move = (cube_size - 1).to_s + 'Rw'
     cube_state.apply_move(parse_move(fat_move))
     expected_cube_state = create_interesting_cube_state(cube_size)
-    parse_alg('L x').apply_to(expected_cube_state)
+    parse_algorithm('L x').apply_to(expected_cube_state)
     expect(cube_state).to be == expected_cube_state
   end
 
@@ -413,12 +410,12 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     fat_move = (cube_size - 1).to_s + 'Fw'
     cube_state.apply_move(parse_move(fat_move))
     expected_cube_state = create_interesting_cube_state(cube_size)
-    parse_alg('B z').apply_to(expected_cube_state)
+    parse_algorithm('B z').apply_to(expected_cube_state)
     expect(cube_state).to be == expected_cube_state
   end
 
   it 'should do a Niklas alg properly' do
-    parse_alg('U\' L\' U R U\' L U R\'').apply_to(cube_state)
+    parse_algorithm('U\' L\' U R U\' L U R\'').apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
     expected_cube_state.apply_piece_cycle([for_letter(Corner, 'c'), for_letter(Corner, 'i'), for_letter(Corner, 'j')])
     expect(cube_state).to be == expected_cube_state
@@ -426,7 +423,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   
   it 'should do a TK wing alg properly if the cube is big enough' do
     if cube_size >= 4
-      parse_alg('U\' R\' U r2 U\' R U r2').apply_to(cube_state)
+      parse_algorithm('U\' R\' U r2 U\' R U r2').apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
       expected_cube_state.apply_piece_cycle([for_letter(Wing, 'e'), for_letter(Wing, 't'), for_letter(Wing, 'k')])
       expect(cube_state).to be == expected_cube_state
@@ -435,7 +432,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
 
   it 'should do the T perm properly' do
     cube_state = CubeState.solved(cube_size)
-    parse_alg('R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\'').apply_to(cube_state)
+    parse_algorithm('R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\'').apply_to(cube_state)
     expected_cube_state = CubeState.solved(cube_size)
     expected_cube_state.apply_piece_cycle([for_letter(Corner, 'b'), for_letter(Corner, 'd')])
     if cube_size % 2 == 1 && cube_size >= 5
@@ -457,7 +454,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
       cube_state.apply_move(parse_move('E'))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
-      equivalent_alg = parse_alg("#{half_size}Dw' #{half_size}Uw y'")
+      equivalent_alg = parse_algorithm("#{half_size}Dw' #{half_size}Uw y'")
       equivalent_alg.apply_to(expected_cube_state)
       expect(cube_state).to be == expected_cube_state
     end
@@ -468,7 +465,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
       cube_state.apply_move(parse_move('S'))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
-      equivalent_alg = parse_alg("#{half_size}Fw' #{half_size}Bw z")
+      equivalent_alg = parse_algorithm("#{half_size}Fw' #{half_size}Bw z")
       equivalent_alg.apply_to(expected_cube_state)
       expect(cube_state).to be == expected_cube_state
     end
@@ -479,7 +476,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
       cube_state.apply_move(parse_move('M'))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
-      equivalent_alg = parse_alg("#{half_size}Lw' #{half_size}Rw x'")
+      equivalent_alg = parse_algorithm("#{half_size}Lw' #{half_size}Rw x'")
       equivalent_alg.apply_to(expected_cube_state)
       expect(cube_state).to be == expected_cube_state
     end
@@ -490,7 +487,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
       cube_state.apply_move(parse_move('E\''))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
-      equivalent_alg = parse_alg("#{half_size}Dw #{half_size}Uw' y")
+      equivalent_alg = parse_algorithm("#{half_size}Dw #{half_size}Uw' y")
       equivalent_alg.apply_to(expected_cube_state)
       expect(cube_state).to be == expected_cube_state
     end
@@ -501,7 +498,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
       cube_state.apply_move(parse_move('S\''))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
-      equivalent_alg = parse_alg("#{half_size}Fw #{half_size}Bw' z'")
+      equivalent_alg = parse_algorithm("#{half_size}Fw #{half_size}Bw' z'")
       equivalent_alg.apply_to(expected_cube_state)
       expect(cube_state).to be == expected_cube_state
     end
@@ -512,7 +509,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
       cube_state.apply_move(parse_move('M\''))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
-      equivalent_alg = parse_alg("#{half_size}Lw #{half_size}Rw' x")
+      equivalent_alg = parse_algorithm("#{half_size}Lw #{half_size}Rw' x")
       equivalent_alg.apply_to(expected_cube_state)
       expect(cube_state).to be == expected_cube_state
     end

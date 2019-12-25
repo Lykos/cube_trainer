@@ -2,31 +2,41 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'results_persistence'
 require 'stats_computer'
 require 'cube'
 require 'options'
+require 'yaml'
 
 include CubeTrainer
 
-def print_stats(results)
-  computer = StatsComputer.new(results)
-  computer.averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }
-  avg = computer.total_average
-  puts "Average #{avg.round(2)}"
-  computer.bad_results.each do |cutoff, number|
-    puts "#{number} are sup #{cutoff} s"
-  end
+options = Options.parse(ARGV)
+computer = StatsComputer.new(options)
+
+# Detailed stats
+computer.averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }
+
+# Stats on bad results
+puts
+puts "# Worst Cases"
+computer.bad_results.each do |cutoff, number|
+  puts "#{number} are sup #{cutoff.round(3)} s"
 end
 
-options = Options.parse(ARGV)
-results = ResultsPersistence.create_for_production.load_results
-if options.commutator_info
-  print_stats(results[options.commutator_info.result_symbol])
-else
-  results.each do |k, v|
-    puts k
-    print_stats(v)
-    puts
-  end
+# Overall progress
+avg = computer.total_average
+puts
+puts "# Progress"
+puts "Average time per alg: #{avg.round(2)} s"
+puts "Average time per alg 24 hours ago: #{computer.old_total_average.round(2)} s"
+
+# Part of the solve
+puts
+puts "# Stats"
+lolstats = computer.expected_time_per_type_stats
+lolstats.each do |stats|
+  puts "#{stats[:name]}: "
+  puts "On average #{stats[:expected_algs].round(2)} algs taking #{stats[:average].round(2)} s each on average."
+  puts "Average time spent in total: #{stats[:total_time].round(2)} s (#{(stats[:weight] * 100).round(2)}%)"
+  puts
 end
+puts "Total time: #{lolstats.map { |stats| stats[:total_time] }.reduce(:+)} s"

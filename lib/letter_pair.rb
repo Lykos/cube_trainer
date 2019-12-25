@@ -2,13 +2,15 @@ require 'cube'
 
 module CubeTrainer
 
+  # Called LetterPair for historical reasons, but actually can contain any number of letters.
   class LetterPair
   
-    SEPARATOR = " "
-    
+    SEPARATOR = ' '
+
     def initialize(letters)
-      raise "Invalid letter pair length for letter pair #{letters.join(" ")}." unless 1 <= letters.length and letters.length < 3
-      raise "Invalid letter '#{SEPARATOR}' in letter pair #{letters.join(" ")}." if letters.include?(SEPARATOR)
+      raise ArgumentError unless letters.is_a?(Array)
+      raise ArgumentError, "Invalid letter pair length for letter pair #{letters.join(" ")}." unless 1 <= letters.length
+      raise ArgumentError, "Invalid letter '#{SEPARATOR}' in letter pair #{letters.join(" ")}." if letters.include?(SEPARATOR)
       @letters = letters
     end
   
@@ -17,6 +19,10 @@ module CubeTrainer
     # Encoding for YAML (and possibly others)
     def encode_with(coder)
       coder['letters'] = @letters
+    end
+
+    def has_any_letter?(letters)
+      !(@letters & letters).empty?
     end
   
     # Construct from data stored in the db.
@@ -40,7 +46,7 @@ module CubeTrainer
     end
   
     def to_s
-      @to_s ||= letters.collect { |l| l.capitalize }.join(' ')
+      @to_s ||= letters.collect { |l| l.capitalize }.join(SEPARATOR)
     end
   
     def regexp

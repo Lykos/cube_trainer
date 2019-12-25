@@ -38,7 +38,7 @@ module CubeTrainer
       @dict ||= Dict.new
     end
   
-    def hint(input)
+    def hints(input)
       letter_pair = input.letter_pair
       word = @results_model.last_word_for_input(input)
       if word.nil?

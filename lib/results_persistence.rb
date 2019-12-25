@@ -41,33 +41,26 @@ module CubeTrainer
       ResultsPersistence.new(db)
     end
   
-    def load_results
-      stm = @db.prepare 'SELECT Mode, Timestamp, TimeS, Input, FailedAttempts, Word FROM Results'
-      results = {}
-      stm.execute.each do |r|
-        mode = r[0].to_sym
-        result = Result.from_raw_data(r)
-        results[mode] ||= []
-        results[mode].push(result)
-      end
-      results
+    def load_results(mode)
+      @load_results_stm ||= @db.prepare('SELECT Mode, Timestamp, TimeS, Input, FailedAttempts, Word FROM Results WHERE Mode = ?')
+      @load_results_stm.execute(mode.to_s).map { |r| Result.from_raw_data(r) }
     end
   
     def replace_word(mode, input, word)
-      stm = @db.prepare 'UPDATE Results SET Word = ? WHERE Mode = ? and Input = ?';
-      stm.execute(word, mode, input)
+      @replace_results_stm ||= @db.prepare 'UPDATE Results SET Word = ? WHERE Mode = ? and Input = ?';
+      @replace_results_stm.execute(word, mode.to_s, input.to_s)
     end
     
     # Delete all results that happened after the given time.
     # Useful if you screwed up and want to delete results of the last 10 seconds.
     def delete_after_time(mode, time)
-      stm = @db.prepare 'DELETE FROM Results WHERE Mode = ? and Timestamp > ?';
-      stm.execute(mode.to_s, time.to_i)
+      @delete_after_time_stm ||= @db.prepare 'DELETE FROM Results WHERE Mode = ? and Timestamp > ?';
+      @delete_after_time_stm.execute(mode.to_s, time.to_i)
     end
   
     def record_result(result)
-      stm = @db.prepare ('INSERT INTO Results(Mode, Timestamp, TimeS, Input, FailedAttempts, Word) Values(?, ?, ?, ?, ?, ?)')
-      stm.execute(result.to_raw_data)
+      @record_result_stm ||= @db.prepare('INSERT INTO Results(Mode, Timestamp, TimeS, Input, FailedAttempts, Word) Values(?, ?, ?, ?, ?, ?)')
+      @record_result_stm.execute(result.to_raw_data)
     end
   end
 
