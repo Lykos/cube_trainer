@@ -16,12 +16,17 @@ describe HintParser do
 
   it "should parse a valid hint table correctly" do
     table = [
-      ["[L', U R' U]", ""], 
-      ["", "[U R' U, L']"],
+      ["[L', U R U']", "", "[L', U R' U']"], 
+      ["", "[U R U', L']", "[D U R U' : [R' U R, D']]"],
+      ["[D U R U' : [D', R' U R]]", "[U R' U', L']", ""],
     ]
-    expect(hint_parser.parse_hint_table(table)).to == {
-      LetterPair.new(['i', 'g']) => parse_commutator("[L', U R' U]"),
-      LetterPair.new(['g', 'i']) => parse_commutator("[U R' U, L']"),
+    expect(hint_parser.parse_hint_table(table)).to be == {
+      LetterPair.new(['i', 'g']) => parse_commutator("[L', U R U']"),
+      LetterPair.new(['g', 'i']) => parse_commutator("[U R U', L']"),
+      LetterPair.new(['t', 'g']) => parse_commutator("[L', U R' U']"),
+      LetterPair.new(['g', 't']) => parse_commutator("[U R' U', L']"),
+      LetterPair.new(['i', 't']) => parse_commutator("[D U R U' : [D', R' U R]]"),
+      LetterPair.new(['t', 'i']) => parse_commutator("[D U R U' : [R' U R, D']]"),
     }
   end
 end

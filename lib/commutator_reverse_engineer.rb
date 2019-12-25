@@ -29,6 +29,7 @@ module CubeTrainer
     end
 
     def find_letter_pair(alg)
+      raise ArgumentError unless alg.is_a?(Algorithm)
       @state.apply_algorithm(alg.inverse)
       result = find_stuff
       @state.apply_algorithm(alg)
