@@ -38,9 +38,9 @@ module CubeTrainer
       @dict ||= Dict.new
     end
   
-    def hints(input)
-      letter_pair = input.letter_pair
-      word = @results_model.last_word_for_input(input)
+    def hints(pao_letter_pair)
+      letter_pair = pao_letter_pair.letter_pair
+      word = @results_model.last_word_for_input(pao_letter_pair)
       if word.nil?
         if letter_pair.letters.first.downcase == 'x'
           dict.words_for_regexp(letter_pair.letters[1], Regexp.new(letter_pair.letters[1]))

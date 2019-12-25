@@ -1,5 +1,6 @@
 require 'trainer'
 require 'results_persistence'
+require 'input_item'
 require 'results_model'
 require 'learner'
 require 'commutator_sets'
@@ -18,7 +19,7 @@ def compute_average(results_model, generator)
 end
 
 describe  do
-  ITEMS = ('a'..'c').to_a.permutation(2).collect { |p| LetterPair.new(p) }
+  ITEMS = ('a'..'c').to_a.permutation(2).collect { |p| InputItem.new(LetterPair.new(p)) }
   
   it "should perform better than random sampling" do
     results_persistence = ResultsPersistence.create_in_memory

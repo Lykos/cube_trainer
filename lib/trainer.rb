@@ -11,7 +11,7 @@ module CubeTrainer
       input = @generator.random_item
       timestamp = Time.now
       partial_result = @learner.execute(input)
-      @results_model.record_result(timestamp, partial_result, input)
+      @results_model.record_result(timestamp, partial_result, input.representation)
     end
   
     def run

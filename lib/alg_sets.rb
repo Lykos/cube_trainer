@@ -1,6 +1,7 @@
 require 'input_sampler'
 require 'alg_name'
 require 'hint_parser'
+require 'input_item'
 
 module CubeTrainer
 
@@ -16,7 +17,7 @@ module CubeTrainer
       NoHinter.new
     end
 
-    VALID_PAIRS = ['Ja', 'Jb', 'Ua', 'Ub', 'Na', 'Nb', 'Ra', 'Rb', 'Z', 'H', 'T', 'Y', 'V', 'Ga', 'Gb', 'Gc', 'Gd', 'F', 'E', 'Aa', 'Ab'].map { |a| AlgName.new(a) }
+    VALID_PAIRS = ['Ja', 'Jb', 'Ua', 'Ub', 'Na', 'Nb', 'Ra', 'Rb', 'Z', 'H', 'T', 'Y', 'V', 'Ga', 'Gb', 'Gc', 'Gd', 'F', 'E', 'Aa', 'Ab'].map { |a| InputItem.new(AlgName.new(a)) }
 
   end
 

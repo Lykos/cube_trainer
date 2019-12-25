@@ -13,15 +13,15 @@ module CubeTrainer
     def initialize(options, results_persistence=ResultsPersistence.create_for_production)
       @options = options
       @results_persistence = results_persistence
-      mode = BufferHelper.mode_for_buffer(options)
+      mode = BufferHelper.mode_for_options(options)
       results = @results_persistence.load_results(mode)
-      @grouped_results = results.group_by { |c| c.input }
+      @grouped_results = results.group_by { |c| c.input_representation }
       grouped_averages = @grouped_results.collect { |c, rs| [c, average_time(rs)] }
       @averages = grouped_averages.sort_by { |t| -t[1] }
 
       now = Time.now
 
-      old_grouped_results = results.select { |r| r.timestamp < now - 24 * 3600 }.group_by { |c| c.input }
+      old_grouped_results = results.select { |r| r.timestamp < now - 24 * 3600 }.group_by { |c| c.input_representation }
       old_grouped_averages = old_grouped_results.collect { |c, rs| [c, average_time(rs)] }
       @old_averages = old_grouped_averages.sort_by { |t| -t[1] }
 

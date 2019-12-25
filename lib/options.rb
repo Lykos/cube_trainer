@@ -36,6 +36,7 @@ module CubeTrainer
       options.restrict_letters = nil
       options.exclude_letters = []
       options.letter_scheme = DefaultLetterScheme.new
+      options.picture = false
       options.mute = false
       options.buffer = nil
       opt_parser = OptionParser.new do |opts|
@@ -61,6 +62,10 @@ module CubeTrainer
         opts.on('-s', '--size SIZE', Integer, 'Use the given cube size.') do |size|
           options.cube_size = size
         end
+
+        opts.on('-p', '--[no-]picture', 'Show a picture of the cube additionally to the letter pair.') do |p|
+          options.picture = p
+        end
   
         opts.on('-n', '--new_item_boundary INTEGER', Integer, 'Number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.') do |int|
           options.new_item_boundary = int
@@ -70,8 +75,8 @@ module CubeTrainer
           options.verbose = v
         end
 
-        opts.on('-m', '--[no-]mute', 'Mute (i.e. no audio).') do |v|
-          options.mute = v
+        opts.on('-m', '--[no-]mute', 'Mute (i.e. no audio).') do |m|
+          options.mute = m
         end
   
         opts.on('-r', '--restrict_letters LETTERLIST', /\w+/, 'List of letters to which the commutators should be restricted.',
@@ -90,6 +95,7 @@ module CubeTrainer
         end   
       end
       opt_parser.parse!(args)
+      raise "Option --commutator_type is required." unless options.commutator_info
       options
     end
   end

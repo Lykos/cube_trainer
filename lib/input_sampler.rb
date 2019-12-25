@@ -1,5 +1,6 @@
 require 'sampling_helper'
 require 'cube_average'
+require 'input_item'
 
 module CubeTrainer
 
@@ -38,10 +39,12 @@ module CubeTrainer
     # In case there are still relatively new items that need to be repeated available, this is the fraction of times that such an item will be chosen.
     REPEAT_NEW_ITEMS_FRACTION = 0.8
   
-    # `items` are the items from which we get samples.
+    # `items` are the items from which we get samples. They have to be an array of InputItem. But the representation inside InputItem can be anything.
     # `results_model` is a helper object that retrieves results to get historic scores.
     # `new_item_bounary` is the number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.
     def initialize(items, results_model, goal_badness=1.0, verbose=false, new_item_boundary=11)
+      raise ArgumentError unless items.is_a?(Array)
+      raise ArgumentError, "Invalid items #{items.inspect}." unless items.all? { |e| e.is_a?(InputItem) }
       raise unless results_model.respond_to?(:results)
       raise unless goal_badness.is_a?(Float)
       @items = items
@@ -86,18 +89,18 @@ module CubeTrainer
   
     # Returns how many items have occurred since the last occurrence of this item (0 if it was the last picked item).
     def items_since_last_occurrence(item)
-      occ = @occurrence_indices[item]
+      occ = @occurrence_indices[item.representation]
       return nil if occ.nil?
       @current_occurrence_index - occ
     end
   
     # Insert a new result.
     def record_result(result)
-      item = result.input
-      @badness_histories[item].push(result_badness(result))
+      repr = result.input_representation
+      @badness_histories[repr].push(result_badness(result))
       @current_occurrence_index += 1
-      @occurrence_indices[item] = @current_occurrence_index
-      @occurrences[item] += 1
+      @occurrence_indices[repr] = @current_occurrence_index
+      @occurrences[repr] += 1
     end
   
     # Actual repetition boundary that is adjusted if the number of items is small.
@@ -125,7 +128,7 @@ module CubeTrainer
     # Computes an exponentially growing score based on the given badness that
     # allows us to strongly prefer bad items.
     def badness_score(item)
-      score = BADNESS_BASE ** (@badness_histories[item].average - @goal_badness)
+      score = BADNESS_BASE ** (@badness_histories[item.representation].average - @goal_badness)
       index = items_since_last_occurrence(item)
       [repetition_adjusted_score(index, score), EPSILON_SCORE].max
     end
@@ -148,7 +151,7 @@ module CubeTrainer
     # Score for items that are either completely new or have occurred less than `@new_item_boundary` times.
     # For all other items, it's 0.
     def new_item_score(item)
-      occ = @occurrences[item]
+      occ = @occurrences[item.representation]
       if occ == 0
         # Items that have never been seen get a positive score, but less than items that need
         # to be repeated urgently.

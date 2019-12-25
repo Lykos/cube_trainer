@@ -30,8 +30,8 @@ module CubeTrainer
       @result_listeners.each { |l| l.delete_after_time(@mode, timestamp) }
     end
     
-    def last_word_for_input(input)
-      result = results.select { |r| r.input == input }.max_by { |r| r.timestamp }
+    def last_word_for_input(input_representation)
+      result = results.select { |r| r.input_representation == input_representation }.max_by { |r| r.timestamp }
       if result.nil? then nil else result.word end
     end
   

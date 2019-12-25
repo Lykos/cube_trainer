@@ -6,6 +6,7 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'move'
 require 'algorithm'
 require 'options'
+require 'parser'
 require 'skewb_layer_finder'
 require 'skewb_state'
 
@@ -15,9 +16,9 @@ SEARCH_DEPTH = 6
 
 options = Options.parse(ARGV)
 
-puts 'Enter scramble with spaces between moves.'
+puts 'Enter scramble.'
 scramble_string = gets.chomp
-scramble = Algorithm.new(scramble_string.split(' ').collect { |move_string| parse_skewb_move(move_string) })
+scramble = parse_skewb_algorithm(scramble_string)
 
 layer_finder = SkewbLayerFinder.new(options.restrict_colors)
 skewb_state = SkewbState.solved

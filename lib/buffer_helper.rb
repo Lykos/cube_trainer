@@ -10,7 +10,7 @@ module CubeTrainer
       end
     end
 
-    def self.mode_for_buffer(options)
+    def self.mode_for_options(options)
       info = options.commutator_info
       if info.has_buffer? and info.generator_class.const_defined?(:PART_TYPE)
         part_type = info.generator_class::PART_TYPE

@@ -1,6 +1,7 @@
 require 'letter_pair_helper'
 require 'input_sampler'
 require 'buffer_helper'
+require 'input_item'
 
 module CubeTrainer
 
@@ -11,7 +12,8 @@ module CubeTrainer
     def initialize(results_model, options)
       @letter_scheme = options.letter_scheme
       @options = options
-      @input_sampler = InputSampler.new(letter_pairs, results_model, goal_badness, options.verbose, options.new_item_boundary)
+      input_items = letter_pairs.map { |e| InputItem.new(e) }
+      @input_sampler = InputSampler.new(input_items, results_model, goal_badness, options.verbose, options.new_item_boundary)
     end
 
     attr_reader :input_sampler, :letter_scheme, :options

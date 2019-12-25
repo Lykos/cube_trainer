@@ -52,12 +52,12 @@ module CubeTrainer
       super
       corner_options = options.dup
       corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
-      corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_buffer(corner_options))
+      corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(corner_options))
       corner_hinter = Hinter.maybe_create(PART_TYPE, corner_options)
 
       parity_options = options.dup
       parity_options.commutator_info = Options::COMMUTATOR_TYPES['corner_parities'] || raise
-      parity_results = result_model.result_persistence.load_results(BufferHelper.mode_for_buffer(parity_options))
+      parity_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(parity_options))
       parity_hinter = Hinter.maybe_create(PART_TYPE, parity_options)
 
       @hinter = CornerTwistPlusParityHinter.new(corner_results, parity_results, corner_hinter, parity_hinter, options)
@@ -111,7 +111,7 @@ module CubeTrainer
       super
       corner_options = options.dup
       corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
-      corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_buffer(corner_options))
+      corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(corner_options))
       corner_hinter = Hinter.maybe_create(PART_TYPE, corner_options)
       @hinter = Corner3TwistHinter.new(corner_results, corner_hinter, options)
     end

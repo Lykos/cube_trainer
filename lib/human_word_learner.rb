@@ -8,10 +8,10 @@ module CubeTrainer
     include ConsoleHelpers
     include UiHelpers
     
-    def initialize(hinter, results_model, muted)
+    def initialize(hinter, results_model, options)
       @hinter = hinter
       @results_model = results_model
-      @muted = muted
+      @muted = options.muted
     end
 
     attr_reader :muted
@@ -52,7 +52,7 @@ module CubeTrainer
         when 'hint'
           # Brutal punishment for failed attempts
           failed_attempts += 100
-          hints = @hinter.hints(input)
+          hints = @hinter.hints(input.representation)
           display_hints(hints)
         when 'delete'
           puts 'Deleting results for the last 30 seconds and exiting.'
