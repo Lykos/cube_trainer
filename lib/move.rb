@@ -22,7 +22,7 @@ module CubeTrainer
       @value > 0
     end
 
-    def invert
+    def inverse
       self::class.new(self.class::NUM_DIRECTIONS - @value)
     end
 
@@ -112,13 +112,13 @@ module CubeTrainer
       raise NotImplementedError
     end
 
-    def invert
+    def inverse
       raise NotImplementedError
     end
 
     # Returns true if this move can be cancelled with the other one with nothing left after cancellation (not even rotations).
     def cancels_totally?(other)
-      invert == other
+      inverse == other
     end
   end
 
@@ -144,7 +144,7 @@ module CubeTrainer
   
     def to_s
       slice_name = SLICES[Face::ELEMENTS.index(@axis_face)]
-      broken_direction = if slice_name == 'S' then direction else direction.invert end
+      broken_direction = if slice_name == 'S' then direction else direction.inverse end
       "#{slice_name}#{broken_direction.name}"
     end
   
@@ -162,8 +162,8 @@ module CubeTrainer
       end
     end
 
-    def invert
-      MSliceMove.new(@axis_face, @direction.invert)
+    def inverse
+      MSliceMove.new(@axis_face, @direction.inverse)
     end
 
     def is_slice_move?
@@ -212,11 +212,11 @@ module CubeTrainer
         cube_state.rotate_slice(@axis_face, s, @direction)
       end
       cube_state.rotate_face(@axis_face, @direction)
-      cube_state.rotate_face(@axis_face.opposite, @direction.invert)
+      cube_state.rotate_face(@axis_face.opposite, @direction.inverse)
     end
 
-    def invert
-      Rotation.new(@axis_face, @direction.invert)
+    def inverse
+      Rotation.new(@axis_face, @direction.inverse)
     end
 
     def is_slice_move?
@@ -307,8 +307,8 @@ module CubeTrainer
       end
     end
 
-    def invert
-      SkewbMove.new(@move, @direction.invert)
+    def inverse
+      SkewbMove.new(@move, @direction.inverse)
     end
 
     def is_slice_move?
@@ -363,8 +363,8 @@ module CubeTrainer
       cube_state.rotate_face(@axis_face, @direction)
     end
 
-    def invert
-      FatMove.new(@axis_face, @width, @direction.invert)
+    def inverse
+      FatMove.new(@axis_face, @width, @direction.inverse)
     end
 
     def is_slice_move?
@@ -419,8 +419,8 @@ module CubeTrainer
       end
     end
 
-    def invert
-      SliceMove.new(@axis_face, @direction.invert)
+    def inverse
+      SliceMove.new(@axis_face, @direction.inverse)
     end
 
     def is_slice_move?
@@ -479,7 +479,7 @@ module CubeTrainer
         SliceMove.new(Face.by_name(slice_name.upcase), direction)
       elsif mslice_name
         raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
-        fixed_direction = if mslice_name == 'S' then direction else direction.invert end
+        fixed_direction = if mslice_name == 'S' then direction else direction.inverse end
         MSliceMove.new(Face::ELEMENTS[SLICES.index(mslice_name)], fixed_direction)
       else
         raise

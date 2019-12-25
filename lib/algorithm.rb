@@ -44,8 +44,8 @@ module CubeTrainer
       @moves.each { |m| m.apply_to(cube_state) }
     end
 
-    def invert
-      Algorithm.new(@moves.reverse.collect { |m| m.invert })
+    def inverse
+      Algorithm.new(@moves.reverse.collect { |m| m.inverse })
     end
 
     def +(other)

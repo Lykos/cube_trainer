@@ -6,7 +6,7 @@ module CubeTrainer
   class SkewbScrambler
     
     def random_move(last_move)
-      (SkewbMove::ALL - [last_move, last_move.invert]).sample
+      (SkewbMove::ALL - [last_move, last_move.inverse]).sample
     end
 
     # TODO Make it random state!

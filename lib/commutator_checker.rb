@@ -27,7 +27,7 @@ module CubeTrainer
     end
 
     def move_modifications(move)
-      [move, move.invert].uniq
+      [move, move.inverse].uniq
     end
 
     def permutation_modifications(alg)
@@ -50,10 +50,10 @@ module CubeTrainer
       elsif algorithm.moves.length == 3
         a, b = algorithm.moves[0], algorithm.moves[1]
         move_modifications(algorithm.moves[1]).flat_map do |m|
-          if a != b.invert 
-            lol = [Algorithm.new([a, m, a.invert]), Algorithm.new([a.invert, m, a])]
+          if a != b.inverse 
+            lol = [Algorithm.new([a, m, a.inverse]), Algorithm.new([a.inverse, m, a])]
             if a != b
-              lol += [Algorithm.new([b, m, b.invert]), Algorithm.new([b.invert, m, b])]
+              lol += [Algorithm.new([b, m, b.inverse]), Algorithm.new([b.inverse, m, b])]
             end
             lol
           else
@@ -94,12 +94,12 @@ module CubeTrainer
 
         # Try to find a fix.
         fix_comm = nil
-        alg.invert.apply_to(@alg_cube_state)
+        alg.inverse.apply_to(@alg_cube_state)
         fixes(commutator).each do |fix|
           fix_alg = fix.algorithm
           fix_alg.apply_to(@alg_cube_state)
           fix_found ||= @cycle_cube_state == @alg_cube_state
-          fix_alg.invert.apply_to(@alg_cube_state)
+          fix_alg.inverse.apply_to(@alg_cube_state)
           fix_comm = fix if fix_found
           break if fix_found
         end
@@ -118,7 +118,7 @@ module CubeTrainer
 
       # cleanup
       @cycle_cube_state.apply_piece_cycle(cycle.reverse)
-      alg.invert.apply_to(@alg_cube_state)
+      alg.inverse.apply_to(@alg_cube_state)
       raise "Cleanup failed" unless @alg_cube_state == @cycle_cube_state
 
       if correct

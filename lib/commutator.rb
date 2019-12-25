@@ -31,7 +31,7 @@ module CubeTrainer
     end
 
     def inverse
-      FakeCommutator.new(@algorithm.invert)
+      FakeCommutator.new(@algorithm.inverse)
     end
 
     def to_s
@@ -68,7 +68,7 @@ module CubeTrainer
     end
 
     def algorithm
-      first_part + second_part + first_part.invert + second_part.invert
+      first_part + second_part + first_part.inverse + second_part.inverse
     end
   end
   
@@ -101,7 +101,7 @@ module CubeTrainer
     end
 
     def algorithm
-      setup + inner_commutator.algorithm + setup.invert
+      setup + inner_commutator.algorithm + setup.inverse
     end
   end
   

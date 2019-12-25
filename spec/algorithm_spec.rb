@@ -4,7 +4,7 @@ include CubeTrainer
 
 describe Algorithm do
   it 'should invert algorithms correctly' do
-    expect(parse_algorithm('R U').invert).to be == parse_algorithm('U\' R\'')
+    expect(parse_algorithm('R U').inverse).to be == parse_algorithm('U\' R\'')
   end
 
   it 'should compute the move count of algorithms correctly' do

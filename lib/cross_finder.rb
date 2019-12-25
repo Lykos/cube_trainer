@@ -13,7 +13,7 @@ module CubeTrainer
         move = FatMove.new(face, 1, d)
         move.apply_to(state)
         score = no_auf_score_on_face(state, face)
-        move.invert.apply_to(state)
+        move.inverse.apply_to(state)
         score
       end.max
       [base + 1, adjusted].max

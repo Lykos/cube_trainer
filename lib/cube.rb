@@ -99,7 +99,7 @@ module CubeTrainer
       self.class.new(@colors.rotate(n))
     end
   
-    def invert
+    def inverse
       self.class.new(@colors.reverse)
     end
   
@@ -249,7 +249,7 @@ module CubeTrainer
     end
 
     def self.for_colors(colors)
-      raise unless colors.length == self::CORRESPONDING_PART_CLASS::FACES
+      raise ArgumentError, "Need #{self::CORRESPONDING_PART_CLASS::FACES} colors for a #{self.class}, have #{colors.inspect}." unless colors.length == self::CORRESPONDING_PART_CLASS::FACES
       corresponding_part = self::CORRESPONDING_PART_CLASS.for_colors(colors)
       nil unless corresponding_part
       self::ELEMENTS.find { |e| e.corresponding_part == corresponding_part }
@@ -291,7 +291,7 @@ module CubeTrainer
       self
     end
   
-    def invert
+    def inverse
       self
     end
     
@@ -397,9 +397,9 @@ module CubeTrainer
   
     # One index of such a piece on a on a NxN face.
     def base_index_on_face(cube_size, incarnation_index)
-      invert = solved_face.piece_index % 2 == 0
+      inverse = solved_face.piece_index % 2 == 0
       coordinates = [0, 1 + incarnation_index]
-      if invert then coordinates.reverse else coordinates end
+      if inverse then coordinates.reverse else coordinates end
     end
   end
   
@@ -456,7 +456,7 @@ module CubeTrainer
       # Each time we swap a face for the opposite, the chirality direction should be inverted.
       no_swapped_faces = canonical_colors.zip(@colors).count { |a, b| a != b }
       inverted = no_swapped_faces % 2 == 1
-      inverted_corner = if inverted then canonical_corner.invert else canonical_corner end
+      inverted_corner = if inverted then canonical_corner.inverse else canonical_corner end
   
       # If the corner is not equal modulo rotation to CHIRALITY_CORNER after this transformation,
       # the original corner had a bad chirality.

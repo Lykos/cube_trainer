@@ -1,3 +1,4 @@
+require 'commutator_reverse_engineer'
 require 'csv'
 require 'parser'
 require 'move'
@@ -25,6 +26,19 @@ module CubeTrainer
   end
 
   class HintParser
+
+    def initialize(part_type, buffer, letter_scheme, verbose, cube_size, test_comms)
+      @part_type = part_type
+      @buffer = buffer
+      @name = buffer.to_s.downcase + '_' + part_type.name.split('::').last.downcase
+      @parse_letter_scheme = @letter_scheme = letter_scheme
+      @verbose = verbose
+      @cube_size = cube_size
+      @test_comms = test_comms
+    end
+
+    attr_reader :name, :part_type, :buffer, :letter_scheme, :parse_letter_scheme, :verbose, :cube_size, :test_comms
+
     def csv_file
       "data/#{name}.csv"
     end
@@ -60,10 +74,13 @@ module CubeTrainer
     end
 
     def parse_hints(cube_size, check_comms)
-      hint_table = CSV.read(csv_file)
+      parse_hint_table(CSV.read(csv_file))
+    end
+    
+    def parse_hint_table(hint_table)
       # First parse whatever we can
       alg_table = hint_table.map { |row| row.map { nil } }
-      reverse_engineer = CommutatorReverseEngineer.new(part_type, buffer, name, cube_size)
+      reverse_engineer = CommutatorReverseEngineer.new(part_type, buffer, cube_size)
       hint_table.each_with_index do |row, row_index|
         row.each_with_index do |cell, col_index|
           next if cell.nil? || cell.empty? || blacklisted?(cell)
@@ -81,7 +98,7 @@ module CubeTrainer
       end
 
       # Now figure out whether rows are the first piece or the second piece.
-      
+
       checker = if check_comms
                   CommutatorChecker.new(part_type, buffer, name, cube_size)
                 else
@@ -96,24 +113,14 @@ module CubeTrainer
       hints
     end
 
-    def initialize(part_type, buffer, letter_scheme, verbose)
-      @part_type = part_type
-      @buffer = buffer
-      @name = buffer.to_s.downcase + '_' + part_type.name.split('::').last.downcase
-      @parse_letter_scheme = @letter_scheme = letter_scheme
-      @verbose = verbose
-    end
-
-    attr_reader :name, :part_type, :buffer, :letter_scheme, :parse_letter_scheme, :verbose
-
   end
    
   class Hinter
     def self.maybe_create(part_type, options)
       buffer = BufferHelper.determine_buffer(part_type, options)
-      hint_parser = HintParser.new(part_type, buffer, options.letter_scheme, options.verbose)
+      hint_parser = HintParser.new(part_type, buffer, options.letter_scheme, options.verbose, options.cube_size, options.test_comms)
       hints = if File.exists?(hint_parser.csv_file)
-                hint_parser.parse_hints(options.cube_size, options.test_comms)
+                hint_parser.parse_hints
               else
                 puts "Failed to find hint CSV file #{hint_parser.csv_file}." if options.verbose
                 {}

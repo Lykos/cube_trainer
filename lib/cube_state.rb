@@ -46,6 +46,11 @@ module CubeTrainer
     # The indices of stickers that this piece occupies on the solved cube.
     def solved_positions(piece, incarnation_index)
       coordinate = piece.solved_coordinate(@n, incarnation_index)
+      piece_coordinates(coordinate)
+    end
+
+    # The indices of the stickers occupied by the piece that occupies the sticker at the given coordinate (note that the piece may additionally occupy other stickers).
+    def piece_coordinates(coordinate)
       # Try to jump to each neighbor face.
       neighbor_coordinates = coordinate.face.neighbors.collect do |neighbor_face|
         if coordinate.can_jump_to?(neighbor_face)
@@ -57,7 +62,7 @@ module CubeTrainer
       end
       [coordinate] + rotate_out_nils(neighbor_coordinates)
     end
-  
+
     def sticker_array(face)
       @stickers[face.piece_index]
     end
@@ -133,7 +138,7 @@ module CubeTrainer
     def rotate_face(face, direction)
       neighbors = face.neighbors
       inverse_order_face = face.coordinate_index_close_to(neighbors[0]) < face.coordinate_index_close_to(neighbors[1])
-      direction = direction.invert if inverse_order_face
+      direction = direction.inverse if inverse_order_face
       Coordinate.on_face(face, @n).each do |cycle|
         apply_4sticker_cycle(cycle, direction)
       end
@@ -141,6 +146,10 @@ module CubeTrainer
   
     def apply_move(move)
       move.apply_to(self)
+    end
+
+    def apply_algorithm(alg)
+      alg.apply_to(self)
     end
   end
 
