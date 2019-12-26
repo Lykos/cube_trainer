@@ -1,23 +1,28 @@
 require 'ui_helpers'
 require 'console_helpers'
 require 'result'
+require 'cube_print_helper'
 
 module CubeTrainer
 
   class HumanTimeLearner
     include ConsoleHelpers
     include UiHelpers
+    include CubePrintHelper
     
     def initialize(hinter, results_model, options)
       @hinter = hinter
       @results_model = results_model
-      @cube_state = CubeState.solved(options.cube_size)
+      @picture = options.picture
       @muted = options.muted
     end
 
     attr_reader :muted
     
     def execute(input)
+      if @picture
+        puts cube_string(input.cube_state, :color)
+      end
       puts_and_say(input.representation)
       data = time_before_any_key_press(@hinter.hints(input.representation))
       if data.char == 'd'

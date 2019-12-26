@@ -45,8 +45,8 @@ module CubeTrainer
       color_info = COLOR_INFOS[color]
       stickers = cube_state.sticker_array(face)
       lines = stickers.collect do |sticker_line|
-        line = sticker_line.collect { |c| color_character(c, color_mode) }.join
-        maybe_reverse(color_info.reverse_columns_mode, line)
+        line = sticker_line.collect { |c| color_character(c, color_mode) }
+        maybe_reverse(color_info.reverse_columns_mode, line).join
       end
       maybe_reverse(color_info.reverse_lines_mode, lines)
     end
@@ -95,7 +95,7 @@ module CubeTrainer
       orange_face = face_lines(cube_state, :orange, color_mode)
       white_face = face_lines(cube_state, :white, color_mode)
       middle_belt = zip_concat_lines(blue_face, red_face, green_face, orange_face)
-      lines = pad_lines(yellow_face, @n) + middle_belt + pad_lines(white_face, @n)
+      lines = pad_lines(yellow_face, cube_state.n) + middle_belt + pad_lines(white_face, cube_state.n)
       lines.join("\n")
     end
 

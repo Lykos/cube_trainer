@@ -18,6 +18,10 @@ module CubeTrainer
       @n = n
       @stickers = stickers
     end
+
+    def dup
+      CubeState.new(@n, @stickers.map { |e| e.dup })
+    end
   
     attr_reader :n, :stickers
     
@@ -42,9 +46,13 @@ module CubeTrainer
       end
       CubeState.new(n, stickers)
     end
-          
+
+    def rotate_piece(piece, incarnation_index=0)
+      apply_sticker_cycle(solved_positions(piece, 0))
+    end
+
     # The indices of stickers that this piece occupies on the solved cube.
-    def solved_positions(piece, incarnation_index)
+    def solved_positions(piece, incarnation_index=0)
       coordinate = piece.solved_coordinate(@n, incarnation_index)
       piece_coordinates(coordinate)
     end
@@ -96,7 +104,7 @@ module CubeTrainer
         end
       end
       cycles = find_cycles(pieces, incarnation_index)
-      cycles.each { |c| apply_index_cycle(c) }
+      cycles.each { |c| apply_sticker_cycle(c) }
     end
   
     def [](coordinate)
@@ -108,7 +116,7 @@ module CubeTrainer
       sticker_array(coordinate.face)[coordinate.x][coordinate.y] = color
     end
   
-    def apply_index_cycle(cycle)
+    def apply_sticker_cycle(cycle)
       last_sticker = self[cycle[-1]]
       (cycle.length - 1).downto(1) do |i|
         self[cycle[i]] = self[cycle[i - 1]]
@@ -119,12 +127,12 @@ module CubeTrainer
     def apply_4sticker_cycle(cycle, direction)
       raise ArgumentError unless cycle.length == 4
       if direction.is_double_move?
-        apply_index_cycle([cycle[0], cycle[2]])
-        apply_index_cycle([cycle[1], cycle[3]])
+        apply_sticker_cycle([cycle[0], cycle[2]])
+        apply_sticker_cycle([cycle[1], cycle[3]])
       else
         # Note that we cannot do reverse! because the values are cached.
         actual_cycle = if direction.value == 3 then cycle.reverse else cycle end
-        apply_index_cycle(actual_cycle)
+        apply_sticker_cycle(actual_cycle)
       end
     end
   

@@ -32,7 +32,7 @@ module CubeTrainer
     attr_reader :averages, :old_averages, :num_results, :num_recent_results
 
     def input_stats(inputs)
-      hashes = inputs.collect { |e| e.hash }
+      hashes = inputs.collect { |e| e.representation.hash }
       filtered_results = @grouped_results.select { |input, rs| hashes.include?(input.hash) }
       newish_elements = filtered_results.collect { |input, rs| rs.length }.count { |l| 1 <= l && l < @options.new_item_boundary }
       found = filtered_results.keys.uniq.length

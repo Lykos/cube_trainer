@@ -12,7 +12,6 @@ module CubeTrainer
     def initialize(results_model, options)
       @letter_scheme = options.letter_scheme
       @options = options
-      input_items = letter_pairs.map { |e| InputItem.new(e) }
       @input_sampler = InputSampler.new(input_items, results_model, goal_badness, options.verbose, options.new_item_boundary)
     end
 
@@ -26,16 +25,20 @@ module CubeTrainer
       raise NotImplementedError
     end
 
-    def letter_pairs
-      @letter_pairs ||= begin
-                          generated_letter_pairs = generate_letter_pairs
-                          restricted_letter_pairs = if options.restrict_letters and not options.restrict_letters.empty?
-                                                      generated_letter_pairs.select { |p| p.has_any_letter?(options.restrict_letters) }
-                                                    else
-                                                      generated_letter_pairs
-                                                    end
-                          restricted_letter_pairs.reject { |p| p.has_any_letter?(options.exclude_letters) }
-                        end
+    def generate_input_items
+      generate_letter_pairs.map { |e| InputItem.new(e) }
+    end
+
+    def input_items
+      @input_items ||= begin
+                         generated_input_items = generate_input_items
+                         restricted_input_items = if options.restrict_letters and not options.restrict_letters.empty?
+                                                     generated_input_items.select { |p| p.representation.has_any_letter?(options.restrict_letters) }
+                                                   else
+                                                     generated_input_items
+                                                   end
+                         restricted_input_items.reject { |p| p.representation.has_any_letter?(options.exclude_letters) }
+                       end
     end
     
     def generate_letter_pairs

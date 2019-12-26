@@ -13,7 +13,7 @@ module CubeTrainer
       raise ArgumentError if resultss.empty?
       @valuess = resultss.map do |results|
         values = {}
-        results.group_by { |r| r.input }.each do |l, rs|
+        results.group_by { |r| r.input_representation }.each do |l, rs|
           avg = CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
           rs.sort_by { |r| r.timestamp }.each { |r| avg.push(r.time_s) }
           values[l] = ActualScore.new(avg.average)

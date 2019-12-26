@@ -52,11 +52,13 @@ module CubeTrainer
       super
       corner_options = options.dup
       corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
+      corner_options.picture = false
       corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(corner_options))
       corner_hinter = Hinter.maybe_create(PART_TYPE, corner_options)
 
       parity_options = options.dup
       parity_options.commutator_info = Options::COMMUTATOR_TYPES['corner_parities'] || raise
+      corner_options.picture = false
       parity_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(parity_options))
       parity_hinter = Hinter.maybe_create(PART_TYPE, parity_options)
 
@@ -111,6 +113,7 @@ module CubeTrainer
       super
       corner_options = options.dup
       corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
+      corner_options.picture = false
       corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(corner_options))
       corner_hinter = Hinter.maybe_create(PART_TYPE, corner_options)
       @hinter = Corner3TwistHinter.new(corner_results, corner_hinter, options)
@@ -122,13 +125,25 @@ module CubeTrainer
       2.0
     end
 
-    def generate_letter_pairs
+    def generate_input_items
+      cube_state = CubeState.solved(options.cube_size)
       non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       1.upto(2).collect_concat do |twist_number|
+        cube_state.rotate_piece(buffer)
         correctly_oriented_corners.combination(2).collect_concat do |c1, c2|
+          twist_number.times do
+            cube_state.rotate_piece(c1)
+            cube_state.rotate_piece(c2)
+          end
           twisted_corner_pair = [c1.rotate_by(twist_number), c2.rotate_by(twist_number)]
-          LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
+          letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
+          twisted_cube_state = cube_state.dup
+          (3 - twist_number).times do
+            cube_state.rotate_piece(c1)
+            cube_state.rotate_piece(c2)
+          end
+          InputItem.new(letter_pair, twisted_cube_state)
         end
       end
     end
