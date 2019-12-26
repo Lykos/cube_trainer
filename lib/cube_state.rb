@@ -20,7 +20,7 @@ module CubeTrainer
     end
 
     def dup
-      CubeState.new(@n, @stickers.map { |e| e.dup })
+      CubeState.new(@n, @stickers.map { |p| p.map { |q| q.dup } })
     end
   
     attr_reader :n, :stickers

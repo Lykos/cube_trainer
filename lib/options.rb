@@ -63,7 +63,7 @@ module CubeTrainer
           options.cube_size = size
         end
 
-        opts.on('-p', '--[no-]picture', 'Show a picture of the cube additionally to the letter pair.') do |p|
+        opts.on('-p', '--[no-]picture', 'Show a picture of the cube instead of the letter pair.') do |p|
           options.picture = p
         end
   

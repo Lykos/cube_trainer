@@ -22,8 +22,9 @@ module CubeTrainer
     def execute(input)
       if @picture
         puts cube_string(input.cube_state, :color)
+      else
+        puts_and_say(input.representation)
       end
-      puts_and_say(input.representation)
       data = time_before_any_key_press(@hinter.hints(input.representation))
       if data.char == 'd'
         puts 'Pressed d. Deleting results for the last 10 seconds and exiting.'
