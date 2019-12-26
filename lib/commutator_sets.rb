@@ -109,6 +109,8 @@ module CubeTrainer
   class Corner3Twists < LetterPairAlgSet
     PART_TYPE = Corner
 
+    include CubePrintHelper
+
     def initialize(result_model, options)
       super
       corner_options = options.dup
@@ -139,6 +141,7 @@ module CubeTrainer
           twisted_corner_pair = [c1.rotate_by(twist_number), c2.rotate_by(twist_number)]
           letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
           twisted_cube_state = cube_state.dup
+          puts cube_string(twisted_cube_state)
           (3 - twist_number).times do
             cube_state.rotate_piece(c1)
             cube_state.rotate_piece(c2)
