@@ -1,5 +1,3 @@
-require 'combined_hinter'
-
 module CubeTrainer
 
   class RestrictedHinter
@@ -13,7 +11,7 @@ module CubeTrainer
 
     def hints(letter_pair)
       raise unless in_domain?(letter_pair)
-      @hinter.hint(letter_pair)
+      @hinter.hints(letter_pair)
     end
 
     def in_domain?(letter_pair)

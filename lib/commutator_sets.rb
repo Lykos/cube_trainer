@@ -1,5 +1,6 @@
 require 'letter_pair_helper'
 require 'input_sampler'
+require 'disjoint_union_alg_set'
 require 'hint_parser'
 require 'letter_pair_sequence'
 require 'utils'
@@ -71,6 +72,12 @@ module CubeTrainer
       two_twists + cw_twists + ccw_twists
     end
  
+  end
+
+  class FloatingCorner2TwistsAnd3Twists < DisjointUnionLetterPairAlgSet
+    def initialize(results_model, options)
+      super(results_model, options, FloatingCorner2Twists.new(results_model, options), Corner3Twists.new(results_model, options))
+    end
   end
 
   class CornerTwistsPlusParities < LetterPairAlgSet

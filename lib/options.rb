@@ -17,6 +17,7 @@ module CubeTrainer
       'corner_twists_plus_parities' => CommutatorInfo.new(:corner_twists_plus_parities_ul_ub, CornerTwistsPlusParities, HumanTimeLearner, 3, true),
       'floating_2twists' => CommutatorInfo.new(:floating_2twists, FloatingCorner2Twists, HumanTimeLearner, 3, false),
       'corner_3twists' => CommutatorInfo.new(:corner_3twists, Corner3Twists, HumanTimeLearner, 3, false),
+      'floating_2twists_and_corner_3twists' => CommutatorInfo.new(:floating_2twists_and_corner_3twists, FloatingCorner2TwistsAnd3Twists, HumanTimeLearner, 3, false),
       'floating_2flips' => CommutatorInfo.new(:floating_2flips, FloatingEdgeFlips, HumanTimeLearner, 3, false),
       'edges' => CommutatorInfo.new(:edge_commutators, EdgeCommutators, HumanTimeLearner, 3, true),
       'wings' => CommutatorInfo.new(:wing_commutators, WingCommutators, HumanTimeLearner, 4, true),
