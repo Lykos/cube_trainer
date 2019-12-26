@@ -34,13 +34,41 @@ module CubeTrainer
       1.5
     end
 
-    def generate_letter_pairs
+    def generate_input_items
+      cube_state = CubeState.solved(options.cube_size)
       non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
-      twisted_corner_pairs = correctly_oriented_corners.permutation(2).map { |c1, c2| [c1.rotate_by(1), c2.rotate_by(2)] }
-      two_twists = twisted_corner_pairs.map { |cs| LetterPair.new(cs.map { |c| letter_scheme.letter(c) }) }
-      one_twists = twisted_corner_pairs.flatten.map { |c| LetterPair.new([letter_scheme.letter(c)]) }.uniq
-      two_twists + one_twists
+      two_twists = correctly_oriented_corners.permutation(2).map do |c1, c2|
+        cube_state.rotate_piece(c1)
+        cube_state.rotate_piece(c2)
+        cube_state.rotate_piece(c2)
+        twisted_corner_pair = [c1.rotate_by(1), c2.rotate_by(2)]
+        letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
+        twisted_cube_state = cube_state.dup
+        cube_state.rotate_piece(c1)
+        cube_state.rotate_piece(c1)
+        cube_state.rotate_piece(c2)
+        InputItem.new(letter_pair, twisted_cube_state)
+      end
+      cube_state.rotate_piece(buffer)
+      ccw_twists = correctly_oriented_corners.map do |c|
+        cube_state.rotate_piece(c)
+        cube_state.rotate_piece(c)
+        letter_pair = LetterPair.new([letter_scheme.letter(c)])
+        twisted_cube_state = cube_state.dup
+        cube_state.rotate_piece(c)       
+        InputItem.new(letter_pair, twisted_cube_state)
+      end
+      cube_state.rotate_piece(buffer)
+      cw_twists = correctly_oriented_corners.map do |c|
+        cube_state.rotate_piece(c)
+        letter_pair = LetterPair.new([letter_scheme.letter(c)])
+        twisted_cube_state = cube_state.dup
+        cube_state.rotate_piece(c)
+        cube_state.rotate_piece(c)       
+        InputItem.new(letter_pair, twisted_cube_state)
+      end
+      two_twists + cw_twists + ccw_twists
     end
  
   end
