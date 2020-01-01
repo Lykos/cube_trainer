@@ -40,13 +40,13 @@ module CubeTrainer
       end
     end
 
-    def face_lines(cube_state, color, color_mode)
+    def face_lines(cube_state, color, color_mode, row_multiplicity=1, column_multiplicity=1)
       face = Face.for_color(color)
       color_info = COLOR_INFOS[color]
       stickers = cube_state.sticker_array(face)
-      lines = stickers.collect do |sticker_line|
-        line = sticker_line.collect { |c| color_character(c, color_mode) }
-        maybe_reverse(color_info.reverse_columns_mode, line).join
+      lines = stickers.collect_concat do |sticker_line|
+        line = sticker_line.collect { |c| color_character(c, color_mode) * column_multiplicity }
+        [maybe_reverse(color_info.reverse_columns_mode, line).join] * row_multiplicity
       end
       maybe_reverse(color_info.reverse_lines_mode, lines)
     end
@@ -85,6 +85,14 @@ module CubeTrainer
       permuted_corner_colors = apply_permutation(corner_colors, color_info.skewb_corner_permutation)
       raise unless corner_colors.length == 4
       skewb_ascii_art(center_color, permuted_corner_colors)
+    end
+
+    def ll_string(cube_state, color_mode)
+      yellow_face = face_lines(cube_state, :yellow, color_mode, 2, 3)
+      red_face = face_lines(cube_state, :red, color_mode, 1, 3)
+      green_face = face_lines(cube_state, :green, color_mode, 1, 3)
+      pll_line = red_face.first + green_face.first
+      (yellow_face + [pll_line] * 3).join("\n")
     end
 
     def cube_string(cube_state, color_mode)

@@ -8,6 +8,7 @@ require 'algorithm'
 require 'options'
 require 'skewb_layer_finder'
 require 'skewb_state'
+require 'parser'
 
 include CubeTrainer
 
@@ -15,7 +16,7 @@ SEARCH_DEPTH = 6
 
 options = Options.parse(ARGV)
 
-puts 'Enter scramble with spaces .'
+puts 'Enter scramble'
 scramble_string = gets.chomp
 scramble = parse_skewb_algorithm(scramble_string)
 
