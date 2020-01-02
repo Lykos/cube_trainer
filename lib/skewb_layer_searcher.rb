@@ -41,7 +41,10 @@ module CubeTrainer
       candidates = [Algorithm.empty]
       layers = []
       loop do
+        puts "Candidates: #{candidates.length}"
+        puts "Layers: #{layers.length}"
         candidate = candidates.pop
+        puts "Candidate: #{candidate}"        
         candidate.apply_temporarily_to(state) do
           # Is there an existing equivalent layer that we already looked at?
           has_equivalent_layer = false
@@ -60,23 +63,25 @@ module CubeTrainer
               end
             end
           end
+          puts "has equivalent layer: #{has_equivalent_layer} #{has_equivalent_shorter_layer}"
 
           # Find out whether there are any layers that are equivalent with rotations.
           # In those cases, we don't add this as an alternative solution because there will be another one that's equivalent modulo rotations.
           candidate_face = state.center_face(EXAMPLE_LAYER_COLOR)
-          layers.each do |l|
-            face_to_face_rotation = candidate_face.rotation_to(l.face)
-            around_face_rotations = [Algorithm.empty] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Algorithm.new([Rotation.new(l.face.chirality_canonicalize, d)]) }
-            around_face_rotations.each do |around_face_rotation|
-              rotation = face_to_face_rotation + around_face_rotation
-              rotation.apply_temporarily_to(state) do
-                if state.layer_solved?(EXAMPLE_LAYER_COLOR)
-                  has_equivalent_layer = true
-                  has_equivalent_shorter_layer ||= l.solution_length < candidate.length
-                end
-              end
-            end
-          end
+          # layers.each do |l|
+          #   face_to_face_rotation = candidate_face.rotation_to(l.face)
+          #   around_face_rotations = [Algorithm.empty] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Algorithm.new([Rotation.new(l.face.chirality_canonicalize, d)]) }
+          #   around_face_rotations.each do |around_face_rotation|
+          #     rotation = face_to_face_rotation + around_face_rotation
+          #     rotation.apply_temporarily_to(state) do
+          #       if state.layer_solved?(EXAMPLE_LAYER_COLOR)
+          #         has_equivalent_layer = true
+          #         has_equivalent_shorter_layer ||= l.solution_length < candidate.length
+          #       end
+          #     end
+          #   end
+          # end
+        
 
           # If there were no equivalent layers in any way, this is a new type of layer.
           unless has_equivalent_layer
@@ -85,7 +90,8 @@ module CubeTrainer
 
           unless has_equivalent_shorter_layer
             SkewbMove::ALL.each do |m|
-              candidates.push(candidate + Algorithm.new([m]))
+              next if candidate.length > 0 && candidate.moves.last.move == m.move
+              candidates.unshift(candidate + Algorithm.new([m]))
             end
           end
         end

@@ -193,12 +193,16 @@ module CubeTrainer
       new(face, 0)
     end
 
+    def self.corner_index(face, corner_index)
+      new(face, corner_index + 1)
+    end
+
     def self.corners_on_face(face)
       (1...SKEWB_STICKERS).collect { |i| new(face, i) }
     end
 
     def self.for_corner(corner)
-      new(Face.for_color(corner.colors.first), corner.piece_index % 4 + 1)
+      corner_index(Face.for_color(corner.colors.first), corner.piece_index % 4)
     end
 
     def <=>(other)

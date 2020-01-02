@@ -1,5 +1,6 @@
 require 'colorize'
 require 'array_helper'
+
 module CubeTrainer
   
   module CubePrintHelper

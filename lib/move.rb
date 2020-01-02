@@ -231,12 +231,51 @@ module CubeTrainer
 
     def apply_to_skewb(skewb_state)
       raise ArgumentError unless skewb_state.is_a?(SkewbState)
-      skewb_state.rotate_face(@axis_face, @direction)
-      skewb_state.rotate_face(@axis_face.opposite, @direction.inverse)
-      rotated_faces = Face::ELEMENTS.select { |f| f != @axis_face && f != @axis_face.opposite }
-      cycle = rotated_faces.map { |f| SkewbCoordinate.center(f) }
-      p cycle, @direction
-      skewb_state.apply_4sticker_cycle(cycle, @direction)
+      # I haven't found a better way for Skewb than to hardcode what each move does.
+      # Note that it's tricky because we have a weird orientation hack for skewb.
+      yellow = Face.for_color(:yellow)
+      white = Face.for_color(:white)
+      red = Face.for_color(:red)
+      orange = Face.for_color(:orange)
+      green = Face.for_color(:green)
+      blue = Face.for_color(:blue)
+      cycles = case AXES[Face::ELEMENTS.index(@axis_face)]
+               when 'x'
+                 [
+                   [SkewbCoordinate.center(white), SkewbCoordinate.center(blue), SkewbCoordinate.center(yellow), SkewbCoordinate.center(green)],
+                   [SkewbCoordinate.corner_index(white, 2), SkewbCoordinate.corner_index(blue, 0), SkewbCoordinate.corner_index(yellow, 1), SkewbCoordinate.corner_index(green, 3)],
+                   [SkewbCoordinate.corner_index(white, 0), SkewbCoordinate.corner_index(blue, 1), SkewbCoordinate.corner_index(yellow, 0), SkewbCoordinate.corner_index(green, 1)],
+                   [SkewbCoordinate.corner_index(white, 3), SkewbCoordinate.corner_index(blue, 2), SkewbCoordinate.corner_index(yellow, 3), SkewbCoordinate.corner_index(green, 2)],
+                   [SkewbCoordinate.corner_index(white, 1), SkewbCoordinate.corner_index(blue, 3), SkewbCoordinate.corner_index(yellow, 2), SkewbCoordinate.corner_index(green, 0)],
+                   [SkewbCoordinate.corner_index(red, 2), SkewbCoordinate.corner_index(red, 0), SkewbCoordinate.corner_index(red, 1), SkewbCoordinate.corner_index(red, 3)],
+                   [SkewbCoordinate.corner_index(orange, 3), SkewbCoordinate.corner_index(orange, 2), SkewbCoordinate.corner_index(orange, 0), SkewbCoordinate.corner_index(orange, 1)],
+                 ]
+               when 'y'
+                 [
+                   [SkewbCoordinate.center(green), SkewbCoordinate.center(orange), SkewbCoordinate.center(blue), SkewbCoordinate.center(red)],
+                   [SkewbCoordinate.corner_index(green, 1), SkewbCoordinate.corner_index(orange, 1), SkewbCoordinate.corner_index(blue, 2), SkewbCoordinate.corner_index(red, 2)],
+                   [SkewbCoordinate.corner_index(green, 0), SkewbCoordinate.corner_index(orange, 0), SkewbCoordinate.corner_index(blue, 0), SkewbCoordinate.corner_index(red, 0)],
+                   [SkewbCoordinate.corner_index(green, 3), SkewbCoordinate.corner_index(orange, 3), SkewbCoordinate.corner_index(blue, 3), SkewbCoordinate.corner_index(red, 3)],
+                   [SkewbCoordinate.corner_index(green, 2), SkewbCoordinate.corner_index(orange, 2), SkewbCoordinate.corner_index(blue, 1), SkewbCoordinate.corner_index(red, 1)],
+                   [SkewbCoordinate.corner_index(white, 2), SkewbCoordinate.corner_index(white, 0), SkewbCoordinate.corner_index(white, 1), SkewbCoordinate.corner_index(white, 3)],
+                   [SkewbCoordinate.corner_index(yellow, 0), SkewbCoordinate.corner_index(yellow, 1), SkewbCoordinate.corner_index(yellow, 3), SkewbCoordinate.corner_index(yellow, 2)],
+                 ]
+               when 'z'
+                 [
+                   [SkewbCoordinate.center(white), SkewbCoordinate.center(red), SkewbCoordinate.center(yellow), SkewbCoordinate.center(orange)],
+                   [SkewbCoordinate.corner_index(white, 2), SkewbCoordinate.corner_index(red, 2), SkewbCoordinate.corner_index(yellow, 2), SkewbCoordinate.corner_index(orange, 2)],
+                   [SkewbCoordinate.corner_index(white, 0), SkewbCoordinate.corner_index(red, 0), SkewbCoordinate.corner_index(yellow, 3), SkewbCoordinate.corner_index(orange, 3)],
+                   [SkewbCoordinate.corner_index(white, 3), SkewbCoordinate.corner_index(red, 3), SkewbCoordinate.corner_index(yellow, 0), SkewbCoordinate.corner_index(orange, 0)],
+                   [SkewbCoordinate.corner_index(white, 1), SkewbCoordinate.corner_index(red, 1), SkewbCoordinate.corner_index(yellow, 1), SkewbCoordinate.corner_index(orange, 1)],
+                   [SkewbCoordinate.corner_index(green, 1), SkewbCoordinate.corner_index(green, 0), SkewbCoordinate.corner_index(green, 2), SkewbCoordinate.corner_index(green, 3)],
+                   [SkewbCoordinate.corner_index(blue, 3), SkewbCoordinate.corner_index(blue, 1), SkewbCoordinate.corner_index(blue, 0), SkewbCoordinate.corner_index(blue, 2)],
+                 ]
+               else
+                 raise
+               end
+      cycles.each do |c|
+        skewb_state.apply_4sticker_cycle(c, @direction)
+      end
     end
 
     def inverse
@@ -291,31 +330,37 @@ module CubeTrainer
     def apply_to(cube_state)
       raise ArgumentError unless cube_state.is_a?(SkewbState)
       # I haven't found a better way for Skewb than to hardcode what each move does.
+      yellow = Face.for_color(:yellow)
+      white = Face.for_color(:white)
+      red = Face.for_color(:red)
+      orange = Face.for_color(:orange)
+      green = Face.for_color(:green)
+      blue = Face.for_color(:blue)
       cycles = case @move
                when 'U'
-                 [[SkewbCoordinate.center(Face.for_color(:blue)), SkewbCoordinate.center(Face.for_color(:white)), SkewbCoordinate.center(Face.for_color(:orange))],
-                  [SkewbCoordinate.new(Face.for_color(:blue), 2), SkewbCoordinate.new(Face.for_color(:white), 2), SkewbCoordinate.new(Face.for_color(:orange), 1)],
-                  [SkewbCoordinate.new(Face.for_color(:blue), 3), SkewbCoordinate.new(Face.for_color(:white), 3), SkewbCoordinate.new(Face.for_color(:orange), 4)],
-                  [SkewbCoordinate.new(Face.for_color(:blue), 4), SkewbCoordinate.new(Face.for_color(:white), 4), SkewbCoordinate.new(Face.for_color(:orange), 3)],
-                  [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:red), 4), SkewbCoordinate.new(Face.for_color(:green), 3)]]
+                 [[SkewbCoordinate.center(blue), SkewbCoordinate.center(white), SkewbCoordinate.center(orange)],
+                  [SkewbCoordinate.new(blue, 2), SkewbCoordinate.new(white, 2), SkewbCoordinate.new(orange, 1)],
+                  [SkewbCoordinate.new(blue, 3), SkewbCoordinate.new(white, 3), SkewbCoordinate.new(orange, 4)],
+                  [SkewbCoordinate.new(blue, 4), SkewbCoordinate.new(white, 4), SkewbCoordinate.new(orange, 3)],
+                  [SkewbCoordinate.new(yellow, 3), SkewbCoordinate.new(red, 4), SkewbCoordinate.new(green, 3)]]
                when 'R'
-                 [[SkewbCoordinate.center(Face.for_color(:yellow)), SkewbCoordinate.center(Face.for_color(:red)), SkewbCoordinate.center(Face.for_color(:blue))],
-                  [SkewbCoordinate.new(Face.for_color(:yellow), 1), SkewbCoordinate.new(Face.for_color(:red), 3), SkewbCoordinate.new(Face.for_color(:blue), 1)],
-                  [SkewbCoordinate.new(Face.for_color(:yellow), 2), SkewbCoordinate.new(Face.for_color(:red), 4), SkewbCoordinate.new(Face.for_color(:blue), 3)],
-                  [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:red), 1), SkewbCoordinate.new(Face.for_color(:blue), 2)],
-                  [SkewbCoordinate.new(Face.for_color(:green), 2), SkewbCoordinate.new(Face.for_color(:white), 3), SkewbCoordinate.new(Face.for_color(:orange), 1)]]
+                 [[SkewbCoordinate.center(yellow), SkewbCoordinate.center(red), SkewbCoordinate.center(blue)],
+                  [SkewbCoordinate.new(yellow, 1), SkewbCoordinate.new(red, 3), SkewbCoordinate.new(blue, 1)],
+                  [SkewbCoordinate.new(yellow, 2), SkewbCoordinate.new(red, 4), SkewbCoordinate.new(blue, 3)],
+                  [SkewbCoordinate.new(yellow, 3), SkewbCoordinate.new(red, 1), SkewbCoordinate.new(blue, 2)],
+                  [SkewbCoordinate.new(green, 2), SkewbCoordinate.new(white, 3), SkewbCoordinate.new(orange, 1)]]
                when 'L'
-                 [[SkewbCoordinate.center(Face.for_color(:yellow)), SkewbCoordinate.center(Face.for_color(:orange)), SkewbCoordinate.center(Face.for_color(:green))],
-                  [SkewbCoordinate.new(Face.for_color(:yellow), 2), SkewbCoordinate.new(Face.for_color(:orange), 1), SkewbCoordinate.new(Face.for_color(:green), 3)],
-                  [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:orange), 4), SkewbCoordinate.new(Face.for_color(:green), 2)],
-                  [SkewbCoordinate.new(Face.for_color(:yellow), 4), SkewbCoordinate.new(Face.for_color(:orange), 2), SkewbCoordinate.new(Face.for_color(:green), 1)],
-                  [SkewbCoordinate.new(Face.for_color(:red), 1), SkewbCoordinate.new(Face.for_color(:blue), 3), SkewbCoordinate.new(Face.for_color(:white), 2)]]
+                 [[SkewbCoordinate.center(yellow), SkewbCoordinate.center(orange), SkewbCoordinate.center(green)],
+                  [SkewbCoordinate.new(yellow, 2), SkewbCoordinate.new(orange, 1), SkewbCoordinate.new(green, 3)],
+                  [SkewbCoordinate.new(yellow, 3), SkewbCoordinate.new(orange, 4), SkewbCoordinate.new(green, 2)],
+                  [SkewbCoordinate.new(yellow, 4), SkewbCoordinate.new(orange, 2), SkewbCoordinate.new(green, 1)],
+                  [SkewbCoordinate.new(red, 1), SkewbCoordinate.new(blue, 3), SkewbCoordinate.new(white, 2)]]
                when 'B'
-                 [[SkewbCoordinate.center(Face.for_color(:yellow)), SkewbCoordinate.center(Face.for_color(:blue)), SkewbCoordinate.center(Face.for_color(:orange))],
-                  [SkewbCoordinate.new(Face.for_color(:yellow), 1), SkewbCoordinate.new(Face.for_color(:blue), 4), SkewbCoordinate.new(Face.for_color(:orange), 2)],
-                  [SkewbCoordinate.new(Face.for_color(:yellow), 3), SkewbCoordinate.new(Face.for_color(:blue), 3), SkewbCoordinate.new(Face.for_color(:orange), 1)],
-                  [SkewbCoordinate.new(Face.for_color(:yellow), 4), SkewbCoordinate.new(Face.for_color(:blue), 1), SkewbCoordinate.new(Face.for_color(:orange), 3)],
-                  [SkewbCoordinate.new(Face.for_color(:red), 3), SkewbCoordinate.new(Face.for_color(:white), 4), SkewbCoordinate.new(Face.for_color(:green), 1)]]
+                 [[SkewbCoordinate.center(yellow), SkewbCoordinate.center(blue), SkewbCoordinate.center(orange)],
+                  [SkewbCoordinate.new(yellow, 1), SkewbCoordinate.new(blue, 4), SkewbCoordinate.new(orange, 2)],
+                  [SkewbCoordinate.new(yellow, 3), SkewbCoordinate.new(blue, 3), SkewbCoordinate.new(orange, 1)],
+                  [SkewbCoordinate.new(yellow, 4), SkewbCoordinate.new(blue, 1), SkewbCoordinate.new(orange, 3)],
+                  [SkewbCoordinate.new(red, 3), SkewbCoordinate.new(white, 4), SkewbCoordinate.new(green, 1)]]
                else
                  raise
                end
