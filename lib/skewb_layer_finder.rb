@@ -39,6 +39,10 @@ module CubeTrainer
       if has_mismatch then naive_score - naive_score / 2 else naive_score end
     end
 
+    def face_color(state, face)
+      state[SkewbCoordinate.center(face)]
+    end
+
     def solved_colors(skewb_state)
       skewb_state.solved_layers & @color_restrictions
     end

@@ -146,6 +146,7 @@ module CubeTrainer
     def apply_rotation(rot)
       rot.apply_to_cube(self)
     end
+
   end
 
 end

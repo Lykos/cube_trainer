@@ -61,6 +61,32 @@ module CubeTrainer
       rot.apply_to_skewb(self)
     end
 
+    # Mirrors across an arbitrary axis.
+    def mirror!
+      yellow = Face.for_color(:yellow)
+      white = Face.for_color(:white)
+      red = Face.for_color(:red)
+      orange = Face.for_color(:orange)
+      green = Face.for_color(:green)
+      blue = Face.for_color(:blue)
+      swaps = [
+        [SkewbCoordinate.center(red), SkewbCoordinate.center(orange)],
+        [SkewbCoordinate.corner_index(red, 0), SkewbCoordinate.corner_index(orange, 1)],
+        [SkewbCoordinate.corner_index(red, 1), SkewbCoordinate.corner_index(orange, 3)],
+        [SkewbCoordinate.corner_index(red, 2), SkewbCoordinate.corner_index(orange, 0)],
+        [SkewbCoordinate.corner_index(red, 3), SkewbCoordinate.corner_index(orange, 2)],
+        [SkewbCoordinate.corner_index(white, 0), SkewbCoordinate.corner_index(white, 1)],
+        [SkewbCoordinate.corner_index(white, 2), SkewbCoordinate.corner_index(white, 3)],
+        [SkewbCoordinate.corner_index(yellow, 0), SkewbCoordinate.corner_index(yellow, 2)],
+        [SkewbCoordinate.corner_index(yellow, 1), SkewbCoordinate.corner_index(yellow, 3)],
+        [SkewbCoordinate.corner_index(green, 0), SkewbCoordinate.corner_index(green, 1)],
+        [SkewbCoordinate.corner_index(green, 2), SkewbCoordinate.corner_index(green, 3)],
+        [SkewbCoordinate.corner_index(blue, 0), SkewbCoordinate.corner_index(blue, 2)],
+        [SkewbCoordinate.corner_index(blue, 1), SkewbCoordinate.corner_index(blue, 3)],
+      ]
+      swaps.each { |s| apply_sticker_cycle(s) }
+    end
+
     def [](coordinate)
       sticker_array(coordinate.face)[coordinate.coordinate]
     end

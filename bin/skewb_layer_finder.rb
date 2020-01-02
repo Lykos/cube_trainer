@@ -9,8 +9,10 @@ require 'options'
 require 'skewb_layer_finder'
 require 'skewb_state'
 require 'parser'
+require 'cube_print_helper'
 
 include CubeTrainer
+include CubePrintHelper
 
 SEARCH_DEPTH = 6
 
@@ -23,7 +25,7 @@ scramble = parse_skewb_algorithm(scramble_string)
 layer_finder = SkewbLayerFinder.new(options.restrict_colors)
 skewb_state = SkewbState.solved
 scramble.apply_to(skewb_state)
-puts skewb_state.to_s
+puts skewb_string(skewb_state, :color)
 
 layer_solutions = layer_finder.find_solutions(skewb_state, SEARCH_DEPTH)
 if layer_solutions.solved?

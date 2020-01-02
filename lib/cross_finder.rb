@@ -11,10 +11,9 @@ module CubeTrainer
       base = no_auf_score_on_face(state, face)
       adjusted = CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
         move = FatMove.new(face, 1, d)
-        move.apply_to(state)
-        score = no_auf_score_on_face(state, face)
-        move.inverse.apply_to(state)
-        score
+        move.apply_temporarily_to(state) do
+          no_auf_score_on_face(state, face)
+        end
       end.max
       [base + 1, adjusted].max
     end
@@ -28,6 +27,10 @@ module CubeTrainer
         inner_coordinate = Coordinate.from_face_distances(face, 3, [[neighbor, 0], [other_neighbor, 1]])
         state[outer_coordinate] == neighbor.color && state[inner_coordinate] == face.color
       end
+    end
+
+    def face_color(state, face)
+      face.color
     end
 
     def solution_score
