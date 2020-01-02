@@ -98,10 +98,7 @@ module CubeTrainer
     end
 
     def score_after_move(state, move)
-      move.apply_to(state)
-      score = state_score(state)
-      move.inverse.apply_to(state)
-      score
+      move.apply_temporarily_to(state) { state_score(state) }
     end
 
     def done?(state)
@@ -143,10 +140,10 @@ module CubeTrainer
       best_solutions = NO_SOLUTIONS
       inner_limit = limit - 1
       moves.each do |m|
-        m.apply_to(state)
-        # Note that limit is updated s.t. this solution helps us.
-        solutions = find_solutions(state, inner_limit)
-        m.inverse.apply_to(state)
+        solutions = m.apply_temporarily_to(state) do
+          # Note that limit is updated s.t. this solution helps us.
+          find_solutions(state, inner_limit)
+        end
         if solutions.solved? then
           adjusted_solutions = FirstMovePlusSolutions.new(m, solutions)
           if adjusted_solutions.strictly_better_than?(best_solutions)

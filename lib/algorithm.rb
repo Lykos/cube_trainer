@@ -1,8 +1,10 @@
 require 'move'
+require 'reversible_applyable'
 
 module CubeTrainer
 
   class Algorithm
+
     def initialize(moves)
       moves.each do |m|
         raise ArgumentError, "#{m.inspect} is not a suitable move." unless m.is_a?(Move)
@@ -17,6 +19,8 @@ module CubeTrainer
     end
 
     attr_reader :moves
+
+    include ReversibleApplyable
 
     def eql?(other)
       self.class.equal?(other.class) && @moves == other.moves

@@ -1,5 +1,6 @@
 require 'cube'
 require 'cube_state'
+require 'reversible_applyable'
 
 module CubeTrainer
 
@@ -120,6 +121,13 @@ module CubeTrainer
     def cancels_totally?(other)
       inverse == other
     end
+
+    include ReversibleApplyable
+
+    def apply_to
+      raise NotImplementedError
+    end
+
   end
 
   class MSliceMove < Move
@@ -188,7 +196,7 @@ module CubeTrainer
       @axis_face = axis_face
       @direction = direction
     end
-  
+
     attr_reader :axis_face, :direction
 
     def eql?(other)
