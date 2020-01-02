@@ -1,12 +1,19 @@
 require 'cube'
 require 'coordinate'
 require 'letter_scheme'
+require 'parser'
 
 include CubeTrainer
 
 RSpec::Matchers.define :be_rotationally_equivalent_to do |expected|
   match do |actual|
     expected.length == actual.length && (0...expected.length).any? { |i| actual.rotate(i) == expected }
+  end
+end
+
+RSpec::Matchers.define :be_one_of do |expected|
+  match do |actual|
+    expected.include?(actual)
   end
 end
 
@@ -238,6 +245,56 @@ describe Face do
     expect(orange_face.close_to_smaller_indices?).to be false
     expect(green_face.close_to_smaller_indices?).to be true
     expect(blue_face.close_to_smaller_indices?).to be false
+  end
+
+  it 'should find out what rotations to do to get to the position of the same face' do
+    expect(yellow_face.rotation_to(yellow_face)).to be == Algorithm.empty
+    expect(white_face.rotation_to(white_face)).to be == Algorithm.empty
+    expect(red_face.rotation_to(red_face)).to be == Algorithm.empty
+    expect(orange_face.rotation_to(orange_face)).to be == Algorithm.empty
+    expect(green_face.rotation_to(green_face)).to be == Algorithm.empty
+    expect(blue_face.rotation_to(blue_face)).to be == Algorithm.empty
+  end
+
+  it 'should find out what rotations to do to get to the position of an opposite face' do
+    expect(yellow_face.rotation_to(white_face)).to be_one_of [parse_algorithm('x2'), parse_algorithm('z2')]
+    expect(white_face.rotation_to(yellow_face)).to be_one_of [parse_algorithm('x2'), parse_algorithm('z2')]
+    expect(red_face.rotation_to(orange_face)).to be_one_of [parse_algorithm('y2'), parse_algorithm('x2')]
+    expect(orange_face.rotation_to(red_face)).to be_one_of [parse_algorithm('y2'), parse_algorithm('x2')]
+    expect(green_face.rotation_to(blue_face)).to be_one_of [parse_algorithm('y2'), parse_algorithm('z2')]
+    expect(blue_face.rotation_to(green_face)).to be_one_of [parse_algorithm('y2'), parse_algorithm('z2')]
+  end
+  
+  it 'should find out what rotations to do to get to the position of a neighbor face' do
+    expect(yellow_face.rotation_to(red_face)).to be == parse_algorithm("x'")
+    expect(yellow_face.rotation_to(orange_face)).to be == parse_algorithm("x")
+    expect(yellow_face.rotation_to(green_face)).to be == parse_algorithm("z'")
+    expect(yellow_face.rotation_to(blue_face)).to be == parse_algorithm("z")
+
+    expect(white_face.rotation_to(red_face)).to be == parse_algorithm("x")
+    expect(white_face.rotation_to(orange_face)).to be == parse_algorithm("x'")
+    expect(white_face.rotation_to(green_face)).to be == parse_algorithm("z")
+    expect(white_face.rotation_to(blue_face)).to be == parse_algorithm("z'")
+
+    expect(red_face.rotation_to(yellow_face)).to be == parse_algorithm("x")
+    expect(red_face.rotation_to(white_face)).to be == parse_algorithm("x'")
+    expect(red_face.rotation_to(green_face)).to be == parse_algorithm("y'")
+    expect(red_face.rotation_to(blue_face)).to be == parse_algorithm("y")
+
+    expect(orange_face.rotation_to(yellow_face)).to be == parse_algorithm("x'")
+    expect(orange_face.rotation_to(white_face)).to be == parse_algorithm("x")
+    expect(orange_face.rotation_to(green_face)).to be == parse_algorithm("y")
+    expect(orange_face.rotation_to(blue_face)).to be == parse_algorithm("y'")
+
+    expect(green_face.rotation_to(yellow_face)).to be == parse_algorithm("z")
+    expect(green_face.rotation_to(white_face)).to be == parse_algorithm("z'")
+    expect(green_face.rotation_to(red_face)).to be == parse_algorithm("y")
+    expect(green_face.rotation_to(orange_face)).to be == parse_algorithm("y'")
+    
+    expect(blue_face.rotation_to(yellow_face)).to be == parse_algorithm("z'")
+    expect(blue_face.rotation_to(white_face)).to be == parse_algorithm("z")
+    expect(blue_face.rotation_to(red_face)).to be == parse_algorithm("y'")
+    expect(blue_face.rotation_to(orange_face)).to be == parse_algorithm("y")
   end
 
 end

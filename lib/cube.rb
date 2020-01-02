@@ -235,6 +235,26 @@ module CubeTrainer
         opposite
       end
     end
+
+    # Returns the algorithm that performs a rotation after which the current face will
+    # lie where the given other face currently is.
+    def rotation_to(other)
+      if other == self
+        Algorithm.empty
+      else
+        axis_face = self.class::ELEMENTS.find { |e| e != chirality_canonicalize && e != other.chirality_canonicalize }
+        direction = if other == self.opposite
+                      CubeDirection::DOUBLE
+                    else
+                      if close_to_smaller_indices? ^ other.close_to_smaller_indices? ^ (axis_priority > other.axis_priority)
+                        CubeDirection::FORWARD
+                      else
+                        CubeDirection::BACKWARD
+                      end
+                    end
+        Algorithm.new([Rotation.new(axis_face, direction)])
+      end
+    end
   
     ELEMENTS = generate_parts
   end

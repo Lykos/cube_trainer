@@ -1,11 +1,13 @@
 require 'coordinate'
 require 'cube'
 require 'cube_print_helper'
+require 'state_helper'
 
 module CubeTrainer
 
   class SkewbState
     include CubePrintHelper
+    include StateHelper
 
     SIDES = COLORS.length
 
@@ -32,6 +34,10 @@ module CubeTrainer
       @stickers[face.piece_index]
     end
 
+    def dup
+      @stickers.map { |s| s.dup }
+    end
+
     def to_s
       skewb_string(self, :nocolor)
     end
@@ -46,6 +52,14 @@ module CubeTrainer
     def apply_move(move)
       move.apply_to(self)
     end
+  
+    def apply_algorithm(alg)
+      alg.apply_to(self)
+    end
+
+    def apply_rotation(rot)
+      rot.apply_to_skewb(self)
+    end
 
     def [](coordinate)
       sticker_array(coordinate.face)[coordinate.coordinate]
@@ -56,14 +70,6 @@ module CubeTrainer
       sticker_array(coordinate.face)[coordinate.coordinate] = color
     end    
   
-    def apply_index_cycle(cycle)
-      last_sticker = self[cycle[-1]]
-      (cycle.length - 1).downto(1) do |i|
-        self[cycle[i]] = self[cycle[i - 1]]
-      end
-      self[cycle[0]] = last_sticker
-    end
-
     def any_layer_solved?
       !solved_layers.empty?
     end
@@ -75,6 +81,10 @@ module CubeTrainer
     
     def layer_solved?(color)
       Face::ELEMENTS.any? { |f| self[SkewbCoordinate.center(f)] == color && layer_solved_internal?(f) }
+    end
+
+    def center_face(color)
+      Face::ELEMENTS.find { |f| self[SkewbCoordinate.center(f)] == color }
     end
 
     # Pairs of coordinate pairs that should match in case of solved layers.
@@ -120,6 +130,14 @@ module CubeTrainer
     def layer_solved_internal?(face)
       if sticker_array(face).uniq.length > 1 then return false end
       layer_check_neighbors(face).collect { |c| self[c] }.uniq.length == 1
+    end
+
+    def rotate_face(face, direction)
+      neighbors = face.neighbors
+      inverse_order_face = face.coordinate_index_close_to(neighbors[0]) < face.coordinate_index_close_to(neighbors[1])
+      direction = direction.inverse if inverse_order_face
+      cycle = SkewbCoordinate.corners_on_face(face)
+      apply_4sticker_cycle(cycle, direction)
     end
 
   end

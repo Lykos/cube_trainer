@@ -67,6 +67,9 @@ module CubeTrainer
   class CubeDirection < AbstractDirection
     NUM_DIRECTIONS = 4
     NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }
+    FORWARD = new(1)
+    DOUBLE = new(2)
+    BACKWARD = new(3)
 
     def name
       raise ArgumentError unless is_non_zero?
@@ -191,7 +194,7 @@ module CubeTrainer
   
   class Rotation < Move
     def initialize(axis_face, direction)
-      raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
+      raise ArgumentError, "Face #{axis_face} is not a valid axis face." unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
       raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
       @axis_face = axis_face
       @direction = direction
@@ -213,14 +216,27 @@ module CubeTrainer
       "#{AXES[Face::ELEMENTS.index(@axis_face)]}#{@direction.name}"
     end
   
-    def apply_to(cube_state)
-      # TODO Skewb
-      raise ArgumentErorr unless cube_state.is_a?(CubeState)
+    def apply_to(cube_or_skewb_state)
+      cube_or_skewb_state.apply_rotation(self)
+    end
+    
+    def apply_to_cube(cube_state)
+      raise ArgumentError unless cube_state.is_a?(CubeState)
       0.upto(cube_state.n - 1) do |s|
         cube_state.rotate_slice(@axis_face, s, @direction)
       end
       cube_state.rotate_face(@axis_face, @direction)
       cube_state.rotate_face(@axis_face.opposite, @direction.inverse)
+    end
+
+    def apply_to_skewb(skewb_state)
+      raise ArgumentError unless skewb_state.is_a?(SkewbState)
+      skewb_state.rotate_face(@axis_face, @direction)
+      skewb_state.rotate_face(@axis_face.opposite, @direction.inverse)
+      rotated_faces = Face::ELEMENTS.select { |f| f != @axis_face && f != @axis_face.opposite }
+      cycle = rotated_faces.map { |f| SkewbCoordinate.center(f) }
+      p cycle, @direction
+      skewb_state.apply_4sticker_cycle(cycle, @direction)
     end
 
     def inverse
@@ -306,9 +322,9 @@ module CubeTrainer
       cycles.each do |c|
         case @direction
         when SkewbDirection::FORWARD
-          cube_state.apply_index_cycle(c)
+          cube_state.apply_sticker_cycle(c)
         when SkewbDirection::BACKWARD
-          cube_state.apply_index_cycle(c.reverse)
+          cube_state.apply_sticker_cycle(c.reverse)
         else
           raise ArgumentError
         end
@@ -466,6 +482,10 @@ module CubeTrainer
       value = POSSIBLE_DIRECTION_NAMES.index { |ds| ds.include?(direction_string) } + 1
       CubeDirection.new(value)
     end
+
+    def parse_axis_face(axis_face_string)
+      Face::ELEMENTS[AXES.index(axis_face_string)]
+    end
   
     def parse_move(move_string)
       match = move_string.match(REGEXP)
@@ -474,7 +494,7 @@ module CubeTrainer
       direction = parse_direction(direction_string)
       if rotation
         raise unless width.nil? && fat_face_name.nil? && face_name.nil? && slice_name.nil?
-        Rotation.new(Face::ELEMENTS[AXES.index(rotation)], direction)
+        Rotation.new(parse_axis_face(rotation), direction)
       elsif fat_face_name
         raise unless rotation.nil? && face_name.nil? && slice_name.nil?
         width = if width == '' then 2 else width.to_i end
@@ -498,7 +518,11 @@ module CubeTrainer
   end
 
   class SkewbMoveParser
-    REGEXP = Regexp.new("([#{SKEWB_MOVES.join}])([#{POSSIBLE_DIRECTION_NAMES.flatten.join}]?)")
+    REGEXP = begin
+               move_part = "(?:([#{SKEWB_MOVES.join}])([#{POSSIBLE_DIRECTION_NAMES.flatten.join}]?))"
+               rotation_part = "(?:([#{AXES.join}])(#{POSSIBLE_DIRECTION_NAMES.flatten.sort_by { |e| -e.length }.join("|")}))"
+               Regexp.new("#{move_part}|#{rotation_part}")
+             end
 
     def regexp
       REGEXP
@@ -518,9 +542,18 @@ module CubeTrainer
     def parse_move(move_string)
       match = move_string.match(REGEXP)
       raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
-      skewb_move_string, direction_string = match.captures
-      direction = parse_skewb_direction(direction_string)
-      SkewbMove.new(skewb_move_string, direction)
+      
+      skewb_move_string, direction_string, rotation, rotation_direction_string = match.captures
+      if skewb_move_string
+        raise unless rotation.nil? && rotation_direction_string.nil?
+        direction = parse_skewb_direction(direction_string)
+        SkewbMove.new(skewb_move_string, direction)
+      elsif rotation
+        raise unless skewb_move_string.nil? && direction_string.nil?
+        Rotation.new(CubeMoveParser::INSTANCE.parse_axis_face(rotation), CubeMoveParser::INSTANCE.parse_direction(rotation_direction_string))
+      else
+        raise
+      end
     end
 
     INSTANCE = SkewbMoveParser.new
