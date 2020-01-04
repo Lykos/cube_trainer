@@ -11,7 +11,7 @@ include CubeTrainer
 include CubePrintHelper
 
 state = SkewbState.solved
-solutions = SkewbLayerSearcher.calculate(2)
+solutions = SkewbLayerSearcher.calculate(4)
 puts
 puts "#{solutions.length} solutions:"
 puts

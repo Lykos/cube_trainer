@@ -130,7 +130,7 @@ module CubeTrainer
             matching_corners.push(check_parts)
           end
         end
-        matching_corners
+        matching_corners.uniq
       end
 
     # Pairs of stickers that can be used to check whether the "outside" of a layer on the given face is

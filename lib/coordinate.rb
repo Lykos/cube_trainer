@@ -205,6 +205,16 @@ module CubeTrainer
       corner_index(Face.for_color(corner.colors.first), corner.piece_index % 4)
     end
 
+    def hash
+      [@face, @coordinate].hash
+    end
+
+    def eql?(other)
+      self.class.equal?(other.class) && @face == other.face && @coordinate == other.coordinate
+    end
+
+    alias == eql?
+
     def <=>(other)
       if @face != other.face
         @face <=> other.face

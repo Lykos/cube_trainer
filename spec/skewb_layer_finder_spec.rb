@@ -52,6 +52,11 @@ describe SkewbLayerFinder do
       expect(layer_finder.state_score(skewb_state)).to be == 1
     end
 
+    it 'should find the score after two moves that create pseudo adjacent things' do
+      parse_sarahs_skewb_algorithm("B R B F'").apply_to(skewb_state)
+      expect(layer_finder.state_score(skewb_state)).to be == 1
+    end
+
     it 'should find a one move layer' do
       parse_fixed_corner_skewb_move("U").apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to be == {

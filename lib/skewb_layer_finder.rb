@@ -16,7 +16,7 @@ module CubeTrainer
           hash[a.sort] = b
           hash[b.sort] = a
         end
-        {}
+        hash
       end
 
     def mismatch_on_outside(skewb_state, coordinates)
