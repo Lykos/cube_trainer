@@ -4,9 +4,10 @@ require 'reversible_applyable'
 
 module CubeTrainer
 
-  SKEWB_MOVES = ['U', 'R', 'L', 'B']
   POSSIBLE_DIRECTION_NAMES = [[''], ['2', '2\''], ['\'', '3']]
   SIMPLE_DIRECTION_NAMES = POSSIBLE_DIRECTION_NAMES.map { |d| d.first }
+  POSSIBLE_SKEWB_DIRECTION_NAMES = [['', '2\''], ['\'', '2']]
+  SIMPLE_SKEWB_DIRECTION_NAMES = POSSIBLE_SKEWB_DIRECTION_NAMES.map { |d| d.first }
   AXES = ['y', 'z', 'x']
   SLICES = ['E', 'S', 'M']
 
@@ -49,14 +50,8 @@ module CubeTrainer
     BACKWARD = new(2)
 
     def name
-      case self
-      when FORWARD
-        SIMPLE_DIRECTION_NAMES[0]
-      when BACKWARD
-        SIMPLE_DIRECTION_NAMES[-1]
-      else
-        raise ArgumentError
-      end
+      raise ArgumentError unless is_non_zero?
+      SIMPLE_SKEWB_DIRECTION_NAMES[@value - 1]
     end
 
     def is_double_move?
@@ -202,6 +197,42 @@ module CubeTrainer
 
     attr_reader :axis_face, :direction
 
+    # I haven't found a better way for Skewb than to hardcode what each move does.
+    # Note that it's tricky because we have a weird orientation hack for skewb.
+    YELLOW = Face.for_color(:yellow)
+    WHITE = Face.for_color(:white)
+    RED = Face.for_color(:red)
+    ORANGE = Face.for_color(:orange)
+    GREEN = Face.for_color(:green)
+    BLUE = Face.for_color(:blue)
+    SKEWB_X_CYCLES = [
+      [SkewbCoordinate.center(WHITE), SkewbCoordinate.center(BLUE), SkewbCoordinate.center(YELLOW), SkewbCoordinate.center(GREEN)],
+      [SkewbCoordinate.corner_index(WHITE, 2), SkewbCoordinate.corner_index(BLUE, 0), SkewbCoordinate.corner_index(YELLOW, 1), SkewbCoordinate.corner_index(GREEN, 3)],
+      [SkewbCoordinate.corner_index(WHITE, 0), SkewbCoordinate.corner_index(BLUE, 1), SkewbCoordinate.corner_index(YELLOW, 0), SkewbCoordinate.corner_index(GREEN, 1)],
+      [SkewbCoordinate.corner_index(WHITE, 3), SkewbCoordinate.corner_index(BLUE, 2), SkewbCoordinate.corner_index(YELLOW, 3), SkewbCoordinate.corner_index(GREEN, 2)],
+      [SkewbCoordinate.corner_index(WHITE, 1), SkewbCoordinate.corner_index(BLUE, 3), SkewbCoordinate.corner_index(YELLOW, 2), SkewbCoordinate.corner_index(GREEN, 0)],
+      [SkewbCoordinate.corner_index(RED, 2), SkewbCoordinate.corner_index(RED, 0), SkewbCoordinate.corner_index(RED, 1), SkewbCoordinate.corner_index(RED, 3)],
+      [SkewbCoordinate.corner_index(ORANGE, 3), SkewbCoordinate.corner_index(ORANGE, 2), SkewbCoordinate.corner_index(ORANGE, 0), SkewbCoordinate.corner_index(ORANGE, 1)],
+    ]
+    SKEWB_Y_CYCLES = [
+      [SkewbCoordinate.center(GREEN), SkewbCoordinate.center(ORANGE), SkewbCoordinate.center(BLUE), SkewbCoordinate.center(RED)],
+      [SkewbCoordinate.corner_index(GREEN, 1), SkewbCoordinate.corner_index(ORANGE, 1), SkewbCoordinate.corner_index(BLUE, 2), SkewbCoordinate.corner_index(RED, 2)],
+      [SkewbCoordinate.corner_index(GREEN, 0), SkewbCoordinate.corner_index(ORANGE, 0), SkewbCoordinate.corner_index(BLUE, 0), SkewbCoordinate.corner_index(RED, 0)],
+      [SkewbCoordinate.corner_index(GREEN, 3), SkewbCoordinate.corner_index(ORANGE, 3), SkewbCoordinate.corner_index(BLUE, 3), SkewbCoordinate.corner_index(RED, 3)],
+      [SkewbCoordinate.corner_index(GREEN, 2), SkewbCoordinate.corner_index(ORANGE, 2), SkewbCoordinate.corner_index(BLUE, 1), SkewbCoordinate.corner_index(RED, 1)],
+      [SkewbCoordinate.corner_index(WHITE, 2), SkewbCoordinate.corner_index(WHITE, 0), SkewbCoordinate.corner_index(WHITE, 1), SkewbCoordinate.corner_index(WHITE, 3)],
+      [SkewbCoordinate.corner_index(YELLOW, 0), SkewbCoordinate.corner_index(YELLOW, 1), SkewbCoordinate.corner_index(YELLOW, 3), SkewbCoordinate.corner_index(YELLOW, 2)],
+    ]
+    SKEWB_Z_CYCLES = [
+      [SkewbCoordinate.center(WHITE), SkewbCoordinate.center(RED), SkewbCoordinate.center(YELLOW), SkewbCoordinate.center(ORANGE)],
+      [SkewbCoordinate.corner_index(WHITE, 2), SkewbCoordinate.corner_index(RED, 2), SkewbCoordinate.corner_index(YELLOW, 2), SkewbCoordinate.corner_index(ORANGE, 2)],
+      [SkewbCoordinate.corner_index(WHITE, 0), SkewbCoordinate.corner_index(RED, 0), SkewbCoordinate.corner_index(YELLOW, 3), SkewbCoordinate.corner_index(ORANGE, 3)],
+      [SkewbCoordinate.corner_index(WHITE, 3), SkewbCoordinate.corner_index(RED, 3), SkewbCoordinate.corner_index(YELLOW, 0), SkewbCoordinate.corner_index(ORANGE, 0)],
+      [SkewbCoordinate.corner_index(WHITE, 1), SkewbCoordinate.corner_index(RED, 1), SkewbCoordinate.corner_index(YELLOW, 1), SkewbCoordinate.corner_index(ORANGE, 1)],
+      [SkewbCoordinate.corner_index(GREEN, 1), SkewbCoordinate.corner_index(GREEN, 0), SkewbCoordinate.corner_index(GREEN, 2), SkewbCoordinate.corner_index(GREEN, 3)],
+      [SkewbCoordinate.corner_index(BLUE, 3), SkewbCoordinate.corner_index(BLUE, 1), SkewbCoordinate.corner_index(BLUE, 0), SkewbCoordinate.corner_index(BLUE, 2)],
+    ]
+
     def eql?(other)
       self.class.equal?(other.class) && @axis_face == other.axis_face && @direction == other.direction
     end
@@ -229,51 +260,18 @@ module CubeTrainer
       cube_state.rotate_face(@axis_face.opposite, @direction.inverse)
     end
 
+    def skewb_cycles
+      case AXES[Face::ELEMENTS.index(@axis_face)]
+      when 'x' then SKEWB_X_CYCLES
+      when 'y' then SKEWB_Y_CYCLES
+      when 'z' then SKEWB_Z_CYCLES
+      else raise
+      end
+    end
+
     def apply_to_skewb(skewb_state)
       raise ArgumentError unless skewb_state.is_a?(SkewbState)
-      # I haven't found a better way for Skewb than to hardcode what each move does.
-      # Note that it's tricky because we have a weird orientation hack for skewb.
-      yellow = Face.for_color(:yellow)
-      white = Face.for_color(:white)
-      red = Face.for_color(:red)
-      orange = Face.for_color(:orange)
-      green = Face.for_color(:green)
-      blue = Face.for_color(:blue)
-      cycles = case AXES[Face::ELEMENTS.index(@axis_face)]
-               when 'x'
-                 [
-                   [SkewbCoordinate.center(white), SkewbCoordinate.center(blue), SkewbCoordinate.center(yellow), SkewbCoordinate.center(green)],
-                   [SkewbCoordinate.corner_index(white, 2), SkewbCoordinate.corner_index(blue, 0), SkewbCoordinate.corner_index(yellow, 1), SkewbCoordinate.corner_index(green, 3)],
-                   [SkewbCoordinate.corner_index(white, 0), SkewbCoordinate.corner_index(blue, 1), SkewbCoordinate.corner_index(yellow, 0), SkewbCoordinate.corner_index(green, 1)],
-                   [SkewbCoordinate.corner_index(white, 3), SkewbCoordinate.corner_index(blue, 2), SkewbCoordinate.corner_index(yellow, 3), SkewbCoordinate.corner_index(green, 2)],
-                   [SkewbCoordinate.corner_index(white, 1), SkewbCoordinate.corner_index(blue, 3), SkewbCoordinate.corner_index(yellow, 2), SkewbCoordinate.corner_index(green, 0)],
-                   [SkewbCoordinate.corner_index(red, 2), SkewbCoordinate.corner_index(red, 0), SkewbCoordinate.corner_index(red, 1), SkewbCoordinate.corner_index(red, 3)],
-                   [SkewbCoordinate.corner_index(orange, 3), SkewbCoordinate.corner_index(orange, 2), SkewbCoordinate.corner_index(orange, 0), SkewbCoordinate.corner_index(orange, 1)],
-                 ]
-               when 'y'
-                 [
-                   [SkewbCoordinate.center(green), SkewbCoordinate.center(orange), SkewbCoordinate.center(blue), SkewbCoordinate.center(red)],
-                   [SkewbCoordinate.corner_index(green, 1), SkewbCoordinate.corner_index(orange, 1), SkewbCoordinate.corner_index(blue, 2), SkewbCoordinate.corner_index(red, 2)],
-                   [SkewbCoordinate.corner_index(green, 0), SkewbCoordinate.corner_index(orange, 0), SkewbCoordinate.corner_index(blue, 0), SkewbCoordinate.corner_index(red, 0)],
-                   [SkewbCoordinate.corner_index(green, 3), SkewbCoordinate.corner_index(orange, 3), SkewbCoordinate.corner_index(blue, 3), SkewbCoordinate.corner_index(red, 3)],
-                   [SkewbCoordinate.corner_index(green, 2), SkewbCoordinate.corner_index(orange, 2), SkewbCoordinate.corner_index(blue, 1), SkewbCoordinate.corner_index(red, 1)],
-                   [SkewbCoordinate.corner_index(white, 2), SkewbCoordinate.corner_index(white, 0), SkewbCoordinate.corner_index(white, 1), SkewbCoordinate.corner_index(white, 3)],
-                   [SkewbCoordinate.corner_index(yellow, 0), SkewbCoordinate.corner_index(yellow, 1), SkewbCoordinate.corner_index(yellow, 3), SkewbCoordinate.corner_index(yellow, 2)],
-                 ]
-               when 'z'
-                 [
-                   [SkewbCoordinate.center(white), SkewbCoordinate.center(red), SkewbCoordinate.center(yellow), SkewbCoordinate.center(orange)],
-                   [SkewbCoordinate.corner_index(white, 2), SkewbCoordinate.corner_index(red, 2), SkewbCoordinate.corner_index(yellow, 2), SkewbCoordinate.corner_index(orange, 2)],
-                   [SkewbCoordinate.corner_index(white, 0), SkewbCoordinate.corner_index(red, 0), SkewbCoordinate.corner_index(yellow, 3), SkewbCoordinate.corner_index(orange, 3)],
-                   [SkewbCoordinate.corner_index(white, 3), SkewbCoordinate.corner_index(red, 3), SkewbCoordinate.corner_index(yellow, 0), SkewbCoordinate.corner_index(orange, 0)],
-                   [SkewbCoordinate.corner_index(white, 1), SkewbCoordinate.corner_index(red, 1), SkewbCoordinate.corner_index(yellow, 1), SkewbCoordinate.corner_index(orange, 1)],
-                   [SkewbCoordinate.corner_index(green, 1), SkewbCoordinate.corner_index(green, 0), SkewbCoordinate.corner_index(green, 2), SkewbCoordinate.corner_index(green, 3)],
-                   [SkewbCoordinate.corner_index(blue, 3), SkewbCoordinate.corner_index(blue, 1), SkewbCoordinate.corner_index(blue, 0), SkewbCoordinate.corner_index(blue, 2)],
-                 ]
-               else
-                 raise
-               end
-      cycles.each do |c|
+      skewb_cycles.each do |c|
         skewb_state.apply_4sticker_cycle(c, @direction)
       end
     end
@@ -303,13 +301,11 @@ module CubeTrainer
 
   class SkewbMove < Move
     def initialize(move, direction)
-      raise ArgumentError unless SKEWB_MOVES.include?(move)
+      raise ArgumentError unless self.class::MOVES.include?(move)
       raise ArgumentError unless direction.is_a?(SkewbDirection) && direction.is_non_zero?
       @move = move
       @direction = direction
     end
-
-    ALL = SKEWB_MOVES.product(SkewbDirection::NON_ZERO_DIRECTIONS).map { |m, d| new(m, d) }
 
     attr_reader :move, :direction
   
@@ -327,57 +323,8 @@ module CubeTrainer
       "#{@move}#{@direction.name}"
     end
 
-    def apply_to(cube_state)
-      raise ArgumentError unless cube_state.is_a?(SkewbState)
-      # I haven't found a better way for Skewb than to hardcode what each move does.
-      yellow = Face.for_color(:yellow)
-      white = Face.for_color(:white)
-      red = Face.for_color(:red)
-      orange = Face.for_color(:orange)
-      green = Face.for_color(:green)
-      blue = Face.for_color(:blue)
-      cycles = case @move
-               when 'U'
-                 [[SkewbCoordinate.center(blue), SkewbCoordinate.center(white), SkewbCoordinate.center(orange)],
-                  [SkewbCoordinate.new(blue, 2), SkewbCoordinate.new(white, 2), SkewbCoordinate.new(orange, 1)],
-                  [SkewbCoordinate.new(blue, 3), SkewbCoordinate.new(white, 3), SkewbCoordinate.new(orange, 4)],
-                  [SkewbCoordinate.new(blue, 4), SkewbCoordinate.new(white, 4), SkewbCoordinate.new(orange, 3)],
-                  [SkewbCoordinate.new(yellow, 3), SkewbCoordinate.new(red, 4), SkewbCoordinate.new(green, 3)]]
-               when 'R'
-                 [[SkewbCoordinate.center(yellow), SkewbCoordinate.center(red), SkewbCoordinate.center(blue)],
-                  [SkewbCoordinate.new(yellow, 1), SkewbCoordinate.new(red, 3), SkewbCoordinate.new(blue, 1)],
-                  [SkewbCoordinate.new(yellow, 2), SkewbCoordinate.new(red, 4), SkewbCoordinate.new(blue, 3)],
-                  [SkewbCoordinate.new(yellow, 3), SkewbCoordinate.new(red, 1), SkewbCoordinate.new(blue, 2)],
-                  [SkewbCoordinate.new(green, 2), SkewbCoordinate.new(white, 3), SkewbCoordinate.new(orange, 1)]]
-               when 'L'
-                 [[SkewbCoordinate.center(yellow), SkewbCoordinate.center(orange), SkewbCoordinate.center(green)],
-                  [SkewbCoordinate.new(yellow, 2), SkewbCoordinate.new(orange, 1), SkewbCoordinate.new(green, 3)],
-                  [SkewbCoordinate.new(yellow, 3), SkewbCoordinate.new(orange, 4), SkewbCoordinate.new(green, 2)],
-                  [SkewbCoordinate.new(yellow, 4), SkewbCoordinate.new(orange, 2), SkewbCoordinate.new(green, 1)],
-                  [SkewbCoordinate.new(red, 1), SkewbCoordinate.new(blue, 3), SkewbCoordinate.new(white, 2)]]
-               when 'B'
-                 [[SkewbCoordinate.center(yellow), SkewbCoordinate.center(blue), SkewbCoordinate.center(orange)],
-                  [SkewbCoordinate.new(yellow, 1), SkewbCoordinate.new(blue, 4), SkewbCoordinate.new(orange, 2)],
-                  [SkewbCoordinate.new(yellow, 3), SkewbCoordinate.new(blue, 3), SkewbCoordinate.new(orange, 1)],
-                  [SkewbCoordinate.new(yellow, 4), SkewbCoordinate.new(blue, 1), SkewbCoordinate.new(orange, 3)],
-                  [SkewbCoordinate.new(red, 3), SkewbCoordinate.new(white, 4), SkewbCoordinate.new(green, 1)]]
-               else
-                 raise
-               end
-      cycles.each do |c|
-        case @direction
-        when SkewbDirection::FORWARD
-          cube_state.apply_sticker_cycle(c)
-        when SkewbDirection::BACKWARD
-          cube_state.apply_sticker_cycle(c.reverse)
-        else
-          raise ArgumentError
-        end
-      end
-    end
-
     def inverse
-      SkewbMove.new(@move, @direction.inverse)
+      self.class.new(@move, @direction.inverse)
     end
 
     def is_slice_move?
@@ -393,6 +340,79 @@ module CubeTrainer
       raise ArgumentError if cancels_totally?(other)
       SkewbMove.new(@axis_face, @direction + other.direction)
     end
+  end
+
+  class FixedCornerSkewbMove < SkewbMove
+    MOVES = ['U', 'R', 'L', 'B']
+
+    def initialize(move, direction)
+      raise ArgumentError unless MOVES.include?(move)
+      raise ArgumentError unless direction.is_a?(SkewbDirection) && direction.is_non_zero?
+      @move = move
+      @direction = direction
+    end
+
+    ALL = MOVES.product(SkewbDirection::NON_ZERO_DIRECTIONS).map { |m, d| new(m, d) }
+    # I haven't found a better way for Skewb than to hardcode what each move does.
+    YELLOW = Face.for_color(:yellow)
+    WHITE = Face.for_color(:white)
+    RED = Face.for_color(:red)
+    ORANGE = Face.for_color(:orange)
+    GREEN = Face.for_color(:green)
+    BLUE = Face.for_color(:blue)
+    U_MOVE_CYCLES = [
+      [SkewbCoordinate.center(BLUE), SkewbCoordinate.center(WHITE), SkewbCoordinate.center(ORANGE)],
+      [SkewbCoordinate.corner_index(BLUE, 1), SkewbCoordinate.corner_index(WHITE, 1), SkewbCoordinate.corner_index(ORANGE, 0)],
+      [SkewbCoordinate.corner_index(BLUE, 2), SkewbCoordinate.corner_index(WHITE, 2), SkewbCoordinate.corner_index(ORANGE, 3)],
+      [SkewbCoordinate.corner_index(BLUE, 3), SkewbCoordinate.corner_index(WHITE, 3), SkewbCoordinate.corner_index(ORANGE, 2)],
+      [SkewbCoordinate.corner_index(YELLOW, 2), SkewbCoordinate.corner_index(RED, 3), SkewbCoordinate.corner_index(GREEN, 2)]
+    ]
+    R_MOVE_CYCLES = [
+      [SkewbCoordinate.center(YELLOW), SkewbCoordinate.center(RED), SkewbCoordinate.center(BLUE)],
+      [SkewbCoordinate.corner_index(YELLOW, 0), SkewbCoordinate.corner_index(RED, 2), SkewbCoordinate.corner_index(BLUE, 0)],
+      [SkewbCoordinate.corner_index(YELLOW, 1), SkewbCoordinate.corner_index(RED, 3), SkewbCoordinate.corner_index(BLUE, 2)],
+      [SkewbCoordinate.corner_index(YELLOW, 2), SkewbCoordinate.corner_index(RED, 0), SkewbCoordinate.corner_index(BLUE, 1)],
+      [SkewbCoordinate.corner_index(GREEN, 1), SkewbCoordinate.corner_index(WHITE, 2), SkewbCoordinate.corner_index(ORANGE, 0)]
+    ]
+    L_MOVE_CYCLES = [
+      [SkewbCoordinate.center(YELLOW), SkewbCoordinate.center(ORANGE), SkewbCoordinate.center(GREEN)],
+      [SkewbCoordinate.corner_index(YELLOW, 1), SkewbCoordinate.corner_index(ORANGE, 0), SkewbCoordinate.corner_index(GREEN, 2)],
+      [SkewbCoordinate.corner_index(YELLOW, 2), SkewbCoordinate.corner_index(ORANGE, 3), SkewbCoordinate.corner_index(GREEN, 1)],
+      [SkewbCoordinate.corner_index(YELLOW, 3), SkewbCoordinate.corner_index(ORANGE, 1), SkewbCoordinate.corner_index(GREEN, 0)],
+      [SkewbCoordinate.corner_index(RED, 0), SkewbCoordinate.corner_index(BLUE, 2), SkewbCoordinate.corner_index(WHITE, 1)]
+    ]
+    B_MOVE_CYCLES = [
+      [SkewbCoordinate.center(YELLOW), SkewbCoordinate.center(BLUE), SkewbCoordinate.center(ORANGE)],
+      [SkewbCoordinate.corner_index(YELLOW, 0), SkewbCoordinate.corner_index(BLUE, 3), SkewbCoordinate.corner_index(ORANGE, 1)],
+      [SkewbCoordinate.corner_index(YELLOW, 2), SkewbCoordinate.corner_index(BLUE, 2), SkewbCoordinate.corner_index(ORANGE, 0)],
+      [SkewbCoordinate.corner_index(YELLOW, 3), SkewbCoordinate.corner_index(BLUE, 0), SkewbCoordinate.corner_index(ORANGE, 2)],
+      [SkewbCoordinate.corner_index(RED, 2), SkewbCoordinate.corner_index(WHITE, 3), SkewbCoordinate.corner_index(GREEN, 0)]
+    ]
+    
+    def cycles
+      case @move
+      when 'U' then U_MOVE_CYCLES
+      when 'R' then R_MOVE_CYCLES
+      when 'L' then L_MOVE_CYCLES
+      when 'B' then B_MOVE_CYCLES
+      else raise ArgumentError
+      end
+    end
+
+    def apply_to(cube_state)
+      raise ArgumentError unless cube_state.is_a?(SkewbState)
+      cycles.each do |c|
+        case @direction
+        when SkewbDirection::FORWARD
+          cube_state.apply_sticker_cycle(c)
+        when SkewbDirection::BACKWARD
+          cube_state.apply_sticker_cycle(c.reverse)
+        else
+          raise ArgumentError
+        end
+      end
+    end
+
   end
   
   class FatMove < Move
@@ -563,14 +583,16 @@ module CubeTrainer
   end
 
   class SkewbMoveParser
-    REGEXP = begin
-               move_part = "(?:([#{SKEWB_MOVES.join}])([#{POSSIBLE_DIRECTION_NAMES.flatten.join}]?))"
-               rotation_part = "(?:([#{AXES.join}])(#{POSSIBLE_DIRECTION_NAMES.flatten.sort_by { |e| -e.length }.join("|")}))"
-               Regexp.new("#{move_part}|#{rotation_part}")
-             end
-
+    def initialize(skewb_move_class)
+      @skewb_move_class = skewb_move_class
+    end
+      
     def regexp
-      REGEXP
+      @regexp ||= begin
+                    move_part = "(?:([#{@skewb_move_class::MOVES.join}])([#{POSSIBLE_SKEWB_DIRECTION_NAMES.flatten.join}]?))"
+                    rotation_part = "(?:([#{AXES.join}])(#{POSSIBLE_DIRECTION_NAMES.flatten.sort_by { |e| -e.length }.join("|")}))"
+                    Regexp.new("#{move_part}|#{rotation_part}")
+                  end
     end
 
     def parse_skewb_direction(direction_string)
@@ -585,14 +607,14 @@ module CubeTrainer
 
     # Parses WCA Skewb moves.
     def parse_move(move_string)
-      match = move_string.match(REGEXP)
+      match = move_string.match(regexp)
       raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
       
       skewb_move_string, direction_string, rotation, rotation_direction_string = match.captures
       if skewb_move_string
         raise unless rotation.nil? && rotation_direction_string.nil?
         direction = parse_skewb_direction(direction_string)
-        SkewbMove.new(skewb_move_string, direction)
+        @skewb_move_class.new(skewb_move_string, direction)
       elsif rotation
         raise unless skewb_move_string.nil? && direction_string.nil?
         Rotation.new(CubeMoveParser::INSTANCE.parse_axis_face(rotation), CubeMoveParser::INSTANCE.parse_direction(rotation_direction_string))
@@ -601,7 +623,7 @@ module CubeTrainer
       end
     end
 
-    INSTANCE = SkewbMoveParser.new
+    FIXED_CORNER_INSTANCE = SkewbMoveParser.new(FixedCornerSkewbMove)
   end
 
 end

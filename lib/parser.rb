@@ -182,12 +182,12 @@ module CubeTrainer
     CubeMoveParser::INSTANCE.parse_move(move_string)
   end
 
-  def parse_skewb_algorithm(alg_string)
-    Parser.new(alg_string, SkewbMoveParser::INSTANCE).parse_algorithm
+  def parse_fixed_corner_skewb_algorithm(alg_string)
+    Parser.new(alg_string, SkewbMoveParser::FIXED_CORNER_INSTANCE).parse_algorithm
   end
 
-  def parse_skewb_move(move_string)
-    SkewbMoveParser::INSTANCE.parse_move(move_string)
+  def parse_fixed_corner_skewb_move(move_string)
+    SkewbMoveParser::FIXED_CORNER_INSTANCE.parse_move(move_string)
   end
 
 end

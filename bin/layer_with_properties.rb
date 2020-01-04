@@ -14,7 +14,7 @@ SCRAMBLE_LENGTH = 15
 SEARCH_DEPTH = 7
 
 def max_score_after_one_move(skewb_state)
-  SkewbMove::ALL.collect do |m|
+  FixedCornerSkewbMove::ALL.collect do |m|
     SkewbLayerFinder.score_after_move(skewb_state, m)
   end.max
 end

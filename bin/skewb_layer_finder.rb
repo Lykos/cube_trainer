@@ -18,9 +18,10 @@ SEARCH_DEPTH = 6
 
 options = Options.parse(ARGV)
 
-puts 'Enter scramble'
+puts 'Enter scramble in fixed corner notation.'
+
 scramble_string = gets.chomp
-scramble = parse_skewb_algorithm(scramble_string)
+scramble = parse_fixed_corner_skewb_algorithm(scramble_string)
 
 layer_finder = SkewbLayerFinder.new(options.restrict_colors)
 skewb_state = SkewbState.solved

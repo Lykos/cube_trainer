@@ -37,7 +37,7 @@ EOS
   end
   
   it "should have the right state after an U move" do
-    parse_skewb_move("U").apply_to(skewb_state)
+    parse_fixed_corner_skewb_move("U").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be false
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -66,7 +66,7 @@ EOS
   end
   
   it "should have the right state after an U' move" do
-    parse_skewb_move("U'").apply_to(skewb_state)
+    parse_fixed_corner_skewb_move("U'").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be false
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -95,7 +95,7 @@ EOS
   end
   
   it "should have the right state after an R move" do
-    parse_skewb_move("R").apply_to(skewb_state)
+    parse_fixed_corner_skewb_move("R").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be false
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -124,7 +124,7 @@ EOS
   end
   
   it "should have the right state after an R' move" do
-    parse_skewb_move("R'").apply_to(skewb_state)
+    parse_fixed_corner_skewb_move("R'").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be false
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -153,7 +153,7 @@ EOS
   end
  
   it "should have the right state after an L move" do
-    parse_skewb_move("L").apply_to(skewb_state)
+    parse_fixed_corner_skewb_move("L").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be false
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -182,7 +182,7 @@ EOS
   end
   
   it "should have the right state after an L' move" do
-    parse_skewb_move("L'").apply_to(skewb_state)
+    parse_fixed_corner_skewb_move("L'").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be false
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -211,7 +211,7 @@ EOS
   end
   
   it "should have the right state after an B move" do
-    parse_skewb_move("B").apply_to(skewb_state)
+    parse_fixed_corner_skewb_move("B").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be false
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -240,7 +240,7 @@ EOS
   end
   
   it "should have the right state after an B' move" do
-    parse_skewb_move("B'").apply_to(skewb_state)
+    parse_fixed_corner_skewb_move("B'").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be false
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -269,7 +269,7 @@ EOS
   end
   
   it "should have the right state after RUB and a mirror" do
-    parse_skewb_algorithm("R U B").apply_to(skewb_state)
+    parse_fixed_corner_skewb_algorithm("R U B").apply_to(skewb_state)
     expect(skewb_state.to_s).to be == (<<EOS
      WWWWW
      WWWWW
@@ -310,7 +310,7 @@ EOS
   end
   
   it "should have the red layer solved after a B L' B' L sledge" do
-    parse_skewb_algorithm("B L' B' L").apply_to(skewb_state)
+    parse_fixed_corner_skewb_algorithm("B L' B' L").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be true
     expect(skewb_state.solved_layers).to be == [:red]
     expect(skewb_state.layer_solved?(:yellow)).to be false
@@ -322,7 +322,7 @@ EOS
   end
   
   it "should have the green layer solved after a U' B U B' sledge" do
-    parse_skewb_algorithm("U' B U B'").apply_to(skewb_state)
+    parse_fixed_corner_skewb_algorithm("U' B U B'").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be true
     expect(skewb_state.solved_layers).to be == [:green]
     expect(skewb_state.layer_solved?(:yellow)).to be false
@@ -334,7 +334,7 @@ EOS
   end
   
   it "should have the white layer solved after a R' B R B' sledge" do
-    parse_skewb_algorithm("R' B R B'").apply_to(skewb_state)
+    parse_fixed_corner_skewb_algorithm("R' B R B'").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be true
     expect(skewb_state.solved_layers).to be == [:white]
     expect(skewb_state.layer_solved?(:yellow)).to be false
@@ -346,7 +346,7 @@ EOS
   end
   
   it "should have the blue layer solved after a L' R B U' sledge" do
-    parse_skewb_algorithm("L' R B U'").apply_to(skewb_state)
+    parse_fixed_corner_skewb_algorithm("L' R B U'").apply_to(skewb_state)
     expect(skewb_state.solved_layers).to be == [:blue]
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -357,7 +357,7 @@ EOS
     expect(skewb_state.any_layer_solved?).to be true
   end
     it "should have the orange layer solved after a R L' B' U sledge" do
-    parse_skewb_algorithm("R L' B' U").apply_to(skewb_state)
+    parse_fixed_corner_skewb_algorithm("R L' B' U").apply_to(skewb_state)
     expect(skewb_state.solved_layers).to be == [:orange]
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -369,7 +369,7 @@ EOS
   end
   
   it "should have the yellow layer solved after a U R' B' L sledge" do
-    parse_skewb_algorithm("U R' B' L").apply_to(skewb_state)
+    parse_fixed_corner_skewb_algorithm("U R' B' L").apply_to(skewb_state)
     expect(skewb_state.solved_layers).to be == [:yellow]
     expect(skewb_state.layer_solved?(:yellow)).to be true
     expect(skewb_state.layer_solved?(:red)).to be false
@@ -381,7 +381,7 @@ EOS
   end
   
   it "should have the orange layer solved after a R' U B L' sledge" do
-    parse_skewb_algorithm("R' U B L'").apply_to(skewb_state)
+    parse_fixed_corner_skewb_algorithm("R' U B L'").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be true
     expect(skewb_state.solved_layers).to be == [:orange]
     expect(skewb_state.layer_solved?(:yellow)).to be false
@@ -393,7 +393,7 @@ EOS
   end
   
   it "should have the blue layer solved after a L U' B' R sledge" do
-    parse_skewb_algorithm("L U' B' R").apply_to(skewb_state)
+    parse_fixed_corner_skewb_algorithm("L U' B' R").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be true
     expect(skewb_state.solved_layers).to be == [:blue]
     expect(skewb_state.layer_solved?(:yellow)).to be false
@@ -405,7 +405,7 @@ EOS
   end
   
   it "should have no layer solved after a false white layer combo" do
-    parse_skewb_algorithm("R' L R L' R' U' L U").apply_to(skewb_state)
+    parse_fixed_corner_skewb_algorithm("R' L R L' R' U' L U").apply_to(skewb_state)
     expect(skewb_state.any_layer_solved?).to be false
     expect(skewb_state.layer_solved?(:yellow)).to be false
     expect(skewb_state.layer_solved?(:red)).to be false

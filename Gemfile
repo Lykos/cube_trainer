@@ -5,4 +5,5 @@ source "https://rubygems.org" do
   gem 'rspec'
   gem 'xdg'
   gem 'sqlite3'
+  gem 'qtbindings'
 end

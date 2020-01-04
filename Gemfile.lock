@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.3)
+    qtbindings (4.8.6.5)
     rake (12.3.3)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
@@ -23,6 +24,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  qtbindings!
   rake!
   rspec!
   sqlite3!

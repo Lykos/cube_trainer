@@ -2,6 +2,7 @@ require 'move'
 require 'parser'
 require 'skewb_layer_finder'
 require 'cube_print_helper'
+require 'set'
 
 module CubeTrainer
 
@@ -23,11 +24,21 @@ module CubeTrainer
         raise ArgumentError unless face.is_a?(Face)
         @move = move
         @sub_solution = sub_solution
-        @alternative_solutions = []
+        @alternative_solutions = Set[]
         @face = face
       end
 
-      attr_reader :move, :sub_solution, :alternative_solutions, :face
+      alias == eql?
+
+      def eql?(other)
+        self.class.equal?(other.class) && @move == other.move && @sub_solution == other.sub_solution
+      end
+      
+      def hash
+        [@move, @sub_solution].hash
+      end
+
+      attr_reader :move, :sub_solution, :face
 
       def layer_solution
         @layer_solution ||= begin
@@ -49,12 +60,16 @@ module CubeTrainer
         raise ArgumentError unless layer_solution.is_a?(SkewbLayerSolution)
         case layer_solution.solution_length <=> solution_length
         when -1 then raise ArgumentError
-        when 0 then @alternative_solutions.push(layer_solution)
+        when 0 then @alternative_solutions.add(layer_solution)
         end
       end
 
       def derived_layer_solution(move, face)
         SkewbLayerSolution.new(move, self, face)
+      end
+
+      def extract_algorithms
+        [layer_solution] + @alternative_solutions.map { |s| s.layer_solution }
       end
       
     end
@@ -82,7 +97,8 @@ module CubeTrainer
       end
     end
 
-    def initialize
+    def initialize(max_length)
+      @max_length = max_length
       @layer_solutions = [SkewbLayerSolution.new(nil, nil, Face.for_color(EXAMPLE_LAYER_COLOR))]
       @good_layer_solutions = []
       @state = SkewbState.solved
@@ -93,7 +109,7 @@ module CubeTrainer
     attr_reader :good_layer_solutions
 
     def derived_layer_candidates(layer_solution)
-      SkewbMove::ALL.collect_concat do |m|
+      FixedCornerSkewbMove::ALL.collect_concat do |m|
         # Ignore possible moves along the same axis as the last move.
         if layer_solution.move && layer_solution.move.move == m.move
           []
@@ -146,10 +162,10 @@ module CubeTrainer
       has_equivalent_solution
     end
     
-    def self.calculate
-      searcher = new
+    def self.calculate(max_length=nil)
+      searcher = new(max_length)
       searcher.calculate
-      searcher.good_layer_solutions
+      searcher.good_layer_solutions.map { |s| s.extract_algorithms }
     end
 
     def pop_candidate
@@ -164,8 +180,8 @@ module CubeTrainer
       @candidates.empty?
     end
 
-    def state_is_good?
-      @finder.state_score(@state) >= 2
+    def state_is_good?(candidate_solution)
+      @finder.state_score(@state) >= 2 || candidate_solution.solution_length <= 3
     end
 
     def calculate
@@ -173,7 +189,7 @@ module CubeTrainer
         puts "Candidates: #{@candidates.length} Layers: #{@layer_solutions.length} Good layers: #{@good_layer_solutions.length}"
         candidate = pop_candidate
         puts "Candidate: #{candidate}"        
-        candidate.layer_solution.apply_temporarily_to(@state) do
+        candidate.layer_solution.inverse.apply_temporarily_to(@state) do
           # Is there an existing equivalent layer that we already looked at?
           has_equivalent_layer = false
 
@@ -185,12 +201,14 @@ module CubeTrainer
           unless has_equivalent_layer
             # If there were no equivalent layers in any way, this is a new type of layer.
             @layer_solutions.push(candidate_solution)
-            if state_is_good?
+            if state_is_good?(candidate_solution)
               @good_layer_solutions.push(candidate_solution)
               puts @finder.state_score(@state)
               puts skewb_string(@state, :color)
             end
-            add_new_candidates(derived_layer_candidates(candidate_solution))
+            if @max_length.nil? || candidate_solution.solution_length < @max_length
+              add_new_candidates(derived_layer_candidates(candidate_solution))
+            end
           end
         end
       end
