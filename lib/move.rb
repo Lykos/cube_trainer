@@ -420,8 +420,8 @@ module CubeTrainer
     # I haven't found a better way for Skewb than to hardcode what each move does.
     F_MOVE_CYCLES = [
       [SkewbCoordinate.center(RED), SkewbCoordinate.center(YELLOW), SkewbCoordinate.center(GREEN)],
-      [SkewbCoordinate.corner_index(RED, 0), SkewbCoordinate.corner_index(YELLOW, 1), SkewbCoordinate.corner_index(GREEN, 0)],
-      [SkewbCoordinate.corner_index(RED, 1), SkewbCoordinate.corner_index(YELLOW, 0), SkewbCoordinate.corner_index(GREEN, 1)],
+      [SkewbCoordinate.corner_index(RED, 0), SkewbCoordinate.corner_index(YELLOW, 1), SkewbCoordinate.corner_index(GREEN, 1)],
+      [SkewbCoordinate.corner_index(RED, 1), SkewbCoordinate.corner_index(YELLOW, 0), SkewbCoordinate.corner_index(GREEN, 0)],
       [SkewbCoordinate.corner_index(RED, 2), SkewbCoordinate.corner_index(YELLOW, 3), SkewbCoordinate.corner_index(GREEN, 3)],
       [SkewbCoordinate.corner_index(BLUE, 0), SkewbCoordinate.corner_index(ORANGE, 1), SkewbCoordinate.corner_index(WHITE, 0)]
     ]
@@ -442,8 +442,8 @@ module CubeTrainer
     B_MOVE_CYCLES = [
       [SkewbCoordinate.center(YELLOW), SkewbCoordinate.center(BLUE), SkewbCoordinate.center(ORANGE)],
       [SkewbCoordinate.corner_index(YELLOW, 0), SkewbCoordinate.corner_index(BLUE, 3), SkewbCoordinate.corner_index(ORANGE, 1)],
-      [SkewbCoordinate.corner_index(YELLOW, 2), SkewbCoordinate.corner_index(BLUE, 0), SkewbCoordinate.corner_index(ORANGE, 0)],
-      [SkewbCoordinate.corner_index(YELLOW, 3), SkewbCoordinate.corner_index(BLUE, 2), SkewbCoordinate.corner_index(ORANGE, 2)],
+      [SkewbCoordinate.corner_index(YELLOW, 2), SkewbCoordinate.corner_index(BLUE, 2), SkewbCoordinate.corner_index(ORANGE, 0)],
+      [SkewbCoordinate.corner_index(YELLOW, 3), SkewbCoordinate.corner_index(BLUE, 0), SkewbCoordinate.corner_index(ORANGE, 2)],
       [SkewbCoordinate.corner_index(RED, 2), SkewbCoordinate.corner_index(WHITE, 3), SkewbCoordinate.corner_index(GREEN, 0)]
     ]
     

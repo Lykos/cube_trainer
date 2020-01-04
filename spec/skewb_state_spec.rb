@@ -596,6 +596,72 @@ OOOBBRRRRRGGGGGOOYYY
 EOS
                                         ).chomp
     end
+    
+    it "should have the right state after an F' B algorithm" do
+      parse_sarahs_skewb_algorithm("F' B").apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     OOOOO
+     OOOOO
+     OOOOO
+     WOOOG
+     WWOGG
+YYGGGRRYYYRRRWWBBBBB
+YGGGGRYYYYRRRRWBBBBB
+GGGGGYYYYYRRRRRBBBBB
+GGGGBRYYYYRRRRGOBBBO
+GGGBBRRYYYRRRGGOOBOO
+     WWWBB
+     WWWWB
+     WWWWW
+     YWWWW
+     YYWWW
+EOS
+                                        ).chomp
+    end
+  
+    it "should have the right state after an R' F' algorithm" do
+      parse_sarahs_skewb_algorithm("R' F'").apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     OOYGG
+     OYYYG
+     YYYYY
+     YYYYY
+     YYYYY
+WWBGGOOOOOBBRRRWWGGG
+WBBBGOOOOOBRRRRWGGGG
+BBBBBOOOOORRRRRGGGGG
+BBBBBROOOYRRRRYGGGGO
+BBBBBRROYYRRRYYGGGOO
+     WWWBB
+     WWWWB
+     WWWWW
+     WWWWR
+     WWWRR
+EOS
+                                        ).chomp
+    end
+  
+    it "should have the right state after an F' R' F' B algorithm" do
+      parse_sarahs_skewb_algorithm("F' R' F' B").apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     GGROO
+     GRRRO
+     RRRRR
+     BRRRY
+     BBRYY
+OOGRRYYOOOBBYWWBBBWW
+OGGGRYOOOOBYYYWBBBBW
+GGGGGOOOOOYYYYYBBBBB
+GGGGBROOOGYYYYGRBBBR
+GGGBBRROGGYYYGGRRBRR
+     WWWOO
+     WWWWO
+     WWWWW
+     WWWWY
+     WWWYY
+EOS
+                                        ).chomp
+    end
   
   end
 end

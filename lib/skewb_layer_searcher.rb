@@ -1,6 +1,7 @@
 require 'move'
 require 'parser'
 require 'skewb_layer_finder'
+require 'cube'
 require 'cube_print_helper'
 require 'set'
 
@@ -11,21 +12,36 @@ module CubeTrainer
 
     include CubePrintHelper
 
-    EXAMPLE_LAYER_COLOR = :white
+    class NonMoveTransformation < Struct.new(:rotation, :mirror)
+      
+      def apply_temporarily_to(skewb_state)
+        skewb_state.mirror! if mirror
+        r = if rotation
+          rotation.apply_temporarily_to(skewb_state) { yield }
+        else
+          yield
+        end
+        skewb_state.mirror! if mirror
+        r
+      end
 
-    # Represents a possible Skewb layer with a solution and the face where the solved layer initially lies.
+    end
+
+    EXAMPLE_LAYER_COLOR = :white
+    EXAMPLE_LAYER_FACE = Face.for_color(EXAMPLE_LAYER_COLOR)
+    AROUND_FACE_ROTATIONS = [nil] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Rotation.new(EXAMPLE_LAYER_FACE.chirality_canonicalize, d) }
+    NON_MOVE_TRANSFORMATIONS = AROUND_FACE_ROTATIONS.product([true, false]).select { |r, m| r || m }.map { |r, m| NonMoveTransformation.new(r, m) }
+
+    # Represents a possible Skewb layer with a solution.
     class SkewbLayerSolution
 
-      # Face is the initial face where the solved center is.
-      def initialize(move, sub_solution, face)
+      def initialize(move, sub_solution)
         raise ArgumentError unless move.nil? || move.is_a?(Move)
         raise ArgumentError unless sub_solution.nil? || sub_solution.is_a?(SkewbLayerSolution)
         raise ArgumentError unless move.nil? == sub_solution.nil?
-        raise ArgumentError unless face.is_a?(Face)
         @move = move
         @sub_solution = sub_solution
         @alternative_solutions = Set[]
-        @face = face
       end
 
       alias == eql?
@@ -38,7 +54,11 @@ module CubeTrainer
         [@move, @sub_solution].hash
       end
 
-      attr_reader :move, :sub_solution, :face
+      def to_s
+        layer_solution.to_s
+      end
+
+      attr_reader :move, :sub_solution
 
       def layer_solution
         @layer_solution ||= begin
@@ -64,69 +84,42 @@ module CubeTrainer
         end
       end
 
-      def derived_layer_solution(move, face)
-        SkewbLayerSolution.new(move, self, face)
-      end
-
       def extract_algorithms
         [layer_solution] + @alternative_solutions.map { |s| s.layer_solution }
       end
       
     end
 
-    class SkewbLayerCandidate
-      def initialize(move, sub_solution)
-        raise ArgumentError unless move.is_a?(Move)
-        raise ArgumentError unless sub_solution.is_a?(SkewbLayerSolution)
-        @move = move
-        @sub_solution = sub_solution
-      end
-
-      attr_reader :move, :sub_solution
-
-      def candidate_solution(face)
-        SkewbLayerSolution.new(@move, @sub_solution, face)
-      end
-
-      def layer_solution
-        @sub_solution.layer_solution + Algorithm.new([@move])
-      end
-
-      def to_s
-        layer_solution.to_s
-      end
-    end
-
     def initialize(max_length)
       @max_length = max_length
-      @layer_solutions = [SkewbLayerSolution.new(nil, nil, Face.for_color(EXAMPLE_LAYER_COLOR))]
+      @layer_solutions = [SkewbLayerSolution.new(nil, nil)]
       @good_layer_solutions = []
       @state = SkewbState.solved
-      @candidates = derived_layer_candidates(@layer_solutions.first)
+      @candidates = derived_layer_solutions(@layer_solutions.first)
       @finder = SkewbLayerFinder.new([EXAMPLE_LAYER_COLOR])
     end
 
     attr_reader :good_layer_solutions
 
-    def derived_layer_candidates(layer_solution)
-      SarahsSkewbMove::ALL.collect_concat do |m|
+    def derived_layer_solutions(layer_solution)
+      SarahsSkewbMove::ALL.reverse.collect_concat do |m|
         # Ignore possible moves along the same axis as the last move.
         if layer_solution.move && layer_solution.move.move == m.move
           []
         else
-          [SkewbLayerCandidate.new(m, layer_solution)]
+          [SkewbLayerSolution.new(m, layer_solution)]
         end
       end
     end
 
     # Find out whether there are any layers that are equivalent without rotations.
     # In those cases, we add this as an alternative solution.
-    def check_equivalent_solution(candidate_solution)
+    def check_equivalent_solution(candidate)
       has_equivalent_solution = false
       @layer_solutions.each do |l|
         l.layer_solution.apply_temporarily_to(@state) do
           if @state.layer_solved?(EXAMPLE_LAYER_COLOR)
-            l.maybe_add_alternative_solution(candidate_solution)
+            l.maybe_add_alternative_solution(candidate)
             has_equivalent_solution = true
           end
         end
@@ -136,26 +129,17 @@ module CubeTrainer
 
     # Find out whether there are any layers that are equivalent with rotations.
     # In those cases, we don't add this as an alternative solution because there will be another one that's equivalent modulo rotations.
-    def check_equivalent_modified_solution(candidate_solution)
+    def check_equivalent_modified_solution(candidate)
       has_equivalent_solution = false
+      transformed_states = NON_MOVE_TRANSFORMATIONS.collect do |t|
+        t.apply_temporarily_to(@state) { @state.dup }
+      end
       @layer_solutions.each do |l|
-        face_to_face_rotation = candidate_solution.face.rotation_to(l.face)
-        around_face_rotations = [Algorithm.empty] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Algorithm.new([Rotation.new(l.face.chirality_canonicalize, d)]) }
-        around_face_rotations.each do |around_face_rotation|
-          rotation = face_to_face_rotation + around_face_rotation
-          rotation.apply_temporarily_to(@state) do
-            l.layer_solution.apply_temporarily_to(@state) do
-              if @state.layer_solved?(EXAMPLE_LAYER_COLOR)
-                has_equivalent_solution = true
-              end
+        transformed_states.each do |s|
+          l.layer_solution.apply_temporarily_to(s) do
+            if s.layer_solved?(EXAMPLE_LAYER_COLOR)
+              has_equivalent_solution = true
             end
-            @state.mirror!
-            l.layer_solution.apply_temporarily_to(@state) do
-              if @state.layer_solved?(EXAMPLE_LAYER_COLOR)
-                has_equivalent_solution = true
-              end
-            end
-            @state.mirror!
           end
         end
       end
@@ -180,8 +164,8 @@ module CubeTrainer
       @candidates.empty?
     end
 
-    def state_is_good?(candidate_solution)
-      @finder.state_score(@state) >= 2 || candidate_solution.solution_length <= 3
+    def state_is_good?(candidate)
+      @finder.state_score(@state) >= 2 || candidate.solution_length <= 3
     end
 
     def calculate
@@ -193,21 +177,19 @@ module CubeTrainer
           # Is there an existing equivalent layer that we already looked at?
           has_equivalent_layer = false
 
-          candidate_face = @state.center_face(EXAMPLE_LAYER_COLOR)
-          candidate_solution = candidate.candidate_solution(candidate_face)
-          has_equivalent_layer ||= check_equivalent_solution(candidate_solution)
-          has_equivalent_layer ||= check_equivalent_modified_solution(candidate_solution)
+          has_equivalent_layer ||= check_equivalent_solution(candidate)
+          has_equivalent_layer ||= check_equivalent_modified_solution(candidate)
           
           unless has_equivalent_layer
             # If there were no equivalent layers in any way, this is a new type of layer.
-            @layer_solutions.push(candidate_solution)
-            if state_is_good?(candidate_solution)
-              @good_layer_solutions.push(candidate_solution)
+            @layer_solutions.push(candidate)
+            if state_is_good?(candidate)
+              @good_layer_solutions.push(candidate)
               puts @finder.state_score(@state)
               puts skewb_string(@state, :color)
             end
-            if @max_length.nil? || candidate_solution.solution_length < @max_length
-              add_new_candidates(derived_layer_candidates(candidate_solution))
+            if @max_length.nil? || candidate.solution_length < @max_length
+              add_new_candidates(derived_layer_solutions(candidate))
             end
           end
         end

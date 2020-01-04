@@ -35,7 +35,7 @@ module CubeTrainer
     end
 
     def dup
-      @stickers.map { |s| s.dup }
+      SkewbState.new(@stickers.map { |s| s.dup })
     end
 
     def to_s
