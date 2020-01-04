@@ -109,7 +109,7 @@ module CubeTrainer
     attr_reader :good_layer_solutions
 
     def derived_layer_candidates(layer_solution)
-      FixedCornerSkewbMove::ALL.collect_concat do |m|
+      SarahsSkewbMove::ALL.collect_concat do |m|
         # Ignore possible moves along the same axis as the last move.
         if layer_solution.move && layer_solution.move.move == m.move
           []
