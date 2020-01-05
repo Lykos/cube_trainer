@@ -36,9 +36,9 @@ if options.output
   yellow_corners = Corner::ELEMENTS.select { |c| c.colors.first == :yellow }
   white_corners = Corner::ELEMENTS.select { |c| c.colors.first == :white }
   non_bottom_faces = Face::ELEMENTS.select { |c| c.color != :white }
-  layer_describer = SkewbTransformationDescriber.new([], white_corners)
-  center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [])
-  top_corner_describer = SkewbTransformationDescriber.new([], yellow_corners)
+  layer_describer = SkewbTransformationDescriber.new([], white_corners, false)
+  center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [], false)
+  top_corner_describer = SkewbTransformationDescriber.new([], yellow_corners, true)
 
   CSV.open(options.output, 'wb', {:col_sep => "\t"}) do |csv|
     csv << ['case description', 'main alg', 'center_transformations', 'top_corner_transformations', 'alternative algs', 'tags']
