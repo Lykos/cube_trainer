@@ -55,6 +55,14 @@ module CubeTrainer
     def +(other)
       Algorithm.new(@moves + other.moves)
     end
+
+    def has_prefix?(other)
+      length >= other.length && @moves[0...other.length].zip(other.moves).all? { |m, n| m == n }
+    end
+ 
+    def has_suffix?(other)
+      length >= other.length && @moves[length - other.length..-1].zip(other.moves).all? { |m, n| m == n }
+    end
  
     # Returns the number of moves that cancel if you concat the algorithm to the right of self.
     # Doesn't support cancellation over rotations or fat move tricks.
