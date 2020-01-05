@@ -4,6 +4,7 @@ require 'skewb_layer_finder'
 require 'cube'
 require 'cube_print_helper'
 require 'set'
+require 'skewb_layer_fingerprinter'
 
 module CubeTrainer
 
@@ -92,11 +93,14 @@ module CubeTrainer
 
     def initialize(max_length)
       @max_length = max_length
-      @layer_solutions = [SkewbLayerSolution.new(nil, nil)]
       @good_layer_solutions = []
       @state = SkewbState.solved
-      @candidates = derived_layer_solutions(@layer_solutions.first)
+      solved_solution = SkewbLayerSolution.new(nil, nil)
+      @candidates = derived_layer_solutions(solved_solution)
       @finder = SkewbLayerFinder.new([EXAMPLE_LAYER_COLOR])
+      @fingerprinter = SkewbLayerFingerprinter.new(EXAMPLE_LAYER_FACE) 
+      @layer_solutions = {}
+      add_layer_solution(solved_solution)
     end
 
     attr_reader :good_layer_solutions
@@ -116,7 +120,7 @@ module CubeTrainer
     # In those cases, we add this as an alternative solution.
     def check_equivalent_solution(candidate)
       has_equivalent_solution = false
-      @layer_solutions.each do |l|
+      get_layer_solutions.each do |l|
         l.layer_solution.apply_temporarily_to(@state) do
           if @state.layer_solved?(EXAMPLE_LAYER_COLOR)
             l.maybe_add_alternative_solution(candidate)
@@ -134,7 +138,7 @@ module CubeTrainer
       transformed_states = NON_MOVE_TRANSFORMATIONS.collect do |t|
         t.apply_temporarily_to(@state) { @state.dup }
       end
-      @layer_solutions.each do |l|
+      get_layer_solutions.each do |l|
         transformed_states.each do |s|
           l.layer_solution.apply_temporarily_to(s) do
             if s.layer_solved?(EXAMPLE_LAYER_COLOR)
@@ -168,9 +172,17 @@ module CubeTrainer
       @finder.state_score(@state) >= 2 || candidate.solution_length <= 3
     end
 
+    def get_layer_solutions
+      @layer_solutions[@fingerprinter.fingerprint(@state)] ||= []
+    end
+
+    def add_layer_solution(candidate)
+      get_layer_solutions.push(candidate)
+    end
+
     def calculate
       until candidates_empty?
-        puts "Candidates: #{@candidates.length} Layers: #{@layer_solutions.length} Good layers: #{@good_layer_solutions.length}"
+        puts "Candidates: #{@candidates.length} Layers: #{@layer_solutions.values.map { |v| v.length}.reduce(:+)} Good layers: #{@good_layer_solutions.length}"
         candidate = pop_candidate
         puts "Candidate: #{candidate}"        
         candidate.layer_solution.inverse.apply_temporarily_to(@state) do
@@ -182,7 +194,7 @@ module CubeTrainer
           
           unless has_equivalent_layer
             # If there were no equivalent layers in any way, this is a new type of layer.
-            @layer_solutions.push(candidate)
+            add_layer_solution(candidate)
             if state_is_good?(candidate)
               @good_layer_solutions.push(candidate)
               puts @finder.state_score(@state)

@@ -102,6 +102,10 @@ module CubeTrainer
     def inverse
       self.class.new(@colors.reverse)
     end
+
+    def has_color?(c)
+      @colors.include?(c)
+    end
   
     # Returns true if the pieces are equal modulo rotation.
     def turned_equals?(other)
