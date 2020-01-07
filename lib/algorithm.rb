@@ -127,6 +127,19 @@ module CubeTrainer
       cancellations
     end
 
+    # Rotates the algorithm, e.g. applying "y" to "R U" becomes "F U". Applying rotation r to alg a is equivalent to r' a r.
+    # Note that this is not implemented for all moves.
+    def rotate(rotation)
+      raise ArgumentError unless rotation.is_a?(Rotation)
+      Algorithm.new(@moves.map { |m| m.rotate(rotation) })
+    end
+
+    # Mirrors the algorithm and uses the given face as the normal of the mirroring. E.g. mirroring "R U F" with "R" as the normal face, we get "L U' F'".
+    def mirror(normal_face)
+      raise ArgumentError unless normal_face.is_a?(Face)
+      Algorithm.new(@moves.map { |m| m.mirror(normal_face) })
+    end
+
     def move_count(metric=:htm)
       Move.check_move_metric(metric)
       @moves.map { |m| m.move_count(metric) }.reduce(:+)

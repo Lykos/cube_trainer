@@ -41,6 +41,7 @@ module CubeTrainer
     def hash
       @value.hash
     end
+
   end
 
   class SkewbDirection < AbstractDirection
@@ -112,6 +113,14 @@ module CubeTrainer
     end
 
     def inverse
+      raise NotImplementedError
+    end
+
+    def rotate(rotation)
+      raise NotImplementedError
+    end
+
+    def mirror(normal_face)
       raise NotImplementedError
     end
 
@@ -414,7 +423,7 @@ module CubeTrainer
   end
 
   class SarahsSkewbMove < SkewbMove
-    MOVES = ['F', 'R', 'L', 'B']
+    MOVES = ['F', 'R', 'B', 'L']
     ALL = MOVES.product(SkewbDirection::NON_ZERO_DIRECTIONS).map { |m, d| new(m, d) }
 
     # I haven't found a better way for Skewb than to hardcode what each move does.
@@ -446,6 +455,30 @@ module CubeTrainer
       [SkewbCoordinate.corner_index(YELLOW, 3), SkewbCoordinate.corner_index(BLUE, 0), SkewbCoordinate.corner_index(ORANGE, 2)],
       [SkewbCoordinate.corner_index(RED, 2), SkewbCoordinate.corner_index(WHITE, 3), SkewbCoordinate.corner_index(GREEN, 0)]
     ]
+
+    def rotate(rotation)
+      if rotation.axis_face != Face.for_color(:yellow)
+        raise NotImplementedError, "Sarahs Skewb move rotations are only implemented for the y axis. Note that other axis are much harder because Sarahs notation doesn't allow for it."
+      end
+      old_move_index = MOVES.index(@move)
+      new_move_index = (old_move_index + 4 - rotation.direction.value) % 4
+      SarahsSkewbMove.new(MOVES[new_move_index], @direction)
+    end
+
+    def mirror(normal_face)
+      old_move_index = MOVES.index(@move)
+      new_move_index = case normal_face.color
+                       when :yellow, :white
+                         raise NotImplementedError, "Sarahs Skewb move mirrors is not implemented for using the y axis as the normal. Note this axis is much harder because Sarahs notation doesn't allow for it."
+                       when :red, :orange
+                         3 - old_move_index
+                       when :green, :blue
+                         (old_move_index + 1) % 2 + (old_move_index / 2) * 2
+                       else
+                         raise
+                       end
+      SarahsSkewbMove.new(MOVES[new_move_index], @direction.inverse)
+    end
     
     def cycles
       case @move
