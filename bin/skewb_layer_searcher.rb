@@ -3,6 +3,9 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
+require 'cube'
+require 'skewb_layer_classifier'
+require 'skewb_layer_improver'
 require 'skewb_layer_searcher'
 require 'skewb_transformation_describer'
 require 'skewb_state'
@@ -15,6 +18,10 @@ include CubePrintHelper
 
 options = SkewbLayerSearcherOptions.parse(ARGV)
 solutions = SkewbLayerSearcher.calculate(options.verbose, options.depth)
+layer_improver = SkewbLayerImprover.new(Face.for_color(:white))
+solutions = solutions.map do |algs|
+  algs.map { |alg| layer_improver.improve_layer(alg) }
+end
 
 if options.verbose
   puts
@@ -39,18 +46,20 @@ if options.output
   layer_describer = SkewbTransformationDescriber.new([], white_corners, false)
   center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [], false)
   top_corner_describer = SkewbTransformationDescriber.new([], yellow_corners, true)
+  layer_classifier = SkewbLayerClassifier.new(Face.for_color(:white))
 
   CSV.open(options.output, 'wb', {:col_sep => "\t"}) do |csv|
     csv << ['case description', 'main alg', 'center_transformations', 'top_corner_transformations', 'alternative algs', 'tags']
     solutions.each do |algs|
       main_alg, alternative_algs = algs[0], algs[1..-1]
+      classification = layer_classifier.classify_layer(algs[0])
       csv << [
         layer_describer.source_description(main_alg),
         main_alg.to_s,
         center_describer.transformation_description(main_alg),
         top_corner_describer.source_description(main_alg),
         alternative_algs.join(', '),
-        "#{main_alg.length}_mover"
+        "#{main_alg.length}_mover #{classification}"
       ]
     end
   end

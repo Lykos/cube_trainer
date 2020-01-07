@@ -199,7 +199,7 @@ module CubeTrainer
   class Rotation < Move
     def initialize(axis_face, direction)
       raise ArgumentError, "Face #{axis_face} is not a valid axis face." unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
-      raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
+      raise ArgumentError, "Invalid direction #{direction}" unless direction.is_a?(CubeDirection) && direction.is_non_zero?
       @axis_face = axis_face
       @direction = direction
     end

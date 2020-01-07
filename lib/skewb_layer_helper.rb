@@ -44,6 +44,13 @@ module CubeTrainer
       end
     end
     
+    def score_on_face(skewb_state, face)
+      matching_coordinates = matching_corner_coordinates(skewb_state, face)
+      naive_score = matching_coordinates.length
+      has_mismatch = has_mismatch_on_outside(skewb_state, matching_coordinates)
+      if has_mismatch then naive_score - naive_score / 2 else naive_score end
+    end
+
   end
 
 end

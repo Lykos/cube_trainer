@@ -230,7 +230,7 @@ module CubeTrainer
         end
       end
     end
-    
+
   end
 
 end
