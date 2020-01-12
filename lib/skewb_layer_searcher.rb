@@ -86,7 +86,8 @@ module CubeTrainer
       end
 
       def extract_algorithms
-        [layer_solution] + @alternative_solutions.map { |s| s.layer_solution }
+        sub_solution.extract_algorithms.map { |alg| Algorithm.new([@move]) + alg } +
+          @alternative_solutions.collect_concat { |s| s.extract_algorithms }
       end
       
     end
