@@ -26,13 +26,13 @@ module CubeTrainer
     end
 
     def has_mismatch_on_outside(skewb_state, coordinates)
-      coordinates.combination(2).all? do |cs|
+      coordinates.combination(2).any? do |cs|
         check_on_outside_internal(skewb_state, cs) == :mismatch
       end
     end
 
     def has_not_adjacent_on_outside(skewb_state, coordinates)
-      coordinates.combination(2).all? do |cs|
+      coordinates.combination(2).any? do |cs|
         check_on_outside_internal(skewb_state, cs) == :not_adjacent
       end
     end
