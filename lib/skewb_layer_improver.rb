@@ -54,6 +54,7 @@ module CubeTrainer
     end.map { |c| SkewbCoordinate.for_corner(c) }
     
     # How nice a particular variation of a layer is. E.g. for adjacent solved corners, we want them in the back.
+    # Higher scores are better.
     def layer_score
       CORNER_COORDINATES_ORDERED_BY_PRIORITY.inject(0) do |sum, c|
         corner_present = @state[c] == @face.color
