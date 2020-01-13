@@ -43,9 +43,9 @@ if options.output
   yellow_corners = Corner::ELEMENTS.select { |c| c.colors.first == :yellow }
   white_corners = Corner::ELEMENTS.select { |c| c.colors.first == :white }
   non_bottom_faces = Face::ELEMENTS.select { |c| c.color != :white }
-  layer_describer = SkewbTransformationDescriber.new([], white_corners, false)
-  center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [], false)
-  top_corner_describer = SkewbTransformationDescriber.new([], yellow_corners, true)
+  layer_describer = SkewbTransformationDescriber.new([], white_corners, :omit_staying, options.letter_scheme)
+  center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [], :omit_staying)
+  top_corner_describer = SkewbTransformationDescriber.new([], yellow_corners, :show_staying, options.letter_scheme)
   layer_classifier = SkewbLayerClassifier.new(Face.for_color(:white))
 
   CSV.open(options.output, 'wb', {:col_sep => "\t"}) do |csv|

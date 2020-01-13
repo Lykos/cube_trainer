@@ -1,3 +1,4 @@
+require 'letter_scheme'
 require 'optparse'
 require 'ostruct'
 
@@ -9,6 +10,7 @@ module CubeTrainer
       options = OpenStruct.new
       # Default options
       options.verbose = true
+      options.letter_scheme = DefaultLetterScheme.new
       opt_parser = OptionParser.new do |opts|
         opts.separator ''
         opts.separator 'Specific options:'      
