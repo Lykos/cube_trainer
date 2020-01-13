@@ -21,6 +21,7 @@ module CubeTrainer
     attr_reader :moves
 
     include ReversibleApplyable
+    include Comparable
 
     def eql?(other)
       self.class.equal?(other.class) && @moves == other.moves
@@ -54,6 +55,10 @@ module CubeTrainer
 
     def +(other)
       Algorithm.new(@moves + other.moves)
+    end
+
+    def <=>(other)
+      [length, @moves] <=> [other.length, other.moves]
     end
 
     def has_prefix?(other)

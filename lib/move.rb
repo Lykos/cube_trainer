@@ -130,9 +130,14 @@ module CubeTrainer
     end
 
     include ReversibleApplyable
+    include Comparable
 
     def apply_to
       raise NotImplementedError
+    end
+
+    def <=>(other)
+      to_s <=> other.to_s
     end
 
   end

@@ -48,7 +48,7 @@ module CubeTrainer
     end
 
     def <=>(other)
-      @piece_index <=> other.piece_index
+      piece_index <=> other.piece_index
     end
 
     include Comparable

@@ -21,7 +21,7 @@ solutions = SkewbLayerSearcher.calculate(options.verbose, options.depth)
 layer_improver = SkewbLayerImprover.new(Face.for_color(:white))
 solutions = solutions.map do |algs|
   algs.map { |alg| layer_improver.improve_layer(alg) }
-end
+end.sort_by { |algs| algs[0] }
 
 if options.verbose
   puts
@@ -39,28 +39,48 @@ if options.verbose
 end
 
 if options.output
+  puts
+  names = {}
+  if options.name_file
+    puts "Reading name TSV file #{options.name_file}."
+    CSV.foreach(options.name_file, col_sep: "\t") do |csv|
+      names[csv[0]] = csv[1]
+    end
+    puts "Read #{names.length} names."
+  end
   state = SkewbState.solved
   yellow_corners = Corner::ELEMENTS.select { |c| c.colors.first == :yellow }
   white_corners = Corner::ELEMENTS.select { |c| c.colors.first == :white }
   non_bottom_faces = Face::ELEMENTS.select { |c| c.color != :white }
-  layer_describer = SkewbTransformationDescriber.new([], white_corners, :omit_staying, options.letter_scheme)
+  layer_corners_letter_scheme = if options.layer_corners_as_letters then options.letter_scheme else nil end
+  layer_describer = SkewbTransformationDescriber.new([], white_corners, :omit_staying, layer_corners_letter_scheme)
   center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [], :omit_staying)
-  top_corner_describer = SkewbTransformationDescriber.new([], yellow_corners, :show_staying, options.letter_scheme)
+  top_corners_letter_scheme = if options.top_corners_as_letters then options.letter_scheme else nil end
+  top_corner_describer = SkewbTransformationDescriber.new([], yellow_corners, :show_staying, top_corners_letter_scheme)
   layer_classifier = SkewbLayerClassifier.new(Face.for_color(:white))
 
   CSV.open(options.output, 'wb', {:col_sep => "\t"}) do |csv|
-    csv << ['case description', 'main alg', 'center_transformations', 'top_corner_transformations', 'alternative algs', 'tags']
+    csv << ['case description', 'main alg', 'center_transformations', 'top_corner_transformations', 'alternative algs', 'name', 'tags']
     solutions.each do |algs|
       main_alg, alternative_algs = algs[0], algs[1..-1]
       classification = layer_classifier.classify_layer(algs[0])
+      source_descriptions = layer_describer.source_descriptions(main_alg)
+      name_letters = source_descriptions.map { |d| d.source }.map { |p| options.letter_scheme.letter(p).capitalize }
+      letter_pairs = name_letters.each_slice(2).map { |ls| ls.join }
+      name = letter_pairs.map do |letter_pair|
+        key = if letter_pair.length == 2 then letter_pair else letter_pair * 2 end
+        name = names[key] || letter_pair
+      end.join(" & ")
       csv << [
-        layer_describer.source_description(main_alg),
+        source_descriptions.join(", "),
         main_alg.to_s,
-        center_describer.transformation_description(main_alg),
-        top_corner_describer.source_description(main_alg),
+        center_describer.transformation_descriptions(main_alg).join(", "),
+        top_corner_describer.source_descriptions(main_alg).join(", "),
         alternative_algs.join(', '),
+        name,
         "#{main_alg.length}_mover #{classification}"
       ]
     end
   end
+  puts "Wrote #{solutions.length} items to TSV file #{options.output}."
 end

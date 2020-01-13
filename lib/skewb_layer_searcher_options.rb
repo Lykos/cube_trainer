@@ -9,7 +9,6 @@ module CubeTrainer
     def self.parse(args)
       options = OpenStruct.new
       # Default options
-      options.verbose = true
       options.letter_scheme = DefaultLetterScheme.new
       opt_parser = OptionParser.new do |opts|
         opts.separator ''
@@ -25,6 +24,18 @@ module CubeTrainer
 
         opts.on('-d', '--depth [DEPTH]', Integer, 'Maximum search depth. Infinite if this is not set.') do |d|
           options.depth = d
+        end
+
+        opts.on('-l', '--[no-]layer-corners-as-letters', 'Show layer corners as letters instead of something like DRF.') do |l|
+          options.layer_corners_as_letters = l
+        end
+        
+        opts.on('-t', '--[no-]top-corners-as-letters', 'Show top corners as letters instead of something like URF.') do |t|
+          options.top_corners_as_letters = t
+        end
+        
+        opts.on('-n', '--name_file [FILE]', String, 'CSV file with a mapping from layer piece letter sequences to names.') do |n|
+          options.name_file = n
         end
         
         opts.on_tail('-h', '--help', 'Show this message') do
