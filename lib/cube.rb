@@ -6,7 +6,8 @@ module CubeTrainer
   COLORS = [:yellow, :red, :green, :blue, :orange, :white]
   SIDES = COLORS.length
   OPPOSITE_PAIRS = [[:yellow, :white], [:red, :orange], [:green, :blue]].collect { |e| e.sort }.sort
-  FACE_NAMES = ['U', 'F', 'R', 'L', 'B', 'D']
+  FACE_SYMBOLS = [:U, :F, :R, :L, :B, :D]
+  FACE_NAMES = FACE_SYMBOLS.map { |s| s.to_s }
   ALPHABET_SIZE = 24
   SKEWB_STICKERS = 5
   raise unless COLORS.length == FACE_NAMES.length
