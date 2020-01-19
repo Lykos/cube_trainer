@@ -11,7 +11,6 @@ module CubeTrainer
   # learning.
   PartialResult = Struct.new(:time_s, :failed_attempts, :word)
 
-  # TODO refactor this to properly include the mode
   class Result
     def initialize(mode, timestamp, time_s, input_representation, failed_attempts, word)
       raise ArgumentError, "Invalid mode #{mode}." unless mode.is_a?(Symbol)
