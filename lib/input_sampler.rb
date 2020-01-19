@@ -1,13 +1,11 @@
 require 'sampling_helper'
 require 'cube_average'
 require 'input_item'
+require 'sampler'
 
 module CubeTrainer
 
-  # TODO factor out subcomponents that do different types of sampling.
   class InputSampler
-  
-    include SamplingHelper
   
     # Minimum score that we always give to each element in order not to screw up our sampling if all weights become 0 or so.
     EPSILON_SCORE = 0.000000001
@@ -21,28 +19,33 @@ module CubeTrainer
     # Base that is taken to the power of the badness to punish bad samples.
     BADNESS_BASE = 10
   
-    # Fraction of the samples that use uniform samples to even occasionally cover
-    # easy cases.
-    COVERAGE_FRACTION = 0.15
-  
     # Number of occurrences that we go back to the past to compute the badness of a given item.
     # Occurrences longer ago have no effect on the sampling any more.
     BADNESS_MEMORY = 5
   
     # Number of seconds that are equivalent to one failed attempt. (Used for calculating badness)
     FAILED_SECONDS = 60
+
+    # Fractions that will be used for each type of sampling. Note that the actual sampling also depends on whether or not there are actually
+    # new items available or whether items have to be repeated.
+    SAMPLING_FRACTIONS = {
+      # In case there are still completely new items available, this is the fraction of times that such an item will be chosen.
+      # Note that completely new items will never be chosen if a relatively new item needs to be repeated.
+      new: 0.1,
+
+      # Fraction of the samples that use uniform samples to even occasionally cover easy cases.
+      coverage: 0.15,
+
+      # Fraction of samples that are just simply bad samples.
+      badness: 0.75,
+    }
   
-    # In case there are still completely new items available, this is the fraction of times that such an item will be chosen.
-    # Note that completely new items will never be chosen if a relatively new item needs to be repeated.
-    COMPLETELY_NEW_ITEMS_FRACTION = 0.1
-  
-    # In case there are still relatively new items that need to be repeated available, this is the fraction of times that such an item will be chosen.
-    REPEAT_NEW_ITEMS_FRACTION = 0.8
+    TaggedInputItem = Struct.new(:tag, :input_item)
   
     # `items` are the items from which we get samples. They have to be an array of InputItem. But the representation inside InputItem can be anything.
     # `results_model` is a helper object that retrieves results to get historic scores.
     # `new_item_bounary` is the number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.
-    def initialize(items, results_model, goal_badness=1.0, verbose=false, new_item_boundary=11)
+    def initialize(items, results_model, goal_badness=1.0, verbose=false, repeat_item_boundary=11)
       raise ArgumentError unless items.is_a?(Array)
       raise ArgumentError, "Invalid items #{items.inspect}." unless items.all? { |e| e.is_a?(InputItem) }
       raise unless results_model.respond_to?(:results)
@@ -52,15 +55,36 @@ module CubeTrainer
       @goal_badness = goal_badness
       @results_model.add_result_listener(self)
       @verbose = verbose
-      @new_item_boundary = new_item_boundary
+      @repeat_item_boundary = repeat_item_boundary
+      repeat_sampler = create_adaptive_sampler(:repeat)
+      combined_sampler = CombinedSampler.new([create_adaptive_subsampler(:new), create_adaptive_subsampler(:badness), create_adaptive_subsampler(:coverage)])
+      @sampler = PrioritizedSampler.new([repeat_sampler, combined_sampler])
       reset
     end
-  
-    attr_reader :items
+
+    def sampling_tag_score_method(tag)
+      m = method((tag.to_s + "_score").to_sym)
+      lambda { |tagged_item| m.call(tagged_item.input_item) }
+    end
+
+    def create_adaptive_sampler(tag)
+      tagged_items = @items.map { |i| TaggedInputItem.new(tag, i) }
+      AdaptiveSampler.new(tagged_items, sampling_tag_score_method(tag))
+    end
     
+    def create_adaptive_subsampler(tag)
+      sampler = create_adaptive_sampler(tag)
+      fraction = SAMPLING_FRACTIONS[tag] || (raise ArgumentError)
+      CombinedSampler::SubSampler.new(sampler, fraction)
+    end
+
+    attr_reader :items
+
+    # Reset caches and incremental state, recompute everything from scratch.
     def reset
       @current_occurrence_index = 0
       @occurrence_indices = {}
+      @repetition_indices = {}
       @badness_histories = {}
       @badness_histories.default_proc = proc { |h, k| h[k] = CubeAverage.new(BADNESS_MEMORY, EPSILON_SCORE) }
       @occurrences = {}
@@ -124,11 +148,15 @@ module CubeTrainer
       return EPSILON_SCORE if index.nil?
       [index ** INDEX_EXPONENT, EPSILON_SCORE].max
     end
+
+    def badness_average(item)
+      @badness_histories[item.representation].average      
+    end
   
     # Computes an exponentially growing score based on the given badness that
     # allows us to strongly prefer bad items.
     def badness_score(item)
-      score = BADNESS_BASE ** (@badness_histories[item.representation].average - @goal_badness)
+      score = BADNESS_BASE ** (badness_average(item) - @goal_badness)
       index = items_since_last_occurrence(item)
       [repetition_adjusted_score(index, score), EPSILON_SCORE].max
     end
@@ -141,22 +169,29 @@ module CubeTrainer
   
     # After how many other items should this item be repeated.
     def repetition_index(occ)
-      rep_index = 2 ** occ
-      # Do a bit of random distortion to avoid completely mechanic repetition.
-      distorted_rep_index = distort(rep_index, 0.2)
-      # At least 1 other item should always come in between.
-      [distorted_rep_index.to_i, 1].max
+      @repetition_indices[occ] ||= begin
+                                     rep_index = 2 ** occ
+                                     # Do a bit of random distortion to avoid completely mechanic repetition.
+                                     distorted_rep_index = distort(rep_index, 0.2)
+                                     # At least 1 other item should always come in between.
+                                     [distorted_rep_index.to_i, 1].max
+                                   end
+    end
+
+    def occurrences(item)
+      @occurrences[item.representation]
     end
   
-    # Score for items that are either completely new or have occurred less than `@new_item_boundary` times.
+    # Score for items that are either completely new 
     # For all other items, it's 0.
-    def new_item_score(item)
-      occ = @occurrences[item.representation]
-      if occ == 0
-        # Items that have never been seen get a positive score, but less than items that need
-        # to be repeated urgently.
-        return 1
-      elsif occ >= @new_item_boundary
+    def new_score(item)
+      occurrences(item) == 0 ? 1 : 0
+    end
+    
+    # Score for items that have occored at least once and have occurred less than `@repeat_item_boundary` times.
+    def repeat_score(item)
+      occ = occurrences(item)
+      if occ == 0 || occ >= @repeat_item_boundary
         # No repetitions necessary any more.
         return 0
       end
@@ -180,59 +215,15 @@ module CubeTrainer
       end
     end
   
-    # Decide randomly whether we should do a coverage sample. If not, we should do a badness sample.
-    def do_coverage_sample
-      rand(0) < COVERAGE_FRACTION
-    end
-  
-    # Decide randomly whether we should handle a new item, i.e. a completely new or a relatively new
-    # one that needs to be repeated.
-    def do_new_item(new_items_score)
-      if new_items_score == 1
-        return rand(0) < COMPLETELY_NEW_ITEMS_FRACTION
-      else
-        return rand(0) < REPEAT_NEW_ITEMS_FRACTION
-      end
-    end
-  
     def random_item
-      # First check whether there are any new items that we have to show to the user.
-      new_items = nil
-      new_items_score = 0
-      items_with_score = 0
-      @items.each do |item|
-        score = new_item_score(item)
-        if score > 1
-          items_with_score += 1
-        end
-        if score > new_items_score
-          new_items = [item]
-          new_items_score = score
-        elsif score == new_items_score && score > 0
-          new_items.push(item)
-        end
+      tagged_sample = @sampler.random_item
+      item = tagged_sample.input_item
+      if @verbose
+        tag = tagged_sample.tag
+        score = sampling_tag_score_method(tag).call(tagged_sample)
+        puts "sampling tag: #{tag}; score: #{score}; items since last occurrence #{items_since_last_occurrence(item)}; occurrences: #{occurrences(item)}"
       end
-      puts "#{items_with_score} items need repetition." if @verbose and items_with_score > 0
-      # If we have a new item that has to be shown, show it.
-      if new_items && do_new_item(new_items_score)
-        s = new_items.sample
-        if new_items_score == 1
-          puts "Completely new item!" if @verbose
-        else
-          puts "Repeat new item sample; Score: #{new_items_score}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}" if @verbose
-        end
-        s
-      else
-        if do_coverage_sample
-          s = sample_by (@items) { |s| coverage_score(s) }
-          puts "Coverage sample; Score: #{coverage_score(s)}; Badness avg: #{@badness_histories[s].average}; items_since_last_occurrence #{items_since_last_occurrence(s)}; occurrences: #{@occurrences[s]}" if @verbose
-          s
-        else
-          s = sample_by(@items) { |s| badness_score(s) }
-          puts "Badness sample; Score: #{badness_score(s)}; Badness avg #{@badness_histories[s].average}; occurrences: #{@occurrences[s]}" if @verbose
-          s
-        end
-      end
+      item
     end
   
   end
