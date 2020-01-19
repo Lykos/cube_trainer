@@ -107,12 +107,11 @@ module CubeTrainer
       @state = color_scheme.solved_skewb_state
       solved_solution = SkewbLayerSolution.new(nil, nil)
       example_layer_color = color_scheme.color(EXAMPLE_LAYER_FACE_SYMBOL)
-      @candidates = derived_layer_solutions(solved_solution)
+      @candidates = [solved_solution]
       @finder = SkewbLayerFinder.new([example_layer_color])
       @fingerprinter = SkewbLayerFingerprinter.new(EXAMPLE_LAYER_FACE, color_scheme)
       @layer_solutions = {}
       @num_layer_solutions = 0
-      add_layer_solution(solved_solution)
     end
 
     attr_reader :good_layer_solutions
