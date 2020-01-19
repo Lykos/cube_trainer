@@ -7,12 +7,13 @@ include CubeTrainer
 
 describe HintParser do
   let (:part_type) { Corner }
-  let (:letter_scheme) { DefaultLetterScheme.new }
+  let (:letter_scheme) { BernhardLetterScheme.new }
+  let (:color_scheme) { ColorScheme::BERNHARD }
   let (:buffer) { letter_scheme.default_buffer(part_type) }
   let (:verbose) { false }
   let (:test_comms) { false }
   let (:cube_size) { 3 }
-  let (:hint_parser) { HintParser.new(part_type, buffer, letter_scheme, verbose, cube_size, test_comms) }
+  let (:hint_parser) { HintParser.new(part_type, buffer, letter_scheme, color_scheme, verbose, cube_size, test_comms) }
 
   it "should parse a valid hint table correctly" do
     table = [

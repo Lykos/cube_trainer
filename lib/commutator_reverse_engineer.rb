@@ -1,19 +1,29 @@
+require 'letter_scheme'
+require 'letter_pair'
+require 'color_scheme'
+
 module CubeTrainer
 
   class CommutatorReverseEngineer
-    def initialize(part_type, buffer, letter_scheme, cube_size)
+    
+    def initialize(part_type, buffer, letter_scheme, color_scheme, cube_size)
+      raise ArgumentError unless part_type.is_a?(Class)
+      raise ArgumentError unless buffer.is_a?(Part) && buffer.is_a?(part_type)
+      raise ArgumentError unless letter_scheme.is_a?(LetterScheme)
+      raise ArgumentError unless color_scheme.is_a?(ColorScheme)
       raise ArgumentError unless cube_size.is_a?(Integer)
       @part_type = part_type
       @buffer = buffer
       @letter_scheme = letter_scheme
-      @state = CubeState.solved(cube_size)
+      @color_scheme = color_scheme
+      @state = color_scheme.solved_cube_state(cube_size)
       @buffer_coordinates = @state.solved_positions(@buffer, 0)
     end
 
     def piece_at_coordinates(coordinates)
       coordinates
       colors = coordinates.map { |c| @state[c] }
-      @part_type.for_colors(colors)
+      @color_scheme.part_for_colors(@part_type, colors)
     end
 
     def find_stuff

@@ -24,12 +24,13 @@ RSpec::Matchers.define :be_the_same_descriptions_as do |expected|
 end
 
 describe SkewbTransformationDescriber do
-  let(:yellow_corners) { Corner::ELEMENTS.select { |c| c.colors.first == :yellow } }
-  let(:white_corners) { Corner::ELEMENTS.select { |c| c.colors.first == :white } }
-  let(:non_bottom_faces) { Face::ELEMENTS.select { |c| c.color != :white } }
-  let(:top_corners_describer) { SkewbTransformationDescriber.new([], yellow_corners, :show_staying) }
-  let(:centers_describer) { SkewbTransformationDescriber.new(non_bottom_faces, [], :omit_staying) }
-  let(:bottom_describer) { SkewbTransformationDescriber.new([], white_corners, :omit_staying) }
+  let(:top_corners) { Corner::ELEMENTS.select { |c| c.face_symbols.first == :U } }
+  let(:bottom_corners) { Corner::ELEMENTS.select { |c| c.face_symbols.first == :D } }
+  let(:non_bottom_faces) { Face::ELEMENTS.select { |c| c.face_symbol != :D } }
+  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:top_corners_describer) { SkewbTransformationDescriber.new([], top_corners, :show_staying, color_scheme) }
+  let(:centers_describer) { SkewbTransformationDescriber.new(non_bottom_faces, [], :omit_staying, color_scheme) }
+  let(:bottom_describer) { SkewbTransformationDescriber.new([], bottom_corners, :omit_staying, color_scheme) }
 
   it 'should describe center transformations of sledges accurately' do
     alg = parse_sarahs_skewb_algorithm("F' L F L'")

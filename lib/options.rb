@@ -36,7 +36,8 @@ module CubeTrainer
       options.commutator_info = COMMUTATOR_TYPES['corners']
       options.restrict_letters = nil
       options.exclude_letters = []
-      options.letter_scheme = DefaultLetterScheme.new
+      options.letter_scheme = BernhardLetterScheme.new
+      options.color_scheme = ColorScheme::BERNHARD
       options.picture = false
       options.mute = false
       options.buffer = nil

@@ -17,7 +17,11 @@ module CubeTrainer
     end
 
     def solved_colors(skewb_state)
-      skewb_state.solved_layers & @color_restrictions
+      if @color_restrictions
+        skewb_state.solved_layers & @color_restrictions
+      else
+        skewb_state.solved_layers
+      end
     end
 
     def solution_score

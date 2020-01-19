@@ -12,13 +12,13 @@ module CubeTrainer
 
     COLOR_MODES = [:color, :nocolor]
     ColorInfo = Struct.new(:reverse_lines_mode, :reverse_columns_mode, :skewb_corner_permutation)
-    COLOR_INFOS = {
-      :yellow => ColorInfo.new(:reverse, :reverse, [2, 3, 0, 1]),
-      :blue => ColorInfo.new(:keep, :reverse, [2, 0, 3, 1]),
-      :red => ColorInfo.new(:keep, :reverse, [2, 0, 3, 1]),
-      :green => ColorInfo.new(:keep, :keep, [1, 0, 3, 2]),
-      :orange => ColorInfo.new(:keep, :keep, [1, 0, 3, 2]),
-      :white => ColorInfo.new(:keep, :reverse, [2, 0, 3, 1])
+    FACE_SYMBOL_INFOS = {
+      :U => ColorInfo.new(:reverse, :reverse, [2, 3, 0, 1]),
+      :L => ColorInfo.new(:keep, :reverse, [2, 0, 3, 1]),
+      :F => ColorInfo.new(:keep, :reverse, [2, 0, 3, 1]),
+      :R => ColorInfo.new(:keep, :keep, [1, 0, 3, 2]),
+      :B => ColorInfo.new(:keep, :keep, [1, 0, 3, 2]),
+      :D => ColorInfo.new(:keep, :reverse, [2, 0, 3, 1])
     }
   
     def color_character(color, color_mode)
@@ -41,15 +41,15 @@ module CubeTrainer
       end
     end
 
-    def face_lines(cube_state, color, color_mode, row_multiplicity=1, column_multiplicity=1)
-      face = Face.for_color(color)
-      color_info = COLOR_INFOS[color]
+    def face_lines(cube_state, face_symbol, color_mode, row_multiplicity=1, column_multiplicity=1)
+      face = Face.for_face_symbol(face_symbol)
+      face_symbol_info = FACE_SYMBOL_INFOS[face_symbol]
       stickers = cube_state.sticker_array(face)
       lines = stickers.collect_concat do |sticker_line|
         line = sticker_line.collect { |c| color_character(c, color_mode) * column_multiplicity }
-        [maybe_reverse(color_info.reverse_columns_mode, line).join] * row_multiplicity
+        [maybe_reverse(face_symbol_info.reverse_columns_mode, line).join] * row_multiplicity
       end
-      maybe_reverse(color_info.reverse_lines_mode, lines)
+      maybe_reverse(face_symbol_info.reverse_lines_mode, lines)
     end
 
     SKEWB_FACE_SIZE = 5
@@ -77,46 +77,46 @@ module CubeTrainer
     # ggggg
     # ogggb
     # oogbb
-    def skewb_face_lines(cube_state, color, color_mode)
-      face = Face.for_color(color)
-      color_info = COLOR_INFOS[color]
+    def skewb_face_lines(cube_state, face_symbol, color_mode)
+      face = Face.for_face_symbol(face_symbol)
+      face_symbol_info = FACE_SYMBOL_INFOS[face_symbol]
       stickers = cube_state.sticker_array(face)
       center_color = color_character(stickers[0], color_mode)
       corner_colors = stickers[1..-1].collect { |c| color_character(c, color_mode) }
-      permuted_corner_colors = apply_permutation(corner_colors, color_info.skewb_corner_permutation)
+      permuted_corner_colors = apply_permutation(corner_colors, face_symbol_info.skewb_corner_permutation)
       raise unless corner_colors.length == 4
       skewb_ascii_art(center_color, permuted_corner_colors)
     end
 
     def ll_string(cube_state, color_mode)
-      yellow_face = face_lines(cube_state, :yellow, color_mode, 2, 3)
-      red_face = face_lines(cube_state, :red, color_mode, 1, 3)
-      green_face = face_lines(cube_state, :green, color_mode, 1, 3)
-      pll_line = red_face.first + green_face.first
-      (yellow_face + [pll_line] * 3).join("\n")
+      top_face = face_lines(cube_state, :U, color_mode, 2, 3)
+      front_face = face_lines(cube_state, :F, color_mode, 1, 3)
+      right_face = face_lines(cube_state, :R, color_mode, 1, 3)
+      pll_line = front_face.first + right_face.first
+      (top_face + [pll_line] * 3).join("\n")
     end
 
     def cube_string(cube_state, color_mode)
-      yellow_face = face_lines(cube_state, :yellow, color_mode)
-      blue_face = face_lines(cube_state, :blue, color_mode)
-      red_face = face_lines(cube_state, :red, color_mode)
-      green_face = face_lines(cube_state, :green, color_mode)
-      orange_face = face_lines(cube_state, :orange, color_mode)
-      white_face = face_lines(cube_state, :white, color_mode)
-      middle_belt = zip_concat_lines(blue_face, red_face, green_face, orange_face)
-      lines = pad_lines(yellow_face, cube_state.n) + middle_belt + pad_lines(white_face, cube_state.n)
+      top_face = face_lines(cube_state, :U, color_mode)
+      left_face = face_lines(cube_state, :L, color_mode)
+      front_face = face_lines(cube_state, :F, color_mode)
+      right_face = face_lines(cube_state, :R, color_mode)
+      back_face = face_lines(cube_state, :B, color_mode)
+      bottom_face = face_lines(cube_state, :D, color_mode)
+      middle_belt = zip_concat_lines(left_face, front_face, right_face, back_face)
+      lines = pad_lines(top_face, cube_state.n) + middle_belt + pad_lines(bottom_face, cube_state.n)
       lines.join("\n")
     end
 
     def skewb_string(cube_state, color_mode)
-      yellow_face = skewb_face_lines(cube_state, :yellow, color_mode)
-      blue_face = skewb_face_lines(cube_state, :blue, color_mode)
-      red_face = skewb_face_lines(cube_state, :red, color_mode)
-      green_face = skewb_face_lines(cube_state, :green, color_mode)
-      orange_face = skewb_face_lines(cube_state, :orange, color_mode)
-      white_face = skewb_face_lines(cube_state, :white, color_mode)
-      middle_belt = zip_concat_lines(blue_face, red_face, green_face, orange_face)
-      lines = pad_lines(yellow_face, SKEWB_FACE_SIZE) + middle_belt + pad_lines(white_face, SKEWB_FACE_SIZE)
+      top_face = skewb_face_lines(cube_state, :U, color_mode)
+      left_face = skewb_face_lines(cube_state, :L, color_mode)
+      front_face = skewb_face_lines(cube_state, :F, color_mode)
+      right_face = skewb_face_lines(cube_state, :R, color_mode)
+      back_face = skewb_face_lines(cube_state, :B, color_mode)
+      bottom_face = skewb_face_lines(cube_state, :D, color_mode)
+      middle_belt = zip_concat_lines(left_face, front_face, right_face, back_face)
+      lines = pad_lines(top_face, SKEWB_FACE_SIZE) + middle_belt + pad_lines(bottom_face, SKEWB_FACE_SIZE)
       lines.join("\n")
     end
 

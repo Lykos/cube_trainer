@@ -17,8 +17,8 @@ include CubeTrainer
 include CubePrintHelper
 
 options = SkewbLayerSearcherOptions.parse(ARGV)
-solutions = SkewbLayerSearcher.calculate(options.verbose, options.depth)
-layer_improver = SkewbLayerImprover.new(Face.for_color(:white))
+solutions = SkewbLayerSearcher.calculate(options.color_scheme, options.verbose, options.depth)
+layer_improver = SkewbLayerImprover.new(Face::D, options.color_scheme)
 solutions = solutions.map do |algs|
   algs.map { |alg| layer_improver.improve_layer(alg) }
 end.sort_by { |algs| algs[0] }
@@ -28,7 +28,7 @@ if options.verbose
   puts "#{solutions.length} solutions:" 
   puts
 
-  state = SkewbState.solved
+  state = options.color_scheme.solved_skewb_state
   solutions.each do |algs|
     algs.first.inverse.apply_temporarily_to(state) do
       puts skewb_string(state, :color)
@@ -48,16 +48,16 @@ if options.output
     end
     puts "Read #{names.length} names."
   end
-  state = SkewbState.solved
-  yellow_corners = Corner::ELEMENTS.select { |c| c.colors.first == :yellow }
-  white_corners = Corner::ELEMENTS.select { |c| c.colors.first == :white }
-  non_bottom_faces = Face::ELEMENTS.select { |c| c.color != :white }
+  state = options.color_scheme.solved_skewb_state
+  top_corners = Corner::ELEMENTS.select { |c| c.face_symbol.first == :U }
+  bottom_corners = Corner::ELEMENTS.select { |c| c.face_symbol.first == :D }
+  non_bottom_faces = Face::ELEMENTS.select { |c| c.face_symbol != :D }
   layer_corners_letter_scheme = if options.layer_corners_as_letters then options.letter_scheme else nil end
-  layer_describer = SkewbTransformationDescriber.new([], white_corners, :omit_staying, layer_corners_letter_scheme)
+  layer_describer = SkewbTransformationDescriber.new([], bottom_corners, :omit_staying, layer_corners_letter_scheme)
   center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [], :omit_staying)
   top_corners_letter_scheme = if options.top_corners_as_letters then options.letter_scheme else nil end
-  top_corner_describer = SkewbTransformationDescriber.new([], yellow_corners, :show_staying, top_corners_letter_scheme)
-  layer_classifier = SkewbLayerClassifier.new(Face.for_color(:white))
+  top_corner_describer = SkewbTransformationDescriber.new([], top_corners, :show_staying, top_corners_letter_scheme)
+  layer_classifier = SkewbLayerClassifier.new(Face::D, options.color_scheme)
 
   CSV.open(options.output, 'wb', {:col_sep => "\t"}) do |csv|
     csv << ['case description', 'main alg', 'center_transformations', 'top_corner_transformations', 'alternative algs', 'name', 'tags']

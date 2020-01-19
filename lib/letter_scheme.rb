@@ -1,5 +1,9 @@
+require 'cube'
+
 module CubeTrainer
+
   class LetterScheme
+
     def initialize
       alphabet.each { |letter| raise "Uncanonical letter #{letter} in alphabet." if letter != canonicalize_letter(letter) }
     end
@@ -37,7 +41,8 @@ module CubeTrainer
 
   end
 
-  class DefaultLetterScheme < LetterScheme
+  class BernhardLetterScheme < LetterScheme
+    
     def alphabet
       @alphabet ||= "a".upto("x").to_a
     end
@@ -52,15 +57,17 @@ module CubeTrainer
     end
 
     PART_TYPE_BUFFERS = {
-      Corner => Corner.for_colors([:yellow, :blue, :orange]),
-      Edge => Edge.for_colors([:yellow, :red]),
-      Wing => Wing.for_colors([:red, :yellow]),
-      XCenter => XCenter.for_colors([:yellow, :green, :red]),
-      TCenter => TCenter.for_colors([:yellow, :red])
+      Corner => Corner.for_face_symbols([:U, :L, :B]),
+      Edge => Edge.for_face_symbols([:U, :F]),
+      Wing => Wing.for_face_symbols([:F, :U]),
+      XCenter => XCenter.for_face_symbols([:U, :R, :F]),
+      TCenter => TCenter.for_face_symbols([:U, :F])
     }
 
     def default_buffer(part_type)
       PART_TYPE_BUFFERS[part_type]
     end
+    
   end
+  
 end

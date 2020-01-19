@@ -4,7 +4,7 @@ require 'cube'
 include CubeTrainer
 
 describe LetterScheme do |clazz|
-  let(:letter_scheme) { DefaultLetterScheme.new }
+  let(:letter_scheme) { BernhardLetterScheme.new }
   let(:letter) { letter_scheme.alphabet.sample }
 
   it 'should find the corner with the right letter' do

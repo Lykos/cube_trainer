@@ -5,7 +5,9 @@ require 'parser'
 include CubeTrainer
 
 describe SkewbState do
-  let (:skewb_state) { SkewbState.solved }
+  
+  let (:color_scheme) { ColorScheme::BERNHARD }
+  let (:skewb_state) { color_scheme.solved_skewb_state }
   
   it "should have the right solved state" do
     expect(skewb_state.any_layer_solved?).to be true

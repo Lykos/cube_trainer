@@ -1,6 +1,7 @@
 # coding: utf-8
 require 'cube'
 require 'skewb_state'
+require 'color_scheme'
 require 'letter_scheme'
 
 module CubeTrainer
@@ -108,12 +109,17 @@ module CubeTrainer
       end
     end
 
-    def initialize(interesting_faces, interesting_corners, staying_mode, letter_scheme=nil)
+    def initialize(interesting_faces, interesting_corners, staying_mode, color_scheme, letter_scheme=nil)
+      raise ArgumentError unless interesting_faces.all? { |f| f.is_a?(Face) }
+      raise ArgumentError unless interesting_corners.all? { |f| f.is_a?(Corner) }
       raise ArgumentError unless [:show_staying, :omit_staying].include?(staying_mode)
+      raise ArgumentError unless color_scheme.is_a?(ColorScheme)
+      raise ArgumentError unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
       @interesting_faces = interesting_faces
       @interesting_corners = interesting_corners
       @show_staying = staying_mode == :show_staying
-      @skewb_state = SkewbState.solved
+      @color_scheme = color_scheme
+      @skewb_state = @color_scheme.solved_skewb_state
       @letter_scheme = letter_scheme
     end
 
@@ -124,7 +130,7 @@ module CubeTrainer
         complete_cycle.push(current_part)
         break if complete_cycle.length > 1 && current_part == part
         next_part_colors = current_part.rotations.map { |r| @skewb_state[yield r] }
-        current_part = part.class.for_colors(next_part_colors)
+        current_part = @color_scheme.part_for_colors(part.class, next_part_colors)
       end
       PartCycle.new(@letter_scheme, complete_cycle)
     end

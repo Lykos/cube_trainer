@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/rubyn
 # coding: utf-8
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
@@ -7,6 +7,7 @@ require 'move'
 require 'algorithm'
 require 'options'
 require 'skewb_layer_finder'
+require 'color_scheme'
 require 'skewb_state'
 require 'parser'
 require 'cube_print_helper'
@@ -24,7 +25,7 @@ scramble_string = gets.chomp
 scramble = parse_fixed_corner_skewb_algorithm(scramble_string)
 
 layer_finder = SkewbLayerFinder.new(options.restrict_colors)
-skewb_state = SkewbState.solved
+skewb_state = ColorScheme::BERNHARD.solved_skewb_state
 scramble.apply_to(skewb_state)
 puts skewb_string(skewb_state, :color)
 

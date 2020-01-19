@@ -7,6 +7,7 @@ require 'move'
 require 'skewb_layer_finder'
 require 'skewb_scrambler'
 require 'skewb_state'
+require 'color_scheme'
 require 'thread'
 
 include CubeTrainer
@@ -20,7 +21,7 @@ queue = Queue.new
 Producer = Thread.new do
   layer_finder = SkewbLayerFinder.new
   scrambler = SkewbScrambler.new
-  skewb_state = SkewbState.solved
+  skewb_state = ColorScheme::BERNHARD.solved_skewb_state
 
   loop do
     scramble = scrambler.random_moves(SCRAMBLE_LENGTH)

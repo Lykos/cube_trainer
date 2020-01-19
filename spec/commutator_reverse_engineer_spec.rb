@@ -1,17 +1,21 @@
 require 'commutator_reverse_engineer'
 require 'cube'
 require 'parser'
+require 'color_scheme'
 require 'letter_scheme'
 
 include CubeTrainer
 
 describe CommutatorReverseEngineer do
 
+  let (:letter_scheme) { BernhardLetterScheme.new }
+  let (:color_scheme) { ColorScheme::WCA }
+  let (:cube_size) { 3 }
+  let (:engineer) { CommutatorReverseEngineer.new(part_type, buffer, letter_scheme, color_scheme, cube_size) }
+
   context 'for corners' do
     let (:part_type) { Corner }
-    let (:buffer) { Corner.for_colors([:yellow, :blue, :orange]) }
-    let (:cube_size) { 3 }
-    let (:engineer) { CommutatorReverseEngineer.new(part_type, buffer, DefaultLetterScheme.new, cube_size) }
+    let (:buffer) { Corner.for_face_symbols([:U, :L, :B]) }
 
     it "should find the letters of ig" do
       alg = parse_commutator("[L', U R U']").algorithm
@@ -47,9 +51,7 @@ describe CommutatorReverseEngineer do
 
   context 'for edges' do
     let (:part_type) { Edge }
-    let (:buffer) { Edge.for_colors([:yellow, :red]) }
-    let (:cube_size) { 3 }
-    let (:engineer) { CommutatorReverseEngineer.new(part_type, buffer, DefaultLetterScheme.new, cube_size) }
+    let (:buffer) { Edge.for_face_symbols([:U, :F]) }
 
     it "should find the letters of a simple alg" do
       alg = parse_commutator("[R' F R, S]").algorithm

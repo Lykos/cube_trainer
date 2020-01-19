@@ -54,6 +54,13 @@ module CubeTrainer
       end
       second_part + first_part
     end
+
+    # Returns the only element of an array and raises if the array has not exactly one element.
+    def only(array)
+      raise ArgumentError unless array.length == 1
+      array[0]
+    end
+          
   end
 
 end

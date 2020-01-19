@@ -36,7 +36,7 @@ module CubeTrainer
     end
 
     def generate_input_items
-      cube_state = CubeState.solved(options.cube_size)
+      cube_state = @color_scheme.solved_cube_state(options.cube_size)
       non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       two_twists = correctly_oriented_corners.permutation(2).map do |c1, c2|
@@ -163,7 +163,7 @@ module CubeTrainer
     end
 
     def generate_input_items
-      cube_state = CubeState.solved(options.cube_size)
+      cube_state = @color_scheme.solved_cube_state(options.cube_size)
       non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       1.upto(2).collect_concat do |twist_number|

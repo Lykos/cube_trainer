@@ -2,6 +2,7 @@ require 'move'
 require 'parser'
 require 'skewb_layer_finder'
 require 'cube'
+require 'color_scheme'
 require 'cube_print_helper'
 require 'set'
 require 'skewb_layer_fingerprinter'
@@ -28,8 +29,8 @@ module CubeTrainer
 
     end
 
-    EXAMPLE_LAYER_COLOR = :white
-    EXAMPLE_LAYER_FACE = Face.for_color(EXAMPLE_LAYER_COLOR)
+    EXAMPLE_LAYER_FACE_SYMBOL = :D
+    EXAMPLE_LAYER_FACE = Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
     AROUND_FACE_ROTATIONS = [nil] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Rotation.new(EXAMPLE_LAYER_FACE.chirality_canonicalize, d) }
     NON_MOVE_TRANSFORMATIONS = AROUND_FACE_ROTATIONS.product([true, false]).select { |r, m| r || m }.map { |r, m| NonMoveTransformation.new(r, m) }
 
@@ -97,15 +98,18 @@ module CubeTrainer
       
     end
 
-    def initialize(verbose, max_length)
+    def initialize(color_scheme, verbose, max_length)
+      raise TypeError unless color_scheme.is_a?(ColorScheme)
+      raise TypeError unless max_length.nil? || max_length.is_a?(Integer)
       @verbose = verbose
       @max_length = max_length
       @good_layer_solutions = []
-      @state = SkewbState.solved
+      @state = color_scheme.solved_skewb_state
       solved_solution = SkewbLayerSolution.new(nil, nil)
+      example_layer_color = color_scheme.color(EXAMPLE_LAYER_FACE_SYMBOL)
       @candidates = derived_layer_solutions(solved_solution)
-      @finder = SkewbLayerFinder.new([EXAMPLE_LAYER_COLOR])
-      @fingerprinter = SkewbLayerFingerprinter.new(EXAMPLE_LAYER_FACE) 
+      @finder = SkewbLayerFinder.new([example_layer_color])
+      @fingerprinter = SkewbLayerFingerprinter.new(EXAMPLE_LAYER_FACE, color_scheme)
       @layer_solutions = {}
       @num_layer_solutions = 0
       add_layer_solution(solved_solution)
@@ -126,14 +130,14 @@ module CubeTrainer
 
     # Find out whether there are any layers that are equivalent without rotations.
     # In those cases, we add this as an alternative solution.
-    def check_equivalent_solution(candidate, verbose)
+    def check_equivalent_solution(candidate)
       has_equivalent_solution = false
       get_layer_solutions.each do |l|
         l.layer_solution.apply_temporarily_to(@state) do
-          if @state.layer_solved?(EXAMPLE_LAYER_COLOR)
+          if @state.layer_at_face_solved?(EXAMPLE_LAYER_FACE)
             l.maybe_add_alternative_solution(candidate)
             has_equivalent_solution = true
-            puts "equivalent to #{l}" if verbose
+            puts "equivalent to #{l}" if @verbose
           end
         end
       end
@@ -142,25 +146,19 @@ module CubeTrainer
 
     # Find out whether there are any layers that are equivalent with rotations.
     # In those cases, we don't add this as an alternative solution because there will be another one that's equivalent modulo rotations.
-    def check_equivalent_modified_solution(candidate, verbose)
+    def check_equivalent_modified_solution(candidate)
       has_equivalent_solution = false
-      # puts "normal state" if verbose
-      # puts skewb_string(@state, :color) if verbose
       transformed_states = NON_MOVE_TRANSFORMATIONS.collect.with_index do |t, i|
-        # puts "#{i}: #{t.inspect}" if verbose
         t.apply_temporarily_to(@state) {
-          # puts skewb_string(@state, :color) if verbose
           @state.dup
         }
       end
       get_layer_solutions.each do |l|
         transformed_states.each.with_index do |s, i|
           l.layer_solution.apply_temporarily_to(s) do
-            if s.layer_solved?(EXAMPLE_LAYER_COLOR)
-              # puts "solved" if verbose
-              # puts skewb_string(s, :color) if verbose
+            if s.layer_at_face_solved?(EXAMPLE_LAYER_FACE)
               has_equivalent_solution = true
-              puts "transformed #{i} equivalent to #{l}" if verbose
+              puts "transformed #{i} equivalent to #{l}" if @verbose
             end
           end
         end
@@ -168,8 +166,8 @@ module CubeTrainer
       has_equivalent_solution
     end
     
-    def self.calculate(verbose, max_length=nil)
-      searcher = new(verbose, max_length)
+    def self.calculate(color_scheme, verbose, max_length=nil)
+      searcher = new(color_scheme, verbose, max_length)
       searcher.calculate
       searcher.good_layer_solutions.map { |s| s.extract_algorithms }
     end
@@ -199,31 +197,17 @@ module CubeTrainer
       get_layer_solutions.push(candidate)
     end
 
-    def debugged_algs
-      @debugged_algs ||= [
-        "F'B  F  L  F'L'",
-        "L'R  L  B  L'B'",
-        "B'F  B  R  B'R'",
-        "R'L  R  F  R'F'",
-        "F B' F' R' F R",
-        "R L' R' B' R B",
-        "B F' B' L' B L",
-        "L R' L' F' L F",
-      ].map { |s| parse_sarahs_skewb_algorithm(s) }
-    end
-
     def calculate
       until candidates_empty?
         candidate = pop_candidate
-        verbose = debugged_algs.any? { |a| a.has_suffix?(candidate.layer_solution) }
         puts "Candidates: #{@candidates.length} Layers: #{@num_layer_solutions} Good layers: #{@good_layer_solutions.length}" if @verbose
         puts "Candidate: #{candidate}" if @verbose
         candidate.layer_solution.inverse.apply_temporarily_to(@state) do
           # Is there an existing equivalent layer that we already looked at?
           has_equivalent_layer = false
 
-          has_equivalent_layer ||= check_equivalent_solution(candidate, verbose)
-          has_equivalent_layer ||= check_equivalent_modified_solution(candidate, verbose)
+          has_equivalent_layer ||= check_equivalent_solution(candidate)
+          has_equivalent_layer ||= check_equivalent_modified_solution(candidate)
           
           unless has_equivalent_layer
             # If there were no equivalent layers in any way, this is a new type of layer.

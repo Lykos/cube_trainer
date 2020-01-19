@@ -1,14 +1,18 @@
 require 'cube_state'
+require 'cube_constants'
 require 'cube'
 require 'move'
 require 'coordinate'
 require 'parser'
 require 'letter_scheme'
+require 'color_scheme'
 
 include CubeTrainer
+include CubeConstants
 
 RSpec.shared_examples 'cube_state' do |cube_size|
-  let(:letter_scheme) { DefaultLetterScheme.new }
+  let(:letter_scheme) { BernhardLetterScheme.new }
+  let(:color_scheme) { ColorScheme::BERNHARD }
 
   def for_letter(part_type, letter)
     letter_scheme.for_letter(part_type, letter)
@@ -16,12 +20,11 @@ RSpec.shared_examples 'cube_state' do |cube_size|
 
   def expect_stickers_changed(cube_state, changed_parts)
     original_state = create_interesting_cube_state(cube_state.n)
-    COLORS.each do |c|
+    FACE_SYMBOLS.each do |s|
       cube_state.n.times do |x|
         cube_state.n.times do |y|
-          coordinate = Coordinate.new(Face.for_color(c), cube_state.n, x, y)
-          expected_color = changed_parts[[c, x, y]] || original_state[coordinate]
-          p coordinate, cube_state[coordinate], expected_color, changed_parts[[c, x, y]] if cube_state[coordinate] != expected_color
+          coordinate = Coordinate.new(Face.for_face_symbol(s), cube_state.n, x, y)
+          expected_color = changed_parts[[s, x, y]] || original_state[coordinate]
           expect(cube_state[coordinate]).to be == expected_color
         end
       end
@@ -29,41 +32,35 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   end
 
   def create_interesting_cube_state(cube_size)
-    state = CubeState.solved(cube_size)
+    state = color_scheme.solved_cube_state(cube_size)
     # The state is like a r2 b2 to make turns a bit more interesting than solved faces.
     0.upto(cube_size - 1) do |a|
-      state[Coordinate.new(white_face, cube_size, a, 1)] = :yellow
-      state[Coordinate.new(white_face, cube_size, -2, a)] = :yellow
-      state[Coordinate.new(yellow_face, cube_size, a, 1)] = :white
-      state[Coordinate.new(yellow_face, cube_size, -2, a)] = :white
-      state[Coordinate.new(red_face, cube_size, a, 1)] = :orange
-      state[Coordinate.new(orange_face, cube_size, a, 1)] = :red
-      state[Coordinate.new(blue_face, cube_size, a, -2)] = :green
-      state[Coordinate.new(green_face, cube_size, a, -2)] = :blue
+      state[Coordinate.new(Face::D, cube_size, a, 1)] = :yellow
+      state[Coordinate.new(Face::D, cube_size, -2, a)] = :yellow
+      state[Coordinate.new(Face::U, cube_size, a, 1)] = :white
+      state[Coordinate.new(Face::U, cube_size, -2, a)] = :white
+      state[Coordinate.new(Face::F, cube_size, a, 1)] = :orange
+      state[Coordinate.new(Face::B, cube_size, a, 1)] = :red
+      state[Coordinate.new(Face::L, cube_size, a, -2)] = :green
+      state[Coordinate.new(Face::R, cube_size, a, -2)] = :blue
     end
-    state[Coordinate.new(white_face, cube_size, -2, -2)] = :white
-    state[Coordinate.new(yellow_face, cube_size, -2, -2)] = :yellow
+    state[Coordinate.new(Face::D, cube_size, -2, -2)] = :white
+    state[Coordinate.new(Face::U, cube_size, -2, -2)] = :yellow
     state
   end
 
-  let (:white_face) { Face.for_color(:white) }
-  let (:yellow_face) { Face.for_color(:yellow) }
-  let (:red_face) { Face.for_color(:red) }
-  let (:orange_face) { Face.for_color(:orange) }
-  let (:green_face) { Face.for_color(:green) }
-  let (:blue_face) { Face.for_color(:blue) }
   let (:cube_state) { create_interesting_cube_state(cube_size) }
   
   it 'should have the right state after applying a nice corner commutator' do
     cube_state.apply_piece_cycle([for_letter(Corner, 'c'), for_letter(Corner, 'd'), for_letter(Corner, 'k')])
     changed_parts = {
-      [:yellow, cube_size - 1, cube_size - 1] => :green,
-      [:green, 0, cube_size - 1] => :orange,
-      [:green, cube_size - 1, cube_size - 1] => :yellow,
-      [:orange, 0, 0] => :blue,
-      [:orange, 0, cube_size - 1] => :white,
-      [:blue, 0, cube_size - 1] => :orange,
-      [:white, cube_size - 1, 0] => :green,
+      [:U, cube_size - 1, cube_size - 1] => :green,
+      [:R, 0, cube_size - 1] => :orange,
+      [:R, cube_size - 1, cube_size - 1] => :yellow,
+      [:B, 0, 0] => :blue,
+      [:B, 0, cube_size - 1] => :white,
+      [:L, 0, cube_size - 1] => :orange,
+      [:D, cube_size - 1, 0] => :green,
     }
     expect_stickers_changed(cube_state, changed_parts)
   end
@@ -71,13 +68,13 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a nasty corner commutator' do
     cube_state.apply_piece_cycle([for_letter(Corner, 'c'), for_letter(Corner, 'h'), for_letter(Corner, 'g')])
     changed_parts = {
-      [:yellow, cube_size - 1, cube_size - 1] => :red,
-      [:yellow, 0, cube_size - 1] => :blue,
-      [:blue, 0, 0] => :white,
-      [:blue, cube_size - 1, 0] => :orange,
-      [:white, 0, cube_size - 1] => :blue,
-      [:orange, 0, cube_size - 1] => :yellow,
-      [:red, cube_size - 1, cube_size - 1] => :yellow,
+      [:U, cube_size - 1, cube_size - 1] => :red,
+      [:U, 0, cube_size - 1] => :blue,
+      [:L, 0, 0] => :white,
+      [:L, cube_size - 1, 0] => :orange,
+      [:D, 0, cube_size - 1] => :blue,
+      [:B, 0, cube_size - 1] => :yellow,
+      [:F, cube_size - 1, cube_size - 1] => :yellow,
     }
     expect_stickers_changed(cube_state, changed_parts)
   end
@@ -85,19 +82,19 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a U move' do
     cube_state.apply_move(parse_move('U'))
     changed_parts = {
-      [:red, 0, 1] => :blue,
-      [:blue, 0, 1] => :orange,
-      [:orange, 0, 1] => :green,
-      [:green, 0, 1] => :red,
+      [:F, 0, 1] => :blue,
+      [:L, 0, 1] => :orange,
+      [:B, 0, 1] => :green,
+      [:R, 0, 1] => :red,
     }
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:red, 0, x]] ||= :green
-      changed_parts[[:blue, 0, x]] ||= :red
-      changed_parts[[:orange, 0, x]] ||= :blue
-      changed_parts[[:green, 0, x]] ||= :orange
+      changed_parts[[:F, 0, x]] ||= :green
+      changed_parts[[:L, 0, x]] ||= :red
+      changed_parts[[:B, 0, x]] ||= :blue
+      changed_parts[[:R, 0, x]] ||= :orange
       if cube_size > 3
-        changed_parts[[:yellow, 1, x]] ||= :white
-        changed_parts[[:yellow, cube_size - 2, x]] ||= :yellow
+        changed_parts[[:U, 1, x]] ||= :white
+        changed_parts[[:U, cube_size - 2, x]] ||= :yellow
       end
     end
     expect_stickers_changed(cube_state, changed_parts)
@@ -106,23 +103,23 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a U\' move' do
     cube_state.apply_move(parse_move('U\''))
     changed_parts = {
-      [:red, 0, cube_size - 2] => :green,
-      [:blue, 0, cube_size - 2] => :red,
-      [:orange, 0, cube_size - 2] => :blue,
-      [:green, 0, cube_size - 2] => :orange
+      [:F, 0, cube_size - 2] => :green,
+      [:L, 0, cube_size - 2] => :red,
+      [:B, 0, cube_size - 2] => :blue,
+      [:R, 0, cube_size - 2] => :orange
     }
     if cube_size > 3 
-      changed_parts[[:yellow, 1, cube_size - 2]] = :yellow
-      changed_parts[[:yellow, cube_size - 2, 1]] = :white
+      changed_parts[[:U, 1, cube_size - 2]] = :yellow
+      changed_parts[[:U, cube_size - 2, 1]] = :white
     end
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:red, 0, x]] ||= :blue
-      changed_parts[[:blue, 0, x]] ||= :orange
-      changed_parts[[:orange, 0, x]] ||= :green
-      changed_parts[[:green, 0, x]] ||= :red
+      changed_parts[[:F, 0, x]] ||= :blue
+      changed_parts[[:L, 0, x]] ||= :orange
+      changed_parts[[:B, 0, x]] ||= :green
+      changed_parts[[:R, 0, x]] ||= :red
       if cube_size > 3
-        changed_parts[[:yellow, x, 1]] ||= :yellow
-        changed_parts[[:yellow, x, cube_size - 2]] ||= :white
+        changed_parts[[:U, x, 1]] ||= :yellow
+        changed_parts[[:U, x, cube_size - 2]] ||= :white
       end
     end
     expect_stickers_changed(cube_state, changed_parts)
@@ -131,16 +128,16 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a R move' do
     cube_state.apply_move(parse_move('R'))
     changed_parts = {
-      [:red, cube_size - 2, 0] => :yellow,
-      [:orange, cube_size - 2, 0] => :white,
+      [:F, cube_size - 2, 0] => :yellow,
+      [:B, cube_size - 2, 0] => :white,
     }
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:yellow, x, 0]] ||= :red
-      changed_parts[[:orange, x, 0]] ||= :yellow
-      changed_parts[[:white, x, 0]] ||= :orange
-      changed_parts[[:red, x, 0]] ||= :white
-      changed_parts[[:green, cube_size - 2, x]] = :blue
-      changed_parts[[:green, x, cube_size - 2]] ||= :green
+      changed_parts[[:U, x, 0]] ||= :red
+      changed_parts[[:B, x, 0]] ||= :yellow
+      changed_parts[[:D, x, 0]] ||= :orange
+      changed_parts[[:F, x, 0]] ||= :white
+      changed_parts[[:R, cube_size - 2, x]] = :blue
+      changed_parts[[:R, x, cube_size - 2]] ||= :green
     end
     expect_stickers_changed(cube_state, changed_parts)
   end
@@ -148,16 +145,16 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a R\' move' do
     cube_state.apply_move(parse_move('R\''))
     changed_parts = {
-      [:red, 1, 0] => :white,
-      [:orange, 1, 0] => :yellow,
+      [:F, 1, 0] => :white,
+      [:B, 1, 0] => :yellow,
     }
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:yellow, x, 0]] ||= :orange
-      changed_parts[[:orange, x, 0]] ||= :white
-      changed_parts[[:white, x, 0]] ||= :red
-      changed_parts[[:red, x, 0]] ||= :yellow
-      changed_parts[[:green, 1, x]] = :blue
-      changed_parts[[:green, x, cube_size - 2]] ||= :green
+      changed_parts[[:U, x, 0]] ||= :orange
+      changed_parts[[:B, x, 0]] ||= :white
+      changed_parts[[:D, x, 0]] ||= :red
+      changed_parts[[:F, x, 0]] ||= :yellow
+      changed_parts[[:R, 1, x]] = :blue
+      changed_parts[[:R, x, cube_size - 2]] ||= :green
     end
     expect_stickers_changed(cube_state, changed_parts)
   end
@@ -165,16 +162,16 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a F move' do
     cube_state.apply_move(parse_move('F'))
     changed_parts = {
-      [:green, cube_size - 2, 0] => :white,
-      [:blue, cube_size - 2, 0] => :yellow,
+      [:R, cube_size - 2, 0] => :white,
+      [:L, cube_size - 2, 0] => :yellow,
     }
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:yellow, 0, x]] ||= :blue
-      changed_parts[[:green, x, 0]] ||= :yellow
-      changed_parts[[:white, 0, x]] ||= :green
-      changed_parts[[:blue, x, 0]] ||= :white
-      changed_parts[[:red, cube_size - 2,  x]] = :orange
-      changed_parts[[:red, x, 1]] ||= :red
+      changed_parts[[:U, 0, x]] ||= :blue
+      changed_parts[[:R, x, 0]] ||= :yellow
+      changed_parts[[:D, 0, x]] ||= :green
+      changed_parts[[:L, x, 0]] ||= :white
+      changed_parts[[:F, cube_size - 2,  x]] = :orange
+      changed_parts[[:F, x, 1]] ||= :red
     end
     expect_stickers_changed(cube_state, changed_parts)
   end
@@ -182,16 +179,16 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a F\' move' do
     cube_state.apply_move(parse_move('F\''))
     changed_parts = {
-      [:green, 1, 0] => :yellow,
-      [:blue, 1, 0] => :white,
+      [:R, 1, 0] => :yellow,
+      [:L, 1, 0] => :white,
     }
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:yellow, 0, x]] ||= :green
-      changed_parts[[:green, x, 0]] ||= :white
-      changed_parts[[:white, 0, x]] ||= :blue
-      changed_parts[[:blue, x, 0]] ||= :yellow
-      changed_parts[[:red, 1,  x]] = :orange
-      changed_parts[[:red, x, 1]] ||= :red
+      changed_parts[[:U, 0, x]] ||= :green
+      changed_parts[[:R, x, 0]] ||= :white
+      changed_parts[[:D, 0, x]] ||= :blue
+      changed_parts[[:L, x, 0]] ||= :yellow
+      changed_parts[[:F, 1,  x]] = :orange
+      changed_parts[[:F, x, 1]] ||= :red
     end
     expect_stickers_changed(cube_state, changed_parts)
   end
@@ -199,16 +196,16 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a B move' do
     cube_state.apply_move(parse_move('B'))
     changed_parts = {
-      [:green, 1, cube_size - 1] => :yellow,
-      [:blue, 1, cube_size - 1] => :white,
+      [:R, 1, cube_size - 1] => :yellow,
+      [:L, 1, cube_size - 1] => :white,
     }
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:yellow, cube_size - 1, x]] ||= :green
-      changed_parts[[:green, x, cube_size - 1]] ||= :white
-      changed_parts[[:white, cube_size - 1, x]] ||= :blue
-      changed_parts[[:blue, x, cube_size - 1]] ||= :yellow
-      changed_parts[[:orange, 1,  x]] = :red
-      changed_parts[[:orange, x, 1]] ||= :orange
+      changed_parts[[:U, cube_size - 1, x]] ||= :green
+      changed_parts[[:R, x, cube_size - 1]] ||= :white
+      changed_parts[[:D, cube_size - 1, x]] ||= :blue
+      changed_parts[[:L, x, cube_size - 1]] ||= :yellow
+      changed_parts[[:B, 1,  x]] = :red
+      changed_parts[[:B, x, 1]] ||= :orange
     end
     expect_stickers_changed(cube_state, changed_parts)
   end
@@ -216,16 +213,16 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a B\' move' do
     cube_state.apply_move(parse_move('B\''))
     changed_parts = {
-      [:green, cube_size - 2, cube_size - 1] => :white,
-      [:blue, cube_size - 2, cube_size - 1] => :yellow,
+      [:R, cube_size - 2, cube_size - 1] => :white,
+      [:L, cube_size - 2, cube_size - 1] => :yellow,
     }
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:yellow, cube_size - 1, x]] ||= :blue
-      changed_parts[[:green, x, cube_size - 1]] ||= :yellow
-      changed_parts[[:white, cube_size - 1, x]] ||= :green
-      changed_parts[[:blue, x, cube_size - 1]] ||= :white
-      changed_parts[[:orange, cube_size - 2,  x]] = :red
-      changed_parts[[:orange, x, 1]] ||= :orange
+      changed_parts[[:U, cube_size - 1, x]] ||= :blue
+      changed_parts[[:R, x, cube_size - 1]] ||= :yellow
+      changed_parts[[:D, cube_size - 1, x]] ||= :green
+      changed_parts[[:L, x, cube_size - 1]] ||= :white
+      changed_parts[[:B, cube_size - 2,  x]] = :red
+      changed_parts[[:B, x, 1]] ||= :orange
     end
     expect_stickers_changed(cube_state, changed_parts)
   end
@@ -233,16 +230,16 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a L move' do
     cube_state.apply_move(parse_move('L'))
     changed_parts = {
-      [:red, 1, cube_size - 1] => :white,
-      [:orange, 1, cube_size - 1] => :yellow,
+      [:F, 1, cube_size - 1] => :white,
+      [:B, 1, cube_size - 1] => :yellow,
     }
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:yellow, x, cube_size - 1]] ||= :orange
-      changed_parts[[:orange, x, cube_size - 1]] ||= :white
-      changed_parts[[:white, x, cube_size - 1]] ||= :red
-      changed_parts[[:red, x, cube_size - 1]] ||= :yellow
-      changed_parts[[:blue, 1, x]] = :green
-      changed_parts[[:blue, x, cube_size - 2]] ||= :blue
+      changed_parts[[:U, x, cube_size - 1]] ||= :orange
+      changed_parts[[:B, x, cube_size - 1]] ||= :white
+      changed_parts[[:D, x, cube_size - 1]] ||= :red
+      changed_parts[[:F, x, cube_size - 1]] ||= :yellow
+      changed_parts[[:L, 1, x]] = :green
+      changed_parts[[:L, x, cube_size - 2]] ||= :blue
     end
     expect_stickers_changed(cube_state, changed_parts)
   end
@@ -250,16 +247,16 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a L\' move' do
     cube_state.apply_move(parse_move('L\''))
     changed_parts = {
-      [:red, cube_size - 2, cube_size - 1] => :yellow,
-      [:orange, cube_size - 2, cube_size - 1] => :white,
+      [:F, cube_size - 2, cube_size - 1] => :yellow,
+      [:B, cube_size - 2, cube_size - 1] => :white,
     }
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:yellow, x, cube_size - 1]] ||= :red
-      changed_parts[[:orange, x, cube_size - 1]] ||= :yellow
-      changed_parts[[:white, x, cube_size - 1]] ||= :orange
-      changed_parts[[:red, x, cube_size - 1]] ||= :white
-      changed_parts[[:blue, cube_size - 2, x]] = :green
-      changed_parts[[:blue, x, cube_size - 2]] ||= :blue
+      changed_parts[[:U, x, cube_size - 1]] ||= :red
+      changed_parts[[:B, x, cube_size - 1]] ||= :yellow
+      changed_parts[[:D, x, cube_size - 1]] ||= :orange
+      changed_parts[[:F, x, cube_size - 1]] ||= :white
+      changed_parts[[:L, cube_size - 2, x]] = :green
+      changed_parts[[:L, x, cube_size - 2]] ||= :blue
     end
     expect_stickers_changed(cube_state, changed_parts)
   end
@@ -267,23 +264,23 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a D move' do
     cube_state.apply_move(parse_move('D'))
     changed_parts = {
-      [:red, cube_size - 1, cube_size - 2] => :green,
-      [:blue, cube_size - 1, cube_size - 2] => :red,
-      [:orange, cube_size - 1, cube_size - 2] => :blue,
-      [:green, cube_size - 1, cube_size - 2] => :orange,
+      [:F, cube_size - 1, cube_size - 2] => :green,
+      [:L, cube_size - 1, cube_size - 2] => :red,
+      [:B, cube_size - 1, cube_size - 2] => :blue,
+      [:R, cube_size - 1, cube_size - 2] => :orange,
     }
     if cube_size > 3 
-      changed_parts[[:white, 1, cube_size - 2]] = :white
-      changed_parts[[:white, cube_size - 2, 1]] = :yellow
+      changed_parts[[:D, 1, cube_size - 2]] = :white
+      changed_parts[[:D, cube_size - 2, 1]] = :yellow
     end
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:red, cube_size - 1, x]] ||= :blue
-      changed_parts[[:blue, cube_size - 1, x]] ||= :orange
-      changed_parts[[:orange, cube_size - 1, x]] ||= :green
-      changed_parts[[:green, cube_size - 1, x]] ||= :red
+      changed_parts[[:F, cube_size - 1, x]] ||= :blue
+      changed_parts[[:L, cube_size - 1, x]] ||= :orange
+      changed_parts[[:B, cube_size - 1, x]] ||= :green
+      changed_parts[[:R, cube_size - 1, x]] ||= :red
       if cube_size > 3
-        changed_parts[[:white, x, 1]] ||= :white
-        changed_parts[[:white, x, cube_size - 2]] ||= :yellow
+        changed_parts[[:D, x, 1]] ||= :white
+        changed_parts[[:D, x, cube_size - 2]] ||= :yellow
       end
     end
     expect_stickers_changed(cube_state, changed_parts)
@@ -292,19 +289,19 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should have the right state after applying a D\' move' do
     cube_state.apply_move(parse_move('D\''))
     changed_parts = {
-      [:red, cube_size - 1, 1] => :blue,
-      [:blue, cube_size - 1, 1] => :orange,
-      [:orange, cube_size - 1, 1] => :green,
-      [:green, cube_size - 1, 1] => :red,
+      [:F, cube_size - 1, 1] => :blue,
+      [:L, cube_size - 1, 1] => :orange,
+      [:B, cube_size - 1, 1] => :green,
+      [:R, cube_size - 1, 1] => :red,
     }
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:red, cube_size - 1, x]] ||= :green
-      changed_parts[[:blue, cube_size - 1, x]] ||= :red
-      changed_parts[[:orange, cube_size - 1, x]] ||= :blue
-      changed_parts[[:green, cube_size - 1, x]] ||= :orange
+      changed_parts[[:F, cube_size - 1, x]] ||= :green
+      changed_parts[[:L, cube_size - 1, x]] ||= :red
+      changed_parts[[:B, cube_size - 1, x]] ||= :blue
+      changed_parts[[:R, cube_size - 1, x]] ||= :orange
       if cube_size > 3
-        changed_parts[[:white, 1, x]] ||= :yellow
-        changed_parts[[:white, cube_size - 2, x]] ||= :white
+        changed_parts[[:D, 1, x]] ||= :yellow
+        changed_parts[[:D, cube_size - 2, x]] ||= :white
       end
     end
     expect_stickers_changed(cube_state, changed_parts)
@@ -314,21 +311,21 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     cube_state.apply_move(parse_move('y'))
     changed_parts = {}
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:red, x, 1]] = :blue
-      changed_parts[[:blue, x, 1]] = :orange
-      changed_parts[[:orange, x, 1]] = :green
-      changed_parts[[:green, x, 1]] = :red
+      changed_parts[[:F, x, 1]] = :blue
+      changed_parts[[:L, x, 1]] = :orange
+      changed_parts[[:B, x, 1]] = :green
+      changed_parts[[:R, x, 1]] = :red
       0.upto(cube_size - 1) do |y|
-        changed_parts[[:red, x, y]] ||= :green
-        changed_parts[[:blue, x, y]] ||= :red
-        changed_parts[[:orange, x, y]] ||= :blue
-        changed_parts[[:green, x, y]] ||= :orange
+        changed_parts[[:F, x, y]] ||= :green
+        changed_parts[[:L, x, y]] ||= :red
+        changed_parts[[:B, x, y]] ||= :blue
+        changed_parts[[:R, x, y]] ||= :orange
       end
       if cube_size > 3
-        changed_parts[[:yellow, 1, x]] ||= :white
-        changed_parts[[:yellow, cube_size - 2, x]] ||= :yellow
-        changed_parts[[:white, 1, x]] ||= :yellow
-        changed_parts[[:white, cube_size - 2, x]] ||= :white
+        changed_parts[[:U, 1, x]] ||= :white
+        changed_parts[[:U, cube_size - 2, x]] ||= :yellow
+        changed_parts[[:D, 1, x]] ||= :yellow
+        changed_parts[[:D, cube_size - 2, x]] ||= :white
       end
     end
     expect_stickers_changed(cube_state, changed_parts)
@@ -338,27 +335,27 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     cube_state.apply_move(parse_move('y\''))
     changed_parts = {}
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:red, x, cube_size - 2]] = :green
-      changed_parts[[:blue, x, cube_size - 2]] = :red
-      changed_parts[[:orange, x, cube_size - 2]] = :blue
-      changed_parts[[:green, x, cube_size - 2]] = :orange
+      changed_parts[[:F, x, cube_size - 2]] = :green
+      changed_parts[[:L, x, cube_size - 2]] = :red
+      changed_parts[[:B, x, cube_size - 2]] = :blue
+      changed_parts[[:R, x, cube_size - 2]] = :orange
       if cube_size > 3 
-        changed_parts[[:yellow, 1, cube_size - 2]] = :yellow
-        changed_parts[[:yellow, cube_size - 2, 1]] = :white
-        changed_parts[[:white, 1, cube_size - 2]] = :white
-        changed_parts[[:white, cube_size - 2, 1]] = :yellow
+        changed_parts[[:U, 1, cube_size - 2]] = :yellow
+        changed_parts[[:U, cube_size - 2, 1]] = :white
+        changed_parts[[:D, 1, cube_size - 2]] = :white
+        changed_parts[[:D, cube_size - 2, 1]] = :yellow
       end
       0.upto(cube_size - 1) do |y|
-        changed_parts[[:red, x, y]] ||= :blue
-        changed_parts[[:blue, x, y]] ||= :orange
-        changed_parts[[:orange, x, y]] ||= :green
-        changed_parts[[:green, x, y]] ||= :red
+        changed_parts[[:F, x, y]] ||= :blue
+        changed_parts[[:L, x, y]] ||= :orange
+        changed_parts[[:B, x, y]] ||= :green
+        changed_parts[[:R, x, y]] ||= :red
       end
       if cube_size > 3
-        changed_parts[[:yellow, x, 1]] ||= :yellow
-        changed_parts[[:yellow, x, cube_size - 2]] ||= :white
-        changed_parts[[:white, x, 1]] ||= :white
-        changed_parts[[:white, x, cube_size - 2]] ||= :yellow
+        changed_parts[[:U, x, 1]] ||= :yellow
+        changed_parts[[:U, x, cube_size - 2]] ||= :white
+        changed_parts[[:D, x, 1]] ||= :white
+        changed_parts[[:D, x, cube_size - 2]] ||= :yellow
       end
     end
     expect_stickers_changed(cube_state, changed_parts)
@@ -368,25 +365,25 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     cube_state.apply_move(parse_move('x'))
     changed_parts = {}
     0.upto(cube_size - 1) do |x|
-      changed_parts[[:green, x, cube_size - 2]] = :green
-      changed_parts[[:green, cube_size - 2, x]] = :blue
-      changed_parts[[:blue, x, cube_size - 2]] = :blue
-      changed_parts[[:blue, cube_size - 2, x]] = :green
-      changed_parts[[:yellow, x, 1]] = :orange
-      changed_parts[[:white, x, 1]] = :red
-      changed_parts[[:orange, cube_size -2, x]] = :white
-      changed_parts[[:orange, x, 1]] = :white
-      changed_parts[[:red, cube_size - 2, x]] = :yellow
-      changed_parts[[:red, x, 1]] = :yellow
+      changed_parts[[:R, x, cube_size - 2]] = :green
+      changed_parts[[:R, cube_size - 2, x]] = :blue
+      changed_parts[[:L, x, cube_size - 2]] = :blue
+      changed_parts[[:L, cube_size - 2, x]] = :green
+      changed_parts[[:U, x, 1]] = :orange
+      changed_parts[[:D, x, 1]] = :red
+      changed_parts[[:B, cube_size -2, x]] = :white
+      changed_parts[[:B, x, 1]] = :white
+      changed_parts[[:F, cube_size - 2, x]] = :yellow
+      changed_parts[[:F, x, 1]] = :yellow
       0.upto(cube_size - 1) do |y|
-        changed_parts[[:yellow, x, y]] ||= :red
-        changed_parts[[:white, x, y]] ||= :orange
-        changed_parts[[:red, x, y]] ||= :white
-        changed_parts[[:orange, x, y]] ||= :yellow
+        changed_parts[[:U, x, y]] ||= :red
+        changed_parts[[:D, x, y]] ||= :orange
+        changed_parts[[:F, x, y]] ||= :white
+        changed_parts[[:B, x, y]] ||= :yellow
       end
     end
-    changed_parts[[:red, cube_size - 2, cube_size - 2]] = :white
-    changed_parts[[:orange, cube_size - 2, cube_size - 2]] = :yellow
+    changed_parts[[:F, cube_size - 2, cube_size - 2]] = :white
+    changed_parts[[:B, cube_size - 2, cube_size - 2]] = :yellow
     expect_stickers_changed(cube_state, changed_parts)
   end
 
@@ -431,9 +428,9 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   end
 
   it 'should do the T perm properly' do
-    cube_state = CubeState.solved(cube_size)
+    cube_state = color_scheme.solved_cube_state(cube_size)
     parse_algorithm('R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\'').apply_to(cube_state)
-    expected_cube_state = CubeState.solved(cube_size)
+    expected_cube_state = color_scheme.solved_cube_state(cube_size)
     expected_cube_state.apply_piece_cycle([for_letter(Corner, 'b'), for_letter(Corner, 'd')])
     if cube_size % 2 == 1 && cube_size >= 5
       expected_cube_state.apply_piece_cycle([for_letter(Midge, 'b'), for_letter(Midge, 'c')])

@@ -4,27 +4,27 @@ require 'cube'
 include CubeTrainer
 
 describe Coordinate do
+  let (:coordinate) { Coordinate.new(Face::U, n, 0, 0) }
+
   context 'for an uneven n' do
-    let (:face) { Face.for_color(:yellow) }
     let (:n) { 7 }
-    let (:coordinate) { Coordinate.new(face, n, 0, 0) }
 
     it 'should check equivalence of coordinates appropriately' do
-      expect(Coordinate.new(face, n, 1, 0) == Coordinate.new(face, n, 1, 0)).to be true
-      expect(Coordinate.new(face, n, 1, 0) == Coordinate.new(face, n, 1, -7)).to be true
-      expect(Coordinate.new(face, n, 1, 0) == Coordinate.new(Face.for_color(:white), n, 1, 0)).to be false
-      expect(Coordinate.new(face, n, 1, 0) == Coordinate.new(face, n, 1, -1)).to be false
-      expect(Coordinate.new(face, n, 1, 0) == Coordinate.new(face, n - 1, 1, 0)).to be false
+      expect(Coordinate.new(Face::U, n, 1, 0) == Coordinate.new(Face::U, n, 1, 0)).to be true
+      expect(Coordinate.new(Face::U, n, 1, 0) == Coordinate.new(Face::U, n, 1, -7)).to be true
+      expect(Coordinate.new(Face::U, n, 1, 0) == Coordinate.new(Face::D, n, 1, 0)).to be false
+      expect(Coordinate.new(Face::U, n, 1, 0) == Coordinate.new(Face::U, n, 1, -1)).to be false
+      expect(Coordinate.new(Face::U, n, 1, 0) == Coordinate.new(Face::U, n + 2, 1, 0)).to be false
     end
     
     it 'should check coordinates appropriately' do
-      expect { Coordinate.new(face, n, 0, 1.0) }.to raise_error(ArgumentError)
-      expect { Coordinate.new(face, n, 0, -7) }.not_to raise_error
-      expect { Coordinate.new(face, n, 0, -8) }.to raise_error(ArgumentError)
-      expect { Coordinate.new(face, n, 0, 7) }.to raise_error(ArgumentError)
-      expect { Coordinate.new(face, n, 0, 0) }.not_to raise_error
-      expect { Coordinate.new(face, n, 0, 5) }.not_to raise_error
-      expect { Coordinate.new(face, n, 0, 6) }.not_to raise_error
+      expect { Coordinate.new(Face::U, n, 0, 1.0) }.to raise_error(ArgumentError)
+      expect { Coordinate.new(Face::U, n, 0, -7) }.not_to raise_error
+      expect { Coordinate.new(Face::U, n, 0, -8) }.to raise_error(ArgumentError)
+      expect { Coordinate.new(Face::U, n, 0, 7) }.to raise_error(ArgumentError)
+      expect { Coordinate.new(Face::U, n, 0, 0) }.not_to raise_error
+      expect { Coordinate.new(Face::U, n, 0, 5) }.not_to raise_error
+      expect { Coordinate.new(Face::U, n, 0, 6) }.not_to raise_error
     end
 
     it 'should check whether something is before the middle' do
@@ -109,43 +109,41 @@ describe Coordinate do
     end
     
     it 'should do the right thing for a corner' do
-      expect(Coordinate.new(face, n, 0, 0).rotations).to be == [Coordinate.new(face, n, 0, 0), Coordinate.new(face, n, 0, -1), Coordinate.new(face, n, -1, -1), Coordinate.new(face, n, -1, 0)]
+      expect(Coordinate.new(Face::U, n, 0, 0).rotations).to be == [Coordinate.new(Face::U, n, 0, 0), Coordinate.new(Face::U, n, 0, -1), Coordinate.new(Face::U, n, -1, -1), Coordinate.new(Face::U, n, -1, 0)]
     end
     
     it 'should do the right thing for a wing' do
-      expect(Coordinate.new(face, n, 0, 2).rotations).to be == [Coordinate.new(face, n, 0, 2), Coordinate.new(face, n, 2, -1), Coordinate.new(face, n, -1, -3), Coordinate.new(face, n, -3, 0)]
+      expect(Coordinate.new(Face::U, n, 0, 2).rotations).to be == [Coordinate.new(Face::U, n, 0, 2), Coordinate.new(Face::U, n, 2, -1), Coordinate.new(Face::U, n, -1, -3), Coordinate.new(Face::U, n, -3, 0)]
     end
     
     it 'should do the right thing for a midge' do
-      expect(Coordinate.new(face, n, 0, 3).rotations).to be == [Coordinate.new(face, n, 0, 3), Coordinate.new(face, n, 3, -1), Coordinate.new(face, n, -1, -4), Coordinate.new(face, n, -4, 0)]
+      expect(Coordinate.new(Face::U, n, 0, 3).rotations).to be == [Coordinate.new(Face::U, n, 0, 3), Coordinate.new(Face::U, n, 3, -1), Coordinate.new(Face::U, n, -1, -4), Coordinate.new(Face::U, n, -4, 0)]
     end
 
     it 'should do the right thing for an oblique' do
-      expect(Coordinate.new(face, n, 1, 2).rotations).to be == [Coordinate.new(face, n, 1, 2), Coordinate.new(face, n, 2, -2), Coordinate.new(face, n, -2, -3), Coordinate.new(face, n, -3, 1)]
+      expect(Coordinate.new(Face::U, n, 1, 2).rotations).to be == [Coordinate.new(Face::U, n, 1, 2), Coordinate.new(Face::U, n, 2, -2), Coordinate.new(Face::U, n, -2, -3), Coordinate.new(Face::U, n, -3, 1)]
     end
   end
   
   context 'for an even n' do
     let (:n) { 6 } 
-    let (:face) { Face.for_color(:yellow) }
-    let (:coordinate) { Coordinate.new(face, n, 0, 0) }
    
     it 'should check equivalence of coordinates appropriately' do
-      expect(Coordinate.new(face, n, 1, 0) == Coordinate.new(face, n, 1, 0)).to be true
-      expect(Coordinate.new(face, n, 1, 0) == Coordinate.new(face, n, 1, -6)).to be true
-      expect(Coordinate.new(face, n, 1, 0) == Coordinate.new(Face.for_color(:white), n, 1, 0)).to be false
-      expect(Coordinate.new(face, n, 1, 0) == Coordinate.new(face, n, 1, -1)).to be false
-      expect(Coordinate.new(face, n, 1, 0) == Coordinate.new(face, n - 1, 1, 0)).to be false
+      expect(Coordinate.new(Face::U, n, 1, 0) == Coordinate.new(Face::U, n, 1, 0)).to be true
+      expect(Coordinate.new(Face::U, n, 1, 0) == Coordinate.new(Face::U, n, 1, -6)).to be true
+      expect(Coordinate.new(Face::U, n, 1, 0) == Coordinate.new(Face::D, n, 1, 0)).to be false
+      expect(Coordinate.new(Face::U, n, 1, 0) == Coordinate.new(Face::U, n, 1, -1)).to be false
+      expect(Coordinate.new(Face::U, n, 1, 0) == Coordinate.new(Face::U, n + 2, 1, 0)).to be false
     end
 
     it 'should check coordinates appropriately' do
-      expect { Coordinate.new(face, n, 0, 1.0) }.to raise_error(ArgumentError)
-      expect { Coordinate.new(face, n, 0, -6) }.not_to raise_error
-      expect { Coordinate.new(face, n, 0, -7) }.to raise_error(ArgumentError)
-      expect { Coordinate.new(face, n, 0, 6) }.to raise_error(ArgumentError)
-      expect { Coordinate.new(face, n, 0, 0) }.not_to raise_error
-      expect { Coordinate.new(face, n, 0, 4) }.not_to raise_error
-      expect { Coordinate.new(face, n, 0, 5) }.not_to raise_error
+      expect { Coordinate.new(Face::U, n, 0, 1.0) }.to raise_error(ArgumentError)
+      expect { Coordinate.new(Face::U, n, 0, -6) }.not_to raise_error
+      expect { Coordinate.new(Face::U, n, 0, -7) }.to raise_error(ArgumentError)
+      expect { Coordinate.new(Face::U, n, 0, 6) }.to raise_error(ArgumentError)
+      expect { Coordinate.new(Face::U, n, 0, 0) }.not_to raise_error
+      expect { Coordinate.new(Face::U, n, 0, 4) }.not_to raise_error
+      expect { Coordinate.new(Face::U, n, 0, 5) }.not_to raise_error
     end
 
     it 'should check whether something is before the middle' do
@@ -223,15 +221,15 @@ describe Coordinate do
     end
     
     it 'should do the right thing for a corner' do
-      expect(Coordinate.new(face, n, 0, 0).rotations).to be == [Coordinate.new(face, n, 0, 0), Coordinate.new(face, n, 0, -1), Coordinate.new(face, n, -1, -1), Coordinate.new(face, n, -1, 0)]
+      expect(Coordinate.new(Face::U, n, 0, 0).rotations).to be == [Coordinate.new(Face::U, n, 0, 0), Coordinate.new(Face::U, n, 0, -1), Coordinate.new(Face::U, n, -1, -1), Coordinate.new(Face::U, n, -1, 0)]
     end
     
     it 'should do the right thing for a wing' do
-      expect(Coordinate.new(face, n, 0, 2).rotations).to be == [Coordinate.new(face, n, 0, 2), Coordinate.new(face, n, 2, -1), Coordinate.new(face, n, -1, -3), Coordinate.new(face, n, -3, 0)]
+      expect(Coordinate.new(Face::U, n, 0, 2).rotations).to be == [Coordinate.new(Face::U, n, 0, 2), Coordinate.new(Face::U, n, 2, -1), Coordinate.new(Face::U, n, -1, -3), Coordinate.new(Face::U, n, -3, 0)]
     end
 
     it 'should do the right thing for an oblique' do
-      expect(Coordinate.new(face, n, 1, 2).rotations).to be == [Coordinate.new(face, n, 1, 2), Coordinate.new(face, n, 2, -2), Coordinate.new(face, n, -2, -3), Coordinate.new(face, n, -3, 1)]
+      expect(Coordinate.new(Face::U, n, 1, 2).rotations).to be == [Coordinate.new(Face::U, n, 1, 2), Coordinate.new(Face::U, n, 2, -2), Coordinate.new(Face::U, n, -2, -3), Coordinate.new(Face::U, n, -3, 1)]
     end
   end
 end

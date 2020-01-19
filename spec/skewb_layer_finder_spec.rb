@@ -3,12 +3,14 @@ require 'move'
 require 'algorithm'
 require 'cube_print_helper'
 require 'parser'
+require 'color_scheme'
 
 include CubeTrainer
 include CubePrintHelper
 
 describe SkewbLayerFinder do
-  let (:skewb_state) { SkewbState.solved }
+  let (:color_scheme) { ColorScheme::BERNHARD }
+  let (:skewb_state) { color_scheme.solved_skewb_state }
   
   context 'when restricted' do
     let (:layer_finder) { SkewbLayerFinder.new([:white]) }

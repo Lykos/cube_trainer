@@ -2,19 +2,18 @@ require 'coordinate'
 require 'cube'
 require 'cube_print_helper'
 require 'state_helper'
+require 'cube_constants'
 
 module CubeTrainer
 
   class SkewbState
     include CubePrintHelper
     include StateHelper
-
-    SIDES = COLORS.length
+    include CubeConstants
 
     def initialize(stickers)
-      raise "Cubes must have #{SIDES} sides." unless stickers.length == SIDES
-      raise "All sides of a Skewb must have #{SKEWB_STICKERS} stickers." unless stickers.all? { |p| p.length == SKEWB_STICKERS }
-      raise 'All stickers on the cube must have a valid color.' unless stickers.all? { |p| p.all? { |c| COLORS.include?(c) } }
+      raise ArgumentError, "Cubes must have #{SIDES} sides." unless stickers.length == FACES
+      raise ArgumentError, "All sides of a Skewb must have #{SKEWB_STICKERS} stickers." unless stickers.all? { |p| p.length == SKEWB_STICKERS }
       @stickers = stickers
     end
 
@@ -31,6 +30,7 @@ module CubeTrainer
     end
 
     def sticker_array(face)
+      raise TypeError unless face.is_a?(Face)
       @stickers[face.piece_index]
     end
 
@@ -42,13 +42,6 @@ module CubeTrainer
       skewb_string(self, :nocolor)
     end
 
-    def self.solved
-      stickers = COLORS.collect do |c|
-        [c] * SKEWB_STICKERS
-      end
-      SkewbState.new(stickers)
-    end
-  
     def apply_move(move)
       move.apply_to(self)
     end
@@ -63,26 +56,26 @@ module CubeTrainer
 
     # Mirrors across an arbitrary axis.
     def mirror!
-      yellow = Face.for_color(:yellow)
-      white = Face.for_color(:white)
-      red = Face.for_color(:red)
-      orange = Face.for_color(:orange)
-      green = Face.for_color(:green)
-      blue = Face.for_color(:blue)
+      top = Face.for_face_symbol(:U)
+      bottom = Face.for_face_symbol(:D)
+      front = Face.for_face_symbol(:F)
+      back = Face.for_face_symbol(:B)
+      right = Face.for_face_symbol(:R)
+      left = Face.for_face_symbol(:L)
       swaps = [
-        [SkewbCoordinate.center(red), SkewbCoordinate.center(orange)],
-        [SkewbCoordinate.corner_index(red, 0), SkewbCoordinate.corner_index(orange, 1)],
-        [SkewbCoordinate.corner_index(red, 1), SkewbCoordinate.corner_index(orange, 3)],
-        [SkewbCoordinate.corner_index(red, 2), SkewbCoordinate.corner_index(orange, 0)],
-        [SkewbCoordinate.corner_index(red, 3), SkewbCoordinate.corner_index(orange, 2)],
-        [SkewbCoordinate.corner_index(white, 0), SkewbCoordinate.corner_index(white, 1)],
-        [SkewbCoordinate.corner_index(white, 2), SkewbCoordinate.corner_index(white, 3)],
-        [SkewbCoordinate.corner_index(yellow, 0), SkewbCoordinate.corner_index(yellow, 2)],
-        [SkewbCoordinate.corner_index(yellow, 1), SkewbCoordinate.corner_index(yellow, 3)],
-        [SkewbCoordinate.corner_index(green, 0), SkewbCoordinate.corner_index(green, 1)],
-        [SkewbCoordinate.corner_index(green, 2), SkewbCoordinate.corner_index(green, 3)],
-        [SkewbCoordinate.corner_index(blue, 0), SkewbCoordinate.corner_index(blue, 2)],
-        [SkewbCoordinate.corner_index(blue, 1), SkewbCoordinate.corner_index(blue, 3)],
+        [SkewbCoordinate.center(front), SkewbCoordinate.center(back)],
+        [SkewbCoordinate.corner_index(front, 0), SkewbCoordinate.corner_index(back, 1)],
+        [SkewbCoordinate.corner_index(front, 1), SkewbCoordinate.corner_index(back, 3)],
+        [SkewbCoordinate.corner_index(front, 2), SkewbCoordinate.corner_index(back, 0)],
+        [SkewbCoordinate.corner_index(front, 3), SkewbCoordinate.corner_index(back, 2)],
+        [SkewbCoordinate.corner_index(bottom, 0), SkewbCoordinate.corner_index(bottom, 1)],
+        [SkewbCoordinate.corner_index(bottom, 2), SkewbCoordinate.corner_index(bottom, 3)],
+        [SkewbCoordinate.corner_index(top, 0), SkewbCoordinate.corner_index(top, 2)],
+        [SkewbCoordinate.corner_index(top, 1), SkewbCoordinate.corner_index(top, 3)],
+        [SkewbCoordinate.corner_index(right, 0), SkewbCoordinate.corner_index(right, 1)],
+        [SkewbCoordinate.corner_index(right, 2), SkewbCoordinate.corner_index(right, 3)],
+        [SkewbCoordinate.corner_index(left, 0), SkewbCoordinate.corner_index(left, 2)],
+        [SkewbCoordinate.corner_index(left, 1), SkewbCoordinate.corner_index(left, 3)],
       ]
       swaps.each { |s| apply_sticker_cycle(s) }
     end
@@ -92,7 +85,6 @@ module CubeTrainer
     end
   
     def []=(coordinate, color)
-      raise "All stickers on the cube must have a valid color." unless COLORS.include?(color)
       sticker_array(coordinate.face)[coordinate.coordinate] = color
     end    
   
@@ -102,11 +94,11 @@ module CubeTrainer
 
     # Returns the color of all solved layers. Empty if there is none.
     def solved_layers
-      Face::ELEMENTS.select { |f| layer_solved_internal?(f) }.collect { |f| self[SkewbCoordinate.center(f)] }
+      Face::ELEMENTS.select { |f| layer_at_face_solved?(f) }.collect { |f| self[SkewbCoordinate.center(f)] }
     end
     
     def layer_solved?(color)
-      Face::ELEMENTS.any? { |f| self[SkewbCoordinate.center(f)] == color && layer_solved_internal?(f) }
+      Face::ELEMENTS.any? { |f| self[SkewbCoordinate.center(f)] == color && layer_at_face_solved?(f) }
     end
 
     def center_face(color)
@@ -120,11 +112,11 @@ module CubeTrainer
         Corner::ELEMENTS.each do |c1|
           Corner::ELEMENTS.each do |c2|
             # Take corner pairs that have a common edge.
-            next if (c1.colors & c2.colors).length != 2
+            next unless c1.has_common_edge_with?(c2)
             check_parts = []
             c1.rotations.each do |c1_rot|
-              next unless c2.colors.include?(c1_rot.colors.first)
-              c2_rot = c2.rotate_color_up(c1_rot.colors.first)
+              next unless c2.face_symbols.include?(c1_rot.face_symbols.first)
+              c2_rot = c2.rotate_face_symbol_up(c1_rot.face_symbols.first)
               check_parts.push([SkewbCoordinate.for_corner(c1_rot), SkewbCoordinate.for_corner(c2_rot)])
             end
             matching_corners.push(check_parts)
@@ -153,7 +145,7 @@ module CubeTrainer
 
     # Note that this does NOT say that the layer corresponding to the given face is solved.
     # The face argument is used as the position where a solved face is present.
-    def layer_solved_internal?(face)
+    def layer_at_face_solved?(face)
       if sticker_array(face).uniq.length > 1 then return false end
       layer_check_neighbors(face).collect { |c| self[c] }.uniq.length == 1
     end

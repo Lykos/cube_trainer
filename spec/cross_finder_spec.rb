@@ -2,11 +2,13 @@ require 'cross_finder'
 require 'move'
 require 'parser'
 require 'algorithm'
+require 'color_scheme'
 
 include CubeTrainer
 
 describe CrossFinder do
-  let (:cube_state) { CubeState.solved(3) }
+  let (:color_scheme) { ColorScheme::BERNHARD }
+  let (:cube_state) { color_scheme.solved_cube_state(3) }
   let (:cross_finder) { CrossFinder.new }
 
   it 'should find an existing cross' do

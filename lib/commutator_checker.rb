@@ -1,20 +1,23 @@
 require 'cube_state'
 require 'commutator'
 require 'algorithm'
+require 'color_scheme'
 
 module CubeTrainer
   class CommutatorChecker
-    def initialize(part_type, buffer, piece_name, cube_size, incarnation_index=0)
+    def initialize(part_type, buffer, piece_name, color_scheme, cube_size, incarnation_index=0)
       raise ArgumentError unless part_type.is_a?(Class) && part_type.ancestors.include?(Part)
       raise ArgumentError unless buffer.class == part_type
       raise ArgumentError, "Unsuitable cube size #{cube_size}." unless cube_size.is_a?(Integer) && cube_size > 0
+      raise ColorScheme unless color_scheme.is_a?(ColorScheme)
       @part_type = part_type
       @buffer = buffer
       @piece_name = piece_name
+      @color_scheme = color_scheme
       @cube_size = cube_size
       @incarnation_index = incarnation_index
-      @alg_cube_state = CubeState.solved(@cube_size)
-      @cycle_cube_state = CubeState.solved(@cube_size)
+      @alg_cube_state = @color_scheme.solved_cube_state(@cube_size)
+      @cycle_cube_state = @color_scheme.solved_cube_state(@cube_size)
       @total_algs = 0
       @broken_algs = 0
       @unfixable_algs = 0

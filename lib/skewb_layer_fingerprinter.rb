@@ -1,10 +1,15 @@
 require 'cube_print_helper'
+require 'cube'
+require 'cube_constants'
+require 'coordinate'
+require 'color_scheme'
 
 module CubeTrainer
 
   class SkewbLayerFingerprinter
 
     include CubePrintHelper
+    include CubeConstants
 
     # Describes how layer corners are situated in the two given corner positions
     # The boolean describes that the corners are adjacent/opposite in the layer.
@@ -22,13 +27,15 @@ module CubeTrainer
       :both_twisted_opposite_way_and_opposite,
     ]
     
-    def initialize(face)
+    def initialize(face, color_scheme)
       raise ArgumentError unless face.is_a?(Face)
+      raise ArgumentError unless color_scheme.is_a?(ColorScheme)
       @face = face
+      @color_scheme = color_scheme
     end
 
-    def group_corner_pairs_by_num_common_colors(corner_pairs)
-      corner_pairs.group_by { |a, b| (a.colors & b.colors).length }.values
+    def group_corner_pairs_by_num_common_faces(corner_pairs)
+      corner_pairs.group_by { |a, b| a.common_faces(b) }.values
     end
 
     def corner_pair_type(skewb_state, corner_pair, layer_color)
@@ -97,12 +104,13 @@ module CubeTrainer
     # layers will be mapped to the same number.
     def fingerprint(skewb_state)
       layer_color = skewb_state[SkewbCoordinate.center(@face)]
-      layer_corners = Corner::ELEMENTS.select { |c| c.colors.first == layer_color }
-      opposite_color = Face.for_color(layer_color).opposite.color
-      opposite_corners = Corner::ELEMENTS.select { |c| c.colors.first == opposite_color }
-      corner_pair_groups = group_corner_pairs_by_num_common_colors(layer_corners.combination(2)) +
-                           group_corner_pairs_by_num_common_colors(opposite_corners.combination(2)) +
-                           group_corner_pairs_by_num_common_colors(layer_corners.product(opposite_corners))
+      layer_face_symbol = @color_scheme.face_symbol(layer_color)
+      layer_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == layer_face_symbol }
+      opposite_layer_face_symbol = opposite_face_symbol(layer_face_symbol)
+      opposite_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == opposite_layer_face_symbol }
+      corner_pair_groups = group_corner_pairs_by_num_common_faces(layer_corners.combination(2)) +
+                           group_corner_pairs_by_num_common_faces(opposite_corners.combination(2)) +
+                           group_corner_pairs_by_num_common_faces(layer_corners.product(opposite_corners))
       corner_pair_group_fingerprints = corner_pair_groups.map do |g|
         corner_pair_group_fingerprint(skewb_state, g, layer_color)
       end

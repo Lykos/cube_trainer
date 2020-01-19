@@ -1,3 +1,4 @@
+require 'color_scheme'
 require 'letter_scheme'
 require 'optparse'
 require 'ostruct'
@@ -9,6 +10,7 @@ module CubeTrainer
     def self.parse(args)
       options = OpenStruct.new
       # Default options
+      options.color_scheme = ColorScheme::BERNHARD
       options.letter_scheme = DefaultLetterScheme.new
       opt_parser = OptionParser.new do |opts|
         opts.separator ''

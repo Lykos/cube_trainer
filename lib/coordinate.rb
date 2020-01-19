@@ -1,4 +1,5 @@
 require 'cube'
+require 'cube_constants'
 
 module CubeTrainer
   # Coordinate of a sticker on the cube
@@ -83,6 +84,11 @@ module CubeTrainer
       end
       raise ArgumentError if coordinates.any? { |c| c.nil? }
       new(face, cube_size, *coordinates)
+    end
+
+    def self.center(face, cube_size)
+      m = middle(cube_size)
+      new(face, cube_size, m, m)
     end
     
     def initialize(face, cube_size, x, y)
@@ -202,7 +208,7 @@ module CubeTrainer
     end
 
     def self.for_corner(corner)
-      corner_index(Face.for_color(corner.colors.first), corner.piece_index % 4)
+      corner_index(Face.for_face_symbol(corner.face_symbols.first), corner.piece_index % 4)
     end
 
     def hash
@@ -224,6 +230,7 @@ module CubeTrainer
     end
 
     include Comparable
+    include CubeConstants
 
     attr_reader :face, :coordinate
   end

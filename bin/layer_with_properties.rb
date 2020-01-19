@@ -6,6 +6,7 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'skewb_layer_finder'
 require 'skewb_scrambler'
 require 'skewb_state'
+require 'color_scheme'
 require 'move'
 
 include CubeTrainer
@@ -39,7 +40,7 @@ end
 
 layer_finder = SkewbLayerFinder.new
 scrambler = SkewbScrambler.new
-skewb_state = SkewbState.solved
+skewb_state = ColorScheme::BERNHARD.solved_skewb_state
 
 loop do
   scramble = scrambler.random_moves(SCRAMBLE_LENGTH)

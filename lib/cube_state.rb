@@ -1,4 +1,5 @@
 require 'cube'
+require 'cube_constants'
 require 'array_helper'
 require 'coordinate'
 require 'cube_print_helper'
@@ -10,14 +11,12 @@ module CubeTrainer
     include ArrayHelper
     include CubePrintHelper
     include StateHelper
-    
-    SIDES = COLORS.length
+    include CubeConstants
     
     def initialize(n, stickers)
       raise 'Cubes of size smaller than 2 are not supported.' if n < 2
-      raise "Cubes must have #{SIDES} sides." unless stickers.length == SIDES
+      raise "Cubes must have #{FACES} sides." unless stickers.length == FACES
       raise "All sides of a #{n}x#{n} must be #{n}x#{n}." unless stickers.all? { |p| p.length == n && p.all? { |q| q.length == n } }
-      raise 'All stickers on the cube must have a valid color.' unless stickers.all? { |p| p.all? { |q| q.all? { |c| COLORS.include?(c) } } }
       @n = n
       @stickers = stickers
     end
@@ -43,13 +42,6 @@ module CubeTrainer
       [@stickers, @n].hash
     end
   
-    def self.solved(n)
-      stickers = COLORS.collect do |c|
-        (0...n).collect { [c] * n }
-      end
-      CubeState.new(n, stickers)
-    end
-
     def rotate_piece(piece, incarnation_index=0)
       apply_sticker_cycle(solved_positions(piece, 0))
     end
@@ -115,7 +107,6 @@ module CubeTrainer
     end
   
     def []=(coordinate, color)
-      raise "All stickers on the cube must have a valid color." unless COLORS.include?(color)
       sticker_array(coordinate.face)[coordinate.x][coordinate.y] = color
     end
     

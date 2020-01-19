@@ -11,6 +11,7 @@ module CubeTrainer
   
     def initialize(results_model, options)
       @letter_scheme = options.letter_scheme
+      @color_scheme = options.color_scheme
       @options = options
       @input_sampler = InputSampler.new(input_items, results_model, goal_badness, options.verbose, options.new_item_boundary)
     end

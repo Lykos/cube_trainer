@@ -23,7 +23,6 @@ module CubeTrainer
   class AlreadySolvedSolutionSet < SolutionSet
     def initialize(colors)
       raise ArgumentError if colors.empty?
-      raise ArgumentError unless colors.all? { |c| COLORS.include?(c) }
       @colors = colors
     end
     
