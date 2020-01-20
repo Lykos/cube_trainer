@@ -89,7 +89,6 @@ module CubeTrainer
       UrlParameterType.new(:co, Integer, (0..99)),
       UrlParameterType.new(:fo, Integer, (0..99)),
       UrlParameterType.new(:dist, Integer, (1..100)),
-      UrlParameterType.new(:dist, Integer, (1..100)),
       # TODO arw
       # TODO ac
     ]
@@ -122,7 +121,6 @@ module CubeTrainer
     def uri(cube_state)
       uri = BASE_URI.dup
       uri.query = URI.encode_www_form(@params + cube_state_params(cube_state))
-      puts uri
       uri
     end
 
