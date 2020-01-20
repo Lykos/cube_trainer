@@ -220,15 +220,20 @@ module CubeTrainer
     def neighbors
       @neighbors ||= begin
                        partial_neighbors = self.class::ELEMENTS.select { |e| e != chirality_canonicalize && e == e.chirality_canonicalize }
-                       ordered_partial_neighbors = if Corner.between_faces([self] + partial_neighbors).valid?
+                       ordered_partial_neighbors = if Corner.create_between_faces([self] + partial_neighbors).valid?
                                                      partial_neighbors
-                                                   elsif Corner.between_faces([self] + partial_neighbors.reverse).valid?
+                                                   elsif Corner.create_between_faces([self] + partial_neighbors.reverse).valid?
                                                      partial_neighbors.reverse
                                                    else
                                                      raise "Couldn't find a proper order for the neighbor faces #{partial_neighbors.inspect} of #{inspect}."
                                                    end
                        ordered_partial_neighbors + ordered_partial_neighbors.collect { |e| e.opposite }
                      end
+    end
+
+    def clockwise_neighbor_after(neighbor)
+      raise ArgumentError unless neighbors.include?(neighbor)
+      @neighbors[(@neighbors.index(neighbor) + 1) % @neighbors.length]
     end
 
     # Returns either the face or its opposite face, depending which one is used in CHIRALITY_FACE_SYMBOLS.
@@ -258,6 +263,10 @@ module CubeTrainer
                     end
         Algorithm.new([Rotation.new(axis_face, direction)])
       end
+    end
+
+    def clockwise_corners
+      neighbors.zip(neighbors.rotate).map { |a, b| Corner.between_faces(self, a, b) }
     end
   
     ELEMENTS = generate_parts
@@ -445,10 +454,14 @@ module CubeTrainer
       for_face_symbols_internal(face_symbols) || for_face_symbols_internal([face_symbols[0], face_symbols[2], face_symbols[1]])
     end
   
-    def self.between_faces(faces)
+    def self.create_between_faces(faces)
       new(faces.collect { |e| e.face_symbol })
     end
-  
+
+    def self.between_faces(faces)
+      for_face_symbols(faces.collect { |e| e.face_symbol })
+    end
+
     # Rotate such that neither the current face symbol nor the given face symbol are at the position of the letter.
     def rotate_other_face_symbol_up(face_symbol)
       index = @face_symbols.index(face_symbol)
@@ -462,7 +475,7 @@ module CubeTrainer
     end
 
     def valid?
-      adjacent_edges.all? { |e| e.valid? } && valid_chirality?
+      adjacent_edges.all? { |e| e } && valid_chirality?
     end
 
     def has_common_edge_with?(other)
@@ -475,11 +488,11 @@ module CubeTrainer
     end
   
     def adjacent_edges
-      @adjacent_edges ||= @face_symbols.combination(2).collect { |e| Edge.new(e) }
+      @adjacent_edges ||= @face_symbols.combination(2).collect { |e| Edge.for_face_symbols(e) }
     end
   
     def adjacent_faces
-      @adjacent_faces ||= @face_symbols.combination(1).collect { |f| Face.new(f) }
+      @adjacent_faces ||= @face_symbols.collect { |f| Face.for_face_symbol(f) }
     end
   
     def valid_chirality?
