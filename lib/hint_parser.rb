@@ -125,7 +125,7 @@ module CubeTrainer
 
       # Now check everything and construct the hint table.
       checker = if @test_comms
-                  CommutatorChecker.new(@part_type, @buffer, name, @cube_size)
+                  CommutatorChecker.new(@part_type, @buffer, name, @color_scheme, @cube_size)
                 else
                   CommutatorCheckerStub.new
                 end

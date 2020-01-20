@@ -32,12 +32,12 @@ module CubeTrainer
       options = OpenStruct.new
       # Default options
       options.new_item_boundary = 11
-      options.restrict_colors = COLORS
       options.commutator_info = COMMUTATOR_TYPES['corners']
       options.restrict_letters = nil
       options.exclude_letters = []
       options.letter_scheme = BernhardLetterScheme.new
       options.color_scheme = ColorScheme::BERNHARD
+      options.restrict_colors = options.color_scheme.colors
       options.picture = false
       options.mute = false
       options.buffer = nil
@@ -58,7 +58,7 @@ module CubeTrainer
         end
 
         opts.on('-x', '--restrict_colors COLORLIST', /[yrbgow]+/, 'Restrict colors to find a layer for.') do |colors|
-          options.restrict_colors = colors.each_char.collect { |c| COLORS.find { |o| o.to_s[0] == c } }
+          options.restrict_colors = colors.each_char.collect { |c| options.color_scheme.colors.find { |o| o.to_s[0] == c } }
         end
 
         opts.on('-s', '--size SIZE', Integer, 'Use the given cube size.') do |size|
