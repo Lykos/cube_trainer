@@ -41,12 +41,12 @@ module CubeTrainer
       end
     end
 
-    def face_lines(cube_state, face_symbol, color_mode, row_multiplicity=1, column_multiplicity=1)
+    def face_lines(cube_state, face_symbol, row_multiplicity=1, column_multiplicity=1, &create_color_character)
       face = Face.for_face_symbol(face_symbol)
       face_symbol_info = FACE_SYMBOL_INFOS[face_symbol]
       stickers = cube_state.sticker_array(face)
       lines = stickers.collect_concat do |sticker_line|
-        line = sticker_line.collect { |c| color_character(c, color_mode) * column_multiplicity }
+        line = sticker_line.collect { |c| (yield c) * column_multiplicity }
         [maybe_reverse(face_symbol_info.reverse_columns_mode, line).join] * row_multiplicity
       end
       maybe_reverse(face_symbol_info.reverse_lines_mode, lines)
@@ -89,20 +89,20 @@ module CubeTrainer
     end
 
     def ll_string(cube_state, color_mode)
-      top_face = face_lines(cube_state, :U, color_mode, 2, 3)
-      front_face = face_lines(cube_state, :F, color_mode, 1, 3)
-      right_face = face_lines(cube_state, :R, color_mode, 1, 3)
+      top_face = face_lines(cube_state, :U, 2, 3) { |c| color_character(c, color_mode) }
+      front_face = face_lines(cube_state, :F, 1, 3) { |c| color_character(c, color_mode) }
+      right_face = face_lines(cube_state, :R, 1, 3) { |c| color_character(c, color_mode) }
       pll_line = front_face.first + right_face.first
       (top_face + [pll_line] * 3).join("\n")
     end
 
     def cube_string(cube_state, color_mode)
-      top_face = face_lines(cube_state, :U, color_mode)
-      left_face = face_lines(cube_state, :L, color_mode)
-      front_face = face_lines(cube_state, :F, color_mode)
-      right_face = face_lines(cube_state, :R, color_mode)
-      back_face = face_lines(cube_state, :B, color_mode)
-      bottom_face = face_lines(cube_state, :D, color_mode)
+      top_face = face_lines(cube_state, :U) { |c| color_character(c, color_mode) }
+      left_face = face_lines(cube_state, :L) { |c| color_character(c, color_mode) }
+      front_face = face_lines(cube_state, :F) { |c| color_character(c, color_mode) }
+      right_face = face_lines(cube_state, :R) { |c| color_character(c, color_mode) }
+      back_face = face_lines(cube_state, :B) { |c| color_character(c, color_mode) }
+      bottom_face = face_lines(cube_state, :D) { |c| color_character(c, color_mode) }
       middle_belt = zip_concat_lines(left_face, front_face, right_face, back_face)
       lines = pad_lines(top_face, cube_state.n) + middle_belt + pad_lines(bottom_face, cube_state.n)
       lines.join("\n")
