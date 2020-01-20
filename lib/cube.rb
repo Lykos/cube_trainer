@@ -266,7 +266,7 @@ module CubeTrainer
     end
 
     def clockwise_corners
-      neighbors.zip(neighbors.rotate).map { |a, b| Corner.between_faces(self, a, b) }
+      neighbors.zip(neighbors.rotate).map { |a, b| Corner.between_faces([self, a, b]) }
     end
   
     ELEMENTS = generate_parts

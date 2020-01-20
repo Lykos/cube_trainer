@@ -3,7 +3,9 @@ require 'cube_state'
 require 'skewb_state'
 require 'color_scheme'
 require 'cube_print_helper'
+require 'parser'
 
+include CubeTrainer
 include CubePrintHelper
 
 describe Move do
@@ -26,17 +28,16 @@ describe Move do
     end
   end
 
-  
   it 'should rotate skewbs correctly' do
     skewb_state = color_scheme.solved_skewb_state
     parse_fixed_corner_skewb_algorithm("x").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to be == SkewbState.new([:blue, :red, :yellow, :white, :orange, :green].map { |e| [e] * 5 })
+      expect(skewb_state).to be == SkewbState.new([:red, :white, :green, :blue, :yellow, :orange].map { |e| [e] * 5 })
     end
     parse_fixed_corner_skewb_algorithm("y").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to be == SkewbState.new([:yellow, :blue, :red, :orange, :green, :white].map { |e| [e] * 5 })
+      expect(skewb_state).to be == SkewbState.new([:yellow, :green, :orange, :red, :blue, :white].map { |e| [e] * 5 })
     end
     parse_fixed_corner_skewb_algorithm("z").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to be == SkewbState.new([:red, :white, :green, :blue, :yellow, :orange].map { |e| [e] * 5 })
+      expect(skewb_state).to be == SkewbState.new([:blue, :red, :yellow, :white, :orange, :green].map { |e| [e] * 5 })
     end
     parse_fixed_corner_skewb_algorithm("x y z' y'").apply_temporarily_to(skewb_state) do
       expect(skewb_state).to be == color_scheme.solved_skewb_state

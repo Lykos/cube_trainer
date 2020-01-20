@@ -240,36 +240,6 @@ module CubeTrainer
 
   class Rotation < AxisFaceAndDirectionMove
 
-    # I haven't found a better way for Skewb than to hardcode what each move does.
-    # that it Note's tricky because we have a weird orientation hack for skewb.
-    SKEWB_X_CYCLES = [
-      [SkewbCoordinate.center(Face::D), SkewbCoordinate.center(Face::L), SkewbCoordinate.center(Face::U), SkewbCoordinate.center(Face::R)],
-      [SkewbCoordinate.corner_index(Face::D, 2), SkewbCoordinate.corner_index(Face::L, 0), SkewbCoordinate.corner_index(Face::U, 1), SkewbCoordinate.corner_index(Face::R, 3)],
-      [SkewbCoordinate.corner_index(Face::D, 0), SkewbCoordinate.corner_index(Face::L, 1), SkewbCoordinate.corner_index(Face::U, 0), SkewbCoordinate.corner_index(Face::R, 1)],
-      [SkewbCoordinate.corner_index(Face::D, 3), SkewbCoordinate.corner_index(Face::L, 2), SkewbCoordinate.corner_index(Face::U, 3), SkewbCoordinate.corner_index(Face::R, 2)],
-      [SkewbCoordinate.corner_index(Face::D, 1), SkewbCoordinate.corner_index(Face::L, 3), SkewbCoordinate.corner_index(Face::U, 2), SkewbCoordinate.corner_index(Face::R, 0)],
-      [SkewbCoordinate.corner_index(Face::F, 2), SkewbCoordinate.corner_index(Face::F, 0), SkewbCoordinate.corner_index(Face::F, 1), SkewbCoordinate.corner_index(Face::F, 3)],
-      [SkewbCoordinate.corner_index(Face::B, 3), SkewbCoordinate.corner_index(Face::B, 2), SkewbCoordinate.corner_index(Face::B, 0), SkewbCoordinate.corner_index(Face::B, 1)],
-    ]
-    SKEWB_Y_CYCLES = [
-      [SkewbCoordinate.center(Face::R), SkewbCoordinate.center(Face::B), SkewbCoordinate.center(Face::L), SkewbCoordinate.center(Face::F)],
-      [SkewbCoordinate.corner_index(Face::R, 1), SkewbCoordinate.corner_index(Face::B, 1), SkewbCoordinate.corner_index(Face::L, 2), SkewbCoordinate.corner_index(Face::F, 2)],
-      [SkewbCoordinate.corner_index(Face::R, 0), SkewbCoordinate.corner_index(Face::B, 0), SkewbCoordinate.corner_index(Face::L, 0), SkewbCoordinate.corner_index(Face::F, 0)],
-      [SkewbCoordinate.corner_index(Face::R, 3), SkewbCoordinate.corner_index(Face::B, 3), SkewbCoordinate.corner_index(Face::L, 3), SkewbCoordinate.corner_index(Face::F, 3)],
-      [SkewbCoordinate.corner_index(Face::R, 2), SkewbCoordinate.corner_index(Face::B, 2), SkewbCoordinate.corner_index(Face::L, 1), SkewbCoordinate.corner_index(Face::F, 1)],
-      [SkewbCoordinate.corner_index(Face::D, 2), SkewbCoordinate.corner_index(Face::D, 0), SkewbCoordinate.corner_index(Face::D, 1), SkewbCoordinate.corner_index(Face::D, 3)],
-      [SkewbCoordinate.corner_index(Face::U, 0), SkewbCoordinate.corner_index(Face::U, 1), SkewbCoordinate.corner_index(Face::U, 3), SkewbCoordinate.corner_index(Face::U, 2)],
-    ]
-    SKEWB_Z_CYCLES = [
-      [SkewbCoordinate.center(Face::D), SkewbCoordinate.center(Face::F), SkewbCoordinate.center(Face::U), SkewbCoordinate.center(Face::B)],
-      [SkewbCoordinate.corner_index(Face::D, 2), SkewbCoordinate.corner_index(Face::F, 2), SkewbCoordinate.corner_index(Face::U, 2), SkewbCoordinate.corner_index(Face::B, 2)],
-      [SkewbCoordinate.corner_index(Face::D, 0), SkewbCoordinate.corner_index(Face::F, 0), SkewbCoordinate.corner_index(Face::U, 3), SkewbCoordinate.corner_index(Face::B, 3)],
-      [SkewbCoordinate.corner_index(Face::D, 3), SkewbCoordinate.corner_index(Face::F, 3), SkewbCoordinate.corner_index(Face::U, 0), SkewbCoordinate.corner_index(Face::B, 0)],
-      [SkewbCoordinate.corner_index(Face::D, 1), SkewbCoordinate.corner_index(Face::F, 1), SkewbCoordinate.corner_index(Face::U, 1), SkewbCoordinate.corner_index(Face::B, 1)],
-      [SkewbCoordinate.corner_index(Face::R, 1), SkewbCoordinate.corner_index(Face::R, 0), SkewbCoordinate.corner_index(Face::R, 2), SkewbCoordinate.corner_index(Face::R, 3)],
-      [SkewbCoordinate.corner_index(Face::L, 3), SkewbCoordinate.corner_index(Face::L, 1), SkewbCoordinate.corner_index(Face::L, 0), SkewbCoordinate.corner_index(Face::L, 2)],
-    ]
-
     def to_s
       "#{AXES[@axis_face.axis_priority]}#{canonical_direction.name}"
     end
@@ -291,13 +261,19 @@ module CubeTrainer
       cube_state.rotate_face(@axis_face.opposite, @direction.inverse)
     end
 
+    def top_corner_cycles
+      cycle = @axis_face.clockwise_corners
+      (0...Corner::FACES).map do |rotation|
+        cycle.map { |c| SkewbCoordinate.for_corner(c.rotate_by(rotation)) }
+      end      
+    end
+
+    def skewb_center_cycle
+      @axis_face.neighbors.map { |f| SkewbCoordinate.center(f) }
+    end
+
     def skewb_cycles
-      case AXES[Face::ELEMENTS.index(@axis_face)]
-      when 'x' then SKEWB_X_CYCLES
-      when 'y' then SKEWB_Y_CYCLES
-      when 'z' then SKEWB_Z_CYCLES
-      else raise
-      end
+      @skewb_cycles ||= [skewb_center_cycle] + self.top_corner_cycles + alternative.top_corner_cycles.map { |c| c.reverse }
     end
 
     def apply_to_skewb(skewb_state)
@@ -309,6 +285,15 @@ module CubeTrainer
 
     def is_slice_move?
       false
+    end
+
+    # Returns an alternative representation of the same rotation
+    def alternative
+      Rotation.new(@axis_face.opposite, @direction.inverse)
+    end
+
+    def equivalent_internal?(other, cube_size)
+      other == alternative || super
     end
 
     def prepend_rotation(other, cube_size)
@@ -532,7 +517,7 @@ module CubeTrainer
     end
 
     def equivalent_internal?(other, cube_size)
-      if other.is_a?(FatMove)
+      if other.is_a?(FatMSliceMove)
         return other.equivalent_internal?(self)
       elsif other.is_a?(SliceMove) && simplified(cube_size) == other.simplified(cube_size)
         return true
@@ -657,8 +642,8 @@ module CubeTrainer
     def outer_moved_corner_cycle
       faces = @axis_corner.adjacent_faces
       faces.each_index.map do |i|
-        new_faces = faces.dup
-        new_faces[i] = faces[i].opposite
+        new_faces = faces.rotate(i)
+        new_faces[0] = new_faces[0].opposite
         Corner.between_faces(new_faces)
       end
     end
@@ -687,8 +672,9 @@ module CubeTrainer
     end
     
     def mirror(normal_face)
-      replaced_face = only(@axis_corner.faces.select { |f| f.same_axis?(normal_face) })
-      new_corner = Corner.between_faces(replace_once(@axis_corner.faces, replaced_face, replaced_face.opposite))
+      faces = @axis_corner.adjacent_faces
+      replaced_face = only(faces.select { |f| f.same_axis?(normal_face) })
+      new_corner = Corner.between_faces(replace_once(faces, replaced_face, replaced_face.opposite))
       self.class.new(new_corner, @direction.inverse)
     end
     
@@ -709,12 +695,11 @@ module CubeTrainer
 
   # TODO Get rid of this legacy class
   class FixedCornerSkewbMove
-    # TODO Fix this weird hack that we do fixed corner on a different rotation.
     MOVED_CORNERS = {
-      'U' => Corner.for_face_symbols([:D, :B, :L]),
-      'R' => Corner.for_face_symbols([:U, :F, :L]),
-      'L' => Corner.for_face_symbols([:U, :B, :R]),
-      'B' => Corner.for_face_symbols([:U, :L, :B]),
+      'U' => Corner.for_face_symbols([:U, :L, :B]),
+      'R' => Corner.for_face_symbols([:D, :R, :B]),
+      'L' => Corner.for_face_symbols([:D, :F, :L]),
+      'B' => Corner.for_face_symbols([:D, :B, :L]),
     }
     ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map { |m, d| SkewbMove.new(m, d) }
   end

@@ -19,7 +19,7 @@ describe SkewbLayerSearcher do
     expect(algs[1].length).to be == 1
     one_move_alg = algs[1][0]
     expect(one_move_alg.length).to be == 1
-    expect(one_move_alg.moves.first).to be_a(SarahsSkewbMove)
+    expect(one_move_alg.moves.first).to be_a(SkewbMove)
   end
 
 end

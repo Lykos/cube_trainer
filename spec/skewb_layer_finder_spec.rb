@@ -40,17 +40,22 @@ describe SkewbLayerFinder do
     end
 
     it 'should find the score after three moves' do
-      parse_fixed_corner_skewb_algorithm("R U B").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("R U R").apply_to(skewb_state)
+      expect(layer_finder.state_score(skewb_state)).to be == 2
+    end
+
+    it 'should find the score after three moves' do
+      parse_fixed_corner_skewb_algorithm("B' L' U'").apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
     it 'should find the score after three destructive moves' do
-      parse_fixed_corner_skewb_algorithm("R U L").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("R U B").apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 1
     end
-
+    
     it 'should find the score after three destructive moves' do
-      parse_fixed_corner_skewb_algorithm("B' L' U'").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("R U L").apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 1
     end
 
@@ -138,10 +143,10 @@ describe SkewbLayerFinder do
       parse_fixed_corner_skewb_algorithm("B L'").apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to be == {
         :yellow => [parse_fixed_corner_skewb_algorithm("L B'")],
-        :red => [parse_fixed_corner_skewb_algorithm("B' L"), parse_fixed_corner_skewb_algorithm("L B'")],
-        :green => [parse_fixed_corner_skewb_algorithm("L B'")],
-        :blue => [parse_fixed_corner_skewb_algorithm("L B'")],
-        :orange => [parse_fixed_corner_skewb_algorithm("L B'"), parse_fixed_corner_skewb_algorithm("U' L")],
+        :red => [parse_fixed_corner_skewb_algorithm("L B'")],
+        :green => [parse_fixed_corner_skewb_algorithm("B' L"), parse_fixed_corner_skewb_algorithm("L B'")],
+        :blue => [parse_fixed_corner_skewb_algorithm("L B'"), parse_fixed_corner_skewb_algorithm("U' L")],
+        :orange => [parse_fixed_corner_skewb_algorithm("L B'")],
         :white => [parse_fixed_corner_skewb_algorithm("L B'")]}
     end
     
