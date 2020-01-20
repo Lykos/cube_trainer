@@ -173,7 +173,7 @@ module CubeTrainer
       Face.for_face_symbol(opposite_face_symbol(face_symbol))
     end
 
-    def same_axis(other)
+    def same_axis?(other)
       axis_priority == other.axis_priority
     end
 
@@ -192,7 +192,10 @@ module CubeTrainer
     # This is used to index the stickers on other faces.
     def axis_priority
       @axis_priority ||= [piece_index, CubeConstants::FACES - 1 - piece_index].min
+    end
 
+    def is_canonical_axis_face?
+      axis_priority < 3
     end
   
     def valid?

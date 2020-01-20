@@ -79,8 +79,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a U move' do
-    cube_state.apply_move(parse_move('U'))
+  it "should have the right state after applying a U move" do
+    cube_state.apply_move(parse_move("U"))
     changed_parts = {
       [:F, 0, 1] => :blue,
       [:L, 0, 1] => :orange,
@@ -100,8 +100,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a U\' move' do
-    cube_state.apply_move(parse_move('U\''))
+  it "should have the right state after applying a U' move" do
+    cube_state.apply_move(parse_move("U'"))
     changed_parts = {
       [:F, 0, cube_size - 2] => :green,
       [:L, 0, cube_size - 2] => :red,
@@ -125,8 +125,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a R move' do
-    cube_state.apply_move(parse_move('R'))
+  it "should have the right state after applying a R move" do
+    cube_state.apply_move(parse_move("R"))
     changed_parts = {
       [:F, cube_size - 2, 0] => :yellow,
       [:B, cube_size - 2, 0] => :white,
@@ -142,8 +142,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a R\' move' do
-    cube_state.apply_move(parse_move('R\''))
+  it "should have the right state after applying a R' move" do
+    cube_state.apply_move(parse_move("R'"))
     changed_parts = {
       [:F, 1, 0] => :white,
       [:B, 1, 0] => :yellow,
@@ -159,8 +159,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a F move' do
-    cube_state.apply_move(parse_move('F'))
+  it "should have the right state after applying a F move" do
+    cube_state.apply_move(parse_move("F"))
     changed_parts = {
       [:R, cube_size - 2, 0] => :white,
       [:L, cube_size - 2, 0] => :yellow,
@@ -176,8 +176,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a F\' move' do
-    cube_state.apply_move(parse_move('F\''))
+  it "should have the right state after applying a F' move" do
+    cube_state.apply_move(parse_move("F'"))
     changed_parts = {
       [:R, 1, 0] => :yellow,
       [:L, 1, 0] => :white,
@@ -193,8 +193,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a B move' do
-    cube_state.apply_move(parse_move('B'))
+  it "should have the right state after applying a B move" do
+    cube_state.apply_move(parse_move("B"))
     changed_parts = {
       [:R, 1, cube_size - 1] => :yellow,
       [:L, 1, cube_size - 1] => :white,
@@ -210,8 +210,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a B\' move' do
-    cube_state.apply_move(parse_move('B\''))
+  it "should have the right state after applying a B' move" do
+    cube_state.apply_move(parse_move("B'"))
     changed_parts = {
       [:R, cube_size - 2, cube_size - 1] => :white,
       [:L, cube_size - 2, cube_size - 1] => :yellow,
@@ -227,8 +227,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
   
-  it 'should have the right state after applying a L move' do
-    cube_state.apply_move(parse_move('L'))
+  it "should have the right state after applying a L move" do
+    cube_state.apply_move(parse_move("L"))
     changed_parts = {
       [:F, 1, cube_size - 1] => :white,
       [:B, 1, cube_size - 1] => :yellow,
@@ -244,8 +244,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a L\' move' do
-    cube_state.apply_move(parse_move('L\''))
+  it "should have the right state after applying a L' move" do
+    cube_state.apply_move(parse_move("L'"))
     changed_parts = {
       [:F, cube_size - 2, cube_size - 1] => :yellow,
       [:B, cube_size - 2, cube_size - 1] => :white,
@@ -261,8 +261,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a D move' do
-    cube_state.apply_move(parse_move('D'))
+  it "should have the right state after applying a D move" do
+    cube_state.apply_move(parse_move("D"))
     changed_parts = {
       [:F, cube_size - 1, cube_size - 2] => :green,
       [:L, cube_size - 1, cube_size - 2] => :red,
@@ -286,8 +286,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a D\' move' do
-    cube_state.apply_move(parse_move('D\''))
+  it "should have the right state after applying a D' move" do
+    cube_state.apply_move(parse_move("D'"))
     changed_parts = {
       [:F, cube_size - 1, 1] => :blue,
       [:L, cube_size - 1, 1] => :orange,
@@ -307,8 +307,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying an y rotation' do
-    cube_state.apply_move(parse_move('y'))
+  it "should have the right state after applying an y rotation" do
+    cube_state.apply_move(parse_move("y"))
     changed_parts = {}
     0.upto(cube_size - 1) do |x|
       changed_parts[[:F, x, 1]] = :blue
@@ -331,8 +331,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying an y\' rotation' do
-    cube_state.apply_move(parse_move('y\''))
+  it "should have the right state after applying an y' rotation" do
+    cube_state.apply_move(parse_move("y'"))
     changed_parts = {}
     0.upto(cube_size - 1) do |x|
       changed_parts[[:F, x, cube_size - 2]] = :green
@@ -361,8 +361,8 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
  
-  it 'should have the right state after applying a x rotaton' do
-    cube_state.apply_move(parse_move('x'))
+  it "should have the right state after applying a x rotaton" do
+    cube_state.apply_move(parse_move("x"))
     changed_parts = {}
     0.upto(cube_size - 1) do |x|
       changed_parts[[:R, x, cube_size - 2]] = :green
@@ -387,68 +387,68 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should do fat U moves like D y' do
-    fat_move = (cube_size - 1).to_s + 'Uw'
+  it "should do fat U moves like D y" do
+    fat_move = (cube_size - 1).to_s + "Uw"
     cube_state.apply_move(parse_move(fat_move))
     expected_cube_state = create_interesting_cube_state(cube_size)
-    parse_algorithm('D y').apply_to(expected_cube_state)
+    parse_algorithm("D y").apply_to(expected_cube_state)
     expect(cube_state).to be == expected_cube_state
   end
 
-  it 'should do fat R moves like L x' do
-    fat_move = (cube_size - 1).to_s + 'Rw'
+  it "should do fat R moves like L x" do
+    fat_move = (cube_size - 1).to_s + "Rw"
     cube_state.apply_move(parse_move(fat_move))
     expected_cube_state = create_interesting_cube_state(cube_size)
-    parse_algorithm('L x').apply_to(expected_cube_state)
+    parse_algorithm("L x").apply_to(expected_cube_state)
     expect(cube_state).to be == expected_cube_state
   end
 
-  it 'should do fat F moves like B z' do
-    fat_move = (cube_size - 1).to_s + 'Fw'
+  it "should do fat F moves like B z" do
+    fat_move = (cube_size - 1).to_s + "Fw"
     cube_state.apply_move(parse_move(fat_move))
     expected_cube_state = create_interesting_cube_state(cube_size)
-    parse_algorithm('B z').apply_to(expected_cube_state)
+    parse_algorithm("B z").apply_to(expected_cube_state)
     expect(cube_state).to be == expected_cube_state
   end
 
-  it 'should do a Niklas alg properly' do
-    parse_algorithm('U\' L\' U R U\' L U R\'').apply_to(cube_state)
+  it "should do a Niklas alg properly" do
+    parse_algorithm("U' L' U R U' L U R'").apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
-    expected_cube_state.apply_piece_cycle([for_letter(Corner, 'c'), for_letter(Corner, 'i'), for_letter(Corner, 'j')])
+    expected_cube_state.apply_piece_cycle([for_letter(Corner, "c"), for_letter(Corner, "i"), for_letter(Corner, "j")])
     expect(cube_state).to be == expected_cube_state
   end
   
-  it 'should do a TK wing alg properly if the cube is big enough' do
+  it "should do a TK wing alg properly if the cube is big enough" do
     if cube_size >= 4
-      parse_algorithm('U\' R\' U r2 U\' R U r2').apply_to(cube_state)
+      parse_algorithm("U' R' U r2 U' R U r2").apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
-      expected_cube_state.apply_piece_cycle([for_letter(Wing, 'e'), for_letter(Wing, 't'), for_letter(Wing, 'k')])
+      expected_cube_state.apply_piece_cycle([for_letter(Wing, "e"), for_letter(Wing, "t"), for_letter(Wing, "k")])
       expect(cube_state).to be == expected_cube_state
     end
   end
 
-  it 'should do the T perm properly' do
+  it "should do the T perm properly" do
     cube_state = color_scheme.solved_cube_state(cube_size)
-    parse_algorithm('R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\'').apply_to(cube_state)
+    parse_algorithm("R U R' U' R' F R2 U' R' U' R U R' F'").apply_to(cube_state)
     expected_cube_state = color_scheme.solved_cube_state(cube_size)
-    expected_cube_state.apply_piece_cycle([for_letter(Corner, 'b'), for_letter(Corner, 'd')])
+    expected_cube_state.apply_piece_cycle([for_letter(Corner, "b"), for_letter(Corner, "d")])
     if cube_size % 2 == 1 && cube_size >= 5
-      expected_cube_state.apply_piece_cycle([for_letter(Midge, 'b'), for_letter(Midge, 'c')])
+      expected_cube_state.apply_piece_cycle([for_letter(Midge, "b"), for_letter(Midge, "c")])
     end
     if cube_size == 3
-      expected_cube_state.apply_piece_cycle([for_letter(Edge, 'b'), for_letter(Edge, 'c')])
+      expected_cube_state.apply_piece_cycle([for_letter(Edge, "b"), for_letter(Edge, "c")])
     end
-    wing_incarnations = for_letter(Wing, 'e').num_incarnations(cube_size)
+    wing_incarnations = for_letter(Wing, "e").num_incarnations(cube_size)
     wing_incarnations.times do |incarnation_index|
-      expected_cube_state.apply_piece_cycle([for_letter(Wing, 'b'), for_letter(Wing, 'c')], incarnation_index)
-      expected_cube_state.apply_piece_cycle([for_letter(Wing, 'm'), for_letter(Wing, 'i')], incarnation_index)
+      expected_cube_state.apply_piece_cycle([for_letter(Wing, "b"), for_letter(Wing, "c")], incarnation_index)
+      expected_cube_state.apply_piece_cycle([for_letter(Wing, "m"), for_letter(Wing, "i")], incarnation_index)
     end
     expect(cube_state).to be == expected_cube_state
   end
   
-  it 'should do an E move properly if the cube size is odd' do
+  it "should do an E move properly if the cube size is odd" do
     if cube_size % 2 == 1
-      cube_state.apply_move(parse_move('E'))
+      cube_state.apply_move(parse_move("E"))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Dw' #{half_size}Uw y'")
@@ -457,9 +457,9 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     end
   end
   
-  it 'should do an S move properly if the cube size is odd' do
+  it "should do an S move properly if the cube size is odd" do
     if cube_size % 2 == 1
-      cube_state.apply_move(parse_move('S'))
+      cube_state.apply_move(parse_move("S"))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Fw' #{half_size}Bw z")
@@ -468,9 +468,9 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     end
   end
   
-  it 'should do an M move properly if the cube size is odd' do
+  it "should do an M move properly if the cube size is odd" do
     if cube_size % 2 == 1
-      cube_state.apply_move(parse_move('M'))
+      cube_state.apply_move(parse_move("M"))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Lw' #{half_size}Rw x'")
@@ -479,9 +479,9 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     end
   end
   
-  it 'should do an E\' move properly if the cube size is odd' do
+  it "should do an E' move properly if the cube size is odd" do
     if cube_size % 2 == 1
-      cube_state.apply_move(parse_move('E\''))
+      cube_state.apply_move(parse_move("E'"))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Dw #{half_size}Uw' y")
@@ -490,9 +490,9 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     end
   end
   
-  it 'should do an S\' move properly if the cube size is odd' do
+  it "should do an S' move properly if the cube size is odd" do
     if cube_size % 2 == 1
-      cube_state.apply_move(parse_move('S\''))
+      cube_state.apply_move(parse_move("S'"))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Fw #{half_size}Bw' z'")
@@ -501,9 +501,9 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     end
   end
   
-  it 'should do an M\' move properly if the cube size is odd' do
+  it "should do an M' move properly if the cube size is odd" do
     if cube_size % 2 == 1
-      cube_state.apply_move(parse_move('M\''))
+      cube_state.apply_move(parse_move("M'"))
       expected_cube_state = create_interesting_cube_state(cube_size)
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Lw #{half_size}Rw' x")

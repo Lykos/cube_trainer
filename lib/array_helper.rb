@@ -60,6 +60,13 @@ module CubeTrainer
       raise ArgumentError unless array.length == 1
       array[0]
     end
+
+    def replace_once(array, old_element, new_element)
+      raise ArgumentError unless array.count { |e| e == old_element } == 1
+      new_array = array.dup
+      new_array[new_array.index(old_element)] = new_element
+      new_array
+    end
           
   end
 

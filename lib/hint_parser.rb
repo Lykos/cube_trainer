@@ -1,5 +1,6 @@
 require 'commutator_reverse_engineer'
 require 'commonality_finder'
+require 'string_helper'
 require 'csv'
 require 'parser'
 require 'move'
@@ -29,11 +30,13 @@ module CubeTrainer
 
   class HintParser
 
+    include StringHelper
+
     def initialize(part_type, buffer, letter_scheme, color_scheme, verbose, cube_size, test_comms)
       raise ArgumentError unless cube_size.is_a?(Integer)
       @part_type = part_type
       @buffer = buffer
-      @name = buffer.to_s.downcase + '_' + part_type.name.split('::').last.downcase
+      @name = buffer.to_s.downcase + '_' + snake_case_class_name(part_type)
       @letter_scheme = letter_scheme
       @color_scheme = color_scheme
       @verbose = verbose

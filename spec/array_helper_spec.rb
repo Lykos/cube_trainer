@@ -49,4 +49,29 @@ describe ArrayHelper do
   it 'should raise an exception if there are multiple nil periods' do
     expect { expect(rotate_out_nils([3, nil, 1, nil, 2])).to be }.to raise_error ArgumentError
   end
+
+  it 'should find the only element in an array' do
+    expect(only([1])).to be == 1
+  end
+
+  it 'should raise when trying to get the only element in an empty array' do
+    expect { only([]) }.to raise_error ArgumentError
+  end
+
+  it 'should raise when trying to get the only element in an array with multiple elements' do
+    expect { only([1, 2]) }.to raise_error ArgumentError
+  end
+
+  it 'should replace one element once in an array' do
+    expect(replace_once([1, 2, 3], 1, 5)).to be == [5, 2, 3]
+  end
+
+  it 'should raise an exception if a non-existing element should be replaced once in an array' do
+    expect { replace_once([1, 2, 3], 5, 1) }.to raise_error ArgumentError
+  end
+  
+  it 'should raise an exception if an element that appears multiple time should be replaced once in an array' do
+    expect { replace_once([1, 1, 3], 1, 5) }.to raise_error ArgumentError
+  end
+  
 end

@@ -12,11 +12,16 @@ module CubeTrainer
     include CubePrintHelper
     include StateHelper
     include CubeConstants
+
+    def self.check_cube_size(n)
+      raise TypeError unless n.is_a?(Integer)
+      raise ArgumentError, 'Cubes of size smaller than 2 are not supported.' if n < 2
+    end
     
     def initialize(n, stickers)
-      raise 'Cubes of size smaller than 2 are not supported.' if n < 2
-      raise "Cubes must have #{FACES} sides." unless stickers.length == FACES
-      raise "All sides of a #{n}x#{n} must be #{n}x#{n}." unless stickers.all? { |p| p.length == n && p.all? { |q| q.length == n } }
+      CubeState.check_cube_size(n)
+      raise ArgumentError, "Cubes must have #{FACES} sides." unless stickers.length == FACES
+      raise ArgumentError, "All sides of a #{n}x#{n} must be #{n}x#{n}." unless stickers.all? { |p| p.length == n && p.all? { |q| q.length == n } }
       @n = n
       @stickers = stickers
     end

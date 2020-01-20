@@ -1,93 +1,91 @@
 require 'cube'
+require 'string_helper'
 require 'cube_constants'
 require 'cube_state'
 require 'reversible_applyable'
+require 'direction'
+require 'array_helper'
+require 'puzzle'
 
 module CubeTrainer
 
-  class AbstractDirection    
-    POSSIBLE_DIRECTION_NAMES = [[''], ['2', '2\''], ['\'', '3']]
-    SIMPLE_DIRECTION_NAMES = POSSIBLE_DIRECTION_NAMES.map { |d| d.first }
-    POSSIBLE_SKEWB_DIRECTION_NAMES = [['', '2\''], ['\'', '2']]
-    SIMPLE_SKEWB_DIRECTION_NAMES = POSSIBLE_SKEWB_DIRECTION_NAMES.map { |d| d.first }
-    
-    def initialize(value)
-      raise ArgumentError, "Direction value #{value} isn't an integer." unless value.is_a?(Integer)
-      raise ArgumentError, "Invalid direction value #{value}." unless 0 <= value && value < self.class::NUM_DIRECTIONS
-      @value = value
-    end
-
-    attr_reader :value
-
-    def is_non_zero?
-      @value > 0
-    end
-
-    def inverse
-      self::class.new(self.class::NUM_DIRECTIONS - @value)
-    end
-
-    def +(other)
-      self::class.new((@value + other.value) % self.class::NUM_DIRECTIONS)
-    end
-    
-    def eql?(other)
-      self.class.equal?(other.class) && @value == other.value
-    end
-  
-    alias == eql?
-  
-    def hash
-      @value.hash
-    end
-
-  end
-
-  class SkewbDirection < AbstractDirection
-    NUM_DIRECTIONS = 3
-    NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }
-    FORWARD = new(1)
-    BACKWARD = new(2)
-
-    def name
-      raise ArgumentError unless is_non_zero?
-      SIMPLE_SKEWB_DIRECTION_NAMES[@value - 1]
-    end
-
-    def is_double_move?
-      false
-    end
-  end
-  
-  class CubeDirection < AbstractDirection
-    NUM_DIRECTIONS = 4
-    NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }
-    FORWARD = new(1)
-    DOUBLE = new(2)
-    BACKWARD = new(3)
-
-    def name
-      raise ArgumentError unless is_non_zero?
-      SIMPLE_DIRECTION_NAMES[@value - 1]
-    end
-
-    def is_double_move?
-      @value == 2
-    end
-  end
-  
   class Move
+
     AXES = ['y', 'z', 'x']
     SLICES = ['E', 'S', 'M']
     MOVE_METRICS = [:qtm, :htm, :stm, :sqtm, :qstm]
 
+    include StringHelper
+    include ArrayHelper
+
+    def <=>(other)
+      class_cmp = self.class.equal?(other.class)
+      if class_cmp == 0
+        identifying_fields <=> other.identifying_fields
+      else
+        class_cmp
+      end
+    end
+
+    include Comparable
+    
+    def hash
+      identifying_fields.hash
+    end
+
+    def eql?(other)
+      identifying_fields == other.identifying_fields
+    end
+
+    alias == eql?
+
+    def identifying_fields
+      raise NotImplementedError
+    end
+
+    def inverse
+      fields = replace_once(identifying_fields, direction, direction.inverse)
+      self.class.new(*fields)
+    end
+
     def self.check_move_metric(metric)
       raise ArgumentError, "Invalid move metric #{metric}." unless MOVE_METRICS.include?(metric)    
     end
-    
-    def move_count(metric=:htm)
+
+    def equivalent?(other, cube_size)
+      decide_meaning(cube_size).equivalent_internal?(other.decide_meaning(cube_size))
+    end
+
+    def equivalent_internal?(other, cube_size)
+      self == other
+    end
+
+    def can_swap?(other)
+      is_a?(Rotation) || other.is_a?(Rotation)
+    end
+
+    # For moves A, B, returns [C, D] if they can be swapped.
+    def swap(other)
+      raise ArgumentError unless can_swap?(other)
+      if is_a?(Rotation)
+        [other.rotate_by(self), self]
+      elsif other.is_a?(Rotation)
+        [other, self.rotate_by(other)]
+      else
+        swap_internal(other)
+      end
+    end
+
+    def swap_internal(other)
+      raise NotImplementedError, "Not implemented for #{self}:#{self.class} and #{other}:#{other.class}."
+    end
+
+    # Cube size is needed to decide whether 'u' is a slice move (like on bigger cubes) or a fat move (like on 3x3).
+    def move_count(cube_size, metric=:htm)
+      raise TypeError unless cube_size.is_a?(Integer)
       Move.check_move_metric(metric)
-      slice_factor = if is_slice_move? then 2 else 1 end
+      return 0 if direction.is_zero?
+      slice_factor = if decide_meaning(cube_size).is_slice_move? then 2 else 1 end
       direction_factor = if direction.is_double_move? then 2 else 1 end
       case metric
       when :qtm
@@ -113,104 +111,134 @@ module CubeTrainer
       raise NotImplementedError
     end
 
-    def inverse
-      raise NotImplementedError
-    end
-
-    def rotate(rotation)
+    def rotate_by(rotation)
       raise NotImplementedError
     end
 
     def mirror(normal_face)
       raise NotImplementedError
     end
-
-    # Returns true if this move can be cancelled with the other one with nothing left after cancellation (not even rotations).
-    def cancels_totally?(other)
-      inverse == other
-    end
-
-    include ReversibleApplyable
-    include Comparable
-
-    def apply_to
+    
+    # The superclass for all moves that work on the same type puzzle as the given one (modulo cube size, i.e. 3x3 is the same as 4x4, but Skewb is different).
+    def puzzles
       raise NotImplementedError
     end
 
-    def <=>(other)
-      to_s <=> other.to_s
-    end
-
-  end
-
-  class MSliceMove < Move
-    def initialize(axis_face, direction)
-      raise ArgumentError unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
-      raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
-      @axis_face = axis_face
-      @direction = direction
-    end
-  
-    attr_reader :axis_face, :direction
-
-    def eql?(other)
-      self.class.equal?(other.class) && @axis_face == other.axis_face && @direction == other.direction
-    end
-  
-    alias == eql?
-  
-    def hash
-      [@axis_face, @direction].hash
-    end
-  
-    def to_s
-      slice_name = SLICES[Face::ELEMENTS.index(@axis_face)]
-      broken_direction = if slice_name == 'S' then direction else direction.inverse end
-      "#{slice_name}#{broken_direction.name}"
-    end
-  
-    def apply_to(cube_state)
-      raise ArgumentError unless cube_state.is_a?(CubeState)
-      # For even layered cubes, m slice moves are meant as very fat moves where only the outer layers stay.
-      # For odd layered cubes, we only move the very middle.
-      if cube_state.n % 2 == 0
-        1.upto(cube_state.n - 2) do |s|
-          cube_state.rotate_slice(@axis_face, s, @direction)
-        end
+    # Return an algorithm from cancelling this move with `other` and cancelling as much as possible.
+    # Note that it doesn't cancel rotations even if we theoretically could do this by using uncanonical wide moves.
+    # Expects prepend_xyz methods to be present. That one can return a cancelled implementation and nil if nothing can be cancelled.
+    def join_with_cancellation(other, cube_size)
+      raise ArgumentError if (puzzles & other.puzzles).empty?
+      this = self.decide_meaning(cube_size)
+      other = other.decide_meaning(cube_size)
+      method_symbol = "prepend_#{snake_case_class_name(this.class)}".to_sym
+      unless other.respond_to?(method_symbol)
+        raise NotImplementedError, "#{other.class}##{method_symbol} is not implemented"
+      end
+      maybe_alg = other.method(method_symbol).call(this, cube_size)
+      if maybe_alg
+        Algorithm.new(maybe_alg.moves.select { |m| m.direction.is_non_zero? })
       else
-        s = cube_state.n / 2
-        cube_state.rotate_slice(@axis_face, s, @direction)
+        Algorithm.new([self, other].select { |m| m.direction.is_non_zero? })
       end
     end
 
-    def inverse
-      MSliceMove.new(@axis_face, @direction.inverse)
+    include ReversibleApplyable
+
+    def apply_to(state)
+      raise NotImplementedError
     end
 
-    def is_slice_move?
-      true
+    # We handle the annoying inconsistency that u is a slice move for bigger cubes, but a fat move for 3x3.
+    # Furthermore, M slice moves are fat m slice moves for even cubes and normal m slice moves for odd cubes.
+    def decide_meaning(cube_size)
+      self
     end
 
-    def cancels_partially?(other)
-      other.is_a?(MSliceMove) && @axis_face == other.axis_face
+    # In terms of prepending, inner M slice moves are exactly like other slice moves.
+    def prepend_inner_m_slice_move(other, cube_size)
+      prepend_slice_move(other, cube_size)
     end
 
-    def cancel_partially(other)
-      raise ArgumentError unless cancels_partially?(other)
-      raise ArgumentError if cancels_totally?(other)
-      MSliceMove.new(@axis_face, @direction + other.direction)
+  end
+
+  module MSlicePrintHelper
+    def to_s
+      slice_name = Move::SLICES[@axis_face.axis_priority]
+      broken_direction = slice_name == 'S' ? canonical_direction : canonical_direction.inverse
+      "#{slice_name}#{broken_direction.name}"
     end
   end
-  
-  class Rotation < Move
+
+  # Intermediate class for all types of moves that have an axis face and a direction, i.e. cube moves and rotations.
+  class AxisFaceAndDirectionMove < Move
+
     def initialize(axis_face, direction)
-      raise ArgumentError, "Face #{axis_face} is not a valid axis face." unless axis_face.is_a?(Face) && Face::ELEMENTS.index(axis_face) < 3
-      raise ArgumentError, "Invalid direction #{direction}" unless direction.is_a?(CubeDirection) && direction.is_non_zero?
+      raise TypeError unless axis_face.is_a?(Face)
+      raise TypeError unless direction.is_a?(CubeDirection)
       @axis_face = axis_face
       @direction = direction
     end
+  
+    attr_reader :direction, :axis_face
+    
+    def translated_direction(other_axis_face)
+      case @axis_face
+      when other_axis_face then @direction
+      when other_axis_face.opposite then @direction.inverse
+      else
+        raise ArgumentError
+      end
+    end
 
-    attr_reader :axis_face, :direction
+    def same_axis?(other)
+      @axis_face.same_axis?(other.axis_face)
+    end
+
+    def identifying_fields
+      [@axis_face, @direction]
+    end
+
+    def canonical_direction
+      @axis_face.is_canonical_axis_face? ? @direction : @direction.inverse
+    end
+
+    def can_swap?(other)
+      super || same_axis?(other)
+    end
+
+    def swap_internal(other)
+      if same_axis?(other)
+        [other, self]
+      else
+        super
+      end
+    end
+
+    def rotate_by(rotation)
+      if same_axis?(rotation)
+        self
+      else
+        rotation_neighbors = rotation.axis_face.neighbors
+        face_index = rotation_neighbors.index(@axis_face) || raise
+        new_axis_face = rotation_neighbors[(face_index + rotation.direction.value) % rotation_neighbors.length]
+        fields = replace_once(identifying_fields, @axis_face, new_axis_face)
+        self.class.new(*fields)
+      end
+    end
+
+    def mirror(normal_face)
+      if normal_face.same_axis?(@axis_face)
+        fields = replace_once(replace_once(identifying_fields, @direction, @direction.inverse), @axis_face, @axis_face.inverse)
+        self.class.new(*fields)
+      else
+        inverse
+      end
+    end
+    
+  end
+
+  class Rotation < AxisFaceAndDirectionMove
 
     # I haven't found a better way for Skewb than to hardcode what each move does.
     # that it Note's tricky because we have a weird orientation hack for skewb.
@@ -242,26 +270,20 @@ module CubeTrainer
       [SkewbCoordinate.corner_index(Face::L, 3), SkewbCoordinate.corner_index(Face::L, 1), SkewbCoordinate.corner_index(Face::L, 0), SkewbCoordinate.corner_index(Face::L, 2)],
     ]
 
-    def eql?(other)
-      self.class.equal?(other.class) && @axis_face == other.axis_face && @direction == other.direction
-    end
-  
-    alias == eql?
-  
-    def hash
-      [@axis_face, @direction].hash
-    end
-  
     def to_s
-      "#{AXES[Face::ELEMENTS.index(@axis_face)]}#{@direction.name}"
+      "#{AXES[@axis_face.axis_priority]}#{canonical_direction.name}"
     end
-  
+
+    def puzzles
+      [Puzzle::SKEWB, Puzzle::NXN_CUBE]
+    end
+
     def apply_to(cube_or_skewb_state)
       cube_or_skewb_state.apply_rotation(self)
     end
     
     def apply_to_cube(cube_state)
-      raise ArgumentError unless cube_state.is_a?(CubeState)
+      raise TypeError unless cube_state.is_a?(CubeState)
       0.upto(cube_state.n - 1) do |s|
         cube_state.rotate_slice(@axis_face, s, @direction)
       end
@@ -279,84 +301,362 @@ module CubeTrainer
     end
 
     def apply_to_skewb(skewb_state)
-      raise ArgumentError unless skewb_state.is_a?(SkewbState)
+      raise TypeError unless skewb_state.is_a?(SkewbState)
       skewb_cycles.each do |c|
         skewb_state.apply_4sticker_cycle(c, @direction)
       end
     end
 
-    def inverse
-      Rotation.new(@axis_face, @direction.inverse)
-    end
-
     def is_slice_move?
       false
     end
 
-    def cancels_partially?(other)
-      other.is_a?(Rotation) && @axis_face == other.axis_face
+    def prepend_rotation(other, cube_size)
+      if same_axis?(other)
+        other_direction = translate_direction(other.axis_face)
+        Algorithm.move(FatMSliceMove.new(@axis_face, @direction + other_direction))
+      end
     end
 
-    def cancel_partially(other)
-      raise ArgumentError unless cancels_partially?(other)
-      raise ArgumentError if cancels_totally?(other)
-      Rotation.new(@axis_face, @direction + other.direction)
+    def prepend_fat_m_slice_move(other, cube_size)
+      nil
     end
 
-    def move_count(metric=:htm)
+    def prepend_fat_move(other, cube_size)
+      if same_axis?(other) && translated_direction(other.axis_face) == other.direction.inverse
+        Algorithm.move(FatMove.new(other.axis_face.opposite, other.direction, other.inverted_width(cube_size)))
+      end
+    end
+
+    def prepend_slice_move(other, cube_size)
+      nil
+    end
+
+    def move_count(cube_size, metric=:htm)
       0
     end
   end
 
-  class SkewbMove < Move
-
-    def initialize(move, direction)
-      raise ArgumentError unless self.class::MOVES.include?(move)
-      raise ArgumentError unless direction.is_a?(SkewbDirection) && direction.is_non_zero?
-      @move = move
-      @direction = direction
+  class CubeMove < AxisFaceAndDirectionMove
+    
+    def puzzles
+      [Puzzle::NXN_CUBE]
     end
 
-    attr_reader :move, :direction
-  
-    def eql?(other)
-      self.class.equal?(other.class) && @move == other.move && @direction == other.direction
-    end
-  
-    alias == eql?
-  
-    def hash
-      [@move, @direction].hash
+    def apply_to(cube_state)
+      raise TypeError unless cube_state.is_a?(CubeState)
+      decide_meaning(cube_state.n).apply_to_internal(cube_state)
     end
 
+    def apply_to_internal(cube_state)
+      raise NotImplementedError
+    end
+    
+  end
+
+  class FatMSliceMove < CubeMove
+
+    def apply_to_internal(cube_state)
+      raise ArgumentError unless cube_state.n % 2 == 0
+      1.upto(cube_state.n - 2) do |s|
+        cube_state.rotate_slice(@axis_face, s, @direction)
+      end
+    end
+
+    include MSlicePrintHelper
+
+    def prepend_rotation(other, cube_size)
+      nil
+    end
+    
+    def prepend_fat_m_slice_move(other, cube_size)
+      if same_axis?(other)
+        other_direction = translate_direction(other.axis_face)
+        Algorithm.move(FatMSliceMove.new(@axis_face, @direction + other_direction))
+      end
+    end
+
+    def prepend_fat_move(other, cube_size)
+      # Note that changing the order is safe because that method returns nil if no cancellation can be performed.
+      other.prepend_fat_m_slice_move(self, cube_size)
+    end
+
+    def prepend_slice_move(other, cube_size)
+      nil
+    end
+
+    def is_slice_move_internal?
+      true
+    end
+
+    def equivalent_internal?(other, cube_size)
+      if cube_size == 3 && other.is_a?(SliceMove) && @axis_face == other.axis_face && @direction == other.direction && other.slice_index == 1
+        return true
+      elsif other.is_a?(FatMSliceMove) && @axis_face == other.axis_face.opposite && @direction = other.direction.opposite
+        return true
+      end
+      super
+    end
+
+  end
+
+  class MaybeFatMSliceMaybeInnerMSliceMove < CubeMove
+
+    include MSlicePrintHelper
+  
+    # For even layered cubes, m slice moves are meant as very fat moves where only the outer layers stay.
+    # For odd layered cubes, we only move the very middle.
+    def decide_meaning(cube_size)
+      if cube_size % 2 == 0
+        FatMSliceMove.new(@axis_face, @direction)
+      else
+        InnerMSliceMove.new(@axis_face, @direction, cube_size / 2)
+      end
+    end
+
+  end
+  
+  class FatMove < CubeMove
+
+    def initialize(axis_face, direction, width)
+      super(axis_face, direction)
+      raise TypeError unless width.is_a?(Integer)
+      raise ArgumentError, "Invalid width #{width} for fat move." unless width >= 1
+      @width = width
+    end
+
+    OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map { |f, d| FatMove.new(f, d, 1) }
+  
+    attr_reader :width
+  
+    def identifying_fields
+      super + [@width]
+    end
+  
     def to_s
-      "#{@move}#{@direction.name}"
+      "#{if @width > 1 then @width else '' end}#{@axis_face.name}#{if @width > 1 then 'w' else '' end}#{@direction.name}"
     end
-
-    def inverse
-      self.class.new(@move, @direction.inverse)
+  
+    def apply_to_internal(cube_state)
+      raise ArgumentError if @width >= cube_state.n
+      0.upto(@width - 1) do |s|
+        cube_state.rotate_slice(@axis_face, s, @direction)
+      end
+      cube_state.rotate_face(@axis_face, @direction)
     end
 
     def is_slice_move?
       false
     end
-    
-    def cancels_partially?(other)
-      other.is_a?(SkewbMove) && @axis_face == other.axis_face
+
+    def with_width(width)
+      FatMove.new(@axis_face, @direction, width)
     end
 
-    def cancel_partially(other)
-      raise ArgumentError unless cancels_partially?(other)
-      raise ArgumentError if cancels_totally?(other)
-      SkewbMove.new(@axis_face, @direction + other.direction)
+    def inverted_width(cube_size)
+      cube_size - @width
+    end
+
+    def prepend_rotation(other, cube_size)
+      # Note that changing the order is safe because that method returns nil if no cancellation can be performed.
+      other.prepend_fat_move(self, cube_size)
+    end
+    
+    def prepend_fat_m_slice_move(other, cube_size)
+      if same_axis?(other) && @width == 1 && @direction == other.translate_direction(@axis_face)
+        Algorithm.move(FatMove.new(@axis_face, @direction, cube_size.n - 1))
+      elsif same_axis?(other) && @width == cube_size.n - 1 && @direction == other.translate_direction(@axis_face).inverse
+        Algorithm.move(FatMove.new(@axis_face, @direction, 1))
+      end
+    end
+
+    def prepend_fat_move(other, cube_size)
+      if @axis_face == other.axis_face && @width == other.width
+        Algorithm.move(FatMove.new(@axis_face, @direction + other.direction, @width))
+      elsif @axis_face == other.axis_face.opposite && @width + other.width == cube_size
+        if @direction == other.direction.inverse
+          Algorithm.move(Rotation.new(@axis_face, @direction))
+        else
+          move = FatMove.new(other.axis_face, other.direction + @direction, other.width)
+          rotation = Rotation.new(@axis_face, @direction)
+          Algorithm.new([move, rotation])
+        end
+      end
+    end
+
+    def prepend_slice_move(other, cube_size)
+      return nil unless same_axis?(other)
+      translated_direction = other.translated_direction(@axis_face)
+      move = case other.slice_index
+             when @width
+               return nil unless translated_direction == @direction
+               with_width(@width + 1)
+             when @width - 1
+               return nil unless translated_direction == @direction.inverse
+               with_width(@width - 1)
+             end
+      Algorithm.move(move)
+    end
+    
+  end
+
+  class SliceMove < CubeMove
+
+    def initialize(axis_face, direction, slice_index)
+      super(axis_face, direction)
+      raise TypeError unless slice_index.is_a?(Integer)
+      raise ArgumentError unless slice_index >= 1
+      @slice_index = slice_index
+    end
+
+    attr_reader :slice_index
+    
+    def identifying_fields
+      super + [@slice_index]
+    end
+
+    def to_s
+      "#{@slice_index}#{@axis_face.name.downcase}#{@direction.name}"
+    end
+
+    def apply_to_internal(cube_state)
+      cube_state.rotate_slice(@axis_face, @slice_index, @direction)
+    end
+    
+    def is_slice_move?
+      true
+    end
+
+    def invert_slice_index(cube_size)
+      cube_size - 1 - @slice_index
+    end
+
+    def equivalent_internal?(other, cube_size)
+      if other.is_a?(FatMove)
+        return other.equivalent_internal?(self)
+      elsif other.is_a?(SliceMove) && simplified(cube_size) == other.simplified(cube_size)
+        return true
+      end
+      super
+    end
+
+    def mirror(normal_face)
+      if normal_face.same_axis?(@axis_face)
+        SliceMove.new(@axis_face.opposite, @direction.inverse, @slice_index)
+      else
+        inverse
+      end
+    end
+
+    def simplified(cube_size)
+      if @slice_index > cube_size / 2
+        SliceMove.new(@axis_face.opposite, @direction.inverse, invert_slice_index(cube_size))
+      else
+        self
+      end
+    end
+
+    def prepend_rotation(other, cube_size)
+      nil
+    end
+
+    def prepend_fat_m_slice_move(other, cube_size)
+      nil
+    end
+
+    def prepend_fat_move(other, cube_size)
+      # Note that changing the order is safe because that method returns nil if no cancellation can be performed.
+      other.prepend_slice_move(self, cube_size)
+    end
+
+    def prepend_slice_move(other, cube_size)
+      return nil unless same_axis?(other)
+      # Only for 4x4, we can join two adjacent slice moves into a fat m slice move.
+      this = simplified(cube_size)
+      if cube_size == 4 && this.slice_index == 1 && mirror(@axis_face).equivalent_internal?(other)
+        Algorithm.move(FatMSliceMove.new(other.axis_face, other.direction))
+      else
+        other = other.simplified(cube_size)
+        if this.axis_face == other.axis_face && this.slice_index == other.slice_index
+          Algorithm.move(SliceMove.new(other.axis_face, other.direction + this.translate_direction(other.axis_face), other.slice_index))
+        end
+      end
+    end
+
+  end
+
+  class InnerMSliceMove < SliceMove
+
+    include MSlicePrintHelper
+
+    def apply_to_internal(cube_state)
+      raise ArgumentError unless cube_state.n % 2 == 1
+      raise ArgumentError unless cube_state.n / 2 == @slice_index
+      super
+    end
+    
+  end
+
+
+  # Not that this represents a move that is written as 'u' which is a slice move on bigger cubes but a fat move on 3x3...
+  class MaybeFatMaybeSliceMove < CubeMove
+  
+    # We handle the annoying inconsistency that u is a slice move for bigger cubes, but a fat move for 3x3.
+    def decide_meaning(cube_size)
+      case cube_size
+      when 2 then raise ArgumentError
+      when 3 then FatMove.new(@axis_face, @direction, 2)
+      else SliceMove.new(@axis_face, @direction, 1)
+      end
+    end
+  
+    def to_s
+      "#{@axis_face.name.downcase}#{@direction.name}"
+    end
+  
+  end
+
+  # TODO Make this a corner-based axis plus a direction.
+  class SkewbMove < Move
+    def initialize(move, direction)
+      raise ArgumentError unless self.class::MOVES.include?(move)
+      raise TypeError unless direction.is_a?(SkewbDirection)
+      @move = move
+      @direction = direction
+    end
+
+    def puzzles
+      [Puzzle::SKEWB]
+    end
+
+    attr_reader :move, :direction
+  
+    def to_s
+      "#{@move}#{@direction.name}"
+    end
+
+    def is_slice_move?
+      false
+    end
+
+    def puzzle_move
+      SkewbMove
+    end
+
+    def puzzle_state_class
+      SkewbState
     end
 
     def cycles
       raise NotImplementedError
     end
+
+    def identifying_fields
+      [@move, @direction]
+    end
     
     def apply_to(cube_state)
-      raise ArgumentError unless cube_state.is_a?(SkewbState)
+      raise TypeError unless cube_state.is_a?(SkewbState)
       cycles.each do |c|
         case @direction
         when SkewbDirection::FORWARD
@@ -410,7 +710,7 @@ module CubeTrainer
       when 'R' then R_MOVE_CYCLES
       when 'L' then L_MOVE_CYCLES
       when 'B' then B_MOVE_CYCLES
-      else raise ArgumentError
+      else raise
       end
     end
 
@@ -450,7 +750,7 @@ module CubeTrainer
       [SkewbCoordinate.corner_index(Face::F, 2), SkewbCoordinate.corner_index(Face::D, 3), SkewbCoordinate.corner_index(Face::R, 0)]
     ]
 
-    def rotate(rotation)
+    def rotate_by(rotation)
       if rotation.axis_face != Face::U
         raise NotImplementedError, "Sarahs Skewb move rotations are only implemented for the y axis. Note that other axis are much harder because Sarahs notation doesn't allow for it."
       end
@@ -480,123 +780,11 @@ module CubeTrainer
       when 'R' then R_MOVE_CYCLES
       when 'L' then L_MOVE_CYCLES
       when 'B' then B_MOVE_CYCLES
-      else raise ArgumentError
+      else raise
       end
     end
   end
   
-  class FatMove < Move
-    def initialize(axis_face, width, direction)
-      raise ArgumentError unless axis_face.is_a?(Face)
-      raise ArgumentError, "Invalid width #{width} for fat move." unless width.is_a?(Integer) and width >= 1
-      raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
-      @axis_face = axis_face
-      @width = width
-      @direction = direction
-    end
-
-    OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map { |f, d| FatMove.new(f, 1, d) }
-  
-    attr_reader :axis_face, :width, :direction
-
-    def eql?(other)
-      self.class.equal?(other.class) && @axis_face == other.axis_face && @width == other.width && @direction == other.direction
-    end
-  
-    alias == eql?
-  
-    def hash
-      [@axis_face, @width, @direction].hash
-    end
-  
-    def to_s
-      "#{if @width > 1 then @width else '' end}#{@axis_face.name}#{if @width > 1 then 'w' else '' end}#{@direction.name}"
-    end
-  
-    def apply_to(cube_state)
-      raise ArgumentError unless cube_state.is_a?(CubeState)
-      raise if @width >= cube_state.n
-      0.upto(@width - 1) do |s|
-        cube_state.rotate_slice(@axis_face, s, @direction)
-      end
-      cube_state.rotate_face(@axis_face, @direction)
-    end
-
-    def inverse
-      FatMove.new(@axis_face, @width, @direction.inverse)
-    end
-
-    def is_slice_move?
-      false
-    end
-
-    def cancels_partially?(other)
-      other.is_a?(FatMove) && @axis_face == other.axis_face && @width == other.width
-    end
-
-    def cancel_partially(other)
-      raise ArgumentError unless cancels_partially?(other)
-      raise ArgumentError if cancels_totally?(other)
-      FatMove.new(@axis_face, @width, @direction + other.direction)
-    end
-  end
-  
-  class SliceMove < Move
-    def initialize(axis_face, direction)
-      raise ArgumentError unless axis_face.is_a?(Face)
-      raise ArgumentError unless direction.is_a?(CubeDirection) && direction.is_non_zero?
-      @axis_face = axis_face
-      @direction = direction
-    end
-  
-    attr_reader :axis_face, :direction
-
-    def eql?(other)
-      self.class.equal?(other.class) && @axis_face == other.axis_face && @direction == other.direction
-    end
-  
-    alias == eql?
-  
-    def hash
-      [@axis_face, @direction].hash
-    end
-  
-    def to_s
-      "#{@axis_face.name.downcase}#{@direction.name}"
-    end
-  
-    def apply_to(cube_state)
-      raise ArgumentError unless cube_state.is_a?(CubeState)
-      # We handle the annoying inconsistency that u is a slice move for bigger cubes, but a fat move for 3x3.
-      if cube_state.n == 3
-        0.upto(1) do |s|
-          cube_state.rotate_slice(@axis_face, s, @direction)
-        end
-        cube_state.rotate_face(@axis_face, @direction)
-      else
-        cube_state.rotate_slice(@axis_face, 1, @direction)
-      end
-    end
-
-    def inverse
-      SliceMove.new(@axis_face, @direction.inverse)
-    end
-
-    def is_slice_move?
-      true
-    end
-
-    def cancels_partially?(other)
-      other.is_a?(SliceMove) && @axis_face == other.axis_face
-    end
-
-    def cancel_partially(other)
-      raise ArgumentError unless cancels_partially?(other)
-      raise ArgumentError if cancels_totally?(other)
-      SliceMove.new(@axis_face, @direction + other.direction)
-    end
-  end
-
   class CubeMoveParser
     REGEXP = begin
                axes_part = "([#{Move::AXES.join}])"
@@ -633,17 +821,17 @@ module CubeTrainer
       elsif fat_face_name
         raise unless rotation.nil? && face_name.nil? && slice_name.nil?
         width = if width == '' then 2 else width.to_i end
-        FatMove.new(Face.by_name(fat_face_name), width, direction)
+        FatMove.new(Face.by_name(fat_face_name), direction, width)
       elsif face_name
         raise unless rotation.nil? && width.nil? && fat_face_name.nil? && slice_name.nil?
-        FatMove.new(Face.by_name(face_name), 1, direction)
+        FatMove.new(Face.by_name(face_name), direction, 1)
       elsif slice_name
         raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
-        SliceMove.new(Face.by_name(slice_name.upcase), direction)
+        MaybeFatMaybeSliceMove.new(Face.by_name(slice_name.upcase), direction)
       elsif mslice_name
         raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
         fixed_direction = if mslice_name == 'S' then direction else direction.inverse end
-        MSliceMove.new(Face::ELEMENTS[Move::SLICES.index(mslice_name)], fixed_direction)
+        MaybeFatMSliceMaybeInnerMSliceMove.new(Face::ELEMENTS[Move::SLICES.index(mslice_name)], fixed_direction)
       else
         raise
       end
