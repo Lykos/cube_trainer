@@ -29,7 +29,7 @@ module CubeTrainer
     def generate_input_items(alg_entries)
       state = @color_scheme.solved_cube_state(@cube_size)
       alg_entries.map do |name, alg|
-        alg.apply_temporarily_to(state) do
+        alg.inverse.apply_temporarily_to(state) do
           InputItem.new(AlgName.new(a), state.dup)
         end
       end
