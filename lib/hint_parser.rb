@@ -30,7 +30,7 @@ module CubeTrainer
     end
 
     def hints_exist?
-      File.exists(csv_file)
+      File.exist?(csv_file)
     end
 
     def maybe_parse_hints

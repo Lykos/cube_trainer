@@ -127,6 +127,11 @@ module CubeTrainer
     def fetch(cube_state)
       Net::HTTP.get(uri(cube_state))
     end
+
+    def fetch_and_store(cube_state, output)
+      image = fetch(cube_state)
+      File.open(output, 'wb') { |f| f.write(image) }
+    end
     
   end
 

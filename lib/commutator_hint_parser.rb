@@ -163,7 +163,7 @@ module CubeTrainer
 
     def self.maybe_parse_hints(part_type, options)
       buffer = BufferHelper.determine_buffer(part_type, options)
-      hint_parser = HintParser.new(part_type, buffer, options.letter_scheme, options.color_scheme, options.verbose, options.cube_size, options.test_comms)
+      hint_parser = CommutatorHintParser.new(part_type, buffer, options.letter_scheme, options.color_scheme, options.verbose, options.cube_size, options.test_comms)
       hint_parser.maybe_parse_hints
     end
 

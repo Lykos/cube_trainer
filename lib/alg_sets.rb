@@ -10,13 +10,13 @@ module CubeTrainer
     include StringHelper
     
     def initialize(results_model, options)
-      @color_scheme = options.color_scheme
-      @cube_size = options.cube_size
-      @hinter = maybe_parse_hints(name, options.verbose)
-      @input_sampler = InputSampler.new(generate_input_items(hinter.entries), results_model, goal_badness, options.verbose, options.new_item_boundary)
+      @results_model = results_model
+      @options = options
     end
 
-    attr_reader :input_sampler, :hinter
+    def input_sampler
+      @input_sampler ||= InputSampler.new(input_items, @results_model, goal_badness, @options.verbose, @options.new_item_boundary)
+    end
 
     def goal_badness
       raise NotImplementedError
@@ -26,11 +26,19 @@ module CubeTrainer
       snake_case_class_name(self.class)
     end
 
-    def generate_input_items(alg_entries)
-      state = @color_scheme.solved_cube_state(@cube_size)
-      alg_entries.map do |name, alg|
+    def hinter
+      @hinter ||= AlgHintParser.maybe_parse_hints(name, @options.verbose)
+    end
+
+    def input_items
+      @input_items ||= generate_input_items
+    end
+
+    def generate_input_items
+      state = @options.color_scheme.solved_cube_state(@options.cube_size)
+      hinter.entries.map do |name, alg|
         alg.inverse.apply_temporarily_to(state) do
-          InputItem.new(AlgName.new(a), state.dup)
+          InputItem.new(name, state.dup)
         end
       end
     end
@@ -42,6 +50,14 @@ module CubeTrainer
   end
 
   class Plls < AlgSet
+
+    def goal_badness
+      1.0
+    end
+
+  end
+
+  class Colls < AlgSet
 
     def goal_badness
       1.0

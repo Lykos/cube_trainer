@@ -1,4 +1,5 @@
 require 'hint_parser'
+require 'alg_name'
 require 'alg_hinter'
 require 'parser'
 
@@ -36,7 +37,7 @@ module CubeTrainer
     end
 
     def self.maybe_parse_hints(name, verbose)
-      AlgHintParser.new(name, verbose)
+      AlgHintParser.new(name, verbose).maybe_parse_hints
     end
 
   end

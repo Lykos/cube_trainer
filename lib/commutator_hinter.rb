@@ -1,6 +1,6 @@
 module CubeTrainer
 
-  class LetterPairHinter
+  class CommutatorHinter
  
     def initialize(hints)
       @hints = hints.map { |k, v| [k, [v]] }.to_h

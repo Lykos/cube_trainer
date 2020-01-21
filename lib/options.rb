@@ -25,7 +25,9 @@ module CubeTrainer
       'tcenters' => CommutatorInfo.new(:tcenter_commutators, TCenterCommutators, HumanTimeLearner, 5, true),
       'words' => CommutatorInfo.new(:letters_to_word, LettersToWord, HumanWordLearner, nil, false),
       'oh_plls' => CommutatorInfo.new(:oh_plls_by_name, Plls, HumanTimeLearner, 3, false),
-      'plls' => CommutatorInfo.new(:plls_by_name, Plls, HumanTimeLearner, 3, false)
+      'plls' => CommutatorInfo.new(:plls_by_name, Plls, HumanTimeLearner, 3, false),
+      'oh_colls' => CommutatorInfo.new(:oh_plls_by_name, Colls, HumanTimeLearner, 3, false),
+      'colls' => CommutatorInfo.new(:plls_by_name, Colls, HumanTimeLearner, 3, false),
     }
     
     def self.parse(args)
