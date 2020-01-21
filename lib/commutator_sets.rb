@@ -1,7 +1,7 @@
 require 'letter_pair_helper'
 require 'input_sampler'
 require 'disjoint_union_alg_set'
-require 'hint_parser'
+require 'commutator_hint_parser'
 require 'letter_pair_sequence'
 require 'utils'
 require 'sequence_hinter'
@@ -89,13 +89,13 @@ module CubeTrainer
       corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
       corner_options.picture = false
       corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(corner_options))
-      corner_hinter = Hinter.maybe_create(PART_TYPE, corner_options)
+      corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_options)
 
       parity_options = options.dup
       parity_options.commutator_info = Options::COMMUTATOR_TYPES['corner_parities'] || raise
       corner_options.picture = false
       parity_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(parity_options))
-      parity_hinter = Hinter.maybe_create(PART_TYPE, parity_options)
+      parity_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, parity_options)
 
       @hinter = CornerTwistPlusParityHinter.new(corner_results, parity_results, corner_hinter, parity_hinter, options)
     end
@@ -152,7 +152,7 @@ module CubeTrainer
       corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
       corner_options.picture = false
       corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(corner_options))
-      corner_hinter = Hinter.maybe_create(PART_TYPE, corner_options)
+      corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_options)
       @hinter = Corner3TwistHinter.new(corner_results, corner_hinter, options)
     end
 
@@ -276,7 +276,7 @@ module CubeTrainer
     # If restrict_letters is not nil, only commutators for those letters are used.
     def initialize(results_model, options)
       super
-      @hinter = Hinter.maybe_create(self.class::PART_TYPE, options)
+      @hinter = CommutatorHintParser.maybe_parse_hints(self.class::PART_TYPE, options)
     end
   
     attr_reader :hinter

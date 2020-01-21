@@ -1,6 +1,6 @@
 require 'cube'
 require 'letter_scheme'
-require 'hint_parser'
+require 'commutator_hint_parser'
 require 'parser'
 
 include CubeTrainer
@@ -13,7 +13,7 @@ describe HintParser do
   let (:verbose) { false }
   let (:test_comms) { false }
   let (:cube_size) { 3 }
-  let (:hint_parser) { HintParser.new(part_type, buffer, letter_scheme, color_scheme, verbose, cube_size, test_comms) }
+  let (:hint_parser) { CommutatorHintParser.new(part_type, buffer, letter_scheme, color_scheme, verbose, cube_size, test_comms) }
 
   it "should parse a valid hint table correctly" do
     table = [

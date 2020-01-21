@@ -1,9 +1,10 @@
 require 'algorithm'
 require 'commutator'
+require 'cube_trainer_error'
 
 module CubeTrainer
 
-  class CommutatorParseError < StandardError
+  class CommutatorParseError < CubeTrainerError
   end
 
   class Parser 
