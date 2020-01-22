@@ -1,4 +1,4 @@
-require 'options'
+require 'commutator_options'
 require 'buffer_helper'
 require 'stats_computer'
 
@@ -145,7 +145,7 @@ module CubeTrainer
     end
 
     def compute_expected_time_per_type_stats
-      relevant_commutator_types = Options::COMMUTATOR_TYPES.select { |k, c| EXPECTED_ALGS_COMPUTER_CLASSES.has_key?(c.result_symbol) }
+      relevant_commutator_types = CommutatorOptions::COMMUTATOR_TYPES.select { |k, c| EXPECTED_ALGS_COMPUTER_CLASSES.has_key?(c.result_symbol) }
       per_type_stats = relevant_commutator_types.map do |k, c|
         patched_options = @options.dup
         patched_options.commutator_info = c

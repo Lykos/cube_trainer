@@ -4,7 +4,6 @@ require 'input_item'
 require 'results_model'
 require 'learner'
 require 'commutator_sets'
-require 'options'
 require 'stats_computer'
 require 'letter_pair'
 

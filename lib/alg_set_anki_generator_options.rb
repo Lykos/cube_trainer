@@ -1,46 +1,32 @@
 require 'color_scheme'
 require 'algorithm'
 require 'parser'
-require 'optparse'
 require 'ostruct'
+require 'common_options'
 
 module CubeTrainer
 
-  class AlgSetAnkiGeneratorOptions
+  class AlgSetAnkiGeneratorOptions < CommonOptions
 
     def self.parse(args)
+      AlgSetAnkiGeneratorOptions.new.parse(args)
+    end
+
+    def default_options
       options = OpenStruct.new
       # Default options
       options.color_scheme = ColorScheme::BERNHARD
       options.cube_size = 3
       options.verbose = false
-      opt_parser = OptionParser.new do |opts|
-        opts.separator ''
-        opts.separator 'Specific options:'      
+    end
 
-        opts.on('-o', '--output [FILE]', String, 'Output path for the anki zip file.') do |o|
-          options.output = o
-        end
+    def add_options(opts, options)
+      add_size(opts, options)
+      add_output(opts, options)
 
-        opts.on('-a', '--alg_set [ALG_SET]', String, 'Algorithm to be applied before visualization.') do |a|
-          options.alg_set = a
-        end
-
-        opts.on('-s', '--size SIZE', Integer, 'Use the given cube size.') do |size|
-          options.cube_size = size
-        end
-
-        opts.on_tail('-h', '--help', 'Show this message') do
-          puts opts
-          exit
-        end   
-
-        opts.on('-v', '--[no-]verbose', 'Give more verbose information.') do |v|
-          options.verbose = v
-        end
+      opts.on('-a', '--alg_set [ALG_SET]', String, 'Algorithm to be applied before visualization.') do |a|
+        options.alg_set = a
       end
-      opt_parser.parse!(args)
-      options
     end
 
   end

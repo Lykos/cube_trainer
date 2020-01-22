@@ -1,11 +1,11 @@
-#!/usr/bin/rubyn
+#!/usr/bin/ruby
 # coding: utf-8
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'move'
 require 'algorithm'
-require 'options'
+require 'skewb_layer_finder_options'
 require 'skewb_layer_finder'
 require 'color_scheme'
 require 'skewb_state'
@@ -17,7 +17,7 @@ include CubePrintHelper
 
 SEARCH_DEPTH = 6
 
-options = Options.parse(ARGV)
+options = SkewbLayerFinderOptions.parse(ARGV)
 
 puts 'Enter scramble in fixed corner notation.'
 
@@ -25,7 +25,7 @@ scramble_string = gets.chomp
 scramble = parse_fixed_corner_skewb_algorithm(scramble_string)
 
 layer_finder = SkewbLayerFinder.new(options.restrict_colors)
-skewb_state = ColorScheme::BERNHARD.solved_skewb_state
+skewb_state = options.color_scheme.solved_skewb_state
 scramble.apply_to(skewb_state)
 puts skewb_string(skewb_state, :color)
 

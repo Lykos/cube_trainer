@@ -4,7 +4,7 @@
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'commutator_sets'
-require 'options'
+require 'commutator_options'
 require 'results_model'
 require 'trainer'
 require 'buffer_helper'
@@ -12,7 +12,7 @@ require 'stats_computer'
 
 include CubeTrainer
 
-options = Options.parse(ARGV)
+options = CommutatorOptions.parse(ARGV)
 results_persistence = ResultsPersistence.create_for_production
 results_model = ResultsModel.new(BufferHelper.mode_for_options(options), results_persistence)
 generator = options.commutator_info.generator_class.new(results_model, options)
