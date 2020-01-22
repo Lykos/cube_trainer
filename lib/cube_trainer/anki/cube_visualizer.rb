@@ -17,10 +17,6 @@ module CubeTrainer
     FACE_SYMBOL_ORDER = [:U, :R, :F, :D, :L, :B]
     raise unless FACE_SYMBOL_ORDER.sort == CubeConstants::FACE_SYMBOLS.sort
 
-    # Order of the faces for the state scheme
-    FACE_ORDER = [:U, :F, :R, :B, :L, :D]
-    raise unless FACE_ORDER.sort == CubeConstants::FACE_SYMBOLS.sort
-
     class SimpleUrlParameterSerializer
       def serialize(value)
         value.to_s
@@ -126,7 +122,7 @@ module CubeTrainer
     def cube_state_params(cube_state)
       raise TypeError unless cube_state.is_a?(CubeState)
       raise ArgumentError unless MIN_N <= cube_state.n && cube_state.n <= MAX_N
-      serialized_cube_state = FACE_ORDER.map do |s| 
+      serialized_cube_state = FACE_SYMBOL_ORDER.map do |s| 
         face_lines(cube_state, s) do |c|
           @color_scheme.face_symbol(c).to_s.downcase
         end.flatten.join
