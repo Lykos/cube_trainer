@@ -1,11 +1,11 @@
-require 'cube_state'
-require 'cube_constants'
-require 'cube'
-require 'move'
-require 'coordinate'
-require 'parser'
-require 'letter_scheme'
-require 'color_scheme'
+require 'cube_trainer/cube_state'
+require 'cube_trainer/cube_constants'
+require 'cube_trainer/cube'
+require 'cube_trainer/move'
+require 'cube_trainer/coordinate'
+require 'cube_trainer/parser'
+require 'cube_trainer/letter_scheme'
+require 'cube_trainer/color_scheme'
 
 include CubeTrainer
 include CubeConstants

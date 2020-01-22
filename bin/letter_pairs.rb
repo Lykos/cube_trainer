@@ -3,8 +3,8 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'letter_pair_word_finder'
-require 'dict'
+require 'cube_trainer/letter_pair_word_finder'
+require 'cube_trainer/dict'
 
 include CubeTrainer
 

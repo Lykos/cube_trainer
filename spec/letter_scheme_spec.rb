@@ -1,5 +1,5 @@
-require 'letter_scheme'
-require 'cube'
+require 'cube_trainer/letter_scheme'
+require 'cube_trainer/cube'
 
 include CubeTrainer
 

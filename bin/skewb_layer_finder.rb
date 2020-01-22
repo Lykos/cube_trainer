@@ -3,14 +3,14 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'move'
-require 'algorithm'
-require 'skewb_layer_finder_options'
-require 'skewb_layer_finder'
-require 'color_scheme'
-require 'skewb_state'
-require 'parser'
-require 'cube_print_helper'
+require 'cube_trainer/move'
+require 'cube_trainer/algorithm'
+require 'cube_trainer/skewb_layer_finder_options'
+require 'cube_trainer/skewb_layer_finder'
+require 'cube_trainer/color_scheme'
+require 'cube_trainer/skewb_state'
+require 'cube_trainer/parser'
+require 'cube_trainer/cube_print_helper'
 
 include CubeTrainer
 include CubePrintHelper

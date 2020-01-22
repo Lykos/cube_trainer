@@ -1,5 +1,5 @@
-require 'cube_visualizer'
-require 'color_scheme'
+require 'cube_trainer/cube_visualizer'
+require 'cube_trainer/color_scheme'
 
 include CubeTrainer
 

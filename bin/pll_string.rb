@@ -3,10 +3,10 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_print_helper'
-require 'cube_state'
-require 'parser'
-require 'color_scheme'
+require 'cube_trainer/cube_print_helper'
+require 'cube_trainer/cube_state'
+require 'cube_trainer/parser'
+require 'cube_trainer/color_scheme'
 
 include CubeTrainer
 include CubePrintHelper

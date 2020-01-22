@@ -1,4 +1,4 @@
-require 'color_scheme'
+require 'cube_trainer/color_scheme'
 
 include CubeTrainer
 

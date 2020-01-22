@@ -1,4 +1,4 @@
-require 'string_helper'
+require 'cube_trainer/string_helper'
 
 include CubeTrainer
 include StringHelper

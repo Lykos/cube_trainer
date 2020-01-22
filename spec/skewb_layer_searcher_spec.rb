@@ -1,5 +1,5 @@
-require 'skewb_layer_searcher'
-require 'color_scheme'
+require 'cube_trainer/skewb_layer_searcher'
+require 'cube_trainer/color_scheme'
 
 include CubeTrainer
 

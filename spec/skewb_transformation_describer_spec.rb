@@ -1,5 +1,5 @@
-require 'parser'
-require 'skewb_transformation_describer'
+require 'cube_trainer/parser'
+require 'cube_trainer/skewb_transformation_describer'
 
 include CubeTrainer
 

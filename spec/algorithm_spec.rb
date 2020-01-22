@@ -1,5 +1,5 @@
-require 'algorithm'
-require 'parser'
+require 'cube_trainer/algorithm'
+require 'cube_trainer/parser'
 
 include CubeTrainer
 

@@ -2,8 +2,8 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'wca_crawler'
-require 'wca_export_reader'
+require 'cube_trainer/wca_crawler'
+require 'cube_trainer/wca_export_reader'
 
 include CubeTrainer
 

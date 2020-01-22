@@ -1,5 +1,5 @@
-require 'commutator'
-require 'parser'
+require 'cube_trainer/commutator'
+require 'cube_trainer/parser'
 
 include CubeTrainer
 

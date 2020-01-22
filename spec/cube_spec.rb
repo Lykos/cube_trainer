@@ -1,7 +1,7 @@
-require 'cube'
-require 'coordinate'
-require 'letter_scheme'
-require 'parser'
+require 'cube_trainer/cube'
+require 'cube_trainer/coordinate'
+require 'cube_trainer/letter_scheme'
+require 'cube_trainer/parser'
 
 include CubeTrainer
 

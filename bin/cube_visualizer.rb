@@ -3,8 +3,8 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_visualizer'
-require 'cube_visualizer_options'
+require 'cube_trainer/cube_visualizer'
+require 'cube_trainer/cube_visualizer_options'
 
 include CubeTrainer
 

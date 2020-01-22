@@ -3,7 +3,7 @@
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'Qt4'
-require 'blind_trainer'
+require 'cube_trainer/blind_trainer'
 
 app = Qt::Application.new(ARGV)
 b = Ui_BlindTrainer.new

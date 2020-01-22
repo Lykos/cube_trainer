@@ -3,12 +3,12 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'commutator_sets'
-require 'commutator_options'
-require 'results_model'
-require 'trainer'
-require 'buffer_helper'
-require 'stats_computer'
+require 'cube_trainer/commutator_sets'
+require 'cube_trainer/commutator_options'
+require 'cube_trainer/results_model'
+require 'cube_trainer/trainer'
+require 'cube_trainer/buffer_helper'
+require 'cube_trainer/stats_computer'
 
 include CubeTrainer
 

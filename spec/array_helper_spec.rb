@@ -1,4 +1,4 @@
-require 'array_helper'
+require 'cube_trainer/array_helper'
 
 include CubeTrainer
 

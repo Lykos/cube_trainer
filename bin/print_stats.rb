@@ -2,9 +2,9 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'stats_computer'
-require 'cube'
-require 'commutator_options'
+require 'cube_trainer/stats_computer'
+require 'cube_trainer/cube'
+require 'cube_trainer/commutator_options'
 require 'yaml'
 
 include CubeTrainer

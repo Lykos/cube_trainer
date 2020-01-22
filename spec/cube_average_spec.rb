@@ -1,4 +1,4 @@
-require 'cube_average'
+require 'cube_trainer/cube_average'
 
 include CubeTrainer
 

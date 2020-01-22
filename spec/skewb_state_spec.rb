@@ -1,8 +1,8 @@
-require 'skewb_state'
-require 'color_scheme'
-require 'move'
-require 'parser'
-require 'cube_print_helper'
+require 'cube_trainer/skewb_state'
+require 'cube_trainer/color_scheme'
+require 'cube_trainer/move'
+require 'cube_trainer/parser'
+require 'cube_trainer/cube_print_helper'
 
 include CubeTrainer
 include CubePrintHelper

@@ -1,7 +1,7 @@
-require 'cube'
-require 'letter_scheme'
-require 'commutator_hint_parser'
-require 'parser'
+require 'cube_trainer/cube'
+require 'cube_trainer/letter_scheme'
+require 'cube_trainer/commutator_hint_parser'
+require 'cube_trainer/parser'
 
 include CubeTrainer
 

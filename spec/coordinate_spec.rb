@@ -1,5 +1,5 @@
-require 'coordinate'
-require 'cube'
+require 'cube_trainer/coordinate'
+require 'cube_trainer/cube'
 
 include CubeTrainer
 

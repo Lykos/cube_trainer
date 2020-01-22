@@ -1,11 +1,11 @@
-require 'trainer'
-require 'results_persistence'
-require 'input_item'
-require 'results_model'
-require 'learner'
-require 'commutator_sets'
-require 'stats_computer'
-require 'letter_pair'
+require 'cube_trainer/trainer'
+require 'cube_trainer/results_persistence'
+require 'cube_trainer/input_item'
+require 'cube_trainer/results_model'
+require 'cube_trainer/learner'
+require 'cube_trainer/commutator_sets'
+require 'cube_trainer/stats_computer'
+require 'cube_trainer/letter_pair'
 
 ITERATIONS = 300
 

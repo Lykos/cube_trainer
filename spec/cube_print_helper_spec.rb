@@ -1,6 +1,6 @@
-require 'cube_print_helper'
-require 'cube_state'
-require 'color_scheme'
+require 'cube_trainer/cube_print_helper'
+require 'cube_trainer/cube_state'
+require 'cube_trainer/color_scheme'
 
 include CubeTrainer
 

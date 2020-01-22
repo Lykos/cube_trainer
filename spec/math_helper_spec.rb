@@ -1,4 +1,4 @@
-require 'math_helper'
+require 'cube_trainer/math_helper'
 
 include CubeTrainer
 
