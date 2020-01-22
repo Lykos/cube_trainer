@@ -12,17 +12,31 @@ module CubeTrainer
       'cube_trainer'
     end
   
-    def base_directory
+    def data_directory
       Pathname.new(data.home.to_s)
     end
   
-    def data_file(filename)
-      base_directory + filename
+    def cache_directory
+      Pathname.new(cache.home.to_s)
     end
   
-    def ensure_base_directory_exists
-      if !File.exists?(base_directory)
-        FileUtils.mkpath(base_directory)
+    def data_file(filename)
+      data_directory + filename
+    end
+  
+    def cache_file(filename)
+      cache_directory + filename
+    end
+  
+    def ensure_data_directory_exists
+      if !File.exists?(data_directory)
+        FileUtils.mkpath(data_directory)
+      end
+    end
+
+    def ensure_cache_directory_exists
+      if !File.exists?(cache_directory)
+        FileUtils.mkpath(cache_directory)
       end
     end
     

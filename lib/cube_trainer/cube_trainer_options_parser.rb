@@ -23,6 +23,12 @@ module CubeTrainer
       end
     end
 
+    def on_cache
+      on('-c', '--[no-]use-cache', 'Use a cache for fetches from the web.') do |c|
+        @options.cache = c
+      end
+    end
+
     def on_size
       on('-s', '--size SIZE', Integer, 'Use the given cube size.') do |s|
         @options.cube_size = s
@@ -30,7 +36,7 @@ module CubeTrainer
     end
 
     def on_output(file_description)
-      opts.on('-o', '--output [FILE]', String, 'Output path for the #{file_description}.') do |o|
+      on('-o', '--output [FILE]', String, 'Output path for the #{file_description}.') do |o|
         @options.output = o
       end
     end

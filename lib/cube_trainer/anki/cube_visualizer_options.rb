@@ -8,11 +8,12 @@ module CubeTrainer
 
   class CubeVisualizerOptions
 
-    def default_options
+    def self.default_options
       options = OpenStruct.new
       options.color_scheme = ColorScheme::BERNHARD
       options.cube_size = 3
       options.algorithm = Algorithm.empty
+      options.cache = true
       options
     end
 
@@ -20,6 +21,7 @@ module CubeTrainer
       options = default_options
       
       CubeTrainerOptionsParser.new(options) do |opts|
+        opts.on_cache
         opts.on_size
         opts.on_output('image file')
 

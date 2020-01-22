@@ -6,6 +6,10 @@ module CubeTrainer
   class WCAStorer
   
     include XDGHelper
+
+    def initialize
+      ensure_data_directory_exists
+    end
   
     def subdirectory
       Pathname.new(super) + 'wca_exports'

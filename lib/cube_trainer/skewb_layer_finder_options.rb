@@ -7,7 +7,7 @@ module CubeTrainer
 
   class SkewbLayerFinderOptions
     
-    def default_options
+    def self.default_options
       options = OpenStruct.new
       options.color_scheme = ColorScheme::BERNHARD
       options

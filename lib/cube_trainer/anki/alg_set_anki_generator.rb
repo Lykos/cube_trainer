@@ -3,6 +3,7 @@
 require 'cube_trainer/move'
 require 'cube_trainer/direction'
 require 'cube_trainer/algorithm'
+require 'cube_trainer/anki/cache'
 require 'cube_trainer/cube_visualizer'
 require 'csv'
 require 'parallel'
@@ -19,6 +20,7 @@ module CubeTrainer
     def initialize(options)
       raise ArgumentError unless File.exist?(options.output) && File.directory?(options.output) && File.writable?(options.output)
       @options = options
+      cache = options.cache ? Cache.new('cube_visualizer') : nil
       @visualizer = CubeVisualizer.new(sch: options.color_scheme, fmt: FORMAT)
     end
 

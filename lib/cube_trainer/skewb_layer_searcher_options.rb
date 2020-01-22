@@ -7,14 +7,14 @@ module CubeTrainer
 
   class SkewbLayerSearcherOptions
 
-    def default_options
+    def slef.default_options
       options = OpenStruct.new
       options.color_scheme = ColorScheme::BERNHARD
       options.letter_scheme = DefaultLetterScheme.new
       options
     end
 
-    def add_options(opts, options)
+    def self.parse(args)
       options = default_options
       
       CubeTrainerOptionsParser.new(options) do |opts|
@@ -35,7 +35,8 @@ module CubeTrainer
         opts.on('-n', '--name_file [FILE]', String, 'CSV file with a mapping from layer piece letter sequences to names.') do |n|
           options.name_file = n
         end
-      end
+      end.parse!(args)
+      options
     end
   end
 

@@ -23,7 +23,7 @@ module CubeTrainer
       include XDGHelper
   
       def initialize
-        ensure_base_directory_exists
+        ensure_data_directory_exists
       end
       
       def old_results_file

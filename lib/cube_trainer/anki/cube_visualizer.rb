@@ -2,7 +2,7 @@ require 'uri'
 require 'cube_trainer/cube_constants'
 require 'cube_trainer/cube_print_helper'
 require 'cube_trainer/color_scheme'
-require 'net/http'
+require 'cube_trainer/anki/cache'
 
 module CubeTrainer
 
@@ -12,8 +12,14 @@ module CubeTrainer
 
     MIN_N = 1
     MAX_N = 10
+    
+    # Order of the faces for the color scheme
     FACE_SYMBOL_ORDER = [:U, :R, :F, :D, :L, :B]
     raise unless FACE_SYMBOL_ORDER.sort == CubeConstants::FACE_SYMBOLS.sort
+
+    # Order of the faces for the state scheme
+    FACE_ORDER = [:U, :F, :R, :B, :L, :D]
+    raise unless FACE_ORDER.sort == CubeConstants::FACE_SYMBOLS.sort
 
     class SimpleUrlParameterSerializer
       def serialize(value)
@@ -95,7 +101,20 @@ module CubeTrainer
 
     URL_PARAMETER_TYPE_KEYS = URL_PARAMETER_TYPES.map { |t| t.name }
 
-    def initialize(**params)
+    class StubCache
+      def [](key)
+        nil
+      end
+
+      def []=(key, value)
+      end
+    end
+
+    def initialize(fetcher, cache, **params)
+      raise TypeError unless fetcher.respond_to?(:get)
+      @fetcher = fetcher
+      raise TypeError unless cache.nil? || (cache.respond_to?(:[]) && cache.respond_to?(:[]=))
+      @cache = cache || StubCache.new
       invalid_keys = params.keys - URL_PARAMETER_TYPE_KEYS
       raise ArgumentError, "Unknown url parameter keys #{invalid_keys.join(', ')}" unless invalid_keys.empty?
       @params = URL_PARAMETER_TYPES.map { |p| p.extract(params) }.select { |p| p }
@@ -107,7 +126,7 @@ module CubeTrainer
     def cube_state_params(cube_state)
       raise TypeError unless cube_state.is_a?(CubeState)
       raise ArgumentError unless MIN_N <= cube_state.n && cube_state.n <= MAX_N
-      serialized_cube_state = FACE_SYMBOL_ORDER.map do |s| 
+      serialized_cube_state = FACE_ORDER.map do |s| 
         face_lines(cube_state, s) do |c|
           @color_scheme.face_symbol(c).to_s.downcase
         end.flatten.join
@@ -125,7 +144,12 @@ module CubeTrainer
     end
 
     def fetch(cube_state)
-      Net::HTTP.get(uri(cube_state))
+      uri = uri(cube_state)
+      if r = @cache[uri.to_s]
+        r
+      else
+        @cache[uri.to_s] = image = @fetcher.get(uri)
+      end
     end
 
     def fetch_and_store(cube_state, output)
