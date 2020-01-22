@@ -1,4 +1,4 @@
-require 'cube_trainer/cube_visualizer'
+require 'cube_trainer/anki/cube_visualizer'
 require 'cube_trainer/color_scheme'
 
 include CubeTrainer

@@ -1,8 +1,6 @@
 require 'cube_trainer/algorithm'
 require 'cube_trainer/parser'
 
-include CubeTrainer
-
 describe Algorithm do
   let (:cube_size) { 3 }
   

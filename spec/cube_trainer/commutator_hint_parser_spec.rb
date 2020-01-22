@@ -3,8 +3,6 @@ require 'cube_trainer/letter_scheme'
 require 'cube_trainer/commutator_hint_parser'
 require 'cube_trainer/parser'
 
-include CubeTrainer
-
 describe HintParser do
   let (:part_type) { Corner }
   let (:letter_scheme) { BernhardLetterScheme.new }
