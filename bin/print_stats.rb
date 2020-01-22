@@ -4,12 +4,12 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'stats_computer'
 require 'cube'
-require 'print_stats_options'
+require 'commutator_options'
 require 'yaml'
 
 include CubeTrainer
 
-options = PrintStatsOptions.parse(ARGV)
+options = CommutatorOptions.parse(ARGV)
 computer = StatsComputer.new(options)
 
 # Detailed stats

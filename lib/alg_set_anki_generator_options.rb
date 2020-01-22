@@ -2,15 +2,11 @@ require 'color_scheme'
 require 'algorithm'
 require 'parser'
 require 'ostruct'
-require 'common_options'
+require 'cube_trainer_options_parser'
 
 module CubeTrainer
 
-  class AlgSetAnkiGeneratorOptions < CommonOptions
-
-    def self.parse(args)
-      AlgSetAnkiGeneratorOptions.new.parse(args)
-    end
+  class AlgSetAnkiGeneratorOptions
 
     def default_options
       options = OpenStruct.new
@@ -18,15 +14,21 @@ module CubeTrainer
       options.color_scheme = ColorScheme::BERNHARD
       options.cube_size = 3
       options.verbose = false
+      options
     end
 
-    def add_options(opts, options)
-      add_size(opts, options)
-      add_output(opts, options)
+    def self.parse(args)
+      options = default_options
+      
+      CubeTrainerOptionsParser.new(options) do |opts|
+        opts.on_size
+        opts.on_output('anki deck & media output directory')
 
-      opts.on('-a', '--alg_set [ALG_SET]', String, 'Algorithm to be applied before visualization.') do |a|
-        options.alg_set = a
-      end
+        opts.on('-a', '--alg_set [ALG_SET]', String, 'Algorithm to be applied before visualization.') do |a|
+          options.alg_set = a
+        end
+      end.parse!(args)
+      options
     end
 
   end

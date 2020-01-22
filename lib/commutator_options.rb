@@ -1,5 +1,5 @@
 require 'ostruct'
-require 'common_options'
+require 'cube_trainer_options_parser'
 require 'commutator_sets'
 require 'color_scheme'
 require 'human_word_learner'
@@ -10,12 +10,7 @@ require 'alg_sets'
 
 module CubeTrainer
 
-  class CommutatorOptions < CommonOptions
-    
-    def self.parse(args)
-      options = CommutatorOptions.new.parse(args)
-      options
-    end
+  class CommutatorOptions
 
     CommutatorInfo = Struct.new(:result_symbol, :generator_class, :learner_class, :default_cube_size, :has_buffer?)
     COMMUTATOR_TYPES = {
@@ -37,7 +32,7 @@ module CubeTrainer
       'colls' => CommutatorInfo.new(:plls_by_name, Colls, HumanTimeLearner, 3, false),
     }
     
-    def default_options
+    def self.default_options
       options = OpenStruct.new
       options.new_item_boundary = 11
       options.commutator_info = COMMUTATOR_TYPES['corners']
@@ -49,13 +44,14 @@ module CubeTrainer
       options.picture = false
       options.mute = false
       options.buffer = nil
+      options
     end
 
     def self.parse(args)
       options = default_options
       
-      CubeTrainerOptions.new(default_options) do
-        add_size(opts)
+      CubeTrainerOptionsParser.new(options) do |opts|
+        opts.on_size
       
         opts.on('-c', '--commutator_type TYPE', COMMUTATOR_TYPES, 'Use the given type of commutators for training.') do |info|
           options.commutator_info = info
@@ -95,9 +91,9 @@ module CubeTrainer
                 '  (Only uses commutators that contain none of the given letters)') do |letters|
           options.exclude_letters = letters.downcase.split('')
         end
-      end
+      end.parse!(args)
       raise ArgumentError, "Option --commutator_type is required." unless options.commutator_info
-      
+      options
     end
   end
 
