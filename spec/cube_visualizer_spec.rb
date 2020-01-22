@@ -22,7 +22,7 @@ describe CubeVisualizer do
   end
 
   it 'should construct a url for minimal settings' do
-    expect(CubeVisualizer.new(fmt: :svg, sch: color_scheme).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=UUUUUUUUU+RRRRRRRRR+FFFFFFFFF+DDDDDDDDD+LLLLLLLLL+BBBBBBBBB'
+    expect(CubeVisualizer.new(fmt: :svg, sch: color_scheme).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
   end
   
   it 'should construct a url for all settings' do
@@ -36,7 +36,7 @@ describe CubeVisualizer do
              co: 40,
              fo: 50,
              dist: 35
-           ).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&size=100&view=plain&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&bg=black&cc=white&co=40&fo=50&dist=35&pzl=3&fd=UUUUUUUUU+RRRRRRRRR+FFFFFFFFF+DDDDDDDDD+LLLLLLLLL+BBBBBBBBB'
+           ).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&size=100&view=plain&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&bg=black&cc=white&co=40&fo=50&dist=35&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
   end
   
 end
