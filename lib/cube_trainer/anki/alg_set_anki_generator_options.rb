@@ -29,6 +29,10 @@ module CubeTrainer
         opts.on('-a', '--alg_set [ALG_SET]', String, 'Algorithm to be applied before visualization.') do |a|
           options.alg_set = a
         end
+
+        opts.on('-u', '--[no-]auf', 'Add multiple columns for different aufs.') do |u|
+          options.auf? = u
+        end
       end.parse!(args)
       options
     end
