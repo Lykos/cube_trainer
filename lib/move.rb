@@ -403,7 +403,7 @@ module CubeTrainer
   
   class FatMove < CubeMove
 
-    def initialize(axis_face, direction, width)
+    def initialize(axis_face, direction, width=1)
       super(axis_face, direction)
       raise TypeError unless width.is_a?(Integer)
       raise ArgumentError, "Invalid width #{width} for fat move." unless width >= 1
