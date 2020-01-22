@@ -6,7 +6,6 @@ source "https://rubygems.org" do
   gem 'xdg'
   gem 'sqlite3'
   gem 'qtbindings'
-  gem 'rubyzip'
   gem 'parallel'
   gem 'ruby-progressbar'
 end
