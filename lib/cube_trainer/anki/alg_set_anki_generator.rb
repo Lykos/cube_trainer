@@ -27,7 +27,7 @@ module CubeTrainer
       raise ArgumentError unless File.exist?(options.output) && File.directory?(options.output) && File.writable?(options.output)
       @options = options
       cache = options.cache ? Cache.new('cube_visualizer') : nil
-      @visualizer = CubeVisualizer.new(Net::HTTP, cache, sch: options.color_scheme, fmt: FORMAT)
+      @visualizer = CubeVisualizer.new(Net::HTTP, cache, sch: options.color_scheme, fmt: FORMAT, stage: options.stage_mask)
     end
 
     def absolute_output_path(name)

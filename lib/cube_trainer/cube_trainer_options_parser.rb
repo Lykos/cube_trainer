@@ -1,4 +1,5 @@
 require 'optparse'
+require 'cube_trainer/anki/cube_visualizer'
 
 module CubeTrainer
 
@@ -38,6 +39,12 @@ module CubeTrainer
     def on_output(file_description)
       on('-o', '--output [FILE]', String, 'Output path for the #{file_description}.') do |o|
         @options.output = o
+      end
+    end
+
+    def on_stage_mask
+      on('-m', '--stage_mask [MASK]', String, 'Stage mask to apply to all images, e.g. coll or cross-x2.') do |m|
+        @options.stage_mask = CubeVisualizer::StageMask.parse(m)
       end
     end
     

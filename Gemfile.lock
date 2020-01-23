@@ -18,8 +18,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
     rspec-support (3.8.2)
+    ruby-filemagic (0.7.2)
     ruby-progressbar (1.10.1)
-    rubyzip (2.0.0)
     sqlite3 (1.4.1)
     xdg (2.2.5)
 
@@ -31,8 +31,8 @@ DEPENDENCIES
   qtbindings!
   rake!
   rspec!
+  ruby-filemagic!
   ruby-progressbar!
-  rubyzip!
   sqlite3!
   xdg!
 

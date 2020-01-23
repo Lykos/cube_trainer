@@ -25,6 +25,7 @@ module CubeTrainer
         opts.on_cache
         opts.on_size
         opts.on_output('anki deck & media output directory')
+        opts.on_stage_mask
 
         opts.on('-a', '--alg_set [ALG_SET]', String, 'Internal algorithm set to be used to generate cards. Either this or --input and --alg_column can be set.') do |a|
           options.alg_set = a

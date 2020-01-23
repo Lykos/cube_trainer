@@ -1,6 +1,7 @@
 require 'uri'
 require 'cube_trainer/cube_constants'
 require 'cube_trainer/move.rb'
+require 'cube_trainer/anki/image_checker'
 require 'cube_trainer/cube_print_helper'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/anki/cache'
@@ -19,7 +20,7 @@ module CubeTrainer
     raise unless FACE_SYMBOL_ORDER.sort == CubeConstants::FACE_SYMBOLS.sort
 
     BASE_MASKS = [:fl, :f2l, :ll, :cll, :ell, :oll, :ocll, :oell, :coll, :ocell, :wv, :vh, :els, :cls, :cmll, :cross, :f2l_3, :f2l_2, :f2l_sm, :f2l_1, :f2b, :line, :'2x2x2', :'2x2x3']
-    STAGE_MASK_REGEXP = Regexp.new("(#{BASE_MASKS.join('|')})(?:-([xyz'2]+))?")
+    STAGE_MASK_REGEXP = Regexp.new("(#{BASE_MASKS.join('|')})(?:-([xyz]['2]?+))?")
 
     class SimpleUrlParameterSerializer
       def serialize(value)
@@ -150,8 +151,10 @@ module CubeTrainer
       @cache = cache || StubCache.new
       invalid_keys = params.keys - URL_PARAMETER_TYPE_KEYS
       raise ArgumentError, "Unknown url parameter keys #{invalid_keys.join(', ')}" unless invalid_keys.empty?
-      @params = URL_PARAMETER_TYPES.map { |p| p.extract(params) }.select { |p| p }
+      @params = URL_PARAMETER_TYPES.map { |p| p.extract(params) }.compact
       @color_scheme = params[:sch] || (raise ArgumentError)
+      format = params[:fmt] || (raise ArgumentError)
+      @checker = ImageChecker.new(format)
     end
 
     BASE_URI = URI("http://cube.crider.co.uk/visualcube.php")
@@ -181,7 +184,12 @@ module CubeTrainer
       if r = @cache[uri.to_s]
         r
       else
-        @cache[uri.to_s] = @fetcher.get(uri)
+        @cache[uri.to_s] =
+          begin
+            data = @fetcher.get(uri)
+            @checker.check(data)
+            data
+          end
       end
     end
 

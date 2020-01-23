@@ -8,4 +8,5 @@ source "https://rubygems.org" do
   gem 'qtbindings'
   gem 'parallel'
   gem 'ruby-progressbar'
+  gem 'ruby-filemagic'
 end
