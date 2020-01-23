@@ -144,7 +144,7 @@ module CubeTrainer
       if r = @cache[uri.to_s]
         r
       else
-        @cache[uri.to_s] = image = @fetcher.get(uri)
+        @cache[uri.to_s] = @fetcher.get(uri)
       end
     end
 

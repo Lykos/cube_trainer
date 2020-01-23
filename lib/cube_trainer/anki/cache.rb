@@ -1,38 +1,42 @@
 require 'cube_trainer/xdg_helper'
+require 'cube_trainer/array_helper'
+require 'sqlite3'
 
 module CubeTrainer
 
   class Cache
 
-    class CacheHelper
+    include XDGHelper
+    include ArrayHelper
 
-      include XDGHelper
-
-      def initialize(namespace)
-        @namespace = namespace
-        ensure_cache_directory_exists
-      end
-
-      def subdirectory
-        Pathname.new(super) + 'cache' + @namespace
-      end
-      
-    end
+    CACHE_DB_FILE = 'cache.sqlite3'
 
     def initialize(namespace)
-      @helper = CacheHelper.new(namespace)
+      raise ArgumentError unless namespace =~ /^\w+$/
+      @namespace = namespace
+      ensure_cache_directory_exists
+      @namespace
+      @db = SQLite3::Database.new(cache_file(CACHE_DB_FILE).to_s)
+      @db.execute('CREATE TABLE IF NOT EXISTS Cache(Namespace TEXT, Key TEXT, Value BLOB)')
+      @db.execute('CREATE INDEX IF NOT EXISTS NamespaceKeyIndex ON Cache(Namespace, Key)');
     end
 
     def [](key)
       raise TypeError unless key.is_a?(String)
-      file = @helper.cache_file(key)
-      File.read(file) if File.exist?(file)
+      @get_stm ||= @db.prepare('SELECT Value FROM Cache WHERE Namespace = ? AND Key = ?')
+      results = @get_stm.execute(@namespace, key).to_a
+      case results.length
+      when 0 then nil
+      when 1 then only(only(results))
+      else
+        raise "Got unexpected results from database."
+      end
     end
 
     def []=(key, value)
       raise TypeError unless key.is_a?(String)
-      file = @helper.cache_file(key)
-      File.open(file, 'wb') { |f| f.write(value) }
+      @put_stm ||= @db.prepare('INSERT INTO Cache(Namespace, Key, Value) VALUES (?, ?, ?)')
+      @put_stm.execute(@namespace, key, value)
     end
     
   end

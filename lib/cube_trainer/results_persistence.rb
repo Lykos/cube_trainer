@@ -26,10 +26,6 @@ module CubeTrainer
         ensure_data_directory_exists
       end
       
-      def old_results_file
-        data_file('results.yml')
-      end
-  
       def db_file
         data_file('results.sqlite3')
       end

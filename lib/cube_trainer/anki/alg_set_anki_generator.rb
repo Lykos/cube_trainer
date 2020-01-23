@@ -4,9 +4,10 @@ require 'cube_trainer/move'
 require 'cube_trainer/direction'
 require 'cube_trainer/algorithm'
 require 'cube_trainer/anki/cache'
-require 'cube_trainer/cube_visualizer'
+require 'cube_trainer/anki/cube_visualizer'
 require 'csv'
 require 'parallel'
+require 'cube_trainer/array_helper'
 require 'cube_trainer/alg_hint_parser'
 require 'net/http'
 
@@ -14,8 +15,10 @@ module CubeTrainer
 
   class AlgSetAnkiGenerator
 
+    include ArrayHelper
+
     FORMAT = :jpg
-    AUFS = [Algorithm.emtpy] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Algorithm.move(FatMove.new(Face::U, d)) }
+    AUFS = [Algorithm.empty] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Algorithm.move(FatMove.new(Face::U, d)) }
     
     def initialize(options)
       raise ArgumentError unless File.exist?(options.output) && File.directory?(options.output) && File.writable?(options.output)
@@ -45,7 +48,7 @@ module CubeTrainer
 
     def algorithms
       algs = hinter.entries
-      if @options.auf?
+      if @options.auf
         algs.collect_concat do |name, alg|
           AUFS.map.with_index { |auf, index| [name, auf + alg, index] }
         end
@@ -56,25 +59,26 @@ module CubeTrainer
 
     # Make an alg name simple enough so we can use it as a file name without problems.
     # TODO This is broken
-    def alg_name_file(name, variation)
-      "#{name}#{variation}.#{FORMAT}".gsub(/\s/, '_').gsub(/'/, '-').gsub('ä', 'ae')
+    def alg_file_name(name, variation)
+      "alg_#{name}#{variation}.#{FORMAT}".gsub(/\s/, '_').gsub('ä', 'ae').gsub('ö', 'oe').gsub('ü', 'ue')
     end
 
-    # TODO This is broken
     def img(source)
+      raise ArgumentError, "Got bad filename #{source}" unless source =~ /^[\w.]+$/
+      # TODO This is bad, but works with our restriction.
       "<img src='#{source}'/>"
     end
     
     def generate_internal(csv)
-      state = @options.color_scheme.solved_cube_state(@options.cube_size)
       Parallel.map(algorithms, progress: 'Fetching alg images', in_threads: 50) do |name, alg, variation|
-        basename = alg_file_name(name, i)
-        alg.inverse.apply_temporarily_to(state) do
-          @visualizer.fetch_and_store(state, filename(basename))
-        end
+        state = @options.color_scheme.solved_cube_state(@options.cube_size)
+        basename = alg_file_name(name, variation)
+        alg.inverse.apply_to(state)
+        @visualizer.fetch_and_store(state, filename(basename))
         [name, alg, variation, basename]
       end.group_by { |l| l.first }.map do |name, stuff|
-        csv << [name] + stuff.collect_concat { |alg, variation, basename| [alg, variation, img(basename)] }
+        alg = only(stuff.select { |name, alg, variation, basename| variation == 0 }.map { |name, alg, variation, basename| alg })
+        csv << [name, alg] + stuff.map { |name, alg, variation, basename| img(basename) }
       end
     end
     

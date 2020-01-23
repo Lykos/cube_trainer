@@ -31,7 +31,7 @@ module CubeTrainer
         end
 
         opts.on('-u', '--[no-]auf', 'Add multiple columns for different aufs.') do |u|
-          options.auf? = u
+          options.auf = u
         end
       end.parse!(args)
       options
