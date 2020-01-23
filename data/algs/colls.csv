@@ -4,7 +4,7 @@ hammer antisune,R L' U' L U R' U2 L' U2 L
 colorful antisune,R U2 R' U2 L' U R U' R' L
 antiniklas,R' U L U' R U L'
 diagonal antisune,R U' R' U2 R U' R' U2 R' D' R U R' D R
-sune,R U R' U R U2 R'
+pure sune,R U R' U R U2 R'
 split sune,R U R' U R U' R D R' U' R D' R2
 hammer sune,L' R U R' U' L U2 R U2 R'
 colorful sune,L' U2 L U2 R U' L' U L R'
@@ -24,17 +24,17 @@ crossed headlights,R' F2 R U2 R U2 R' F2 R U2 R'
 diagonal headlights,R2 D' R U R' D R U R U' R' U' R
 pure chamäleon,R U2 R' U' R U' R2 U2 R U R' U R
 front bar chamäleon,R' F R U R' U' R' F' R2 U' R' U2 R
-back bar chamäleon,F R U R' U' R U' R' U' R U R' F'
+top bar chamäleon,F R U R' U' R U' R' U' R U R' F'
 left match chamäleon,r U R' U' r' F R F'
 right match chamäleon,F R F' r U R' U' r'
 diagonal chamäleon,R U' R2 D' r U2 r' D R2 U R'
-pure pi,R U2 R2 U' R2 U' R2 U2 R
-ugly diag pi,R' F2 R U2 R U2 R' F2 U' R U' R'
-nice diag pi,R U R' U' R' F R2 U R' U' R U R' U' F'
-cross pi,F U R U' R' U R U2 R' U' R U R' F'
-double bar pi,r U' r' U' r U r' U' x' R2 U' R' U R' x
-diagonal pi,R U D' R U R' D R2 U' R' U' R2 U2 R
-pure h,R U R' U R U' R' U R U2 R'
-front h,F R U' R' U R U2 R' U' R U R' U' F'
-right h,R U R' U R U L' U R' U' L
-diagonal h,F R U R' U' R U R' U' R U R' U' F'
+pure Pi,R U2 R2 U' R2 U' R2 U2 R
+ugly diag Pi,R' F2 R U2 R U2 R' F2 U' R U' R'
+nice diag Pi,R U R' U' R' F R2 U R' U' R U R' U' F'
+cross Pi,F U R U' R' U R U2 R' U' R U R' F'
+double bar Pi,r U' r' U' r U r' U' x' R2 U' R' U R' x
+diagonal Pi,R U D' R U R' D R2 U' R' U' R2 U2 R
+pure H,R U R' U R U' R' U R U2 R'
+front H,F R U' R' U R U2 R' U' R U R' U' F'
+right H,R U R' U R U L' U R' U' L
+diagonal H,F R U R' U' R U R' U' R U R' U' F'
