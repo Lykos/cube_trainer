@@ -1,5 +1,7 @@
 require 'cube_trainer/anki/cube_visualizer'
 require 'cube_trainer/color_scheme'
+require 'cube_trainer/algorithm'
+require 'cube_trainer/move'
 
 URL = 'http://cube.crider.co.uk/visualcube.php?fmt=svg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
 IMAGE = 'some image'
@@ -51,13 +53,14 @@ describe CubeVisualizer do
              fmt: :svg,
              size: 100,
              view: :plain,
+             stage: CubeVisualizer::StageMask.new(:coll, Algorithm.move(Rotation.new(Face::U, CubeDirection::FORWARD))),
              sch: color_scheme,
              bg: :black,
              cc: :white,
              co: 40,
              fo: 50,
              dist: 35
-           ).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&size=100&view=plain&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&bg=black&cc=white&co=40&fo=50&dist=35&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
+           ).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&size=100&view=plain&stage=coll-y&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&bg=black&cc=white&co=40&fo=50&dist=35&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
   end
   
   it 'should fetch an image' do
@@ -71,6 +74,12 @@ describe CubeVisualizer do
   it 'should fetch an image and then cache it' do
     expect(CubeVisualizer.new(fetcher, cache, fmt: :svg, sch: color_scheme).fetch(cube_state)).to be == IMAGE
     expect(CubeVisualizer.new(FailFetcher.new, cache, fmt: :svg, sch: color_scheme).fetch(cube_state)).to be == IMAGE
+  end
+
+  it 'should parse a stage mask correctly' do
+    mask = CubeVisualizer::StageMask.parse('coll-x2')
+    expect(mask.base_mask).to be == :coll
+    expect(mask.rotations).to be == Algorithm.move(Rotation.new(Face::R, CubeDirection::DOUBLE))
   end
   
 end

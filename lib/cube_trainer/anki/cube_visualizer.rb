@@ -1,5 +1,6 @@
 require 'uri'
 require 'cube_trainer/cube_constants'
+require 'cube_trainer/move.rb'
 require 'cube_trainer/cube_print_helper'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/anki/cache'
@@ -17,6 +18,9 @@ module CubeTrainer
     FACE_SYMBOL_ORDER = [:U, :R, :F, :D, :L, :B]
     raise unless FACE_SYMBOL_ORDER.sort == CubeConstants::FACE_SYMBOLS.sort
 
+    BASE_MASKS = [:fl, :f2l, :ll, :cll, :ell, :oll, :ocll, :oell, :coll, :ocell, :wv, :vh, :els, :cls, :cmll, :cross, :f2l_3, :f2l_2, :f2l_sm, :f2l_1, :f2b, :line, :'2x2x2', :'2x2x3']
+    STAGE_MASK_REGEXP = Regexp.new("(#{BASE_MASKS.join('|')})(?:-([xyz'2]+))?")
+
     class SimpleUrlParameterSerializer
       def serialize(value)
         value.to_s
@@ -31,7 +35,39 @@ module CubeTrainer
       end
     end
 
+    class StageMask
+      def initialize(base_mask, rotations=Algorithm.empty)
+        raise ArgumentError unless BASE_MASKS.include?(base_mask)
+        raise TypeError unless rotations.is_a?(Algorithm)
+        raise TypeError unless rotations.moves.all? { |r| r.is_a?(Rotation) }
+        @base_mask = base_mask
+        @rotations = rotations
+      end
+
+      attr_reader :base_mask, :rotations
+
+      def self.parse(stage_mask_string)
+        match = stage_mask_string.match(STAGE_MASK_REGEXP)
+        raise ArgumentError, "Invalid stage mask #{stage_mask_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
+        raw_base_mask, raw_rotations = match.captures
+        rotations = raw_rotations ? parse_algorithm(raw_rotations) : Algorithm.empty
+        StageMask.new(raw_base_mask.to_sym, rotations)
+      end
+    end
+    
     COLOR_SCHEME_URL_PARAMETER_SERIALIZER = ColorSchemeUrlParameterSerializer.new
+    
+    class StageMaskUrlParameterSerializer
+      def serialize(value)
+        if value.rotations.empty?
+          value.base_mask.to_s
+        else
+          "#{value.base_mask}-#{value.rotations.moves.join}"
+        end
+      end      
+    end
+
+    STAGE_MASK_URL_PARAMETER_SERIALIZER = StageMaskUrlParameterSerializer.new
 
     class UrlParameterType
       def initialize(name,
@@ -85,6 +121,7 @@ module CubeTrainer
       UrlParameterType.new(:fmt, Symbol, [:png, :gif, :jpg, :svg, :tiff, :ico], required: true),
       UrlParameterType.new(:size, Integer, (0..1024)),
       UrlParameterType.new(:view, Symbol, [:plain, :trans]),
+      UrlParameterType.new(:stage, StageMask, FAKE_INFINITE_RANGE, parameter_value_serializer: STAGE_MASK_URL_PARAMETER_SERIALIZER),
       UrlParameterType.new(:sch, ColorScheme, FAKE_INFINITE_RANGE, required: true, parameter_value_serializer: COLOR_SCHEME_URL_PARAMETER_SERIALIZER),
       UrlParameterType.new(:bg, Symbol, COLORS),
       UrlParameterType.new(:cc, Symbol, COLORS),

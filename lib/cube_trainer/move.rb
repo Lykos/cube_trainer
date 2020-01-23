@@ -742,7 +742,7 @@ module CubeTrainer
   
     def parse_move(move_string)
       match = move_string.match(REGEXP)
-      raise "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
+      raise ArgumentError "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
       rotation, width, fat_face_name, face_name, slice_name, mslice_name, direction_string = match.captures
       direction = parse_direction(direction_string)
       if rotation
