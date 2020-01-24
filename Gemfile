@@ -5,9 +5,9 @@ source "https://rubygems.org" do
   gem 'rspec', group: :test
   gem 'xdg'
   gem 'sqlite3'
-  gem 'qtbindings'
-  gem 'parallel'
-  gem 'ruby-progressbar'
-  gem 'ruby-filemagic'
+  gem 'qtbindings', group: :ui
+  gem 'parallel', group: :anki
+  gem 'ruby-progressbar', group: :anki
+  gem 'ruby-filemagic', group: :anki
   gem 'simplecov', require: false, group: :test
 end
