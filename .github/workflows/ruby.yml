@@ -15,6 +15,7 @@ jobs:
         ruby-version: 2.6.x
     - name: Install Qt
       uses: mstksg/get-package@v1
+      with:
         apt-get: qtlib4-dev
     - name: Build and test with Rake
       run: |
