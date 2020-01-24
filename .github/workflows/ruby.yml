@@ -13,6 +13,10 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
+    - name: Install Package Dependencies
+      uses: mstksg/get-package@v1
+      with:
+        apt-get: libsqlite3-dev
     - name: Build and test with Rake
       run: |
         gem install bundler
