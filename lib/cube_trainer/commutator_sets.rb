@@ -4,6 +4,7 @@ require 'cube_trainer/disjoint_union_alg_set'
 require 'cube_trainer/commutator_hint_parser'
 require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/utils'
+require 'cube_trainer/no_hinter'
 require 'cube_trainer/sequence_hinter'
 require 'cube_trainer/letter_pair_alg_set'
 
@@ -86,13 +87,13 @@ module CubeTrainer
     def initialize(result_model, options)
       super
       corner_options = options.dup
-      corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
+      corner_options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES['corners'] || raise
       corner_options.picture = false
       corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(corner_options))
       corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_options)
 
       parity_options = options.dup
-      parity_options.commutator_info = Options::COMMUTATOR_TYPES['corner_parities'] || raise
+      parity_options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES['corner_parities'] || raise
       corner_options.picture = false
       parity_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(parity_options))
       parity_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, parity_options)
@@ -149,7 +150,7 @@ module CubeTrainer
     def initialize(result_model, options)
       super
       corner_options = options.dup
-      corner_options.commutator_info = Options::COMMUTATOR_TYPES['corners'] || raise
+      corner_options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES['corners'] || raise
       corner_options.picture = false
       corner_results = result_model.result_persistence.load_results(BufferHelper.mode_for_options(corner_options))
       corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_options)

@@ -1,5 +1,6 @@
 require 'ostruct'
 require 'cube_trainer/cube_trainer_options_parser'
+require 'cube_trainer/commutator_hint_parser'
 require 'cube_trainer/commutator_sets'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/human_word_learner'
@@ -44,6 +45,7 @@ module CubeTrainer
       options.picture = false
       options.mute = false
       options.buffer = nil
+      options.test_comms_mode = :ignore
       options
     end
 
@@ -53,13 +55,13 @@ module CubeTrainer
       CubeTrainerOptionsParser.new(options) do |opts|
         opts.on_size
       
-        opts.on('-c', '--commutator_type TYPE', COMMUTATOR_TYPES, 'Use the given type of commutators for training.') do |info|
-          options.commutator_info = info
-          if options.cube_size.nil? and not info.default_cube_size.nil? then options.cube_size = info.default_cube_size end
+        opts.on('-c', '--commutator_type TYPE', COMMUTATOR_TYPES, 'Use the given type of commutators for training.') do |c|
+          options.commutator_info = c
+          if options.cube_size.nil? and not c.default_cube_size.nil? then options.cube_size = c.default_cube_size end
         end
 
-        opts.on('-t', '--[no-]test_comms', 'Test commutators at startup.') do |test|
-          options.test_comms = test
+        opts.on('-t', '--test_comms_mode [MODE]', CommutatorHintParser::TEST_COMMS_MODES, 'Test commutators mode at startup.') do |t|
+          options.test_comms_mode = t
         end
 
         opts.on('-b', '--buffer BUFFER', /\w+/, 'Buffer to use instead of the default one.') do |b|

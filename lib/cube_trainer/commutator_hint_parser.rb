@@ -31,9 +31,13 @@ module CubeTrainer
 
   class CommutatorHintParser < HintParser
 
+    TEST_COMMS_MODES = [:ignore, :warn, :fail]
+    
     include StringHelper
 
-    def initialize(part_type, buffer, letter_scheme, color_scheme, verbose, cube_size, test_comms)
+    def initialize(part_type:, buffer:, letter_scheme:, color_scheme:, verbose:, cube_size:, test_comms_mode:)
+      raise ArgumentError, "Invalid test comms mode #{test_comms_mode}. Allowed are: #{TEST_COMMS_MODES.inspect}" unless TEST_COMMS_MODES.include?(test_comms_mode)
+      raise ArgumentError, 'Having test_comms_mode == :warn, but !verbose is pointless.' if test_comms_mode == :warn && !verbose
       raise ArgumentError unless cube_size.is_a?(Integer)
       @part_type = part_type
       @buffer = buffer
@@ -42,15 +46,23 @@ module CubeTrainer
       @color_scheme = color_scheme
       @verbose = verbose
       @cube_size = cube_size
-      @test_comms = test_comms
+      @test_comms_mode = test_comms_mode
     end
 
-    attr_reader :name, :part_type, :buffer, :verbose, :cube_size, :test_comms
+    attr_reader :name, :part_type, :buffer, :verbose, :cube_size, :test_comms_mode
 
     FACE_REGEXP = Regexp.new("[#{(CubeConstants::FACE_NAMES + CubeConstants::FACE_NAMES.map { |f| f.downcase }).join("")}]{2,3}")
 
     def letter_pair(part0, part1)
       LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) })
+    end
+
+    def warn_comms?
+      @test_comms_mode != :ignore && @verbose
+    end
+
+    def fail_comms?
+      @test_comms_mode == :fail
     end
 
     BLACKLIST = ['flip']
@@ -96,6 +108,21 @@ module CubeTrainer
     def parse_hints(raw_hints)
       parse_hint_table(add_nils_to_table(raw_hints))
     end
+
+    def checker
+      @checker ||= if @test_comms_mode == :ignore
+                    CommutatorCheckerStub.new
+                  else
+                    CommutatorChecker.new(
+                      part_type: @part_type,
+                      buffer: @buffer,
+                      piece_name: name,
+                      color_scheme: @color_scheme,
+                      cube_size: @cube_size,
+                      verbose: @verbose
+                    )
+                  end
+    end
     
     def parse_hint_table(hint_table)
       # First parse whatever we can
@@ -121,11 +148,6 @@ module CubeTrainer
       interpretation = CommonalityFinder.interpret_table(alg_table)
 
       # Now check everything and construct the hint table.
-      checker = if @test_comms
-                  CommutatorChecker.new(@part_type, @buffer, name, @color_scheme, @cube_size)
-                else
-                  CommutatorCheckerStub.new
-                end
       errors = []
       hints = {}
       alg_table.each_with_index do |row, row_index|
@@ -134,12 +156,12 @@ module CubeTrainer
           row_description = "#{("A".."Z").to_a[col_index]}#{row_index}"
           if letter_pair.nil?
             if cell.is_a?(AlgEntry)
-              puts "Algorithm #{cell.algorithm} at #{row_description} is outside of the valid part of the table." if @test_comms
+              puts "Algorithm #{cell.algorithm} at #{row_description} is outside of the valid part of the table." if warn_comms?
             else
               # Ignore this. Any invalid stuff can be outside the interesting part of the table.
             end
           elsif cell.is_a?(ErrorEntry)
-            puts "Algorithm for #{letter_pair} at #{row_description} has a problem: cell.error_message." if @test_comms
+            puts "Algorithm for #{letter_pair} at #{row_description} has a problem: cell.error_message." if warn_comms?
           elsif cell.is_a?(AlgEntry)
             commutator = cell.algorithm
             parts = letter_pair.letters.map { |l| @letter_scheme.for_letter(@part_type, l) }
@@ -150,7 +172,9 @@ module CubeTrainer
       end
       
       if checker.broken_algs > 0
-        puts "#{checker.broken_algs} broken algs of #{checker.total_algs}. #{checker.unfixable_algs} were unfixable."
+        msg = "#{checker.broken_algs} broken algs of #{checker.total_algs}. #{checker.unfixable_algs} were unfixable."
+        raise msg if fail_comms?
+        puts msg if warn_comms? 
       elsif @verbose
         puts "Parsed #{checker.total_algs} algs."
       end
@@ -163,7 +187,15 @@ module CubeTrainer
 
     def self.maybe_parse_hints(part_type, options)
       buffer = BufferHelper.determine_buffer(part_type, options)
-      hint_parser = CommutatorHintParser.new(part_type, buffer, options.letter_scheme, options.color_scheme, options.verbose, options.cube_size, options.test_comms)
+      hint_parser = CommutatorHintParser.new(
+        part_type: part_type,
+        buffer: buffer,
+        letter_scheme: options.letter_scheme,
+        color_scheme: options.color_scheme,
+        verbose: options.verbose,
+        cube_size: options.cube_size,
+        test_comms_mode: options.test_comms_mode
+      )
       hint_parser.maybe_parse_hints
     end
 

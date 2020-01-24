@@ -6,12 +6,18 @@ require 'cube_trainer/parser'
 describe HintParser do
   let (:part_type) { Corner }
   let (:letter_scheme) { BernhardLetterScheme.new }
-  let (:color_scheme) { ColorScheme::BERNHARD }
   let (:buffer) { letter_scheme.default_buffer(part_type) }
-  let (:verbose) { false }
-  let (:test_comms) { false }
-  let (:cube_size) { 3 }
-  let (:hint_parser) { CommutatorHintParser.new(part_type, buffer, letter_scheme, color_scheme, verbose, cube_size, test_comms) }
+  let (:hint_parser) {
+    CommutatorHintParser.new(
+      part_type: part_type,
+      buffer: buffer,
+      letter_scheme: letter_scheme,
+      color_scheme: ColorScheme::BERNHARD,
+      verbose: false,
+      cube_size: 3,
+      test_comms_mode: :ignore,
+    )
+  }
 
   it "should parse a valid hint table correctly" do
     table = [
