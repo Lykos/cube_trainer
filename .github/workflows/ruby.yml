@@ -16,7 +16,7 @@ jobs:
     - name: Install Qt
       uses: mstksg/get-package@v1
       with:
-        apt-get: qtlib4-dev
+        apt-get: libqt4-dev
     - name: Build and test with Rake
       run: |
         gem install bundler
