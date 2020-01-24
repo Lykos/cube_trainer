@@ -18,24 +18,7 @@ jobs:
       with:
         apt-get:
         - libqt4-dev
-        - build-essential
-        - bison
-        - openssl
-        - libreadline5
-        - libreadline-dev
-        - curl
-        - git-core
-        - zlib1g
-        - zlib1g-dev
-        - libssl-dev
-        - libsqlite3-0
-        - libsqlite3-dev
-        - sqlite3
-        - libxml2-dev
-        - autoconf
-        - xorg-dev
-        - libgl1-mesa-dev
-        - libglu1-mesa-dev
+        - ruby-dev
     - name: Build and test with Rake
       run: |
         gem install bundler
