@@ -5,6 +5,7 @@ source "https://rubygems.org" do
   gem 'rspec', group: :test
   gem 'xdg'
   gem 'sqlite3'
+  gem 'colorize'
   gem 'qtbindings', group: :ui
   gem 'parallel', group: :anki
   gem 'ruby-progressbar', group: :anki
