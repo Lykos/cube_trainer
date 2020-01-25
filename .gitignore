@@ -4,3 +4,5 @@
 */#*#
 spec/examples.txt
 coverage
+lib/cube_trainer/native.so
+tmp/*

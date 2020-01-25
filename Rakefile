@@ -1,3 +1,5 @@
+require 'rake/extensiontask'
+
 RBUIC = '/usr/local/bin/rbuic4'
 UIFILES = FileList.new('ui/**/*.ui')
 
@@ -11,6 +13,8 @@ end
 
 desc 'generate all Qt UI files using rbuic4'
 task :uic => UIFILES.collect { |f| ui_to_rb(f) }
+
+Rake::ExtensionTask.new('cube_trainer/native')
 
 rule(/^lib\/.*_ui\.rb$/ => lambda { |f| rb_to_ui(f) }) do |t|
   ui_file = t.source
