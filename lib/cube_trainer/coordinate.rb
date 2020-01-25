@@ -86,14 +86,29 @@ module CubeTrainer
       new(face, cube_size, *coordinates)
     end
 
+    def self.solved_position(part, cube_size, incarnation_index)
+      raise TypeError unless part.is_a?(Part)
+      raise unless part.class::ELEMENTS.length == 24
+      raise unless incarnation_index >= 0 && incarnation_index < part.num_incarnations(cube_size)
+      base_coordinate = Coordinate.new(part.solved_face, cube_size, *part.base_index_on_face(cube_size, incarnation_index))
+      other_face_symbols = part.corresponding_part.face_symbols[1..-1].sort
+      coordinate = base_coordinate.rotations.find do |coordinate|
+        face_symbols_closeby = coordinate.close_neighbor_faces.map { |f| f.face_symbol }
+        face_symbols_closeby.sort == other_face_symbols
+      end
+      raise "Couldn't find a fitting coordinate on the solved face." if coordinate.nil?
+      coordinate
+    end
+
     def self.center(face, cube_size)
       m = middle(cube_size)
       new(face, cube_size, m, m)
     end
     
     def initialize(face, cube_size, x, y)
-      raise ArgumentError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
-      raise ArgumentError unless cube_size.is_a?(Integer) && cube_size > 0
+      raise TypeError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
+      raise TypeError unless cube_size.is_a?(Integer)
+      raise ArgumentError unless cube_size > 0
       @face = face
       @cube_size = cube_size
       @coordinates = [x, y].map { |c| Coordinate.canonicalize(c, cube_size) }

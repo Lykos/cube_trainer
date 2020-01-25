@@ -4,6 +4,7 @@ require 'cube_trainer/array_helper'
 require 'cube_trainer/coordinate'
 require 'cube_trainer/cube_print_helper'
 require 'cube_trainer/state_helper'
+require 'cube_trainer/native'
 
 module CubeTrainer
 
@@ -24,6 +25,7 @@ module CubeTrainer
       raise ArgumentError, "All sides of a #{n}x#{n} must be #{n}x#{n}." unless stickers.all? { |p| p.length == n && p.all? { |q| q.length == n } }
       @n = n
       @stickers = stickers
+      @native_cube_state = Native::CubeState.new(n, stickers)
     end
 
     def dup

@@ -140,19 +140,7 @@ module CubeTrainer
 
     # Coordinate in the solved state.
     def solved_coordinate(cube_size, incarnation_index)
-      solved_coordinates[[cube_size, incarnation_index]] ||=
-        begin
-          raise unless self.class::ELEMENTS.length == 24
-          raise unless incarnation_index >= 0 && incarnation_index < num_incarnations(cube_size)
-          base_coordinate = Coordinate.new(solved_face, cube_size, *base_index_on_face(cube_size, incarnation_index))
-          other_face_symbols = corresponding_part.face_symbols[1..-1].sort
-          coordinate = base_coordinate.rotations.find do |coordinate|
-            face_symbols_closeby = coordinate.close_neighbor_faces.map { |f| f.face_symbol }
-            face_symbols_closeby.sort == other_face_symbols
-          end
-          raise "Couldn't find a fitting coordinate on the solved face." if coordinate.nil?
-          coordinate
-        end
+      solved_coordinates[[cube_size, incarnation_index]] ||= Coordinate.solved_position(self, cube_size, incarnation_index)
     end
   end
   
