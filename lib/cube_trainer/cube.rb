@@ -1,10 +1,12 @@
 require 'cube_trainer/cube_constants'
 require 'cube_trainer/coordinate'
+require 'cube_trainer/array_helper'
 
 module CubeTrainer
 
   class Part
 
+    include ArrayHelper
     include CubeConstants
     
     def initialize(face_symbols)
@@ -155,6 +157,10 @@ module CubeTrainer
     # Whether closeness to this face results in smaller indices for the stickers of other faces.
     def close_to_smaller_indices?
       piece_index < 3
+    end
+
+    def coordinate_index_base_face(coordinate_index)
+      only(neighbors.select { |n| n.close_to_smaller_indices? && coordinate_index_close_to(n) == coordinate_index})
     end
   
     def opposite

@@ -25,7 +25,16 @@ module CubeTrainer
       raise ArgumentError, "All sides of a #{n}x#{n} must be #{n}x#{n}." unless stickers.all? { |p| p.length == n && p.all? { |q| q.length == n } }
       @n = n
       @stickers = stickers
-      @native_cube_state = Native::CubeState.new(n, stickers)
+      stickers_hash = FACE_SYMBOLS.zip(stickers).map do |face_symbol, face_stickers|
+        face = Face.for_face_symbol(face_symbol)
+        face_hash = {
+          stickers: face_stickers,
+          x_base_face_symbol: face.coordinate_index_base_face(0).face_symbol,
+          y_base_face_symbol: face.coordinate_index_base_face(1).face_symbol,
+        }
+        [face_symbol, face_hash]
+      end.to_h
+      @native_cube_state = Native::CubeState.new(n, stickers_hash)
     end
 
     def dup

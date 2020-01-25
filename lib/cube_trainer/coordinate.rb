@@ -1,5 +1,6 @@
 require 'cube_trainer/cube'
 require 'cube_trainer/cube_constants'
+require 'cube_trainer/native'
 
 module CubeTrainer
   # Coordinate of a sticker on the cube
@@ -112,9 +113,17 @@ module CubeTrainer
       @face = face
       @cube_size = cube_size
       @coordinates = [x, y].map { |c| Coordinate.canonicalize(c, cube_size) }
+      @native = Native::CubeCoordinate.new(
+        cube_size,
+        face.face_symbol,
+        face.coordinate_index_base_face(0).face_symbol,
+        face.coordinate_index_base_face(1).face_symbol,
+        x,
+        y,
+      )
     end
 
-    attr_reader :face, :cube_size, :coordinates
+    attr_reader :face, :cube_size, :coordinates, :native
 
     def x
       @coordinates[0]

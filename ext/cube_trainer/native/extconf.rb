@@ -1,4 +1,5 @@
 require 'mkmf'
 
-dir_config('native')
+$srcs = Dir['*.c']
+
 create_makefile('native')
