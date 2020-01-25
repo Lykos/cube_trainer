@@ -6,9 +6,10 @@ source "https://rubygems.org" do
   gem 'rake-compiler', :development
   gem 'xdg'
   gem 'sqlite3'
-  gem 'qtbindings'
-  gem 'parallel'
-  gem 'ruby-progressbar'
-  gem 'ruby-filemagic'
+  gem 'colorize'
+  gem 'qtbindings', group: :ui
+  gem 'parallel', group: :anki
+  gem 'ruby-progressbar', group: :anki
+  gem 'ruby-filemagic', group: :anki
   gem 'simplecov', require: false, group: :test
 end
