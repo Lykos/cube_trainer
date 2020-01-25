@@ -1,14 +1,14 @@
 #include "cube_state.h"
 
 #include <stdio.h>
-#include <ruby/encoding.h>
 
 #include "face_symbols.h"
 #include "cube_coordinate.h"
+#include "utils.h"
 
-VALUE stickers_symbol;
-VALUE x_base_face_symbol_symbol;
-VALUE y_base_face_symbol_symbol;
+ID stickers_id;
+ID x_base_face_symbol_id;
+ID y_base_face_symbol_id;
 VALUE CubeStateClass = Qnil;
 
 typedef struct {
@@ -27,6 +27,7 @@ void CubeStateData_mark(void* const ptr) {
 void CubeStateData_free(void* const ptr) {
   const CubeStateData* const data = ptr;
   free(data->stickers);
+  free(ptr);
 }
 
 size_t CubeStateData_size(const void* const ptr) {
@@ -34,11 +35,10 @@ size_t CubeStateData_size(const void* const ptr) {
   return sizeof(CubeStateData) + num_stickers_for_cube_size(data->cube_size) * sizeof(VALUE);
 }
 
-const struct rb_data_type_struct CubeStateData_type = {
+const rb_data_type_t CubeStateData_type = {
   "CubeTrainer::Native::CubeStateData",
   {CubeStateData_mark, CubeStateData_free, CubeStateData_size, NULL},
-  NULL, NULL,
-  RUBY_TYPED_FREE_IMMEDIATELY
+  NULL, NULL, 0
 };
 
 VALUE CubeState_alloc(const VALUE klass) {
@@ -60,30 +60,34 @@ int extract_index_base_face_index(const VALUE face_hash, const VALUE key) {
   return face_index(index_base_face_symbol);
 }
 
-int replace_face(VALUE key, VALUE value, VALUE self) {
+int replace_face(const VALUE key, const VALUE value, const VALUE self) {
   CubeStateData* data;
   GetCubeStateData(self, data);
+  if (data->stickers == NULL) {
+    rb_raise(rb_eArgError, "Cube isn't initialized.");
+  }
   const int n = data->cube_size;
   Check_Type(value, T_HASH);
   if (RHASH_SIZE(value) != 3) {
     rb_raise(rb_eTypeError, "Cube faces must have 3 entries, got %ld.", RHASH_SIZE(value));
   }
   const int on_face_index = face_index(key);
-  const int x_base_face_index = extract_index_base_face_index(value, x_base_face_symbol_symbol);
-  const int y_base_face_index = extract_index_base_face_index(value, y_base_face_symbol_symbol);
-  const VALUE stickers = rb_hash_aref(value, stickers_symbol);
+  // Caching these keys isn't easy because the garbage collector will get them.
+  const VALUE stickers = rb_hash_aref(value, ID2SYM(stickers_id));
   if (stickers == Qnil) {
-    rb_raise(rb_eTypeError, "Cube faces must have keys called :stickers that contains the stickers on that face.");
+    rb_raise(rb_eTypeError, "Cube faces must have a key called :stickers that contains the stickers on that face.");
   }
+  const int x_base_face_index = extract_index_base_face_index(value, ID2SYM(x_base_face_symbol_id));
+  const int y_base_face_index = extract_index_base_face_index(value, ID2SYM(y_base_face_symbol_id));
   Check_Type(stickers, T_ARRAY);
   if (RARRAY_LEN(stickers) != n) {
-      rb_raise(rb_eRuntimeError, "All faces of a %dx%d cube must have %d rows. Got %ld rows.", n, n, n, RARRAY_LEN(stickers));    
+      rb_raise(rb_eArgError, "All faces of a %dx%d cube must have %d rows. Got %ld rows.", n, n, n, RARRAY_LEN(stickers));
   }
   for (int y = 0; y < n; ++y) {
     const VALUE row = rb_ary_entry(stickers, y);
     Check_Type(row, T_ARRAY);
     if (RARRAY_LEN(row) != n) {
-      rb_raise(rb_eRuntimeError, "All rows of a %dx%d cube must have %d cells. Got %ld cells.", n, n, n, RARRAY_LEN(row));
+      rb_raise(rb_eArgError, "All rows of a %dx%d cube must have %d cells. Got %ld cells.", n, n, n, RARRAY_LEN(row));
       for (int x = 0; x < n; ++x) {
         const VALUE cell = rb_ary_entry(row, x);
         data->stickers[sticker_index(n, on_face_index, x, y)] = cell;
@@ -101,7 +105,10 @@ VALUE CubeState_initialize(const VALUE self, const VALUE cube_size, const VALUE 
   data->cube_size = n;
   data->stickers = malloc(num_stickers_for_cube_size(n) * sizeof(VALUE));
   if (data->stickers == NULL) {
-    rb_raise(rb_eRuntimeError, "Allocating cube failed.");
+    rb_raise(rb_eArgError, "Allocating cube failed.");
+  }
+  for (int i = 0; i < num_stickers_for_cube_size(n); ++i) {
+    data->stickers[i] = Qnil;
   }
   if (RHASH_SIZE(stickers) != cube_faces) {
     rb_raise(rb_eTypeError, "Cubes must have %d faces. Got %ld.", cube_faces, RHASH_SIZE(stickers));
@@ -113,20 +120,25 @@ VALUE CubeState_initialize(const VALUE self, const VALUE cube_size, const VALUE 
 VALUE CubeState_entry(const VALUE self, const VALUE coordinate) {
   CubeStateData* data;
   GetCubeStateData(self, data);
-  return data->stickers[CubeCoordinate_sticker_index(coordinate)];
+  if (data->stickers == NULL) {
+    rb_raise(rb_eArgError, "Cube isn't initialized.");
+  }
+  return data->stickers[CubeCoordinate_sticker_index(coordinate, data->cube_size)];
 }
 
 VALUE CubeState_store(const VALUE self, const VALUE coordinate, const VALUE value) {
   CubeStateData* data;
   GetCubeStateData(self, data);
-  return data->stickers[CubeCoordinate_sticker_index(coordinate)] = value;
+  if (data->stickers == NULL) {
+    rb_raise(rb_eArgError, "Cube isn't initialized.");
+  }
+  return data->stickers[CubeCoordinate_sticker_index(coordinate, data->cube_size)] = value;
 }
 
-void rb_init_cube_state_class_under(VALUE NativeModule) {
-  const rb_encoding* ascii = rb_enc_find("ASCII");
-  stickers_symbol = rb_check_symbol_cstr("stickers", 8, ascii);
-  x_base_face_symbol_symbol = rb_check_symbol_cstr("x_base_face_symbol", 18, ascii);
-  y_base_face_symbol_symbol = rb_check_symbol_cstr("y_base_face_symbol", 18, ascii);
+void init_cube_state_class_under(VALUE NativeModule) {
+  stickers_id = rb_intern("stickers");
+  x_base_face_symbol_id = rb_intern("x_base_face_symbol");
+  y_base_face_symbol_id = rb_intern("y_base_face_symbol");
   CubeStateClass = rb_define_class_under(NativeModule, "CubeState", rb_cObject);
   rb_define_alloc_func(CubeStateClass, CubeState_alloc);
   rb_define_method(CubeStateClass, "initialize", CubeState_initialize, 2);

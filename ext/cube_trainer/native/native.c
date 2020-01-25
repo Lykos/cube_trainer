@@ -10,7 +10,7 @@ VALUE NativeModule = Qnil;
 void Init_native() {
   CubeTrainerModule = rb_define_module("CubeTrainer");
   NativeModule = rb_define_module_under(CubeTrainerModule, "Native");
-  rb_init_cube_state_class_under(NativeModule);
-  rb_init_cube_coordinate_class_under(NativeModule);
-  rb_init_face_indices();
+  init_cube_state_class_under(NativeModule);
+  init_cube_coordinate_class_under(NativeModule);
+  init_face_symbols();
 }

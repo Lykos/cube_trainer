@@ -113,6 +113,7 @@ module CubeTrainer
       @face = face
       @cube_size = cube_size
       @coordinates = [x, y].map { |c| Coordinate.canonicalize(c, cube_size) }
+      x, y = @coordinates
       @native = Native::CubeCoordinate.new(
         cube_size,
         face.face_symbol,
