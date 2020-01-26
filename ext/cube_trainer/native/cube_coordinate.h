@@ -6,7 +6,12 @@
 
 int num_stickers_for_cube_size(int cube_size);
 
-int sticker_index(int cube_size, FACE_INDEX on_face_index, int x, int y);
+typedef struct {
+  int x;
+  int y;
+} Point;
+
+int sticker_index(int cube_size, FACE_INDEX on_face_index, Point point);
 
 int transform_index(FACE_INDEX index_base_face_index, int cube_size, int index);
 
@@ -16,12 +21,7 @@ void check_base_face_indices(int on_face_index,
                              int x_base_face_index,
                              int y_base_face_index);
 
-typedef struct {
-  int x;
-  int y;
-} Point;
-
-Point point_on_face(int face_index,
+Point point_on_face(int on_face_index,
                     int x_base_face_index,
                     int y_base_face_index,
                     int cube_size,

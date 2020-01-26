@@ -7,8 +7,7 @@ VALUE CubeCoordinateClass = Qnil;
 typedef struct {
   int cube_size;
   int on_face_index;
-  int x;
-  int y;
+  Point point;
 } CubeCoordinateData;
 
 const rb_data_type_t CubeCoordinateData_type = {
@@ -24,8 +23,8 @@ int num_stickers_for_cube_size(const int cube_size) {
   return cube_faces * cube_size * cube_size;
 }
 
-int sticker_index(const int cube_size, const FACE_INDEX on_face_index, const int x, const int y) {
-  return on_face_index * cube_size * cube_size + y * cube_size + x;
+int sticker_index(const int cube_size, const FACE_INDEX on_face_index, const Point point) {
+  return on_face_index * cube_size * cube_size + point.y * cube_size + point.x;
 }
 
 int CubeCoordinate_sticker_index(const VALUE obj, const int cube_size) {
@@ -34,7 +33,7 @@ int CubeCoordinate_sticker_index(const VALUE obj, const int cube_size) {
   if (data->cube_size != cube_size) {
     rb_raise(rb_eArgError, "Cannot use coordinate for cube size %d on a %dx%d cube.", data->cube_size, cube_size, cube_size);
   }
-  return sticker_index(cube_size, data->on_face_index, data->x, data->y);
+  return sticker_index(cube_size, data->on_face_index, data->point);
 }
 
 size_t CubeCoordinateData_size(const void* const ptr) {
@@ -46,8 +45,8 @@ VALUE CubeCoordinate_alloc(const VALUE klass) {
   VALUE object = TypedData_Make_Struct(klass, CubeCoordinateData, &CubeCoordinateData_type, data);
   data->cube_size = 0;
   data->on_face_index = 0;
-  data->x = 0;
-  data->y = 0;
+  data->point.x = 0;
+  data->point.y = 0;
   return object;
 }
 
@@ -64,7 +63,7 @@ int transform_index(const FACE_INDEX index_base_face_index, const int cube_size,
 }
 
 int switch_axes(const FACE_INDEX x_base_face_index, const FACE_INDEX y_base_face_index) {
-  return axis_index(x_base_face_index) < axis_index(y_base_face_index);
+  return axis_index(x_base_face_index) > axis_index(y_base_face_index);
 }
 
 void check_base_face_indices(const int on_face_index,
@@ -133,8 +132,7 @@ VALUE CubeCoordinate_initialize(const VALUE self,
   GetCubeCoordinateData(self, data);
   data->cube_size = n;
   data->on_face_index = on_face_index;
-  data->x = point.x;
-  data->y = point.y;
+  data->point = point;
   return self;
 }
 
@@ -145,8 +143,8 @@ VALUE CubeCoordinate_hash(const VALUE self) {
   st_index_t hash = rb_hash_start((st_index_t)CubeCoordinate_hash);
   hash = rb_hash_uint(hash, data->cube_size);
   hash = rb_hash_uint(hash, data->on_face_index);
-  hash = rb_hash_uint(hash, data->x);
-  hash = rb_hash_uint(hash, data->y);
+  hash = rb_hash_uint(hash, data->point.x);
+  hash = rb_hash_uint(hash, data->point.y);
   return ST2FIX(rb_hash_end(hash));
 }
 
@@ -163,8 +161,8 @@ VALUE CubeCoordinate_eql(const VALUE self, const VALUE other) {
   GetCubeCoordinateData(other, other_data);
   if (self_data->cube_size == other_data->cube_size &&
       self_data->on_face_index == other_data->on_face_index &&
-      self_data->x == other_data->x &&
-      self_data->y == other_data->y) {
+      self_data->point.x == other_data->point.x &&
+      self_data->point.y == other_data->point.y) {
     return Qtrue;
   } else {
     return Qfalse;

@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include "utils.h"
 
-// Compiler doesn't like a constant here.
-ID face_ids[6];
+ID face_ids[cube_faces];
 
 FACE_INDEX face_index(const VALUE face_symbol) {
   Check_Type(face_symbol, T_SYMBOL);
@@ -15,6 +14,23 @@ FACE_INDEX face_index(const VALUE face_symbol) {
     }
   }
   rb_raise(rb_eArgError, "Invalid face symbol %+"PRIsVALUE"", face_symbol);
+}
+
+// TODO This is very unelegant.
+const FACE_INDEX U_neighbors[neighbor_faces] = {F, L, B, R};
+const FACE_INDEX F_neighbors[neighbor_faces] = {U, R, D, L};
+const FACE_INDEX R_neighbors[neighbor_faces] = {U, B, D, F};
+
+FACE_INDEX neighbor_face_index(const FACE_INDEX face_index, const int index) {
+  const int canonical_index = face_index == axis_index(face_index) ? index : 3 - index;
+  switch (axis_index(face_index)) {
+  case U: return U_neighbors[canonical_index];
+  case F: return F_neighbors[canonical_index];
+  case R: return R_neighbors[canonical_index];
+  default:
+    // Crash
+    break;
+  }
 }
 
 VALUE face_symbol(const FACE_INDEX face_index) {
@@ -30,10 +46,10 @@ FACE_INDEX opposite_face_index(const FACE_INDEX face_index) {
 }
 
 void init_face_symbols() {
-  face_ids[0] = rb_intern("U");
-  face_ids[1] = rb_intern("F");
-  face_ids[2] = rb_intern("R");
-  face_ids[3] = rb_intern("L");
-  face_ids[4] = rb_intern("B");
-  face_ids[5] = rb_intern("D");
+  face_ids[U] = rb_intern("U");
+  face_ids[F] = rb_intern("F");
+  face_ids[R] = rb_intern("R");
+  face_ids[L] = rb_intern("L");
+  face_ids[B] = rb_intern("B");
+  face_ids[D] = rb_intern("D");
 }

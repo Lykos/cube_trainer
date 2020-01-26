@@ -18,44 +18,50 @@ module CubeTrainer
       raise TypeError unless n.is_a?(Integer)
       raise ArgumentError, 'Cubes of size smaller than 2 are not supported.' if n < 2
     end
-    
-    def initialize(n, stickers)
+
+    def self.from_stickers(n, stickers)
       CubeState.check_cube_size(n)
       raise ArgumentError, "Cubes must have #{FACES} sides." unless stickers.length == FACES
       raise ArgumentError, "All sides of a #{n}x#{n} must be #{n}x#{n}." unless stickers.all? { |p| p.length == n && p.all? { |q| q.length == n } }
-      @n = n
-      @stickers = stickers
       stickers_hash = FACE_SYMBOLS.zip(stickers).map do |face_symbol, face_stickers|
         face = Face.for_face_symbol(face_symbol)
+        # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
+        # so we have to swap coordinates here.
         face_hash = {
           stickers: face_stickers,
-          x_base_face_symbol: face.coordinate_index_base_face(0).face_symbol,
-          y_base_face_symbol: face.coordinate_index_base_face(1).face_symbol,
+          x_base_face_symbol: face.coordinate_index_base_face(1).face_symbol,
+          y_base_face_symbol: face.coordinate_index_base_face(0).face_symbol,
         }
         [face_symbol, face_hash]
       end.to_h
-      @native_cube_state = Native::CubeState.new(n, stickers_hash)
+      new(Native::CubeState.new(n, stickers_hash))
+    end
+
+    def initialize(native)
+      @native = native
     end
 
     def dup
-      CubeState.new(@n, @stickers.map { |p| p.map { |q| q.dup } })
+      CubeState.new(@native.dup)
     end
   
-    attr_reader :n, :stickers, :native
-    
-    def encode_with(coder)
-      coder['stickers'] = @stickers
-      coder['n'] = @n
+    attr_reader :native
+
+    def n
+      @native.cube_size
+    end
+  
+    def stickers
     end
   
     def eql?(other)
-      self.class.equal?(other.class) && @stickers == other.stickers && @n == other.n && @native == other.native
+      self.class.equal?(other.class) && @native == other.native
     end
   
     alias == eql?
   
     def hash
-      [@stickers, @n, @native].hash
+      [self.class, @native].hash
     end
   
     def rotate_piece(piece, incarnation_index=0)
@@ -64,7 +70,7 @@ module CubeTrainer
 
     # The indices of stickers that this piece occupies on the solved cube.
     def solved_positions(piece, incarnation_index=0)
-      coordinate = piece.solved_coordinate(@n, incarnation_index)
+      coordinate = piece.solved_coordinate(n, incarnation_index)
       piece_coordinates(coordinate)
     end
 
@@ -83,7 +89,9 @@ module CubeTrainer
     end
 
     def sticker_array(face)
-      @stickers[face.piece_index]
+        # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
+        # so we have to swap coordinates here.
+      @native.sticker_array(face.face_symbol, face.coordinate_index_base_face(1).face_symbol, face.coordinate_index_base_face(0).face_symbol);
     end
   
     def to_s
@@ -106,7 +114,7 @@ module CubeTrainer
       raise "Cycles of heterogenous piece types #{pieces.inspect} are not supported." if pieces.any? { |p| p.class != pieces.first.class }
       raise 'Cycles of invalid pieces are not supported.' unless pieces.all? { |p| p.valid? }
       raise "Invalid incarnation index #{incarnation_index}." unless incarnation_index.is_a?(Integer) && incarnation_index >= 0
-      raise "Incarnation index #{incarnation_index} for cube size #{@n} is not supported for #{pieces.first.inspect}." unless incarnation_index < pieces.first.num_incarnations(@n)
+      raise "Incarnation index #{incarnation_index} for cube size #{n} is not supported for #{pieces.first.inspect}." unless incarnation_index < pieces.first.num_incarnations(n)
       pieces.each_with_index do |p, i|
         pieces.each_with_index do |q, j|
           if i != j && p.turned_equals?(q)
@@ -119,15 +127,16 @@ module CubeTrainer
     end
   
     def [](coordinate)
-      sticker_array(coordinate.face)[coordinate.x][coordinate.y]
+      @native[coordinate.native]
     end
   
     def []=(coordinate, color)
+      @native[coordinate.native] = color
       sticker_array(coordinate.face)[coordinate.x][coordinate.y] = color
     end
     
     def rotate_slice(face, slice, direction)
-      Coordinate.on_slice(face, slice, @n).each do |cycle|
+      Coordinate.on_slice(face, slice, n).each do |cycle|
         apply_4sticker_cycle(cycle, direction)
       end
     end
@@ -137,7 +146,7 @@ module CubeTrainer
       neighbors = face.neighbors
       inverse_order_face = face.coordinate_index_close_to(neighbors[0]) < face.coordinate_index_close_to(neighbors[1])
       direction = direction.inverse if inverse_order_face
-      Coordinate.on_face(face, @n).each do |cycle|
+      Coordinate.on_face(face, n).each do |cycle|
         apply_4sticker_cycle(cycle, direction)
       end
     end

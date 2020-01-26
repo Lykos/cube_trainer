@@ -104,7 +104,7 @@ module CubeTrainer
       stickers = ordered_colors.map do |c|
         (0...n).collect { [c] * n }
       end
-      CubeState.new(n, stickers)
+      CubeState.from_stickers(n, stickers)
     end
 
     # Colors in the order of the face symbols.

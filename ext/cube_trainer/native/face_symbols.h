@@ -4,16 +4,19 @@
 
 typedef int FACE_INDEX;
 
-static const FACE_INDEX cube_faces = 6;
+#define cube_faces 6
+#define neighbor_faces 4
 
-static const FACE_INDEX U = 0;
-static const FACE_INDEX F = 1;
-static const FACE_INDEX R = 2;
-static const FACE_INDEX L = 3;
-static const FACE_INDEX B = 4;
-static const FACE_INDEX D = 5;
+#define U 0
+#define F 1
+#define R 2
+#define L 3
+#define B 4
+#define D 5
 
 FACE_INDEX face_index(VALUE face_symbol);
+
+FACE_INDEX neighbor_face_index(FACE_INDEX face_index, int index);
 
 VALUE face_symbol(FACE_INDEX face_index);
 
