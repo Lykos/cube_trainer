@@ -22,11 +22,12 @@ const FACE_INDEX F_neighbors[neighbor_faces] = {U, R, D, L};
 const FACE_INDEX R_neighbors[neighbor_faces] = {U, B, D, F};
 
 FACE_INDEX neighbor_face_index(const FACE_INDEX face_index, const int index) {
-  const int canonical_index = face_index == axis_index(face_index) ? index : 3 - index;
+  const int adjusted_index = face_index == axis_index(face_index) ? index : 3 - index;
+  const int cropped_index = ((adjusted_index % 4) + 4) % 4;
   switch (axis_index(face_index)) {
-  case U: return U_neighbors[canonical_index];
-  case F: return F_neighbors[canonical_index];
-  case R: return R_neighbors[canonical_index];
+  case U: return U_neighbors[cropped_index];
+  case F: return F_neighbors[cropped_index];
+  case R: return R_neighbors[cropped_index];
   default:
     // Crash
     break;

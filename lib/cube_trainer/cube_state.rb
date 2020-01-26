@@ -136,19 +136,12 @@ module CubeTrainer
     end
     
     def rotate_slice(face, slice, direction)
-      Coordinate.on_slice(face, slice, n).each do |cycle|
-        apply_4sticker_cycle(cycle, direction)
-      end
+      @native.rotate_slice(face.face_symbol, slice, direction.value)
     end
   
     # Rotates the stickers on one face (not a real move, only stickers on one face!)
     def rotate_face(face, direction)
-      neighbors = face.neighbors
-      inverse_order_face = face.coordinate_index_close_to(neighbors[0]) < face.coordinate_index_close_to(neighbors[1])
-      direction = direction.inverse if inverse_order_face
-      Coordinate.on_face(face, n).each do |cycle|
-        apply_4sticker_cycle(cycle, direction)
-      end
+      @native.rotate_face(face.face_symbol, direction.value)
     end
   
     def apply_move(move)

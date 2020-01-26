@@ -80,7 +80,7 @@ module CubeTrainer
     end
 
     def piece_index
-      self.class::ELEMENTS.index(self)
+      @piece_index ||= self.class::ELEMENTS.index(self)
     end
   
     # Rotate a piece such that the given face symbol is the first face symbol.

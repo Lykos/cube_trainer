@@ -1,4 +1,5 @@
 require 'cube_trainer/cube_state'
+require 'cube_trainer/cube_print_helper'
 require 'cube_trainer/cube_constants'
 require 'cube_trainer/cube'
 require 'cube_trainer/move'
@@ -9,6 +10,7 @@ require 'cube_trainer/color_scheme'
 
 include CubeTrainer
 include CubeConstants
+include CubePrintHelper
 
 RSpec.shared_examples 'cube_state' do |cube_size|
   let(:letter_scheme) { BernhardLetterScheme.new }
@@ -205,6 +207,23 @@ RSpec.shared_examples 'cube_state' do |cube_size|
       changed_parts[[:D, cube_size - 1, x]] ||= :blue
       changed_parts[[:L, x, cube_size - 1]] ||= :yellow
       changed_parts[[:B, 1,  x]] = :red
+      changed_parts[[:B, x, 1]] ||= :orange
+    end
+    expect_stickers_changed(cube_state, changed_parts)
+  end
+
+  it "should have the right state after applying a B2 move" do
+    cube_state.apply_move(parse_move("B2"))
+    changed_parts = {
+      [:U, cube_size - 1, cube_size - 2] => :yellow,
+      [:D, cube_size - 1, cube_size - 2] => :white,
+    }
+    0.upto(cube_size - 1) do |x|
+      changed_parts[[:U, cube_size - 1, x]] ||= :white
+      changed_parts[[:R, x, cube_size - 1]] ||= :blue
+      changed_parts[[:D, cube_size - 1, x]] ||= :yellow
+      changed_parts[[:L, x, cube_size - 1]] ||= :green
+      changed_parts[[:B, x, cube_size - 2]] = :red
       changed_parts[[:B, x, 1]] ||= :orange
     end
     expect_stickers_changed(cube_state, changed_parts)
