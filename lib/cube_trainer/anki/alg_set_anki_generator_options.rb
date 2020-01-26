@@ -28,6 +28,10 @@ module CubeTrainer
         opts.on_stage_mask
         opts.on_solved_mask
 
+        opts.on('-d', '--output_dir [FILE]', String, 'Output directory path for the media.') do |d|
+          options.output_dir = d
+        end
+
         opts.on('-a', '--alg_set [ALG_SET]', String, 'Internal algorithm set to be used to generate cards. Either this or --input and --alg_column can be set.') do |a|
           options.alg_set = a
         end

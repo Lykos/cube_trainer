@@ -24,7 +24,7 @@ module CubeTrainer
     AUFS = [Algorithm.empty] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Algorithm.move(FatMove.new(Face::U, d)) }
     
     def initialize(options)
-      raise ArgumentError unless File.exist?(options.output) && File.directory?(options.output) && File.writable?(options.output)
+      raise ArgumentError unless File.exist?(options.output_dir) && File.directory?(options.output_dir) && File.writable?(options.output_dir)
       @options = options
       cache = options.cache ? Cache.new('cube_visualizer') : nil
       @visualizer = CubeVisualizer.new(Net::HTTP, cache, sch: options.color_scheme, fmt: FORMAT, stage: options.stage_mask)
@@ -34,11 +34,11 @@ module CubeTrainer
     end
 
     def absolute_output_path(name)
-      File.join(@options.output, name)
+      File.join(@options.output_dir, name)
     end
 
     def generate
-      CSV.open(absolute_output_path('deck.tsv'), 'wb', :col_sep => "\t") do |csv|
+      CSV.open(@options.output, 'wb', :col_sep => "\t") do |csv|
         generate_internal(csv)
       end
     end

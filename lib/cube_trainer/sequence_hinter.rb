@@ -173,13 +173,12 @@ module CubeTrainer
 
     include ArrayHelper
 
-    def initialize(hinters, separator)
+    def initialize(hinters)
       hinters.each do |h|
         raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints) && h.respond_to?(:entries)
       end
       raise ArgumentError if hinters.empty?
       @hinters = hinters
-      @separator = separator
     end
 
     def hints(input)
@@ -191,14 +190,14 @@ module CubeTrainer
     def entries
       entries_components = @hinters.map { |h| h.entries }
       entries_components[0].product(*entries_components[1..-1]).map do |entry_combination|
-        name = entry_combination.map { |e| e[0] }.join(@separator)
+        name = entry_combination.map { |e| e[0] }.reduce(:+)
         alg = entry_combination.map { |e| e[1] }.reduce(:+)
         [name, alg]
       end
     end
 
     def input_parts(input)
-      parts = input.to_s.split(@separator).map { |i| AlgName.new(i) }
+      parts = input.sub_names
       raise ArgumentError unless @hinters.length == parts.length
       parts
     end

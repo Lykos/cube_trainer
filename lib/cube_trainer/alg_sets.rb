@@ -65,29 +65,6 @@ module CubeTrainer
   end
 
   class OllsPlusCp < AlgSet
-
-    def create_hinter
-      AlgSequenceHinter.new([oll_hinter, cp_hinter], ' + ')
-    end
-
-    def oll_hinter
-      @oll_hinter ||= AlgHintParser.maybe_parse_hints('olls', @options.verbose)
-    end
-    
-    def cp_hinter
-      @cp_hinter ||= DisjointUnionHinter.new([
-                                               RestrictedHinter.new([AlgName.new('Ja'), AlgName.new('Y')], pll_hinter),
-                                               RestrictedHinter.new([AlgName.new('solved')], solved_hinter),
-                                             ])
-    end
-
-    def solved_hinter
-      @solved_hinter ||= AlgHinter.new({AlgName.new('solved') => Algorithm.empty})
-    end
-    
-    def pll_hinter
-      @pll_hinter ||= AlgHintParser.maybe_parse_hints('plls', @options.verbose)
-    end
     
     def goal_badness
       1.0

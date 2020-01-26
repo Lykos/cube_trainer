@@ -9,6 +9,10 @@ module CubeTrainer
       @hinter = hinter
     end
 
+    def self.trivially_restricted(hinter)
+      new(hinter.entries.map { |e| e.first }, hinter)
+    end
+
     attr_reader :inputs
 
     def hints(input)

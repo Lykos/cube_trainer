@@ -4,7 +4,7 @@ require 'cube_trainer/anki/note_input'
 module CubeTrainer
 
   class AlgSetParser
-    
+
     def self.parse(file, alg_column, name_column)
       CSV.read(file, :col_sep => "\t").map do |row|
         name = row[name_column]
