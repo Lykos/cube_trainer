@@ -3,17 +3,26 @@ module CubeTrainer
   class AlgName
 
     SEPARATOR = ' + '
+    OPENING_BRACKET = '('
+    CLOSING_BRACKET = '('
+    RESERVED_STUFF = [SEPARATOR, OPENING_BRACKET, CLOSING_BRACKET]
 
-    def name
+    def self.bracketed(stuff)
+      OPENING_BRACKET + stuff.to_s + CLOSING_BRACKET
+    end
+
+    def to_s
       raise NotImplementedError
     end
     
-    def to_s
-      name
+    def bracketed_if_needed_to_s
+      raise NotImplementedError
     end
 
     def self.from_raw_data(input)
-      if input.include?(SEPARATOR)
+      if input.include?(OPENING_BRACKET) || input.include?(CLOSING_BRACKET)
+        raise NotImplementedError
+      elsif input.include?(SEPARATOR)
         CombinedAlgName.new(input.split(SEPARATOR))
       else
         SimpleAlgName.new(input)
@@ -21,17 +30,17 @@ module CubeTrainer
     end
   
     def to_raw_data
-      name
+      to_s
     end
 
     def eql?(other)
-      self.class.equal?(other.class) && name == other.name
+      self.class.equal?(other.class) && to_s == other.to_s
     end
   
     alias == eql?
   
     def hash
-      name.hash
+      to_s.hash
     end
 
     def +(other)
@@ -43,33 +52,37 @@ module CubeTrainer
     
     def initialize(name)
       raise ArgumentError if name.include?(SEPARATOR)
-      @name = name
+      @to_s = name
     end
 
-    attr_reader :name
+    attr_reader :to_s
     
+    def bracketed_if_needed_to_s
+      to_s
+    end
+
   end
 
-  # Note that there is only one level of combining algs.
-  # This is caused by the fact that the structure couldn't be recognized because combining algs is associative.
   class CombinedAlgName < AlgName
     
     def initialize(sub_names)
-      @sub_names = sub_names.collect_concat do |s|
-        case s
-        when CombinedAlgName then s.sub_names
-        when SimpleAlgName then [s]
-        else raise TypeError, "Bad alg name subtype #{s.class}."
-        end
-      end
+      @sub_names = sub_names
     end
 
     attr_reader :sub_names
 
-    def name
+    def to_s
       @sub_names.join(SEPARATOR)
     end
 
+    def to_raw_data
+      @sub_names.map { |n| n.bracketed_if_needed_to_s }.join(SEPARATOR)
+    end
+
+    def bracketed_if_needed_to_s
+      AlgName.bracketed(to_s)
+    end
+    
   end
 
 end

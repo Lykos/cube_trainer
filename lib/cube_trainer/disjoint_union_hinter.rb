@@ -7,7 +7,7 @@ module CubeTrainer
 
     def initialize(restricted_hinters)
       restricted_hinters.each do |h|
-        raise TypeError unless h.respond_to?(:in_domain?) && h.respond_to?(:hints) && h.respond_to?(:entries)
+        raise TypeError unless h.is_a?(RestrictedHinter)
       end
       restricted_hinters.combination(2).each do |r, s|
         overlap = r.inputs & s.inputs

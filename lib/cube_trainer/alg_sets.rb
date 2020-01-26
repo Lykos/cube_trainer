@@ -34,7 +34,7 @@ module CubeTrainer
     end
 
     def create_hinter
-      AlgHintParser.maybe_parse_hints(name, @options.verbose)
+      AlgHintParser.parse_hints(name, @options.verbose)
     end
 
     def input_items

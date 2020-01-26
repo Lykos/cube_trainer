@@ -3,8 +3,8 @@ module CubeTrainer
   class RestrictedHinter
 
     def initialize(inputs, hinter)
-      raise TypeError unless inputs.respond_to?(:include?)
-      raise TypeError unless hinter.respond_to?(:hints) && hinter.respond_to?(:entries)
+      raise TypeError, "Invalid input type #{inputs.class}." unless inputs.respond_to?(:include?)
+      raise TypeError, "Invalid hinter type #{hinter.class}." unless hinter.respond_to?(:hints) && hinter.respond_to?(:entries)
       @inputs = inputs
       @hinter = hinter
     end

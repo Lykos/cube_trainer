@@ -35,7 +35,7 @@ module CubeTrainer
 
     def maybe_parse_hints
       hints = if hints_exist?
-                parse_hints(read_hints)
+                parse_hints_internal(read_hints)
               else
                 puts "Failed to find hint CSV file #{hint_parser.csv_file}." if verbose
                 {}
@@ -43,11 +43,16 @@ module CubeTrainer
       hinter_class.new(hints)
     end
 
+    def parse_hints
+      raise ArgumentError, "No algorithm sheet found at #{csv_file}." unless hints_exist?
+      maybe_parse_hints
+    end
+
     def hinter_class
       raise NotImplementedError
     end
 
-    def parse_hints
+    def parse_hints_internal
       raise NotImplementedError
     end
 

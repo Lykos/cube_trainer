@@ -105,7 +105,7 @@ module CubeTrainer
       table.map { |row| row + [nil] * (max_row_length - row.length) }
     end
 
-    def parse_hints(raw_hints)
+    def parse_hints_internal(raw_hints)
       parse_hint_table(add_nils_to_table(raw_hints))
     end
 
