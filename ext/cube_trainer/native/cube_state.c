@@ -18,8 +18,8 @@ typedef struct {
 
 void CubeStateData_mark(void* const ptr) {
   const CubeStateData* data = ptr;
-  const int n = num_stickers_for_cube_size(data->cube_size);
-  for (int i = 0; i < n; ++i) {
+  const int n = data->cube_size;
+  for (int i = 0; i < num_stickers_for_cube_size(n); ++i) {
     rb_gc_mark(data->stickers[i]);
   }
 }
@@ -168,7 +168,8 @@ VALUE CubeState_hash(const VALUE self) {
 
   st_index_t hash = rb_hash_start(data->cube_size);
   hash = rb_hash_uint(hash, (st_index_t)CubeState_hash);
-  for (int i = 0; i < data->cube_size; i++) {
+  const int n = data->cube_size;
+  for (int i = 0; i < num_stickers_for_cube_size(n); i++) {
     const VALUE sub_hash = rb_hash(data->stickers[i]);
     hash = rb_hash_uint(hash, NUM2LONG(sub_hash));
   }
@@ -189,7 +190,8 @@ VALUE CubeState_eql(const VALUE self, const VALUE other) {
   if (self_data->cube_size != other_data->cube_size) {
     return Qfalse;
   }
-  for (int i = 0; i < self_data->cube_size; ++i) {
+  const int n = self_data->cube_size;
+  for (int i = 0; i < num_stickers_for_cube_size(n); ++i) {
     if (self_data->stickers[i] != other_data->stickers[i]) {
       return Qfalse;
     }
@@ -208,7 +210,7 @@ VALUE CubeState_dup(const VALUE self) {
   if (data->stickers == NULL) {
     rb_raise(rb_eNoMemError, "Allocating cube failed.");
   }
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < num_stickers_for_cube_size(n); ++i) {
     dupped_data->stickers[i] = data->stickers[i];
   }
   return dupped;
