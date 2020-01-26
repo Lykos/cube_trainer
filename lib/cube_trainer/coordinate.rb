@@ -133,7 +133,7 @@ module CubeTrainer
     alias == eql?
 
     def hash
-      [@face, @cube_size, @coordinates, @native].hash
+      [self.class, @face, @cube_size, @coordinates, @native].hash
     end
 
     def can_jump_to?(to_face)
