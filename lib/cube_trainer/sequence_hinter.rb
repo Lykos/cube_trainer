@@ -165,4 +165,27 @@ module CubeTrainer
     end
   end
   
+  class AlgPairHinter
+    def initialize(hinters, separator)
+      @hinters = hinters
+      @separator = separator
+    end
+
+    def hints(input)
+      [@hinters.zip(input_parts(input)).map { |h, i| only(h.hints(i)) }.join(@separator)]
+    end
+
+    def entries
+      @hinters[0].entries.product(*@hinters[1..-1].entries).map do |entry_combination|
+        name = entry_combination.map { |e| e[0] }.join(@separator)
+        alg = entry_combination.map { |e| e[1] }.reduce(:+)
+        [name, alg]
+      end
+    end
+
+    def input_parts(input)
+      input_hinter.to_s.split(@separator)
+    end
+  end
+
 end

@@ -1,7 +1,10 @@
 require 'cube_trainer/input_sampler'
+require 'cube_trainer/restricted_hinter'
+require 'cube_trainer/disjoint_union_hinter'
 require 'cube_trainer/alg_name'
 require 'cube_trainer/alg_hint_parser'
 require 'cube_trainer/input_item'
+require 'cube_trainer/sequence_hinter'
 
 module CubeTrainer
 
@@ -25,9 +28,13 @@ module CubeTrainer
     def name
       snake_case_class_name(self.class)
     end
-
+    
     def hinter
-      @hinter ||= AlgHintParser.maybe_parse_hints(name, @options.verbose)
+      @hinter ||= create_hinter
+    end
+
+    def create_hinter
+      AlgHintParser.maybe_parse_hints(name, @options.verbose)
     end
 
     def input_items
@@ -51,6 +58,33 @@ module CubeTrainer
 
   class Plls < AlgSet
 
+    def goal_badness
+      1.0
+    end
+
+  end
+
+  class OllsPlusCp < AlgSet
+
+    def create_hinter
+      AlgSequenceHinter.new([@oll_hinter, @cp_hinter], ' + ')
+    end
+
+    def oll_hinter
+      @oll_hinter ||= AlgHintParser.maybe_parse_hints('olls', @options.verbose)
+    end
+    
+    def cp_hinter
+      @cp_hinter ||= DisjointUnionHinter.new([
+                                               RestrictedHinter.new([AlgName.new('Ja'), AlgName.new('Y')], pll_hinter),
+                                               AlgHinter.new({AlgName.new('solved') => Algorithm.empty})
+                                             ])
+    end
+    
+    def pll_hinter
+      @pll_hinter ||= AlgHintParser.maybe_parse_hints('plls', @options.verbose)
+    end
+    
     def goal_badness
       1.0
     end

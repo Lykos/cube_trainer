@@ -15,11 +15,6 @@ module CubeTrainer
       new(input)
     end
   
-    # Encoding for YAML (and possibly others)
-    def encode_with(coder)
-      coder['name'] = @name
-    end
-
     def to_raw_data
       @name
     end
