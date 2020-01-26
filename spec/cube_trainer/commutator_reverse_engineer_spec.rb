@@ -9,9 +9,8 @@ include CubeTrainer
 describe CommutatorReverseEngineer do
 
   let (:letter_scheme) { BernhardLetterScheme.new }
-  let (:color_scheme) { ColorScheme::WCA }
   let (:cube_size) { 3 }
-  let (:engineer) { CommutatorReverseEngineer.new(part_type, buffer, letter_scheme, color_scheme, cube_size) }
+  let (:engineer) { CommutatorReverseEngineer.new(part_type, buffer, letter_scheme, cube_size) }
 
   context 'for corners' do
     let (:part_type) { Corner }

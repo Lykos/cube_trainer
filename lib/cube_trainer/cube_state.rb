@@ -64,28 +64,9 @@ module CubeTrainer
       [self.class, @native].hash
     end
   
-    def rotate_piece(piece, incarnation_index=0)
-      apply_sticker_cycle(solved_positions(piece, 0))
-    end
-
-    # The indices of stickers that this piece occupies on the solved cube.
-    def solved_positions(piece, incarnation_index=0)
-      coordinate = piece.solved_coordinate(n, incarnation_index)
-      piece_coordinates(coordinate)
-    end
-
-    # The indices of the stickers occupied by the piece that occupies the sticker at the given coordinate (note that the piece may additionally occupy other stickers).
-    def piece_coordinates(coordinate)
-      # Try to jump to each neighbor face.
-      neighbor_coordinates = coordinate.face.neighbors.collect do |neighbor_face|
-        if coordinate.can_jump_to?(neighbor_face)
-          coordinate.jump_to_neighbor(neighbor_face)
-        else
-          # It's important that we put a nil because it shows us how we need to rotate the data in the end.
-          nil
-        end
-      end
-      [coordinate] + rotate_out_nils(neighbor_coordinates)
+    def rotate_corner(corner)
+      raise TypeError unless corner.is_a?(Corner)
+      apply_sticker_cycle(corner.rotations.map { |c| Coordinate.solved_position(c, n, 0) })
     end
 
     def sticker_array(face)
@@ -105,7 +86,7 @@ module CubeTrainer
     def find_cycles(pieces, incarnation_index)
       piece_positions = []
       pieces.each do |p|
-        piece_positions.push(solved_positions(p, incarnation_index))
+        piece_positions.push(Coordinate.solved_positions(p, n, incarnation_index))
       end
       piece_positions[0].zip(*piece_positions[1..-1])
     end

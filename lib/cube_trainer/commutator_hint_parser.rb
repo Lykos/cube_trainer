@@ -127,7 +127,7 @@ module CubeTrainer
     def parse_hint_table(hint_table)
       # First parse whatever we can
       alg_table = hint_table.map { |row| row.map { EmptyEntry.new } }
-      reverse_engineer = CommutatorReverseEngineer.new(@part_type, @buffer, @letter_scheme, @color_scheme, @cube_size)
+      reverse_engineer = CommutatorReverseEngineer.new(@part_type, @buffer, @letter_scheme, @cube_size)
       hint_table.each_with_index do |row, row_index|
         row.each_with_index do |cell, col_index|
           next if cell.nil? || cell.empty? || blacklisted?(cell)

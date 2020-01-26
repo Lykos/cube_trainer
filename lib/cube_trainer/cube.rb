@@ -128,13 +128,8 @@ module CubeTrainer
       @solved_face ||= Face.for_face_symbol(@face_symbols.first)
     end
 
-    def solved_coordinates
-      @solved_coordinates ||= {}
-    end
-
-    # Coordinate in the solved state.
-    def solved_coordinate(cube_size, incarnation_index)
-      solved_coordinates[[cube_size, incarnation_index]] ||= Coordinate.solved_position(self, cube_size, incarnation_index)
+    def solved_coordinate(cube_size, incarnation_index=0)
+      Coordinate.solved_position(self, cube_size, incarnation_index)
     end
   end
   

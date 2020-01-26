@@ -54,12 +54,8 @@ module CubeTrainer
       new(face, cube_size, *coordinates)
     end
 
-    def self.solved_position(part, cube_size, incarnation_index)
-      raise TypeError unless part.is_a?(Part)
-      raise unless part.class::ELEMENTS.length == 24
-      raise unless incarnation_index >= 0 && incarnation_index < part.num_incarnations(cube_size)
-      base_coordinate = Coordinate.new(part.solved_face, cube_size, *part.base_index_on_face(cube_size, incarnation_index))
-      other_face_symbols = part.corresponding_part.face_symbols[1..-1].sort
+    def self.improve_coordinate_internal(part, base_coordinate, other_face_symbols)
+      other_face_symbols.sort!
       coordinate = base_coordinate.rotations.find do |coordinate|
         face_symbols_closeby = coordinate.close_neighbor_faces.map { |f| f.face_symbol }
         face_symbols_closeby.sort == other_face_symbols
@@ -68,9 +64,36 @@ module CubeTrainer
       coordinate
     end
 
+    # The coordinate of the solved position of the main sticker of this part.
+    def self.solved_position(part, cube_size, incarnation_index)
+      raise TypeError unless part.is_a?(Part)
+      raise unless part.class::ELEMENTS.length == 24
+      raise unless incarnation_index >= 0 && incarnation_index < part.num_incarnations(cube_size)
+      # This is a coordinate on the same face and belonging to an equivalent part. But it might not be the right one.
+      base_coordinate = Coordinate.new(part.solved_face, cube_size, *part.base_index_on_face(cube_size, incarnation_index))
+      other_face_symbols = part.corresponding_part.face_symbols[1..-1]
+      improve_coordinate_internal(part, base_coordinate, other_face_symbols)
+    end
+
+    # The coordinate of the solved position of all stickers of this part.
+    def self.solved_positions(part, cube_size, incarnation_index)
+      solved_coordinate = solved_position(part, cube_size, incarnation_index)
+      other_coordinates = part.face_symbols[1..-1].map.with_index do |f, i|
+        # The reverse is important for edge like parts.
+        base_coordinate = Coordinate.new(Face.for_face_symbol(f), cube_size, *part.base_index_on_face(cube_size, incarnation_index).reverse)
+        other_face_symbols = [part.face_symbols[0]] + part.corresponding_part.face_symbols[1...i + 1] + part.corresponding_part.face_symbols[i + 2..-1]
+        improve_coordinate_internal(part, base_coordinate, other_face_symbols)
+      end
+      [solved_coordinate] + other_coordinates
+    end
+    
     def self.center(face, cube_size)
       m = middle(cube_size)
       new(face, cube_size, m, m)
+    end
+
+    def self.from_indices(face, cube_size, x, y)
+      new(face, cube_size, x, y);
     end
     
     def initialize(face, cube_size, x, y)
@@ -84,6 +107,8 @@ module CubeTrainer
       @native = Native::CubeCoordinate.new(
         cube_size,
         face.face_symbol,
+        # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
+        # so we have to swap coordinates here.
         face.coordinate_index_base_face(0).face_symbol,
         face.coordinate_index_base_face(1).face_symbol,
         x,
@@ -159,7 +184,6 @@ module CubeTrainer
     def is_before_middle?(x)
       Coordinate.canonicalize(x, @cube_size) <= Coordinate.last_before_middle(@cube_size)
     end
-
 
     # On a nxn grid with integer coordinates between 0 and n - 1, give the 4 points that point (x, y) hits if you rotate by 90 degrees.
     def rotate

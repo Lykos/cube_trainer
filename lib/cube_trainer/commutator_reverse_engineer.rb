@@ -6,35 +6,45 @@ module CubeTrainer
 
   class CommutatorReverseEngineer
     
-    def initialize(part_type, buffer, letter_scheme, color_scheme, cube_size)
+    def initialize(part_type, buffer, letter_scheme, cube_size)
       raise TypeError unless part_type.is_a?(Class)
       raise TypeError unless buffer.is_a?(Part) && buffer.is_a?(part_type)
       raise TypeError unless letter_scheme.is_a?(LetterScheme)
-      raise TypeError unless color_scheme.is_a?(ColorScheme)
       raise TypeError unless cube_size.is_a?(Integer)
       @part_type = part_type
       @buffer = buffer
       @letter_scheme = letter_scheme
-      @color_scheme = color_scheme
-      @state = color_scheme.solved_cube_state(cube_size)
-      @buffer_coordinates = @state.solved_positions(@buffer, 0)
+      # We don't care much about any other pieces, so we'll just use nil
+      # everywhere.
+      stickers = Face::ELEMENTS.map do |face_symbol|
+        (0...cube_size).map do |x|
+          (0...cube_size).map do |y|
+            nil
+          end
+        end
+      end
+      @state = CubeState.from_stickers(cube_size, stickers)
+      @solved_positions = {}
+      @buffer_coordinate = solved_position(@buffer)
+      # We write on every sticker where it was in the initial state.
+      # That way we can easily reverse engineer what a commutator does.
+      part_type::ELEMENTS.each do |part|
+        @state[solved_position(part)] = part
+      end
     end
 
-    def piece_at_coordinates(coordinates)
-      colors = coordinates.map { |c| @state[c] }
-      @color_scheme.part_for_colors(@part_type, colors)
+    def solved_position(part)
+      @solved_positions[part] ||= Coordinate.solved_position(part, @state.n, 0)
     end
 
     def find_stuff
-      piece0 = piece_at_coordinates(@buffer_coordinates)
-      return nil if piece0 == @buffer
-      solved_coordinates_of_piece0 = @state.solved_positions(piece0, 0)
-      piece1 = piece_at_coordinates(solved_coordinates_of_piece0)
-      return nil if piece1 == @buffer
-      solved_coordinates_of_piece1 = @state.solved_positions(piece1, 0)
-      piece2 = piece_at_coordinates(solved_coordinates_of_piece1)
-      if piece2 == @buffer
-        LetterPair.new([piece0, piece1].map { |p| @letter_scheme.letter(p) })
+      part0 = @state[@buffer_coordinate]
+      return nil if part0 == @buffer
+      part1 = @state[solved_position(part0)]
+      return nil if part1 == @buffer
+      part2 = @state[solved_position(part1)]
+      if part2 == @buffer
+        LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) })
       else
         nil
       end

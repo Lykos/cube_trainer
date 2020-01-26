@@ -41,33 +41,33 @@ module CubeTrainer
       non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       two_twists = correctly_oriented_corners.permutation(2).map do |c1, c2|
-        cube_state.rotate_piece(c1)
-        cube_state.rotate_piece(c2)
-        cube_state.rotate_piece(c2)
+        cube_state.rotate_corner(c1)
+        cube_state.rotate_corner(c2)
+        cube_state.rotate_corner(c2)
         twisted_corner_pair = [c1.rotate_by(1), c2.rotate_by(2)]
         letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
         twisted_cube_state = cube_state.dup
-        cube_state.rotate_piece(c1)
-        cube_state.rotate_piece(c1)
-        cube_state.rotate_piece(c2)
+        cube_state.rotate_corner(c1)
+        cube_state.rotate_corner(c1)
+        cube_state.rotate_corner(c2)
         InputItem.new(letter_pair, twisted_cube_state)
       end
-      cube_state.rotate_piece(buffer)
+      cube_state.rotate_corner(buffer)
       ccw_twists = correctly_oriented_corners.map do |c|
-        cube_state.rotate_piece(c)
-        cube_state.rotate_piece(c)
+        cube_state.rotate_corner(c)
+        cube_state.rotate_corner(c)
         letter_pair = LetterPair.new([letter_scheme.letter(c)])
         twisted_cube_state = cube_state.dup
-        cube_state.rotate_piece(c)       
+        cube_state.rotate_corner(c)       
         InputItem.new(letter_pair, twisted_cube_state)
       end
-      cube_state.rotate_piece(buffer)
+      cube_state.rotate_corner(buffer)
       cw_twists = correctly_oriented_corners.map do |c|
-        cube_state.rotate_piece(c)
+        cube_state.rotate_corner(c)
         letter_pair = LetterPair.new([letter_scheme.letter(c)])
         twisted_cube_state = cube_state.dup
-        cube_state.rotate_piece(c)
-        cube_state.rotate_piece(c)       
+        cube_state.rotate_corner(c)
+        cube_state.rotate_corner(c)       
         InputItem.new(letter_pair, twisted_cube_state)
       end
       two_twists + cw_twists + ccw_twists
@@ -168,18 +168,18 @@ module CubeTrainer
       non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       1.upto(2).collect_concat do |twist_number|
-        cube_state.rotate_piece(buffer)
+        cube_state.rotate_corner(buffer)
         correctly_oriented_corners.combination(2).collect_concat do |c1, c2|
           twist_number.times do
-            cube_state.rotate_piece(c1)
-            cube_state.rotate_piece(c2)
+            cube_state.rotate_corner(c1)
+            cube_state.rotate_corner(c2)
           end
           twisted_corner_pair = [c1.rotate_by(twist_number), c2.rotate_by(twist_number)]
           letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
           twisted_cube_state = cube_state.dup
           (3 - twist_number).times do
-            cube_state.rotate_piece(c1)
-            cube_state.rotate_piece(c2)
+            cube_state.rotate_corner(c1)
+            cube_state.rotate_corner(c2)
           end
           InputItem.new(letter_pair, twisted_cube_state)
         end
