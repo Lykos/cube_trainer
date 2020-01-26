@@ -22,4 +22,5 @@ jobs:
         gem install bundler
         bundle config set without 'ui'
         bundle install --jobs 4 --retry 3
+        bundle exec rake compile
         bundle exec rake
