@@ -3,7 +3,7 @@
 source "https://rubygems.org" do
   gem 'rake', group: [:test, :development]
   gem 'rspec', group: :test
-  gem 'rake-compiler', :development
+  gem 'rake-compiler', group: :development
   gem 'xdg'
   gem 'sqlite3'
   gem 'colorize'
