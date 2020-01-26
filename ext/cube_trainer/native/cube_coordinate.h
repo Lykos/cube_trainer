@@ -4,7 +4,7 @@
 
 #include "face_symbols.h"
 
-int num_stickers_for_cube_size(int cube_size);
+int num_stickers(int cube_size);
 
 typedef struct {
   int x;

@@ -19,7 +19,7 @@ const rb_data_type_t CubeCoordinateData_type = {
 
 #define GetCubeCoordinateData(obj, data) TypedData_Get_Struct((obj), CubeCoordinateData, &CubeCoordinateData_type, (data));
 
-int num_stickers_for_cube_size(const int cube_size) {
+int num_stickers(const int cube_size) {
   return cube_faces * cube_size * cube_size;
 }
 

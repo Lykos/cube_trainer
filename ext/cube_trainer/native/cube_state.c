@@ -19,7 +19,7 @@ typedef struct {
 void CubeStateData_mark(void* const ptr) {
   const CubeStateData* data = ptr;
   const int n = data->cube_size;
-  for (int i = 0; i < num_stickers_for_cube_size(n); ++i) {
+  for (int i = 0; i < num_stickers(n); ++i) {
     rb_gc_mark(data->stickers[i]);
   }
 }
@@ -32,7 +32,7 @@ void CubeStateData_free(void* const ptr) {
 
 size_t CubeStateData_size(const void* const ptr) {
   const CubeStateData* const data = ptr;
-  return sizeof(CubeStateData) + num_stickers_for_cube_size(data->cube_size) * sizeof(VALUE);
+  return sizeof(CubeStateData) + num_stickers(data->cube_size) * sizeof(VALUE);
 }
 
 const rb_data_type_t CubeStateData_type = {
@@ -40,6 +40,14 @@ const rb_data_type_t CubeStateData_type = {
   {CubeStateData_mark, CubeStateData_free, CubeStateData_size, NULL},
   NULL, NULL, 0
 };
+
+VALUE* malloc_stickers(const int n) {
+  VALUE* const stickers = malloc(num_stickers(n) * sizeof(VALUE));
+  if (stickers == NULL) {
+    rb_raise(rb_eNoMemError, "Allocating cube failed.");
+  }
+  return stickers;
+}
 
 VALUE CubeState_alloc(const VALUE klass) {
   CubeStateData* data;
@@ -109,11 +117,8 @@ VALUE CubeState_initialize(const VALUE self, const VALUE cube_size, const VALUE 
   CubeStateData* data;
   GetCubeStateData(self, data);
   data->cube_size = n;
-  data->stickers = malloc(num_stickers_for_cube_size(n) * sizeof(VALUE));
-  if (data->stickers == NULL) {
-    rb_raise(rb_eNoMemError, "Allocating cube failed.");
-  }
-  for (int i = 0; i < num_stickers_for_cube_size(n); ++i) {
+  data->stickers = malloc_stickers(n);
+  for (int i = 0; i < num_stickers(n); ++i) {
     data->stickers[i] = Qnil;
   }
   if (RHASH_SIZE(stickers) != cube_faces) {
@@ -169,7 +174,7 @@ VALUE CubeState_hash(const VALUE self) {
   st_index_t hash = rb_hash_start(data->cube_size);
   hash = rb_hash_uint(hash, (st_index_t)CubeState_hash);
   const int n = data->cube_size;
-  for (int i = 0; i < num_stickers_for_cube_size(n); i++) {
+  for (int i = 0; i < num_stickers(n); i++) {
     const VALUE sub_hash = rb_hash(data->stickers[i]);
     hash = rb_hash_uint(hash, NUM2LONG(sub_hash));
   }
@@ -191,7 +196,7 @@ VALUE CubeState_eql(const VALUE self, const VALUE other) {
     return Qfalse;
   }
   const int n = self_data->cube_size;
-  for (int i = 0; i < num_stickers_for_cube_size(n); ++i) {
+  for (int i = 0; i < num_stickers(n); ++i) {
     if (self_data->stickers[i] != other_data->stickers[i]) {
       return Qfalse;
     }
@@ -204,13 +209,10 @@ VALUE CubeState_dup(const VALUE self) {
   GetInitializedCubeStateData(self, data);
   const int n = data->cube_size;
   CubeStateData* dupped_data;
-  VALUE dupped = TypedData_Make_Struct(rb_obj_class(self), CubeStateData, &CubeStateData_type, data);
+  VALUE dupped = TypedData_Make_Struct(rb_obj_class(self), CubeStateData, &CubeStateData_type, dupped_data);
   dupped_data->cube_size = n;
-  dupped_data->stickers = malloc(num_stickers_for_cube_size(n) * sizeof(VALUE));
-  if (data->stickers == NULL) {
-    rb_raise(rb_eNoMemError, "Allocating cube failed.");
-  }
-  for (int i = 0; i < num_stickers_for_cube_size(n); ++i) {
+  dupped_data->stickers = malloc_stickers(n);
+  for (int i = 0; i < num_stickers(n); ++i) {
     dupped_data->stickers[i] = data->stickers[i];
   }
   return dupped;

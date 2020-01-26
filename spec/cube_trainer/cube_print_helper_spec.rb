@@ -37,8 +37,6 @@ EOS
     it 'should print a state after sexy move correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       apply_sexy(cube_state)
-      puts
-      puts cube_string(cube_state, :color)
       expected = <<EOS
   YB
   YR
