@@ -32,7 +32,7 @@ module CubeTrainer
       raise ArgumentError unless face_symbols_to_colors.keys.sort == FACE_SYMBOLS.sort
       raise ArgumentError unless face_symbols_to_colors.values.all? { |c| c.is_a?(Symbol) }
       num_uniq_colors = face_symbols_to_colors.values.uniq.length
-      raise ArgumentError, "Got #{num_uniq_colors} unique colors #{face_symbols_to_colors.values.uniq}, but needed #{FACES}." unless num_uniq_colors == FACES
+      raise ArgumentError, "Got #{num_uniq_colors} unique colors #{face_symbols_to_colors.values.uniq}, but needed #{FACE_SYMBOLS.length}." unless num_uniq_colors == FACE_SYMBOLS.length
       @face_symbols_to_colors = face_symbols_to_colors
       @colors_to_face_symbols = face_symbols_to_colors.invert
     end

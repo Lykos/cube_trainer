@@ -7,9 +7,11 @@ module CubeTrainer
   class Part
 
     include ArrayHelper
+    extend ArrayHelper
     include CubeConstants
+    extend CubeConstants
     
-    def initialize(face_symbols)
+    def initialize(face_symbols, piece_index)
       clazz = self.class
       if face_symbols.any? { |c| c.class != Symbol || !FACE_SYMBOLS.include?(c) }
         raise ArgumentError, "Faces symbols contain invalid item: #{face_symbols.inspect}"
@@ -21,17 +23,21 @@ module CubeTrainer
         raise ArgumentError, "Non-unique face symbols #{face_symbols} for #{clazz}."
       end
       @face_symbols = face_symbols
+      @piece_index = piece_index
     end
+
+    attr_reader :piece_index, :face_symbols
   
     def self.generate_parts
-      parts = FACE_SYMBOLS.permutation(self::FACES).collect { |p| new(p) }.select { |p| p.valid? }.sort_by { |p| p.priorities }
+      parts = FACE_SYMBOLS.permutation(self::FACES).select { |p| self.valid?(p) }.map.with_index { |p, i| new(p, i) }
       raise "Generated #{parts.length} parts for #{self}, but the alphabet size is only #{ALPHABET_SIZE}." unless parts.length <= ALPHABET_SIZE
       parts
     end
   
     def self.for_face_symbols_internal(face_symbols)
       raise unless face_symbols.length == self::FACES
-      self::ELEMENTS.find { |e| e.face_symbols == face_symbols }
+      p self::ELEMENTS if self::ELEMENTS.select { |e| e.face_symbols == face_symbols }.length != 1
+      only(self::ELEMENTS.select { |e| e.face_symbols == face_symbols })
     end
 
     def self.for_face_symbols(face_symbols)
@@ -42,12 +48,8 @@ module CubeTrainer
       self::ELEMENTS[i]
     end
   
-    def encode_with(coder)
-      coder['face_symbols'] = @face_symbols
-    end
-
     def <=>(other)
-      piece_index <=> other.piece_index
+      @piece_index <=> other.piece_index
     end
 
     include Comparable
@@ -62,12 +64,6 @@ module CubeTrainer
       @face_symbols.hash
     end
   
-    attr_reader :face_symbols
-  
-    def priorities
-      @face_symbols.collect { |c| FACE_SYMBOLS.index(c) }
-    end
-  
     def inspect
       self.class.to_s + "(" + @face_symbols.collect { |c| c.to_s }.join(", ") + ")"
     end
@@ -79,10 +75,6 @@ module CubeTrainer
       end.join
     end
 
-    def piece_index
-      @piece_index ||= self.class::ELEMENTS.index(self)
-    end
-  
     # Rotate a piece such that the given face symbol is the first face symbol.
     def rotate_face_symbol_up(c)
       index = @face_symbols.index(c)
@@ -95,11 +87,11 @@ module CubeTrainer
     end
 
     def rotate_by(n)
-      self.class.new(@face_symbols.rotate(n))
+      self.class.for_face_symbols(@face_symbols.rotate(n))
     end
   
     def inverse
-      self.class.new(@face_symbols.reverse)
+      self.class.for_face_symbols(@face_symbols.reverse)
     end
 
     def has_face_symbol?(c)
@@ -156,7 +148,7 @@ module CubeTrainer
     
     # Whether closeness to this face results in smaller indices for the stickers of other faces.
     def close_to_smaller_indices?
-      piece_index < 3
+      @piece_index < 3
     end
 
     def coordinate_index_base_face(coordinate_index)
@@ -185,14 +177,14 @@ module CubeTrainer
     # Priority of the closeness to this face.
     # This is used to index the stickers on other faces.
     def axis_priority
-      @axis_priority ||= [piece_index, CubeConstants::FACES - 1 - piece_index].min
+      @axis_priority ||= [@piece_index, CubeConstants::FACE_SYMBOLS.length - 1 - @piece_index].min
     end
 
     def is_canonical_axis_face?
-      axis_priority < 3
+      close_to_smaller_indices?
     end
   
-    def valid?
+    def self.valid?(face_symbols)
       true
     end
   
@@ -213,10 +205,10 @@ module CubeTrainer
     # Neighbor faces in clockwise order.
     def neighbors
       @neighbors ||= begin
-                       partial_neighbors = self.class::ELEMENTS.select { |e| e != chirality_canonicalize && e == e.chirality_canonicalize }
-                       ordered_partial_neighbors = if Corner.create_between_faces([self] + partial_neighbors).valid?
+                       partial_neighbors = self.class::ELEMENTS.select { |e| !same_axis?(e) && e.is_canonical_axis_face? }
+                       ordered_partial_neighbors = if Corner.valid_between_faces?([self] + partial_neighbors)
                                                      partial_neighbors
-                                                   elsif Corner.create_between_faces([self] + partial_neighbors.reverse).valid?
+                                                   elsif Corner.valid_between_faces?([self] + partial_neighbors.reverse)
                                                      partial_neighbors.reverse
                                                    else
                                                      raise "Couldn't find a proper order for the neighbor faces #{partial_neighbors.inspect} of #{inspect}."
@@ -230,22 +222,14 @@ module CubeTrainer
       @neighbors[(@neighbors.index(neighbor) + 1) % @neighbors.length]
     end
 
-    # Returns either the face or its opposite face, depending which one is used in CHIRALITY_FACE_SYMBOLS.
-    def chirality_canonicalize
-      if CHIRALITY_FACE_SYMBOLS.include?(face_symbol)
-        self
-      else
-        opposite
-      end
-    end
-
     # Returns the algorithm that performs a rotation after which the current face will
     # lie where the given other face currently is.
     def rotation_to(other)
       if other == self
         Algorithm.empty
       else
-        axis_face = self.class::ELEMENTS.find { |e| e != chirality_canonicalize && e != other.chirality_canonicalize }
+        # There can be multiple solutions.
+        axis_face = self.class::ELEMENTS.find { |e| !same_axis?(e) && !other.same_axis?(e) && e.is_canonical_axis_face? }
         direction = if other == self.opposite
                       CubeDirection::DOUBLE
                     else
@@ -270,9 +254,9 @@ module CubeTrainer
   class MoveableCenter < Part
     FACES = 1
   
-    def initialize(corresponding_part)
+    def initialize(corresponding_part, piece_index)
       raise "Invalid corresponding part #{corresponding_part}." unless corresponding_part.is_a?(Part)
-      super([corresponding_part.face_symbols[0]])
+      super([corresponding_part.face_symbols[0]], piece_index)
       @corresponding_part = corresponding_part
     end
 
@@ -280,7 +264,7 @@ module CubeTrainer
       raise ArgumentError, "Need #{self::CORRESPONDING_PART_CLASS::FACES} face_symbols for a #{self.class}, have #{face_symbols.inspect}." unless face_symbols.length == self::CORRESPONDING_PART_CLASS::FACES
       corresponding_part = self::CORRESPONDING_PART_CLASS.for_face_symbols(face_symbols)
       nil unless corresponding_part
-      self::ELEMENTS.find { |e| e.corresponding_part == corresponding_part }
+      only(self::ELEMENTS.select { |e| e.corresponding_part == corresponding_part })
     end
   
     def self.create_for_face_symbols(face_symbols)
@@ -289,10 +273,6 @@ module CubeTrainer
   
     def face_symbol
       @face_symbols[0]
-    end
-  
-    def encode_with(coder)
-      coder['corresponding_part'] = @corresponding_part
     end
   
     def eql?(other)
@@ -305,11 +285,7 @@ module CubeTrainer
       ([face_symbol, @index]).hash
     end
   
-    attr_reader :face_symbols, :corresponding_part
-  
-    def priorities
-      @corresponding_part.priorities
-    end
+    attr_reader :corresponding_part
   
     def inspect
       self.class.to_s + "(" + face_symbol.to_s + ", " + @corresponding_part.inspect + ")"
@@ -323,8 +299,8 @@ module CubeTrainer
       self
     end
     
-    def valid?
-      @corresponding_part.valid?
+    def self.valid?(face_symbols)
+      self::CORRESPONDING_PART_CLASS.valid?(face_symbols)
     end
   
     def neighbor?(other)
@@ -336,22 +312,20 @@ module CubeTrainer
     end
   
     def self.generate_parts
-      self::CORRESPONDING_PART_CLASS::ELEMENTS.collect { |p| new(p) }.sort_by { |p| p.priorities }
+      self::CORRESPONDING_PART_CLASS::ELEMENTS.collect { |p| new(p, p.piece_index) }
     end
   end
 
   module EdgeLike
-    include CubeConstants
-
-    def valid?
-      !OPPOSITE_FACE_SYMBOLS.any? { |ss| ss.sort == @face_symbols.sort }
+    def valid?(face_symbols)
+      !CubeConstants::OPPOSITE_FACE_SYMBOLS.any? { |ss| ss.sort == face_symbols.sort }
     end
   end
   
   class Edge < Part
     FACES = 2
 
-    include EdgeLike
+    extend EdgeLike
   
     ELEMENTS = generate_parts
 
@@ -369,7 +343,7 @@ module CubeTrainer
   class Midge < Part
     FACES = 2
 
-    include EdgeLike
+    extend EdgeLike
   
     ELEMENTS = generate_parts
   
@@ -386,16 +360,16 @@ module CubeTrainer
   class Wing < Part
     FACES = 2
   
-    include EdgeLike
+    extend EdgeLike
   
     def self.for_face_symbols(face_symbols)
       # One additional face symbol is usually mentioned for wings.
       raise unless face_symbols.length == FACES || face_symbols.length == FACES + 1
       if face_symbols.length == 3
-        valid = Corner.new(face_symbols).valid?
+        valid = Corner.valid?(face_symbols)
         reordered_face_symbols = face_symbols.dup
         reordered_face_symbols[0], reordered_face_symbols[1] = reordered_face_symbols[1], reordered_face_symbols[0]
-        reordered_valid = Corner.new(reordered_face_symbols).valid?
+        reordered_valid = Corner.valid?(reordered_face_symbols)
         raise "Couldn't determine chirality for #{face_symbols.inspect} which is needed to parse a wing." if valid == reordered_valid
         if valid then for_face_symbols(face_symbols[0..1]) else for_face_symbols_internal(reordered_face_symbols[0..1]) end
       else
@@ -405,7 +379,7 @@ module CubeTrainer
   
     def corresponding_part
       @corresponding_part ||= begin
-                                corners = FACE_SYMBOLS.select { |c| !@face_symbols.include?(c) }.collect { |c| Corner.new(@face_symbols + [c]) }.select { |c| c.valid? }
+                                corners = FACE_SYMBOLS.select { |c| !@face_symbols.include?(c) && Corner.valid?(@face_symbols + [c]) }.map { |c| Corner.for_face_symbols(@face_symbols + [c]) }
                                 only(corners)
                               end
     end
@@ -434,8 +408,8 @@ module CubeTrainer
   
   class Corner < Part
     FACES = 3
-    CHIRALITY_CORNER = Corner.new(CHIRALITY_FACE_SYMBOLS)
-  
+    #CHIRALITY_CORNER = Corner.new(CHIRALITY_FACE_SYMBOLS)
+
     def self.create_for_face_symbols(face_symbols)
       piece_candidates = face_symbols[1..-1].permutation.collect { |cs| new([face_symbols[0]] + cs) }
       pieces = piece_candidates.select { |p| p.valid? }
@@ -445,11 +419,11 @@ module CubeTrainer
 
     def self.for_face_symbols(face_symbols)
       raise "Invalid number of face_symbols to create a corner: #{face_symbols.inspect}" unless face_symbols.length == FACES
-      for_face_symbols_internal(face_symbols) || for_face_symbols_internal([face_symbols[0], face_symbols[2], face_symbols[1]])
+      valid?(face_symbols) ? for_face_symbols_internal(face_symbols) : for_face_symbols_internal([face_symbols[0], face_symbols[2], face_symbols[1]])
     end
   
-    def self.create_between_faces(faces)
-      new(faces.collect { |e| e.face_symbol })
+    def self.valid_between_faces?(faces)
+      valid?(faces.collect { |e| e.face_symbol })
     end
 
     def self.between_faces(faces)
@@ -468,8 +442,8 @@ module CubeTrainer
       rotate_other_face_symbol_up(f.face_symbol)
     end
 
-    def valid?
-      adjacent_edges.all? { |e| e } && valid_chirality?
+    def self.valid?(face_symbols)
+      face_symbols.combination(2).all? { |e| Edge.valid?(e) } && valid_chirality?(face_symbols)
     end
 
     def has_common_edge_with?(other)
@@ -487,22 +461,6 @@ module CubeTrainer
   
     def adjacent_faces
       @adjacent_faces ||= @face_symbols.collect { |f| Face.for_face_symbol(f) }
-    end
-  
-    def valid_chirality?
-      # To make it comparable to our CHIRALITY_CORNER, we switch each face used in c
-      # different from the ones used in the CHIRALITY_CORNER for the opposite face.
-      canonical_face_symbols = adjacent_faces.collect { |f| f.chirality_canonicalize.face_symbol }
-      canonical_corner = Corner.new(canonical_face_symbols)
-  
-      # Each time we swap a face for the opposite, the chirality direction should be inverted.
-      no_swapped_faces = canonical_face_symbols.zip(@face_symbols).count { |a, b| a != b }
-      inverted = no_swapped_faces % 2 == 1
-      inverted_corner = if inverted then canonical_corner.inverse else canonical_corner end
-  
-      # If the corner is not equal modulo rotation to CHIRALITY_CORNER after this transformation,
-      # the original corner had a bad chirality.
-      inverted_corner.turned_equals?(CHIRALITY_CORNER)
     end
   
     ELEMENTS = generate_parts

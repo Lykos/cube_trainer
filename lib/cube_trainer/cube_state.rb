@@ -21,14 +21,14 @@ module CubeTrainer
 
     def self.from_stickers(n, stickers)
       CubeState.check_cube_size(n)
-      raise ArgumentError, "Cubes must have #{FACES} sides." unless stickers.length == FACES
+      raise ArgumentError, "Cubes must have #{FACE_SYMBOLS.length} sides." unless stickers.length == FACE_SYMBOLS.length
       raise ArgumentError, "All sides of a #{n}x#{n} must be #{n}x#{n}." unless stickers.all? { |p| p.length == n && p.all? { |q| q.length == n } }
       stickers_hash = FACE_SYMBOLS.zip(stickers).map do |face_symbol, face_stickers|
         face = Face.for_face_symbol(face_symbol)
-        # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
-        # so we have to swap coordinates here.
         face_hash = {
           stickers: face_stickers,
+          # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
+          # so we have to swap coordinates here.
           x_base_face_symbol: face.coordinate_index_base_face(1).face_symbol,
           y_base_face_symbol: face.coordinate_index_base_face(0).face_symbol,
         }
@@ -89,9 +89,13 @@ module CubeTrainer
     end
 
     def sticker_array(face)
+      @native.sticker_array(
+        face.face_symbol,
         # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
         # so we have to swap coordinates here.
-      @native.sticker_array(face.face_symbol, face.coordinate_index_base_face(1).face_symbol, face.coordinate_index_base_face(0).face_symbol);
+        face.coordinate_index_base_face(1).face_symbol,
+        face.coordinate_index_base_face(0).face_symbol
+      )
     end
   
     def to_s
@@ -112,7 +116,6 @@ module CubeTrainer
       raise 'Cycles of length smaller than 2 are not supported.' if pieces.length < 2
       raise 'Cycles of weird piece types are not supported.' unless pieces.all? { |p| p.is_a?(Part) }
       raise "Cycles of heterogenous piece types #{pieces.inspect} are not supported." if pieces.any? { |p| p.class != pieces.first.class }
-      raise 'Cycles of invalid pieces are not supported.' unless pieces.all? { |p| p.valid? }
       raise "Invalid incarnation index #{incarnation_index}." unless incarnation_index.is_a?(Integer) && incarnation_index >= 0
       raise "Incarnation index #{incarnation_index} for cube size #{n} is not supported for #{pieces.first.inspect}." unless incarnation_index < pieces.first.num_incarnations(n)
       pieces.each_with_index do |p, i|

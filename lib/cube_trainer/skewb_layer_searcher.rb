@@ -31,7 +31,7 @@ module CubeTrainer
 
     EXAMPLE_LAYER_FACE_SYMBOL = :D
     EXAMPLE_LAYER_FACE = Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
-    AROUND_FACE_ROTATIONS = [nil] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Rotation.new(EXAMPLE_LAYER_FACE.chirality_canonicalize, d) }
+    AROUND_FACE_ROTATIONS = [nil] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Rotation.new(EXAMPLE_LAYER_FACE, d) }
     NON_MOVE_TRANSFORMATIONS = AROUND_FACE_ROTATIONS.product([true, false]).select { |r, m| r || m }.map { |r, m| NonMoveTransformation.new(r, m) }
 
     # Represents a possible Skewb layer with a solution.

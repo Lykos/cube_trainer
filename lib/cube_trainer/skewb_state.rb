@@ -12,7 +12,7 @@ module CubeTrainer
     include CubeConstants
 
     def initialize(stickers)
-      raise ArgumentError, "Cubes must have #{SIDES} sides." unless stickers.length == FACES
+      raise ArgumentError, "Cubes must have #{FACE_SYMBOLS.length} sides." unless stickers.length == FACE_SYMBOLS.length
       raise ArgumentError, "All sides of a Skewb must have #{SKEWB_STICKERS} stickers." unless stickers.all? { |p| p.length == SKEWB_STICKERS }
       @stickers = stickers
     end

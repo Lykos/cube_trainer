@@ -11,6 +11,14 @@ module CubeTrainer
       end
     end
 
+    def turned_equals?(a, b)
+      return false if a.length != b.length
+      (0...a.length).any? do |r|
+        return true if a.rotate(r) == b
+      end
+      return false
+    end
+
     def rotate_out_nils(array)
       first_part = []
       second_part = []
@@ -57,6 +65,7 @@ module CubeTrainer
 
     # Returns the only element of an array and raises if the array has not exactly one element.
     def only(array)
+      raise ArgumentError if array.empty?
       raise ArgumentError unless array.length == 1
       array[0]
     end
