@@ -135,13 +135,13 @@ module CubeTrainer
     end
 
     def eql?(other)
-      self.class.equal?(other.class) && @face == other.face && @cube_size == other.cube_size && @coordinates == other.coordinates
+      self.class.equal?(other.class) && @face == other.face && @cube_size == other.cube_size && @coordinates == other.coordinates && @native == other.native
     end
 
     alias == eql?
 
     def hash
-      [@face, @cube_size, @coordinates].hash
+      [@face, @cube_size, @coordinates, @native].hash
     end
 
     def can_jump_to?(to_face)

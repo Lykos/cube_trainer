@@ -41,7 +41,7 @@ module CubeTrainer
       CubeState.new(@n, @stickers.map { |p| p.map { |q| q.dup } })
     end
   
-    attr_reader :n, :stickers
+    attr_reader :n, :stickers, :native
     
     def encode_with(coder)
       coder['stickers'] = @stickers
@@ -49,13 +49,13 @@ module CubeTrainer
     end
   
     def eql?(other)
-      self.class.equal?(other.class) && @stickers == other.stickers && @n == other.n
+      self.class.equal?(other.class) && @stickers == other.stickers && @n == other.n && @native == other.native
     end
   
     alias == eql?
   
     def hash
-      [@stickers, @n].hash
+      [@stickers, @n, @native].hash
     end
   
     def rotate_piece(piece, incarnation_index=0)
