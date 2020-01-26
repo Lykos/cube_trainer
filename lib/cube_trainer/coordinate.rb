@@ -43,6 +43,7 @@ module CubeTrainer
     end
 
     def self.from_face_distances(face, cube_size, face_distances)
+      raise ArgumentError if face_distances.length != 2
       coordinates = [nil, nil]
       face_distances.each do |neighbor, distance|
         index = face.coordinate_index_close_to(neighbor)
@@ -90,6 +91,14 @@ module CubeTrainer
     def self.center(face, cube_size)
       m = middle(cube_size)
       from_indices(face, cube_size, m, m)
+    end
+
+    def self.edges_outside(face, cube_size)
+      face.neighbors.zip(face.neighbors.rotate(1)).collect_concat do |neighbor, next_neighbor|
+        1.upto(cube_size - 2).map do |i|
+          from_face_distances(neighbor, cube_size, {face => 0, next_neighbor => i})
+        end
+      end
     end
 
     def self.from_indices(face, cube_size, x, y)

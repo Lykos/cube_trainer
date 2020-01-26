@@ -11,7 +11,7 @@ module CubeTrainer
     include CubeConstants
     include ArrayHelper
 
-    RESERVED_COLORS = [:unknown]
+    RESERVED_COLORS = [:transparent, :unknown, :oriented]
 
     class CornerMatcher
       def initialize(face_symbol_matchers)

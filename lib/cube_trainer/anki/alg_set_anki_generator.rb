@@ -28,6 +28,9 @@ module CubeTrainer
       @options = options
       cache = options.cache ? Cache.new('cube_visualizer') : nil
       @visualizer = CubeVisualizer.new(Net::HTTP, cache, sch: options.color_scheme, fmt: FORMAT, stage: options.stage_mask)
+      if @options.solved_mask_name
+        @solved_mask = CubeMask.from_name(options.solved_mask_name, options.cube_size, :unknown)
+      end
     end
 
     def absolute_output_path(name)
@@ -111,6 +114,7 @@ module CubeTrainer
     def generate_internal(csv)
       Parallel.map(note_inputs, progress: 'Fetching alg images', in_threads: 50) do |note_input|
         state = @options.color_scheme.solved_cube_state(@options.cube_size)
+        @solved_mask.apply_to(cube_state) if @solved_mask
         note_input.modified_alg.inverse.apply_to(state)
         @visualizer.fetch_and_store(state, absolute_output_path(note_input.image_filename))
         note_input

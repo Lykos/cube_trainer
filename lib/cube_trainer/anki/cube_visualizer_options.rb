@@ -25,6 +25,7 @@ module CubeTrainer
         opts.on_size
         opts.on_output('image file')
         opts.on_stage_mask
+        opts.on_solved_mask
 
         opts.on('-a', '--algorithm [ALGORITHM]', String, 'Algorithm to be applied before visualization.') do |a|
           options.algorithm = parse_algorithm(a)
