@@ -1,13 +1,17 @@
 require 'cube_trainer/cube_average'
 require 'cube_trainer/input_sampler'
 require 'ostruct'
-require 'cube_trainer/utils'
+require 'cube_trainer/array_helper'
+require 'cube_trainer/alg_name'
 
 module CubeTrainer
 
   # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
   # e.g. solving a corner twist and a parity by a comm and a parity.
   class HeterogenousSequenceHinter
+
+    include ArrayHelper
+
     def initialize(resultss, hinters)
       raise ArgumentError if resultss.length != hinters.length
       raise ArgumentError if resultss.empty?
@@ -165,18 +169,28 @@ module CubeTrainer
     end
   end
   
-  class AlgPairHinter
+  class AlgSequenceHinter
+
+    include ArrayHelper
+
     def initialize(hinters, separator)
+      hinters.each do |h|
+        raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints) && h.respond_to?(:entries)
+      end
+      raise ArgumentError if hinters.empty?
       @hinters = hinters
       @separator = separator
     end
 
     def hints(input)
-      [@hinters.zip(input_parts(input)).map { |h, i| only(h.hints(i)) }.join(@separator)]
+      parts = input_parts(input)
+      hint_components = @hinters.zip(parts).map { |h, i| only(h.hints(i)) }
+      [hint_components.reduce(:+)]
     end
 
     def entries
-      @hinters[0].entries.product(*@hinters[1..-1].entries).map do |entry_combination|
+      entries_components = @hinters.map { |h| h.entries }
+      entries_components[0].product(*entries_components[1..-1]).map do |entry_combination|
         name = entry_combination.map { |e| e[0] }.join(@separator)
         alg = entry_combination.map { |e| e[1] }.reduce(:+)
         [name, alg]
@@ -184,7 +198,9 @@ module CubeTrainer
     end
 
     def input_parts(input)
-      input_hinter.to_s.split(@separator)
+      parts = input.to_s.split(@separator).map { |i| AlgName.new(i) }
+      raise ArgumentError unless @hinters.length == parts.length
+      parts
     end
   end
 

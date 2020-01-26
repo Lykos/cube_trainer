@@ -6,6 +6,9 @@ module CubeTrainer
   class DisjointUnionHinter
 
     def initialize(restricted_hinters)
+      restricted_hinters.each do |h|
+        raise TypeError unless h.respond_to?(:in_domain?) && h.respond_to?(:hints) && h.respond_to?(:entries)
+      end
       restricted_hinters.combination(2).each do |r, s|
         overlap = r.inputs & s.inputs
         if !overlap.empty?
@@ -20,6 +23,10 @@ module CubeTrainer
         return r.hints(input) if r.in_domain?(input)
       end
       raise
+    end
+
+    def entries
+      @restricted_hinters.collect_concat { |h| h.entries }
     end
   end
 

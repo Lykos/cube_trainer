@@ -31,6 +31,7 @@ module CubeTrainer
       'plls' => CommutatorInfo.new(:plls_by_name, Plls, HumanTimeLearner, 3, false),
       'oh_colls' => CommutatorInfo.new(:oh_plls_by_name, Colls, HumanTimeLearner, 3, false),
       'colls' => CommutatorInfo.new(:plls_by_name, Colls, HumanTimeLearner, 3, false),
+      'olls_plus_cp' => CommutatorInfo.new(:olls_plus_cp, OllsPlusCp, HumanTimeLearner, 3, false),
     }
     
     def self.default_options

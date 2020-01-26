@@ -67,7 +67,7 @@ module CubeTrainer
   class OllsPlusCp < AlgSet
 
     def create_hinter
-      AlgSequenceHinter.new([@oll_hinter, @cp_hinter], ' + ')
+      AlgSequenceHinter.new([oll_hinter, cp_hinter], ' + ')
     end
 
     def oll_hinter
@@ -77,8 +77,12 @@ module CubeTrainer
     def cp_hinter
       @cp_hinter ||= DisjointUnionHinter.new([
                                                RestrictedHinter.new([AlgName.new('Ja'), AlgName.new('Y')], pll_hinter),
-                                               AlgHinter.new({AlgName.new('solved') => Algorithm.empty})
+                                               RestrictedHinter.new([AlgName.new('solved')], solved_hinter),
                                              ])
+    end
+
+    def solved_hinter
+      @solved_hinter ||= AlgHinter.new({AlgName.new('solved') => Algorithm.empty})
     end
     
     def pll_hinter

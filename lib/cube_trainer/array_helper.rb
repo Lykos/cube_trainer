@@ -65,8 +65,8 @@ module CubeTrainer
 
     # Returns the only element of an array and raises if the array has not exactly one element.
     def only(array)
-      raise ArgumentError if array.empty?
-      raise ArgumentError unless array.length == 1
+      raise ArgumentError, "Can't take the only element of an empty array." if array.empty?
+      raise ArgumentError, "Can't take the only element of an array with #{array.length} elements." unless array.length == 1
       array[0]
     end
 

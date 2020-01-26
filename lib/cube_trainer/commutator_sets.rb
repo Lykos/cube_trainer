@@ -3,7 +3,7 @@ require 'cube_trainer/input_sampler'
 require 'cube_trainer/disjoint_union_alg_set'
 require 'cube_trainer/commutator_hint_parser'
 require 'cube_trainer/letter_pair_sequence'
-require 'cube_trainer/utils'
+require 'cube_trainer/array_helper'
 require 'cube_trainer/no_hinter'
 require 'cube_trainer/sequence_hinter'
 require 'cube_trainer/letter_pair_alg_set'
@@ -118,6 +118,8 @@ module CubeTrainer
     end
 
     class CornerTwistPlusParityHinter < HeterogenousSequenceHinter
+      include ArrayHelper
+
       def initialize(corner_results, parity_results, corner_hinter, parity_hinter, options)
         super([corner_results, parity_results], [corner_hinter, parity_hinter])
         @letter_scheme = options.letter_scheme
