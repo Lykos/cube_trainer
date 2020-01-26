@@ -46,6 +46,11 @@ describe CubeVisualizer do
     expect(CubeVisualizer.new(fetcher, cache, fmt: :svg, sch: color_scheme).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
   end
   
+  it 'should construct a url for a cube with transparent parts' do
+    #cube_state[Coordinate.for_]
+    expect(CubeVisualizer.new(fetcher, cache, fmt: :svg, sch: color_scheme).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
+  end
+  
   it 'should construct a url for all settings' do
     expect(CubeVisualizer.new(
              fetcher,

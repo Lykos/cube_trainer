@@ -11,6 +11,8 @@ module CubeTrainer
     include CubeConstants
     include ArrayHelper
 
+    RESERVED_COLORS = [:unknown]
+
     class CornerMatcher
       def initialize(face_symbol_matchers)
         raise ArgumentError, "Exactly one nil allowed in face symbol matchers." unless face_symbol_matchers.count { |s| s.nil? } == 1
@@ -30,6 +32,10 @@ module CubeTrainer
 
     def initialize(face_symbols_to_colors)
       raise ArgumentError unless face_symbols_to_colors.keys.sort == FACE_SYMBOLS.sort
+      face_symbols_to_colors.values.each do |c|
+        raise TypeError unless c.is_a?(Symbol)
+        raise ArgumentError, "Color #{c} cannot be part of the color scheme because it is a reserved color." if RESERVED_COLORS.include?(c)
+      end
       raise ArgumentError unless face_symbols_to_colors.values.all? { |c| c.is_a?(Symbol) }
       num_uniq_colors = face_symbols_to_colors.values.uniq.length
       raise ArgumentError, "Got #{num_uniq_colors} unique colors #{face_symbols_to_colors.values.uniq}, but needed #{FACE_SYMBOLS.length}." unless num_uniq_colors == FACE_SYMBOLS.length

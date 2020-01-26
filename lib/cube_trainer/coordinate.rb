@@ -51,10 +51,10 @@ module CubeTrainer
         coordinates[index] = coordinate
       end
       raise ArgumentError if coordinates.any? { |c| c.nil? }
-      new(face, cube_size, *coordinates)
+      from_indices(face, cube_size, *coordinates)
     end
 
-    def self.improve_coordinate_internal(part, base_coordinate, other_face_symbols)
+    def self.match_coordinate_internal(part, base_coordinate, other_face_symbols)
       other_face_symbols.sort!
       coordinate = base_coordinate.rotations.find do |coordinate|
         face_symbols_closeby = coordinate.close_neighbor_faces.map { |f| f.face_symbol }
@@ -70,9 +70,9 @@ module CubeTrainer
       raise unless part.class::ELEMENTS.length == 24
       raise unless incarnation_index >= 0 && incarnation_index < part.num_incarnations(cube_size)
       # This is a coordinate on the same face and belonging to an equivalent part. But it might not be the right one.
-      base_coordinate = Coordinate.new(part.solved_face, cube_size, *part.base_index_on_face(cube_size, incarnation_index))
+      base_coordinate = Coordinate.from_indices(part.solved_face, cube_size, *part.base_index_on_face(cube_size, incarnation_index))
       other_face_symbols = part.corresponding_part.face_symbols[1..-1]
-      improve_coordinate_internal(part, base_coordinate, other_face_symbols)
+      match_coordinate_internal(part, base_coordinate, other_face_symbols)
     end
 
     # The coordinate of the solved position of all stickers of this part.
@@ -80,31 +80,25 @@ module CubeTrainer
       solved_coordinate = solved_position(part, cube_size, incarnation_index)
       other_coordinates = part.face_symbols[1..-1].map.with_index do |f, i|
         # The reverse is important for edge like parts.
-        base_coordinate = Coordinate.new(Face.for_face_symbol(f), cube_size, *part.base_index_on_face(cube_size, incarnation_index).reverse)
+        base_coordinate = Coordinate.from_indices(Face.for_face_symbol(f), cube_size, *part.base_index_on_face(cube_size, incarnation_index).reverse)
         other_face_symbols = [part.face_symbols[0]] + part.corresponding_part.face_symbols[1...i + 1] + part.corresponding_part.face_symbols[i + 2..-1]
-        improve_coordinate_internal(part, base_coordinate, other_face_symbols)
+        match_coordinate_internal(part, base_coordinate, other_face_symbols)
       end
       [solved_coordinate] + other_coordinates
     end
     
     def self.center(face, cube_size)
       m = middle(cube_size)
-      new(face, cube_size, m, m)
+      from_indices(face, cube_size, m, m)
     end
 
     def self.from_indices(face, cube_size, x, y)
-      new(face, cube_size, x, y);
-    end
-    
-    def initialize(face, cube_size, x, y)
       raise TypeError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
       raise TypeError unless cube_size.is_a?(Integer)
       raise ArgumentError unless cube_size > 0
-      @face = face
-      @cube_size = cube_size
-      @coordinates = [x, y].map { |c| Coordinate.canonicalize(c, cube_size) }
-      x, y = @coordinates
-      @native = Native::CubeCoordinate.new(
+      x = Coordinate.canonicalize(x, cube_size)
+      y = Coordinate.canonicalize(y, cube_size)
+      native = Native::CubeCoordinate.new(
         cube_size,
         face.face_symbol,
         # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
@@ -114,6 +108,18 @@ module CubeTrainer
         x,
         y,
       )
+      new(face, cube_size, x, y, native);
+    end
+    
+    def initialize(face, cube_size, x, y, native)
+      raise TypeError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
+      raise TypeError unless cube_size.is_a?(Integer)
+      raise ArgumentError unless cube_size > 0
+      raise TypeError unless native.is_a?(Native::CubeCoordinate)
+      @face = face
+      @cube_size = cube_size
+      @coordinates = [x, y]
+      @native = native
     end
 
     attr_reader :face, :cube_size, :coordinates, :native
@@ -154,11 +160,11 @@ module CubeTrainer
       new_coordinate_index = to_face.coordinate_index_close_to(@face)
       new_coordinate = make_coordinate_at_edge_to(@face)
       new_coordinates.insert(new_coordinate_index, new_coordinate)
-      Coordinate.new(to_face, @cube_size, *new_coordinates)
+      Coordinate.from_indices(to_face, @cube_size, *new_coordinates)
     end
 
     def jump_to_coordinates(new_coordinates)
-      Coordinate.new(@face, @cube_size, *new_coordinates)
+      Coordinate.from_indices(@face, @cube_size, *new_coordinates)
     end
 
     def make_coordinate_at_edge_to(face)

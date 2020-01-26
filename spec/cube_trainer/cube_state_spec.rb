@@ -25,7 +25,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     FACE_SYMBOLS.each do |s|
       cube_state.n.times do |x|
         cube_state.n.times do |y|
-          coordinate = Coordinate.new(Face.for_face_symbol(s), cube_state.n, x, y)
+          coordinate = Coordinate.from_indices(Face.for_face_symbol(s), cube_state.n, x, y)
           expected_color = changed_parts[[s, x, y]] || original_state[coordinate]
           expect(cube_state[coordinate]).to be == expected_color
         end
@@ -37,17 +37,17 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     state = color_scheme.solved_cube_state(cube_size)
     # The state is like a r2 b2 to make turns a bit more interesting than solved faces.
     0.upto(cube_size - 1) do |a|
-      state[Coordinate.new(Face::D, cube_size, a, 1)] = :yellow
-      state[Coordinate.new(Face::D, cube_size, -2, a)] = :yellow
-      state[Coordinate.new(Face::U, cube_size, a, 1)] = :white
-      state[Coordinate.new(Face::U, cube_size, -2, a)] = :white
-      state[Coordinate.new(Face::F, cube_size, a, 1)] = :orange
-      state[Coordinate.new(Face::B, cube_size, a, 1)] = :red
-      state[Coordinate.new(Face::L, cube_size, a, -2)] = :green
-      state[Coordinate.new(Face::R, cube_size, a, -2)] = :blue
+      state[Coordinate.from_indices(Face::D, cube_size, a, 1)] = :yellow
+      state[Coordinate.from_indices(Face::D, cube_size, -2, a)] = :yellow
+      state[Coordinate.from_indices(Face::U, cube_size, a, 1)] = :white
+      state[Coordinate.from_indices(Face::U, cube_size, -2, a)] = :white
+      state[Coordinate.from_indices(Face::F, cube_size, a, 1)] = :orange
+      state[Coordinate.from_indices(Face::B, cube_size, a, 1)] = :red
+      state[Coordinate.from_indices(Face::L, cube_size, a, -2)] = :green
+      state[Coordinate.from_indices(Face::R, cube_size, a, -2)] = :blue
     end
-    state[Coordinate.new(Face::D, cube_size, -2, -2)] = :white
-    state[Coordinate.new(Face::U, cube_size, -2, -2)] = :yellow
+    state[Coordinate.from_indices(Face::D, cube_size, -2, -2)] = :white
+    state[Coordinate.from_indices(Face::U, cube_size, -2, -2)] = :yellow
     state
   end
 

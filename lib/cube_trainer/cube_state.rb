@@ -38,6 +38,7 @@ module CubeTrainer
     end
 
     def initialize(native)
+      raise TypeError unless native.is_a?(Native::CubeState)
       @native = native
     end
 
