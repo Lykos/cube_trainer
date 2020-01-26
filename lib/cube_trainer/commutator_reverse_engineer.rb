@@ -7,11 +7,11 @@ module CubeTrainer
   class CommutatorReverseEngineer
     
     def initialize(part_type, buffer, letter_scheme, color_scheme, cube_size)
-      raise ArgumentError unless part_type.is_a?(Class)
-      raise ArgumentError unless buffer.is_a?(Part) && buffer.is_a?(part_type)
-      raise ArgumentError unless letter_scheme.is_a?(LetterScheme)
-      raise ArgumentError unless color_scheme.is_a?(ColorScheme)
-      raise ArgumentError unless cube_size.is_a?(Integer)
+      raise TypeError unless part_type.is_a?(Class)
+      raise TypeError unless buffer.is_a?(Part) && buffer.is_a?(part_type)
+      raise TypeError unless letter_scheme.is_a?(LetterScheme)
+      raise TypeError unless color_scheme.is_a?(ColorScheme)
+      raise TypeError unless cube_size.is_a?(Integer)
       @part_type = part_type
       @buffer = buffer
       @letter_scheme = letter_scheme
@@ -21,7 +21,6 @@ module CubeTrainer
     end
 
     def piece_at_coordinates(coordinates)
-      coordinates
       colors = coordinates.map { |c| @state[c] }
       @color_scheme.part_for_colors(@part_type, colors)
     end
@@ -42,7 +41,7 @@ module CubeTrainer
     end
 
     def find_letter_pair(alg)
-      raise ArgumentError unless alg.is_a?(Algorithm)
+      raise TypeError unless alg.is_a?(Algorithm)
       alg.inverse.apply_temporarily_to(@state) { find_stuff }
     end
 

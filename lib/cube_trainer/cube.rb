@@ -165,7 +165,7 @@ module CubeTrainer
 
     # Returns the index of the coordinate that is used to determine how close a sticker on `on_face` is to `to_face`.
     def coordinate_index_close_to(to_face)
-      raise ArgumentError, "Cannot get the coordinate index close to #{to_face.inspect} on #{inspect} because they are not neighbors." unless neighbors.include?(to_face)
+      raise ArgumentError, "Cannot get the coordinate index close to #{to_face.inspect} on #{inspect} because they are not neighbors." if same_axis?(to_face)
       to_priority = to_face.axis_priority
       if axis_priority < to_priority then
         to_priority - 1
@@ -218,7 +218,7 @@ module CubeTrainer
     end
 
     def clockwise_neighbor_after(neighbor)
-      raise ArgumentError unless neighbors.include?(neighbor)
+      raise ArgumentError if same_axis?(neighbor)
       @neighbors[(@neighbors.index(neighbor) + 1) % @neighbors.length]
     end
 
