@@ -9,9 +9,14 @@ module CubeTrainer
       @magic = FileMagic.new
     end
 
-    def check(data)
+    def valid?(data)
       info = @magic.buffer(data)
-      raise if @format == :jpg && !info.start_with?('JPEG')
+      case @format
+      when :jpg
+        info.start_with?('JPEG')        
+      else
+        raise NotImplementedError
+      end
     end
    
   end

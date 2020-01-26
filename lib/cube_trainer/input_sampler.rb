@@ -1,4 +1,5 @@
 require 'cube_trainer/sampling_helper'
+require 'cube_trainer/random_helper'
 require 'cube_trainer/cube_average'
 require 'cube_trainer/input_item'
 require 'cube_trainer/sampler'
@@ -6,6 +7,8 @@ require 'cube_trainer/sampler'
 module CubeTrainer
 
   class InputSampler
+
+    include RandomHelper
   
     # Minimum score that we always give to each element in order not to screw up our sampling if all weights become 0 or so.
     EPSILON_SCORE = 0.000000001
@@ -161,12 +164,6 @@ module CubeTrainer
       [repetition_adjusted_score(index, score), EPSILON_SCORE].max
     end
     
-    # Distort the given value randomly by up to the given factor.
-    def distort(value, factor)
-      raise unless factor > 0 && factor < 1
-      value * (1 - factor) + (factor * 2 * value * rand)
-    end
-  
     # After how many other items should this item be repeated.
     def repetition_index(occ)
       @repetition_indices[occ] ||= begin

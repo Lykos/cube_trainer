@@ -27,7 +27,7 @@ module CubeTrainer
       raise ArgumentError unless File.exist?(options.output_dir) && File.directory?(options.output_dir) && File.writable?(options.output_dir)
       @options = options
       cache = options.cache ? Cache.new('cube_visualizer') : nil
-      @visualizer = CubeVisualizer.new(Net::HTTP, cache, sch: options.color_scheme, fmt: FORMAT, stage: options.stage_mask)
+      @visualizer = CubeVisualizer.new(fetcher: Net::HTTP, cache: cache, sch: options.color_scheme, fmt: FORMAT, stage: options.stage_mask)
       if @options.solved_mask_name
         @solved_mask = CubeMask.from_name(options.solved_mask_name, options.cube_size, :unknown)
       end
@@ -54,7 +54,7 @@ module CubeTrainer
 
     def internal_note_inputs
       raise ArgumentError unless @options.alg_set
-      AlgHintParser.maybe_parse_hints(@options.alg_set, @options.verbose).entries.map { |name, alg| NoteInput.new([name, alg], name, alg) }
+      AlgHintParser.parse_hints(@options.alg_set, @options.verbose).entries.map { |name, alg| NoteInput.new([name, alg], name, alg) }
     end
 
     def external_note_inputs
@@ -83,8 +83,8 @@ module CubeTrainer
       end
     end
 
-    def name_set
-      @name_set ||= Set.new
+    def name_to_alg
+      @name_to_alg ||= {}
     end
 
     # Make an alg name simple enough so we can use it as a file name without problems.
@@ -92,7 +92,8 @@ module CubeTrainer
     def new_image_filename(alg_name, variation_index='')
       name = "alg_#{alg_name}#{variation_index}.#{FORMAT}".
                gsub(/\s/, '_').
-               gsub(/['\/()?]/, '').
+               gsub(/[\/()?]/, '').
+               gsub("'", '-').
                gsub('ä', 'ae').
                gsub('ö', 'oe').
                gsub('ü', 'ue').
@@ -101,12 +102,13 @@ module CubeTrainer
                gsub('Ü', 'Ue').
                gsub('è', 'e').
                gsub('ß', 'ss')
-      raise unless name_set.add?(name)
+      raise ArgumentError, "Two algs map to file name #{name}: #{alg_name} and #{name_to_alg[name]}" if name_to_alg[name]
+      name_to_alg[name] = alg_name
       name
     end
 
     def img(source)
-      raise ArgumentError, "Got bad filename #{source}" unless source =~ /^[\w.-]+$/
+      raise ArgumentError, "Got bad filename #{source}" unless source =~ /^[\w.+-]+$/
       # TODO This is bad, but works with our restriction.
       "<img src='#{source}'/>"
     end
@@ -114,7 +116,7 @@ module CubeTrainer
     def generate_internal(csv)
       Parallel.map(note_inputs, progress: 'Fetching alg images', in_threads: 50) do |note_input|
         state = @options.color_scheme.solved_cube_state(@options.cube_size)
-        @solved_mask.apply_to(cube_state) if @solved_mask
+        @solved_mask.apply_to(state) if @solved_mask
         note_input.modified_alg.inverse.apply_to(state)
         @visualizer.fetch_and_store(state, absolute_output_path(note_input.image_filename))
         note_input

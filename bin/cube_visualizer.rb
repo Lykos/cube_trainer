@@ -15,7 +15,7 @@ options = CubeVisualizerOptions.parse(ARGV)
 
 fmt = File.extname(options.output)[1..-1].to_sym
 cache = options.cache ? Cache.new('cube_visualizer') : nil
-visualizer = CubeVisualizer.new(Net::HTTP, cache, sch: options.color_scheme, fmt: fmt, stage: options.stage_mask)
+visualizer = CubeVisualizer.new(fetcher: Net::HTTP, cache: cache, sch: options.color_scheme, fmt: fmt, stage: options.stage_mask)
 cube_state = options.color_scheme.solved_cube_state(options.cube_size)
 if options.solved_mask_name
   solved_mask = CubeMask.from_name(options.solved_mask_name, options.cube_size, :unknown)

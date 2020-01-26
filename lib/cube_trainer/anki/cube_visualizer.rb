@@ -5,6 +5,7 @@ require 'cube_trainer/anki/image_checker'
 require 'cube_trainer/cube_print_helper'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/anki/cache'
+require 'cube_trainer/anki/exponential_backoff'
 
 module CubeTrainer
 
@@ -144,17 +145,21 @@ module CubeTrainer
       end
     end
 
-    def initialize(fetcher, cache, **params)
+    def initialize(fetcher: fetcher, cache: nil, retries: 5, checker: nil, **params)
       raise TypeError unless fetcher.respond_to?(:get)
       @fetcher = fetcher
       raise TypeError unless cache.nil? || (cache.respond_to?(:[]) && cache.respond_to?(:[]=))
       @cache = cache || StubCache.new
+      raise TypeError unless retries.is_a?(Integer)
+      raise ArgumentError if retries < 0
+      @retries = retries
+      raise TypeError unless checker.nil? || checker.respond_to?(:valid?)
       invalid_keys = params.keys - URL_PARAMETER_TYPE_KEYS
       raise ArgumentError, "Unknown url parameter keys #{invalid_keys.join(', ')}" unless invalid_keys.empty?
       @params = URL_PARAMETER_TYPES.map { |p| p.extract(params) }.compact
       @color_scheme = params[:sch] || (raise ArgumentError)
       format = params[:fmt] || (raise ArgumentError)
-      @checker = ImageChecker.new(format)
+      @checker = checker || ImageChecker.new(format)
     end
 
     BASE_URI = URI("http://cube.crider.co.uk/visualcube.php")
@@ -184,17 +189,24 @@ module CubeTrainer
       uri
     end
 
+    def really_fetch_internal(uri)
+      backoff = ExponentialBackoff.new
+      data = @fetcher.get(uri)
+      return data if @checker.valid?(data)
+      @retries.times {
+        sleep(backoff.next_backoff_s)
+        data = @fetcher.get(uri)
+        return data if @checker.valid?(data)
+      }
+      raise RuntimeError, "Didn't get a valid image after #{@retries} retries."
+    end
+
     def fetch(cube_state)
       uri = uri(cube_state)
       if r = @cache[uri.to_s]
         r
       else
-        @cache[uri.to_s] =
-          begin
-            data = @fetcher.get(uri)
-            @checker.check(data)
-            data
-          end
+        @cache[uri.to_s] = really_fetch_internal(uri)
       end
     end
 
