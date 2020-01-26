@@ -2,6 +2,7 @@ require 'cube_trainer/anki/cube_visualizer'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/algorithm'
 require 'cube_trainer/move'
+require 'cube_trainer/parser'
 
 URL = 'http://cube.crider.co.uk/visualcube.php?fmt=svg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
 IMAGE = 'some image'
@@ -47,8 +48,33 @@ describe CubeVisualizer do
   end
   
   it 'should construct a url for a cube with transparent parts' do
-    #cube_state[Coordinate.for_]
-    expect(CubeVisualizer.new(fetcher, cache, fmt: :svg, sch: color_scheme).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
+    cube_state[Coordinate.from_indices(Face::U, 3, 0, 0)] = :transparent
+    cube_state[Coordinate.from_indices(Face::F, 3, 0, 1)] = :transparent
+    cube_state[Coordinate.from_indices(Face::R, 3, 0, 2)] = :transparent
+    cube_state[Coordinate.from_indices(Face::L, 3, 1, 0)] = :transparent
+    cube_state[Coordinate.from_indices(Face::B, 3, 1, 1)] = :transparent
+    cube_state[Coordinate.from_indices(Face::D, 3, 1, 2)] = :transparent
+    expect(CubeVisualizer.new(fetcher, cache, fmt: :svg, sch: color_scheme).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuutrrtrrrrrrftfffffffdddtdddddllllltlllbbbbtbbbb'
+  end
+  
+  it 'should construct a url for a cube with unknown parts' do
+    cube_state[Coordinate.from_indices(Face::U, 3, 0, 0)] = :unknown
+    cube_state[Coordinate.from_indices(Face::F, 3, 0, 1)] = :unknown
+    cube_state[Coordinate.from_indices(Face::R, 3, 0, 2)] = :unknown
+    cube_state[Coordinate.from_indices(Face::L, 3, 1, 0)] = :unknown
+    cube_state[Coordinate.from_indices(Face::B, 3, 1, 1)] = :unknown
+    cube_state[Coordinate.from_indices(Face::D, 3, 1, 2)] = :unknown
+    expect(CubeVisualizer.new(fetcher, cache, fmt: :svg, sch: color_scheme).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuunrrnrrrrrrfnfffffffdddndddddlllllnlllbbbbnbbbb'
+  end
+  
+  it 'should construct a url for a cube with oriented parts' do
+    cube_state[Coordinate.from_indices(Face::U, 3, 0, 0)] = :oriented
+    cube_state[Coordinate.from_indices(Face::F, 3, 0, 1)] = :oriented
+    cube_state[Coordinate.from_indices(Face::R, 3, 0, 2)] = :oriented
+    cube_state[Coordinate.from_indices(Face::L, 3, 1, 0)] = :oriented
+    cube_state[Coordinate.from_indices(Face::B, 3, 1, 1)] = :oriented
+    cube_state[Coordinate.from_indices(Face::D, 3, 1, 2)] = :oriented
+    expect(CubeVisualizer.new(fetcher, cache, fmt: :svg, sch: color_scheme).uri(cube_state).to_s).to be == 'http://cube.crider.co.uk/visualcube.php?fmt=svg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuorrorrrrrrfofffffffdddodddddlllllolllbbbbobbbb'
   end
   
   it 'should construct a url for all settings' do

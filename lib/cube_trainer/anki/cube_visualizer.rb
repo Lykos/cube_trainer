@@ -164,7 +164,12 @@ module CubeTrainer
       raise ArgumentError unless MIN_N <= cube_state.n && cube_state.n <= MAX_N
       serialized_cube_state = FACE_SYMBOL_ORDER.map do |s| 
         face_lines(cube_state, s) do |c|
-          @color_scheme.face_symbol(c).to_s.downcase
+          case c
+          when :transparent then 't'
+          when :unknown then 'n'
+          when :oriented then 'o'
+          else @color_scheme.face_symbol(c).to_s.downcase
+          end
         end.flatten.join
       end.join
       extra_params = [
