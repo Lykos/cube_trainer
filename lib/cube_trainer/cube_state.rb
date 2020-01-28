@@ -129,13 +129,12 @@ module CubeTrainer
       @native.rotate_face(face.face_symbol, direction.value)
     end
   
-    def apply_move(move)
-      move.apply_to(self)
+    def apply(applyable)
+      applyable.apply_to(self)
     end
 
-    def apply_algorithm(alg)
-      alg.apply_to(self)
-    end
+    alias apply_move apply
+    alias apply_algorithm apply
 
     def apply_rotation(rot)
       rot.apply_to_cube(self)

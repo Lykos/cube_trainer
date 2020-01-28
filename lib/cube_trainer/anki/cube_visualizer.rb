@@ -145,7 +145,7 @@ module CubeTrainer
       end
     end
 
-    def initialize(fetcher: fetcher, cache: nil, retries: 5, checker: nil, **params)
+    def initialize(fetcher:, cache: nil, retries: 5, checker: nil, **params)
       raise TypeError unless fetcher.respond_to?(:get)
       @fetcher = fetcher
       raise TypeError unless cache.nil? || (cache.respond_to?(:[]) && cache.respond_to?(:[]=))

@@ -119,6 +119,8 @@ module CubeTrainer
       )
       new(face, cube_size, x, y, native);
     end
+
+    private_class_method :new
     
     def initialize(face, cube_size, x, y, native)
       raise TypeError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)

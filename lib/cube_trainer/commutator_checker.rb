@@ -3,6 +3,7 @@ require 'cube_trainer/commutator'
 require 'cube_trainer/algorithm'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/cube_print_helper'
+require 'cube_trainer/part_cycle_factory'
 
 module CubeTrainer
   
@@ -11,8 +12,8 @@ module CubeTrainer
     include CubePrintHelper
     
     def initialize(part_type:, buffer:, piece_name:, color_scheme:, cube_size:, verbose: false, incarnation_index: 0)
-      raise ArgumentError unless part_type.is_a?(Class) && part_type.ancestors.include?(Part)
-      raise ArgumentError unless buffer.class == part_type
+      raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(Part)
+      raise TypeError unless buffer.class == part_type
       raise ArgumentError, "Unsuitable cube size #{cube_size}." unless cube_size.is_a?(Integer) && cube_size > 0
       raise ColorScheme unless color_scheme.is_a?(ColorScheme)
       @part_type = part_type
@@ -22,17 +23,18 @@ module CubeTrainer
       @cube_size = cube_size
       @verbose = verbose
       @incarnation_index = incarnation_index
-      @alg_cube_state = @color_scheme.solved_cube_state(@cube_size)
-      @cycle_cube_state = @color_scheme.solved_cube_state(@cube_size)
+      @alg_cube_state = @color_scheme.solved_cube_state(cube_size)
+      @cycle_cube_state = @color_scheme.solved_cube_state(cube_size)
       @total_algs = 0
       @broken_algs = 0
       @unfixable_algs = 0
+      @part_cycle_factory = PartCycleFactory.new(cube_size, incarnation_index)
     end
 
     attr_reader :total_algs, :broken_algs, :unfixable_algs
 
     def construct_cycle(parts)
-      [@buffer] + parts
+      @part_cycle_factory.construct([@buffer] + parts)
     end
 
     def move_modifications(move)
@@ -97,43 +99,40 @@ module CubeTrainer
     def check_alg(row_description, letter_pair, parts, commutator)
       # Apply alg and cycle
       cycle = construct_cycle(parts)
-      @cycle_cube_state.apply_piece_cycle(cycle, @incarnation_index)
-      alg = commutator.algorithm
-      @total_algs += 1
+      cycle.apply_temporarily_to(@cycle_cube_state) do
+        alg = commutator.algorithm
+        @total_algs += 1
 
-      # compare
-      correct = alg.apply_temporarily_to(@alg_cube_state) { @cycle_cube_state == @alg_cube_state }
-      fix_found = false
-      unless correct
-        puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} doesn't do what it's expected to do." if @verbose
-        @broken_algs += 1
+        # compare
+        correct = alg.apply_temporarily_to(@alg_cube_state) { @cycle_cube_state == @alg_cube_state }
+        fix_found = false
+        unless correct
+          puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} doesn't do what it's expected to do." if @verbose
+          @broken_algs += 1
 
-        # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
-        if @verbose
-          if fix = find_fix(commutator)
-            fix_found = true
-            puts "Found fix #{fix}."
-          else
-            @unfixable_algs += 1
-            puts "Couldn't find a fix for this alg."
-            puts "actual"
-            puts alg.apply_temporarily_to(@alg_cube_state) { cube_string(@alg_cube_state, :color) }
-            puts "expected"
-            puts cube_string(@cycle_cube_state, :color)
+          # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
+          if @verbose
+            if fix = find_fix(commutator)
+              fix_found = true
+              puts "Found fix #{fix}."
+            else
+              @unfixable_algs += 1
+              puts "Couldn't find a fix for this alg."
+              puts "actual"
+              puts alg.anpply_temporarily_to(@alg_cube_state) { cube_string(@alg_cube_state, :color) }
+              puts "expected"
+              puts cube_string(@cycle_cube_state, :color)
+            end
           end
         end
-      end
 
-      # cleanup
-      @cycle_cube_state.apply_piece_cycle(cycle.reverse)
-      raise "Cleanup failed" unless @alg_cube_state == @cycle_cube_state
-
-      if correct
-        :correct
-      elsif fix_found
-        :fix_found
-      else
-        :unfixable
+        if correct
+          :correct
+        elsif fix_found
+          :fix_found
+        else
+          :unfixable
+        end
       end
     end
   end

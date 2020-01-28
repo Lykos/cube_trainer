@@ -129,7 +129,7 @@ module CubeTrainer
     end
 
     def zip_concat_lines(*args)
-      args[0].zip(*args[1..-1]).collect { |lines| lines.join }
+      args.transpose.collect { |lines| lines.join }
     end
   end
   
