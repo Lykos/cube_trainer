@@ -10,11 +10,6 @@ module CubeTrainer
     include ReversibleApplyable
     
     def initialize(cube_size, sticker_cycle)
-      CubeState.check_cube_size(cube_size)
-      sticker_cycle.each do |c|
-        raise TypeError unless c.is_a?(Coordinate)
-        raise ArgumentError unless c.cube_size == cube_size
-      end
       @cube_size = cube_size
       @sticker_cycle = sticker_cycle
     end
@@ -37,11 +32,9 @@ module CubeTrainer
     include ReversibleApplyable
 
     def initialize(cube_size, sticker_cycles)
-      CubeState.check_cube_size(cube_size)
       affected_set = Set[]
       sticker_cycles.each do |c|
         raise TypeError unless c.is_a?(StickerCycle)
-        raise ArgumentError unless c.cube_size == cube_size
         c.sticker_cycle.each { |s| raise ArgumentError unless affected_set.add?(s) }
       end
       @cube_size = cube_size
