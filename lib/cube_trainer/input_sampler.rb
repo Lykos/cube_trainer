@@ -1,6 +1,6 @@
 require 'cube_trainer/sampling_helper'
 require 'cube_trainer/random_helper'
-require 'cube_trainer/cube_average'
+require 'cube_trainer/native'
 require 'cube_trainer/input_item'
 require 'cube_trainer/sampler'
 
@@ -89,7 +89,7 @@ module CubeTrainer
       @occurrence_indices = {}
       @repetition_indices = {}
       @badness_histories = {}
-      @badness_histories.default_proc = proc { |h, k| h[k] = CubeAverage.new(BADNESS_MEMORY, EPSILON_SCORE) }
+      @badness_histories.default_proc = proc { |h, k| h[k] = Native::CubeAverage.new(BADNESS_MEMORY, EPSILON_SCORE) }
       @occurrences = {}
       @occurrences.default = 0
       @results_model.results.sort_by { |r| r.timestamp }.each do |r|

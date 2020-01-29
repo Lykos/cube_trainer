@@ -1,4 +1,4 @@
-require 'cube_trainer/cube_average'
+require 'cube_trainer/native'
 require 'cube_trainer/input_sampler'
 require 'ostruct'
 require 'cube_trainer/array_helper'
@@ -18,7 +18,7 @@ module CubeTrainer
       @valuess = resultss.map do |results|
         values = {}
         results.group_by { |r| r.input_representation }.each do |l, rs|
-          avg = CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
+          avg = Native::CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
           rs.sort_by { |r| r.timestamp }.each { |r| avg.push(r.time_s) }
           values[l] = ActualScore.new(avg.average)
         end

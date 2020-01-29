@@ -1,4 +1,4 @@
-require 'cube_trainer/cube_average'
+require 'cube_trainer/native'
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/results_persistence'
 require 'cube_trainer/probabilities'
@@ -86,7 +86,7 @@ module CubeTrainer
     end
   
     def average(values)
-      avg = CubeAverage.new(5, 0)
+      avg = Native::CubeAverage.new(5, 0)
       values.each { |v| avg.push(v) }
       avg.average
     end
