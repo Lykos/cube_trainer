@@ -229,27 +229,28 @@ module CubeTrainer
   end
 
   class SkewbCoordinate    
-    def initialize(face, coordinate)
+    def initialize(face, coordinate, native)
       raise ArgumentError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
       raise ArgumentError unless coordinate.is_a?(Integer) && 0 <= coordinate && coordinate < SKEWB_STICKERS
       @face = face
       @coordinate = coordinate
+      @native = native
     end
 
-    def self.center(face)
-      new(face, 0)
-    end
+    private_class_method :new
 
-    def self.corner_index(face, corner_index)
-      new(face, corner_index + 1)
+    def self.for_center(face)
+      native = Native::SkewbCoordinate.for_center(face.face_symbol)
+      new(face, 0, native)
     end
 
     def self.corners_on_face(face)
-      (1...SKEWB_STICKERS).collect { |i| new(face, i) }
+      face.clockwise_corners.collect { |c| for_corner(c) }
     end
 
     def self.for_corner(corner)
-      corner_index(Face.for_face_symbol(corner.face_symbols.first), corner.piece_index % 4)
+      native = Native::SkewbCoordinate.for_corner(corner.face_symbols)
+      new(Face.for_face_symbol(corner.face_symbols.first), 1 + corner.piece_index % 4, native)
     end
 
     def hash

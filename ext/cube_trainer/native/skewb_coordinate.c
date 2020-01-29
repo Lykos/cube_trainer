@@ -180,5 +180,7 @@ void init_skewb_coordinate_class_under(const VALUE module) {
   rb_define_alias(SkewbCoordinateClass, "==", "eql?");
   rb_define_method(SkewbCoordinateClass, "face", SkewbCoordinate_face, 0);
   rb_define_method(SkewbCoordinateClass, "part_type", SkewbCoordinate_part_type, 0);
+  rb_define_singleton_method(SkewbCoordinateClass, "for_center", SkewbCoordinate_for_center, 1);
+  rb_define_singleton_method(SkewbCoordinateClass, "for_corner", SkewbCoordinate_for_corner, 1);
 }
 

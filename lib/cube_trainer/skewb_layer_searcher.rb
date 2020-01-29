@@ -16,23 +16,18 @@ module CubeTrainer
 
     class NonMoveTransformation < Struct.new(:rotation, :mirror)
       
-      def apply_temporarily_to(skewb_state)
-        skewb_state.mirror! if mirror
-        r = if rotation
-          rotation.apply_temporarily_to(skewb_state) { yield }
-        else
-          yield
-        end
-        skewb_state.mirror! if mirror
-        r
+      def apply_to(algorithm)
+        algorithm = algorithm.mirror(MIRROR_NORMAL_FACE) if mirror
+        algorithm.rotate_by(rotation)
       end
 
     end
 
     EXAMPLE_LAYER_FACE_SYMBOL = :D
     EXAMPLE_LAYER_FACE = Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
-    AROUND_FACE_ROTATIONS = [nil] + CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Rotation.new(EXAMPLE_LAYER_FACE, d) }
-    NON_MOVE_TRANSFORMATIONS = AROUND_FACE_ROTATIONS.product([true, false]).select { |r, m| r || m }.map { |r, m| NonMoveTransformation.new(r, m) }
+    MIRROR_NORMAL_FACE = EXAMPLE_LAYER_FACE.neighbors.first
+    AROUND_FACE_ROTATIONS = CubeDirection::ALL_DIRECTIONS.map { |d| Rotation.new(EXAMPLE_LAYER_FACE, d) }
+    NON_MOVE_TRANSFORMATIONS = AROUND_FACE_ROTATIONS.product([true, false]).select { |r, m| r.direction.is_non_zero? || m }.map { |r, m| NonMoveTransformation.new(r, m) }
 
     # Represents a possible Skewb layer with a solution.
     class SkewbLayerSolution
@@ -147,8 +142,10 @@ module CubeTrainer
     # In those cases, we don't add this as an alternative solution because there will be another one that's equivalent modulo rotations.
     def check_equivalent_modified_solution(candidate)
       has_equivalent_solution = false
-      transformed_states = NON_MOVE_TRANSFORMATIONS.collect.with_index do |t, i|
-        t.apply_temporarily_to(@state) {
+      transformed_states = NON_MOVE_TRANSFORMATIONS.collect do |t|
+        # We go back to the original state and then apply a transformed version of the algorithm.
+        inverse_plus_modified = candidate.layer_solution + t.apply_to(candidate.layer_solution).inverse
+        inverse_plus_modified.apply_temporarily_to(@state) {
           @state.dup
         }
       end

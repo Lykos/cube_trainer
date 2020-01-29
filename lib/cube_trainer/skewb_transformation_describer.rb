@@ -168,7 +168,7 @@ module CubeTrainer
     # Describes where each interesting piece comes from.
     def source_descriptions(algorithm)
       algorithm.apply_temporarily_to(@skewb_state) do
-        find_part_sources(@interesting_faces, &SkewbCoordinate.method(:center)) +
+        find_part_sources(@interesting_faces, &SkewbCoordinate.method(:for_center)) +
           find_part_sources(@interesting_corners, &SkewbCoordinate.method(:for_corner))
       end.sort
     end
@@ -176,7 +176,7 @@ module CubeTrainer
     # Describes what kind of tranformation the alg does in terms of piece cycles.
     def transformation_descriptions(algorithm)
       algorithm.apply_temporarily_to(@skewb_state) do
-        find_part_target_cycles(@interesting_faces, &SkewbCoordinate.method(:center)) +
+        find_part_target_cycles(@interesting_faces, &SkewbCoordinate.method(:for_center)) +
           find_part_target_cycles(@interesting_corners, &SkewbCoordinate.method(:for_corner))
       end.sort
     end

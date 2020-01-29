@@ -63,7 +63,7 @@ module CubeTrainer
       right = Face.for_face_symbol(:R)
       left = Face.for_face_symbol(:L)
       swaps = [
-        [SkewbCoordinate.center(front), SkewbCoordinate.center(back)],
+        [SkewbCoordinate.for_center(front), SkewbCoordinate.for_center(back)],
         [SkewbCoordinate.corner_index(front, 0), SkewbCoordinate.corner_index(back, 1)],
         [SkewbCoordinate.corner_index(front, 1), SkewbCoordinate.corner_index(back, 3)],
         [SkewbCoordinate.corner_index(front, 2), SkewbCoordinate.corner_index(back, 0)],
@@ -77,7 +77,7 @@ module CubeTrainer
         [SkewbCoordinate.corner_index(left, 0), SkewbCoordinate.corner_index(left, 2)],
         [SkewbCoordinate.corner_index(left, 1), SkewbCoordinate.corner_index(left, 3)],
       ]
-      swaps.each { |s| apply_sticker_cycle(s) }
+      MIRROR_SWAPS.each { |s| apply_sticker_cycle(s) }
     end
 
     def [](coordinate)
@@ -94,15 +94,15 @@ module CubeTrainer
 
     # Returns the color of all solved layers. Empty if there is none.
     def solved_layers
-      Face::ELEMENTS.select { |f| layer_at_face_solved?(f) }.collect { |f| self[SkewbCoordinate.center(f)] }
+      Face::ELEMENTS.select { |f| layer_at_face_solved?(f) }.collect { |f| self[SkewbCoordinate.for_center(f)] }
     end
     
     def layer_solved?(color)
-      Face::ELEMENTS.any? { |f| self[SkewbCoordinate.center(f)] == color && layer_at_face_solved?(f) }
+      Face::ELEMENTS.any? { |f| self[SkewbCoordinate.for_center(f)] == color && layer_at_face_solved?(f) }
     end
 
     def center_face(color)
-      Face::ELEMENTS.find { |f| self[SkewbCoordinate.center(f)] == color }
+      Face::ELEMENTS.find { |f| self[SkewbCoordinate.for_center(f)] == color }
     end
 
     # Pairs of coordinate pairs that should match in case of solved layers.

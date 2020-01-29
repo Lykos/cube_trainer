@@ -269,7 +269,7 @@ module CubeTrainer
     end
 
     def skewb_center_cycle
-      @axis_face.neighbors.map { |f| SkewbCoordinate.center(f) }
+      @axis_face.neighbors.map { |f| SkewbCoordinate.for_center(f) }
     end
 
     def skewb_cycles
@@ -636,7 +636,7 @@ module CubeTrainer
     end
 
     def center_cycle
-      @axis_corner.adjacent_faces.map { |f| SkewbCoordinate.center(f) }
+      @axis_corner.adjacent_faces.map { |f| SkewbCoordinate.for_center(f) }
     end
 
     def outer_moved_corner_cycle

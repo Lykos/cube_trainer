@@ -13,7 +13,7 @@ module CubeTrainer
     include SkewbLayerHelper
 
     def face_color(state, face)
-      state[SkewbCoordinate.center(face)]
+      state[SkewbCoordinate.for_center(face)]
     end
 
     def solved_colors(skewb_state)

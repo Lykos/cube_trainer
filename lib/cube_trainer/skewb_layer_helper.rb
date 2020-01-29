@@ -38,7 +38,7 @@ module CubeTrainer
     end
 
     def matching_corner_coordinates(skewb_state, face)
-      face_color = skewb_state[SkewbCoordinate.center(face)]
+      face_color = skewb_state[SkewbCoordinate.for_center(face)]
       matching_coordinates = SkewbCoordinate.corners_on_face(face).select do |c|
         skewb_state[c] == face_color
       end

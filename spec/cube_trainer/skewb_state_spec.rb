@@ -41,36 +41,6 @@ EOS
                                             ).chomp
   end
 
-  it "should have the right state after mirroring" do
-    skewb_state.mirror!
-    expect(skewb_state.any_layer_solved?).to be true
-    expect(skewb_state.solved_layers.sort).to be == [:yellow, :red, :green, :blue, :orange, :white].sort
-    expect(skewb_state.layer_solved?(:yellow)).to be true
-    expect(skewb_state.layer_solved?(:red)).to be true
-    expect(skewb_state.layer_solved?(:green)).to be true
-    expect(skewb_state.layer_solved?(:blue)).to be true
-    expect(skewb_state.layer_solved?(:orange)).to be true
-    expect(skewb_state.layer_solved?(:white)).to be true
-    expect(skewb_state.to_s).to be == (<<EOS
-     YYYYY
-     YYYYY
-     YYYYY
-     YYYYY
-     YYYYY
-BBBBBOOOOOGGGGGRRRRR
-BBBBBOOOOOGGGGGRRRRR
-BBBBBOOOOOGGGGGRRRRR
-BBBBBOOOOOGGGGGRRRRR
-BBBBBOOOOOGGGGGRRRRR
-     WWWWW
-     WWWWW
-     WWWWW
-     WWWWW
-     WWWWW
-EOS
-                                      ).chomp
-  end
-
   context "when using fixed corner notation" do
 
     it "should have the right state after an U move" do
@@ -373,47 +343,6 @@ EOS
   
     context 'when using WCA orientation' do
       let (:color_scheme) { ColorScheme::WCA }
-
-      it "should have the right state after RUB and a mirror" do
-        parse_fixed_corner_skewb_algorithm("R U B").apply_to(skewb_state)
-        expect(skewb_state.to_s).to be == (<<EOS
-     YYRRR
-     YRRRR
-     RRRRR
-     RRRRW
-     RRRWW
-RROGGYYGGGRRYBBWWBBB
-ROOOGYGGGGRYYYBWBBBB
-OOOOOGGGGGYYYYYBBBBB
-OOOOOBGGGOYYYYGYBBBG
-OOOOOBBGOOYYYGGYYBGG
-     WWWBB
-     WWWWB
-     WWWWW
-     WWWWO
-     WWWOO
-EOS
-                                            ).chomp
-        skewb_state.mirror!
-        expect(skewb_state.to_s).to be == (<<EOS
-     RRRWW
-     RRRRW
-     RRRRR
-     YRRRR
-     YYRRR
-GGORRBBBWWBBYRRGGGYY
-GOOORBBBBWBYYYRGGGGY
-OOOOOBBBBBYYYYYGGGGG
-OOOOOGBBBYGYYYYOGGGB
-OOOOOGGBYYGGYYYOOGBB
-     WWWOO
-     WWWWO
-     WWWWW
-     WWWWB
-     WWWBB
-EOS
-                                          ).chomp
-      end
 
       it "should have the red layer solved after a B L' B' L sledge" do
         parse_fixed_corner_skewb_algorithm("B L' B' L").apply_to(skewb_state)

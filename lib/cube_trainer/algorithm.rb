@@ -25,6 +25,8 @@ module CubeTrainer
     end
 
     attr_reader :moves
+    attr_writer :inverse
+    protected :inverse=
 
     include ReversibleApplyable
     include Comparable
@@ -56,7 +58,11 @@ module CubeTrainer
     end
 
     def inverse
-      Algorithm.new(@moves.reverse.collect { |m| m.inverse })
+      @inverse ||= begin
+                     alg = Algorithm.new(@moves.reverse.collect { |m| m.inverse })
+                     alg.inverse = self
+                     alg
+                   end
     end
 
     def +(other)
@@ -95,6 +101,7 @@ module CubeTrainer
     # Note that this is not implemented for all moves.
     def rotate_by(rotation)
       raise TypeError unless rotation.is_a?(Rotation)
+      return self if rotation.direction.is_zero?
       Algorithm.new(@moves.map { |m| m.rotate_by(rotation) })
     end
 

@@ -103,7 +103,7 @@ module CubeTrainer
     # It tries to be different for different types of layers, but it's not perfect yet, so some
     # layers will be mapped to the same number.
     def fingerprint(skewb_state)
-      layer_color = skewb_state[SkewbCoordinate.center(@face)]
+      layer_color = skewb_state[SkewbCoordinate.for_center(@face)]
       layer_face_symbol = @color_scheme.face_symbol(layer_color)
       layer_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == layer_face_symbol }
       opposite_layer_face_symbol = opposite_face_symbol(layer_face_symbol)
