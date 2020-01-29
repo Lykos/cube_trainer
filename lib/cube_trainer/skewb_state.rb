@@ -61,10 +61,12 @@ module CubeTrainer
     end
 
     def [](coordinate)
+      @native[coordinate.native]
       sticker_array(coordinate.face)[coordinate.coordinate]
     end
   
     def []=(coordinate, color)
+      @native[coordinate.native] = color
       sticker_array(coordinate.face)[coordinate.coordinate] = color
     end    
   
