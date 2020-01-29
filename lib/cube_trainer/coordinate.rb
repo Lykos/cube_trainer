@@ -232,10 +232,11 @@ module CubeTrainer
     def initialize(face, coordinate, native)
       raise ArgumentError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
       raise ArgumentError unless coordinate.is_a?(Integer) && 0 <= coordinate && coordinate < SKEWB_STICKERS
-      @face = face
       @coordinate = coordinate
       @native = native
     end
+
+    attr_reader :native
 
     private_class_method :new
 
@@ -254,27 +255,27 @@ module CubeTrainer
     end
 
     def hash
-      [@face, @coordinate].hash
+      @hash ||= [self.class, @native].hash
     end
 
     def eql?(other)
-      self.class.equal?(other.class) && @face == other.face && @coordinate == other.coordinate
+      @native.eql?(other.native)
     end
 
     alias == eql?
 
     def <=>(other)
-      if @face != other.face
-        @face <=> other.face
-      else
-        @coordinate <=> other.coordinate
-      end
+      @native <=> other.native
+    end
+
+    def face
+      @face ||= Face.for_face_symbol(@native.face)
     end
 
     include Comparable
     include CubeConstants
 
-    attr_reader :face, :coordinate
+    attr_reader :coordinate
   end
 
 end

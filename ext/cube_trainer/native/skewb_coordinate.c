@@ -158,6 +158,35 @@ static VALUE SkewbCoordinate_eql(const VALUE self, const VALUE other) {
   }
 }
 
+
+static VALUE SkewbCoordinate_spaceship(const VALUE self, const VALUE other) {
+  if (self == other) {
+    return INT2NUM(0);
+  }
+  if (rb_obj_class(self) != rb_obj_class(other)) {
+    rb_raise(rb_eTypeError, "Cannot compare two incompatible types.");
+  }
+  const SkewbCoordinateData* self_data;
+  GetSkewbCoordinateData(self, self_data);
+  const SkewbCoordinateData* other_data;
+  GetSkewbCoordinateData(other, other_data);
+#define cmp(a, b) \
+    do { \
+      if ((a) != (b)) { \
+        if ((a) < (b)) { \
+          return INT2NUM(-1); \
+        } else { \
+          return INT2NUM(1); \
+        } \
+      } \
+    } while (0)
+  cmp(self_data->on_face_index, other_data->on_face_index);
+  cmp(self_data->part_type, other_data->part_type);
+  cmp(self_data->within_face_index, other_data->within_face_index);
+#undef cmp
+  return 0;
+}
+
 VALUE SkewbCoordinate_face(const VALUE self) {
   SkewbCoordinateData* data;
   GetSkewbCoordinateData(self, data);
@@ -178,6 +207,7 @@ void init_skewb_coordinate_class_under(const VALUE module) {
   rb_define_method(SkewbCoordinateClass, "hash", SkewbCoordinate_hash, 0);
   rb_define_method(SkewbCoordinateClass, "eql?", SkewbCoordinate_eql, 1);
   rb_define_alias(SkewbCoordinateClass, "==", "eql?");
+  rb_define_method(SkewbCoordinateClass, "<=>", SkewbCoordinate_spaceship, 1);
   rb_define_method(SkewbCoordinateClass, "face", SkewbCoordinate_face, 0);
   rb_define_method(SkewbCoordinateClass, "part_type", SkewbCoordinate_part_type, 0);
   rb_define_singleton_method(SkewbCoordinateClass, "for_center", SkewbCoordinate_for_center, 1);
