@@ -117,7 +117,6 @@ module CubeTrainer
   
     def []=(coordinate, color)
       @native[coordinate.native] = color
-      sticker_array(coordinate.face)[coordinate.x][coordinate.y] = color
     end
     
     def rotate_slice(face, slice, direction)
