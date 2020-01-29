@@ -16,7 +16,7 @@ typedef struct {
   VALUE* stickers;
 } CubeStateData;
 
-void CubeStateData_mark(void* const ptr) {
+static void CubeStateData_mark(void* const ptr) {
   const CubeStateData* data = ptr;
   const int n = data->cube_size;
   for (int i = 0; i < num_stickers(n); ++i) {
@@ -24,13 +24,13 @@ void CubeStateData_mark(void* const ptr) {
   }
 }
 
-void CubeStateData_free(void* const ptr) {
+static void CubeStateData_free(void* const ptr) {
   const CubeStateData* const data = ptr;
   free(data->stickers);
   free(ptr);
 }
 
-size_t CubeStateData_size(const void* const ptr) {
+static size_t CubeStateData_size(const void* const ptr) {
   const CubeStateData* const data = ptr;
   return sizeof(CubeStateData) + num_stickers(data->cube_size) * sizeof(VALUE);
 }
@@ -42,7 +42,7 @@ const rb_data_type_t CubeStateData_type = {
   RUBY_TYPED_FREE_IMMEDIATELY  
 };
 
-VALUE* malloc_stickers(const int n) {
+static VALUE* malloc_stickers(const int n) {
   VALUE* const stickers = malloc(num_stickers(n) * sizeof(VALUE));
   if (stickers == NULL) {
     rb_raise(rb_eNoMemError, "Allocating cube failed.");
@@ -50,22 +50,28 @@ VALUE* malloc_stickers(const int n) {
   return stickers;
 }
 
-VALUE CubeState_alloc(const VALUE klass) {
+static VALUE CubeState_alloc(const VALUE klass) {
   CubeStateData* data;
-  VALUE object = TypedData_Make_Struct(klass, CubeStateData, &CubeStateData_type, data);
+  const VALUE object = TypedData_Make_Struct(klass, CubeStateData, &CubeStateData_type, data);
   data->cube_size = 0;
   data->stickers = NULL;
   return object;
 }
 
-#define GetCubeStateData(obj, data) TypedData_Get_Struct((obj), CubeStateData, &CubeStateData_type, (data));
-#define GetInitializedCubeStateData(obj, data) \
-  TypedData_Get_Struct((obj), CubeStateData, &CubeStateData_type, (data)); \
-  if (data->stickers == NULL) { \
-    rb_raise(rb_eArgError, "Cube isn't initialized."); \
-  }
+#define GetCubeStateData(obj, data) \
+  do { \
+    TypedData_Get_Struct((obj), CubeStateData, &CubeStateData_type, (data)); \
+  } while (0)
 
-int extract_index_base_face_index(const VALUE face_hash, const VALUE key) {
+#define GetInitializedCubeStateData(obj, data) \
+  do { \
+    GetCubeStateData((obj), (data)); \
+    if (data->stickers == NULL) { \
+      rb_raise(rb_eArgError, "Cube isn't initialized."); \
+    } \
+  } while(0)
+
+static int extract_index_base_face_index(const VALUE face_hash, const VALUE key) {
   const VALUE index_base_face_symbol = rb_hash_aref(face_hash, key);
   if (index_base_face_symbol == Qnil) {
     rb_raise(rb_eTypeError, "Cube faces must have keys called :{x,y}_base_face_symbol that describes which face an x or y value of 0 is close to.");
@@ -74,12 +80,9 @@ int extract_index_base_face_index(const VALUE face_hash, const VALUE key) {
   return face_index(index_base_face_symbol);
 }
 
-int replace_face(const VALUE key, const VALUE value, const VALUE self) {
+static int CubeState_replace_face(const VALUE key, const VALUE value, const VALUE self) {
   const CubeStateData* data;
-  GetCubeStateData(self, data);
-  if (data->stickers == NULL) {
-    rb_raise(rb_eArgError, "Cube isn't initialized.");
-  }
+  GetInitializedCubeStateData(self, data);
   const int n = data->cube_size;
   Check_Type(value, T_HASH);
   if (RHASH_SIZE(value) != 3) {
@@ -109,12 +112,13 @@ int replace_face(const VALUE key, const VALUE value, const VALUE self) {
       data->stickers[sticker_index(n, on_face_index, point)] = cell;
     }
   }
+  return ST_CONTINUE;
 }
 
-VALUE CubeState_initialize(const VALUE self, const VALUE cube_size, const VALUE stickers) {
+static VALUE CubeState_initialize(const VALUE self, const VALUE cube_size, const VALUE stickers) {
   Check_Type(cube_size, T_FIXNUM);
   Check_Type(stickers, T_HASH);
-  const int n = NUM2INT(cube_size);
+  const int n = FIX2INT(cube_size);
   CubeStateData* data;
   GetCubeStateData(self, data);
   data->cube_size = n;
@@ -125,14 +129,14 @@ VALUE CubeState_initialize(const VALUE self, const VALUE cube_size, const VALUE 
   if (RHASH_SIZE(stickers) != cube_faces) {
     rb_raise(rb_eTypeError, "Cubes must have %d faces. Got %ld.", cube_faces, RHASH_SIZE(stickers));
   }
-  rb_hash_foreach(stickers, replace_face, self);
+  rb_hash_foreach(stickers, CubeState_replace_face, self);
   return self;
 }
 
-VALUE CubeState_sticker_array(const VALUE self,
-                              const VALUE on_face_symbol,
-                              const VALUE x_base_face_symbol,
-                              const VALUE y_base_face_symbol) {
+static VALUE CubeState_sticker_array(const VALUE self,
+                                     const VALUE on_face_symbol,
+                                     const VALUE x_base_face_symbol,
+                                     const VALUE y_base_face_symbol) {
   Check_Type(on_face_symbol, T_SYMBOL);
   Check_Type(x_base_face_symbol, T_SYMBOL);
   Check_Type(y_base_face_symbol, T_SYMBOL);
@@ -156,19 +160,19 @@ VALUE CubeState_sticker_array(const VALUE self,
   return face;
 }
 
-VALUE CubeState_entry(const VALUE self, const VALUE coordinate) {
+static VALUE CubeState_entry(const VALUE self, const VALUE coordinate) {
   const CubeStateData* data;
   GetInitializedCubeStateData(self, data);
   return data->stickers[CubeCoordinate_sticker_index(coordinate, data->cube_size)];
 }
 
-VALUE CubeState_store(const VALUE self, const VALUE coordinate, const VALUE value) {
+static VALUE CubeState_store(const VALUE self, const VALUE coordinate, const VALUE value) {
   const CubeStateData* data;
   GetInitializedCubeStateData(self, data);
   return data->stickers[CubeCoordinate_sticker_index(coordinate, data->cube_size)] = value;
 }
 
-VALUE CubeState_hash(const VALUE self) {
+static VALUE CubeState_hash(const VALUE self) {
   const CubeStateData* data;
   GetInitializedCubeStateData(self, data);
 
@@ -182,7 +186,7 @@ VALUE CubeState_hash(const VALUE self) {
   return ST2FIX(rb_hash_end(hash));
 }
 
-VALUE CubeState_eql(const VALUE self, const VALUE other) {
+static VALUE CubeState_eql(const VALUE self, const VALUE other) {
   if (self == other) {
     return Qtrue;
   }
@@ -205,12 +209,12 @@ VALUE CubeState_eql(const VALUE self, const VALUE other) {
   return Qtrue;
 }
 
-VALUE CubeState_dup(const VALUE self) {
+static VALUE CubeState_dup(const VALUE self) {
   const CubeStateData* data;
   GetInitializedCubeStateData(self, data);
   const int n = data->cube_size;
   CubeStateData* dupped_data;
-  VALUE dupped = TypedData_Make_Struct(rb_obj_class(self), CubeStateData, &CubeStateData_type, dupped_data);
+  const VALUE dupped = TypedData_Make_Struct(rb_obj_class(self), CubeStateData, &CubeStateData_type, dupped_data);
   dupped_data->cube_size = n;
   dupped_data->stickers = malloc_stickers(n);
   for (int i = 0; i < num_stickers(n); ++i) {
@@ -219,13 +223,13 @@ VALUE CubeState_dup(const VALUE self) {
   return dupped;
 }
 
-VALUE CubeState_cube_size(const VALUE self) {
+static VALUE CubeState_cube_size(const VALUE self) {
   const CubeStateData* data;
   GetInitializedCubeStateData(self, data);
   return ST2FIX(data->cube_size);
 }
 
-void swap(VALUE* const stickers, int i, int j) {
+static void swap(VALUE* const stickers, int i, int j) {
   VALUE buffer;
   buffer = stickers[i];
   stickers[i] = stickers[j];
@@ -236,7 +240,7 @@ typedef struct {
   int indices[neighbor_faces];
 } Sticker4Cycle;
 
-void apply_4cycle(VALUE* const stickers, const Sticker4Cycle cycle, const int direction) {
+static void apply_4cycle(VALUE* const stickers, const Sticker4Cycle cycle, const int direction) {
   if (direction == 2) {
     swap(stickers, cycle.indices[0], cycle.indices[2]);
     swap(stickers, cycle.indices[1], cycle.indices[3]);
@@ -252,13 +256,13 @@ void apply_4cycle(VALUE* const stickers, const Sticker4Cycle cycle, const int di
   }
 }
 
-VALUE CubeState_rotate_slice(const VALUE self, const VALUE turned_face_symbol, const VALUE slice_num, const VALUE direction_num) {
+static VALUE CubeState_rotate_slice(const VALUE self, const VALUE turned_face_symbol, const VALUE slice_num, const VALUE direction_num) {
   Check_Type(turned_face_symbol, T_SYMBOL);
   Check_Type(slice_num, T_FIXNUM);
   Check_Type(direction_num, T_FIXNUM);
   const int turned_face_index = face_index(turned_face_symbol);
-  const int slice = NUM2INT(slice_num);
-  const int direction = ((NUM2INT(direction_num) % 4) + 4) % 4;
+  const int slice = FIX2INT(slice_num);
+  const int direction = ((FIX2INT(direction_num) % 4) + 4) % 4;
   if (direction == 0) {
     return Qnil;
   }
@@ -278,13 +282,13 @@ VALUE CubeState_rotate_slice(const VALUE self, const VALUE turned_face_symbol, c
   return Qnil;
 }
 
-VALUE CubeState_rotate_face(const VALUE self, const VALUE turned_face_symbol, const VALUE direction_num) {
+static VALUE CubeState_rotate_face(const VALUE self, const VALUE turned_face_symbol, const VALUE direction_num) {
   const CubeStateData* data;
   GetInitializedCubeStateData(self, data);
   Check_Type(turned_face_symbol, T_SYMBOL);
   Check_Type(direction_num, T_FIXNUM);
   const int turned_face_index = face_index(turned_face_symbol);
-  const int direction = ((NUM2INT(direction_num) % 4) + 4) % 4;
+  const int direction = ((FIX2INT(direction_num) % 4) + 4) % 4;
   const int n = data->cube_size;
   for (int y = 0; y < n / 2; ++y) {
     for (int x = 0; x < (n + 1) / 2; ++x) {
@@ -301,11 +305,11 @@ VALUE CubeState_rotate_face(const VALUE self, const VALUE turned_face_symbol, co
   return Qnil;
 }
 
-void init_cube_state_class_under(VALUE NativeModule) {
+void init_cube_state_class_under(const VALUE module) {
   stickers_id = rb_intern("stickers");
   x_base_face_symbol_id = rb_intern("x_base_face_symbol");
   y_base_face_symbol_id = rb_intern("y_base_face_symbol");
-  CubeStateClass = rb_define_class_under(NativeModule, "CubeState", rb_cObject);
+  CubeStateClass = rb_define_class_under(module, "CubeState", rb_cObject);
   rb_define_alloc_func(CubeStateClass, CubeState_alloc);
   rb_define_method(CubeStateClass, "initialize", CubeState_initialize, 2);
   rb_define_method(CubeStateClass, "[]", CubeState_entry, 1);

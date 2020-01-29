@@ -2,4 +2,4 @@
 
 #include <ruby.h>
 
-void init_cube_state_class_under(VALUE NativeModule);
+void init_cube_state_class_under(VALUE module);

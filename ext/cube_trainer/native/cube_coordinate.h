@@ -30,4 +30,4 @@ Point point_on_face(int on_face_index,
 
 int CubeCoordinate_sticker_index(VALUE obj, int cube_size);
 
-void init_cube_coordinate_class_under(VALUE NativeModule);
+void init_cube_coordinate_class_under(VALUE module);
