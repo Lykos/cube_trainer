@@ -38,7 +38,8 @@ size_t CubeStateData_size(const void* const ptr) {
 const rb_data_type_t CubeStateData_type = {
   "CubeTrainer::Native::CubeStateData",
   {CubeStateData_mark, CubeStateData_free, CubeStateData_size, NULL},
-  NULL, NULL, 0
+  NULL, NULL,
+  RUBY_TYPED_FREE_IMMEDIATELY  
 };
 
 VALUE* malloc_stickers(const int n) {
