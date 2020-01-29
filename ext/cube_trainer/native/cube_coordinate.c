@@ -10,9 +10,13 @@ typedef struct {
   Point point;
 } CubeCoordinateData;
 
+size_t CubeCoordinateData_size(const void* const ptr) {
+  return sizeof(CubeCoordinateData);
+}
+
 const rb_data_type_t CubeCoordinateData_type = {
   "CubeTrainer::Native::CubeCoordinateData",
-  {NULL, NULL, NULL, NULL},
+  {NULL, NULL, CubeCoordinateData_size, NULL},
   NULL, NULL,
   RUBY_TYPED_FREE_IMMEDIATELY
 };
@@ -34,10 +38,6 @@ int CubeCoordinate_sticker_index(const VALUE obj, const int cube_size) {
     rb_raise(rb_eArgError, "Cannot use coordinate for cube size %d on a %dx%d cube.", data->cube_size, cube_size, cube_size);
   }
   return sticker_index(cube_size, data->on_face_index, data->point);
-}
-
-size_t CubeCoordinateData_size(const void* const ptr) {
-  return sizeof(CubeCoordinateData);
 }
 
 VALUE CubeCoordinate_alloc(const VALUE klass) {
@@ -169,6 +169,28 @@ VALUE CubeCoordinate_eql(const VALUE self, const VALUE other) {
   }
 }
 
+VALUE CubeCoordinate_cube_size(const VALUE self) {
+  const CubeCoordinateData* data;
+  GetCubeCoordinateData(self, data);
+  return INT2NUM(data->cube_size);
+}
+
+VALUE CubeCoordinate_face(const VALUE self) {
+  const CubeCoordinateData* data;
+  GetCubeCoordinateData(self, data);
+  return face_symbol(data->on_face_index);    
+}
+
+VALUE CubeCoordinate_coordinate(const VALUE self, const VALUE index_base_face_symbol) {
+  const CubeCoordinateData* data;
+  GetCubeCoordinateData(self, data);
+  const FACE_INDEX index_base_face_index = face_index(index_base_face_symbol);
+  // Make use of the fact that 0 + 1 + 2 = 3
+  const FACE_INDEX third_face_index = 3 - axis_index(data->on_face_index) - axis_index(index_base_face_index);
+  const int index = switch_axes(index_base_face_index, third_face_index) ? data->point.y : data->point.x;
+  return INT2NUM(transform_index(index_base_face_index, data->cube_size, index));
+}
+
 void init_cube_coordinate_class_under(const VALUE NativeModule) {
   CubeCoordinateClass = rb_define_class_under(NativeModule, "CubeCoordinate", rb_cObject);
   rb_define_alloc_func(CubeCoordinateClass, CubeCoordinate_alloc);
@@ -176,4 +198,7 @@ void init_cube_coordinate_class_under(const VALUE NativeModule) {
   rb_define_method(CubeCoordinateClass, "hash", CubeCoordinate_hash, 0);
   rb_define_method(CubeCoordinateClass, "eql?", CubeCoordinate_eql, 1);
   rb_define_alias(CubeCoordinateClass, "==", "eql?");
+  rb_define_method(CubeCoordinateClass, "cube_size", CubeCoordinate_cube_size, 0);
+  rb_define_method(CubeCoordinateClass, "face", CubeCoordinate_face, 0);
+  rb_define_method(CubeCoordinateClass, "coordinate", CubeCoordinate_coordinate, 1);
 }

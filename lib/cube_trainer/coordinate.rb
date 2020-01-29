@@ -110,53 +110,61 @@ module CubeTrainer
       native = Native::CubeCoordinate.new(
         cube_size,
         face.face_symbol,
-        # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
-        # so we have to swap coordinates here.
         face.coordinate_index_base_face(0).face_symbol,
         face.coordinate_index_base_face(1).face_symbol,
         x,
         y,
       )
-      new(face, cube_size, x, y, native);
+      new(native);
     end
 
     private_class_method :new
     
-    def initialize(face, cube_size, x, y, native)
-      raise TypeError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
-      raise TypeError unless cube_size.is_a?(Integer)
-      raise ArgumentError unless cube_size > 0
+    def initialize(native)
       raise TypeError unless native.is_a?(Native::CubeCoordinate)
-      @face = face
-      @cube_size = cube_size
-      @coordinates = [x, y]
       @native = native
     end
 
-    attr_reader :face, :cube_size, :coordinates, :native
+    attr_reader :native
+
+    def face
+      @face ||= Face.for_face_symbol(@native.face)
+    end
+
+    def cube_size
+      @cube_size ||= @native.cube_size
+    end
+
+    def coordinate(coordinate_index)
+      native.coordinate(face.coordinate_index_base_face(coordinate_index).face_symbol)
+    end
+
+    def coordinates
+      @coordinates ||= [@x, @y]
+    end
 
     def x
-      @coordinates[0]
+      @x ||= coordinate(0)
     end
 
     def y
-      @coordinates[1]
+      @y ||= coordinate(1)
     end
 
     def eql?(other)
-      self.class.equal?(other.class) && @face == other.face && @cube_size == other.cube_size && @coordinates == other.coordinates && @native == other.native
+      self.class.equal?(other.class) && @native == other.native
     end
 
     alias == eql?
 
     def hash
-      [self.class, @face, @cube_size, @coordinates, @native].hash
+      [self.class, @native].hash
     end
 
     def can_jump_to?(to_face)
       raise ArgumentError unless to_face.is_a?(Face)
-      jump_coordinate_index = @face.coordinate_index_close_to(to_face)
-      jump_coordinate = @coordinates[jump_coordinate_index]
+      jump_coordinate_index = face.coordinate_index_close_to(to_face)
+      jump_coordinate = coordinates[jump_coordinate_index]
       (jump_coordinate == 0 && to_face.close_to_smaller_indices?) ||
         (jump_coordinate == Coordinate.highest_coordinate(cube_size) && !to_face.close_to_smaller_indices?)
     end
@@ -165,27 +173,27 @@ module CubeTrainer
       raise ArgumentError unless to_face.is_a?(Face)
       raise ArgumentError unless face.neighbors.include?(to_face)
       raise ArgumentError unless can_jump_to?(to_face)
-      new_coordinates = @coordinates.dup
-      jump_coordinate_index = @face.coordinate_index_close_to(to_face)
+      new_coordinates = coordinates.dup
+      jump_coordinate_index = face.coordinate_index_close_to(to_face)
       jump_coordinate = new_coordinates.delete_at(jump_coordinate_index)
-      new_coordinate_index = to_face.coordinate_index_close_to(@face)
-      new_coordinate = make_coordinate_at_edge_to(@face)
+      new_coordinate_index = to_face.coordinate_index_close_to(face)
+      new_coordinate = make_coordinate_at_edge_to(face)
       new_coordinates.insert(new_coordinate_index, new_coordinate)
-      Coordinate.from_indices(to_face, @cube_size, *new_coordinates)
+      Coordinate.from_indices(to_face, cube_size, *new_coordinates)
     end
 
     def jump_to_coordinates(new_coordinates)
-      Coordinate.from_indices(@face, @cube_size, *new_coordinates)
+      Coordinate.from_indices(face, cube_size, *new_coordinates)
     end
 
     def make_coordinate_at_edge_to(face)
-      if face.close_to_smaller_indices? then 0 else Coordinate.highest_coordinate(@cube_size) end
+      if face.close_to_smaller_indices? then 0 else Coordinate.highest_coordinate(cube_size) end
     end
 
     # Returns neighbor faces that are closer to this coordinate than their opposite face.
     def close_neighbor_faces
-      @face.neighbors.select do |neighbor|
-        coordinate = @coordinates[@face.coordinate_index_close_to(neighbor)]
+      face.neighbors.select do |neighbor|
+        coordinate = coordinates[face.coordinate_index_close_to(neighbor)]
         if neighbor.close_to_smaller_indices?
           is_before_middle?(coordinate)
         else
@@ -195,16 +203,16 @@ module CubeTrainer
     end
 
     def is_after_middle?(x)
-      Coordinate.canonicalize(x, @cube_size) > Coordinate.middle_or_before(@cube_size)
+      Coordinate.canonicalize(x, cube_size) > Coordinate.middle_or_before(cube_size)
     end
 
     def is_before_middle?(x)
-      Coordinate.canonicalize(x, @cube_size) <= Coordinate.last_before_middle(@cube_size)
+      Coordinate.canonicalize(x, cube_size) <= Coordinate.last_before_middle(cube_size)
     end
 
     # On a nxn grid with integer coordinates between 0 and n - 1, give the 4 points that point (x, y) hits if you rotate by 90 degrees.
     def rotate
-      jump_to_coordinates([y, Coordinate.invert_coordinate(x, @cube_size)])
+      jump_to_coordinates([y, Coordinate.invert_coordinate(x, cube_size)])
     end
   
     # On a nxn grid with integer coordinates between 0 and n - 1, give the 4 points that point (x, y) hits if you do a full rotation of the face in clockwise order.

@@ -4,7 +4,7 @@ require 'cube_trainer/cube'
 include CubeTrainer
 
 describe Coordinate do
-  let (:coordinate) { Coordinate.from_indices(Face::U, n, 0, 0) }
+  let (:coordinate) { Coordinate.from_indices(Face::U, n, 0, 1) }
 
   context 'for an uneven n' do
     let (:n) { 7 }
@@ -15,6 +15,13 @@ describe Coordinate do
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::D, n, 1, 0)).to be false
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::U, n, 1, -1)).to be false
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::U, n + 2, 1, 0)).to be false
+    end
+    
+    it 'should return the values passed in the constructor via the getters' do
+      expect(coordinate.face).to be == Face::U
+      expect(coordinate.cube_size).to be == n
+      expect(coordinate.x).to be == 0
+      expect(coordinate.y).to be == 1
     end
     
     it 'should check coordinates appropriately' do
@@ -146,6 +153,13 @@ describe Coordinate do
       expect { Coordinate.from_indices(Face::U, n, 0, 5) }.not_to raise_error
     end
 
+    it 'should return the values passed in the constructor via the getters' do
+      expect(coordinate.face).to be == Face::U
+      expect(coordinate.cube_size).to be == n
+      expect(coordinate.x).to be == 0
+      expect(coordinate.y).to be == 1
+    end
+    
     it 'should check whether something is before the middle' do
       expect(coordinate.is_before_middle?(-6)).to be true
       expect(coordinate.is_before_middle?(-5)).to be true
