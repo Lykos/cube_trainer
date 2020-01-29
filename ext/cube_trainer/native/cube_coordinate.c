@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-VALUE CubeCoordinateClass = Qnil;
+static VALUE CubeCoordinateClass = Qnil;
 
 typedef struct {
   size_t cube_size;
@@ -34,9 +34,9 @@ size_t sticker_index(const size_t cube_size, const face_index_t on_face_index, c
   return on_face_index * cube_size * cube_size + point.y * cube_size + point.x;
 }
 
-size_t CubeCoordinate_sticker_index(const VALUE obj, const size_t cube_size) {
+size_t CubeCoordinate_sticker_index(const VALUE self, const size_t cube_size) {
   CubeCoordinateData* data;
-  GetCubeCoordinateData(obj, data);
+  GetCubeCoordinateData(self, data);
   if (data->cube_size != cube_size) {
     rb_raise(rb_eArgError, "Cannot use coordinate for cube size %ld on a %ldx%ld cube.", data->cube_size, cube_size, cube_size);
   }
@@ -65,7 +65,7 @@ size_t transform_index(const face_index_t index_base_face_index, const size_t cu
   }
 }
 
-int switch_axes(const face_index_t x_base_face_index, const face_index_t y_base_face_index) {
+bool switch_axes(const face_index_t x_base_face_index, const face_index_t y_base_face_index) {
   return axis_index(x_base_face_index) > axis_index(y_base_face_index);
 }
 

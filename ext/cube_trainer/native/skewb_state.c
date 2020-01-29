@@ -1,6 +1,10 @@
 #include "skewb_state.h"
 
-VALUE SkewbStateClass = Qnil;
+#include "face_symbols.h"
+#include "skewb_coordinate.h"
+#include "utils.h"
+
+static VALUE SkewbStateClass = Qnil;
 
 typedef struct {
   VALUE stickers[total_skewb_stickers];
@@ -99,6 +103,74 @@ static VALUE SkewbState_dup(const VALUE self) {
   return dupped;
 }
 
+static void apply_twisted_corner_cycle(VALUE* const stickers, const Corner corner, const bool invert) {
+  size_t twisted_corner_cycle[3];
+  for (size_t i = 0; i < 3; ++i) {
+    Corner corner_variant;
+    for (size_t j = 0; j < 3; ++j) {
+      corner_variant.face_indices[j] = corner.face_indices[(i + j) % 3];
+    }
+    twisted_corner_cycle[i] = corner_sticker_index(corner_variant);
+  }
+  apply_sticker_cycle(stickers, twisted_corner_cycle, 3, invert);
+}
+
+static void apply_center_cycle(VALUE* const stickers, const Corner corner, const bool invert) {
+  size_t center_cycle[3];
+  for (size_t i = 0; i < 3; ++i) {
+    center_cycle[i] = center_sticker_index(corner.face_indices[i]);
+  }
+  apply_sticker_cycle(stickers, center_cycle, 3, invert);
+}
+
+static void apply_moved_corner_cycles(VALUE* const stickers, const Corner corner, const bool invert) {
+  Corner adjacent_corners[3];
+  for (size_t i = 0; i < 3; ++i) {
+    adjacent_corners[i].face_indices[0] = opposite_face_index(corner.face_indices[i]);
+    adjacent_corners[i].face_indices[1] = corner.face_indices[(i + 2) % 3];
+    adjacent_corners[i].face_indices[2] = corner.face_indices[(i + 1) % 3];
+  }
+  for (size_t i = 0; i < 3; ++i) {
+    size_t sticker_cycle[3];
+    for (size_t j = 0; j < 3; ++j) {
+      sticker_cycle[j] = adjacent_corners[j].face_indices[i];
+    }
+    apply_sticker_cycle(stickers, sticker_cycle, 3, invert);
+  }
+}
+
+static VALUE SkewbState_entry(const VALUE self, const VALUE coordinate) {
+  const SkewbStateData* data;
+  GetSkewbStateData(self, data);
+  return data->stickers[SkewbCoordinate_sticker_index(coordinate)];
+}
+
+static VALUE SkewbState_store(const VALUE self, const VALUE coordinate, const VALUE value) {
+  SkewbStateData* data;
+  GetSkewbStateData(self, data);
+  return data->stickers[SkewbCoordinate_sticker_index(coordinate)] = value;
+}
+
+static VALUE SkewbState_twist_corner(const VALUE self, const VALUE face_symbols, const VALUE direction) {
+  Check_Type(face_symbols, T_ARRAY);
+  Check_Type(direction, T_FIXNUM);
+  SkewbStateData* data;
+  GetSkewbStateData(self, data);
+  const int d = FIX2INT(direction) % 3;
+  if (d == 0) {
+    return Qnil;
+  }
+
+  const Corner corner = extract_corner(face_symbols);
+  const bool invert = d == 2;
+
+  apply_twisted_corner_cycle(data->stickers, corner, invert);
+  apply_center_cycle(data->stickers, corner, invert);
+  apply_moved_corner_cycles(data->stickers, corner, invert);
+  
+  return Qnil;
+}
+
 void init_skewb_state_class_under(const VALUE module) {
   SkewbStateClass = rb_define_class_under(module, "SkewbState", rb_cObject);
   rb_define_alloc_func(SkewbStateClass, SkewbState_alloc);
@@ -107,4 +179,7 @@ void init_skewb_state_class_under(const VALUE module) {
   rb_define_method(SkewbStateClass, "eql?", SkewbState_eql, 1);
   rb_define_alias(SkewbStateClass, "==", "eql?");
   rb_define_method(SkewbStateClass, "dup", SkewbState_dup, 0);
+  rb_define_method(SkewbStateClass, "[]", SkewbState_entry, 2);
+  rb_define_method(SkewbStateClass, "[]=", SkewbState_store, 2);
+  rb_define_method(SkewbStateClass, "twist_corner", SkewbState_twist_corner, 2);
 }

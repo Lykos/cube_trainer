@@ -6,10 +6,10 @@
 #include "cube_coordinate.h"
 #include "utils.h"
 
-ID stickers_id;
-ID x_base_face_symbol_id;
-ID y_base_face_symbol_id;
-VALUE CubeStateClass = Qnil;
+static ID stickers_id = 0;
+static ID x_base_face_symbol_id = 0;
+static ID y_base_face_symbol_id = 0;
+static VALUE CubeStateClass = Qnil;
 
 typedef struct {
   size_t cube_size;
@@ -227,40 +227,13 @@ static VALUE CubeState_cube_size(const VALUE self) {
   return ST2FIX(data->cube_size);
 }
 
-static void swap(VALUE* const stickers, size_t i, size_t j) {
-  VALUE buffer;
-  buffer = stickers[i];
-  stickers[i] = stickers[j];
-  stickers[j] = buffer;
-}
-
-typedef struct {
-  size_t indices[neighbor_faces];
-} Sticker4Cycle;
-
-static void apply_4cycle(VALUE* const stickers, const Sticker4Cycle cycle, const int direction) {
-  if (direction == 2) {
-    swap(stickers, cycle.indices[0], cycle.indices[2]);
-    swap(stickers, cycle.indices[1], cycle.indices[3]);
-  } else {
-    const size_t last_index = (direction * (neighbor_faces - 1)) % neighbor_faces;
-    const VALUE buffer = stickers[cycle.indices[last_index]];
-    for (size_t i = neighbor_faces - 1; i >= 1; --i) {
-      const size_t target_index = (direction * i) % neighbor_faces;
-      const size_t source_index = (direction * (i - 1)) % neighbor_faces;
-      stickers[cycle.indices[target_index]] = stickers[cycle.indices[source_index]];
-    }
-    stickers[cycle.indices[0]] = buffer;
-  }
-}
-
 static VALUE CubeState_rotate_slice(const VALUE self, const VALUE turned_face_symbol, const VALUE slice_num, const VALUE direction_num) {
   Check_Type(turned_face_symbol, T_SYMBOL);
   Check_Type(slice_num, T_FIXNUM);
   Check_Type(direction_num, T_FIXNUM);
   const face_index_t turned_face_index = face_index(turned_face_symbol);
   const size_t slice = FIX2INT(slice_num);
-  const size_t direction = ((FIX2INT(direction_num) % 4) + 4) % 4;
+  const direction_t direction = ((FIX2INT(direction_num) % 4) + 4) % 4;
   if (direction == 0) {
     return Qnil;
   }
@@ -275,7 +248,7 @@ static VALUE CubeState_rotate_slice(const VALUE self, const VALUE turned_face_sy
       const Point point = point_on_face(on_face_index, turned_face_index, next_face_index, n, slice, i);
       cycle.indices[j] = sticker_index(n, on_face_index, point);
     }
-    apply_4cycle(data->stickers, cycle, direction);
+    apply_sticker_4cycle(data->stickers, cycle, direction);
   }
   return Qnil;
 }
@@ -297,7 +270,7 @@ static VALUE CubeState_rotate_face(const VALUE self, const VALUE turned_face_sym
         const Point point = point_on_face(turned_face_index, x_face_index, y_face_index, n, x, y);
         cycle.indices[j] = sticker_index(n, turned_face_index, point);
       }
-      apply_4cycle(data->stickers, cycle, direction);
+      apply_sticker_4cycle(data->stickers, cycle, direction);
     }
   }
   return Qnil;
