@@ -54,32 +54,6 @@ module CubeTrainer
       rot.apply_to_skewb(self)
     end
 
-    # Mirrors across an arbitrary axis.
-    def mirror!
-      top = Face.for_face_symbol(:U)
-      bottom = Face.for_face_symbol(:D)
-      front = Face.for_face_symbol(:F)
-      back = Face.for_face_symbol(:B)
-      right = Face.for_face_symbol(:R)
-      left = Face.for_face_symbol(:L)
-      swaps = [
-        [SkewbCoordinate.for_center(front), SkewbCoordinate.for_center(back)],
-        [SkewbCoordinate.corner_index(front, 0), SkewbCoordinate.corner_index(back, 1)],
-        [SkewbCoordinate.corner_index(front, 1), SkewbCoordinate.corner_index(back, 3)],
-        [SkewbCoordinate.corner_index(front, 2), SkewbCoordinate.corner_index(back, 0)],
-        [SkewbCoordinate.corner_index(front, 3), SkewbCoordinate.corner_index(back, 2)],
-        [SkewbCoordinate.corner_index(bottom, 0), SkewbCoordinate.corner_index(bottom, 1)],
-        [SkewbCoordinate.corner_index(bottom, 2), SkewbCoordinate.corner_index(bottom, 3)],
-        [SkewbCoordinate.corner_index(top, 0), SkewbCoordinate.corner_index(top, 2)],
-        [SkewbCoordinate.corner_index(top, 1), SkewbCoordinate.corner_index(top, 3)],
-        [SkewbCoordinate.corner_index(right, 0), SkewbCoordinate.corner_index(right, 1)],
-        [SkewbCoordinate.corner_index(right, 2), SkewbCoordinate.corner_index(right, 3)],
-        [SkewbCoordinate.corner_index(left, 0), SkewbCoordinate.corner_index(left, 2)],
-        [SkewbCoordinate.corner_index(left, 1), SkewbCoordinate.corner_index(left, 3)],
-      ]
-      MIRROR_SWAPS.each { |s| apply_sticker_cycle(s) }
-    end
-
     def [](coordinate)
       sticker_array(coordinate.face)[coordinate.coordinate]
     end
