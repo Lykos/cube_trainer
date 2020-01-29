@@ -16,11 +16,6 @@ module CubeTrainer
   
     attr_reader :letters
   
-    # Encoding for YAML (and possibly others)
-    def encode_with(coder)
-      coder['letters'] = @letters
-    end
-
     def has_any_letter?(letters)
       !(@letters & letters).empty?
     end
@@ -42,7 +37,7 @@ module CubeTrainer
     alias == eql?
   
     def hash
-      @letters.hash
+      @hash ||= ([self.class] + @letters).hash
     end
   
     def to_s

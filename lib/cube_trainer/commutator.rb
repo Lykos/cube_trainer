@@ -27,7 +27,7 @@ module CubeTrainer
     alias == eql?
 
     def hash
-      @algorithm.hash
+      @hash ||= [self.class, @algorithm].hash
     end
 
     def inverse
@@ -56,7 +56,7 @@ module CubeTrainer
     alias == eql?
   
     def hash
-      [@first_part, @second_part].hash
+      @hash ||= [self.class, @first_part, @second_part].hash
     end
     
     def inverse
@@ -89,7 +89,7 @@ module CubeTrainer
     alias == eql?
   
     def hash
-      [@setup, @inner_commutator].hash
+      @hash ||= [self.class, @setup, @inner_commutator].hash
     end
   
     def inverse

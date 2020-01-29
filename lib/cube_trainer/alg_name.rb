@@ -40,7 +40,7 @@ module CubeTrainer
     alias == eql?
   
     def hash
-      to_s.hash
+      @hash ||= [self.class, to_s].hash
     end
 
     def +(other)

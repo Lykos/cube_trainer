@@ -55,13 +55,13 @@ module CubeTrainer
     include Comparable
   
     def eql?(other)
-      self.class.equal?(other.class) && @face_symbols == other.face_symbols
+      self.class.equal?(other.class) && @piece_index == other.piece_index
     end
   
     alias == eql?
   
     def hash
-      @face_symbols.hash
+      @hash ||= [self.class, @piece_index].hash
     end
   
     def inspect
@@ -275,10 +275,6 @@ module CubeTrainer
     end
     
     alias == eql?
-  
-    def hash
-      ([face_symbol, @index]).hash
-    end
   
     attr_reader :corresponding_part
   

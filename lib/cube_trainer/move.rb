@@ -30,11 +30,11 @@ module CubeTrainer
     include Comparable
     
     def hash
-      identifying_fields.hash
+      @hash ||= ([self.class] + identifying_fields).hash
     end
 
     def eql?(other)
-      identifying_fields == other.identifying_fields
+      self.class == other.class && identifying_fields == other.identifying_fields
     end
 
     alias == eql?

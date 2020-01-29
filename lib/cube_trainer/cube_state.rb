@@ -62,7 +62,7 @@ module CubeTrainer
     alias == eql?
   
     def hash
-      [self.class, @native].hash
+      @hash ||= [self.class, @native].hash
     end
   
     def rotate_corner(corner)

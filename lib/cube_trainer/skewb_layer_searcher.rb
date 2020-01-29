@@ -53,7 +53,7 @@ module CubeTrainer
       end
       
       def hash
-        [@move, @sub_solution].hash
+        @hash ||= [self.class, @move, @sub_solution].hash
       end
 
       def to_s

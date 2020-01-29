@@ -13,7 +13,7 @@ module CubeTrainer
     end
 
     def hash
-      name.hash
+      @hash ||= [self.class, @name].hash
     end
     
     alias == eql?

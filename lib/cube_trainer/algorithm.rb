@@ -36,7 +36,7 @@ module CubeTrainer
     alias == eql?
   
     def hash
-      @moves.hash
+      @hash ||= ([self.class] + @moves).hash
     end
 
     def length

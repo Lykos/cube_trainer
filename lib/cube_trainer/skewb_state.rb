@@ -26,7 +26,7 @@ module CubeTrainer
     alias == eql?
   
     def hash
-      @stickers.hash
+      @hash ||= ([self.class] + @stickers).hash
     end
 
     def sticker_array(face)
