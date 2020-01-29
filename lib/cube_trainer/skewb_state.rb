@@ -11,10 +11,16 @@ module CubeTrainer
     include StateHelper
     include CubeConstants
 
-    def initialize(stickers)
+    def initialize(stickers, native)
       raise ArgumentError, "Cubes must have #{FACE_SYMBOLS.length} sides." unless stickers.length == FACE_SYMBOLS.length
       raise ArgumentError, "All sides of a Skewb must have #{SKEWB_STICKERS} stickers." unless stickers.all? { |p| p.length == SKEWB_STICKERS }
       @stickers = stickers
+    end
+
+    def self.for_solved_colors(solved_colors)
+      stickers = FACE_SYMBOLS.map { |c| [solved_colors[c]] * SKEWB_STICKERS }
+      native = solved_colors
+      new(stickers, native)
     end
 
     attr_reader :stickers
@@ -35,7 +41,7 @@ module CubeTrainer
     end
 
     def dup
-      SkewbState.new(@stickers.map { |s| s.dup })
+      SkewbState.new(@stickers.map { |s| s.dup }, @native.dup)
     end
 
     def to_s

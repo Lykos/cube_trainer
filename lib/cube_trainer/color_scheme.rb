@@ -119,10 +119,7 @@ module CubeTrainer
     end
     
     def solved_skewb_state
-      stickers = ordered_colors.map do |c|
-        [c] * SKEWB_STICKERS
-      end
-      SkewbState.new(stickers)
+      SkewbState.for_solved_colors(@face_symbols_to_colors.dup)
     end
 
   end
