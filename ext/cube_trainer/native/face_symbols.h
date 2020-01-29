@@ -2,7 +2,7 @@
 
 #include <ruby.h>
 
-typedef int FACE_INDEX;
+typedef int face_index_t;
 
 #define cube_faces 6
 #define neighbor_faces 4
@@ -14,14 +14,14 @@ typedef int FACE_INDEX;
 #define B 4
 #define D 5
 
-FACE_INDEX face_index(VALUE face_symbol);
+face_index_t face_index(VALUE face_symbol);
 
-FACE_INDEX neighbor_face_index(FACE_INDEX face_index, int index);
+face_index_t neighbor_face_index(face_index_t face_index, size_t index);
 
-VALUE face_symbol(FACE_INDEX face_index);
+VALUE face_symbol(face_index_t face_index);
 
-FACE_INDEX axis_index(FACE_INDEX face_index);
+face_index_t axis_index(face_index_t face_index);
 
-FACE_INDEX opposite_face_index(FACE_INDEX face_index);
+face_index_t opposite_face_index(face_index_t face_index);
 
 void init_face_symbols();

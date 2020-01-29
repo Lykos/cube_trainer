@@ -5,8 +5,8 @@
 VALUE CubeCoordinateClass = Qnil;
 
 typedef struct {
-  int cube_size;
-  int on_face_index;
+  size_t cube_size;
+  face_index_t on_face_index;
   Point point;
 } CubeCoordinateData;
 
@@ -26,19 +26,19 @@ const rb_data_type_t CubeCoordinateData_type = {
     TypedData_Get_Struct((obj), CubeCoordinateData, &CubeCoordinateData_type, (data)); \
   } while (0)
 
-int num_stickers(const int cube_size) {
+size_t num_stickers(const size_t cube_size) {
   return cube_faces * cube_size * cube_size;
 }
 
-int sticker_index(const int cube_size, const FACE_INDEX on_face_index, const Point point) {
+size_t sticker_index(const size_t cube_size, const face_index_t on_face_index, const Point point) {
   return on_face_index * cube_size * cube_size + point.y * cube_size + point.x;
 }
 
-int CubeCoordinate_sticker_index(const VALUE obj, const int cube_size) {
+size_t CubeCoordinate_sticker_index(const VALUE obj, const size_t cube_size) {
   CubeCoordinateData* data;
   GetCubeCoordinateData(obj, data);
   if (data->cube_size != cube_size) {
-    rb_raise(rb_eArgError, "Cannot use coordinate for cube size %d on a %dx%d cube.", data->cube_size, cube_size, cube_size);
+    rb_raise(rb_eArgError, "Cannot use coordinate for cube size %ld on a %ldx%ld cube.", data->cube_size, cube_size, cube_size);
   }
   return sticker_index(cube_size, data->on_face_index, data->point);
 }
@@ -53,11 +53,11 @@ static VALUE CubeCoordinate_alloc(const VALUE klass) {
   return object;
 }
 
-static int inverted_index(const int cube_size, const int index) {
+static size_t inverted_index(const size_t cube_size, const size_t index) {
   return cube_size - 1 - index;
 }
 
-int transform_index(const FACE_INDEX index_base_face_index, const int cube_size, const int index) {
+size_t transform_index(const face_index_t index_base_face_index, const size_t cube_size, const size_t index) {
   if (index_base_face_index == axis_index(index_base_face_index)) {
     return index;
   } else {
@@ -65,13 +65,13 @@ int transform_index(const FACE_INDEX index_base_face_index, const int cube_size,
   }
 }
 
-int switch_axes(const FACE_INDEX x_base_face_index, const FACE_INDEX y_base_face_index) {
+int switch_axes(const face_index_t x_base_face_index, const face_index_t y_base_face_index) {
   return axis_index(x_base_face_index) > axis_index(y_base_face_index);
 }
 
-void check_base_face_indices(const int on_face_index,
-                             const int x_base_face_index,
-                             const int y_base_face_index) {
+void check_base_face_indices(const face_index_t on_face_index,
+                             const face_index_t x_base_face_index,
+                             const face_index_t y_base_face_index) {
   if (axis_index(x_base_face_index) == axis_index(on_face_index)) {
     rb_raise(rb_eArgError, "Invalid value for x_base_face_symbol.");
   }
@@ -83,14 +83,14 @@ void check_base_face_indices(const int on_face_index,
   }
 }
 
-Point point_on_face(const int face_index,
-                    const int x_base_face_index,
-                    const int y_base_face_index,
-                    const int cube_size,
-                    const int untransformed_x,
-                    const int untransformed_y) {
-  const int transformed_x = transform_index(x_base_face_index, cube_size, untransformed_x);
-  const int transformed_y = transform_index(y_base_face_index, cube_size, untransformed_y);
+Point point_on_face(const face_index_t face_index,
+                    const face_index_t x_base_face_index,
+                    const face_index_t y_base_face_index,
+                    const size_t cube_size,
+                    const size_t untransformed_x,
+                    const size_t untransformed_y) {
+  const size_t transformed_x = transform_index(x_base_face_index, cube_size, untransformed_x);
+  const size_t transformed_y = transform_index(y_base_face_index, cube_size, untransformed_y);
   Point point;
   if (switch_axes(x_base_face_index, y_base_face_index)) {
     point.x = transformed_y;
@@ -102,9 +102,9 @@ Point point_on_face(const int face_index,
   return point;
 }
 
-static void check_cube_index(const int cube_size, const int index) {
+static void check_cube_index(const size_t cube_size, const size_t index) {
   if (index < 0 || index >= cube_size) {
-    rb_raise(rb_eArgError, "Invalid value %d for x with cube size %d.", index, cube_size);
+    rb_raise(rb_eArgError, "Invalid value %ld for x with cube size %ld.", index, cube_size);
   }
 }
 
@@ -121,14 +121,14 @@ static VALUE CubeCoordinate_initialize(const VALUE self,
   Check_Type(y_base_face_symbol, T_SYMBOL);
   Check_Type(x_num, T_FIXNUM);
   Check_Type(y_num, T_FIXNUM);
-  const int n = FIX2INT(cube_size);
-  const FACE_INDEX on_face_index = face_index(face_symbol);
-  const FACE_INDEX x_base_face_index = face_index(x_base_face_symbol);
-  const FACE_INDEX y_base_face_index = face_index(y_base_face_symbol);
+  const size_t n = FIX2INT(cube_size);
+  const face_index_t on_face_index = face_index(face_symbol);
+  const face_index_t x_base_face_index = face_index(x_base_face_symbol);
+  const face_index_t y_base_face_index = face_index(y_base_face_symbol);
   check_base_face_indices(on_face_index, x_base_face_index, y_base_face_index);
-  const int untransformed_x = FIX2INT(x_num);
+  const size_t untransformed_x = FIX2INT(x_num);
   check_cube_index(n, untransformed_x);
-  const int untransformed_y = FIX2INT(y_num);
+  const size_t untransformed_y = FIX2INT(y_num);
   check_cube_index(n, untransformed_y);
   const Point point = point_on_face(on_face_index, x_base_face_index, y_base_face_index, n, untransformed_x, untransformed_y);
   CubeCoordinateData* data;
@@ -187,10 +187,10 @@ static VALUE CubeCoordinate_face(const VALUE self) {
 static VALUE CubeCoordinate_coordinate(const VALUE self, const VALUE index_base_face_symbol) {
   const CubeCoordinateData* data;
   GetCubeCoordinateData(self, data);
-  const FACE_INDEX index_base_face_index = face_index(index_base_face_symbol);
+  const face_index_t index_base_face_index = face_index(index_base_face_symbol);
   // Make use of the fact that 0 + 1 + 2 = 3
-  const FACE_INDEX third_face_index = 3 - axis_index(data->on_face_index) - axis_index(index_base_face_index);
-  const int index = switch_axes(index_base_face_index, third_face_index) ? data->point.y : data->point.x;
+  const face_index_t third_face_index = 3 - axis_index(data->on_face_index) - axis_index(index_base_face_index);
+  const size_t index = switch_axes(index_base_face_index, third_face_index) ? data->point.y : data->point.x;
   return INT2NUM(transform_index(index_base_face_index, data->cube_size, index));
 }
 

@@ -8,7 +8,7 @@ typedef struct {
 
 static void SkewbStateData_mark(void* const ptr) {
   const SkewbStateData* data = ptr;
-  for (int i = 0; i < total_skewb_stickers; ++i) {
+  for (size_t i = 0; i < total_skewb_stickers; ++i) {
     rb_gc_mark(data->stickers[i]);
   }
 }
@@ -32,7 +32,7 @@ const rb_data_type_t SkewbStateData_type = {
 static VALUE SkewbState_alloc(const VALUE klass) {
   SkewbStateData* data;
   const VALUE object = TypedData_Make_Struct(klass, SkewbStateData, &SkewbStateData_type, data);
-  for (int i = 0; i < total_skewb_stickers; ++i) {
+  for (size_t i = 0; i < total_skewb_stickers; ++i) {
     data->stickers[i] = Qnil;
   }
 }
@@ -40,8 +40,8 @@ static VALUE SkewbState_alloc(const VALUE klass) {
 static int SkewbState_replace_face(const VALUE key, const VALUE value, const VALUE self) {
   SkewbStateData* data;
   GetSkewbStateData(self, data);
-  const FACE_INDEX on_face_index = face_index(key);
-  for (int i = 0; i < skewb_stickers_per_face; ++i) {
+  const face_index_t on_face_index = face_index(key);
+  for (size_t i = 0; i < skewb_stickers_per_face; ++i) {
     data->stickers[on_face_index * skewb_stickers_per_face + i] = value;
   }
   return ST_CONTINUE;
@@ -63,7 +63,7 @@ static VALUE SkewbState_hash(const VALUE self) {
   GetSkewbStateData(self, data);
 
   st_index_t hash = rb_hash_start((st_index_t)SkewbState_hash);
-  for (int i = 0; i < total_skewb_stickers; i++) {
+  for (size_t i = 0; i < total_skewb_stickers; i++) {
     const VALUE sub_hash = rb_hash(data->stickers[i]);
     hash = rb_hash_uint(hash, NUM2LONG(sub_hash));
   }
@@ -81,7 +81,7 @@ static VALUE SkewbState_eql(const VALUE self, const VALUE other) {
   GetSkewbStateData(self, self_data);
   const SkewbStateData* other_data;
   GetSkewbStateData(self, other_data);
-  for (int i = 0; i < total_skewb_stickers; ++i) {
+  for (size_t i = 0; i < total_skewb_stickers; ++i) {
     if (self_data->stickers[i] != other_data->stickers[i]) {
       return Qfalse;
     }
