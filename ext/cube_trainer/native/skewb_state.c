@@ -35,6 +35,7 @@ static VALUE SkewbState_alloc(const VALUE klass) {
   for (size_t i = 0; i < total_skewb_stickers; ++i) {
     data->stickers[i] = Qnil;
   }
+  return object;
 }
 
 static int SkewbState_replace_face(const VALUE key, const VALUE value, const VALUE self) {
@@ -101,7 +102,7 @@ static VALUE SkewbState_dup(const VALUE self) {
 void init_skewb_state_class_under(const VALUE module) {
   SkewbStateClass = rb_define_class_under(module, "SkewbState", rb_cObject);
   rb_define_alloc_func(SkewbStateClass, SkewbState_alloc);
-  rb_define_method(SkewbStateClass, "initialize", SkewbState_initialize, 6);
+  rb_define_method(SkewbStateClass, "initialize", SkewbState_initialize, 1);
   rb_define_method(SkewbStateClass, "hash", SkewbState_hash, 0);
   rb_define_method(SkewbStateClass, "eql?", SkewbState_eql, 1);
   rb_define_alias(SkewbStateClass, "==", "eql?");
