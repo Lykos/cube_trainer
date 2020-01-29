@@ -9,6 +9,10 @@ describe CubeAverage do
     expect(average_computer.average).to be == 6
   end
 
+  it "should raise an error if a non-numeric type gets pushed" do
+    expect { average_computer.push("0") }.to raise_error TypeError
+  end
+
   context "when it has one element" do
     before do
       average_computer.push(3)

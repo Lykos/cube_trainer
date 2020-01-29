@@ -18,6 +18,7 @@ module CubeTrainer
     end
   
     def push(value)
+      raise TypeError unless value.is_a?(Numeric)
       was_saturated = saturated?
       @values.push(value)
       if was_saturated
