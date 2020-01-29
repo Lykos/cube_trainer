@@ -1,6 +1,6 @@
-require 'cube_trainer/cube_average'
+require 'cube_trainer/native'
 
-include CubeTrainer
+include CubeTrainer::Native
 
 describe CubeAverage do
   let (:average_computer) { CubeAverage.new(5, 6) }
