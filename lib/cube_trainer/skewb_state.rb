@@ -11,37 +11,38 @@ module CubeTrainer
     include StateHelper
     include CubeConstants
 
-    def initialize(stickers, native)
-      raise ArgumentError, "Cubes must have #{FACE_SYMBOLS.length} sides." unless stickers.length == FACE_SYMBOLS.length
-      raise ArgumentError, "All sides of a Skewb must have #{SKEWB_STICKERS} stickers." unless stickers.all? { |p| p.length == SKEWB_STICKERS }
-      @stickers = stickers
+    def initialize(native)
+      raise TypeError unless native.is_a?(Native::SkewbState)
+      @native = native
     end
+
+    attr_reader :native
 
     def self.for_solved_colors(solved_colors)
-      stickers = FACE_SYMBOLS.map { |c| [solved_colors[c]] * SKEWB_STICKERS }
-      native = solved_colors
-      new(stickers, native)
+      native = Native::SkewbState.new(solved_colors)
+      new(native)
     end
-
-    attr_reader :stickers
   
     def eql?(other)
-      self.class.equal?(other.class) && @stickers == other.stickers
+      self.class.equal?(other.class) && @native == other.native
     end
   
     alias == eql?
   
     def hash
-      @hash ||= ([self.class] + @stickers).hash
+      @hash ||= [self.class, @native].hash
     end
 
+    # TODO Get rid of this backwards compatibility artifact
     def sticker_array(face)
       raise TypeError unless face.is_a?(Face)
-      @stickers[face.piece_index]
+      center_sticker = self[SkewbCoordinate.for_center(face)]
+      corner_stickers = face.clockwise_corners.sort.map { |c| self[SkewbCoordinate.for_corner(c)] }
+      [center_sticker] + corner_stickers
     end
 
     def dup
-      SkewbState.new(@stickers.map { |s| s.dup }, @native.dup)
+      SkewbState.new(@native.dup)
     end
 
     def to_s
@@ -62,7 +63,6 @@ module CubeTrainer
 
     def [](coordinate)
       @native[coordinate.native]
-      sticker_array(coordinate.face)[coordinate.coordinate]
     end
   
     def []=(coordinate, color)

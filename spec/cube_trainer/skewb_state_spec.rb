@@ -45,13 +45,6 @@ EOS
 
     it "should have the right state after an U move" do
       parse_fixed_corner_skewb_move("U").apply_to(skewb_state)
-      expect(skewb_state.any_layer_solved?).to be false
-      expect(skewb_state.layer_solved?(:yellow)).to be false
-      expect(skewb_state.layer_solved?(:red)).to be false
-      expect(skewb_state.layer_solved?(:green)).to be false
-      expect(skewb_state.layer_solved?(:blue)).to be false
-      expect(skewb_state.layer_solved?(:orange)).to be false
-      expect(skewb_state.layer_solved?(:white)).to be false
       expect(skewb_state.to_s).to be == (<<EOS
      OOOOO
      OOOOO
@@ -70,6 +63,13 @@ YYYBBRRRRRGGGGGOOBBB
      RRWWW
 EOS
                                         ).chomp
+      expect(skewb_state.any_layer_solved?).to be false
+      expect(skewb_state.layer_solved?(:yellow)).to be false
+      expect(skewb_state.layer_solved?(:red)).to be false
+      expect(skewb_state.layer_solved?(:green)).to be false
+      expect(skewb_state.layer_solved?(:blue)).to be false
+      expect(skewb_state.layer_solved?(:orange)).to be false
+      expect(skewb_state.layer_solved?(:white)).to be false
   end
   
     it "should have the right state after an U' move" do

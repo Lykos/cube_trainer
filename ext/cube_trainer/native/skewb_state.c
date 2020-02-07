@@ -179,7 +179,7 @@ void init_skewb_state_class_under(const VALUE module) {
   rb_define_method(SkewbStateClass, "eql?", SkewbState_eql, 1);
   rb_define_alias(SkewbStateClass, "==", "eql?");
   rb_define_method(SkewbStateClass, "dup", SkewbState_dup, 0);
-  rb_define_method(SkewbStateClass, "[]", SkewbState_entry, 2);
+  rb_define_method(SkewbStateClass, "[]", SkewbState_entry, 1);
   rb_define_method(SkewbStateClass, "[]=", SkewbState_store, 2);
   rb_define_method(SkewbStateClass, "twist_corner", SkewbState_twist_corner, 2);
 }
