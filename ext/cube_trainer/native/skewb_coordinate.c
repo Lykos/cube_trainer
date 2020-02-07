@@ -27,7 +27,7 @@ static const rb_data_type_t SkewbCoordinateData_type = {
 Corner rotated_corner(const Corner corner, const int rotation) {
   Corner result;
   for (int i = 0; i < 3; ++i) {
-    result.face_indices[(i + rotation) % 3] = corner.face_indices[i];
+    result.face_indices[i] = corner.face_indices[(i + rotation) % 3];
   }
   return result;
 }

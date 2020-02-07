@@ -113,10 +113,7 @@ static VALUE SkewbState_store(const VALUE self, const VALUE coordinate, const VA
 static void apply_twisted_corner_cycle(VALUE* const stickers, const Corner corner, const bool invert) {
   size_t twisted_corner_cycle[3];
   for (size_t i = 0; i < 3; ++i) {
-    Corner corner_variant;
-    for (size_t j = 0; j < 3; ++j) {
-      corner_variant.face_indices[j] = corner.face_indices[(i + j) % 3];
-    }
+    const Corner corner_variant = rotated_corner(corner, i);
     twisted_corner_cycle[i] = corner_sticker_index(corner_variant);
   }
   apply_sticker_cycle(stickers, twisted_corner_cycle, 3, invert);
@@ -142,12 +139,8 @@ static void apply_moved_corner_cycles(VALUE* const stickers, const Corner corner
   for (size_t cycle_index = 0; cycle_index < 3; ++cycle_index) {
     size_t sticker_cycle[3];
     for (size_t corner_index = 0; corner_index < 3; ++corner_index) {
-      const Corner current_corner = adjacent_corners[corner_index];
       // The current corner, but twisted such that the sticker we care about in the current cycle faces up.
-      Corner current_corner_for_current_cycle;
-      for (size_t i = 0; i < 3; ++i) {
-        current_corner_for_current_cycle.face_indices[i] = current_corner.face_indices[(cycle_index + i) % 3];
-      }
+      const Corner current_corner_for_current_cycle = rotated_corner(adjacent_corners[corner_index], cycle_index);
       sticker_cycle[corner_index] = corner_sticker_index(current_corner_for_current_cycle);
     }
     apply_sticker_cycle(stickers, sticker_cycle, 3, invert);
