@@ -21,7 +21,7 @@ solutions = SkewbLayerSearcher.calculate(options.color_scheme, options.verbose, 
 layer_improver = SkewbLayerImprover.new(Face::D, options.color_scheme)
 solutions = solutions.map do |algs|
   algs.map { |alg| layer_improver.improve_layer(alg) }
-end.sort_by { |algs| algs[0] }
+end
 
 if options.verbose
   puts
@@ -49,8 +49,8 @@ if options.output
     puts "Read #{names.length} names."
   end
   state = options.color_scheme.solved_skewb_state
-  top_corners = Corner::ELEMENTS.select { |c| c.face_symbol.first == :U }
-  bottom_corners = Corner::ELEMENTS.select { |c| c.face_symbol.first == :D }
+  top_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == :U }
+  bottom_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == :D }
   non_bottom_faces = Face::ELEMENTS.select { |c| c.face_symbol != :D }
   layer_corners_letter_scheme = if options.layer_corners_as_letters then options.letter_scheme else nil end
   layer_describer = SkewbTransformationDescriber.new([], bottom_corners, :omit_staying, layer_corners_letter_scheme)
