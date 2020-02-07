@@ -178,7 +178,7 @@ module CubeTrainer
     def is_canonical_axis_face?
       close_to_smaller_indices?
     end
-  
+
     def self.valid?(face_symbols)
       true
     end

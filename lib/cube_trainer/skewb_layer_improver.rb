@@ -13,16 +13,13 @@ module CubeTrainer
       raise ArgumentError unless face.is_a?(Face)
       @state = color_scheme.solved_skewb_state
       @face = face
+      @solved_color = color_scheme.color(@face)
     end
 
     def alg_variations(algorithm)
       mirror_normal = @face.neighbors.first
       (0..3).map { |d| CubeDirection.new(d) }.product([true, false]).map do |d, m|
-        alg = if d.value == 0
-                algorithm
-              else
-                algorithm.rotate(Rotation.new(@face.chirality_canonicalize, d))
-              end
+        alg = algorithm.rotate_by(Rotation.new(@face, d))
         if m then alg.mirror(mirror_normal) else alg end
       end
     end
@@ -57,7 +54,7 @@ module CubeTrainer
     # Higher scores are better.
     def layer_score
       CORNER_COORDINATES_ORDERED_BY_PRIORITY.inject(0) do |sum, c|
-        corner_present = @state[c] == @face.color
+        corner_present = @state[c] == @solved_color
         2 * sum + (corner_present ? 1 : 0)
       end
     end
