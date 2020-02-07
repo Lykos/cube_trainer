@@ -17,9 +17,11 @@ typedef struct {
   face_index_t face_indices[3];
 } Corner;
 
-size_t corner_sticker_index(const Corner corner);
+Corner rotated_corner(Corner corner, int rotation);
 
-size_t center_sticker_index(const face_index_t on_face_index);
+size_t corner_sticker_index(Corner corner);
+
+size_t center_sticker_index(face_index_t on_face_index);
 
 size_t SkewbCoordinate_sticker_index(VALUE self);
 

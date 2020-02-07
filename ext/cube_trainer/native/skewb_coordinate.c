@@ -17,14 +17,22 @@ static size_t SkewbCoordinateData_size(const void* const ptr) {
   return sizeof(SkewbCoordinateData);
 }
 
-const rb_data_type_t SkewbCoordinateData_type = {
+static const rb_data_type_t SkewbCoordinateData_type = {
   "SkewbTrainer::Native::SkewbCoordinateData",
   {NULL, NULL, SkewbCoordinateData_size, NULL},
   NULL, NULL,
   RUBY_TYPED_FREE_IMMEDIATELY
 };
 
-size_t skewb_corner_index_component(const face_index_t face_index) {
+Corner rotated_corner(const Corner corner, const int rotation) {
+  Corner result;
+  for (int i = 0; i < 3; ++i) {
+    result.face_indices[(i + rotation) % 3] = corner.face_indices[i];
+  }
+  return result;
+}
+
+static size_t skewb_corner_index_component(const face_index_t face_index) {
   return face_index / 3;
 }
 
