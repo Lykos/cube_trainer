@@ -7,10 +7,10 @@ module CubeTrainer
 
   class SkewbLayerSearcherOptions
 
-    def slef.default_options
+    def self.default_options
       options = OpenStruct.new
       options.color_scheme = ColorScheme::BERNHARD
-      options.letter_scheme = DefaultLetterScheme.new
+      options.letter_scheme = BernhardLetterScheme.new
       options
     end
 

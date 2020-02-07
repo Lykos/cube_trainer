@@ -103,6 +103,18 @@ static VALUE SkewbState_dup(const VALUE self) {
   return dupped;
 }
 
+static VALUE SkewbState_entry(const VALUE self, const VALUE coordinate) {
+  const SkewbStateData* data;
+  GetSkewbStateData(self, data);
+  return data->stickers[SkewbCoordinate_sticker_index(coordinate)];
+}
+
+static VALUE SkewbState_store(const VALUE self, const VALUE coordinate, const VALUE value) {
+  SkewbStateData* data;
+  GetSkewbStateData(self, data);
+  return data->stickers[SkewbCoordinate_sticker_index(coordinate)] = value;
+}
+
 static void apply_twisted_corner_cycle(VALUE* const stickers, const Corner corner, const bool invert) {
   size_t twisted_corner_cycle[3];
   for (size_t i = 0; i < 3; ++i) {
@@ -147,24 +159,12 @@ static void apply_moved_corner_cycles(VALUE* const stickers, const Corner corner
   }
 }
 
-static VALUE SkewbState_entry(const VALUE self, const VALUE coordinate) {
-  const SkewbStateData* data;
-  GetSkewbStateData(self, data);
-  return data->stickers[SkewbCoordinate_sticker_index(coordinate)];
-}
-
-static VALUE SkewbState_store(const VALUE self, const VALUE coordinate, const VALUE value) {
-  SkewbStateData* data;
-  GetSkewbStateData(self, data);
-  return data->stickers[SkewbCoordinate_sticker_index(coordinate)] = value;
-}
-
 static VALUE SkewbState_twist_corner(const VALUE self, const VALUE face_symbols, const VALUE direction) {
   Check_Type(face_symbols, T_ARRAY);
   Check_Type(direction, T_FIXNUM);
   SkewbStateData* data;
   GetSkewbStateData(self, data);
-  const int d = FIX2INT(direction) % 3;
+  const direction_t d = (FIX2INT(direction) % 3 + 3) % 3;
   if (d == 0) {
     return Qnil;
   }
@@ -175,6 +175,47 @@ static VALUE SkewbState_twist_corner(const VALUE self, const VALUE face_symbols,
   apply_twisted_corner_cycle(data->stickers, corner, invert);
   apply_center_cycle(data->stickers, corner, invert);
   apply_moved_corner_cycles(data->stickers, corner, invert);
+  
+  return Qnil;
+}
+
+static void apply_center_rotation(VALUE* const stickers, const face_index_t axis_face_index, const direction_t direction) {
+  Sticker4Cycle center_cycle;
+  for (size_t i = 0; i < 4; ++i) {
+    center_cycle.indices[i] = center_sticker_index(neighbor_face_index(axis_face_index, i));
+  }
+  apply_sticker_4cycle(stickers, center_cycle, 4 - direction);
+}
+
+static void apply_corner_rotation(VALUE* const stickers, const face_index_t axis_face_index, const direction_t direction) {
+  Corner corner;
+  corner.face_indices[2] = axis_face_index;
+  for (size_t cycle_index = 0; cycle_index < 2; ++cycle_index) {
+    Sticker4Cycle corner_cycle;
+    for (size_t corner_index = 0; corner_index < 4; ++corner_index) {
+      for (size_t i = 0; i < 2; ++i) {
+        corner.face_indices[(cycle_index + i) % 2] = neighbor_face_index(axis_face_index, corner_index + i);
+      }
+      corner_cycle.indices[corner_index] = corner_sticker_index(corner);
+    }
+    apply_sticker_4cycle(stickers, corner_cycle, 4 - direction);
+  }
+}
+
+static VALUE SkewbState_rotate(const VALUE self, const VALUE axis_face_symbol, const VALUE direction) {
+  Check_Type(axis_face_symbol, T_SYMBOL);
+  Check_Type(direction, T_FIXNUM);
+  SkewbStateData* data;
+  GetSkewbStateData(self, data);
+  const direction_t d = (FIX2INT(direction) % 4 + 4) % 4;
+  if (d == 0) {
+    return Qnil;
+  }
+  const face_index_t axis_face_index = face_index(axis_face_symbol);
+
+  apply_center_rotation(data->stickers, axis_face_index, direction);
+  apply_corner_rotation(data->stickers, axis_face_index, direction);
+  apply_corner_rotation(data->stickers, opposite_face_index(axis_face_index), 4 - direction);
   
   return Qnil;
 }
@@ -190,4 +231,5 @@ void init_skewb_state_class_under(const VALUE module) {
   rb_define_method(SkewbStateClass, "[]", SkewbState_entry, 1);
   rb_define_method(SkewbStateClass, "[]=", SkewbState_store, 2);
   rb_define_method(SkewbStateClass, "twist_corner", SkewbState_twist_corner, 2);
+  rb_define_method(SkewbStateClass, "rotate", SkewbState_rotate, 2);
 }

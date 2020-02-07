@@ -114,7 +114,7 @@ module CubeTrainer
     def derived_layer_solutions(layer_solution)
       SarahsSkewbMove::ALL.reverse.collect_concat do |m|
         # Ignore possible moves along the same axis as the last move.
-        if layer_solution.move && layer_solution.move.move == m.move
+        if layer_solution.move && layer_solution.move.axis_corner == m.axis_corner
           []
         else
           [SkewbLayerSolution.new(m, layer_solution)]
@@ -181,7 +181,7 @@ module CubeTrainer
     end
 
     def state_is_good?(candidate)
-      @finder.state_score(@state) >= 2 || candidate.solution_length <= 3
+      true # @finder.state_score(@state) >= 2 || candidate.solution_length <= 3
     end
 
     def get_layer_solutions

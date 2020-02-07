@@ -261,26 +261,9 @@ module CubeTrainer
       cube_state.rotate_face(@axis_face.opposite, @direction.inverse)
     end
 
-    def top_corner_cycles
-      cycle = @axis_face.clockwise_corners
-      (0...Corner::FACES).map do |rotation|
-        cycle.map { |c| SkewbCoordinate.for_corner(c.rotate_by(rotation)) }
-      end      
-    end
-
-    def skewb_center_cycle
-      @axis_face.neighbors.map { |f| SkewbCoordinate.for_center(f) }
-    end
-
-    def skewb_cycles
-      @skewb_cycles ||= [skewb_center_cycle] + self.top_corner_cycles + alternative.top_corner_cycles.map { |c| c.reverse }
-    end
-
     def apply_to_skewb(skewb_state)
       raise TypeError unless skewb_state.is_a?(SkewbState)
-      skewb_cycles.each do |c|
-        skewb_state.apply_4sticker_cycle(c, @direction)
-      end
+      return skewb_state.rotate(@axis_face, @direction)
     end
 
     def is_slice_move?
@@ -631,34 +614,6 @@ module CubeTrainer
       SkewbState
     end
 
-    def twisted_corner_cycle
-      @axis_corner.rotations.map { |r| SkewbCoordinate.for_corner(r) }
-    end
-
-    def center_cycle
-      @axis_corner.adjacent_faces.map { |f| SkewbCoordinate.for_center(f) }
-    end
-
-    def outer_moved_corner_cycle
-      faces = @axis_corner.adjacent_faces
-      faces.each_index.map do |i|
-        new_faces = faces.rotate(i)
-        new_faces[0] = new_faces[0].opposite
-        Corner.between_faces(new_faces)
-      end
-    end
-
-    def moved_corner_cycles
-      cycle = outer_moved_corner_cycle
-      (0...Corner::FACES).map do |rotation|
-        cycle.map { |c| SkewbCoordinate.for_corner(c.rotate_by(rotation)) }
-      end
-    end
-
-    def cycles
-      @cycles ||= [twisted_corner_cycle, center_cycle] + moved_corner_cycles
-    end
-
     def identifying_fields
       [@axis_corner, @direction]
     end
@@ -680,17 +635,7 @@ module CubeTrainer
     
     def apply_to(skewb_state)
       raise TypeError unless skewb_state.is_a?(SkewbState)
-      return skewb_state.twist_corner(@axis_corner, @direction)
-      cycles.each do |c|
-        case @direction
-        when SkewbDirection::FORWARD
-          skewb_state.apply_sticker_cycle(c)
-        when SkewbDirection::BACKWARD
-          skewb_state.apply_sticker_cycle(c.reverse)
-        else
-          raise ArgumentError
-        end
-      end
+      skewb_state.twist_corner(@axis_corner, @direction)
     end
   end
 

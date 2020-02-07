@@ -35,11 +35,11 @@ module CubeTrainer
       end
     end
 
-    COLORS_ORDERED_BY_PRIORITY = [:white, :yellow, :red, :green, :blue, :orange]
+    FACE_SYMBOLS_ORDERED_BY_PRIORITY = [:D, :U, :F, :R, :L, :B]
 
     CORNER_COORDINATES_ORDERED_BY_PRIORITY = Corner::ELEMENTS.sort_by do |c|
-      face_index = COLORS_ORDERED_BY_PRIORITY.index(c.colors.first)
-      within_face_index = if c.colors.first == :white
+      face_index = FACE_SYMBOLS_ORDERED_BY_PRIORITY.index(c.face_symbols.first)
+      within_face_index = if c.face_symbols.first == :D
                             case c.piece_index % 4
                             when 0 then 3
                             when 1 then 1
