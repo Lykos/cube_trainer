@@ -28,11 +28,6 @@ const rb_data_type_t SkewbStateData_type = {
   RUBY_TYPED_FREE_IMMEDIATELY
 };
 
-#define GetSkewbStateData(obj, data) \
-  do { \
-    TypedData_Get_Struct((obj), SkewbStateData, &SkewbStateData_type, (data)); \
-  } while (0)
-
 static VALUE SkewbState_alloc(const VALUE klass) {
   SkewbStateData* data;
   const VALUE object = TypedData_Make_Struct(klass, SkewbStateData, &SkewbStateData_type, data);
