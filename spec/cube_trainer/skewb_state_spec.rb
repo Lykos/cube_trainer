@@ -277,7 +277,6 @@ EOS
   
     it "should have the right state after an x rotation" do
       parse_fixed_corner_skewb_move("x").apply_to(skewb_state)
-      puts skewb_string(skewb_state, :color)
       expect(skewb_state.to_s).to be == (<<EOS
      RRRRR
      RRRRR
