@@ -680,6 +680,7 @@ module CubeTrainer
     
     def apply_to(skewb_state)
       raise TypeError unless skewb_state.is_a?(SkewbState)
+      return skewb_state.twist_corner(@axis_corner, @direction)
       cycles.each do |c|
         case @direction
         when SkewbDirection::FORWARD

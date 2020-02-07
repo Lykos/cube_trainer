@@ -125,15 +125,23 @@ static void apply_center_cycle(VALUE* const stickers, const Corner corner, const
 
 static void apply_moved_corner_cycles(VALUE* const stickers, const Corner corner, const bool invert) {
   Corner adjacent_corners[3];
-  for (size_t i = 0; i < 3; ++i) {
-    adjacent_corners[i].face_indices[0] = opposite_face_index(corner.face_indices[i]);
-    adjacent_corners[i].face_indices[1] = corner.face_indices[(i + 2) % 3];
-    adjacent_corners[i].face_indices[2] = corner.face_indices[(i + 1) % 3];
+  for (size_t corner_index = 0; corner_index < 3; ++corner_index) {
+    adjacent_corners[corner_index].face_indices[0] = opposite_face_index(corner.face_indices[corner_index]);
+    adjacent_corners[corner_index].face_indices[1] = corner.face_indices[(corner_index + 2) % 3];
+    adjacent_corners[corner_index].face_indices[2] = corner.face_indices[(corner_index + 1) % 3];
   }
-  for (size_t i = 0; i < 3; ++i) {
+  // We have 3 different cycles, one for the outside stickers and one two for the remaining stickers of the
+  // corners that contain the outside stickers.
+  for (size_t cycle_index = 0; cycle_index < 3; ++cycle_index) {
     size_t sticker_cycle[3];
-    for (size_t j = 0; j < 3; ++j) {
-      sticker_cycle[j] = adjacent_corners[j].face_indices[i];
+    for (size_t corner_index = 0; corner_index < 3; ++corner_index) {
+      const Corner current_corner = adjacent_corners[corner_index];
+      // The current corner, but twisted such that the sticker we care about in the current cycle faces up.
+      Corner current_corner_for_current_cycle;
+      for (size_t i = 0; i < 3; ++i) {
+        current_corner_for_current_cycle.face_indices[i] = current_corner.face_indices[(cycle_index + i) % 3];
+      }
+      sticker_cycle[corner_index] = corner_sticker_index(current_corner_for_current_cycle);
     }
     apply_sticker_cycle(stickers, sticker_cycle, 3, invert);
   }

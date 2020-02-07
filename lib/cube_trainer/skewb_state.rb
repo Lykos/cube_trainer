@@ -52,6 +52,10 @@ module CubeTrainer
     def apply_move(move)
       move.apply_to(self)
     end
+
+    def twist_corner(corner, direction)
+      @native.twist_corner(corner.face_symbols, direction.value)
+    end
   
     def apply_algorithm(alg)
       alg.apply_to(self)
