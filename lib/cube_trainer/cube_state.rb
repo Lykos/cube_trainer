@@ -70,7 +70,9 @@ module CubeTrainer
       apply_sticker_cycle(corner.rotations.map { |c| Coordinate.solved_position(c, n, 0) })
     end
 
+    # TODO Get rid of this backwards compatibility artifact
     def sticker_array(face)
+      raise TypeError unless face.is_a?(Face)
       @native.sticker_array(
         face.face_symbol,
         # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
@@ -82,33 +84,6 @@ module CubeTrainer
   
     def to_s
       cube_string(self, :nocolor)
-    end
-  
-    def find_cycles(pieces, incarnation_index)
-      piece_positions = []
-      pieces.each do |p|
-        piece_positions.push(Coordinate.solved_positions(p, n, incarnation_index))
-      end
-      piece_positions[0].zip(*piece_positions[1..-1])
-    end
-  
-    # Cycles the given positions. Note that it does NOT search for the given pieces and cycle them, rather, it cycles
-    # the pieces that are at the position that those pieces would take in a solved state.
-    def apply_piece_cycle(pieces, incarnation_index=0)
-      raise 'Cycles of length smaller than 2 are not supported.' if pieces.length < 2
-      raise 'Cycles of weird piece types are not supported.' unless pieces.all? { |p| p.is_a?(Part) }
-      raise "Cycles of heterogenous piece types #{pieces.inspect} are not supported." if pieces.any? { |p| p.class != pieces.first.class }
-      raise "Invalid incarnation index #{incarnation_index}." unless incarnation_index.is_a?(Integer) && incarnation_index >= 0
-      raise "Incarnation index #{incarnation_index} for cube size #{n} is not supported for #{pieces.first.inspect}." unless incarnation_index < pieces.first.num_incarnations(n)
-      pieces.each_with_index do |p, i|
-        pieces.each_with_index do |q, j|
-          if i != j && p.turned_equals?(q)
-            raise "Pieces #{p} and #{q} are equal modulo rotation, so they can't be cycled."
-          end
-        end
-      end
-      cycles = find_cycles(pieces, incarnation_index)
-      cycles.each { |c| apply_sticker_cycle(c) }
     end
   
     def [](coordinate)

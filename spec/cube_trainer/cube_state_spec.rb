@@ -7,6 +7,7 @@ require 'cube_trainer/coordinate'
 require 'cube_trainer/parser'
 require 'cube_trainer/letter_scheme'
 require 'cube_trainer/color_scheme'
+require 'cube_trainer/part_cycle_factory'
 
 include CubeTrainer
 include CubeConstants
@@ -15,9 +16,10 @@ include CubePrintHelper
 RSpec.shared_examples 'cube_state' do |cube_size|
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:cycle_factory) { PartCycleFactory.new(cube_size, 0) }  
 
-  def for_letter(part_type, letter)
-    letter_scheme.for_letter(part_type, letter)
+  def construct_cycle(part_type, letters)
+    cycle_factory.construct(letters.map { |l| letter_scheme.for_letter(part_type, l) })
   end
 
   def expect_stickers_changed(cube_state, changed_parts)
@@ -54,7 +56,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   let (:cube_state) { create_interesting_cube_state(cube_size) }
   
   it 'should have the right state after applying a nice corner commutator' do
-    cube_state.apply_piece_cycle([for_letter(Corner, 'c'), for_letter(Corner, 'd'), for_letter(Corner, 'k')])
+    construct_cycle(Corner, ['c', 'd', 'k']).apply_to(cube_state)
     changed_parts = {
       [:U, cube_size - 1, cube_size - 1] => :green,
       [:R, 0, cube_size - 1] => :orange,
@@ -68,7 +70,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   end
   
   it 'should have the right state after applying a nasty corner commutator' do
-    cube_state.apply_piece_cycle([for_letter(Corner, 'c'), for_letter(Corner, 'h'), for_letter(Corner, 'g')])
+    construct_cycle(Corner, ['c', 'h', 'g']).apply_to(cube_state)
     changed_parts = {
       [:U, cube_size - 1, cube_size - 1] => :red,
       [:U, 0, cube_size - 1] => :blue,
@@ -433,7 +435,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it "should do a Niklas alg properly" do
     parse_algorithm("U' L' U R U' L U R'").apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
-    expected_cube_state.apply_piece_cycle([for_letter(Corner, "c"), for_letter(Corner, "i"), for_letter(Corner, "j")])
+    construct_cycle(Corner, ['c', 'i', 'j']).apply_to(expected_cube_state)
     expect(cube_state).to be == expected_cube_state
   end
   
@@ -441,7 +443,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     if cube_size >= 4
       parse_algorithm("U' R' U r2 U' R U r2").apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
-      expected_cube_state.apply_piece_cycle([for_letter(Wing, "e"), for_letter(Wing, "t"), for_letter(Wing, "k")])
+      construct_cycle(Wing, ['e', 't', 'k']).apply_to(expected_cube_state)
       expect(cube_state).to be == expected_cube_state
     end
   end
@@ -450,17 +452,18 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     cube_state = color_scheme.solved_cube_state(cube_size)
     parse_algorithm("R U R' U' R' F R2 U' R' U' R U R' F'").apply_to(cube_state)
     expected_cube_state = color_scheme.solved_cube_state(cube_size)
-    expected_cube_state.apply_piece_cycle([for_letter(Corner, "b"), for_letter(Corner, "d")])
+    construct_cycle(Corner, ['b', 'd']).apply_to(expected_cube_state)
     if cube_size % 2 == 1 && cube_size >= 5
-      expected_cube_state.apply_piece_cycle([for_letter(Midge, "b"), for_letter(Midge, "c")])
+      construct_cycle(Midge, ['b', 'c']).apply_to(expected_cube_state)
     end
     if cube_size == 3
-      expected_cube_state.apply_piece_cycle([for_letter(Edge, "b"), for_letter(Edge, "c")])
+      construct_cycle(Edge, ['b', 'c']).apply_to(expected_cube_state)
     end
-    wing_incarnations = for_letter(Wing, "e").num_incarnations(cube_size)
+    wing_incarnations = letter_scheme.for_letter(Wing, 'e').num_incarnations(cube_size)
     wing_incarnations.times do |incarnation_index|
-      expected_cube_state.apply_piece_cycle([for_letter(Wing, "b"), for_letter(Wing, "c")], incarnation_index)
-      expected_cube_state.apply_piece_cycle([for_letter(Wing, "m"), for_letter(Wing, "i")], incarnation_index)
+      factory = PartCycleFactory.new(cube_size, incarnation_index)
+      factory.construct([letter_scheme.for_letter(Wing, 'b'), letter_scheme.for_letter(Wing, 'c')]).apply_to(expected_cube_state)
+      factory.construct([letter_scheme.for_letter(Wing, 'm'), letter_scheme.for_letter(Wing, 'i')]).apply_to(expected_cube_state)
     end
     expect(cube_state).to be == expected_cube_state
   end
