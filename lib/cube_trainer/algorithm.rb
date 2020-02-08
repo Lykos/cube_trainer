@@ -55,7 +55,9 @@ module CubeTrainer
     end
 
     def apply_to(cube_state)
-      # TODO compile_for_skewb.apply_to(cube_state) if cube_state.is_a?(SkewbState)
+       if cube_state.is_a?(SkewbState)
+         return compiled_for_skewb.apply_to(cube_state)
+       end
       @moves.each { |m| m.apply_to(cube_state) }
     end
 
@@ -125,8 +127,8 @@ module CubeTrainer
       Algorithm.new(@moves * factor)
     end
 
-    def compile_for_skewb
-      CompiledSkewbAlgorithm.for_moves(@moves)
+    def compiled_for_skewb
+      @compiled_for_skewb ||= CompiledSkewbAlgorithm.for_moves(@moves)
     end
     
   end

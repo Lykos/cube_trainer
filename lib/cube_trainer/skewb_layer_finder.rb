@@ -29,7 +29,7 @@ module CubeTrainer
     end
 
     def generate_moves(skewb_state)
-      FixedCornerSkewbMove::ALL.dup
+      FixedCornerSkewbMove::ALL.map { |m| Algorithm.move(m) }
     end
   end
   

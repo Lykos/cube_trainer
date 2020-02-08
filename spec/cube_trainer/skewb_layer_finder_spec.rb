@@ -25,7 +25,7 @@ describe SkewbLayerFinder do
     end
 
     it 'should find the score after one move' do
-      parse_fixed_corner_skewb_move("R").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("R").apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 3
     end
 
@@ -75,7 +75,7 @@ describe SkewbLayerFinder do
     end
 
     it 'should find a one move layer' do
-      parse_fixed_corner_skewb_move("U").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("U").apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to be == {
         :white => [parse_fixed_corner_skewb_algorithm("U'")]}
     end
@@ -113,7 +113,7 @@ describe SkewbLayerFinder do
     end
     
     it 'should find a one move layer' do
-      parse_fixed_corner_skewb_move("U").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("U").apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to be == {
         :yellow => [parse_fixed_corner_skewb_algorithm("U'")],
         :red => [parse_fixed_corner_skewb_algorithm("U'")],

@@ -79,7 +79,7 @@ module CubeTrainer
     def extract_algorithms
       algs = @internal_solution_set.extract_algorithms
       algs.each do |k, v|
-        v.collect! { |s| Algorithm.new([@extra_move]) + s }
+        v.collect! { |s| @extra_move + s }
       end
       algs
     end

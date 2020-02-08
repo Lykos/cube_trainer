@@ -44,7 +44,7 @@ EOS
   context "when using fixed corner notation" do
 
     it "should have the right state after an U move" do
-      parse_fixed_corner_skewb_move("U").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("U").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      OOOOO
      OOOOO
@@ -73,7 +73,7 @@ EOS
   end
   
     it "should have the right state after an U' move" do
-      parse_fixed_corner_skewb_move("U'").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("U'").apply_to(skewb_state)
       expect(skewb_state.any_layer_solved?).to be false
       expect(skewb_state.layer_solved?(:yellow)).to be false
       expect(skewb_state.layer_solved?(:red)).to be false
@@ -102,7 +102,7 @@ EOS
     end
   
     it "should have the right state after an R move" do
-      parse_fixed_corner_skewb_move("R").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("R").apply_to(skewb_state)
       expect(skewb_state.any_layer_solved?).to be false
       expect(skewb_state.layer_solved?(:yellow)).to be false
       expect(skewb_state.layer_solved?(:red)).to be false
@@ -131,7 +131,7 @@ EOS
     end
     
     it "should have the right state after an R' move" do
-      parse_fixed_corner_skewb_move("R'").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("R'").apply_to(skewb_state)
       expect(skewb_state.any_layer_solved?).to be false
       expect(skewb_state.layer_solved?(:yellow)).to be false
       expect(skewb_state.layer_solved?(:red)).to be false
@@ -160,7 +160,7 @@ EOS
     end
    
     it "should have the right state after an L move" do
-      parse_fixed_corner_skewb_move("L").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("L").apply_to(skewb_state)
       expect(skewb_state.any_layer_solved?).to be false
       expect(skewb_state.layer_solved?(:yellow)).to be false
       expect(skewb_state.layer_solved?(:red)).to be false
@@ -189,7 +189,7 @@ EOS
     end
     
     it "should have the right state after an L' move" do
-      parse_fixed_corner_skewb_move("L'").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("L'").apply_to(skewb_state)
       expect(skewb_state.any_layer_solved?).to be false
       expect(skewb_state.layer_solved?(:yellow)).to be false
       expect(skewb_state.layer_solved?(:red)).to be false
@@ -218,7 +218,7 @@ EOS
     end
     
     it "should have the right state after an B move" do
-      parse_fixed_corner_skewb_move("B").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("B").apply_to(skewb_state)
       expect(skewb_state.any_layer_solved?).to be false
       expect(skewb_state.layer_solved?(:yellow)).to be false
       expect(skewb_state.layer_solved?(:red)).to be false
@@ -247,7 +247,7 @@ EOS
     end
     
     it "should have the right state after an B' move" do
-      parse_fixed_corner_skewb_move("B'").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("B'").apply_to(skewb_state)
       expect(skewb_state.any_layer_solved?).to be false
       expect(skewb_state.layer_solved?(:yellow)).to be false
       expect(skewb_state.layer_solved?(:red)).to be false
@@ -276,7 +276,7 @@ EOS
     end
   
     it "should have the right state after an x rotation" do
-      parse_fixed_corner_skewb_move("x").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("x").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      RRRRR
      RRRRR
@@ -298,7 +298,7 @@ EOS
     end
   
     it "should have the right state after an y rotation" do
-      parse_fixed_corner_skewb_move("y").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("y").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      YYYYY
      YYYYY
@@ -320,7 +320,7 @@ EOS
     end
     
     it "should have the right state after an z rotation" do
-      parse_fixed_corner_skewb_move("z").apply_to(skewb_state)
+      parse_fixed_corner_skewb_algorithm("z").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      BBBBB
      BBBBB
@@ -458,7 +458,7 @@ EOS
   context "when using Sarah's notation" do
 
     it "should have the right state after an F move" do
-      parse_sarahs_skewb_move("F").apply_to(skewb_state)
+      parse_sarahs_skewb_algorithm("F").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      YYRRR
      YRRRR
@@ -480,7 +480,7 @@ EOS
   end
   
     it "should have the right state after an F' move" do
-      parse_sarahs_skewb_move("F'").apply_to(skewb_state)
+      parse_sarahs_skewb_algorithm("F'").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      YYGGG
      YGGGG
@@ -502,7 +502,7 @@ EOS
     end
   
     it "should have the right state after an R move" do
-      parse_sarahs_skewb_move("R").apply_to(skewb_state)
+      parse_sarahs_skewb_algorithm("R").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      GGGGG
      GGGGG
@@ -524,7 +524,7 @@ EOS
     end
     
     it "should have the right state after an R' move" do
-      parse_sarahs_skewb_move("R'").apply_to(skewb_state)
+      parse_sarahs_skewb_algorithm("R'").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      OOOOO
      OOOOO
@@ -546,7 +546,7 @@ EOS
     end
    
     it "should have the right state after an L move" do
-      parse_sarahs_skewb_move("L").apply_to(skewb_state)
+      parse_sarahs_skewb_algorithm("L").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      BBBYY
      BBBBY
@@ -568,7 +568,7 @@ EOS
     end
     
     it "should have the right state after an L' move" do
-      parse_sarahs_skewb_move("L'").apply_to(skewb_state)
+      parse_sarahs_skewb_algorithm("L'").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      RRRYY
      RRRRY
@@ -590,7 +590,7 @@ EOS
     end
     
     it "should have the right state after an B move" do
-      parse_sarahs_skewb_move("B").apply_to(skewb_state)
+      parse_sarahs_skewb_algorithm("B").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      OOOOO
      OOOOO
@@ -612,7 +612,7 @@ EOS
     end
     
     it "should have the right state after an B' move" do
-      parse_sarahs_skewb_move("B'").apply_to(skewb_state)
+      parse_sarahs_skewb_algorithm("B'").apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS
      BBBBB
      BBBBB
@@ -635,7 +635,6 @@ EOS
     
     it "should have the right state after an F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' B").apply_to(skewb_state)
-      puts skewb_string(skewb_state, :color)
       expect(skewb_state.to_s).to be == (<<EOS
      OOOOO
      OOOOO
@@ -674,6 +673,72 @@ BBBBBRROYYRRRYYGGGOO
      WWWWW
      WWWWR
      WWWRR
+EOS
+                                        ).chomp
+    end
+
+    it "should have the right state after an R' F' x algorithm" do
+      parse_sarahs_skewb_algorithm("R' F' x").apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     OOOOO
+     OOOOO
+     OOOOO
+     ROOOY
+     RROYY
+GGBBBWWWBBRRRBBYYYYY
+GBBBBWWWWBRRRRBYYYYY
+BBBBBWWWWWRRRRRYYYYY
+WBBBBWWWWRYRRRRGYYYO
+WWBBBWWWRRYYRRRGGYOO
+     OOGGG
+     OGGGG
+     GGGGG
+     GGGGW
+     GGGWW
+EOS
+                                        ).chomp
+    end
+
+    it "should have the right state after an R' F' y2 algorithm" do
+      parse_sarahs_skewb_algorithm("R' F' y2").apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     YYYYY
+     YYYYY
+     YYYYY
+     GYYYO
+     GGYOO
+BBRRRWWGGGWWBGGOOOOO
+BRRRRWGGGGWBBBGOOOOO
+RRRRRGGGGGBBBBBOOOOO
+RRRRYGGGGOBBBBBROOOY
+RRRYYGGGOOBBBBBRROYY
+     RRWWW
+     RWWWW
+     WWWWW
+     BWWWW
+     BBWWW
+EOS
+                                        ).chomp
+    end
+
+    it "should have the right state after an R' F' z' algorithm" do
+      parse_sarahs_skewb_algorithm("R' F' z'").apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     RRRYY
+     RRRRY
+     RRRRR
+     BRRRR
+     BBRRR
+GGYYYOOOYYBBWRRGGGWW
+GYYYYOOOOYBWWWRGGGGW
+YYYYYOOOOOWWWWWGGGGG
+OYYYYOOOORWWWWWOGGGG
+OOYYYOOORRWWWWWOOGGG
+     GGBBB
+     GBBBB
+     BBBBB
+     WBBBB
+     WWBBB
 EOS
                                         ).chomp
     end

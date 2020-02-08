@@ -172,16 +172,16 @@ static void apply_center_rotation(VALUE* const stickers, const face_index_t axis
   apply_sticker_4cycle(stickers, center_cycle, direction);
 }
 
-static void apply_corner_rotation(VALUE* const stickers, const face_index_t axis_face_index, const direction_t direction) {
+static void apply_corner_rotations(VALUE* const stickers, const face_index_t axis_face_index, const direction_t direction) {
   Corner corner;
   corner.face_indices[2] = axis_face_index;
-  for (size_t cycle_index = 0; cycle_index < 2; ++cycle_index) {
+  for (size_t cycle_index = 0; cycle_index < 3; ++cycle_index) {
     Sticker4Cycle corner_cycle;
     for (size_t corner_index = 0; corner_index < 4; ++corner_index) {
       for (size_t i = 0; i < 2; ++i) {
-        corner.face_indices[(cycle_index + i) % 2] = neighbor_face_index(axis_face_index, corner_index + i);
+        corner.face_indices[i] = neighbor_face_index(axis_face_index, corner_index + i);
       }
-      corner_cycle.indices[corner_index] = corner_sticker_index(corner);
+      corner_cycle.indices[corner_index] = corner_sticker_index(rotated_corner(corner, cycle_index));
     }
     apply_sticker_4cycle(stickers, corner_cycle, direction);
   }
@@ -193,8 +193,8 @@ void rotate_skewb_state(const face_index_t axis_face_index, direction_t directio
     return;
   }
   apply_center_rotation(skewb_state->stickers, axis_face_index, direction);
-  apply_corner_rotation(skewb_state->stickers, axis_face_index, direction);
-  apply_corner_rotation(skewb_state->stickers, opposite_face_index(axis_face_index), 4 - direction);
+  apply_corner_rotations(skewb_state->stickers, axis_face_index, direction);
+  apply_corner_rotations(skewb_state->stickers, opposite_face_index(axis_face_index), 4 - direction);
 }
 
 static VALUE SkewbState_rotate(const VALUE self, const VALUE axis_face_symbol, const VALUE direction) {

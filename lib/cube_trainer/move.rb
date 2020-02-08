@@ -633,11 +633,7 @@ module CubeTrainer
       new_corner = Corner.between_faces(replace_once(faces, replaced_face, replaced_face.opposite))
       self.class.new(new_corner, @direction.inverse)
     end
-    
-    def apply_to(skewb_state)
-      raise TypeError unless skewb_state.is_a?(SkewbState)
-      skewb_state.rotate_corner(@axis_corner, @direction)
-    end
+
   end
 
   # TODO Get rid of this legacy class

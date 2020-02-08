@@ -92,6 +92,10 @@ Corner extract_corner(const VALUE face_symbols) {
       rb_raise(rb_eArgError, "A corner of a skewb must have 3 faces on different axis.");
     }
   }
+  // Check chirality
+  if (neighbor_face_index(corner.face_indices[0], neighbor_index(corner.face_indices[0], corner.face_indices[1]) + 1) != corner.face_indices[2]) {
+    rb_raise(rb_eArgError, "Corner of a skewb must have a valid chirality.");    
+  }
   return corner;
 }
 

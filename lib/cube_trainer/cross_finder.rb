@@ -46,7 +46,7 @@ module CubeTrainer
     end
 
     def generate_moves(state)
-      FatMove::OUTER_MOVES.dup
+      FatMove::OUTER_MOVES.map { |m| Algorithm.move(m) }
     end
   end
 
