@@ -194,7 +194,7 @@ void rotate_skewb_state(const face_index_t axis_face_index, direction_t directio
   }
   apply_center_rotation(skewb_state->stickers, axis_face_index, direction);
   apply_corner_rotations(skewb_state->stickers, axis_face_index, direction);
-  apply_corner_rotations(skewb_state->stickers, opposite_face_index(axis_face_index), 4 - direction);
+  apply_corner_rotations(skewb_state->stickers, opposite_face_index(axis_face_index), invert_cube_direction(direction));
 }
 
 static VALUE SkewbState_rotate(const VALUE self, const VALUE axis_face_symbol, const VALUE direction) {

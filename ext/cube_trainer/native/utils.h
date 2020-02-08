@@ -5,8 +5,8 @@
 
 #define MIN(a, b) ((a) > (b) ? (b) : (a))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
-#define FALSE 0;
-#define TRUE 1;
+#define FALSE 0
+#define TRUE 1
 
 typedef char bool;
 typedef char direction_t;
@@ -14,6 +14,10 @@ typedef char direction_t;
 typedef struct {
   size_t indices[4];
 } Sticker4Cycle;
+
+direction_t invert_cube_direction(direction_t direction);
+
+direction_t invert_skewb_direction(direction_t direction);
 
 void apply_sticker_cycle(VALUE* stickers, const size_t* indices, size_t size, bool invert);
 

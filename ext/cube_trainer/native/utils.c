@@ -7,6 +7,14 @@ static void swap(VALUE* const stickers, size_t i, size_t j) {
   stickers[j] = buffer;
 }
 
+direction_t invert_cube_direction(direction_t direction) {
+  return (4 - direction) % 4;
+}
+
+direction_t invert_skewb_direction(direction_t direction) {
+  return (3 - direction) % 3;
+}
+
 void apply_sticker_cycle(VALUE* const stickers, const size_t* const indices, const size_t size, const bool invert) {
   const size_t direction = invert ? size - 1 : 1;
   const size_t last_index = (direction * (size - 1)) % size;

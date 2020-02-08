@@ -765,5 +765,115 @@ EOS
                                         ).chomp
     end
   
+    it "should have the right state after a F' R' F' B algorithm mirrored along the F normal" do
+      parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.mirror(Face::F).apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     BBOYY
+     BOOOY
+     OOOOO
+     GOOOR
+     GGORR
+OOGRRWWBBBWWYBBRRRYY
+OGGGRWBBBBWYYYBRRRRY
+GGGGGBBBBBYYYYYRRRRR
+BGGGGOBBBOGYYYYGRRRO
+BBGGGOOBOOGGYYYGGROO
+     WWWYY
+     WWWWY
+     WWWWW
+     WWWWR
+     WWWRR
+EOS
+                                        ).chomp
+    end
+  
+    it "should have the right state after an inverted F' R' F' B algorithm" do
+      parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.inverse.apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     YYGGG
+     YGGGG
+     GGGGG
+     RGGGW
+     RRGWW
+GGOYYBBYOOGGBRRWWRRR
+GOOOYBYYYOGBBBRWRRRR
+OOOOOYYYYYBBBBBRRRRR
+OOOOBRYYYOBBBBYBRRRY
+OOOBBRRYOOBBBYYBBRYY
+     WWWWW
+     WWWWW
+     WWWWW
+     GWWWO
+     GGWOO
+EOS
+                                        ).chomp
+    end
+  
+    it "should have the right state after a x rotated F' R' F' B algorithm" do
+      parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.rotate_by(parse_move("x")).apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     OOWWW
+     OWWWW
+     WWWWW
+     YWWWG
+     YYWGG
+YYGBBRRRWWOOOBBOOYBB
+YGGGBRRRRWOOOOBOYYYB
+GGGGGRRRRROOOOOYYYYY
+WGGGGRRRROGOOORWYYYG
+WWGGGRRROOGGORRWWYGG
+     YYBYY
+     YBBBY
+     BBBBB
+     RBBBB
+     RRBBB
+EOS
+                                        ).chomp
+    end
+  
+    it "should have the right state after a y2 rotated F' R' F' B algorithm" do
+      parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.rotate_by(parse_move("y2")).apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     YYOGG
+     YOOOG
+     OOOOO
+     ROOOB
+     RROBB
+GGYWWGGGWWRRBOOYYRRR
+GYYYWGGGGWRBBBOYRRRR
+YYYYYGGGGGBBBBBRRRRR
+YYYYBOGGGOBBBBGORRRB
+YYYBBOOGOOBBBGGOORBB
+     YYWWW
+     YWWWW
+     WWWWW
+     RWWWW
+     RRWWW
+EOS
+                                        ).chomp
+    end
+  
+    it "should have the right state after a z' rotated F' R' F' B algorithm" do
+      parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.rotate_by(parse_move("z'")).apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     GGBYY
+     GBBBY
+     BBBBB
+     WBBBB
+     WWBBB
+OORBBOOOYYOOGBBRRWWW
+ORRRBOOOOYOGGGBRWWWW
+RRRRROOOOOGGGGGWWWWW
+YRRRWBOOORGGGGGRWWWG
+YYRWWBBORRGGGGGRRWGG
+     RRYWW
+     RYYYW
+     YYYYY
+     OYYYY
+     OOYYY
+EOS
+                                        ).chomp
+    end
+  
   end
 end

@@ -16,7 +16,7 @@ module CubeTrainer
 
     class AlgorithmTransformation < Struct.new(:rotation, :mirror)
       
-      def apply_to(algorithm)
+      def transformed(algorithm)
         algorithm = algorithm.mirror(MIRROR_NORMAL_FACE) if mirror
         algorithm.rotate_by(rotation)
       end
@@ -52,30 +52,40 @@ module CubeTrainer
       end
 
       def to_s
-        layer_solution.to_s
+        algorithm.to_s
       end
 
       attr_reader :move, :sub_solution
 
-      def layer_solution
-        @layer_solution ||= begin
-                              if move.nil?
-                                Algorithm.empty
-                              else
-                                Algorithm.new([@move]) + @sub_solution.layer_solution
-                              end
-                            end
+      def algorithm
+        @algorithm ||= begin
+                         if move.nil?
+                           Algorithm.empty
+                         else
+                           Algorithm.move(@move) + @sub_solution.algorithm
+                         end
+                       end
       end
 
-      def solution_length
-        layer_solution.length
+      def compiled_algorithm
+        @compiled_algorithm ||= begin
+                                  if move.nil?
+                                    CompiledSkewbAlgorithm::EMPTY
+                                  else
+                                    Algorithm.move(@move).compiled_for_skewb + @sub_solution.compiled_algorithm
+                                  end
+                                end
+      end
+
+      def algorithm_length
+        algorithm.length
       end
 
       # Adds an alternative solution if it is equally good as the existing ones.
       # Worse solutions are ignored.
       def maybe_add_alternative_solution(layer_solution)
         raise ArgumentError unless layer_solution.is_a?(SkewbLayerSolution)
-        case layer_solution.solution_length <=> solution_length
+        case layer_solution.algorithm_length <=> algorithm_length
         when -1 then raise ArgumentError
         when 0 then @alternative_solutions.add(layer_solution)
         end
@@ -83,7 +93,7 @@ module CubeTrainer
 
       def extract_algorithms
         own_algs = if @sub_solution
-                     @sub_solution.extract_algorithms.map { |alg| Algorithm.new([@move]) + alg }
+                     @sub_solution.extract_algorithms.map { |alg| Algorithm.move(@move) + alg }
                    else
                      [Algorithm.empty]
                    end
@@ -127,7 +137,7 @@ module CubeTrainer
     def check_equivalent_solution(candidate)
       has_equivalent_solution = false
       get_layer_solutions.each do |l|
-        l.layer_solution.apply_temporarily_to(@state) do
+        l.compiled_algorithm.apply_temporarily_to(@state) do
           if @state.layer_at_face_solved?(EXAMPLE_LAYER_FACE)
             l.maybe_add_alternative_solution(candidate)
             has_equivalent_solution = true
@@ -142,22 +152,24 @@ module CubeTrainer
     # In those cases, we don't add this as an alternative solution because there will be another one that's equivalent modulo rotations.
     def check_equivalent_modified_solution(candidate)
       has_equivalent_solution = false
-      transformed_states = ALGORITHM_TRANSFORMATIONS.collect do |t|
-        # We go back to the original state and then apply a transformed version of the algorithm.
-        inverse_plus_modified = candidate.layer_solution + t.apply_to(candidate.layer_solution).inverse
-        inverse_plus_modified.apply_temporarily_to(@state) {
-          @state.dup
-        }
+      # We go back to the original state and then apply a transformed version of the algorithm.
+      transformed_states = candidate.compiled_algorithm.apply_temporarily_to(@state) do
+        ALGORITHM_TRANSFORMATIONS.collect do |t|
+          transformed = t.transformed(candidate.compiled_algorithm).inverse
+          transformed.apply_temporarily_to(@state) { @state.dup }
+        end
       end
       get_layer_solutions.each do |l|
         transformed_states.each.with_index do |s, i|
-          l.layer_solution.apply_temporarily_to(s) do
+          l.compiled_algorithm.apply_temporarily_to(s) do
             if s.layer_at_face_solved?(EXAMPLE_LAYER_FACE)
               has_equivalent_solution = true
               puts "transformed #{i} equivalent to #{l}" if @verbose
             end
           end
+          break if has_equivalent_solution
         end
+        break if has_equivalent_solution
       end
       has_equivalent_solution
     end
@@ -181,7 +193,7 @@ module CubeTrainer
     end
 
     def state_is_good?(candidate)
-      true #@finder.state_score(@state) >= 2 || candidate.solution_length <= 3
+      @finder.state_score(@state) >= 2 || candidate.algorithm_length <= 3
     end
 
     def get_layer_solutions
@@ -198,7 +210,7 @@ module CubeTrainer
         candidate = pop_candidate
         puts "Candidates: #{@candidates.length} Layers: #{@num_layer_solutions} Good layers: #{@good_layer_solutions.length}" if @verbose
         puts "Candidate: #{candidate}" if @verbose
-        candidate.layer_solution.inverse.apply_temporarily_to(@state) do
+        candidate.compiled_algorithm.inverse.apply_temporarily_to(@state) do
           # Is there an existing equivalent layer that we already looked at?
           has_equivalent_layer = false
 
@@ -209,7 +221,7 @@ module CubeTrainer
             # If there were no equivalent layers in any way, this is a new type of layer.
             add_layer_solution(candidate)
             @good_layer_solutions.push(candidate) if state_is_good?(candidate)
-            if @max_length.nil? || candidate.solution_length < @max_length
+            if @max_length.nil? || candidate.algorithm_length < @max_length
               add_new_candidates(derived_layer_solutions(candidate))
             end
           end

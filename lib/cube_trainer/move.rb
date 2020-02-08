@@ -621,9 +621,9 @@ module CubeTrainer
     def rotate_by(rotation)
       nice_face = only(@axis_corner.adjacent_faces.select { |f| f.same_axis?(rotation.axis_face) })
       nice_direction = rotation.translated_direction(nice_face)
-      corners = nice_face.clockwise_corners
-      # TODO Fix this. The index might fail in case of rotated versions, but it doesn't currently happen in practice.
-      new_corner = corners[(corners.index(@axis_corner) + nice_direction.value) % corners.length]
+      nice_face_corners = nice_face.clockwise_corners
+      on_nice_face_index = nice_face_corners.index { |c| c.turned_equals?(@axis_corner) }
+      new_corner = nice_face_corners[(on_nice_face_index + nice_direction.value) % nice_face_corners.length]
       self.class.new(new_corner, @direction)
     end
     

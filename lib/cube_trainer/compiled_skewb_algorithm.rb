@@ -4,11 +4,16 @@ module CubeTrainer
 
   class CompiledSkewbAlgorithm
 
+    include ReversibleApplyable
+
     def initialize(native)
+      raise TypeError unless native.is_a?(Native::SkewbAlgorithm)
       @native = native
     end
 
-    private_class_method :new
+    attr_reader :native
+    attr_writer :inverse
+    protected :inverse=
 
     def self.transform_move(move)
       if move.is_a?(Rotation) then [:rotation, move.axis_face.face_symbol, move.direction.value]
@@ -22,13 +27,27 @@ module CubeTrainer
       new(native)
     end
 
+    EMPTY = for_moves([])
+
     def rotate_by(rotation)
-      @native.rotate_by(rotation.axis_face.face_symbol, rotation.direction.value)
+      CompiledSkewbAlgorithm.new(@native.rotate_by(rotation.axis_face.face_symbol, rotation.direction.value))
     end                  
     
     def mirror(normal_face)
-      @native.mirror(normal_face.face_symbol)
-    end                  
+      CompiledSkewbAlgorithm.new(@native.mirror(normal_face.face_symbol))
+    end
+
+    def inverse
+      @inverse ||= begin
+                     alg = CompiledSkewbAlgorithm.new(@native.inverse)
+                     alg.inverse = self
+                     alg
+                   end
+    end
+
+    def +(other)
+      CompiledSkewbAlgorithm.new(@native + other.native)
+    end
     
     def apply_to(skewb_state)
       @native.apply_to(skewb_state.native)
