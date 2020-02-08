@@ -1,7 +1,6 @@
 #include "skewb_state.h"
 
 #include "face_symbols.h"
-#include "utils.h"
 
 static VALUE SkewbStateClass = Qnil;
 
@@ -161,7 +160,7 @@ static VALUE SkewbState_rotate_corner(const VALUE self, const VALUE face_symbols
   Check_Type(face_symbols, T_ARRAY);
   Check_Type(direction, T_FIXNUM);
 
-  rotate_corner_for_skewb_state(extract_corner(face_symbols), FIX2INT(direction), data);
+  rotate_corner_for_skewb_state(extract_corner(face_symbols), FIX2INT(direction), self);
   
   return Qnil;
 }
@@ -171,7 +170,7 @@ static void apply_center_rotation(VALUE* const stickers, const face_index_t axis
   for (size_t i = 0; i < 4; ++i) {
     center_cycle.indices[i] = center_sticker_index(neighbor_face_index(axis_face_index, i));
   }
-  apply_sticker_4cycle(stickers, center_cycle, 4 - direction);
+  apply_sticker_4cycle(stickers, center_cycle, direction);
 }
 
 static void apply_corner_rotation(VALUE* const stickers, const face_index_t axis_face_index, const direction_t direction) {
@@ -185,7 +184,7 @@ static void apply_corner_rotation(VALUE* const stickers, const face_index_t axis
       }
       corner_cycle.indices[corner_index] = corner_sticker_index(corner);
     }
-    apply_sticker_4cycle(stickers, corner_cycle, 4 - direction);
+    apply_sticker_4cycle(stickers, corner_cycle, direction);
   }
 }
 
@@ -206,7 +205,7 @@ static VALUE SkewbState_rotate(const VALUE self, const VALUE axis_face_symbol, c
   Check_Type(axis_face_symbol, T_SYMBOL);
   Check_Type(direction, T_FIXNUM);
   
-  rotate(face_index(axis_face_symbol), FIX2INT(direction), self);
+  rotate_skewb_state(face_index(axis_face_symbol), FIX2INT(direction), self);
   
   return Qnil;
 }

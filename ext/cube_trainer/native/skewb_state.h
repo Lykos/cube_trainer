@@ -3,6 +3,7 @@
 #include <ruby.h>
 
 #include "skewb_coordinate.h"
+#include "utils.h"
 
 typedef struct {
   VALUE stickers[total_skewb_stickers];
