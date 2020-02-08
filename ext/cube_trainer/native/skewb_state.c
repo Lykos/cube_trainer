@@ -141,26 +141,25 @@ static void apply_moved_corner_cycles(VALUE* const stickers, const Corner corner
   }
 }
 
-void rotate_corner_for_skewb_state(const Corner corner, direction_t direction, const VALUE skewb_state) {
-  SkewbStateData* data;
-  GetSkewbStateData(skewb_state, data);
-
+void rotate_corner_for_skewb_state(const Corner corner, direction_t direction, SkewbStateData* const skewb_state) {
   direction = (direction % 3 + 3) % 3;
   if (direction == 0) {
     return;
   }
   const bool invert = direction == 2;
 
-  apply_twisted_corner_cycle(data->stickers, corner, invert);
-  apply_center_cycle(data->stickers, corner, invert);
-  apply_moved_corner_cycles(data->stickers, corner, invert);
+  apply_twisted_corner_cycle(skewb_state->stickers, corner, invert);
+  apply_center_cycle(skewb_state->stickers, corner, invert);
+  apply_moved_corner_cycles(skewb_state->stickers, corner, invert);
 }
 
 static VALUE SkewbState_rotate_corner(const VALUE self, const VALUE face_symbols, const VALUE direction) {
   Check_Type(face_symbols, T_ARRAY);
   Check_Type(direction, T_FIXNUM);
+  SkewbStateData* data;
+  GetSkewbStateData(skewb_state, data);
 
-  rotate_corner_for_skewb_state(extract_corner(face_symbols), FIX2INT(direction), self);
+  rotate_corner_for_skewb_state(extract_corner(face_symbols), FIX2INT(direction), data);
   
   return Qnil;
 }
@@ -188,24 +187,23 @@ static void apply_corner_rotation(VALUE* const stickers, const face_index_t axis
   }
 }
 
-void rotate_skewb_state(const face_index_t axis_face_index, direction_t direction, const VALUE skewb_state) {
-  SkewbStateData* data;
-  GetSkewbStateData(skewb_state, data);
-
+void rotate_skewb_state(const face_index_t axis_face_index, direction_t direction, SkewbStateData* const skewb_state) {
   direction = (direction % 4 + 4) % 4;
   if (direction == 0) {
     return;
   }
-  apply_center_rotation(data->stickers, axis_face_index, direction);
-  apply_corner_rotation(data->stickers, axis_face_index, direction);
-  apply_corner_rotation(data->stickers, opposite_face_index(axis_face_index), 4 - direction);
+  apply_center_rotation(skewb_state->stickers, axis_face_index, direction);
+  apply_corner_rotation(skewb_state->stickers, axis_face_index, direction);
+  apply_corner_rotation(skewb_state->stickers, opposite_face_index(axis_face_index), 4 - direction);
 }
 
 static VALUE SkewbState_rotate(const VALUE self, const VALUE axis_face_symbol, const VALUE direction) {
   Check_Type(axis_face_symbol, T_SYMBOL);
   Check_Type(direction, T_FIXNUM);
-  
-  rotate_skewb_state(face_index(axis_face_symbol), FIX2INT(direction), self);
+  SkewbStateData* data;
+  GetSkewbStateData(skewb_state, data);
+
+  rotate_skewb_state(face_index(axis_face_symbol), FIX2INT(direction), data);
   
   return Qnil;
 }
