@@ -765,6 +765,31 @@ EOS
                                         ).chomp
     end
   
+    it "should have the right state after an F' R' + F' B algorithm" do
+      first_algorithm = parse_sarahs_skewb_algorithm("F' R'")
+      second_algorithm = parse_sarahs_skewb_algorithm("F' B")
+      algorithm = first_algorithm.compiled_for_skewb + second_algorithm.compiled_for_skewb
+      algorithm.apply_to(skewb_state)
+      expect(skewb_state.to_s).to be == (<<EOS
+     GGROO
+     GRRRO
+     RRRRR
+     BRRRY
+     BBRYY
+OOGRRYYOOOBBYWWBBBWW
+OGGGRYOOOOBYYYWBBBBW
+GGGGGOOOOOYYYYYBBBBB
+GGGGBROOOGYYYYGRBBBR
+GGGBBRROGGYYYGGRRBRR
+     WWWOO
+     WWWWO
+     WWWWW
+     WWWWY
+     WWWYY
+EOS
+                                        ).chomp
+    end
+  
     it "should have the right state after a F' R' F' B algorithm mirrored along the F normal" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.mirror(Face::F).apply_to(skewb_state)
       expect(skewb_state.to_s).to be == (<<EOS

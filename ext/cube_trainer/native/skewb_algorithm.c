@@ -300,7 +300,7 @@ static VALUE SkewbAlgorithm_plus(const VALUE self, const VALUE other) {
   const SkewbAlgorithmData* self_data;
   GetInitializedSkewbAlgorithmData(self, self_data);
   const SkewbAlgorithmData* other_data;
-  GetInitializedSkewbAlgorithmData(self, other_data);
+  GetInitializedSkewbAlgorithmData(other, other_data);
   SkewbAlgorithmData* sum_data;
   const VALUE sum = TypedData_Make_Struct(SkewbAlgorithmClass, SkewbAlgorithmData, &SkewbAlgorithmData_type, sum_data);
   sum_data->size = self_data->size + other_data->size;

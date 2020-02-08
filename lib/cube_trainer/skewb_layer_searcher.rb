@@ -152,7 +152,7 @@ module CubeTrainer
     # In those cases, we don't add this as an alternative solution because there will be another one that's equivalent modulo rotations.
     def check_equivalent_modified_solution(candidate)
       has_equivalent_solution = false
-      # We go back to the original state and then apply a transformed version of the algorithm.
+      # We go back to the original state and then apply a transformed version of the inverse of the algorithm.
       transformed_states = candidate.compiled_algorithm.apply_temporarily_to(@state) do
         ALGORITHM_TRANSFORMATIONS.collect do |t|
           transformed = t.transformed(candidate.compiled_algorithm).inverse
@@ -165,6 +165,7 @@ module CubeTrainer
             if s.layer_at_face_solved?(EXAMPLE_LAYER_FACE)
               has_equivalent_solution = true
               puts "transformed #{i} equivalent to #{l}" if @verbose
+              raise if candidate.algorithm_length == 2
             end
           end
           break if has_equivalent_solution
