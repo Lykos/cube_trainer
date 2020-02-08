@@ -157,7 +157,7 @@ static VALUE SkewbState_rotate_corner(const VALUE self, const VALUE face_symbols
   Check_Type(face_symbols, T_ARRAY);
   Check_Type(direction, T_FIXNUM);
   SkewbStateData* data;
-  GetSkewbStateData(skewb_state, data);
+  GetSkewbStateData(self, data);
 
   rotate_corner_for_skewb_state(extract_corner(face_symbols), FIX2INT(direction), data);
   
@@ -201,7 +201,7 @@ static VALUE SkewbState_rotate(const VALUE self, const VALUE axis_face_symbol, c
   Check_Type(axis_face_symbol, T_SYMBOL);
   Check_Type(direction, T_FIXNUM);
   SkewbStateData* data;
-  GetSkewbStateData(skewb_state, data);
+  GetSkewbStateData(self, data);
 
   rotate_skewb_state(face_index(axis_face_symbol), FIX2INT(direction), data);
   
