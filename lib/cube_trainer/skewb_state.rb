@@ -57,8 +57,8 @@ module CubeTrainer
       @native.rotate(axis_face.face_symbol, direction.value)
     end
 
-    def twist_corner(corner, direction)
-      @native.twist_corner(corner.face_symbols, direction.value)
+    def rotate_corner(corner, direction)
+      @native.rotate_corner(corner.face_symbols, direction.value)
     end
   
     def apply_algorithm(alg)
@@ -136,7 +136,7 @@ module CubeTrainer
     # Note that this does NOT say that the layer corresponding to the given face is solved.
     # The face argument is used as the position where a solved face is present.
     def layer_at_face_solved?(face)
-      if sticker_array(face).uniq.length > 1 then return false end
+      return false unless native.face_solved?(face.face_symbol)
       layer_check_neighbors(face).collect { |c| self[c] }.uniq.length == 1
     end
 

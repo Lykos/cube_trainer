@@ -635,7 +635,7 @@ module CubeTrainer
     
     def apply_to(skewb_state)
       raise TypeError unless skewb_state.is_a?(SkewbState)
-      skewb_state.twist_corner(@axis_corner, @direction)
+      skewb_state.rotate_corner(@axis_corner, @direction)
     end
   end
 

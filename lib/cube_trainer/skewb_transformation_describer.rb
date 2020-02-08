@@ -110,11 +110,11 @@ module CubeTrainer
     end
 
     def initialize(interesting_faces, interesting_corners, staying_mode, color_scheme, letter_scheme=nil)
-      raise ArgumentError unless interesting_faces.all? { |f| f.is_a?(Face) }
-      raise ArgumentError unless interesting_corners.all? { |f| f.is_a?(Corner) }
+      raise TypeError unless interesting_faces.all? { |f| f.is_a?(Face) }
+      raise TypeError unless interesting_corners.all? { |f| f.is_a?(Corner) }
       raise ArgumentError unless [:show_staying, :omit_staying].include?(staying_mode)
-      raise ArgumentError unless color_scheme.is_a?(ColorScheme)
-      raise ArgumentError unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
+      raise TypeError unless color_scheme.is_a?(ColorScheme)
+      raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
       @interesting_faces = interesting_faces
       @interesting_corners = interesting_corners
       @show_staying = staying_mode == :show_staying

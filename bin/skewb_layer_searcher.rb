@@ -53,10 +53,10 @@ if options.output
   bottom_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == :D }
   non_bottom_faces = Face::ELEMENTS.select { |c| c.face_symbol != :D }
   layer_corners_letter_scheme = if options.layer_corners_as_letters then options.letter_scheme else nil end
-  layer_describer = SkewbTransformationDescriber.new([], bottom_corners, :omit_staying, layer_corners_letter_scheme)
-  center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [], :omit_staying)
+  layer_describer = SkewbTransformationDescriber.new([], bottom_corners, :omit_staying, options.color_scheme, layer_corners_letter_scheme)
+  center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [], :omit_staying, options.color_scheme)
   top_corners_letter_scheme = if options.top_corners_as_letters then options.letter_scheme else nil end
-  top_corner_describer = SkewbTransformationDescriber.new([], top_corners, :show_staying, top_corners_letter_scheme)
+  top_corner_describer = SkewbTransformationDescriber.new([], top_corners, :show_staying, options.color_scheme, top_corners_letter_scheme)
   layer_classifier = SkewbLayerClassifier.new(Face::D, options.color_scheme)
 
   CSV.open(options.output, 'wb', {:col_sep => "\t"}) do |csv|

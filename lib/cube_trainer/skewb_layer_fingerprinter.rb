@@ -110,6 +110,7 @@ module CubeTrainer
     # It tries to be different for different types of layers, but it's not perfect yet, so some
     # layers will be mapped to the same number.
     def fingerprint(skewb_state)
+      return Native.skewb_layer_fingerprint(skewb_state.native, @face.face_symbol)
       layer_color = skewb_state[SkewbCoordinate.for_center(@face)]
       corner_pair_group_fingerprints = @corner_pair_groups.map do |g|
         corner_pair_group_fingerprint(skewb_state, g, layer_color)

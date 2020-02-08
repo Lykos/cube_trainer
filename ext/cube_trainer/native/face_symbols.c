@@ -22,15 +22,14 @@ static const face_index_t F_neighbors[neighbor_faces] = {U, R, D, L};
 static const face_index_t R_neighbors[neighbor_faces] = {U, B, D, F};
 
 face_index_t neighbor_face_index(const face_index_t face_index, const size_t index) {
-  const size_t adjusted_index = face_index == axis_index(face_index) ? index : 3 - index;
-  const size_t cropped_index = ((adjusted_index % 4) + 4) % 4;
+  const size_t adjusted_index = face_index == axis_index(face_index) ? index : -index;
+  const size_t cropped_index = (adjusted_index % 4 + 4) % 4;
   switch (axis_index(face_index)) {
   case U: return U_neighbors[cropped_index];
   case F: return F_neighbors[cropped_index];
   case R: return R_neighbors[cropped_index];
   default:
-    // Crash
-    break;
+    rb_raise(rb_eRuntimeError, "invalid axis index");
   }
 }
 

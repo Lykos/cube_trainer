@@ -14,7 +14,7 @@ module CubeTrainer
 
     include CubePrintHelper
 
-    class NonMoveTransformation < Struct.new(:rotation, :mirror)
+    class AlgorithmTransformation < Struct.new(:rotation, :mirror)
       
       def apply_to(algorithm)
         algorithm = algorithm.mirror(MIRROR_NORMAL_FACE) if mirror
@@ -27,7 +27,7 @@ module CubeTrainer
     EXAMPLE_LAYER_FACE = Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
     MIRROR_NORMAL_FACE = EXAMPLE_LAYER_FACE.neighbors.first
     AROUND_FACE_ROTATIONS = CubeDirection::ALL_DIRECTIONS.map { |d| Rotation.new(EXAMPLE_LAYER_FACE, d) }
-    NON_MOVE_TRANSFORMATIONS = AROUND_FACE_ROTATIONS.product([true, false]).select { |r, m| r.direction.is_non_zero? || m }.map { |r, m| NonMoveTransformation.new(r, m) }
+    ALGORITHM_TRANSFORMATIONS = AROUND_FACE_ROTATIONS.product([true, false]).select { |r, m| r.direction.is_non_zero? || m }.map { |r, m| AlgorithmTransformation.new(r, m) }
 
     # Represents a possible Skewb layer with a solution.
     class SkewbLayerSolution
@@ -142,7 +142,7 @@ module CubeTrainer
     # In those cases, we don't add this as an alternative solution because there will be another one that's equivalent modulo rotations.
     def check_equivalent_modified_solution(candidate)
       has_equivalent_solution = false
-      transformed_states = NON_MOVE_TRANSFORMATIONS.collect do |t|
+      transformed_states = ALGORITHM_TRANSFORMATIONS.collect do |t|
         # We go back to the original state and then apply a transformed version of the algorithm.
         inverse_plus_modified = candidate.layer_solution + t.apply_to(candidate.layer_solution).inverse
         inverse_plus_modified.apply_temporarily_to(@state) {
@@ -181,7 +181,7 @@ module CubeTrainer
     end
 
     def state_is_good?(candidate)
-      true # @finder.state_score(@state) >= 2 || candidate.solution_length <= 3
+      true #@finder.state_score(@state) >= 2 || candidate.solution_length <= 3
     end
 
     def get_layer_solutions

@@ -1,14 +1,9 @@
 #include "skewb_state.h"
 
 #include "face_symbols.h"
-#include "skewb_coordinate.h"
 #include "utils.h"
 
 static VALUE SkewbStateClass = Qnil;
-
-typedef struct {
-  VALUE stickers[total_skewb_stickers];
-} SkewbStateData;
 
 static void SkewbStateData_mark(void* const ptr) {
   const SkewbStateData* data = ptr;
@@ -82,7 +77,7 @@ static VALUE SkewbState_eql(const VALUE self, const VALUE other) {
   const SkewbStateData* other_data;
   GetSkewbStateData(self, other_data);
   for (size_t i = 0; i < total_skewb_stickers; ++i) {
-    if (self_data->stickers[i] != other_data->stickers[i]) {
+    if (!color_eq(self_data->stickers[i], other_data->stickers[i])) {
       return Qfalse;
     }
   }
@@ -147,22 +142,26 @@ static void apply_moved_corner_cycles(VALUE* const stickers, const Corner corner
   }
 }
 
-static VALUE SkewbState_twist_corner(const VALUE self, const VALUE face_symbols, const VALUE direction) {
-  Check_Type(face_symbols, T_ARRAY);
-  Check_Type(direction, T_FIXNUM);
+void rotate_corner_for_skewb_state(const Corner corner, direction_t direction, const VALUE skewb_state) {
   SkewbStateData* data;
-  GetSkewbStateData(self, data);
-  const direction_t d = (FIX2INT(direction) % 3 + 3) % 3;
-  if (d == 0) {
-    return Qnil;
-  }
+  GetSkewbStateData(skewb_state, data);
 
-  const Corner corner = extract_corner(face_symbols);
-  const bool invert = d == 2;
+  direction = (direction % 3 + 3) % 3;
+  if (direction == 0) {
+    return;
+  }
+  const bool invert = direction == 2;
 
   apply_twisted_corner_cycle(data->stickers, corner, invert);
   apply_center_cycle(data->stickers, corner, invert);
   apply_moved_corner_cycles(data->stickers, corner, invert);
+}
+
+static VALUE SkewbState_rotate_corner(const VALUE self, const VALUE face_symbols, const VALUE direction) {
+  Check_Type(face_symbols, T_ARRAY);
+  Check_Type(direction, T_FIXNUM);
+
+  rotate_corner_for_skewb_state(extract_corner(face_symbols), FIX2INT(direction), data);
   
   return Qnil;
 }
@@ -190,22 +189,40 @@ static void apply_corner_rotation(VALUE* const stickers, const face_index_t axis
   }
 }
 
-static VALUE SkewbState_rotate(const VALUE self, const VALUE axis_face_symbol, const VALUE direction) {
-  Check_Type(axis_face_symbol, T_SYMBOL);
-  Check_Type(direction, T_FIXNUM);
+void rotate_skewb_state(const face_index_t axis_face_index, direction_t direction, const VALUE skewb_state) {
   SkewbStateData* data;
-  GetSkewbStateData(self, data);
-  const direction_t d = (FIX2INT(direction) % 4 + 4) % 4;
-  if (d == 0) {
-    return Qnil;
-  }
-  const face_index_t axis_face_index = face_index(axis_face_symbol);
+  GetSkewbStateData(skewb_state, data);
 
+  direction = (direction % 4 + 4) % 4;
+  if (direction == 0) {
+    return;
+  }
   apply_center_rotation(data->stickers, axis_face_index, direction);
   apply_corner_rotation(data->stickers, axis_face_index, direction);
   apply_corner_rotation(data->stickers, opposite_face_index(axis_face_index), 4 - direction);
+}
+
+static VALUE SkewbState_rotate(const VALUE self, const VALUE axis_face_symbol, const VALUE direction) {
+  Check_Type(axis_face_symbol, T_SYMBOL);
+  Check_Type(direction, T_FIXNUM);
+  
+  rotate(face_index(axis_face_symbol), FIX2INT(direction), self);
   
   return Qnil;
+}
+
+static VALUE SkewbState_face_solved(const VALUE self, const VALUE face_symbol) {
+  const SkewbStateData* data;
+  GetSkewbStateData(self, data);
+  const face_index_t solved_face_index = face_index(face_symbol);
+  const size_t center_index = center_sticker_index(solved_face_index);
+  const VALUE color = data->stickers[center_index];
+  for (int i = 1; i < 5; ++i) {
+    if (!color_eq(data->stickers[center_index + i], color)) {
+      return Qfalse;
+    }
+  }
+  return Qtrue;
 }
 
 void init_skewb_state_class_under(const VALUE module) {
@@ -218,6 +235,7 @@ void init_skewb_state_class_under(const VALUE module) {
   rb_define_method(SkewbStateClass, "dup", SkewbState_dup, 0);
   rb_define_method(SkewbStateClass, "[]", SkewbState_entry, 1);
   rb_define_method(SkewbStateClass, "[]=", SkewbState_store, 2);
-  rb_define_method(SkewbStateClass, "twist_corner", SkewbState_twist_corner, 2);
+  rb_define_method(SkewbStateClass, "rotate_corner", SkewbState_rotate_corner, 2);
   rb_define_method(SkewbStateClass, "rotate", SkewbState_rotate, 2);
+  rb_define_method(SkewbStateClass, "face_solved?", SkewbState_face_solved, 1);
 }

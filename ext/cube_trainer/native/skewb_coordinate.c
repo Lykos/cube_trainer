@@ -26,7 +26,7 @@ static const rb_data_type_t SkewbCoordinateData_type = {
 
 Corner rotated_corner(const Corner corner, const int rotation) {
   Corner result;
-  for (int i = 0; i < 3; ++i) {
+  for (size_t i = 0; i < 3; ++i) {
     result.face_indices[i] = corner.face_indices[(i + rotation) % 3];
   }
   return result;
@@ -75,8 +75,7 @@ static VALUE part_type_to_symbol(const SkewbPartType part_type) {
   case CORNER:
     return ID2SYM(corner_part_type_id);
   default:
-    // Crash
-    break;
+    rb_raise(rb_eRuntimeError, "invalid skewb part type");
   }
 }
 

@@ -202,7 +202,7 @@ static VALUE CubeState_eql(const VALUE self, const VALUE other) {
   }
   const size_t n = self_data->cube_size;
   for (size_t i = 0; i < num_stickers(n); ++i) {
-    if (self_data->stickers[i] != other_data->stickers[i]) {
+    if (!color_eq(self_data->stickers[i], other_data->stickers[i])) {
       return Qfalse;
     }
   }
