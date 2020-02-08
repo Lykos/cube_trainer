@@ -1,6 +1,7 @@
 require 'cube_trainer/move'
 require 'cube_trainer/reversible_applyable'
 require 'cube_trainer/cancellation_helper'
+require 'cube_trainer/compiled_skewb_algorithm'
 
 module CubeTrainer
 
@@ -54,6 +55,7 @@ module CubeTrainer
     end
 
     def apply_to(cube_state)
+      # TODO compile_for_skewb.apply_to(cube_state) if cube_state.is_a?(SkewbState)
       @moves.each { |m| m.apply_to(cube_state) }
     end
 
@@ -122,6 +124,11 @@ module CubeTrainer
     def *(factor)
       Algorithm.new(@moves * factor)
     end
+
+    def compile_for_skewb
+      CompiledSkewbAlgorithm.for_moves(@moves)
+    end
+    
   end
 
 end

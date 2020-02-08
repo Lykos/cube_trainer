@@ -635,6 +635,7 @@ EOS
     
     it "should have the right state after an F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' B").apply_to(skewb_state)
+      puts skewb_string(skewb_state, :color)
       expect(skewb_state.to_s).to be == (<<EOS
      OOOOO
      OOOOO

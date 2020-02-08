@@ -102,7 +102,7 @@ static SkewbAxis extract_axis(const SkewbMoveType type, const VALUE axis) {
     result.face_index = face_index(axis);
     return result;
   default:
-    rb_raise(rb_eRuntimeError, "invalid move type %d", type);
+    rb_raise(rb_eRuntimeError, "invalid move type %d in extract_axis", type);
   }
 }
 
@@ -130,10 +130,12 @@ static void apply_move_to(const SkewbMove move, SkewbStateData* const skewb_stat
   switch (move.type) {
   case MOVE:
     rotate_corner_for_skewb_state(move.axis.corner, move.direction, skewb_state);
+    break;
   case ROTATION:
     rotate_skewb_state(move.axis.face_index, move.direction, skewb_state);
+    break;
   default:
-    rb_raise(rb_eRuntimeError, "invalid move type %d", move.type);
+    rb_raise(rb_eRuntimeError, "invalid move type %d in apply_move_to", move.type);
   }
 }
 
@@ -194,7 +196,7 @@ static SkewbMove rotate_move_by(const SkewbMove move, const face_index_t rotatio
     break;
   }
   default:
-    rb_raise(rb_eRuntimeError, "invalid move type %d", move.type);
+    rb_raise(rb_eRuntimeError, "invalid move type %d in rotate_move_by", move.type);
   }
   return result;
 }
@@ -229,7 +231,7 @@ static SkewbMove mirror_move(const SkewbMove move, const face_index_t normal_fac
   case ROTATION:
     break;
   default:
-    rb_raise(rb_eRuntimeError, "invalid move type %d", move.type);
+    rb_raise(rb_eRuntimeError, "invalid move type %d in mirror_move", move.type);
   }
   return result;
 }
@@ -250,4 +252,10 @@ static VALUE SkewbAlgorithm_mirror(const VALUE self, const VALUE normal_face_sym
 void init_skewb_algorithm_class_under(VALUE module) {
   move_id = rb_intern("move");
   rotation_id = rb_intern("rotation");
+  SkewbAlgorithmClass = rb_define_class_under(module, "SkewbAlgorithm", rb_cObject);
+  rb_define_alloc_func(SkewbAlgorithmClass, SkewbAlgorithm_alloc);
+  rb_define_method(SkewbAlgorithmClass, "initialize", SkewbAlgorithm_initialize, 1);
+  rb_define_method(SkewbAlgorithmClass, "apply_to", SkewbAlgorithm_apply_to, 1);
+  rb_define_method(SkewbAlgorithmClass, "rotate_by", SkewbAlgorithm_rotate_by, 2);
+  rb_define_method(SkewbAlgorithmClass, "mirror", SkewbAlgorithm_mirror, 1);
 }
