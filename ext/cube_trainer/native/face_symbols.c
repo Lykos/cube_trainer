@@ -1,7 +1,6 @@
 #include "face_symbols.h"
 
 #include <stdlib.h>
-#include "utils.h"
 
 static ID face_ids[cube_faces];
 
@@ -41,8 +40,21 @@ axis_index_t axis_index(const face_index_t face_index) {
   return MIN(face_index, opposite_face_index(face_index));
 }
 
+bool same_axis(const face_index_t left_face_index, const face_index_t right_face_index) {
+  return axis_index(left_face_index) == axis_index(right_face_index);
+}
+
 face_index_t opposite_face_index(const face_index_t face_index) {
   return cube_faces - 1 - face_index;
+}
+
+size_t neighbor_index(const face_index_t base_face_index, const face_index_t other_face_index) {
+  for (int i = 0; i < 4; ++i) {
+    if (neighbor_face_index(base_face_index, i) == other_face_index) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 void init_face_symbols() {

@@ -27,4 +27,10 @@ size_t SkewbCoordinate_sticker_index(VALUE self);
 
 Corner extract_corner(VALUE face_symbols);
  
+typedef struct {
+  Corner corners[4];
+} FaceCorners;
+
+FaceCorners get_face_corners(face_index_t face_index);
+
 void init_skewb_coordinate_class_under(VALUE module);

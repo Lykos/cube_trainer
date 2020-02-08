@@ -95,6 +95,16 @@ Corner extract_corner(const VALUE face_symbols) {
   return corner;
 }
 
+FaceCorners get_face_corners(const face_index_t face_index) {
+  FaceCorners result;
+  for (size_t i = 0; i < 4; ++i) {
+    result.corners[i].face_indices[0] = face_index;
+    result.corners[i].face_indices[1] = neighbor_face_index(face_index, i);
+    result.corners[i].face_indices[2] = neighbor_face_index(face_index, i + 1);
+  }
+  return result;
+}
+
 #define GetSkewbCoordinateData(obj, data) \
   do { \
     TypedData_Get_Struct((obj), SkewbCoordinateData, &SkewbCoordinateData_type, (data)); \

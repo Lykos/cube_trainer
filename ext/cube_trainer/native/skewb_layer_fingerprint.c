@@ -185,20 +185,6 @@ static VALUE skewb_layer_fingerprint(const VALUE module, const VALUE skewb_state
   return rb_fingerprint;
 }
 
-typedef struct {
-  Corner corners[4];
-} FaceCorners;
-
-static FaceCorners get_face_corners(const face_index_t face_index) {
-  FaceCorners result;
-  for (size_t i = 0; i < 4; ++i) {
-    result.corners[i].face_indices[0] = face_index;
-    result.corners[i].face_indices[1] = neighbor_face_index(face_index, i);
-    result.corners[i].face_indices[2] = neighbor_face_index(face_index, i + 1);
-  }
-  return result;
-}
-
 static CornerPairGroup adjacent_corner_pairs_group(const FaceCorners corners) {
   CornerPairGroup result;
   result.num_corner_pairs = 4;
