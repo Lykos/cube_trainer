@@ -142,7 +142,7 @@ static void apply_moved_corner_cycles(VALUE* const stickers, const Corner corner
 }
 
 void rotate_corner_for_skewb_state(const Corner corner, direction_t direction, SkewbStateData* const skewb_state) {
-  direction = (direction % 3 + 3) % 3;
+  direction = CROP_MOD(direction, 3);
   if (direction == 0) {
     return;
   }
@@ -188,7 +188,7 @@ static void apply_corner_rotations(VALUE* const stickers, const face_index_t axi
 }
 
 void rotate_skewb_state(const face_index_t axis_face_index, direction_t direction, SkewbStateData* const skewb_state) {
-  direction = (direction % 4 + 4) % 4;
+  direction = CROP_MOD(direction, 4);
   if (direction == 0) {
     return;
   }

@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-#include "face_symbols.h"
 #include "cube_coordinate.h"
 #include "utils.h"
 
@@ -10,11 +9,6 @@ static ID stickers_id = 0;
 static ID x_base_face_symbol_id = 0;
 static ID y_base_face_symbol_id = 0;
 static VALUE CubeStateClass = Qnil;
-
-typedef struct {
-  size_t cube_size;
-  VALUE* stickers;
-} CubeStateData;
 
 static void CubeStateData_mark(void* const ptr) {
   const CubeStateData* data = ptr;
@@ -57,19 +51,6 @@ static VALUE CubeState_alloc(const VALUE klass) {
   data->stickers = NULL;
   return object;
 }
-
-#define GetCubeStateData(obj, data) \
-  do { \
-    TypedData_Get_Struct((obj), CubeStateData, &CubeStateData_type, (data)); \
-  } while (0)
-
-#define GetInitializedCubeStateData(obj, data) \
-  do { \
-    GetCubeStateData((obj), (data)); \
-    if (data->stickers == NULL) { \
-      rb_raise(rb_eArgError, "Cube state isn't initialized."); \
-    } \
-  } while(0)
 
 static size_t extract_index_base_face_index(const VALUE face_hash, const VALUE key) {
   const VALUE index_base_face_symbol = rb_hash_aref(face_hash, key);
@@ -227,39 +208,39 @@ static VALUE CubeState_cube_size(const VALUE self) {
   return ST2FIX(data->cube_size);
 }
 
-static VALUE CubeState_rotate_slice(const VALUE self, const VALUE turned_face_symbol, const VALUE slice_num, const VALUE direction_num) {
-  Check_Type(turned_face_symbol, T_SYMBOL);
-  Check_Type(slice_num, T_FIXNUM);
-  Check_Type(direction_num, T_FIXNUM);
-  const face_index_t turned_face_index = face_index(turned_face_symbol);
-  const size_t slice = FIX2INT(slice_num);
-  const direction_t direction = ((FIX2INT(direction_num) % 4) + 4) % 4;
+void rotate_slice_for_cube(const face_index_t turned_face_index, const size_t slice_index, direction_t direction, const CubeStateData* const data) {
+  direction = CROP_MOD(direction, 4);
   if (direction == 0) {
-    return Qnil;
+    return;
   }
-  const CubeStateData* data;
-  GetInitializedCubeStateData(self, data);
   const size_t n = data->cube_size;
   for (size_t i = 0; i < n; ++i) {
     Sticker4Cycle cycle;
     for (size_t j = 0; j < neighbor_faces; ++j) {
       const face_index_t on_face_index = neighbor_face_index(turned_face_index, j);
       const face_index_t next_face_index = neighbor_face_index(turned_face_index, j + 1);
-      const Point point = point_on_face(on_face_index, turned_face_index, next_face_index, n, slice, i);
+      const Point point = point_on_face(on_face_index, turned_face_index, next_face_index, n, slice_index, i);
       cycle.indices[j] = sticker_index(n, on_face_index, point);
     }
     apply_sticker_4cycle(data->stickers, cycle, direction);
-  }
+  }  
+}
+
+static VALUE CubeState_rotate_slice(const VALUE self, const VALUE turned_face_symbol, const VALUE slice_index, const VALUE direction) {
+  Check_Type(turned_face_symbol, T_SYMBOL);
+  Check_Type(slice_index, T_FIXNUM);
+  Check_Type(direction, T_FIXNUM);
+  const CubeStateData* data;
+  GetInitializedCubeStateData(self, data);
+  rotate_slice_for_cube(face_index(turned_face_symbol), FIX2INT(slice_index), FIX2INT(direction), data);
   return Qnil;
 }
 
-static VALUE CubeState_rotate_face(const VALUE self, const VALUE turned_face_symbol, const VALUE direction_num) {
-  const CubeStateData* data;
-  GetInitializedCubeStateData(self, data);
-  Check_Type(turned_face_symbol, T_SYMBOL);
-  Check_Type(direction_num, T_FIXNUM);
-  const face_index_t turned_face_index = face_index(turned_face_symbol);
-  const int direction = ((FIX2INT(direction_num) % 4) + 4) % 4;
+void rotate_face_for_cube(const face_index_t turned_face_index, direction_t direction, const CubeStateData* const data) {
+  direction = CROP_MOD(direction, 4);
+  if (direction == 0) {
+    return;
+  }
   const size_t n = data->cube_size;
   for (size_t y = 0; y < n / 2; ++y) {
     for (size_t x = 0; x < (n + 1) / 2; ++x) {
@@ -273,6 +254,14 @@ static VALUE CubeState_rotate_face(const VALUE self, const VALUE turned_face_sym
       apply_sticker_4cycle(data->stickers, cycle, direction);
     }
   }
+}
+
+static VALUE CubeState_rotate_face(const VALUE self, const VALUE turned_face_symbol, const VALUE direction) {
+  Check_Type(turned_face_symbol, T_SYMBOL);
+  Check_Type(direction, T_FIXNUM);
+  const CubeStateData* data;
+  GetInitializedCubeStateData(self, data);
+  rotate_face_for_cube(face_index(turned_face_symbol), FIX2INT(direction), data);
   return Qnil;
 }
 

@@ -131,6 +131,10 @@ module CubeTrainer
       @compiled_for_skewb ||= CompiledSkewbAlgorithm.for_moves(@moves)
     end
     
+    def compiled_for_cube(n)
+      (@compiled_for_cube ||= {})[n] ||= CompiledCubeAlgorithm.for_moves(n, @moves)
+    end
+    
   end
 
 end

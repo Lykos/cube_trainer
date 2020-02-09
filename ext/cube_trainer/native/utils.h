@@ -7,6 +7,7 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define FALSE 0
 #define TRUE 1
+#define CROP_MOD(a, b) (((a) % (b) + (b)) % (b))
 
 typedef char bool;
 typedef char direction_t;

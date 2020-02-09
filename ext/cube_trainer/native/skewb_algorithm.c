@@ -261,8 +261,6 @@ static VALUE SkewbAlgorithm_mirror(const VALUE self, const VALUE normal_face_sym
   mirrored_data->moves = malloc_moves(mirrored_data->size);
   for (size_t i = 0; i < data->size; ++i) {
     mirrored_data->moves[i] = mirror_move(data->moves[i], normal_face_index);
-    const Corner corner = data->moves[i].axis.corner;
-    const Corner mirrored_corner = mirrored_data->moves[i].axis.corner;
   }
   return mirrored;
 }
