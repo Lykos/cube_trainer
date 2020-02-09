@@ -55,7 +55,7 @@ static void check_moves(const CubeAlgorithmData* const data, const char* const n
 }
 
 static CubeMove* malloc_moves(const size_t n) {
-  CubeMove* const moves = malloc(n * sizeof(VALUE));
+  CubeMove* const moves = malloc(n * sizeof(CubeMove));
   if (moves == NULL) {
     rb_raise(rb_eNoMemError, "Allocating cube algorithm failed.");
   }
@@ -254,11 +254,11 @@ static VALUE CubeAlgorithm_plus(const VALUE self, const VALUE other) {
 }
 
 void init_cube_algorithm_class_under(const VALUE module) {
-  slice_id = rb_intern("move");
+  slice_id = rb_intern("slice");
   face_id = rb_intern("face");
   CubeAlgorithmClass = rb_define_class_under(module, "CubeAlgorithm", rb_cObject);
   rb_define_alloc_func(CubeAlgorithmClass, CubeAlgorithm_alloc);
-  rb_define_method(CubeAlgorithmClass, "initialize", CubeAlgorithm_initialize, 1);
+  rb_define_method(CubeAlgorithmClass, "initialize", CubeAlgorithm_initialize, 2);
   rb_define_method(CubeAlgorithmClass, "apply_to", CubeAlgorithm_apply_to, 1);
   rb_define_method(CubeAlgorithmClass, "rotate_by", CubeAlgorithm_rotate_by, 2);
   rb_define_method(CubeAlgorithmClass, "mirror", CubeAlgorithm_mirror, 1);

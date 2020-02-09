@@ -60,7 +60,7 @@ static void check_moves(const SkewbAlgorithmData* const data, const char* const 
 }
 
 static SkewbMove* malloc_moves(const size_t n) {
-  SkewbMove* const moves = malloc(n * sizeof(VALUE));
+  SkewbMove* const moves = malloc(n * sizeof(SkewbMove));
   if (moves == NULL) {
     rb_raise(rb_eNoMemError, "Allocating skewb algorithm failed.");
   }

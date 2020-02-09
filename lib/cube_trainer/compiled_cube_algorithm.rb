@@ -17,40 +17,39 @@ module CubeTrainer
 
     def self.transform_move(move, cube_size)
       decided_move = move.decide_meaning(cube_size)
-      if move.is_a?(Rotation)
+      if decided_move.is_a?(Rotation)
         slice_moves = 0.upto(cube_size - 1).map do |i|
-          [:slice, move.axis_face.face_symbol, move.direction.value, i]
+          [:slice, decided_move.axis_face.face_symbol, decided_move.direction.value, i]
         end
         [
-          [:face, move.axis_face.face_symbol, move.direction.value]
-          [:face, move.axis_face.opposite.face_symbol, move.direction.inverse.value]
+          [:face, decided_move.axis_face.face_symbol, decided_move.direction.value],
+          [:face, decided_move.axis_face.opposite.face_symbol, decided_move.direction.inverse.value],
         ] + slice_moves
-      elsif move.is_a?(FatMSliceMove)
+      elsif decided_move.is_a?(FatMSliceMove)
         1.upto(cube_size - 2).map do |i|
-          [:slice, move.axis_face.face_symbol, move.direction.value, i]
+          [:slice, decided_move.axis_face.face_symbol, decided_move.direction.value, i]
         end
-      elsif move.is_a?(SliceMove)  # Note that this also covers InnerMSliceMove
+      elsif decided_move.is_a?(SliceMove)  # Note that this also covers InnerMSliceMove
         [
-          [:slice, move.axis_face.face_symbol, move.direction.value, move.slice_index]
+          [:slice, decided_move.axis_face.face_symbol, decided_move.direction.value, decided_move.slice_index]
         ]
-      elsif move.is_a?(FatMove)
-        slice_moves = 0.upto(move.width - 1).map do |i|
-          [:slice, move.axis_face.face_symbol, move.direction.value, i]
+      elsif decided_move.is_a?(FatMove)
+        slice_moves = 0.upto(decided_move.width - 1).map do |i|
+          [:slice, decided_move.axis_face.face_symbol, decided_move.direction.value, i]
         end
         [
-          [:face, move.axis_face.face_symbol, move.direction.value]
+          [:face, decided_move.axis_face.face_symbol, decided_move.direction.value]
         ] + slice_moves
       else
-        raise TypeError
+        raise TypeError, "Invalid move type #{move.class} that becomes #{decided_move.class} for cube size #{cube_size}."
       end
     end
 
     def self.for_moves(cube_size, moves)
-      native = Native::CubeAlgorithm.new(moves.collect_concat { |m| transform_move(m, cube_size) })
+      transformed_moves = moves.collect_concat { |m| transform_move(m, cube_size) }
+      native = Native::CubeAlgorithm.new(cube_size, transformed_moves)
       new(native)
     end
-
-    EMPTY = for_moves([])
 
     def rotate_by(rotation)
       CompiledCubeAlgorithm.new(@native.rotate_by(rotation.axis_face.face_symbol, rotation.direction.value))

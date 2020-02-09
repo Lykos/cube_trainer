@@ -1,6 +1,7 @@
 require 'cube_trainer/move'
 require 'cube_trainer/reversible_applyable'
 require 'cube_trainer/cancellation_helper'
+require 'cube_trainer/compiled_cube_algorithm'
 require 'cube_trainer/compiled_skewb_algorithm'
 
 module CubeTrainer
@@ -55,10 +56,14 @@ module CubeTrainer
     end
 
     def apply_to(cube_state)
-       if cube_state.is_a?(SkewbState)
-         return compiled_for_skewb.apply_to(cube_state)
-       end
-      @moves.each { |m| m.apply_to(cube_state) }
+      case cube_state
+      when SkewbState
+        compiled_for_skewb.apply_to(cube_state)
+      when CubeState
+        compiled_for_cube(cube_state.n).apply_to(cube_state)
+      else
+        raise TypeError, "Unsupported cube state class #{cube_state.class}."
+      end
     end
 
     def inverse
