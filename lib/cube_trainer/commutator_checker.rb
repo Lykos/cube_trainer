@@ -96,6 +96,27 @@ module CubeTrainer
       nil
     end
 
+    def handle_incorrect
+      puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} doesn't do what it's expected to do." if @verbose
+      @broken_algs += 1
+
+      # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
+      if @verbose
+        if fix = find_fix(commutator)
+          puts "Found fix #{fix}."
+          return :fix_found
+        else
+          @unfixable_algs += 1
+          puts "Couldn't find a fix for this alg."
+          puts "actual"
+          puts alg.apply_temporarily_to(@alg_cube_state) { cube_string(@alg_cube_state, :color) }
+          puts "expected"
+          puts cube_string(@cycle_cube_state, :color)
+        end
+      end
+      :unfixable
+    end
+
     def check_alg(row_description, letter_pair, parts, commutator)
       # Apply alg and cycle
       cycle = construct_cycle(parts)
@@ -105,35 +126,15 @@ module CubeTrainer
 
         # compare
         correct = alg.apply_temporarily_to(@alg_cube_state) { @cycle_cube_state == @alg_cube_state }
-        fix_found = false
-        unless correct
-          puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} doesn't do what it's expected to do." if @verbose
-          @broken_algs += 1
-
-          # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
-          if @verbose
-            if fix = find_fix(commutator)
-              fix_found = true
-              puts "Found fix #{fix}."
-            else
-              @unfixable_algs += 1
-              puts "Couldn't find a fix for this alg."
-              puts "actual"
-              puts alg.anpply_temporarily_to(@alg_cube_state) { cube_string(@alg_cube_state, :color) }
-              puts "expected"
-              puts cube_string(@cycle_cube_state, :color)
-            end
-          end
-        end
 
         if correct
           :correct
-        elsif fix_found
-          :fix_found
         else
-          :unfixable
+          handle_incorrect
         end
       end
     end
+    
   end
+  
 end
