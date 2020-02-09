@@ -2,7 +2,6 @@ require 'cube_trainer/cube'
 require 'cube_trainer/string_helper'
 require 'cube_trainer/cube_constants'
 require 'cube_trainer/cube_state'
-require 'cube_trainer/reversible_applyable'
 require 'cube_trainer/direction'
 require 'cube_trainer/array_helper'
 require 'cube_trainer/puzzle'
@@ -143,12 +142,6 @@ module CubeTrainer
       end
     end
 
-    include ReversibleApplyable
-
-    def apply_to(state)
-      raise NotImplementedError
-    end
-
     # We handle the annoying inconsistency that u is a slice move for bigger cubes, but a fat move for 3x3.
     # Furthermore, M slice moves are fat m slice moves for even cubes and normal m slice moves for odd cubes.
     def decide_meaning(cube_size)
@@ -248,24 +241,6 @@ module CubeTrainer
       [Puzzle::SKEWB, Puzzle::NXN_CUBE]
     end
 
-    def apply_to(cube_or_skewb_state)
-      cube_or_skewb_state.apply_rotation(self)
-    end
-    
-    def apply_to_cube(cube_state)
-      raise TypeError unless cube_state.is_a?(CubeState)
-      0.upto(cube_state.n - 1) do |s|
-        cube_state.rotate_slice(@axis_face, s, @direction)
-      end
-      cube_state.rotate_face(@axis_face, @direction)
-      cube_state.rotate_face(@axis_face.opposite, @direction.inverse)
-    end
-
-    def apply_to_skewb(skewb_state)
-      raise TypeError unless skewb_state.is_a?(SkewbState)
-      return skewb_state.rotate(@axis_face, @direction)
-    end
-
     def is_slice_move?
       false
     end
@@ -311,25 +286,9 @@ module CubeTrainer
       [Puzzle::NXN_CUBE]
     end
 
-    def apply_to(cube_state)
-      raise TypeError unless cube_state.is_a?(CubeState)
-      decide_meaning(cube_state.n).apply_to_internal(cube_state)
-    end
-
-    def apply_to_internal(cube_state)
-      raise NotImplementedError
-    end
-    
   end
 
   class FatMSliceMove < CubeMove
-
-    def apply_to_internal(cube_state)
-      raise ArgumentError unless cube_state.n % 2 == 0
-      1.upto(cube_state.n - 2) do |s|
-        cube_state.rotate_slice(@axis_face, s, @direction)
-      end
-    end
 
     include MSlicePrintHelper
 
@@ -405,14 +364,6 @@ module CubeTrainer
       "#{if @width > 1 then @width else '' end}#{@axis_face.name}#{if @width > 1 then 'w' else '' end}#{@direction.name}"
     end
   
-    def apply_to_internal(cube_state)
-      raise ArgumentError if @width >= cube_state.n
-      0.upto(@width - 1) do |s|
-        cube_state.rotate_slice(@axis_face, s, @direction)
-      end
-      cube_state.rotate_face(@axis_face, @direction)
-    end
-
     def is_slice_move?
       false
     end
@@ -487,10 +438,6 @@ module CubeTrainer
       "#{@slice_index}#{@axis_face.name.downcase}#{@direction.name}"
     end
 
-    def apply_to_internal(cube_state)
-      cube_state.rotate_slice(@axis_face, @slice_index, @direction)
-    end
-    
     def is_slice_move?
       true
     end
@@ -556,12 +503,6 @@ module CubeTrainer
   class InnerMSliceMove < SliceMove
 
     include MSlicePrintHelper
-
-    def apply_to_internal(cube_state)
-      raise ArgumentError unless cube_state.n % 2 == 1
-      raise ArgumentError unless cube_state.n / 2 == @slice_index
-      super
-    end
     
   end
 

@@ -6,10 +6,7 @@ require 'cube_trainer/parser'
 include CubeTrainer
 
 def apply_sexy(cube_state)
-  cube_state.apply_move(parse_move('R'))
-  cube_state.apply_move(parse_move('U'))
-  cube_state.apply_move(parse_move('R\''))
-  cube_state.apply_move(parse_move('U\''))
+  parse_algorithm("R U R' U'").apply_to(cube_state)
 end
 
 describe CubePrintHelper do

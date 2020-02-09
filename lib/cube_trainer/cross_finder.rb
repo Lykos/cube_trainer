@@ -10,13 +10,16 @@ module CubeTrainer
 
     def score_on_face(state, face)
       base = no_auf_score_on_face(state, face)
-      adjusted = CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
-        move = FatMove.new(face, d, 1)
+      adjusted = cross_adjustments(face).map do |move|
         move.apply_temporarily_to(state) do
           no_auf_score_on_face(state, face)
         end
       end.max
       [base + 1, adjusted].max
+    end
+
+    def cross_adjustments(face)
+      (@cross_adjustments ||= {})[face] ||= CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Algorithm.move(FatMove.new(face, d, 1)) }
     end
 
     def no_auf_score_on_face(state, face)
