@@ -16,6 +16,12 @@ module CubeTrainer
       @cache[part] ||= Coordinate.solved_positions(part, @cube_size, @incarnation_index)
     end
 
+    def multi_corner_twist(corners)
+      raise TypeError, 'Cycles of weird piece types are not supported.' unless corners.all? { |p| p.is_a?(Corner) }
+      cycles = corners.map { |c| StickerCycle.new(@cube_size, coordinates(c)) }
+      StickerCycles.new(@cube_size, cycles)
+    end
+
     def construct(parts) 
       raise TypeError, 'Cycles of weird piece types are not supported.' unless parts.all? { |p| p.is_a?(Part) }
       raise ArgumentError, 'Cycles of length smaller than 2 are not supported.' if parts.length < 2

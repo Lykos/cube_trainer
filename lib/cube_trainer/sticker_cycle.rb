@@ -40,11 +40,20 @@ module CubeTrainer
       @cube_size = cube_size
       @sticker_cycles = sticker_cycles
     end
+
+    attr_reader :cube_size, :sticker_cycles
+    protected :cube_size, :sticker_cycles
     
     def apply_to(cube_state)
       raise TypeError unless cube_state.is_a?(CubeState)
       raise ArgumentError unless cube_state.n == @cube_size
       @sticker_cycles.each { |c| c.apply_to(cube_state) }
+    end
+
+    def +(other)
+      raise TypeError unless other.is_a?(StickerCycles)
+      raise ArgumentError unless @cube_size == other.cube_size
+      StickerCycles.new(@cube_size, @sticker_cycles + other.sticker_cycles)
     end
 
     def inverse

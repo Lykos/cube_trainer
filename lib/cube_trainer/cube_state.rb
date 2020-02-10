@@ -65,11 +65,6 @@ module CubeTrainer
       @hash ||= [self.class, @native].hash
     end
   
-    def rotate_corner(corner)
-      raise TypeError unless corner.is_a?(Corner)
-      apply_sticker_cycle(corner.rotations.map { |c| Coordinate.solved_position(c, n, 0) })
-    end
-
     # TODO Get rid of this backwards compatibility artifact
     def sticker_array(face)
       raise TypeError unless face.is_a?(Face)
