@@ -114,7 +114,7 @@ module CubeTrainer
       example_layer_color = color_scheme.color(EXAMPLE_LAYER_FACE_SYMBOL)
       @candidates = [solved_solution]
       @finder = SkewbLayerFinder.new([example_layer_color])
-      @fingerprinter = SkewbLayerFingerprinter.new(EXAMPLE_LAYER_FACE, color_scheme)
+      @fingerprinter = SkewbLayerFingerprinter.new(EXAMPLE_LAYER_FACE)
       @layer_solutions = {}
       @num_layer_solutions = 0
     end
