@@ -89,15 +89,6 @@ module CubeTrainer
       @native[coordinate.native] = color
     end
     
-    def rotate_slice(face, slice, direction)
-      @native.rotate_slice(face.face_symbol, slice, direction.value)
-    end
-  
-    # Rotates the stickers on one face (not a real move, only stickers on one face!)
-    def rotate_face(face, direction)
-      @native.rotate_face(face.face_symbol, direction.value)
-    end
-  
   end
 
 end

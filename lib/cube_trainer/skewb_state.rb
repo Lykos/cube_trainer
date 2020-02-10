@@ -53,14 +53,6 @@ module CubeTrainer
       move.apply_to(self)
     end
 
-    def rotate(axis_face, direction)
-      @native.rotate(axis_face.face_symbol, direction.value)
-    end
-
-    def rotate_corner(corner, direction)
-      @native.rotate_corner(corner.face_symbols, direction.value)
-    end
-  
     def apply_algorithm(alg)
       alg.apply_to(self)
     end

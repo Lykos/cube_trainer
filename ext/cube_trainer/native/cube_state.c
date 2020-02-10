@@ -226,16 +226,6 @@ void rotate_slice_for_cube(const face_index_t turned_face_index, const size_t sl
   }  
 }
 
-static VALUE CubeState_rotate_slice(const VALUE self, const VALUE turned_face_symbol, const VALUE slice_index, const VALUE direction) {
-  Check_Type(turned_face_symbol, T_SYMBOL);
-  Check_Type(slice_index, T_FIXNUM);
-  Check_Type(direction, T_FIXNUM);
-  const CubeStateData* data;
-  GetInitializedCubeStateData(self, data);
-  rotate_slice_for_cube(face_index(turned_face_symbol), FIX2INT(slice_index), FIX2INT(direction), data);
-  return Qnil;
-}
-
 void rotate_face_for_cube(const face_index_t turned_face_index, direction_t direction, const CubeStateData* const data) {
   direction = CROP_MOD(direction, 4);
   if (direction == 0) {
@@ -256,15 +246,6 @@ void rotate_face_for_cube(const face_index_t turned_face_index, direction_t dire
   }
 }
 
-static VALUE CubeState_rotate_face(const VALUE self, const VALUE turned_face_symbol, const VALUE direction) {
-  Check_Type(turned_face_symbol, T_SYMBOL);
-  Check_Type(direction, T_FIXNUM);
-  const CubeStateData* data;
-  GetInitializedCubeStateData(self, data);
-  rotate_face_for_cube(face_index(turned_face_symbol), FIX2INT(direction), data);
-  return Qnil;
-}
-
 void init_cube_state_class_under(const VALUE module) {
   stickers_id = rb_intern("stickers");
   x_base_face_symbol_id = rb_intern("x_base_face_symbol");
@@ -280,6 +261,4 @@ void init_cube_state_class_under(const VALUE module) {
   rb_define_alias(CubeStateClass, "==", "eql?");
   rb_define_method(CubeStateClass, "dup", CubeState_dup, 0);
   rb_define_method(CubeStateClass, "cube_size", CubeState_cube_size, 0);
-  rb_define_method(CubeStateClass, "rotate_slice", CubeState_rotate_slice, 3);
-  rb_define_method(CubeStateClass, "rotate_face", CubeState_rotate_face, 2);
 }
