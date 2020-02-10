@@ -27,7 +27,8 @@ module CubeTrainer
       @cycle_cube_state = @color_scheme.solved_cube_state(cube_size)
       @total_algs = 0
       @broken_algs = 0
-      @unfixable_algs = 0
+      # Unknown by default. Only relevant if we actually search for fixes.
+      @unfixable_algs = nil
       @part_cycle_factory = PartCycleFactory.new(cube_size, incarnation_index)
     end
 
@@ -96,7 +97,12 @@ module CubeTrainer
       nil
     end
 
-    def handle_incorrect
+    def count_unfixable
+      @unfixable_algs ||= 0
+      @unfixable_algs += 1
+    end
+
+    def handle_incorrect(row_description, letter_pair, commutator, alg)
       puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} doesn't do what it's expected to do." if @verbose
       @broken_algs += 1
 
@@ -106,7 +112,7 @@ module CubeTrainer
           puts "Found fix #{fix}."
           return :fix_found
         else
-          @unfixable_algs += 1
+          count_unfixable
           puts "Couldn't find a fix for this alg."
           puts "actual"
           puts alg.apply_temporarily_to(@alg_cube_state) { cube_string(@alg_cube_state, :color) }
@@ -130,7 +136,7 @@ module CubeTrainer
         if correct
           :correct
         else
-          handle_incorrect
+          handle_incorrect(row_description, letter_pair, commutator, alg)
         end
       end
     end
