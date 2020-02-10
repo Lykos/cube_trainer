@@ -27,6 +27,10 @@ module CubeTrainer
     def broken_algs
       0
     end
+
+    def error_algs
+      0
+    end
   end
 
   class CommutatorHintParser < HintParser
