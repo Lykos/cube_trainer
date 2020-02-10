@@ -34,13 +34,6 @@ RSpec.shared_examples 'compiled_cube_algorithm' do |cube_size|
     }.check { |a, f|
       a.compiled_for_cube(cube_size).mirror(f).apply_to(compile_then_transform_cube_state)
       a.mirror(f).compiled_for_cube(cube_size).apply_to(transform_then_compile_cube_state)
-      if compile_then_transform_cube_state != transform_then_compile_cube_state
-        puts a
-        puts f
-        puts a.mirror(f)
-        puts cube_string(compile_then_transform_cube_state, :color)
-        puts cube_string(transform_then_compile_cube_state, :color)
-      end
       expect(compile_then_transform_cube_state).to be == transform_then_compile_cube_state
     }
   end
