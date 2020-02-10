@@ -22,8 +22,12 @@ GEM
     rspec-mocks (3.8.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
+    rspec-prof (0.0.7)
+      rspec (~> 3.0)
+      ruby-prof
     rspec-support (3.8.2)
     ruby-filemagic (0.7.2)
+    ruby-prof (1.2.0)
     ruby-progressbar (1.10.1)
     simplecov (0.17.1)
       docile (~> 1.1)
@@ -43,6 +47,7 @@ DEPENDENCIES
   rake!
   rake-compiler!
   rspec!
+  rspec-prof!
   ruby-filemagic!
   ruby-progressbar!
   simplecov!

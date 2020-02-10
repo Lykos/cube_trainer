@@ -3,6 +3,7 @@
 source "https://rubygems.org" do
   gem 'rake', group: [:test, :development]
   gem 'rspec', group: :test
+  gem 'rspec-prof', group: :test
   gem 'rake-compiler', group: :development
   gem 'xdg'
   gem 'sqlite3'
