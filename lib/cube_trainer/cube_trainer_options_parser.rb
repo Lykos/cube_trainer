@@ -9,6 +9,8 @@ module CubeTrainer
     def initialize(options, &block)
       @options = options
       super do |opts|
+        opts.banner = "Usage: '#{$PROGRAM_NAME} [options]'"
+        
         opts.separator ''
         opts.separator 'Specific options:'
 
