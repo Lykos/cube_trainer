@@ -72,6 +72,7 @@ module CubeTrainer
       raise unless incarnation_index >= 0 && incarnation_index < part.num_incarnations(cube_size)
       # This is a coordinate on the same face and belonging to an equivalent part. But it might not be the right one.
       base_coordinate = Coordinate.from_indices(part.solved_face, cube_size, *part.base_index_on_face(cube_size, incarnation_index))
+      base_coordinate.coordinates; base_coordinate.cube_size
       other_face_symbols = part.corresponding_part.face_symbols[1..-1]
       match_coordinate_internal(part, base_coordinate, other_face_symbols)
     end
@@ -80,8 +81,12 @@ module CubeTrainer
     def self.solved_positions(part, cube_size, incarnation_index)
       solved_coordinate = solved_position(part, cube_size, incarnation_index)
       other_coordinates = part.face_symbols[1..-1].map.with_index do |f, i|
-        # The reverse is important for edge like parts.
-        base_coordinate = Coordinate.from_indices(Face.for_face_symbol(f), cube_size, *part.base_index_on_face(cube_size, incarnation_index).reverse)
+        face = Face.for_face_symbol(f)
+        # The reverse is important for edge like parts. We are not in the same position as usual solved pieces would be.
+        # For other types of pieces, it doesn't make a difference as the base index will just be a rotation of the original one, but we will anyway look at all rotations later.
+        base_indices = part.base_index_on_other_face(face, cube_size, incarnation_index).reverse
+        base_coordinate = Coordinate.from_indices(face, cube_size, *base_indices)
+        base_coordinate.coordinates; base_coordinate.cube_size
         other_face_symbols = [part.face_symbols[0]] + part.corresponding_part.face_symbols[1...i + 1] + part.corresponding_part.face_symbols[i + 2..-1]
         match_coordinate_internal(part, base_coordinate, other_face_symbols)
       end
@@ -140,7 +145,7 @@ module CubeTrainer
     end
 
     def coordinates
-      @coordinates ||= [@x, @y]
+      @coordinates ||= [x, y]
     end
 
     def x
@@ -183,7 +188,7 @@ module CubeTrainer
     end
 
     def jump_to_coordinates(new_coordinates)
-      Coordinate.from_indices(face, cube_size, *new_coordinates)
+      Coordinate.from_indices(@face, @cube_size, *new_coordinates)
     end
 
     def make_coordinate_at_edge_to(face)
@@ -210,7 +215,7 @@ module CubeTrainer
       Coordinate.canonicalize(x, cube_size) <= Coordinate.last_before_middle(cube_size)
     end
 
-    # On a nxn grid with integer coordinates between 0 and n - 1, give the 4 points that point (x, y) hits if you rotate by 90 degrees.
+    # On a nxn grid with integer coordinates between 0 and n - 1, iterates between the 4 points that point (x, y) hits if you rotate by 90 degrees.
     def rotate
       jump_to_coordinates([y, Coordinate.invert_coordinate(x, cube_size)])
     end

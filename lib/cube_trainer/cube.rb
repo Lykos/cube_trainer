@@ -33,6 +33,10 @@ module CubeTrainer
       raise "Generated #{parts.length} parts for #{self}, but the alphabet size is only #{ALPHABET_SIZE}." unless parts.length <= ALPHABET_SIZE
       parts
     end
+
+    def base_index_on_face(cube_size, incarnation_index)
+      base_index_on_other_face(solved_face, cube_size, incarnation_index)
+    end
   
     def self.for_face_symbols_internal(face_symbols)
       raise unless face_symbols.length == self::FACES
@@ -318,7 +322,7 @@ module CubeTrainer
     end
 
     # One index of such a piece on a on a NxN face.
-    def base_index_on_face(cube_size, incarnation_index)
+    def base_index_on_other_face(face, cube_size, incarnation_index)
       [0, 1]
     end
   end
@@ -331,7 +335,7 @@ module CubeTrainer
     ELEMENTS = generate_parts
   
     # One index of such a piece on a on a NxN face.
-    def base_index_on_face(cube_size, incarnation_index)
+    def base_index_on_other_face(face, cube_size, incarnation_index)
       [0, Coordinate.middle(cube_size)]
     end
   
@@ -380,10 +384,13 @@ module CubeTrainer
     end
   
     ELEMENTS = generate_parts
+
+    WING_BASE_INDEX_INVERTED_FACE_SYMBOLS = [:U, :R, :B]
   
     # One index of such a piece on a on a NxN face.
-    def base_index_on_face(cube_size, incarnation_index)
-      inverse = solved_face.piece_index % 2 == 0
+    def base_index_on_other_face(face, cube_size, incarnation_index)
+      # TODO Make this more elegant than hardcoding
+      inverse = WING_BASE_INDEX_INVERTED_FACE_SYMBOLS.include?(face.face_symbol)
       coordinates = [0, 1 + incarnation_index]
       if inverse then coordinates.reverse else coordinates end
     end
@@ -391,7 +398,6 @@ module CubeTrainer
   
   class Corner < Part
     FACES = 3
-    #CHIRALITY_CORNER = Corner.new(CHIRALITY_FACE_SYMBOLS)
 
     def self.create_for_face_symbols(face_symbols)
       piece_candidates = face_symbols[1..-1].permutation.collect { |cs| new([face_symbols[0]] + cs) }
@@ -453,7 +459,7 @@ module CubeTrainer
     end
   
     # One index of such a piece on a on a NxN face.
-    def base_index_on_face(cube_size, incarnation_index)
+    def base_index_on_other_face(face, cube_size, incarnation_index)
       [0, 0]
     end
   end
@@ -467,7 +473,7 @@ module CubeTrainer
     end
   
     # One index of such a piece on a on a NxN face.
-    def base_index_on_face(cube_size, incarnation_index)
+    def base_index_on_other_face(face, cube_size, incarnation_index)
       [1 + incarnation_index, 1 + incarnation_index]
     end
   end
@@ -485,7 +491,7 @@ module CubeTrainer
     end
     
     # One index of such a piece on a on a NxN face.
-    def base_index_on_face(cube_size, incarnation_index)
+    def base_index_on_other_face(face, cube_size, incarnation_index)
       [1 + incarnation_index, cube_size / 2]
     end
   end

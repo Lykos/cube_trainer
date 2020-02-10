@@ -234,16 +234,96 @@ describe Coordinate do
       expect(Coordinate.invert_coordinate(5, n)).to be 0
     end
     
-    it 'should do the right thing for a corner' do
+    it 'should get the right rotations for a corner' do
       expect(Coordinate.from_indices(Face::U, n, 0, 0).rotations).to be == [Coordinate.from_indices(Face::U, n, 0, 0), Coordinate.from_indices(Face::U, n, 0, -1), Coordinate.from_indices(Face::U, n, -1, -1), Coordinate.from_indices(Face::U, n, -1, 0)]
     end
     
-    it 'should do the right thing for a wing' do
+    it 'should get the right rotations for a wing' do
       expect(Coordinate.from_indices(Face::U, n, 0, 2).rotations).to be == [Coordinate.from_indices(Face::U, n, 0, 2), Coordinate.from_indices(Face::U, n, 2, -1), Coordinate.from_indices(Face::U, n, -1, -3), Coordinate.from_indices(Face::U, n, -3, 0)]
     end
 
-    it 'should do the right thing for an oblique' do
+    it 'should get the right rotations for an oblique' do
       expect(Coordinate.from_indices(Face::U, n, 1, 2).rotations).to be == [Coordinate.from_indices(Face::U, n, 1, 2), Coordinate.from_indices(Face::U, n, 2, -2), Coordinate.from_indices(Face::U, n, -2, -3), Coordinate.from_indices(Face::U, n, -3, 1)]
+    end
+
+    it 'should get the right solved position for wing FU' do
+      part = Wing.for_face_symbols([:F, :U])
+      expect(Coordinate.solved_position(part, n, 0)).to be == Coordinate.from_indices(Face::F, n, 0, 1)
+    end
+
+    it 'should get the right solved position for wing UF' do
+      part = Wing.for_face_symbols([:U, :F])
+      expect(Coordinate.solved_position(part, n, 0)).to be == Coordinate.from_indices(Face::U, n, 0, n - 2)
+    end
+
+    it 'should get the right solved position for wing BD' do
+      part = Wing.for_face_symbols([:B, :D])
+      expect(Coordinate.solved_position(part, n, 0)).to be == Coordinate.from_indices(Face::B, n, n - 1, 1)
+    end
+
+    it 'should get the right solved position for wing DB' do
+      part = Wing.for_face_symbols([:D, :B])
+      expect(Coordinate.solved_position(part, n, 0)).to be == Coordinate.from_indices(Face::D, n, n - 1, n - 2)
+    end
+
+    it 'should get the right solved position for wing LB' do
+      part = Wing.for_face_symbols([:L, :B])
+      expect(Coordinate.solved_position(part, n, 0)).to be == Coordinate.from_indices(Face::L, n, 1, n - 1)
+    end
+
+    it 'should get the right solved position for wing BL' do
+      part = Wing.for_face_symbols([:B, :L])
+      expect(Coordinate.solved_position(part, n, 0)).to be == Coordinate.from_indices(Face::B, n, n - 2, n - 1)
+    end
+
+    it 'should get the right solved position for wing RB' do
+      part = Wing.for_face_symbols([:R, :B])
+      expect(Coordinate.solved_position(part, n, 0)).to be == Coordinate.from_indices(Face::R, n, n - 2, n - 1)
+    end
+
+    it 'should get the right solved position for wing BR' do
+      part = Wing.for_face_symbols([:B, :R])
+      expect(Coordinate.solved_position(part, n, 0)).to be == Coordinate.from_indices(Face::B, n, 1, 0)
+    end
+
+    it 'should get the right solved positions for wing FU' do
+      part = Wing.for_face_symbols([:F, :U])
+      expect(Coordinate.solved_positions(part, n, 0)).to be == [Coordinate.from_indices(Face::F, n, 0, 1), Coordinate.from_indices(Face::U, n, 0, 1)]
+    end
+
+    it 'should get the right solved positions for wing UF' do
+      part = Wing.for_face_symbols([:U, :F])
+      expect(Coordinate.solved_positions(part, n, 0)).to be == [Coordinate.from_indices(Face::U, n, 0, n - 2), Coordinate.from_indices(Face::F, n, 0, n - 2)]
+    end
+
+    it 'should get the right solved positions for wing BD' do
+      part = Wing.for_face_symbols([:B, :D])
+      expect(Coordinate.solved_positions(part, n, 0)).to be == [Coordinate.from_indices(Face::B, n, n - 1, 1), Coordinate.from_indices(Face::D, n, n - 1, 1)]
+    end
+
+    it 'should get the right solved positions for wing DB' do
+      part = Wing.for_face_symbols([:D, :B])
+      expect(Coordinate.solved_positions(part, n, 0)).to be == [Coordinate.from_indices(Face::D, n, n - 1, n - 2), Coordinate.from_indices(Face::B, n, n - 1, n - 2)]
+    end
+
+    it 'should get the right solved positions for wing LB' do
+      part = Wing.for_face_symbols([:L, :B])
+      expect(Coordinate.solved_positions(part, n, 0)).to be == [Coordinate.from_indices(Face::L, n, 1, n - 1), Coordinate.from_indices(Face::B, n, 1, n - 1)]
+    end
+
+    it 'should get the right solved positions for wing BL' do
+      part = Wing.for_face_symbols([:B, :L])
+      expect(Coordinate.solved_positions(part, n, 0)).to be == [Coordinate.from_indices(Face::B, n, n - 2, n - 1), Coordinate.from_indices(Face::L, n, n - 2, n - 1)]
+    end
+
+    it 'should get the right solved positions for wing RB' do
+      part = Wing.for_face_symbols([:R, :B])
+      expect(Coordinate.solved_positions(part, n, 0)).to be == [Coordinate.from_indices(Face::R, n, n - 2, n - 1), Coordinate.from_indices(Face::B, n, n - 2, 0)]
+    end
+
+    it 'should get the right solved positions for wing BR' do
+      part = Wing.for_face_symbols([:B, :R])
+      expect(Coordinate.solved_positions(part, n, 0)).to be == [Coordinate.from_indices(Face::B, n, 1, 0), Coordinate.from_indices(Face::R, n, 1, n - 1)]
     end
   end
 end

@@ -42,7 +42,6 @@ module CubeTrainer
     end
 
     attr_reader :cube_size, :sticker_cycles
-    protected :cube_size, :sticker_cycles
     
     def apply_to(cube_state)
       raise TypeError unless cube_state.is_a?(CubeState)

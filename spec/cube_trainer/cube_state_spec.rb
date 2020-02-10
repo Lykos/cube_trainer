@@ -453,7 +453,6 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   
   it "should do a TK wing alg properly if the cube is big enough" do
     if cube_size >= 4
-      skip 'TK wing alg broken'
       parse_algorithm("U' R' U r2 U' R U r2").apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
       construct_cycle(Wing, ['e', 't', 'k']).apply_to(expected_cube_state)
@@ -462,7 +461,6 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   end
 
   it "should do the T perm properly" do
-    skip 'TK wing alg broken' if cube_size >= 4
     cube_state = color_scheme.solved_cube_state(cube_size)
     parse_algorithm("R U R' U' R' F R2 U' R' U' R U R' F'").apply_to(cube_state)
     expected_cube_state = color_scheme.solved_cube_state(cube_size)
