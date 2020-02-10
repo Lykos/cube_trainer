@@ -1,19 +1,8 @@
-require 'cube_trainer/reversible_applyable'
+require 'cube_trainer/compiled_algorithm'
 
 module CubeTrainer
 
-  class CompiledCubeAlgorithm
-
-    include ReversibleApplyable
-
-    def initialize(native)
-      raise TypeError unless native.is_a?(Native::CubeAlgorithm)
-      @native = native
-    end
-
-    attr_reader :native
-    attr_writer :inverse
-    protected :inverse=
+  class CompiledCubeAlgorithm < CompiledAlgorithm
 
     def self.transform_move(move, cube_size)
       decided_move = move.decide_meaning(cube_size)
@@ -51,30 +40,8 @@ module CubeTrainer
       new(native)
     end
 
-    def rotate_by(rotation)
-      CompiledCubeAlgorithm.new(@native.rotate_by(rotation.axis_face.face_symbol, rotation.direction.value))
-    end                  
-    
-    def mirror(normal_face)
-      CompiledCubeAlgorithm.new(@native.mirror(normal_face.face_symbol))
-    end
+    NATIVE_CLASS = Native::CubeAlgorithm
 
-    def inverse
-      @inverse ||= begin
-                     alg = CompiledCubeAlgorithm.new(@native.inverse)
-                     alg.inverse = self
-                     alg
-                   end
-    end
-
-    def +(other)
-      CompiledCubeAlgorithm.new(@native + other.native)
-    end
-    
-    def apply_to(cube_state)
-      @native.apply_to(cube_state.native)
-    end                  
-    
   end
-  
+
 end
