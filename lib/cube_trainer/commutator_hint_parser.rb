@@ -161,7 +161,8 @@ module CubeTrainer
               # Ignore this. Any invalid stuff can be outside the interesting part of the table.
             end
           elsif cell.is_a?(ErrorEntry)
-            puts "Algorithm for #{letter_pair} at #{row_description} has a problem: cell.error_message." if warn_comms?
+            checker.count_error_alg
+            puts "Algorithm for #{letter_pair} at #{row_description} has a problem: #{cell.error_message}." if warn_comms?
           elsif cell.is_a?(AlgEntry)
             commutator = cell.algorithm
             parts = letter_pair.letters.map { |l| @letter_scheme.for_letter(@part_type, l) }
@@ -171,8 +172,8 @@ module CubeTrainer
         end
       end
       
-      if checker.broken_algs > 0
-        msg = "#{checker.broken_algs} broken algs of #{checker.total_algs}."
+      if checker.broken_algs + checker.error_algs > 0
+        msg = "#{checker.error_algs} error algs and #{checker.broken_algs} broken algs of #{checker.total_algs}."
         msg += " #{checker.unfixable_algs} were unfixable." if checker.unfixable_algs
         raise msg if fail_comms?
         puts msg if warn_comms? 

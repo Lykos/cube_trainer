@@ -29,10 +29,11 @@ module CubeTrainer
       @broken_algs = 0
       # Unknown by default. Only relevant if we actually search for fixes.
       @unfixable_algs = nil
+      @error_algs = 0
       @part_cycle_factory = PartCycleFactory.new(cube_size, incarnation_index)
     end
 
-    attr_reader :total_algs, :broken_algs, :unfixable_algs
+    attr_reader :total_algs, :broken_algs, :unfixable_algs, :error_algs
 
     def construct_cycle(parts)
       @part_cycle_factory.construct([@buffer] + parts)
@@ -92,15 +93,23 @@ module CubeTrainer
     def find_fix(commutator)
       potential_fixes(commutator).each do |fix|
         fix_alg = fix.algorithm
-        return fix_alg if fix_alg.apply_temporarily_to(@alg_cube_state) { @cycle_cube_state == @alg_cube_state }
+        return fix if fix_alg.apply_temporarily_to(@alg_cube_state) { @cycle_cube_state == @alg_cube_state }
       end
       nil
     end
 
-    def count_unfixable
+    # Count an alg with a parse error or something like that that is broken before the checker gets to see it.
+    def count_error_alg
+      @total_algs += 1
+      @error_algs += 1
+    end
+
+    def count_unfixable_alg
       @unfixable_algs ||= 0
       @unfixable_algs += 1
     end
+
+    private :count_unfixable_alg
 
     def handle_incorrect(row_description, letter_pair, commutator, alg)
       puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} doesn't do what it's expected to do." if @verbose
@@ -112,7 +121,7 @@ module CubeTrainer
           puts "Found fix #{fix}."
           return :fix_found
         else
-          count_unfixable
+          count_unfixable_alg
           puts "Couldn't find a fix for this alg."
           puts "actual"
           puts alg.apply_temporarily_to(@alg_cube_state) { cube_string(@alg_cube_state, :color) }
