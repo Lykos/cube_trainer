@@ -3,6 +3,9 @@ require 'cube_trainer/color_scheme'
 require 'cube_trainer/move'
 require 'cube_trainer/parser'
 require 'cube_trainer/cube_print_helper'
+require 'rantly'
+require 'rantly/rspec_extensions'
+require 'rantly/shrinks'
 
 include CubeTrainer
 include CubePrintHelper
@@ -11,6 +14,16 @@ describe SkewbState do
   
   let (:color_scheme) { ColorScheme::BERNHARD }
   let (:skewb_state) { color_scheme.solved_skewb_state }
+  
+  it 'should not be equal to a state with one sticker changed' do
+    property_of {
+      Rantly { skewb_coordinate }
+    }.check { |c|
+      other_skewb_state = skewb_state.dup
+      other_skewb_state[c] = :other_color
+      expect(other_skewb_state == skewb_state).to be_falsey
+    }
+  end
   
   it "should have the right solved state" do
     expect(skewb_state.any_layer_solved?).to be true
