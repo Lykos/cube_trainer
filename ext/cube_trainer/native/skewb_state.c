@@ -74,7 +74,7 @@ static VALUE SkewbState_eql(const VALUE self, const VALUE other) {
   const SkewbStateData* self_data;
   GetSkewbStateData(self, self_data);
   const SkewbStateData* other_data;
-  GetSkewbStateData(self, other_data);
+  GetSkewbStateData(other, other_data);
   for (size_t i = 0; i < total_skewb_stickers; ++i) {
     if (!color_eq(self_data->stickers[i], other_data->stickers[i])) {
       return Qfalse;

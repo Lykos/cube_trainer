@@ -192,7 +192,7 @@ static CubeMove mirror_move(const CubeMove move, const face_index_t normal_face_
   if (same_axis(move.axis_face_index, normal_face_index)) {
     result.axis_face_index = opposite_face_index(move.axis_face_index);
   }
-  result.direction = opposite_face_index(move.axis_face_index);
+  result.direction = invert_cube_direction(move.direction);
   return result;
 }
 

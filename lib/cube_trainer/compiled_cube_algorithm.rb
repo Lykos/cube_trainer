@@ -71,8 +71,8 @@ module CubeTrainer
       CompiledCubeAlgorithm.new(@native + other.native)
     end
     
-    def apply_to(skewb_state)
-      @native.apply_to(skewb_state.native)
+    def apply_to(cube_state)
+      @native.apply_to(cube_state.native)
     end                  
     
   end

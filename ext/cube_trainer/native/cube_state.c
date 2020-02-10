@@ -177,7 +177,7 @@ static VALUE CubeState_eql(const VALUE self, const VALUE other) {
   const CubeStateData* self_data;
   GetInitializedCubeStateData(self, self_data);
   const CubeStateData* other_data;
-  GetInitializedCubeStateData(self, other_data);
+  GetInitializedCubeStateData(other, other_data);
   if (self_data->cube_size != other_data->cube_size) {
     return Qfalse;
   }

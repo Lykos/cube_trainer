@@ -94,6 +94,10 @@ describe Algorithm do
   it "should compute cancellations of algorithms across easy rotations correctly" do
     expect(parse_algorithm("R x U y L").cancellations(parse_algorithm("z U' R F"), cube_size)).to be == 3
   end
+
+  it "should mirror algorithms correctly" do
+    expect(parse_algorithm("M' D D2 F2 D2 F2").mirror(Face::D)).to be == parse_algorithm("M U' U2 F2 U2 F2")
+  end
   
   it "should apply a rotation correctly to Sarahs skewb algorithm" do
     expect(parse_sarahs_skewb_algorithm("F R'").rotate_by(parse_move("y"))).to be == parse_sarahs_skewb_algorithm("L F'")

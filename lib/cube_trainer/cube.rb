@@ -90,10 +90,6 @@ module CubeTrainer
       self.class.for_face_symbols(@face_symbols.rotate(n))
     end
   
-    def inverse
-      self.class.for_face_symbols(@face_symbols.reverse)
-    end
-
     def has_face_symbol?(c)
       @face_symbols.include?(c)
     end
@@ -147,7 +143,7 @@ module CubeTrainer
     end
 
     def coordinate_index_base_face(coordinate_index)
-      only(neighbors.select { |n| n.close_to_smaller_indices? && coordinate_index_close_to(n) == coordinate_index})
+      (@coordinate_index_base_face ||= {})[coordinate_index] ||= only(neighbors.select { |n| n.close_to_smaller_indices? && coordinate_index_close_to(n) == coordinate_index})
     end
   
     def opposite
@@ -286,10 +282,6 @@ module CubeTrainer
       self
     end
   
-    def inverse
-      self
-    end
-    
     def self.valid?(face_symbols)
       self::CORRESPONDING_PART_CLASS.valid?(face_symbols)
     end

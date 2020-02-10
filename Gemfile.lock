@@ -10,6 +10,7 @@ GEM
     rake (12.3.3)
     rake-compiler (1.1.0)
       rake
+    rantly (2.0.0)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
@@ -46,6 +47,7 @@ DEPENDENCIES
   qtbindings!
   rake!
   rake-compiler!
+  rantly!
   rspec!
   rspec-prof!
   ruby-filemagic!

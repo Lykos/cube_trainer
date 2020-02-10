@@ -3,6 +3,9 @@ require 'rake/extensiontask'
 RBUIC = '/usr/local/bin/rbuic4'
 UIFILES = FileList.new('ui/**/*.ui')
 
+# TODO Find the proper way to do this
+ENV['RANTLY_VERBOSE'] ||= '0'
+
 def ui_to_rb(f)
   f.sub(/^ui\//, 'lib/').sub(/.ui$/, '_ui.rb')
 end

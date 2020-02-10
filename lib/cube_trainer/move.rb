@@ -167,7 +167,7 @@ module CubeTrainer
   class AxisFaceAndDirectionMove < Move
 
     def initialize(axis_face, direction)
-      raise TypeError unless axis_face.is_a?(Face)
+      raise TypeError, "Unsuitable axis face #{axis_face}." unless axis_face.is_a?(Face)
       raise TypeError unless direction.is_a?(CubeDirection)
       @axis_face = axis_face
       @direction = direction
@@ -222,7 +222,7 @@ module CubeTrainer
 
     def mirror(normal_face)
       if normal_face.same_axis?(@axis_face)
-        fields = replace_once(replace_once(identifying_fields, @direction, @direction.inverse), @axis_face, @axis_face.inverse)
+        fields = replace_once(replace_once(identifying_fields, @direction, @direction.inverse), @axis_face, @axis_face.opposite)
         self.class.new(*fields)
       else
         inverse
