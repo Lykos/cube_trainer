@@ -10,6 +10,7 @@ require 'cube_trainer/anki/cube_visualizer_options'
 require 'net/http'
 
 include CubeTrainer
+include Anki
 
 options = CubeVisualizerOptions.parse(ARGV)
 

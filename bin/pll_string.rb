@@ -9,7 +9,7 @@ require 'cube_trainer/parser'
 require 'cube_trainer/color_scheme'
 
 include CubeTrainer
-include CubePrintHelper
+include Core::CubePrintHelper
 
 puts 'Enter LL scramble'
 scramble_string = gets.chomp

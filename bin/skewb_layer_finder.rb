@@ -13,7 +13,7 @@ require 'cube_trainer/parser'
 require 'cube_trainer/cube_print_helper'
 
 include CubeTrainer
-include CubePrintHelper
+include Core::CubePrintHelper
 
 SEARCH_DEPTH = 6
 

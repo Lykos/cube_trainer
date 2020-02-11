@@ -3,17 +3,18 @@
 
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_trainer/cube'
+require 'cube_trainer/core/cube_print_helper'
+require 'cube_trainer/core/cube'
+require 'cube_trainer/core/skewb_state'
 require 'cube_trainer/skewb_layer_classifier'
 require 'cube_trainer/skewb_layer_improver'
 require 'cube_trainer/skewb_layer_searcher'
 require 'cube_trainer/skewb_transformation_describer'
-require 'cube_trainer/skewb_state'
-require 'cube_trainer/cube_print_helper'
 require 'cube_trainer/skewb_layer_searcher_options'
 require 'csv'
 
 include CubeTrainer
+include Core
 include CubePrintHelper
 
 options = SkewbLayerSearcherOptions.parse(ARGV)
