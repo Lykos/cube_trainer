@@ -17,7 +17,7 @@ def compute_average(results_model, generator)
     learner.average_time
 end
 
-describe  do
+describe InputSampler do
   ITEMS = ('a'..'c').to_a.permutation(2).collect { |p| InputItem.new(LetterPair.new(p)) }
   
   it "should perform better than random sampling" do

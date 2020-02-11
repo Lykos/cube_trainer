@@ -10,7 +10,10 @@ module CubeTrainer
 
     include MathHelper
 
-    def initialize(options, results_persistence=ResultsPersistence.create_for_production)
+    def initialize(now, options, results_persistence=ResultsPersistence.create_for_production)
+      raise TypeError unless now.is_a?(Time)
+      raise TypeError unless results_persistence.respond_to?(:load_results)
+      @now = now
       @options = options
       @results_persistence = results_persistence
       mode = BufferHelper.mode_for_options(options)
@@ -18,8 +21,6 @@ module CubeTrainer
       @grouped_results = results.group_by { |c| c.input_representation }
       grouped_averages = @grouped_results.collect { |c, rs| [c, average_time(rs)] }
       @averages = grouped_averages.sort_by { |t| -t[1] }
-
-      now = Time.now
 
       old_grouped_results = results.select { |r| r.timestamp < now - 24 * 3600 }.group_by { |c| c.input_representation }
       old_grouped_averages = old_grouped_results.collect { |c, rs| [c, average_time(rs)] }
@@ -47,7 +48,7 @@ module CubeTrainer
     end
 
     def expected_time_per_type_stats
-      @expected_time_per_type_stats ||= ExpectedTimeComputer.new(@options, @results_persistence).compute_expected_time_per_type_stats
+      @expected_time_per_type_stats ||= ExpectedTimeComputer.new(@now, @options, @results_persistence).compute_expected_time_per_type_stats
     end
 
     # Interesting time boundaries to see the number of bad results above that boundary. It allows to display things like "9 results are above 4.5 and one result is above 5"
@@ -82,17 +83,12 @@ module CubeTrainer
     end
       
     def average_time(results)
-      average(float_times_s(results))
-    end
-  
-    def average(values)
       avg = Native::CubeAverage.new(5, 0)
-      values.each { |v| avg.push(v) }
+      results.sort_by { |r| r.timestamp }.each { |r| avg.push(r.time_s) }
       avg.average
     end
   
     def float_times_s(results)
-      results.collect { |result| result.time_s }
     end
     
   end

@@ -135,7 +135,8 @@ module CubeTrainer
       corner_parities: CornerParitiesComputer,
     }
 
-    def initialize(options, results_persistence)
+    def initialize(now, options, results_persistence)
+      @now = now
       @options = options
       @results_persistence = results_persistence
     end
@@ -149,7 +150,7 @@ module CubeTrainer
       per_type_stats = relevant_commutator_types.map do |k, c|
         patched_options = @options.dup
         patched_options.commutator_info = c
-        average = StatsComputer.new(patched_options, @results_persistence).total_average
+        average = StatsComputer.new(@now, patched_options, @results_persistence).total_average
         expected_algs = EXPECTED_ALGS_COMPUTER_CLASSES[c.result_symbol].new(cube_numbers).compute_expected_algs
         {name: k, expected_algs: expected_algs, average: average, total_time: expected_algs * average}
       end

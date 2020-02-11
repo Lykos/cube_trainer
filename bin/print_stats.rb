@@ -10,7 +10,7 @@ require 'yaml'
 include CubeTrainer
 
 options = CommutatorOptions.parse(ARGV)
-computer = StatsComputer.new(options)
+computer = StatsComputer.new(Time.now, options)
 
 # Detailed stats
 computer.averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }
