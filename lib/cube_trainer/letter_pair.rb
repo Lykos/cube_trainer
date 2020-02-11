@@ -1,5 +1,3 @@
-require 'cube_trainer/cube'
-
 module CubeTrainer
 
   # Called LetterPair for historical reasons, but actually can contain any number of letters.
@@ -8,7 +6,7 @@ module CubeTrainer
     SEPARATOR = ' '
 
     def initialize(letters)
-      raise ArgumentError unless letters.is_a?(Array)
+      raise TypeError unless letters.is_a?(Array)
       raise ArgumentError, "Invalid letter pair length for letter pair #{letters.join(" ")}." unless 1 <= letters.length
       raise ArgumentError, "Invalid letter '#{SEPARATOR}' in letter pair #{letters.join(" ")}." if letters.include?(SEPARATOR)
       @letters = letters

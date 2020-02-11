@@ -1,7 +1,9 @@
-require 'cube_trainer/parser'
+require 'cube_trainer/core/parser'
 require 'cube_trainer/anki/note_input'
 
 module CubeTrainer
+
+  module Anki
 
   class AlgSetParser
 
@@ -14,6 +16,8 @@ module CubeTrainer
       end
     end
     
+  end
+
   end
   
 end

@@ -1,14 +1,14 @@
 require 'cube_trainer/commutator_reverse_engineer'
 require 'cube_trainer/commutator_hinter'
 require 'cube_trainer/commonality_finder'
-require 'cube_trainer/string_helper'
+require 'cube_trainer/core/cube'
+require 'cube_trainer/core/cube_constants'
+require 'cube_trainer/core/move'
+require 'cube_trainer/core/parser'
 require 'cube_trainer/hint_parser'
-require 'cube_trainer/parser'
-require 'cube_trainer/move'
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/commutator_checker'
-require 'cube_trainer/cube_constants'
-require 'cube_trainer/cube'
+require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
 
@@ -37,7 +37,7 @@ module CubeTrainer
 
     TEST_COMMS_MODES = [:ignore, :warn, :fail]
     
-    include StringHelper
+    include Utils::StringHelper
 
     def initialize(part_type:, buffer:, letter_scheme:, color_scheme:, verbose:, cube_size:, test_comms_mode:)
       raise ArgumentError, "Invalid test comms mode #{test_comms_mode}. Allowed are: #{TEST_COMMS_MODES.inspect}" unless TEST_COMMS_MODES.include?(test_comms_mode)

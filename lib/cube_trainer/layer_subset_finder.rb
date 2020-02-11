@@ -1,5 +1,5 @@
 require 'cube_trainer/bruteforce_finder'
-require 'cube_trainer/cube'
+require 'cube_trainer/core/cube'
 
 module CubeTrainer
 

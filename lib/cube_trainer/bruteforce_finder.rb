@@ -1,4 +1,4 @@
-require 'cube_trainer/algorithm'
+require 'cube_trainer/core/algorithm'
 
 module CubeTrainer
 
@@ -28,7 +28,7 @@ module CubeTrainer
     
     def extract_algorithms
       algs = {}
-      @colors.each { |c| algs[c] = [Algorithm.empty] }
+      @colors.each { |c| algs[c] = [Core::Algorithm.empty] }
       algs
     end
 

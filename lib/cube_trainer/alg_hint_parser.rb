@@ -1,10 +1,10 @@
-require 'cube_trainer/hint_parser'
-require 'cube_trainer/alg_name'
-require 'cube_trainer/sequence_hinter'
-require 'cube_trainer/restricted_hinter'
-require 'cube_trainer/disjoint_union_hinter'
 require 'cube_trainer/alg_hinter'
-require 'cube_trainer/parser'
+require 'cube_trainer/alg_name'
+require 'cube_trainer/core/parser'
+require 'cube_trainer/disjoint_union_hinter'
+require 'cube_trainer/hint_parser'
+require 'cube_trainer/restricted_hinter'
+require 'cube_trainer/sequence_hinter'
 
 module CubeTrainer
 
@@ -39,10 +39,10 @@ module CubeTrainer
       AlgHinter
     end
 
-    SOLVED_HINTER = AlgHinter.new({SimpleAlgName.new('solved') => Algorithm.empty})
-    AUF_HINTER = AlgHinter.new(([[SimpleAlgName.new('auf skip'), Algorithm.empty]] +
+    SOLVED_HINTER = AlgHinter.new({SimpleAlgName.new('solved') => Core::Algorithm.empty})
+    AUF_HINTER = AlgHinter.new(([[SimpleAlgName.new('auf skip'), Core::Algorithm.empty]] +
                                 CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
-                                  alg = Algorithm.move(FatMove.new(Face::U, d))
+                                  alg = Core::Algorithm.move(FatMove.new(Face::U, d))
                                   [SimpleAlgName.new(alg.to_s), alg]
                                 end).to_h)
     ADJACENT_PLL_NAME = SimpleAlgName.new('Ja')

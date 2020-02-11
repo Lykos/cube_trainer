@@ -1,20 +1,21 @@
 # coding: utf-8
 
-require 'set'
-require 'cube_trainer/move'
-require 'cube_trainer/direction'
+require 'csv'
 require 'cube_trainer/anki/alg_set_parser'
-require 'cube_trainer/algorithm'
 require 'cube_trainer/anki/cache'
 require 'cube_trainer/anki/cube_visualizer'
-require 'csv'
-require 'parallel'
-require 'cube_trainer/array_helper'
-require 'cube_trainer/alg_hint_parser'
-require 'net/http'
 require 'cube_trainer/anki/note_input'
+require 'cube_trainer/core/move'
+require 'cube_trainer/core/direction'
+require 'cube_trainer/core/algorithm'
+require 'cube_trainer/utils/array_helper'
+require 'net/http'
+require 'parallel'
+require 'set'
 
 module CubeTrainer
+
+  module Anki
 
   class AlgSetAnkiGenerator
 
@@ -126,6 +127,8 @@ module CubeTrainer
       end
     end
     
+  end
+
   end
 
 end

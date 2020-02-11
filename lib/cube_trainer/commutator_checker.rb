@@ -1,9 +1,9 @@
-require 'cube_trainer/cube_state'
-require 'cube_trainer/commutator'
-require 'cube_trainer/algorithm'
 require 'cube_trainer/color_scheme'
-require 'cube_trainer/cube_print_helper'
-require 'cube_trainer/part_cycle_factory'
+require 'cube_trainer/core/cube_state'
+require 'cube_trainer/core/commutator'
+require 'cube_trainer/core/algorithm'
+require 'cube_trainer/core/cube_print_helper'
+require 'cube_trainer/core/part_cycle_factory'
 
 module CubeTrainer
   

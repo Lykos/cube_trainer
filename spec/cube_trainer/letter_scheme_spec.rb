@@ -1,7 +1,5 @@
+require 'cube_trainer/core/cube'
 require 'cube_trainer/letter_scheme'
-require 'cube_trainer/cube'
-
-include CubeTrainer
 
 describe LetterScheme do |clazz|
   let(:letter_scheme) { BernhardLetterScheme.new }

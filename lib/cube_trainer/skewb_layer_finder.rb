@@ -1,8 +1,8 @@
+require 'cube_trainer/core/coordinate'
+require 'cube_trainer/core/skewb_state'
+require 'cube_trainer/core/move'
 require 'cube_trainer/layer_subset_finder'
 require 'cube_trainer/skewb_layer_helper'
-require 'cube_trainer/coordinate'
-require 'cube_trainer/skewb_state'
-require 'cube_trainer/move'
 
 module CubeTrainer
 
@@ -13,7 +13,7 @@ module CubeTrainer
     include SkewbLayerHelper
 
     def face_color(state, face)
-      state[SkewbCoordinate.for_center(face)]
+      state[Core::SkewbCoordinate.for_center(face)]
     end
 
     def solved_colors(skewb_state)
@@ -29,7 +29,7 @@ module CubeTrainer
     end
 
     def generate_moves(skewb_state)
-      FixedCornerSkewbMove::ALL.map { |m| Algorithm.move(m) }
+      FixedCornerSkewbMove::ALL.map { |m| Core::Algorithm.move(m) }
     end
   end
   

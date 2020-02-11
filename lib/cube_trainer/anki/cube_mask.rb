@@ -1,6 +1,8 @@
-require 'cube_trainer/coordinate'
+require 'cube_trainer/core/coordinate'
 
 module CubeTrainer
+
+  module Anki
 
   class CubeMask
     def self.from_name(example_name, cube_size, color)
@@ -20,6 +22,8 @@ module CubeTrainer
     def apply_to(cube_state)
       @coordinates.each { |c| cube_state[c] = @color }
     end
+  end
+
   end
   
 end

@@ -1,6 +1,5 @@
 require 'yaml'
 require 'cube_trainer/result'
-require 'cube_trainer/cube'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/xdg_helper'
 require 'sqlite3'

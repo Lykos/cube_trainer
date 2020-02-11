@@ -1,9 +1,9 @@
-require 'cube_trainer/native'
-require 'cube_trainer/input_sampler'
-require 'ostruct'
-require 'cube_trainer/array_helper'
 require 'cube_trainer/alg_name'
-require 'cube_trainer/cube_state'
+require 'cube_trainer/core/cube_state'
+require 'cube_trainer/input_sampler'
+require 'cube_trainer/native'
+require 'cube_trainer/utils/array_helper'
+require 'ostruct'
 
 module CubeTrainer
 

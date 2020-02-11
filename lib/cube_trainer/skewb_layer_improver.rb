@@ -1,7 +1,7 @@
-require 'cube_trainer/skewb_state'
-require 'cube_trainer/move'
-require 'cube_trainer/coordinate'
-require 'cube_trainer/cube_print_helper'
+require 'cube_trainer/core/coordinate'
+require 'cube_trainer/core/cube_print_helper'
+require 'cube_trainer/core/move'
+require 'cube_trainer/core/skewb_state'
 
 module CubeTrainer
 

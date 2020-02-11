@@ -1,4 +1,4 @@
-require 'cube_trainer/skewb_state'
+require 'cube_trainer/core/skewb_state'
 
 module CubeTrainer
 

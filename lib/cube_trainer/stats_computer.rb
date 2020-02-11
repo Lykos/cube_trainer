@@ -1,8 +1,8 @@
-require 'cube_trainer/native'
 require 'cube_trainer/buffer_helper'
-require 'cube_trainer/results_persistence'
+require 'cube_trainer/native'
 require 'cube_trainer/probabilities'
-require 'cube_trainer/math_helper'
+require 'cube_trainer/results_persistence'
+require 'cube_trainer/utils/math_helper'
 
 module CubeTrainer
 

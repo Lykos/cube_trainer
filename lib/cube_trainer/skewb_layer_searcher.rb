@@ -1,18 +1,18 @@
-require 'cube_trainer/move'
-require 'cube_trainer/parser'
-require 'cube_trainer/skewb_layer_finder'
-require 'cube_trainer/cube'
 require 'cube_trainer/color_scheme'
-require 'cube_trainer/cube_print_helper'
-require 'set'
+require 'cube_trainer/core/move'
+require 'cube_trainer/core/parser'
+require 'cube_trainer/core/cube'
+require 'cube_trainer/core/cube_print_helper'
+require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/skewb_layer_fingerprinter'
+require 'set'
 
 module CubeTrainer
 
   # Searches all possible Skewb layers.
   class SkewbLayerSearcher
 
-    include CubePrintHelper
+    include Core::CubePrintHelper
 
     class AlgorithmTransformation < Struct.new(:rotation, :mirror)
       
@@ -60,9 +60,9 @@ module CubeTrainer
       def algorithm
         @algorithm ||= begin
                          if move.nil?
-                           Algorithm.empty
+                           Core::Algorithm.empty
                          else
-                           Algorithm.move(@move) + @sub_solution.algorithm
+                           Core::Algorithm.move(@move) + @sub_solution.algorithm
                          end
                        end
       end
@@ -70,9 +70,9 @@ module CubeTrainer
       def compiled_algorithm
         @compiled_algorithm ||= begin
                                   if move.nil?
-                                    CompiledSkewbAlgorithm::EMPTY
+                                    Core::CompiledSkewbAlgorithm::EMPTY
                                   else
-                                    Algorithm.move(@move).compiled_for_skewb + @sub_solution.compiled_algorithm
+                                    Core::Algorithm.move(@move).compiled_for_skewb + @sub_solution.compiled_algorithm
                                   end
                                 end
       end
@@ -93,9 +93,9 @@ module CubeTrainer
 
       def extract_algorithms
         own_algs = if @sub_solution
-                     @sub_solution.extract_algorithms.map { |alg| Algorithm.move(@move) + alg }
+                     @sub_solution.extract_algorithms.map { |alg| Core::Algorithm.move(@move) + alg }
                    else
-                     [Algorithm.empty]
+                     [Core::Algorithm.empty]
                    end
         alternative_algs = @alternative_solutions.collect_concat { |s| s.extract_algorithms }
         own_algs + alternative_algs

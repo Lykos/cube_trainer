@@ -11,7 +11,13 @@ SimpleCov.start do
 end
 
 require 'cube_trainer'
+require 'cube_trainer/anki'
+require 'cube_trainer/core'
+require 'cube_trainer/utils'
 require 'generator_helpers'
 require 'shrink_helpers'
 
 include CubeTrainer
+include Anki
+include Core
+include Utils

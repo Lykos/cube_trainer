@@ -1,8 +1,8 @@
-require 'cube_trainer/sampling_helper'
-require 'cube_trainer/random_helper'
-require 'cube_trainer/native'
 require 'cube_trainer/input_item'
+require 'cube_trainer/native'
 require 'cube_trainer/sampler'
+require 'cube_trainer/utils/random_helper'
+require 'cube_trainer/utils/sampling_helper'
 
 module CubeTrainer
 

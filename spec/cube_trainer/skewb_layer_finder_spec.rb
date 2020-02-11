@@ -1,9 +1,9 @@
-require 'cube_trainer/skewb_layer_finder'
-require 'cube_trainer/move'
-require 'cube_trainer/algorithm'
-require 'cube_trainer/cube_print_helper'
-require 'cube_trainer/parser'
 require 'cube_trainer/color_scheme'
+require 'cube_trainer/core/algorithm'
+require 'cube_trainer/core/cube_print_helper'
+require 'cube_trainer/core/move'
+require 'cube_trainer/core/parser'
+require 'cube_trainer/skewb_layer_finder'
 
 include CubeTrainer
 include CubePrintHelper

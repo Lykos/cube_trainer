@@ -2,6 +2,8 @@ require 'filemagic'
 
 module CubeTrainer
 
+  module Anki
+
   class ImageChecker
 
     def initialize(format)
@@ -19,6 +21,8 @@ module CubeTrainer
       end
     end
    
+  end
+
   end
 
 end

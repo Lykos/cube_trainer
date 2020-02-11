@@ -1,3 +1,6 @@
+require 'cube_trainer/core/coordinate'
+require 'cube_trainer/core/cube'
+require 'cube_trainer/core/cube_state'
 require 'cube_trainer/letter_scheme'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/color_scheme'
@@ -8,7 +11,7 @@ module CubeTrainer
     
     def initialize(part_type, buffer, letter_scheme, cube_size)
       raise TypeError unless part_type.is_a?(Class)
-      raise TypeError unless buffer.is_a?(Part) && buffer.is_a?(part_type)
+      raise TypeError unless buffer.is_a?(Core::Part) && buffer.is_a?(part_type)
       raise TypeError unless letter_scheme.is_a?(LetterScheme)
       raise TypeError unless cube_size.is_a?(Integer)
       @part_type = part_type
@@ -16,14 +19,14 @@ module CubeTrainer
       @letter_scheme = letter_scheme
       # We don't care much about any other pieces, so we'll just use nil
       # everywhere.
-      stickers = Face::ELEMENTS.map do |face_symbol|
+      stickers = Core::Face::ELEMENTS.map do |face_symbol|
         (0...cube_size).map do |x|
           (0...cube_size).map do |y|
             nil
           end
         end
       end
-      @state = CubeState.from_stickers(cube_size, stickers)
+      @state = Core::CubeState.from_stickers(cube_size, stickers)
       @solved_positions = {}
       @buffer_coordinate = solved_position(@buffer)
       # We write on every sticker where it was in the initial state.
@@ -34,7 +37,7 @@ module CubeTrainer
     end
 
     def solved_position(part)
-      @solved_positions[part] ||= Coordinate.solved_position(part, @state.n, 0)
+      @solved_positions[part] ||= Core::Coordinate.solved_position(part, @state.n, 0)
     end
 
     def find_stuff
@@ -51,7 +54,7 @@ module CubeTrainer
     end
 
     def find_letter_pair(alg)
-      raise TypeError unless alg.is_a?(Algorithm)
+      raise TypeError unless alg.is_a?(Core::Algorithm)
       alg.inverse.apply_temporarily_to(@state) { find_stuff }
     end
 
