@@ -15,7 +15,7 @@ def rb_to_ui(f)
 end
 
 desc 'generate all Qt UI files using rbuic4'
-task :uic => UIFILES.collect { |f| ui_to_rb(f) }
+task uic: UIFILES.collect { |f| ui_to_rb(f) }
 
 Rake::ExtensionTask.new('cube_trainer/native')
 
@@ -23,14 +23,15 @@ rule(/^lib\/.*_ui\.rb$/ => lambda { |f| rb_to_ui(f) }) do |t|
   ui_file = t.source
   rb_file = t.name
   if !system(RBUIC, ui_file, '-o', rb_file)
-    STDERR.puts "Failed to compile #{ui_file}."
+    warn "Failed to compile #{ui_file}."
   end
 end
 
 begin
   require 'rspec/core/rake_task'
   RSpec::Core::RakeTask.new(:spec)
-  task :default => :spec
-rescue LoadError
+  task default: :spec
+rescue LoadError => e
+  warn "Couldn't create spec task #{e}."
 end
 
