@@ -239,11 +239,15 @@ static SkewbMove mirror_move(const SkewbMove move, const face_index_t normal_fac
         break;
       }
     }
-    result.direction = invert_skewb_direction(result.direction);
+    result.direction = invert_skewb_direction(move.direction);
     break;
   }
-  case ROTATION:
+  case ROTATION: {
+    if (!same_axis(move.axis.face_index, normal_face_index)) {
+      result.direction = invert_cube_direction(move.direction);
+    }
     break;
+  }
   default:
     rb_raise(rb_eRuntimeError, "invalid move type %d in mirror_move", move.type);
   }

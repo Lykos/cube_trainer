@@ -29,19 +29,11 @@ describe CompiledCubeAlgorithm do
   end
 
   it 'should behave the same if we mirror then compile or if we compile then mirror' do
-    skip 'mirror for skewb is broken'
     property_of {
       Rantly { [skewb_algorithm, face] }
     }.check { |a, f|
       a.compiled_for_skewb.mirror(f).apply_to(compile_then_transform_skewb_state)
       a.mirror(f).compiled_for_skewb.apply_to(transform_then_compile_skewb_state)
-      if compile_then_transform_skewb_state != transform_then_compile_skewb_state
-        puts a
-        puts f
-        puts a.mirror(f)
-        puts skewb_string(compile_then_transform_skewb_state, :color)
-        puts skewb_string(transform_then_compile_skewb_state, :color)
-      end
       expect(compile_then_transform_skewb_state).to be == transform_then_compile_skewb_state
     }
   end
