@@ -4,9 +4,13 @@ module CubeTrainer
 
     def initialize(inputs, hinter)
       raise TypeError, "Invalid input type #{inputs.class}." unless inputs.respond_to?(:include?)
-      raise TypeError, "Invalid hinter type #{hinter.class}." unless hinter.respond_to?(:hints) && hinter.respond_to?(:entries)
+      raise TypeError, "Invalid hinter type #{hinter.class}." unless hinter.respond_to?(:hints)
       @inputs = inputs
       @hinter = hinter
+      if hinter.respond_to?(:entries)
+        @entries = @hinter.entries.select { |a, b| in_domain?(a) }
+        self.class.attr_reader :entries
+      end
     end
 
     def self.trivially_restricted(hinter)
@@ -24,9 +28,6 @@ module CubeTrainer
       @inputs.include?(input)
     end
 
-    def entries
-      @hinter.entries.select { |a, b| in_domain?(a) }
-    end
   end
   
 end

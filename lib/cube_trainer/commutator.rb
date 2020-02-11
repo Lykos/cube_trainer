@@ -6,8 +6,8 @@ require 'cube_trainer/move'
 module CubeTrainer
 
   class Commutator
-    def cancellations(other, metric=:htm)
-      algorithm.cancellations(other.algorithm, metric)
+    def cancellations(other, cube_size, metric=:htm)
+      algorithm.cancellations(other.algorithm, cube_size, metric)
     end
   end
 

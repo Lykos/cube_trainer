@@ -115,7 +115,7 @@ module CubeTrainer
       include ArrayHelper
 
       def initialize(corner_results, parity_results, corner_hinter, parity_hinter, options)
-        super([corner_results, parity_results], [corner_hinter, parity_hinter])
+        super(options.cube_size, [corner_results, parity_results], [corner_hinter, parity_hinter])
         @letter_scheme = options.letter_scheme
       end
 
@@ -181,7 +181,7 @@ module CubeTrainer
     class Corner3TwistHinter < HomogenousSequenceHinter
       # Note that this should be the results for corner comms, not for corner 3 twists.
       def initialize(corner_results, corner_hinter, options)
-        super(corner_results, corner_hinter)
+        super(options.cube_size, corner_results, corner_hinter)
         @letter_scheme = options.letter_scheme
       end
 

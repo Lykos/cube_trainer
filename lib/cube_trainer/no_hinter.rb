@@ -1,8 +1,9 @@
 module CubeTrainer
   
   class NoHinter
-    def initialize(entries)
-      @entries = entries
+    
+    def initialize(keys)
+      @entries = keys.map { |k| [k, nil] }
     end
 
     attr_reader :entries
