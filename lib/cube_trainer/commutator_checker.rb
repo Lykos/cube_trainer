@@ -11,7 +11,7 @@ module CubeTrainer
 
     include CubePrintHelper
     
-    def initialize(part_type:, buffer:, piece_name:, color_scheme:, cube_size:, verbose: false, incarnation_index: 0)
+    def initialize(part_type:, buffer:, piece_name:, color_scheme:, letter_scheme:, cube_size:, verbose: false, find_fixes: false, incarnation_index: 0)
       raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(Part)
       raise TypeError unless buffer.class == part_type
       raise ArgumentError, "Unsuitable cube size #{cube_size}." unless cube_size.is_a?(Integer) && cube_size > 0
@@ -20,8 +20,10 @@ module CubeTrainer
       @buffer = buffer
       @piece_name = piece_name
       @color_scheme = color_scheme
+      @letter_scheme = letter_scheme
       @cube_size = cube_size
       @verbose = verbose
+      @find_fixes = find_fixes
       @incarnation_index = incarnation_index
       @alg_cube_state = @color_scheme.solved_cube_state(cube_size)
       @cycle_cube_state = @color_scheme.solved_cube_state(cube_size)
@@ -116,23 +118,38 @@ module CubeTrainer
       @broken_algs += 1
 
       # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
-      if @verbose
+      if @find_fixes
         if fix = find_fix(commutator)
-          puts "Found fix #{fix}."
-          return :fix_found
+          puts "Found fix #{fix}." if @verbose
+          return CheckAlgResult.new(:fix_found, fix)
         else
           count_unfixable_alg
-          puts "Couldn't find a fix for this alg."
-          puts "actual"
-          puts alg.apply_temporarily_to(@alg_cube_state) { cube_string(@alg_cube_state, :color) }
-          puts "expected"
-          puts cube_string(@cycle_cube_state, :color)
+          if @verbose
+            puts "Couldn't find a fix for this alg."
+            puts "actual"
+            puts alg.apply_temporarily_to(@alg_cube_state) { cube_string(@alg_cube_state, :color) }
+            puts "expected"
+            puts cube_string(@cycle_cube_state, :color)
+          end
         end
       end
-      :unfixable
+      CheckAlgResult::UNFIXABLE
     end
 
-    def check_alg(row_description, letter_pair, parts, commutator)
+    class CheckAlgResult
+      def initialize(result, fix=nil)
+        @result = result
+        @fix = fix
+      end
+
+      attr_reader :result, :fix
+
+      CORRECT = CheckAlgResult.new(:correct)
+      UNFIXABLE = CheckAlgResult.new(:unfixable)
+    end
+
+    def check_alg(row_description, letter_pair, commutator)
+      parts = letter_pair.letters.map { |l| @letter_scheme.for_letter(@part_type, l) }
       # Apply alg and cycle
       cycle = construct_cycle(parts)
       cycle.apply_temporarily_to(@cycle_cube_state) do
@@ -143,7 +160,7 @@ module CubeTrainer
         correct = alg.apply_temporarily_to(@alg_cube_state) { @cycle_cube_state == @alg_cube_state }
 
         if correct
-          :correct
+          CheckAlgResult::CORRECT
         else
           handle_incorrect(row_description, letter_pair, commutator, alg)
         end

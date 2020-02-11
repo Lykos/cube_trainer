@@ -21,7 +21,7 @@ module CubeTrainer
     
     def check_alg(*args)
       @total_algs += 1
-      :correct
+      CommutatorChecker::CheckAlgResult::CORRECT
     end
 
     def broken_algs
@@ -122,8 +122,10 @@ module CubeTrainer
                       buffer: @buffer,
                       piece_name: name,
                       color_scheme: @color_scheme,
+                      letter_scheme: @letter_scheme,
                       cube_size: @cube_size,
-                      verbose: @verbose
+                      verbose: @verbose,
+                      find_fixes: @verbose,
                     )
                   end
     end
@@ -169,8 +171,7 @@ module CubeTrainer
             puts "Algorithm for #{letter_pair} at #{row_description} has a problem: #{cell.error_message}." if warn_comms?
           elsif cell.is_a?(AlgEntry)
             commutator = cell.algorithm
-            parts = letter_pair.letters.map { |l| @letter_scheme.for_letter(@part_type, l) }
-            check_result = checker.check_alg(row_description, letter_pair, parts, commutator)
+            check_result = checker.check_alg(row_description, letter_pair, commutator).result
             hints[letter_pair] = commutator if check_result == :correct
           end
         end
