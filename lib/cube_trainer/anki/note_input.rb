@@ -1,7 +1,11 @@
 module CubeTrainer
 
-  NoteInput = Struct.new(:fields, :name, :alg)
+  module Anki
 
-  NoteInputVariation = Struct.new(:fields, :name, :modified_alg, :image_filename, :img)
+    NoteInput = Struct.new(:fields, :name, :alg)
+
+    NoteInputVariation = Struct.new(:fields, :name, :modified_alg, :image_filename, :img)
+
+  end
 
 end

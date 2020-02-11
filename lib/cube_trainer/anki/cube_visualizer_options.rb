@@ -1,10 +1,12 @@
 require 'cube_trainer/color_scheme'
+require 'cube_trainer/core/algorithm'
+require 'cube_trainer/core/parser'
 require 'cube_trainer/cube_trainer_options_parser'
-require 'cube_trainer/algorithm'
-require 'cube_trainer/parser'
 require 'ostruct'
 
 module CubeTrainer
+
+  module Anki
 
   class CubeVisualizerOptions
 
@@ -33,6 +35,8 @@ module CubeTrainer
       end.parse!(args)
       options
     end
+
+  end
 
   end
 

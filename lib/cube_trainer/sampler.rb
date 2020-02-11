@@ -1,5 +1,5 @@
-require 'cube_trainer/sampling_helper'
 require 'cube_trainer/cube_trainer_error'
+require 'cube_trainer/utils/sampling_helper'
 
 module CubeTrainer
 
@@ -18,7 +18,7 @@ module CubeTrainer
 
   class CombinedSampler < Sampler
 
-    include SamplingHelper
+    include Utils::SamplingHelper
     SubSampler = Struct.new(:subsampler, :weight)
     
     def initialize(subsamplers)
@@ -69,7 +69,7 @@ module CubeTrainer
   
   class AdaptiveSampler < Sampler
 
-    include SamplingHelper
+    include Utils::SamplingHelper
 
     def initialize(items, get_weight_proc)
       raise TypeError unless get_weight_proc.respond_to?(:call)

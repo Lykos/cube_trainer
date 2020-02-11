@@ -1,13 +1,13 @@
+require 'cube_trainer/core/part_cycle_factory'
 require 'cube_trainer/letter_pair_helper'
 require 'cube_trainer/input_sampler'
 require 'cube_trainer/disjoint_union_alg_set'
 require 'cube_trainer/commutator_hint_parser'
 require 'cube_trainer/letter_pair_sequence'
-require 'cube_trainer/array_helper'
-require 'cube_trainer/part_cycle_factory'
 require 'cube_trainer/no_hinter'
 require 'cube_trainer/sequence_hinter'
 require 'cube_trainer/letter_pair_alg_set'
+require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
 
@@ -112,7 +112,7 @@ module CubeTrainer
     end
 
     class CornerTwistPlusParityHinter < HeterogenousSequenceHinter
-      include ArrayHelper
+      include Utils::ArrayHelper
 
       def initialize(corner_results, parity_results, corner_hinter, parity_hinter, options)
         super(options.cube_size, [corner_results, parity_results], [corner_hinter, parity_hinter])

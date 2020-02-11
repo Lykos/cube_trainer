@@ -1,6 +1,6 @@
 # coding: utf-8
-require 'cube_trainer/cube'
-require 'cube_trainer/skewb_state'
+require 'cube_trainer/core/cube'
+require 'cube_trainer/core/skewb_state'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/letter_scheme'
 

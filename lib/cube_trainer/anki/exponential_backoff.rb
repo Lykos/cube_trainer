@@ -1,10 +1,12 @@
-require 'cube_trainer/random_helper'
+require 'cube_trainer/utils/random_helper'
 
 module CubeTrainer
 
+  module Anki
+
   class ExponentialBackoff
 
-    include RandomHelper
+    include Utils::RandomHelper
 
     def initialize(initial_backoff_s=0.1, max_backoff_s=5)
       @initial_backoff_s = 1
@@ -18,6 +20,8 @@ module CubeTrainer
       backoff_s
     end
     
+  end
+
   end
   
 end

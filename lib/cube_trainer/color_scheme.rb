@@ -1,15 +1,15 @@
-require 'cube_trainer/cube'
-require 'cube_trainer/cube_constants'
-require 'cube_trainer/skewb_state'
-require 'cube_trainer/cube_state'
-require 'cube_trainer/array_helper'
+require 'cube_trainer/core/cube'
+require 'cube_trainer/core/cube_constants'
+require 'cube_trainer/core/cube_state'
+require 'cube_trainer/core/skewb_state'
+require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
 
   class ColorScheme
 
-    include CubeConstants
-    include ArrayHelper
+    include Core::CubeConstants
+    include Utils::ArrayHelper
 
     RESERVED_COLORS = [:transparent, :unknown, :oriented]
 
@@ -88,7 +88,7 @@ module CubeTrainer
         @colors_to_face_symbols[turned_face_symbols_to_colors[s]]
       end)
       # There should be exactly one corner that gets mapped to the chirality corner.
-      chirality_corner_source = only(Corner::ELEMENTS.select { |corner| corner_matcher.matches?(corner) })
+      chirality_corner_source = only(Core::Corner::ELEMENTS.select { |corner| corner_matcher.matches?(corner) })
       missing_face_symbol = CHIRALITY_FACE_SYMBOLS[corner_matcher.wildcard_index]
       missing_face_symbol_source = chirality_corner_source.face_symbols[corner_matcher.wildcard_index]
       turned_face_symbols_to_colors[missing_face_symbol] = color(missing_face_symbol_source)

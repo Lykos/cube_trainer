@@ -1,4 +1,4 @@
-require 'cube_trainer/cube'
+require 'cube_trainer/core/cube'
 require 'cube_trainer/letter_pair'
 
 module CubeTrainer

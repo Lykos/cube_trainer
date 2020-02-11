@@ -1,5 +1,5 @@
-require 'cube_trainer/cube'
-require 'cube_trainer/coordinate'
+require 'cube_trainer/core/cube'
+require 'cube_trainer/core/coordinate'
 
 def face
   choose(*Face::ELEMENTS)

@@ -1,11 +1,11 @@
-require 'cube_trainer/string_helper'
+require 'cube_trainer/utils/string_helper'
 require 'csv'
 
 module CubeTrainer
 
   class HintParser
 
-    include StringHelper
+    include Utils::StringHelper
 
     def csv_file
       "data/#{hint_type}/#{name}.csv"

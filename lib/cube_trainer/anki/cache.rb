@@ -1,13 +1,15 @@
+require 'cube_trainer/utils/array_helper'
 require 'cube_trainer/xdg_helper'
-require 'cube_trainer/array_helper'
 require 'sqlite3'
 
 module CubeTrainer
 
+  module Anki
+
   class Cache
 
     include XDGHelper
-    include ArrayHelper
+    include Utils::ArrayHelper
 
     CACHE_DB_FILE = 'cache.sqlite3'
 
@@ -39,6 +41,8 @@ module CubeTrainer
       @put_stm.execute(@namespace, key, value)
     end
     
+  end
+
   end
   
 end

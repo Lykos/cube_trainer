@@ -1,7 +1,7 @@
-require 'cube_trainer/ui_helpers'
 require 'cube_trainer/console_helpers'
+require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/result'
-require 'cube_trainer/cube_print_helper'
+require 'cube_trainer/ui_helpers'
 
 module CubeTrainer
 

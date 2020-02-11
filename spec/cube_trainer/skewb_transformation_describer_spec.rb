@@ -1,4 +1,4 @@
-require 'cube_trainer/parser'
+require 'cube_trainer/core/parser'
 require 'cube_trainer/skewb_transformation_describer'
 
 include CubeTrainer

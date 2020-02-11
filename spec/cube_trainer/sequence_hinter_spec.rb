@@ -1,9 +1,9 @@
-require 'cube_trainer/sequence_hinter'
-require 'cube_trainer/input_item'
-require 'cube_trainer/result'
-require 'cube_trainer/parser'
 require 'cube_trainer/alg_hinter'
 require 'cube_trainer/alg_name'
+require 'cube_trainer/core/parser'
+require 'cube_trainer/input_item'
+require 'cube_trainer/result'
+require 'cube_trainer/sequence_hinter'
 
 class FakeHeterogenousSequenceHinter < HeterogenousSequenceHinter
   def generate_combinations(input)

@@ -1,13 +1,15 @@
-require 'uri'
-require 'cube_trainer/cube_constants'
-require 'cube_trainer/move.rb'
 require 'cube_trainer/anki/image_checker'
-require 'cube_trainer/cube_print_helper'
-require 'cube_trainer/color_scheme'
 require 'cube_trainer/anki/cache'
 require 'cube_trainer/anki/exponential_backoff'
+require 'cube_trainer/color_scheme'
+require 'cube_trainer/core/cube_constants'
+require 'cube_trainer/core/move'
+require 'cube_trainer/core/cube_print_helper'
+require 'uri'
 
 module CubeTrainer
+
+  module Anki
 
   class CubeVisualizer
 
@@ -38,10 +40,10 @@ module CubeTrainer
     end
 
     class StageMask
-      def initialize(base_mask, rotations=Algorithm.empty)
+      def initialize(base_mask, rotations=Core::Algorithm.empty)
         raise ArgumentError unless BASE_MASKS.include?(base_mask)
-        raise TypeError unless rotations.is_a?(Algorithm)
-        raise TypeError unless rotations.moves.all? { |r| r.is_a?(Rotation) }
+        raise TypeError unless rotations.is_a?(Core::Algorithm)
+        raise TypeError unless rotations.moves.all? { |r| r.is_a?(Core::Rotation) }
         @base_mask = base_mask
         @rotations = rotations
       end
@@ -52,7 +54,7 @@ module CubeTrainer
         match = stage_mask_string.match(STAGE_MASK_REGEXP)
         raise ArgumentError, "Invalid stage mask #{stage_mask_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
         raw_base_mask, raw_rotations = match.captures
-        rotations = raw_rotations ? parse_algorithm(raw_rotations) : Algorithm.empty
+        rotations = raw_rotations ? parse_algorithm(raw_rotations) : Core::Algorithm.empty
         StageMask.new(raw_base_mask.to_sym, rotations)
       end
     end
@@ -215,6 +217,8 @@ module CubeTrainer
       File.open(output, 'wb') { |f| f.write(image) }
     end
     
+  end
+
   end
 
 end

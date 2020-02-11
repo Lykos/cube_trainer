@@ -1,7 +1,7 @@
-require 'cube_trainer/commutator_reverse_engineer'
-require 'cube_trainer/cube'
-require 'cube_trainer/parser'
 require 'cube_trainer/color_scheme'
+require 'cube_trainer/commutator_reverse_engineer'
+require 'cube_trainer/core/cube'
+require 'cube_trainer/core/parser'
 require 'cube_trainer/letter_scheme'
 
 include CubeTrainer
