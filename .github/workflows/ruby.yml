@@ -3,12 +3,6 @@ name: Ruby
 on: [push]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Rubocop checks
-      uses: gimenete/rubocop-action@1.0
-
   build:
     runs-on: ubuntu-latest
     steps:
