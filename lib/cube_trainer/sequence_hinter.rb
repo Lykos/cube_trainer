@@ -3,6 +3,7 @@ require 'cube_trainer/input_sampler'
 require 'ostruct'
 require 'cube_trainer/array_helper'
 require 'cube_trainer/alg_name'
+require 'cube_trainer/cube_state'
 
 module CubeTrainer
 
@@ -12,9 +13,11 @@ module CubeTrainer
 
     include ArrayHelper
 
-    def initialize(resultss, hinters)
+    def initialize(cube_size, resultss, hinters)
+      CubeState.check_cube_size(cube_size)
       raise ArgumentError if resultss.length != hinters.length
       raise ArgumentError if resultss.empty?
+      @cube_size = cube_size
       @valuess = resultss.map do |results|
         values = {}
         results.group_by { |r| r.input_representation }.each do |l, rs|
@@ -52,6 +55,10 @@ module CubeTrainer
       end
 
       def plus_actual(value)
+        self
+      end
+
+      def -@
         self
       end
 
@@ -93,6 +100,10 @@ module CubeTrainer
         ActualScore.new(@value + value)
       end
 
+      def -@
+        ActualScore.new(-@value)
+      end
+
       def to_s
         if @value.is_a?(Float)
           @value.round(2).to_s
@@ -112,7 +123,7 @@ module CubeTrainer
 
     class DescriptionAndValue < Struct.new(:description, :value, :cancellations)
       def <=>(other)
-        [value, other.cancellations, description] <=> [other.value, other.cancellations, other.description]
+        [-cancellations, value, description] <=> [-other.cancellations, other.value, other.description]
       end
 
       def to_s
@@ -140,14 +151,14 @@ module CubeTrainer
                             value = ls.map.with_index { |l, i| value(i, l) }.reduce(:+)
                             cancellations = hs[0..-2].zip(hs[1..-1]).map do |left, right|
                               if left && right
-                                ActualScore.new(left.cancellations(right, :sqtm))
+                                ActualScore.new(left.cancellations(right, @cube_size, :sqtm))
                               else
                                 UNKNOWN_SCORE
                               end
                             end.reduce(:+)
                             DescriptionAndValue.new(description, value, cancellations)
                           end
-                          base_hints_descriptions = combinations.zip(base_hints).map { |ls, hs| ls.zip(hs).select { |l, h| h }.map { |l, h| "#{l}: #{h}" } }
+                          base_hints_descriptions = combinations.zip(base_hints).map { |ls, hs| ls.zip(hs).select { |l, h| h }.map { |l, h| "#{l}: #{h}" } }.flatten.uniq
                           [
                             descriptions_and_values.sort.join("\n"),
                             base_hints_descriptions.sort.join("\n")
@@ -164,8 +175,8 @@ module CubeTrainer
   # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
   # where the primitive cases are all of the same type, e.g. solving 3 twists by 2 comms.
   class HomogenousSequenceHinter < HeterogenousSequenceHinter
-    def initialize(results, hinter, multiplicity=2)
-      super([results] * multiplicity, [hinter] * multiplicity)
+    def initialize(cube_size, results, hinter, multiplicity=2)
+      super(cube_size, [results] * multiplicity, [hinter] * multiplicity)
     end
   end
   

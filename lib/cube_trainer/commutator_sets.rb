@@ -11,10 +11,10 @@ require 'cube_trainer/letter_pair_alg_set'
 
 module CubeTrainer
 
-  ORIENTATION_FACES = [Face.by_name('U'), Face.by_name('D')]
+  ORIENTATION_FACES = [Face::U, Face::D]
 
   def orientation_face(part)
-    faces = ORIENTATION_FACES.select { |f| part.colors.include?(f.color) }
+    faces = ORIENTATION_FACES.select { |f| part.face_symbols.include?(f.face_symbol) }
     raise "Couldn't determine unique orientation face for #{part}: #{faces}" unless faces.length == 1
     faces.first
   end
@@ -28,7 +28,7 @@ module CubeTrainer
 
     def initialize(result_model, options)
       super
-      @hinter = NoHinter.new
+      @hinter = NoHinter.new(input_items.map { |i| i.representation })
     end
 
     attr_reader :hinter
@@ -248,7 +248,7 @@ module CubeTrainer
 
     def initialize(result_model, options)
       super
-      @hinter = NoHinter.new
+      @hinter = NoHinter.new(input_items.map { |i| i.representation })
     end
 
     attr_reader :hinter
@@ -352,7 +352,7 @@ module CubeTrainer
 
     def initialize(result_model, options)
       super
-      @hinter = NoHinter.new
+      @hinter = NoHinter.new(input_items.map { |i| i.representation })
     end
 
     attr_reader :hinter

@@ -27,6 +27,7 @@ describe Algorithm do
     expect(parse_algorithm("R'").cancellations(parse_algorithm("R'"), cube_size)).to be == 1
     expect(parse_algorithm("R2").cancellations(parse_algorithm("R"), cube_size)).to be == 1
     expect(parse_algorithm("R2").cancellations(parse_algorithm("R'"), cube_size)).to be == 1
+    expect(parse_algorithm("U").cancellations(parse_algorithm("U2"), cube_size)).to be == 1
   end
   
   it "should compute cancellations of single wide moves correctly" do

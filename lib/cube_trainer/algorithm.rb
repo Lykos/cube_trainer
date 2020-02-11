@@ -1,6 +1,7 @@
 require 'cube_trainer/move'
 require 'cube_trainer/reversible_applyable'
 require 'cube_trainer/cancellation_helper'
+require 'cube_trainer/cube_state'
 require 'cube_trainer/compiled_cube_algorithm'
 require 'cube_trainer/compiled_skewb_algorithm'
 
@@ -99,6 +100,7 @@ module CubeTrainer
     # Returns the number of moves that cancel if you concat the algorithm to the right of self.
     # Note that the cube size is important to know which fat moves cancel
     def cancellations(other, cube_size, metric=:htm)
+      CubeState.check_cube_size(cube_size)
       Move.check_move_metric(metric)
       cancelled = cancelled(cube_size)
       other_cancelled = other.cancelled(cube_size)
