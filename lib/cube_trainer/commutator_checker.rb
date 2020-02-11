@@ -47,7 +47,7 @@ module CubeTrainer
 
     def permutation_modifications(alg)
       if alg.length <= 3
-        alg.moves.permutation.collect { |p| Algorithm.new(p) }
+        alg.moves.permutation.collect { |p| Core::Algorithm.new(p) }
       else
         [alg]
       end
@@ -56,7 +56,7 @@ module CubeTrainer
     def alg_modifications(alg)
       perms = permutation_modifications(alg)
       a, *as = alg.moves.map { |m| move_modifications(m) }
-      perms + a.product(*as).map { |ms| Algorithm.new(ms) }
+      perms + a.product(*as).map { |ms| Core::Algorithm.new(ms) }
     end
 
     def comm_part_modifications(algorithm)
@@ -66,13 +66,13 @@ module CubeTrainer
         a, b = algorithm.moves[0], algorithm.moves[1]
         move_modifications(algorithm.moves[1]).flat_map do |m|
           if a != b.inverse 
-            lol = [Algorithm.new([a, m, a.inverse]), Algorithm.new([a.inverse, m, a])]
+            lol = [Core::Algorithm.new([a, m, a.inverse]), Core::Algorithm.new([a.inverse, m, a])]
             if a != b
-              lol += [Algorithm.new([b, m, b.inverse]), Algorithm.new([b.inverse, m, b])]
+              lol += [Core::Algorithm.new([b, m, b.inverse]), Core::Algorithm.new([b.inverse, m, b])]
             end
             lol
           else
-            [Algorithm.new([a, m, b]), Algorithm.new([b, m, a])]
+            [Core::Algorithm.new([a, m, b]), Core::Algorithm.new([b, m, a])]
           end
         end
       else
@@ -81,12 +81,12 @@ module CubeTrainer
     end
 
     def potential_fixes(commutator)
-      if commutator.is_a?(SetupCommutator) then
-        alg_modifications(commutator.setup).product(potential_fixes(commutator.inner_commutator)).map { |setup, comm| SetupCommutator.new(setup, comm) }
-      elsif commutator.is_a?(PureCommutator)
-        comm_part_modifications(commutator.first_part).product(comm_part_modifications(commutator.second_part)).flat_map { |a, b| [PureCommutator.new(a, b), PureCommutator.new(b, a)].uniq }
-      elsif commutator.is_a?(FakeCommutator)
-        alg_modifications(commutator.algorithm).map { |a| FakeCommutator.new(a) }
+      if commutator.is_a?(Core::SetupCommutator) then
+        alg_modifications(commutator.setup).product(potential_fixes(commutator.inner_commutator)).map { |setup, comm| Core::SetupCommutator.new(setup, comm) }
+      elsif commutator.is_a?(Core::PureCommutator)
+        comm_part_modifications(commutator.first_part).product(comm_part_modifications(commutator.second_part)).flat_map { |a, b| [Core::PureCommutator.new(a, b), Core::PureCommutator.new(b, a)].uniq }
+      elsif commutator.is_a?(Core::FakeCommutator)
+        alg_modifications(commutator.algorithm).map { |a| Core::FakeCommutator.new(a) }
       else
         raise ArgumentError
       end
