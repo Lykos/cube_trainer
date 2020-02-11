@@ -9,3 +9,5 @@ jobs:
     - uses: actions/checkout@v1
     - name: Rubocop Linter Action
       uses: andrewmcodes/rubocop-linter-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
