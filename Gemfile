@@ -7,6 +7,7 @@ source 'https://rubygems.org' do
   gem 'ruby-progressbar'
   gem 'rubyzip'
   gem 'sqlite3'
+  gem 'wombat'
   gem 'xdg'
 
   group :development do
