@@ -15,11 +15,9 @@ class FakeFetcher
   end
 
   def get(url)
-    if url.to_s == URL
-      @image
-    else
-      raise "Unknown url '#{url}'"
-    end
+    raise "Unknown url '#{url}'" if url.to_s != URL
+
+    @image
   end
 end
 
