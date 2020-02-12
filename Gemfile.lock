@@ -42,6 +42,7 @@ GEM
     ruby-filemagic (0.7.2)
     ruby-prof (1.2.0)
     ruby-progressbar (1.10.1)
+    rubyzip (2.2.0)
     simplecov (0.17.1)
       docile (~> 1.1)
       json (>= 1.8, < 3)
@@ -66,6 +67,7 @@ DEPENDENCIES
   rubocop!
   ruby-filemagic!
   ruby-progressbar!
+  rubyzip!
   simplecov!
   sqlite3!
   xdg!

@@ -5,6 +5,7 @@ source 'https://rubygems.org' do
   gem 'parallel'
   gem 'ruby-filemagic'
   gem 'ruby-progressbar'
+  gem 'rubyzip'
   gem 'sqlite3'
   gem 'xdg'
 
