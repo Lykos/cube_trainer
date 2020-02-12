@@ -20,12 +20,7 @@ module CubeTrainer
     include ArrayHelper
 
     def <=>(other)
-      class_cmp = self.class.equal?(other.class)
-      if class_cmp == 0
-        identifying_fields <=> other.identifying_fields
-      else
-        class_cmp
-      end
+      [self.class.name] + identifying_fields <=> [other.class.name] + other.identifying_fields
     end
 
     include Comparable
@@ -54,7 +49,7 @@ module CubeTrainer
     end
 
     def equivalent?(other, cube_size)
-      decide_meaning(cube_size).equivalent_internal?(other.decide_meaning(cube_size))
+      decide_meaning(cube_size).equivalent_internal?(other.decide_meaning(cube_size), cube_size)
     end
 
     def equivalent_internal?(other, cube_size)
@@ -105,7 +100,7 @@ module CubeTrainer
     end
 
     def is_slice_move?
-      raise NotImplementedError
+      raise NotImplementedError, "Not implemented for #{self}:#{self.class}."
     end
 
     def direction
@@ -253,13 +248,13 @@ module CubeTrainer
     end
 
     def equivalent_internal?(other, cube_size)
-      other == alternative || super
+      self == other || alternative == other
     end
 
     def prepend_rotation(other, cube_size)
       if same_axis?(other)
-        other_direction = translate_direction(other.axis_face)
-        Algorithm.move(FatMSliceMove.new(@axis_face, @direction + other_direction))
+        other_direction = translated_direction(other.axis_face)
+        Algorithm.move(Rotation.new(@axis_face, @direction + other_direction))
       end
     end
 
@@ -300,7 +295,7 @@ module CubeTrainer
     
     def prepend_fat_m_slice_move(other, cube_size)
       if same_axis?(other)
-        other_direction = translate_direction(other.axis_face)
+        other_direction = other.translated_direction(@axis_face)
         Algorithm.move(FatMSliceMove.new(@axis_face, @direction + other_direction))
       end
     end
@@ -314,17 +309,19 @@ module CubeTrainer
       nil
     end
 
-    def is_slice_move_internal?
+    def is_slice_move?
       true
     end
 
     def equivalent_internal?(other, cube_size)
-      if cube_size == 3 && other.is_a?(SliceMove) && @axis_face == other.axis_face && @direction == other.direction && other.slice_index == 1
-        return true
-      elsif other.is_a?(FatMSliceMove) && @axis_face == other.axis_face.opposite && @direction = other.direction.opposite
-        return true
+      if other.is_a?(SliceMove)
+        return cube_size == 3 && other.slice_index == 1 &&
+               (@axis_face == other.axis_face && @direction == other.direction ||
+                @axis_face == other.axis_face.opposite && @direction == other.direction.inverse)
+      elsif other.is_a?(FatMSliceMove)
+        return @axis_face == other.axis_face.opposite && @direction == other.direction.inverse
       end
-      super
+      return false
     end
 
   end
@@ -363,7 +360,7 @@ module CubeTrainer
     end
   
     def to_s
-      "#{if @width > 1 then @width else '' end}#{@axis_face.name}#{if @width > 1 then 'w' else '' end}#{@direction.name}"
+      "#{@width > 2 ? @width : ''}#{@axis_face.name}#{if @width > 1 then 'w' else '' end}#{@direction.name}"
     end
   
     def is_slice_move?
@@ -384,9 +381,9 @@ module CubeTrainer
     end
     
     def prepend_fat_m_slice_move(other, cube_size)
-      if same_axis?(other) && @width == 1 && @direction == other.translate_direction(@axis_face)
-        Algorithm.move(FatMove.new(@axis_face, @direction, cube_size.n - 1))
-      elsif same_axis?(other) && @width == cube_size.n - 1 && @direction == other.translate_direction(@axis_face).inverse
+      if same_axis?(other) && @width == 1 && @direction == other.translated_direction(@axis_face)
+        Algorithm.move(FatMove.new(@axis_face, @direction, cube_size - 1))
+      elsif same_axis?(other) && @width == cube_size - 1 && @direction == other.translated_direction(@axis_face).inverse
         Algorithm.move(FatMove.new(@axis_face, @direction, 1))
       end
     end
@@ -408,13 +405,16 @@ module CubeTrainer
     def prepend_slice_move(other, cube_size)
       return nil unless same_axis?(other)
       translated_direction = other.translated_direction(@axis_face)
-      move = case other.slice_index
+      translated_slice_index = other.translated_slice_index(@axis_face, cube_size)
+      move = case translated_slice_index
              when @width
                return nil unless translated_direction == @direction
                with_width(@width + 1)
              when @width - 1
                return nil unless translated_direction == @direction.inverse
                with_width(@width - 1)
+             else
+               return nil
              end
       Algorithm.move(move)
     end
@@ -437,7 +437,7 @@ module CubeTrainer
     end
 
     def to_s
-      "#{@slice_index}#{@axis_face.name.downcase}#{@direction.name}"
+      "#{@slice_index > 1 ? @slice_index : ''}#{@axis_face.name.downcase}#{@direction.name}"
     end
 
     def is_slice_move?
@@ -448,13 +448,22 @@ module CubeTrainer
       cube_size - 1 - @slice_index
     end
 
+    def translated_slice_index(other_axis_face, cube_size)
+      case @axis_face
+      when other_axis_face then @slice_index
+      when other_axis_face.opposite then invert_slice_index(cube_size)
+      else
+        raise ArgumentError
+      end
+    end
+
     def equivalent_internal?(other, cube_size)
       if other.is_a?(FatMSliceMove)
-        return other.equivalent_internal?(self)
-      elsif other.is_a?(SliceMove) && simplified(cube_size) == other.simplified(cube_size)
-        return true
+        return other.equivalent_internal?(self, cube_size)
+      elsif other.is_a?(SliceMove)
+        return simplified(cube_size) == other.simplified(cube_size)
       end
-      super
+      return false
     end
 
     def mirror(normal_face)
@@ -466,7 +475,7 @@ module CubeTrainer
     end
 
     def simplified(cube_size)
-      if @slice_index > cube_size / 2
+      if @slice_index >= (cube_size + 1) / 2
         SliceMove.new(@axis_face.opposite, @direction.inverse, invert_slice_index(cube_size))
       else
         self
@@ -490,12 +499,12 @@ module CubeTrainer
       return nil unless same_axis?(other)
       # Only for 4x4, we can join two adjacent slice moves into a fat m slice move.
       this = simplified(cube_size)
-      if cube_size == 4 && this.slice_index == 1 && mirror(@axis_face).equivalent_internal?(other)
+      if cube_size == 4 && this.slice_index == 1 && mirror(@axis_face).equivalent_internal?(other, cube_size)
         Algorithm.move(FatMSliceMove.new(other.axis_face, other.direction))
       else
         other = other.simplified(cube_size)
         if this.axis_face == other.axis_face && this.slice_index == other.slice_index
-          Algorithm.move(SliceMove.new(other.axis_face, other.direction + this.translate_direction(other.axis_face), other.slice_index))
+          Algorithm.move(SliceMove.new(other.axis_face, other.direction + this.translated_direction(other.axis_face), other.slice_index))
         end
       end
     end
@@ -606,9 +615,10 @@ module CubeTrainer
                axes_part = "([#{Move::AXES.join}])"
                fat_move_part = "(\\d*)([#{CubeConstants::FACE_NAMES.join}])w"
                normal_move_part = "([#{CubeConstants::FACE_NAMES.join}])"
-               small_move_part = "([#{CubeConstants::FACE_NAMES.join.downcase}])"
-               slice_move_part = "([#{Move::SLICES.join}])"
-               move_part = "(?:#{axes_part}|#{fat_move_part}|#{normal_move_part}|#{small_move_part}|#{slice_move_part})"
+               maybe_fat_maybe_slice_move_part = "([#{CubeConstants::FACE_NAMES.join.downcase}])"
+               slice_move_part = "(\\d+)([#{CubeConstants::FACE_NAMES.join.downcase}])"
+               mslice_move_part = "([#{Move::SLICES.join}])"
+               move_part = "(?:#{axes_part}|#{fat_move_part}|#{normal_move_part}|#{maybe_fat_maybe_slice_move_part}|#{slice_move_part}|#{mslice_move_part})"
                direction_part = "(#{AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten.sort_by { |e| -e.length }.join("|")})"
                Regexp.new("#{move_part}#{direction_part}")
              end
@@ -629,23 +639,26 @@ module CubeTrainer
     def parse_move(move_string)
       match = move_string.match(REGEXP)
       raise ArgumentError "Invalid move #{move_string}." if !match || !match.pre_match.empty? || !match.post_match.empty?
-      rotation, width, fat_face_name, face_name, slice_name, mslice_name, direction_string = match.captures
+      rotation, width, fat_face_name, face_name, maybe_fat_maybe_slice_name, slice_index, slice_name, mslice_name, direction_string = match.captures
       direction = parse_direction(direction_string)
       if rotation
-        raise unless width.nil? && fat_face_name.nil? && face_name.nil? && slice_name.nil?
+        raise unless width.nil? && fat_face_name.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
         Rotation.new(parse_axis_face(rotation), direction)
       elsif fat_face_name
-        raise unless rotation.nil? && face_name.nil? && slice_name.nil?
+        raise unless rotation.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
         width = if width == '' then 2 else width.to_i end
         FatMove.new(Face.by_name(fat_face_name), direction, width)
       elsif face_name
-        raise unless rotation.nil? && width.nil? && fat_face_name.nil? && slice_name.nil?
+        raise unless rotation.nil? && width.nil? && fat_face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
         FatMove.new(Face.by_name(face_name), direction, 1)
+      elsif maybe_fat_maybe_slice_name
+        raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
+        MaybeFatMaybeSliceMove.new(Face.by_name(maybe_fat_maybe_slice_name.upcase), direction)
       elsif slice_name
-        raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
-        MaybeFatMaybeSliceMove.new(Face.by_name(slice_name.upcase), direction)
+        raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && mslice_name.nil?
+        SliceMove.new(Face.by_name(slice_name.upcase), direction, slice_index.to_i)
       elsif mslice_name
-        raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil?
+        raise unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil?
         fixed_direction = if mslice_name == 'S' then direction else direction.inverse end
         MaybeFatMSliceMaybeInnerMSliceMove.new(Face::ELEMENTS[Move::SLICES.index(mslice_name)], fixed_direction)
       else

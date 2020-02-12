@@ -16,6 +16,12 @@ module CubeTrainer
 
     attr_reader :value
 
+    def <=>(other)
+      @value <=> other.value
+    end
+
+    include Comparable
+
     def is_zero?
       @value == 0
     end
