@@ -11,6 +11,7 @@ source 'https://rubygems.org' do
   group :development do
     # Rake would be here as well, but it's in group test.
     gem 'rake-compiler'
+    gem 'rubocop'
   end
   group :test do
     gem 'rake', group: :development
