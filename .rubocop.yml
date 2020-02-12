@@ -5,3 +5,6 @@ Layout/LineLength:
 Metrics/BlockLength:
   Exclude:
   - 'spec/**/*.rb'
+Style/MultilineBlockChain:
+  Exclude:
+  - 'spec/**/*.rb'
