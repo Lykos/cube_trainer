@@ -144,15 +144,21 @@ module CubeTrainer
     end
     
     def read_scrambles_file(input_stream)
-      @3x3scrambles = []
+      @scrambles3x3 = []
       CSV.parse(input_stream, col_sep: COL_SEP) do |row|
         scrambleid = row[0]
         next if scrambleid == 'scrambleId'
         eventid = row[2]
         next unless eventid == '333'
-        @3x3scrambles.push({scrambleid: scrambleid, competitionid: row[1], eventid: eventid,
-                            roundtypeid: row[2], groupid: row[3], isextra: row[4].to_i == 1,
-                            scramblenum: row[5].to_i, parse_algorithm(row[6])})
+        isextra = row[4].to_i == 1
+        @scrambles3x3.push({scrambleid: scrambleid,
+                            competitionid: row[1],
+                            eventid: eventid,
+                            roundtypeid: row[2],
+                            groupid: row[3],
+                            isextra: isextra,
+                            scramblenum: row[5].to_i,
+                            scramble: parse_algorithm(row[6])})
       end
     end
     

@@ -70,7 +70,8 @@ describe ArrayHelper do
     expect { replace_once([1, 2, 3], 5, 1) }.to raise_error ArgumentError
   end
 
-  it 'should raise an exception if an element that appears multiple time should be replaced once in an array' do
+  it 'should raise an exception if an element that appears multiple time should be ' \
+     'replaced once in an array' do
     expect { replace_once([1, 1, 3], 1, 5) }.to raise_error ArgumentError
   end
 end

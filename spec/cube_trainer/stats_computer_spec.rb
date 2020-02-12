@@ -26,7 +26,8 @@ describe StatsComputer do
   let(:fill_letter_pairs) { ('a'..'z').map { |l| LetterPair.new(['b', l]) } }
   let(:mode) { BufferHelper.mode_for_options(options) }
   let(:results) do
-    other_mode_results = CommutatorOptions::COMMUTATOR_TYPES.reject { |k, _v| k == 'corners' }.map do |_k, v|
+    other_commutator_infos = CommutatorOptions::COMMUTATOR_TYPES.reject { |k, _v| k == 'corners' }
+    other_mode_results = other_commutator_infos.map do |_k, v|
       patched_options = options.dup
       patched_options.commutator_info = v
       mode = BufferHelper.mode_for_options(patched_options)
@@ -57,11 +58,14 @@ describe StatsComputer do
   let(:computer) { StatsComputer.new(now, options, results_persistence) }
 
   it 'should compute detailed averages for all our results' do
-    expect(computer.averages).to be == [[letter_pair_b, 10.0], [letter_pair_a, 3.0]] + fill_letter_pairs.map { |ls| [ls, 1.0] }
+    fill_letter_averages = fill_letter_pairs.map { |ls| [ls, 1.0] }
+    expected = [[letter_pair_b, 10.0], [letter_pair_a, 3.0]] + fill_letter_averages
+    expect(computer.averages).to be == expected
   end
 
   it 'should compute which are our bad results' do
-    expect(computer.bad_results).to be == [[1.0, 2], [1.1, 2], [1.2, 2], [1.3, 2], [1.4, 2], [1.5, 2]]
+    expected_bad_results = [[1.0, 2], [1.1, 2], [1.2, 2], [1.3, 2], [1.4, 2], [1.5, 2]]
+    expect(computer.bad_results).to be == expected_bad_results
   end
 
   it 'should compute how many results we had now and 24 hours ago' do
@@ -71,7 +75,8 @@ describe StatsComputer do
 
   it 'should compute how long each part of the solve takes' do
     stats = computer.expected_time_per_type_stats
-    expect(stats.map { |s| s[:name] }.sort).to be == %w[corner_3twists corners edges floating_2flips floating_2twists]
+    names = %w[corner_3twists corners edges floating_2flips floating_2twists]
+    expect(stats.map { |s| s[:name] }.sort).to be == names
     expect(stats.map { |s| s[:weight] }.reduce(:+)).to be == 1.0
     stats.each do |s|
       expect(s[:expected_algs]).to be_a(Float)
