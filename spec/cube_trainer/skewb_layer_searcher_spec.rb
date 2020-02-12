@@ -4,8 +4,6 @@ require 'cube_trainer/skewb_layer_searcher'
 require 'cube_trainer/color_scheme'
 require 'set'
 
-include CubeTrainer
-
 describe SkewbLayerSearcher do
   let(:verbose) { false }
   let(:color_scheme) { ColorScheme::BERNHARD }

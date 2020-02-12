@@ -7,10 +7,9 @@ require 'cube_trainer/core/move'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/skewb_layer_finder'
 
-include CubeTrainer
-include CubePrintHelper
-
 describe SkewbLayerFinder do
+  include CubePrintHelper
+
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:skewb_state) { color_scheme.solved_skewb_state }
 

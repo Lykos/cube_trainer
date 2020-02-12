@@ -35,7 +35,7 @@ describe SkewbState do
     expect(skewb_state.layer_solved?(:blue)).to be true
     expect(skewb_state.layer_solved?(:orange)).to be true
     expect(skewb_state.layer_solved?(:white)).to be true
-    expect(skewb_state.to_s).to be == <<~EOS
+    expect(skewb_state.to_s).to be == <<~SKEWB.chomp
            YYYYY
            YYYYY
            YYYYY
@@ -51,14 +51,13 @@ describe SkewbState do
            WWWWW
            WWWWW
            WWWWW
-    EOS
-                                      .chomp
+    SKEWB
   end
 
   context 'when using fixed corner notation' do
     it 'should have the right state after an U move' do
       parse_fixed_corner_skewb_algorithm('U').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              OOOOO
              OOOOO
              OOOOO
@@ -74,8 +73,7 @@ describe SkewbState do
              WWWWW
              RWWWW
              RRWWW
-      EOS
-                                        .chomp
+      SKEWB
       expect(skewb_state.any_layer_solved?).to be false
       expect(skewb_state.layer_solved?(:yellow)).to be false
       expect(skewb_state.layer_solved?(:red)).to be false
@@ -94,7 +92,7 @@ describe SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be false
       expect(skewb_state.layer_solved?(:orange)).to be false
       expect(skewb_state.layer_solved?(:white)).to be false
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              BBBBB
              BBBBB
              BBBBB
@@ -110,8 +108,7 @@ describe SkewbState do
              WWWWW
              GWWWW
              GGWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it 'should have the right state after an R move' do
@@ -123,7 +120,7 @@ describe SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be false
       expect(skewb_state.layer_solved?(:orange)).to be false
       expect(skewb_state.layer_solved?(:white)).to be false
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              YYYRR
              YYYYR
              YYYYY
@@ -139,8 +136,7 @@ describe SkewbState do
              OOOOO
              OOOOO
              OOOOO
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an R' move" do
@@ -152,7 +148,7 @@ describe SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be false
       expect(skewb_state.layer_solved?(:orange)).to be false
       expect(skewb_state.layer_solved?(:white)).to be false
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              YYYBB
              YYYYB
              YYYYY
@@ -168,8 +164,7 @@ describe SkewbState do
              GGGGG
              GGGGG
              GGGGG
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it 'should have the right state after an L move' do
@@ -181,7 +176,7 @@ describe SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be false
       expect(skewb_state.layer_solved?(:orange)).to be false
       expect(skewb_state.layer_solved?(:white)).to be false
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              YYYYY
              YYYYY
              YYYYY
@@ -197,8 +192,7 @@ describe SkewbState do
              RRRRR
              RRRRW
              RRRWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an L' move" do
@@ -210,7 +204,7 @@ describe SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be false
       expect(skewb_state.layer_solved?(:orange)).to be false
       expect(skewb_state.layer_solved?(:white)).to be false
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              YYYYY
              YYYYY
              YYYYY
@@ -226,8 +220,7 @@ describe SkewbState do
              BBBBB
              BBBBW
              BBBWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it 'should have the right state after an B move' do
@@ -239,7 +232,7 @@ describe SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be false
       expect(skewb_state.layer_solved?(:orange)).to be false
       expect(skewb_state.layer_solved?(:white)).to be false
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              GGYYY
              GYYYY
              YYYYY
@@ -255,8 +248,7 @@ describe SkewbState do
              BBBBB
              BBBBB
              BBBBB
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an B' move" do
@@ -268,7 +260,7 @@ describe SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be false
       expect(skewb_state.layer_solved?(:orange)).to be false
       expect(skewb_state.layer_solved?(:white)).to be false
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              RRYYY
              RYYYY
              YYYYY
@@ -284,13 +276,12 @@ describe SkewbState do
              OOOOO
              OOOOO
              OOOOO
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it 'should have the right state after an x rotation' do
       parse_fixed_corner_skewb_algorithm('x').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              RRRRR
              RRRRR
              RRRRR
@@ -306,13 +297,12 @@ describe SkewbState do
              OOOOO
              OOOOO
              OOOOO
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it 'should have the right state after an y rotation' do
       parse_fixed_corner_skewb_algorithm('y').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              YYYYY
              YYYYY
              YYYYY
@@ -328,13 +318,12 @@ describe SkewbState do
              WWWWW
              WWWWW
              WWWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it 'should have the right state after an z rotation' do
       parse_fixed_corner_skewb_algorithm('z').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              BBBBB
              BBBBB
              BBBBB
@@ -350,8 +339,7 @@ describe SkewbState do
              GGGGG
              GGGGG
              GGGGG
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     context 'when using WCA orientation' do
@@ -469,7 +457,7 @@ describe SkewbState do
   context "when using Sarah's notation" do
     it 'should have the right state after an F move' do
       parse_sarahs_skewb_algorithm('F').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              YYRRR
              YRRRR
              RRRRR
@@ -485,13 +473,12 @@ describe SkewbState do
              WWWWW
              WWWWW
              WWWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an F' move" do
       parse_sarahs_skewb_algorithm("F'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              YYGGG
              YGGGG
              GGGGG
@@ -507,13 +494,12 @@ describe SkewbState do
              WWWWW
              WWWWW
              WWWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it 'should have the right state after an R move' do
       parse_sarahs_skewb_algorithm('R').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              GGGGG
              GGGGG
              GGGGG
@@ -529,13 +515,12 @@ describe SkewbState do
              WWWWW
              WWWWB
              WWWBB
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an R' move" do
       parse_sarahs_skewb_algorithm("R'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              OOOOO
              OOOOO
              OOOOO
@@ -551,13 +536,12 @@ describe SkewbState do
              WWWWW
              WWWWR
              WWWRR
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it 'should have the right state after an L move' do
       parse_sarahs_skewb_algorithm('L').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              BBBYY
              BBBBY
              BBBBB
@@ -573,13 +557,12 @@ describe SkewbState do
              WWWWW
              WWWWW
              WWWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an L' move" do
       parse_sarahs_skewb_algorithm("L'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              RRRYY
              RRRRY
              RRRRR
@@ -595,13 +578,12 @@ describe SkewbState do
              WWWWW
              WWWWW
              WWWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it 'should have the right state after an B move' do
       parse_sarahs_skewb_algorithm('B').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              OOOOO
              OOOOO
              OOOOO
@@ -617,13 +599,12 @@ describe SkewbState do
              WWWWW
              RWWWW
              RRWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an B' move" do
       parse_sarahs_skewb_algorithm("B'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              BBBBB
              BBBBB
              BBBBB
@@ -639,13 +620,12 @@ describe SkewbState do
              WWWWW
              GWWWW
              GGWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' B").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              OOOOO
              OOOOO
              OOOOO
@@ -661,13 +641,12 @@ describe SkewbState do
              WWWWW
              YWWWW
              YYWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an R' F' algorithm" do
       parse_sarahs_skewb_algorithm("R' F'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              OOYGG
              OYYYG
              YYYYY
@@ -683,13 +662,12 @@ describe SkewbState do
              WWWWW
              WWWWR
              WWWRR
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an R' F' x algorithm" do
       parse_sarahs_skewb_algorithm("R' F' x").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              OOOOO
              OOOOO
              OOOOO
@@ -705,13 +683,12 @@ describe SkewbState do
              GGGGG
              GGGGW
              GGGWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an R' F' y2 algorithm" do
       parse_sarahs_skewb_algorithm("R' F' y2").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              YYYYY
              YYYYY
              YYYYY
@@ -727,13 +704,12 @@ describe SkewbState do
              WWWWW
              BWWWW
              BBWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an R' F' z' algorithm" do
       parse_sarahs_skewb_algorithm("R' F' z'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              RRRYY
              RRRRY
              RRRRR
@@ -749,13 +725,12 @@ describe SkewbState do
              BBBBB
              WBBBB
              WWBBB
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an F' R' F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' R' F' B").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              GGROO
              GRRRO
              RRRRR
@@ -771,8 +746,7 @@ describe SkewbState do
              WWWWW
              WWWWY
              WWWYY
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an F' R' + F' B algorithm" do
@@ -780,7 +754,7 @@ describe SkewbState do
       second_algorithm = parse_sarahs_skewb_algorithm("F' B")
       algorithm = first_algorithm.compiled_for_skewb + second_algorithm.compiled_for_skewb
       algorithm.apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              GGROO
              GRRRO
              RRRRR
@@ -796,13 +770,12 @@ describe SkewbState do
              WWWWW
              WWWWY
              WWWYY
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after a F' R' F' B algorithm mirrored along the F normal" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.mirror(Face::F).apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              BBOYY
              BOOOY
              OOOOO
@@ -818,13 +791,12 @@ describe SkewbState do
              WWWWW
              WWWWR
              WWWRR
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after an inverted F' R' F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.inverse.apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              YYGGG
              YGGGG
              GGGGG
@@ -840,13 +812,12 @@ describe SkewbState do
              WWWWW
              GWWWO
              GGWOO
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after a x rotated F' R' F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.rotate_by(parse_move('x')).apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              OOWWW
              OWWWW
              WWWWW
@@ -862,13 +833,12 @@ describe SkewbState do
              BBBBB
              RBBBB
              RRBBB
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after a y2 rotated F' R' F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.rotate_by(parse_move('y2')).apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              YYOGG
              YOOOG
              OOOOO
@@ -884,13 +854,12 @@ describe SkewbState do
              WWWWW
              RWWWW
              RRWWW
-      EOS
-                                        .chomp
+      SKEWB
     end
 
     it "should have the right state after a z' rotated F' R' F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.rotate_by(parse_move("z'")).apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~EOS
+      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              GGBYY
              GBBBY
              BBBBB
@@ -906,8 +875,7 @@ describe SkewbState do
              YYYYY
              OYYYY
              OOYYY
-      EOS
-                                        .chomp
+      SKEWB
     end
   end
 end
