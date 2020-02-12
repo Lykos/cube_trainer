@@ -13,7 +13,7 @@ def count_filtered(results)
 end
 
 crawler = WCACrawler.new
-filename = crawler.get_latest_file
+filename = crawler.download_latest_file
 reader = WCAExportReader.new(filename)
 # puts reader.nemeses('2017MINA04')
 puts "2017: #{count_filtered(reader.results.select { |c| reader.competitions[c[:competitionid]][:startdate].year == 2017 })}"

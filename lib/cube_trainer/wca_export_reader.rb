@@ -27,8 +27,7 @@ module CubeTrainer
       when 'time' then WCAResult.time(result_int)
       when 'multi' then WCAResult.multi(result_int)
       when 'number' then WCAResult.number(result_int)
-      else
-        raise "Unknown format #{format}."
+      else raise "Unknown format #{format}."
       end
     end
 
@@ -44,14 +43,23 @@ module CubeTrainer
       end
     end
 
+    def parse_person(row)
+      {
+        personid: row[0],
+        subid: row[1],
+        name: row[2],
+        country: row[3],
+        gender: row[4]
+      }
+    end
+
     def read_people_file(input_stream)
       @people = {}
       CSV.parse(input_stream, col_sep: COL_SEP) do |row|
         personid = row[0]
         next if personid == 'id'
 
-        @people[personid] = { personid: personid, subid: row[1], name: row[2],
-                              country: row[3], gender: row[4] }
+        @people[personid] = parse_person(row)
       end
     end
 
@@ -101,75 +109,115 @@ module CubeTrainer
       end
     end
 
+    def parse_competition(row)
+      year = row[5].to_i
+      startdate = Time.new(year, row[6].to_i, row[7].to_i)
+      enddate = Time.new(year, row[8].to_i, row[9].to_i)
+      eventspecs = row[10].split(' ')
+      # TODO: parse these
+      wcadelegate = row[11]
+      organizer = row[12]
+      venue = row[13]
+      {
+        competitionid: row[0],
+        name: row[1],
+        cityname: row[2],
+        countryid: row[3],
+        information: row[4],
+        startdate: startdate,
+        enddate: enddate,
+        eventspecs: eventspecs,
+        wcadelegate: wcadelegate,
+        organizer: organizer,
+        venue: venue,
+        venueaddress: row[14],
+        venuedetails: row[15],
+        externalwebsite: row[16],
+        cellname: row[17],
+        latitude: row[18],
+        longitude: row[19]
+      }
+    end
+
     def read_competitions_file(input_stream)
       @competitions = {}
       CSV.parse(input_stream, col_sep: COL_SEP, quote_char: "\x00") do |row|
         competitionid = row[0]
         next if competitionid == 'id'
 
-        year = row[5].to_i
-        startdate = Time.new(year, row[6].to_i, row[7].to_i)
-        enddate = Time.new(year, row[8].to_i, row[9].to_i)
-        eventspecs = row[10].split(' ')
-        # TODO: parse these
-        wcadelegate = row[11]
-        organizer = row[12]
-        venue = row[13]
-        @competitions[competitionid] = { competitionid: competitionid, name: row[1], cityname: row[2],
-                                         countryid: row[3], information: row[4], startdate: startdate,
-                                         enddate: enddate, eventspecs: eventspecs, wcadelegate: wcadelegate,
-                                         organizer: organizer, venue: venue, venueaddress: row[14],
-                                         venuedetails: row[15], externalwebsite: row[16], cellname: row[17],
-                                         latitude: row[18], longitude: row[19] }
+        @competitions[competitionid] = parse_competition(row)
       end
+    end
+
+    def parse_round_type(row)
+      {
+        roundtypeid: row[0],
+        rank: row[1].to_i,
+        name: row[2],
+        cellname: row[3],
+        final: row[4].to_i.positive?
+      }
     end
 
     def read_round_types_file(input_stream)
       @round_types = []
       CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        roundtypeid = row[0]
-        next if roundtypeid == 'id'
+        next if row[0] == 'id'
 
-        @round_types.push(roundtypeid: roundtypeid, rank: row[1].to_i, name: row[2],
-                          cellname: row[3], final: row[4].to_i > 0)
+        @round_types.push(parse_round_type(row))
       end
+    end
+
+    def parse_result(row)
+      values = row[10..14].reject(&:empty?).map { |v| result(eventid, v) }
+      {
+        competitionid: row[0],
+        eventid: eventid,
+        roundtypeid: row[2],
+        pos: row[3].to_i,
+        best: result(eventid, row[4]),
+        average: result(eventid, row[5]),
+        personname: row[6],
+        personid: row[7],
+        personcountryid: row[8],
+        formatid: row[9],
+        values: values,
+        regionalsinglerecord: row[15],
+        regionalaveragerecord: row[16]
+      }
     end
 
     def read_results_file(input_stream)
       @results = []
       CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        competitionid = row[0]
-        next if competitionid == 'competitionId'
+        next if row[0] == 'competitionId'
 
-        eventid = row[1]
-        values = row[10..14].reject(&:empty?).map { |v| result(eventid, v) }
-        @results.push(competitionid: competitionid, eventid: eventid,
-                      roundtypeid: row[2], pos: row[3].to_i, best: result(eventid, row[4]),
-                      average: result(eventid, row[5]), personname: row[6], personid: row[7],
-                      personcountryid: row[8], formatid: row[9],
-                      values: values, regionalsinglerecord: row[15],
-                      regionalaveragerecord: row[16])
+        @results.push(parse_result(row))
       end
+    end
+
+    def parse_scramble3x3(row)
+      isextra = row[4].to_i == 1
+      scramble = parse_algorithm(row[6])
+      {
+        scrambleid: scrambleid,
+        competitionid: row[1],
+        eventid: eventid,
+        roundtypeid: row[2],
+        groupid: row[3],
+        isextra: isextra,
+        scramblenum: row[5].to_i,
+        scramble: scramble
+      }
     end
 
     def read_scrambles_file(input_stream)
       @scrambles3x3 = []
       CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        scrambleid = row[0]
-        next if scrambleid == 'scrambleId'
+        next if row[0] == 'scrambleId'
+        next unless row[2] == '333'
 
-        eventid = row[2]
-        next unless eventid == '333'
-
-        isextra = row[4].to_i == 1
-        @scrambles3x3.push(scrambleid: scrambleid,
-                           competitionid: row[1],
-                           eventid: eventid,
-                           roundtypeid: row[2],
-                           groupid: row[3],
-                           isextra: isextra,
-                           scramblenum: row[5].to_i,
-                           scramble: parse_algorithm(row[6]))
+        @scrambles3x3.push(parse_scramble3x3(row))
       end
     end
 
@@ -192,7 +240,7 @@ module CubeTrainer
 
     attr_reader :results, :continents, :countries, :competitions, :events, :people, :round_types
 
-    def is_nemesis?(badguy, victim)
+    def nemesis?(badguy, victim)
       badranks = @ranks[badguy]
       victimranks = @ranks[victim]
       victimranks.all? do |k, v|
@@ -206,7 +254,7 @@ module CubeTrainer
         id = person[:personid]
         next if id == wcaid
 
-        badguys.push(id) if is_nemesis?(id, wcaid)
+        badguys.push(id) if nemesis?(id, wcaid)
       end
       badguys
     end

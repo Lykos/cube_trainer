@@ -16,6 +16,7 @@ require 'rantly/shrinks'
 
 RSpec.shared_examples 'cube_state' do |cube_size|
   include CubePrintHelper
+
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cycle_factory) { PartCycleFactory.new(cube_size, 0) }
@@ -26,7 +27,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
 
   def expect_stickers_changed(cube_state, changed_parts)
     original_state = create_interesting_cube_state(cube_state.n)
-    FACE_SYMBOLS.each do |s|
+    CubeConstants::FACE_SYMBOLS.each do |s|
       cube_state.n.times do |x|
         cube_state.n.times do |y|
           coordinate = Coordinate.from_indices(Face.for_face_symbol(s), cube_state.n, x, y)

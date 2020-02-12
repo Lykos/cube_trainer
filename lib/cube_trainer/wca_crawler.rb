@@ -14,19 +14,20 @@ module CubeTrainer
     WCA_BASE_URL = 'https://www.worldcubeassociation.org'
     REDIRECT_LIMIT = 5
 
-    def get_latest_file_internal
+    def extract_link(links_on_export_page)
+      matching_links = links_on_export_page['links'].select do |l|
+        l =~ /WCA_export\d+_\d+\.tsv\.zip/
+      end
+      only(matching_link)
+    end
+
+    def download_latest_file_name
       links_on_export_page = Wombat.crawl do
         base_url WCA_BASE_URL
         path '/results/misc/export.html'
         links({ xpath: '//a' }, :list)
       end
-      matching_links = links_on_export_page['links'].select do |l|
-        l =~ /WCA_export\d+_\d+\.tsv\.zip/
-      end
-      raise 'No WCA export found.' if matching_links.empty?
-      raise 'Multiple WCA exports found.' if matching_links.length > 1
-
-      matching_links.first
+      extract_link(links_on_export_page)
     end
 
     def construct_wca_export_url(filename)
@@ -63,9 +64,9 @@ module CubeTrainer
 
     # Figures out what is the latest WCA export file, downloads it if we don't have it yet
     # and returns the filename.
-    def get_latest_file
-      filename = get_latest_file_internal
-      if @storer.has_wca_export_file(filename)
+    def download_latest_file
+      filename = download_latest_file_name
+      if @storer.wca_export_file_exists?(filename)
         puts "No download since we have #{filename} already."
       else
         download_wca_export(filename)

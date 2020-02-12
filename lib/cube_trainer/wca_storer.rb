@@ -19,7 +19,7 @@ module CubeTrainer
       data_file(filename)
     end
 
-    def has_wca_export_file(filename)
+    def wca_export_file_exists?(filename)
       File.exist?(wca_export_path(filename))
     end
   end

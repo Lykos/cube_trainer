@@ -12,6 +12,10 @@ Style/MultilineBlockChain:
 Metrics/AbcSize:
   Exclude:
   - 'spec/**/*_spec.rb'
+  # TODO: This is temporary
+  - 'lib/cube_trainer/wca_export_reader.rb'
 Metrics/MethodLength:
   Exclude:
   - 'spec/**/*_spec.rb'
+  # TODO: This is temporary
+  - 'lib/cube_trainer/wca_export_reader.rb'
