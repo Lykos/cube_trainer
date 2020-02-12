@@ -1,5 +1,7 @@
 Layout/LineLength:
   Max: 100
+  Exclude:
+  - 'spec/**/*_spec.rb'
 Metrics/BlockLength:
   Exclude:
   - 'spec/**/*.rb'
