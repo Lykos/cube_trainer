@@ -4,7 +4,13 @@ Layout/LineLength:
   - 'spec/**/*_spec.rb'
 Metrics/BlockLength:
   Exclude:
-  - 'spec/**/*.rb'
+  - 'spec/**/*_spec.rb'
 Style/MultilineBlockChain:
   Exclude:
-  - 'spec/**/*.rb'
+  - 'spec/**/*_spec.rb'
+Metrics/AbcSize:
+  Exclude:
+  - 'spec/**/*_spec.rb'
+Metrics/MethodLength:
+  Exclude:
+  - 'spec/**/*_spec.rb'
