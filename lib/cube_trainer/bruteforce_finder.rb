@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/algorithm'
 
 module CubeTrainer
-
   class SolutionSet
     # Shorter solutions should be treated as better. Unsolved is equivalent to infinity length.
     def strictly_better_than?(other)
-      if !solved? && !other.solved? then
+      if !solved? && !other.solved?
         return false
       elsif !solved?
         return false
       elsif !other.solved?
         return true
       end
+
       length < other.length
     end
 
@@ -23,9 +25,10 @@ module CubeTrainer
   class AlreadySolvedSolutionSet < SolutionSet
     def initialize(colors)
       raise ArgumentError if colors.empty?
+
       @colors = colors
     end
-    
+
     def extract_algorithms
       algs = {}
       @colors.each { |c| algs[c] = [Core::Algorithm.empty] }
@@ -49,8 +52,11 @@ module CubeTrainer
 
   class UnionSolutionSet < SolutionSet
     def initialize(internal_solution_sets)
-      @length = if internal_solution_sets.empty? then nil else internal_solution_sets.first.length end
-      raise ArgumentError unless internal_solution_sets.all? { |s| s.length == @length }
+      @length = internal_solution_sets.empty? ? nil : internal_solution_sets.first.length
+      unless internal_solution_sets.all? { |s| s.length == @length }
+        raise ArgumentError
+      end
+
       @internal_solution_sets = internal_solution_sets
     end
 
@@ -59,8 +65,8 @@ module CubeTrainer
     def extract_algorithms
       algs = {}
       @internal_solution_sets.each do |s|
-        algs.update(s.extract_algorithms) do |k, v0, v1|
-          (v0 + v1).sort_by { |a| a.to_s }
+        algs.update(s.extract_algorithms) do |_k, v0, v1|
+          (v0 + v1).sort_by(&:to_s)
         end
       end
       algs
@@ -78,7 +84,7 @@ module CubeTrainer
 
     def extract_algorithms
       algs = @internal_solution_set.extract_algorithms
-      algs.each do |k, v|
+      algs.each do |_k, v|
         v.collect! { |s| @extra_move + s }
       end
       algs
@@ -88,11 +94,11 @@ module CubeTrainer
   NO_SOLUTIONS = UnionSolutionSet.new([])
 
   class BruteForceFinder
-    def initialize(find_all_solutions=true)
+    def initialize(find_all_solutions = true)
       @find_all_solutions = find_all_solutions
     end
-    
-    def state_score(state)
+
+    def state_score(_state)
       raise NotImplementedError
     end
 
@@ -100,11 +106,11 @@ module CubeTrainer
       move.apply_temporarily_to(state) { state_score(state) }
     end
 
-    def done?(state)
+    def done?(_state)
       raise NotImplementedError
     end
 
-    def generate_moves(state)
+    def generate_moves(_state)
       raise NotImplementedError
     end
 
@@ -121,21 +127,22 @@ module CubeTrainer
 
     def find_solutions(state, limit)
       raise ArgumentError unless limit.is_a?(Integer) && limit >= 0
+
       sols = solved_colors(state)
-      if !sols.empty?
+      unless sols.empty?
         raise unless state_score(state) == solution_score
+
         return AlreadySolvedSolutionSet.new(sols)
       end
-      if limit == 0
-        return NO_SOLUTIONS
-      end
+      return NO_SOLUTIONS if limit == 0
+
       moves = generate_moves(state).collect do |m|
         [m, score_after_move(state, m)]
-      end.select do |m, score|
+      end.select do |_m, score|
         score + limit >= 4
-      end.sort_by do |m, score|
+      end.sort_by do |_m, score|
         -score
-      end.collect { |m, score| m }
+      end.collect { |m, _score| m }
       best_solutions = NO_SOLUTIONS
       inner_limit = limit - 1
       moves.each do |m|
@@ -143,19 +150,18 @@ module CubeTrainer
           # Note that limit is updated s.t. this solution helps us.
           find_solutions(state, inner_limit)
         end
-        if solutions.solved? then
-          adjusted_solutions = FirstMovePlusSolutions.new(m, solutions)
-          if adjusted_solutions.strictly_better_than?(best_solutions)
-            best_solutions = adjusted_solutions
-            inner_limit = new_move_limit(solutions.length)
-            break if inner_limit < 0
-          else
-            best_solutions = UnionSolutionSet.new([best_solutions, adjusted_solutions])
-          end
+        next unless solutions.solved?
+
+        adjusted_solutions = FirstMovePlusSolutions.new(m, solutions)
+        if adjusted_solutions.strictly_better_than?(best_solutions)
+          best_solutions = adjusted_solutions
+          inner_limit = new_move_limit(solutions.length)
+          break if inner_limit < 0
+        else
+          best_solutions = UnionSolutionSet.new([best_solutions, adjusted_solutions])
         end
       end
       best_solutions
     end
   end
-  
 end

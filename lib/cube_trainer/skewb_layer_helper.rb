@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/skewb_state'
 
 module CubeTrainer
-
   module SkewbLayerHelper
     MATCHING_CORNERS_HASH =
       begin
@@ -15,9 +16,13 @@ module CubeTrainer
 
     def check_on_outside_internal(skewb_state, coordinates)
       raise ArgumentError unless coordinates.length == 2
-      raise ArgumentError unless coordinates.all? { |c| c.is_a?(SkewbCoordinate) }
+      unless coordinates.all? { |c| c.is_a?(SkewbCoordinate) }
+        raise ArgumentError
+      end
+
       friends = MATCHING_CORNERS_HASH[coordinates.sort]
       return :not_adjacent unless friends
+
       if skewb_state[friends[0]] == skewb_state[friends[1]]
         :match
       else
@@ -43,14 +48,12 @@ module CubeTrainer
         skewb_state[c] == face_color
       end
     end
-    
+
     def score_on_face(skewb_state, face)
       matching_coordinates = matching_corner_coordinates(skewb_state, face)
       naive_score = matching_coordinates.length
       has_mismatch = has_mismatch_on_outside(skewb_state, matching_coordinates)
-      if has_mismatch then naive_score - naive_score / 2 else naive_score end
+      has_mismatch ? naive_score - naive_score / 2 : naive_score
     end
-
   end
-
 end

@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
-# coding: utf-8
+# frozen_string_literal: true
 
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'cube_trainer/anki/alg_set_anki_generator'
 require 'cube_trainer/anki/alg_set_anki_generator_options'

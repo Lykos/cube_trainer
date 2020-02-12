@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/cube'
 require 'cube_trainer/letter_scheme'
 
-describe LetterScheme do |clazz|
+describe LetterScheme do |_clazz|
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:letter) { letter_scheme.alphabet.sample }
 
@@ -35,5 +37,3 @@ describe LetterScheme do |clazz|
     expect(letter_scheme.letter(xcenter)).to be == letter
   end
 end
-
-

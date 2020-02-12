@@ -1,22 +1,23 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/skewb_state'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/letter_scheme'
 
 module CubeTrainer
-
   class SkewbTransformationDescriber
-
-    TOP_BOTTOM_CORNERS = 
-    DOUBLE_ARROW = ' ↔ '
+    TOP_BOTTOM_CORNERS =
+      DOUBLE_ARROW = ' ↔ '
     ARROW = ' → '
 
     class PartSequence
-
       def initialize(letter_scheme, parts)
-        raise ArgumentError unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
+        unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
+          raise ArgumentError
+        end
         raise ArgumentError unless parts.all? { |p| p.is_a?(Part) }
+
         @letter_scheme = letter_scheme
         @parts = parts
       end
@@ -42,16 +43,15 @@ module CubeTrainer
       def trivial?
         @parts.length <= 1 || @parts == [@parts[0], @parts[0]]
       end
-      
     end
 
     class PartMove < PartSequence
-
       def initialize(letter_scheme, parts)
         raise ArgumentError unless parts.length == 2
+
         super
       end
-      
+
       def source
         @parts.first
       end
@@ -71,23 +71,24 @@ module CubeTrainer
       def <=>(other)
         target <=> other.target
       end
-      
     end
 
     class PartCycle < PartSequence
-
       def first_move
         PartMove.new(@letter_scheme, @parts[0..1])
       end
 
       def simplify(interesting_parts)
         return self if @parts.empty?
+
         simplified_parts = []
         first_part = parts.first
         parts.each do |part|
-          simplified_parts.push(part)   
+          simplified_parts.push(part)
           # Stop after we reach a rotation of the first part (but still include that target to show the rotation or the end of the cycle).
-          break if simplified_parts.length > 1 && first_part.rotations.include?(part)
+          if simplified_parts.length > 1 && first_part.rotations.include?(part)
+            break
+          end
           # Stop when we reach the first uninteresting part (but still include that target to show where the last interesting part moves).
           break if (interesting_parts & part.rotations).empty?
         end
@@ -109,12 +110,17 @@ module CubeTrainer
       end
     end
 
-    def initialize(interesting_faces, interesting_corners, staying_mode, color_scheme, letter_scheme=nil)
+    def initialize(interesting_faces, interesting_corners, staying_mode, color_scheme, letter_scheme = nil)
       raise TypeError unless interesting_faces.all? { |f| f.is_a?(Face) }
       raise TypeError unless interesting_corners.all? { |f| f.is_a?(Corner) }
-      raise ArgumentError unless [:show_staying, :omit_staying].include?(staying_mode)
+      unless %i[show_staying omit_staying].include?(staying_mode)
+        raise ArgumentError
+      end
       raise TypeError unless color_scheme.is_a?(ColorScheme)
-      raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
+      unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
+        raise TypeError
+      end
+
       @interesting_faces = interesting_faces
       @interesting_corners = interesting_corners
       @show_staying = staying_mode == :show_staying
@@ -123,12 +129,13 @@ module CubeTrainer
       @letter_scheme = letter_scheme
     end
 
-    def find_complete_source_cycle(part, &make_coordinate)
+    def find_complete_source_cycle(part)
       complete_cycle = []
       current_part = part
       loop do
         complete_cycle.push(current_part)
         break if complete_cycle.length > 1 && current_part == part
+
         next_part_colors = current_part.rotations.map { |r| @skewb_state[yield r] }
         current_part = @color_scheme.part_for_colors(part.class, next_part_colors)
       end
@@ -180,7 +187,5 @@ module CubeTrainer
           find_part_target_cycles(@interesting_corners, &SkewbCoordinate.method(:for_corner))
       end.sort
     end
-    
   end
-
 end

@@ -1,30 +1,26 @@
+# frozen_string_literal: true
+
 module CubeTrainer
-
   module Core
+    class Puzzle
+      def initialize(name)
+        @name = name
+      end
 
-  class Puzzle
-    
-    def initialize(name)
-      @name = name
+      attr_reader :name
+
+      def eql?(other)
+        self.class == other.class && name == other.name
+      end
+
+      def hash
+        @hash ||= [self.class, @name].hash
+      end
+
+      alias == eql?
+
+      NXN_CUBE = Puzzle.new('nxn cube')
+      SKEWB = Puzzle.new('skewb')
     end
-
-    attr_reader :name
-
-    def eql?(other)
-      self.class == other.class && self.name == other.name
-    end
-
-    def hash
-      @hash ||= [self.class, @name].hash
-    end
-    
-    alias == eql?
-    
-    NXN_CUBE = Puzzle.new('nxn cube')
-    SKEWB = Puzzle.new('skewb')
-    
   end
-
-  end
-
 end

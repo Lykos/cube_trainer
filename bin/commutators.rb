@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
-# coding: utf-8
+# frozen_string_literal: true
 
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'cube_trainer/commutator_sets'
 require 'cube_trainer/commutator_options'
@@ -24,4 +24,3 @@ puts "#{stats[:found]} of #{stats[:total]} items found, #{stats[:newish_elements
 puts "#{stats_computer.num_results} results, #{stats_computer.num_recent_results} of them in the last 24 hours."
 
 Trainer.new(learner, results_model, generator.input_sampler).run
-

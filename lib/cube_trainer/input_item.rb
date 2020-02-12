@@ -1,8 +1,8 @@
-module CubeTrainer
+# frozen_string_literal: true
 
+module CubeTrainer
   class InputItem
-    
-    def initialize(representation, cube_state=nil)
+    def initialize(representation, cube_state = nil)
       @representation = representation
       @cube_state = cube_state
     end
@@ -12,7 +12,5 @@ module CubeTrainer
 
     # An (optional) cube state that represents this input item.
     attr_reader :cube_state
-
   end
-  
 end

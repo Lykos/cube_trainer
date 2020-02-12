@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/coordinate'
 require 'cube_trainer/core/parser'
@@ -20,7 +22,7 @@ end
 describe Edge do
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:cube_size) { 3 }
-    
+
   it 'returns the right solved_coordinate' do
     expect(letter_scheme.for_letter(Edge, 'a').solved_coordinate(cube_size, 0)).to be == Coordinate.from_indices(Face::U, cube_size, 0, 1)
     expect(letter_scheme.for_letter(Edge, 'b').solved_coordinate(cube_size, 0)).to be == Coordinate.from_indices(Face::U, cube_size, 1, 0)
@@ -86,45 +88,45 @@ describe Wing do
   let(:cube_size) { 4 }
 
   it 'should parse wings in UB correctly' do
-    expect(Wing.parse('UBl')).to be == Wing.for_face_symbols([:B, :U])
-    expect(Wing.parse('UBr')).to be == Wing.for_face_symbols([:U, :B])
-    expect(Wing.parse('BUl')).to be == Wing.for_face_symbols([:B, :U])
-    expect(Wing.parse('BUr')).to be == Wing.for_face_symbols([:U, :B])
+    expect(Wing.parse('UBl')).to be == Wing.for_face_symbols(%i[B U])
+    expect(Wing.parse('UBr')).to be == Wing.for_face_symbols(%i[U B])
+    expect(Wing.parse('BUl')).to be == Wing.for_face_symbols(%i[B U])
+    expect(Wing.parse('BUr')).to be == Wing.for_face_symbols(%i[U B])
   end
 
   it 'should parse wings in DB correctly' do
-    expect(Wing.parse('DBL')).to be == Wing.for_face_symbols([:D, :B])
-    expect(Wing.parse('DBR')).to be == Wing.for_face_symbols([:B, :D])
-    expect(Wing.parse('BDL')).to be == Wing.for_face_symbols([:D, :B])
-    expect(Wing.parse('BDR')).to be == Wing.for_face_symbols([:B, :D])
+    expect(Wing.parse('DBL')).to be == Wing.for_face_symbols(%i[D B])
+    expect(Wing.parse('DBR')).to be == Wing.for_face_symbols(%i[B D])
+    expect(Wing.parse('BDL')).to be == Wing.for_face_symbols(%i[D B])
+    expect(Wing.parse('BDR')).to be == Wing.for_face_symbols(%i[B D])
   end
 
   it 'should parse wings in UF correctly' do
-    expect(Wing.parse('UFl')).to be == Wing.for_face_symbols([:U, :F])
-    expect(Wing.parse('UFr')).to be == Wing.for_face_symbols([:F, :U])
-    expect(Wing.parse('FUl')).to be == Wing.for_face_symbols([:U, :F])
-    expect(Wing.parse('FUr')).to be == Wing.for_face_symbols([:F, :U])
+    expect(Wing.parse('UFl')).to be == Wing.for_face_symbols(%i[U F])
+    expect(Wing.parse('UFr')).to be == Wing.for_face_symbols(%i[F U])
+    expect(Wing.parse('FUl')).to be == Wing.for_face_symbols(%i[U F])
+    expect(Wing.parse('FUr')).to be == Wing.for_face_symbols(%i[F U])
   end
 
   it 'should parse wings in DF correctly' do
-    expect(Wing.parse('DFl')).to be == Wing.for_face_symbols([:F, :D])
-    expect(Wing.parse('DFr')).to be == Wing.for_face_symbols([:D, :F])
-    expect(Wing.parse('FDl')).to be == Wing.for_face_symbols([:F, :D])
-    expect(Wing.parse('FDr')).to be == Wing.for_face_symbols([:D, :F])
+    expect(Wing.parse('DFl')).to be == Wing.for_face_symbols(%i[F D])
+    expect(Wing.parse('DFr')).to be == Wing.for_face_symbols(%i[D F])
+    expect(Wing.parse('FDl')).to be == Wing.for_face_symbols(%i[F D])
+    expect(Wing.parse('FDr')).to be == Wing.for_face_symbols(%i[D F])
   end
 
   it 'should parse wings in UR correctly' do
-    expect(Wing.parse('URb')).to be == Wing.for_face_symbols([:R, :U])
-    expect(Wing.parse('URf')).to be == Wing.for_face_symbols([:U, :R])
-    expect(Wing.parse('RUb')).to be == Wing.for_face_symbols([:R, :U])
-    expect(Wing.parse('RUf')).to be == Wing.for_face_symbols([:U, :R])
+    expect(Wing.parse('URb')).to be == Wing.for_face_symbols(%i[R U])
+    expect(Wing.parse('URf')).to be == Wing.for_face_symbols(%i[U R])
+    expect(Wing.parse('RUb')).to be == Wing.for_face_symbols(%i[R U])
+    expect(Wing.parse('RUf')).to be == Wing.for_face_symbols(%i[U R])
   end
 
   it 'should parse wings in FR correctly' do
-    expect(Wing.parse('FRu')).to be == Wing.for_face_symbols([:R, :F])
-    expect(Wing.parse('FRd')).to be == Wing.for_face_symbols([:F, :R])
-    expect(Wing.parse('RFu')).to be == Wing.for_face_symbols([:R, :F])
-    expect(Wing.parse('RFd')).to be == Wing.for_face_symbols([:F, :R])
+    expect(Wing.parse('FRu')).to be == Wing.for_face_symbols(%i[R F])
+    expect(Wing.parse('FRd')).to be == Wing.for_face_symbols(%i[F R])
+    expect(Wing.parse('RFu')).to be == Wing.for_face_symbols(%i[R F])
+    expect(Wing.parse('RFd')).to be == Wing.for_face_symbols(%i[F R])
   end
 
   it 'returns the right solved_coordinate' do
@@ -190,7 +192,7 @@ end
 describe Face do
   let(:letter_scheme) { BernhardLetterScheme.new }
 
-  it 'should return the right neighbor faces' do  
+  it 'should return the right neighbor faces' do
     expect(Face::U.neighbors).to be_rotationally_equivalent_to [Face::R, Face::F, Face::L, Face::B]
     expect(Face::D.neighbors).to be_rotationally_equivalent_to [Face::F, Face::R, Face::B, Face::L]
     expect(Face::F.neighbors).to be_rotationally_equivalent_to [Face::U, Face::R, Face::D, Face::L]
@@ -243,39 +245,38 @@ describe Face do
     expect(Face::R.rotation_to(Face::L)).to be_one_of [parse_algorithm('y2'), parse_algorithm('z2')]
     expect(Face::L.rotation_to(Face::R)).to be_one_of [parse_algorithm('y2'), parse_algorithm('z2')]
   end
-  
+
   it 'should find out what rotations to do to get to the position of a neighbor face' do
     expect(Face::U.rotation_to(Face::F)).to be == parse_algorithm("x'")
-    expect(Face::U.rotation_to(Face::B)).to be == parse_algorithm("x")
+    expect(Face::U.rotation_to(Face::B)).to be == parse_algorithm('x')
     expect(Face::U.rotation_to(Face::R)).to be == parse_algorithm("z'")
-    expect(Face::U.rotation_to(Face::L)).to be == parse_algorithm("z")
+    expect(Face::U.rotation_to(Face::L)).to be == parse_algorithm('z')
 
-    expect(Face::D.rotation_to(Face::F)).to be == parse_algorithm("x")
+    expect(Face::D.rotation_to(Face::F)).to be == parse_algorithm('x')
     expect(Face::D.rotation_to(Face::B)).to be == parse_algorithm("x'")
-    expect(Face::D.rotation_to(Face::R)).to be == parse_algorithm("z")
+    expect(Face::D.rotation_to(Face::R)).to be == parse_algorithm('z')
     expect(Face::D.rotation_to(Face::L)).to be == parse_algorithm("z'")
 
-    expect(Face::F.rotation_to(Face::U)).to be == parse_algorithm("x")
+    expect(Face::F.rotation_to(Face::U)).to be == parse_algorithm('x')
     expect(Face::F.rotation_to(Face::D)).to be == parse_algorithm("x'")
     expect(Face::F.rotation_to(Face::R)).to be == parse_algorithm("y'")
-    expect(Face::F.rotation_to(Face::L)).to be == parse_algorithm("y")
+    expect(Face::F.rotation_to(Face::L)).to be == parse_algorithm('y')
 
     expect(Face::B.rotation_to(Face::U)).to be == parse_algorithm("x'")
-    expect(Face::B.rotation_to(Face::D)).to be == parse_algorithm("x")
-    expect(Face::B.rotation_to(Face::R)).to be == parse_algorithm("y")
+    expect(Face::B.rotation_to(Face::D)).to be == parse_algorithm('x')
+    expect(Face::B.rotation_to(Face::R)).to be == parse_algorithm('y')
     expect(Face::B.rotation_to(Face::L)).to be == parse_algorithm("y'")
 
-    expect(Face::R.rotation_to(Face::U)).to be == parse_algorithm("z")
+    expect(Face::R.rotation_to(Face::U)).to be == parse_algorithm('z')
     expect(Face::R.rotation_to(Face::D)).to be == parse_algorithm("z'")
-    expect(Face::R.rotation_to(Face::F)).to be == parse_algorithm("y")
+    expect(Face::R.rotation_to(Face::F)).to be == parse_algorithm('y')
     expect(Face::R.rotation_to(Face::B)).to be == parse_algorithm("y'")
-    
-    expect(Face::L.rotation_to(Face::U)).to be == parse_algorithm("z'")
-    expect(Face::L.rotation_to(Face::D)).to be == parse_algorithm("z")
-    expect(Face::L.rotation_to(Face::F)).to be == parse_algorithm("y'")
-    expect(Face::L.rotation_to(Face::B)).to be == parse_algorithm("y")
-  end
 
+    expect(Face::L.rotation_to(Face::U)).to be == parse_algorithm("z'")
+    expect(Face::L.rotation_to(Face::D)).to be == parse_algorithm('z')
+    expect(Face::L.rotation_to(Face::F)).to be == parse_algorithm("y'")
+    expect(Face::L.rotation_to(Face::B)).to be == parse_algorithm('y')
+  end
 end
 
 describe TCenter do
@@ -311,9 +312,9 @@ describe TCenter do
 end
 
 describe XCenter do
-  let(:letter_scheme) { BernhardLetterScheme.new }  
+  let(:letter_scheme) { BernhardLetterScheme.new }
   let(:cube_size) { 4 }
-  
+
   it 'returns the right solved_coordinate' do
     expect(letter_scheme.for_letter(XCenter, 'a').solved_coordinate(cube_size, 0)).to be == Coordinate.from_indices(Face::U, cube_size, 1, -2)
     expect(letter_scheme.for_letter(XCenter, 'b').solved_coordinate(cube_size, 0)).to be == Coordinate.from_indices(Face::U, cube_size, 1, 1)

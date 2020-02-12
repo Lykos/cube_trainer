@@ -1,13 +1,11 @@
 #!/usr/bin/ruby
-# coding: utf-8
+# frozen_string_literal: true
 
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/skewb_scrambler'
 require 'cube_trainer/color_scheme'
-require 'thread'
-
 include CubeTrainer
 
 SCRAMBLE_LENGTH = 15
@@ -28,20 +26,20 @@ Producer = Thread.new do
     layer_solutions = layer_finder.find_layer(skewb_state, SEARCH_DEPTH)
     scramble.invert.apply_to(skewb_state)
     queue.push([:solutions, layer_solutions])
-    while queue.length > MAX_QUEUE_LENGTH
-      sleep(1)
-    end
+    sleep(1) while queue.length > MAX_QUEUE_LENGTH
   end
 end
 
 loop do
   type, scramble = queue.pop
   raise unless type == :scramble
-  puts "Scramble"
+
+  puts 'Scramble'
   puts scramble
   type, layer_solutions = queue.pop
   puts "#{queue.length / 2} solutions in the queue."
   raise unless type == :solutions
+
   if layer_solutions.solved?
     puts "Optimal solution has #{layer_solutions.length} moves. Press enter to see solutions."
     gets

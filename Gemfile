@@ -1,10 +1,10 @@
-# coding: utf-8
+# frozen_string_literal: true
 
 source 'https://rubygems.org' do
   gem 'colorize'
   gem 'parallel'
-  gem 'ruby-progressbar'
   gem 'ruby-filemagic'
+  gem 'ruby-progressbar'
   gem 'sqlite3'
   gem 'xdg'
 

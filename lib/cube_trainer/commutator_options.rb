@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ostruct'
 require 'cube_trainer/cube_trainer_options_parser'
 require 'cube_trainer/commutator_hint_parser'
@@ -10,9 +12,7 @@ require 'cube_trainer/letter_scheme'
 require 'cube_trainer/alg_sets'
 
 module CubeTrainer
-
   class CommutatorOptions
-
     CommutatorInfo = Struct.new(:result_symbol, :generator_class, :learner_class, :default_cube_size, :has_buffer?)
     COMMUTATOR_TYPES = {
       'corners' => CommutatorInfo.new(:corner_commutators, CornerCommutators, HumanTimeLearner, 3, true),
@@ -31,9 +31,9 @@ module CubeTrainer
       'plls' => CommutatorInfo.new(:plls_by_name, Plls, HumanTimeLearner, 3, false),
       'oh_colls' => CommutatorInfo.new(:oh_plls_by_name, Colls, HumanTimeLearner, 3, false),
       'colls' => CommutatorInfo.new(:plls_by_name, Colls, HumanTimeLearner, 3, false),
-      'olls_plus_cp' => CommutatorInfo.new(:olls_plus_cp, OllsPlusCp, HumanTimeLearner, 3, false),
-    }
-    
+      'olls_plus_cp' => CommutatorInfo.new(:olls_plus_cp, OllsPlusCp, HumanTimeLearner, 3, false)
+    }.freeze
+
     def self.default_options
       options = OpenStruct.new
       options.new_item_boundary = 11
@@ -52,13 +52,13 @@ module CubeTrainer
 
     def self.parse(args)
       options = default_options
-      
+
       CubeTrainerOptionsParser.new(options) do |opts|
         opts.on_size
-      
+
         opts.on('-c', '--commutator_type TYPE', COMMUTATOR_TYPES, 'Use the given type of commutators for training.') do |c|
           options.commutator_info = c
-          if options.cube_size.nil? and not c.default_cube_size.nil? then options.cube_size = c.default_cube_size end
+          if options.cube_size.nil? && !c.default_cube_size.nil? then options.cube_size = c.default_cube_size end
         end
 
         opts.on('-t', '--test_comms_mode [MODE]', CommutatorHintParser::TEST_COMMS_MODES, 'Test commutators mode at startup.') do |t|
@@ -76,28 +76,30 @@ module CubeTrainer
         opts.on('-p', '--[no-]picture', 'Show a picture of the cube instead of the letter pair.') do |p|
           options.picture = p
         end
-  
+
         opts.on('-n', '--new_item_boundary INTEGER', Integer, 'Number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.') do |int|
           options.new_item_boundary = int
         end
-  
+
         opts.on('-m', '--[no-]mute', 'Mute (i.e. no audio).') do |m|
           options.mute = m
         end
-  
+
         opts.on('-r', '--restrict_letters LETTERLIST', /\w+/, 'List of letters to which the commutators should be restricted.',
                 '  (Only uses commutators that contain at least one of the given letters)') do |letters|
           options.restrict_letters = letters.downcase.split('')
         end
 
-        opts.on('-e', '--exclude_letters LETTERLIST', /\w+/,  'List of letters which should be excluded for commutators.',
+        opts.on('-e', '--exclude_letters LETTERLIST', /\w+/, 'List of letters which should be excluded for commutators.',
                 '  (Only uses commutators that contain none of the given letters)') do |letters|
           options.exclude_letters = letters.downcase.split('')
         end
       end.parse!(args)
-      raise ArgumentError, "Option --commutator_type is required." unless options.commutator_info
+      unless options.commutator_info
+        raise ArgumentError, 'Option --commutator_type is required.'
+      end
+
       options
     end
   end
-
 end

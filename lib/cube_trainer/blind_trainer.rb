@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'Qt4'
 require 'cube_trainer/stop_watch'
 require 'cube_trainer/time_history'
@@ -6,32 +8,31 @@ require 'cube_trainer/cubie_controller'
 require 'cube_trainer/ui_helpers'
 
 module CubeTrainer
-
   class BlindTrainer < Qt::MainWindow
     slots 'start_stop_clicked()'
-  
+
     include UiHelpers
-  
+
     def start_stop_clicked
       if running?
         @stop_watch.stop
-        start_stop_button.setText("Start")
+        start_stop_button.setText('Start')
       else
-        start_stop_button.setText("Stop")
+        start_stop_button.setText('Stop')
         start
       end
     end
-  
+
     def start
       @failed_attempts = 0
       @cube_controller.select_cubie
       @stop_watch.start
     end
-  
+
     def running?
       @stop_watch.running?
     end
-  
+
     def event(e)
       if @initialized && running? && e.type == Qt::Event::KeyPress
         if e.text == cubie.letter
@@ -44,33 +45,31 @@ module CubeTrainer
       end
       super(e)
     end
-  
+
     def start_stop_button
       @start_stop_button ||= find_child(Qt::PushButton, 'start_stop')
     end
-  
+
     def create_result
       raise NotImplementedError, "This doesn't work after we changed the format of the result: Result.new(@stop_watch.start_time, @stop_watch.time_s, cubie, @failed_attempts)"
     end
-  
+
     def cubie
       @cube_controller.cubie
     end
-  
-    # TODO Find a better way to finalize the initialization.
+
+    # TODO: Find a better way to finalize the initialization.
     def init
       stop_watch_widget = find_child(Qt::Label, 'stop_watch')
       @stop_watch = StopWatch.new(stop_watch_widget)
-  
-      time_history_widget = find_child(Qt::Widget, 'time_history') 
+
+      time_history_widget = find_child(Qt::Widget, 'time_history')
       @time_history = TimeHistory.new(time_history_widget)
-  
+
       cube_view = find_child(Qt::GraphicsView, 'cube_view')
       @cube_controller = CubieController.new(cube_view)
-  
+
       @initialized = true
     end
-  
   end
-
 end

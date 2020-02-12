@@ -1,11 +1,15 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/cube'
 
 module CubeTrainer
-
   class LetterScheme
-
     def initialize
-      alphabet.each { |letter| raise "Uncanonical letter #{letter} in alphabet." if letter != canonicalize_letter(letter) }
+      alphabet.each do |letter|
+        if letter != canonicalize_letter(letter)
+          raise "Uncanonical letter #{letter} in alphabet."
+                               end
+      end
     end
 
     def letter(piece)
@@ -25,7 +29,7 @@ module CubeTrainer
       raise NotImplementedError
     end
 
-    def canonicalize_letter(letter)
+    def canonicalize_letter(_letter)
       raise NotImplementedError
     end
 
@@ -38,36 +42,32 @@ module CubeTrainer
     end
 
     alias parse_buffer parse_part
-
   end
 
   class BernhardLetterScheme < LetterScheme
-    
     def alphabet
-      @alphabet ||= "a".upto("x").to_a
+      @alphabet ||= 'a'.upto('x').to_a
     end
 
     def canonicalize_letter(letter)
-      letter.downcase      
+      letter.downcase
     end
 
     # Letters that we shoot to by default.
-    def shoot_letters(part_type)
-      ['a', 'b', 'd', 'l', 'h', 't', 'p']
+    def shoot_letters(_part_type)
+      %w[a b d l h t p]
     end
 
     PART_TYPE_BUFFERS = {
-      Corner => Corner.for_face_symbols([:U, :L, :B]),
-      Edge => Edge.for_face_symbols([:U, :F]),
-      Wing => Wing.for_face_symbols([:F, :U]),
-      XCenter => XCenter.for_face_symbols([:U, :R, :F]),
-      TCenter => TCenter.for_face_symbols([:U, :F])
-    }
+      Corner => Corner.for_face_symbols(%i[U L B]),
+      Edge => Edge.for_face_symbols(%i[U F]),
+      Wing => Wing.for_face_symbols(%i[F U]),
+      XCenter => XCenter.for_face_symbols(%i[U R F]),
+      TCenter => TCenter.for_face_symbols(%i[U F])
+    }.freeze
 
     def default_buffer(part_type)
       PART_TYPE_BUFFERS[part_type]
     end
-    
   end
-  
 end

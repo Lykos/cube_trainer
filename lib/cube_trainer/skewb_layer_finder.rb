@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/coordinate'
 require 'cube_trainer/core/skewb_state'
 require 'cube_trainer/core/move'
@@ -5,10 +7,9 @@ require 'cube_trainer/layer_subset_finder'
 require 'cube_trainer/skewb_layer_helper'
 
 module CubeTrainer
-
   # Helper class that finds how to solve a given layer on the Skewb.
   class SkewbLayerFinder < LayerSubsetFinder
-    alias :find_layer :find_solutions
+    alias find_layer find_solutions
 
     include SkewbLayerHelper
 
@@ -28,9 +29,8 @@ module CubeTrainer
       4
     end
 
-    def generate_moves(skewb_state)
+    def generate_moves(_skewb_state)
       FixedCornerSkewbMove::ALL.map { |m| Core::Algorithm.move(m) }
     end
   end
-  
 end

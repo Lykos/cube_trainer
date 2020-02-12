@@ -1,16 +1,17 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/coordinate'
 require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/core/move'
 require 'cube_trainer/core/skewb_state'
 
 module CubeTrainer
-
   class SkewbLayerImprover
-
     include CubePrintHelper
 
     def initialize(face, color_scheme)
       raise ArgumentError unless face.is_a?(Face)
+
       @state = color_scheme.solved_skewb_state
       @face = face
       @solved_color = color_scheme.color(@face)
@@ -20,7 +21,7 @@ module CubeTrainer
       mirror_normal = @face.neighbors.first
       (0..3).map { |d| CubeDirection.new(d) }.product([true, false]).map do |d, m|
         alg = algorithm.rotate_by(Rotation.new(@face, d))
-        if m then alg.mirror(mirror_normal) else alg end
+        m ? alg.mirror(mirror_normal) : alg
       end
     end
 
@@ -32,7 +33,7 @@ module CubeTrainer
       end
     end
 
-    FACE_SYMBOLS_ORDERED_BY_PRIORITY = [:D, :U, :F, :R, :L, :B]
+    FACE_SYMBOLS_ORDERED_BY_PRIORITY = %i[D U F R L B].freeze
 
     CORNER_COORDINATES_ORDERED_BY_PRIORITY = Corner::ELEMENTS.sort_by do |c|
       face_index = FACE_SYMBOLS_ORDERED_BY_PRIORITY.index(c.face_symbols.first)
@@ -49,7 +50,7 @@ module CubeTrainer
                           end
       face_index * 4 + within_face_index
     end.map { |c| SkewbCoordinate.for_corner(c) }
-    
+
     # How nice a particular variation of a layer is. E.g. for adjacent solved corners, we want them in the back.
     # Higher scores are better.
     def layer_score
@@ -58,8 +59,5 @@ module CubeTrainer
         2 * sum + (corner_present ? 1 : 0)
       end
     end
-
   end
-  
 end
-  

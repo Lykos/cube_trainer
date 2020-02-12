@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/part_cycle_factory'
 require 'cube_trainer/letter_pair_helper'
 require 'cube_trainer/input_sampler'
@@ -10,12 +12,14 @@ require 'cube_trainer/letter_pair_alg_set'
 require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
-
-  ORIENTATION_FACES = [Face::U, Face::D]
+  ORIENTATION_FACES = [Face::U, Face::D].freeze
 
   def orientation_face(part)
     faces = ORIENTATION_FACES.select { |f| part.face_symbols.include?(f.face_symbol) }
-    raise "Couldn't determine unique orientation face for #{part}: #{faces}" unless faces.length == 1
+    unless faces.length == 1
+      raise "Couldn't determine unique orientation face for #{part}: #{faces}"
+    end
+
     faces.first
   end
 
@@ -28,11 +32,11 @@ module CubeTrainer
 
     def initialize(result_model, options)
       super
-      @hinter = NoHinter.new(input_items.map { |i| i.representation })
+      @hinter = NoHinter.new(input_items.map(&:representation))
     end
 
     attr_reader :hinter
-    
+
     def goal_badness
       1.5
     end
@@ -40,7 +44,7 @@ module CubeTrainer
     def generate_input_items
       cube_state = @color_scheme.solved_cube_state(options.cube_size)
       part_cycle_factory = PartCycleFactory.new(options.cube_size, 0)
-      non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
+      non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       two_twists = correctly_oriented_corners.permutation(2).map do |c1, c2|
         twisted_corner_pair = [c1.rotate_by(1), c2.rotate_by(2)]
@@ -66,7 +70,6 @@ module CubeTrainer
       end
       two_twists + cw_twists + ccw_twists
     end
- 
   end
 
   class FloatingCorner2TwistsAnd3Twists < DisjointUnionLetterPairAlgSet
@@ -96,16 +99,16 @@ module CubeTrainer
     end
 
     attr_reader :hinter
-    
+
     def goal_badness
       2.0
     end
 
     def generate_letter_pairs
-      non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
-      incorrectly_oriented_corners = non_buffer_corners.select { |c| !ORIENTATION_FACES.include?(c.solved_face) }
-      non_buffer_corners.product(incorrectly_oriented_corners).select do |parity, twist|
-        !parity.turned_equals?(twist)
+      non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
+      incorrectly_oriented_corners = non_buffer_corners.reject { |c| ORIENTATION_FACES.include?(c.solved_face) }
+      non_buffer_corners.product(incorrectly_oriented_corners).reject do |parity, twist|
+        parity.turned_equals?(twist)
       end.map do |targets|
         LetterPairSequence.new(targets.map { |t| LetterPair.new([letter_scheme.letter(t)]) })
       end
@@ -121,6 +124,7 @@ module CubeTrainer
 
       def generate_combinations(letter_sequence)
         raise ArgumentError unless letter_sequence.letter_pairs.length == 2
+
         parity_letter_pair = letter_sequence.letter_pairs.first
         parity_letter = only(parity_letter_pair.letters)
         twist_letter_pair = letter_sequence.letter_pairs.last
@@ -154,7 +158,7 @@ module CubeTrainer
     end
 
     attr_reader :hinter
-    
+
     def goal_badness
       2.0
     end
@@ -162,7 +166,7 @@ module CubeTrainer
     def generate_input_items
       cube_state = @color_scheme.solved_cube_state(options.cube_size)
       part_cycle_factory = PartCycleFactory.new(options.cube_size, 0)
-      non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
+      non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       buffer_twist = part_cycle_factory.multi_corner_twist([buffer])
       1.upto(2).collect_concat do |twist_number|
@@ -171,13 +175,15 @@ module CubeTrainer
           twisted_corner_pair = [c1.rotate_by(twist_number), c2.rotate_by(twist_number)]
           letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
           twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c1, c2])
-          twist_sticker_cycles = twist_sticker_cycles.inverse if twist_number == 2
+          if twist_number == 2
+            twist_sticker_cycles = twist_sticker_cycles.inverse
+          end
           twisted_cube_state = twist_sticker_cycles.apply_temporarily_to(cube_state) { cube_state.dup }
           InputItem.new(letter_pair, twisted_cube_state)
         end
       end
     end
- 
+
     class Corner3TwistHinter < HomogenousSequenceHinter
       # Note that this should be the results for corner comms, not for corner 3 twists.
       def initialize(corner_results, corner_hinter, options)
@@ -192,6 +198,7 @@ module CubeTrainer
       def rotate_comm_target(comm, target_index, rotation)
         raise ArgumentError unless comm.length == 2
         raise ArgumentError unless [0, 1].include?(target_index)
+
         comm.map.with_index do |c, i|
           if i == target_index
             c.rotate_by(rotation)
@@ -203,6 +210,7 @@ module CubeTrainer
 
       def generate_directed_solutions(parts)
         raise unless parts.length == 2
+
         first_corner, second_corner = parts
 
         # We define one solution explicitly
@@ -225,6 +233,7 @@ module CubeTrainer
         extended_solutions = Corner::FACES.times.collect_concat do |rot|
           extended_solutions.map do |solution|
             raise unless solution.length == 2
+
             first_comm, second_comm = solution
             [rotate_comm_target(first_comm, 1, rot),
              rotate_comm_target(second_comm, 0, rot)]
@@ -239,7 +248,6 @@ module CubeTrainer
         pieces = letter_pair.letters.map { |l| @letter_scheme.for_letter(PART_TYPE, l) }
         generate_directed_solutions(pieces) + generate_directed_solutions(pieces.reverse)
       end
-    
     end
   end
 
@@ -248,11 +256,11 @@ module CubeTrainer
 
     def initialize(result_model, options)
       super
-      @hinter = NoHinter.new(input_items.map { |i| i.representation })
+      @hinter = NoHinter.new(input_items.map(&:representation))
     end
 
     attr_reader :hinter
-    
+
     def goal_badness
       2.0
     end
@@ -261,111 +269,95 @@ module CubeTrainer
       edge_letters = PART_TYPE::ELEMENTS.map { |c| c.rotations.map { |r| letter_scheme.letter(r) }.min }.uniq.sort
       edge_letters.combination(2).map { |cs| LetterPair.new(cs) }
     end
- 
   end
 
   class CommutatorSet < LetterPairAlgSet
-    
     # If restrict_letters is not nil, only commutators for those letters are used.
     def initialize(results_model, options)
       super
       @hinter = CommutatorHintParser.maybe_parse_hints(self.class::PART_TYPE, options)
     end
-  
-    attr_reader :hinter
-  
-  end
-  
-  class CornerCommutators < CommutatorSet
 
+    attr_reader :hinter
+  end
+
+  class CornerCommutators < CommutatorSet
     PART_TYPE = Corner
 
     def generate_letter_pairs
       letter_pairs_for_piece - rotations
     end
-  
+
     def goal_badness
       1.0
     end
-    
   end
-  
+
   class EdgeCommutators < CommutatorSet
-  
     PART_TYPE = Edge
 
     def generate_letter_pairs
       letter_pairs_for_piece - rotations
     end
-  
+
     def goal_badness
       1.0
     end
-    
   end
-  
+
   class WingCommutators < CommutatorSet
-  
     PART_TYPE = Wing
 
     def generate_letter_pairs
       letter_pairs_for_piece - rotations
     end
-  
+
     def goal_badness
       2.0
     end
-    
   end
-  
+
   class XCenterCommutators < CommutatorSet
-  
     PART_TYPE = XCenter
 
     def generate_letter_pairs
       letter_pairs_for_piece - neighbors
     end
-    
+
     def goal_badness
       4.0
     end
-    
   end
-  
+
   class TCenterCommutators < CommutatorSet
-  
     PART_TYPE = TCenter
 
     def generate_letter_pairs
       letter_pairs_for_piece - neighbors
     end
-    
+
     def goal_badness
       4.0
     end
-    
   end
 
   class CornerParities < LetterPairAlgSet
-    
     PART_TYPE = Corner
 
     def initialize(result_model, options)
       super
-      @hinter = NoHinter.new(input_items.map { |i| i.representation })
+      @hinter = NoHinter.new(input_items.map(&:representation))
     end
 
     attr_reader :hinter
-    
+
     def goal_badness
       2.0
     end
 
     def generate_letter_pairs
-      non_buffer_corners = PART_TYPE::ELEMENTS.select { |c| !c.turned_equals?(buffer) }
+      non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
       non_buffer_corners.map { |c| LetterPair.new([letter_scheme.letter(c)]) }
     end
-    
   end
-
 end

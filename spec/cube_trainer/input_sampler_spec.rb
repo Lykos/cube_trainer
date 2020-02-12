@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/trainer'
 require 'cube_trainer/results_persistence'
 require 'cube_trainer/input_item'
@@ -10,17 +12,20 @@ require 'cube_trainer/letter_pair'
 ITERATIONS = 300
 
 def compute_average(results_model, generator)
-    learner = Learner.new
-    trainer = Trainer.new(learner, results_model, generator)
-    ITERATIONS.times { trainer.one_iteration }
-    raise "Not all inputs covered." unless learner.items_learned == generator.items.length
-    learner.average_time
+  learner = Learner.new
+  trainer = Trainer.new(learner, results_model, generator)
+  ITERATIONS.times { trainer.one_iteration }
+  unless learner.items_learned == generator.items.length
+    raise 'Not all inputs covered.'
+  end
+
+  learner.average_time
 end
 
 describe InputSampler do
   ITEMS = ('a'..'c').to_a.permutation(2).collect { |p| InputItem.new(LetterPair.new(p)) }
-  
-  it "should perform better than random sampling" do
+
+  it 'should perform better than random sampling' do
     results_persistence = ResultsPersistence.create_in_memory
     results_model = ResultsModel.new(:items, results_persistence)
     smart_sampler = InputSampler.new(ITEMS, results_model, 1.0)
@@ -34,4 +39,3 @@ describe InputSampler do
     expect(smart_average).to be < random_average
   end
 end
-

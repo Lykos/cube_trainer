@@ -1,6 +1,7 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
 
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'cube_trainer/stats_computer'
 require 'cube_trainer/cube'
@@ -17,7 +18,7 @@ computer.averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }
 
 # Stats on bad results
 puts
-puts "# Worst Cases"
+puts '# Worst Cases'
 computer.bad_results.each do |cutoff, number|
   puts "#{number} are sup #{cutoff.round(3)} s"
 end
@@ -25,13 +26,13 @@ end
 # Overall progress
 avg = computer.total_average
 puts
-puts "# Progress"
+puts '# Progress'
 puts "Average time per alg: #{avg.round(2)} s"
 puts "Average time per alg 24 hours ago: #{computer.old_total_average.round(2)} s"
 
 # Part of the solve
 puts
-puts "# Stats"
+puts '# Stats'
 lolstats = computer.expected_time_per_type_stats
 lolstats.each do |stats|
   puts "#{stats[:name]}: "

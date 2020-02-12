@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
-# coding: utf-8
+# frozen_string_literal: true
 
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/core/cube'
@@ -26,7 +26,7 @@ end
 
 if options.verbose
   puts
-  puts "#{solutions.length} solutions:" 
+  puts "#{solutions.length} solutions:"
   puts
 
   state = options.color_scheme.solved_skewb_state
@@ -52,31 +52,32 @@ if options.output
   state = options.color_scheme.solved_skewb_state
   top_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == :U }
   bottom_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == :D }
-  non_bottom_faces = Face::ELEMENTS.select { |c| c.face_symbol != :D }
-  layer_corners_letter_scheme = if options.layer_corners_as_letters then options.letter_scheme else nil end
+  non_bottom_faces = Face::ELEMENTS.reject { |c| c.face_symbol == :D }
+  layer_corners_letter_scheme = options.layer_corners_as_letters ? options.letter_scheme : nil
   layer_describer = SkewbTransformationDescriber.new([], bottom_corners, :omit_staying, options.color_scheme, layer_corners_letter_scheme)
   center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [], :omit_staying, options.color_scheme)
-  top_corners_letter_scheme = if options.top_corners_as_letters then options.letter_scheme else nil end
+  top_corners_letter_scheme = options.top_corners_as_letters ? options.letter_scheme : nil
   top_corner_describer = SkewbTransformationDescriber.new([], top_corners, :show_staying, options.color_scheme, top_corners_letter_scheme)
   layer_classifier = SkewbLayerClassifier.new(Face::D, options.color_scheme)
 
-  CSV.open(options.output, 'wb', {:col_sep => "\t"}) do |csv|
+  CSV.open(options.output, 'wb', col_sep: "\t") do |csv|
     csv << ['case description', 'main alg', 'center_transformations', 'top_corner_transformations', 'alternative algs', 'name', 'tags']
     solutions.each do |algs|
-      main_alg, alternative_algs = algs[0], algs[1..-1]
+      main_alg = algs[0]
+      alternative_algs = algs[1..-1]
       classification = layer_classifier.classify_layer(algs[0])
       source_descriptions = layer_describer.source_descriptions(main_alg)
-      name_letters = source_descriptions.map { |d| d.source }.map { |p| options.letter_scheme.letter(p).capitalize }
-      letter_pairs = name_letters.each_slice(2).map { |ls| ls.join }
+      name_letters = source_descriptions.map(&:source).map { |p| options.letter_scheme.letter(p).capitalize }
+      letter_pairs = name_letters.each_slice(2).map(&:join)
       name = letter_pairs.map do |letter_pair|
-        key = if letter_pair.length == 2 then letter_pair else letter_pair * 2 end
+        key = letter_pair.length == 2 ? letter_pair : letter_pair * 2
         name = names[key] || letter_pair
-      end.join(" & ")
+      end.join(' & ')
       csv << [
-        source_descriptions.join(", "),
+        source_descriptions.join(', '),
         main_alg.to_s,
-        center_describer.transformation_descriptions(main_alg).join(", "),
-        top_corner_describer.source_descriptions(main_alg).join(", "),
+        center_describer.transformation_descriptions(main_alg).join(', '),
+        top_corner_describer.source_descriptions(main_alg).join(', '),
         alternative_algs.join(', '),
         name,
         "#{main_alg.length}_mover #{classification}"

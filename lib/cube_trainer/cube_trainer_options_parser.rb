@@ -1,21 +1,21 @@
+# frozen_string_literal: true
+
 require 'optparse'
 require 'cube_trainer/anki/cube_visualizer'
 require 'cube_trainer/anki/cube_mask'
 
 module CubeTrainer
-
   class CubeTrainerOptionsParser < OptionParser
-
     def initialize(options, &block)
       @options = options
       super do |opts|
         opts.banner = "Usage: '#{$PROGRAM_NAME} [options]'"
-        
+
         opts.separator ''
         opts.separator 'Specific options:'
 
         yield opts
-        
+
         opts.on('-v', '--[no-]verbose', 'Give more verbose information.') do |v|
           options.verbose = v
         end
@@ -39,7 +39,7 @@ module CubeTrainer
       end
     end
 
-    def on_output(file_description)
+    def on_output(_file_description)
       on('-o', '--output [FILE]', String, 'Output path for the #{file_description}.') do |o|
         @options.output = o
       end
@@ -56,7 +56,5 @@ module CubeTrainer
         @options.solved_mask_name = k
       end
     end
-    
   end
-  
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/alg_hinter'
 require 'cube_trainer/alg_name'
 require 'cube_trainer/core/parser'
@@ -7,7 +9,6 @@ require 'cube_trainer/restricted_hinter'
 require 'cube_trainer/sequence_hinter'
 
 module CubeTrainer
-
   class AlgHintParser < HintParser
     include StringHelper
 
@@ -39,7 +40,7 @@ module CubeTrainer
       AlgHinter
     end
 
-    SOLVED_HINTER = AlgHinter.new({SimpleAlgName.new('solved') => Core::Algorithm.empty})
+    SOLVED_HINTER = AlgHinter.new(SimpleAlgName.new('solved') => Core::Algorithm.empty)
     AUF_HINTER = AlgHinter.new(([[SimpleAlgName.new('auf skip'), Core::Algorithm.empty]] +
                                 CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
                                   alg = Core::Algorithm.move(FatMove.new(Face::U, d))
@@ -61,23 +62,19 @@ module CubeTrainer
                               ])
     end
 
-    # TODO Move this to alg sets once those are refactored to not include inputs and stuff
+    # TODO: Move this to alg sets once those are refactored to not include inputs and stuff
     # Also make it less ugly and special casy
     def self.maybe_parse_special_hints(name, verbose)
       if name.include?(ALG_SET_SEPARATOR)
         sub_hinters = name.split(ALG_SET_SEPARATOR).map { |n| parse_hints(n, verbose) }
         AlgSequenceHinter.new(sub_hinters)
       elsif name == 'cp'
-        self.construct_cp_hinter(verbose)
-      else
-        nil
+        construct_cp_hinter(verbose)
       end
     end
 
     def self.parse_hints(name, verbose)
       maybe_parse_special_hints(name, verbose) || AlgHintParser.new(name, verbose).parse_hints
     end
-
   end
-  
 end

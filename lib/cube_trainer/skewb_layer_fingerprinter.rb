@@ -1,12 +1,13 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/cube'
 require 'cube_trainer/color_scheme'
 
 module CubeTrainer
-
   class SkewbLayerFingerprinter
-
     def initialize(face)
       raise ArgumentError unless face.is_a?(Core::Face)
+
       @face = face
     end
 
@@ -16,7 +17,5 @@ module CubeTrainer
     def fingerprint(skewb_state)
       Native.skewb_layer_fingerprint(skewb_state.native, @face.face_symbol)
     end
-
   end
-
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/alg_name'
 require 'cube_trainer/core/cube_state'
 require 'cube_trainer/input_sampler'
@@ -6,26 +8,27 @@ require 'cube_trainer/utils/array_helper'
 require 'ostruct'
 
 module CubeTrainer
-
   # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
   # e.g. solving a corner twist and a parity by a comm and a parity.
   class HeterogenousSequenceHinter
-
     include ArrayHelper
 
     def initialize(cube_size, resultss, hinters)
       CubeState.check_cube_size(cube_size)
       raise ArgumentError if resultss.length != hinters.length
       raise ArgumentError if resultss.empty?
+
       hinters.each do |h|
-        raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints)
+        unless h.respond_to?(:hints)
+          raise TypeError, "Got invalid hinter type #{h.class}."
+        end
       end
       @cube_size = cube_size
       @valuess = resultss.map do |results|
         values = {}
-        results.group_by { |r| r.input_representation }.each do |l, rs|
+        results.group_by(&:input_representation).each do |l, rs|
           avg = Native::CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
-          rs.sort_by { |r| r.timestamp }.each { |r| avg.push(r.time_s) }
+          rs.sort_by(&:timestamp).each { |r| avg.push(r.time_s) }
           values[l] = ActualScore.new(avg.average)
         end
         values
@@ -45,7 +48,7 @@ module CubeTrainer
 
       include Comparable
 
-      def +(score)
+      def +(_score)
         self
       end
 
@@ -53,11 +56,11 @@ module CubeTrainer
         0
       end
 
-      def actual_compare(value)
+      def actual_compare(_value)
         1
       end
 
-      def plus_actual(value)
+      def plus_actual(_value)
         self
       end
 
@@ -133,7 +136,7 @@ module CubeTrainer
         cancellations_string = if cancellations > ActualScore.new(0)
                                  " (cancels #{cancellations})"
                                else
-                                 ""
+                                 ''
                                end
         "#{description}: #{value}#{cancellations_string}"
       end
@@ -141,8 +144,9 @@ module CubeTrainer
 
     def base_hint(index, input)
       raise IndexError unless index >= 0 && index < length
+
       hints = @hinters[index].hints(input)
-      if hints.empty? then nil else only(hints) end
+      hints.empty? ? nil : only(hints)
     end
 
     def hints(input)
@@ -161,7 +165,7 @@ module CubeTrainer
                             end.reduce(:+)
                             DescriptionAndValue.new(description, value, cancellations)
                           end
-                          base_hints_descriptions = combinations.zip(base_hints).map { |ls, hs| ls.zip(hs).select { |l, h| h }.map { |l, h| "#{l}: #{h}" } }.flatten.uniq
+                          base_hints_descriptions = combinations.zip(base_hints).map { |ls, hs| ls.zip(hs).select { |_l, h| h }.map { |l, h| "#{l}: #{h}" } }.flatten.uniq
                           [
                             descriptions_and_values.sort.join("\n"),
                             base_hints_descriptions.sort.join("\n")
@@ -169,29 +173,30 @@ module CubeTrainer
                         end
     end
 
-    def generate_combinations(input)
+    def generate_combinations(_input)
       raise NotImplementedError
     end
-
   end
 
   # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
   # where the primitive cases are all of the same type, e.g. solving 3 twists by 2 comms.
   class HomogenousSequenceHinter < HeterogenousSequenceHinter
-    def initialize(cube_size, results, hinter, multiplicity=2)
+    def initialize(cube_size, results, hinter, multiplicity = 2)
       super(cube_size, [results] * multiplicity, [hinter] * multiplicity)
     end
   end
-  
-  class AlgSequenceHinter
 
+  class AlgSequenceHinter
     include ArrayHelper
 
     def initialize(hinters)
       hinters.each do |h|
-        raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints) && h.respond_to?(:entries)
+        unless h.respond_to?(:hints) && h.respond_to?(:entries)
+          raise TypeError, "Got invalid hinter type #{h.class}."
+        end
       end
       raise ArgumentError if hinters.empty?
+
       @hinters = hinters
     end
 
@@ -202,7 +207,7 @@ module CubeTrainer
     end
 
     def entries
-      entries_components = @hinters.map { |h| h.entries }
+      entries_components = @hinters.map(&:entries)
       entries_components[0].product(*entries_components[1..-1]).map do |entry_combination|
         name = entry_combination.map { |e| e[0] }.reduce(:+)
         alg = entry_combination.map { |e| e[1] }.reduce(:+)
@@ -213,8 +218,8 @@ module CubeTrainer
     def input_parts(input)
       parts = input.sub_names
       raise ArgumentError unless @hinters.length == parts.length
+
       parts
     end
   end
-
 end

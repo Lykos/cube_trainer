@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
-# coding: utf-8
+# frozen_string_literal: true
 
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'cube_trainer/move'
 require 'cube_trainer/algorithm'

@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/cube_trainer_error'
 require 'cube_trainer/utils/sampling_helper'
 
 module CubeTrainer
-
   class SamplingError < CubeTrainerError
   end
 
@@ -17,13 +18,14 @@ module CubeTrainer
   end
 
   class CombinedSampler < Sampler
-
     include Utils::SamplingHelper
     SubSampler = Struct.new(:subsampler, :weight)
-    
+
     def initialize(subsamplers)
       subsamplers.each do |s|
-        raise TypeError, "#{s.inspect} is not a subsampler." unless s.is_a?(SubSampler)
+        unless s.is_a?(SubSampler)
+          raise TypeError, "#{s.inspect} is not a subsampler."
+        end
         raise TypeError unless s.weight.is_a?(Numeric)
         raise ArgumentError unless s.weight > 0.0
         raise TypeError unless s.subsampler.is_a?(Sampler)
@@ -34,7 +36,8 @@ module CubeTrainer
     def random_item
       subsamplers = ready_subsamplers
       raise SamplingError if subsamplers.empty?
-      sample_by(subsamplers) { |s| s.weight }.subsampler.random_item
+
+      sample_by(subsamplers, &:weight).subsampler.random_item
     end
 
     def ready_subsamplers
@@ -44,13 +47,12 @@ module CubeTrainer
     def ready?
       !ready_subsamplers.empty?
     end
-
   end
-  
-  class PrioritizedSampler < Sampler
 
+  class PrioritizedSampler < Sampler
     def initialize(subsamplers)
       raise TypeError unless subsamplers.all? { |s| s.is_a?(Sampler) }
+
       @subsamplers = subsamplers
     end
 
@@ -62,17 +64,16 @@ module CubeTrainer
     end
 
     def ready?
-      @subsamplers.any? { |s| s.ready? }
+      @subsamplers.any?(&:ready?)
     end
-    
   end
-  
-  class AdaptiveSampler < Sampler
 
+  class AdaptiveSampler < Sampler
     include Utils::SamplingHelper
 
     def initialize(items, get_weight_proc)
       raise TypeError unless get_weight_proc.respond_to?(:call)
+
       @items = items
       @get_weight_proc = get_weight_proc
     end
@@ -80,17 +81,16 @@ module CubeTrainer
     def random_item
       ready_items = items
       raise SamplingError if ready_items.empty?
+
       sample_by(ready_items, &@get_weight_proc)
     end
 
     def items
       @items.select { |e| @get_weight_proc.call(e) > 0 }
     end
-    
+
     def ready?
       !items.empty?
     end
-
   end
-
 end

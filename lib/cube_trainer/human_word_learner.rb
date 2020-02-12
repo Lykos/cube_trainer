@@ -1,13 +1,14 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/ui_helpers'
 require 'cube_trainer/console_helpers'
 require 'cube_trainer/result'
 
 module CubeTrainer
-
   class HumanWordLearner
     include ConsoleHelpers
     include UiHelpers
-    
+
     def initialize(hinter, results_model, options)
       @hinter = hinter
       @results_model = results_model
@@ -26,8 +27,8 @@ module CubeTrainer
       end
     end
 
-    COMMANDS = ['hint', 'replace', 'delete', 'quit']
-    
+    COMMANDS = %w[hint replace delete quit].freeze
+
     def execute(input)
       puts_and_say(input)
       time_s = nil
@@ -57,12 +58,13 @@ module CubeTrainer
         when 'delete'
           puts 'Deleting results for the last 30 seconds and exiting.'
           @results_model.delete_after_time(Time.now - 30)
-          exit          
+          exit
         when 'replace'
           if last_word.nil? || COMMANDS.include?(last_word)
             puts_and_say('Can only replace with a valid word that is not a special command.')
           elsif input.matches_word?(last_word)
             raise if last_failed_attempts.nil? || last_time_s.nil?
+
             failed_attempts = last_failed_attempts
             word = last_word
             time_s = last_time_s
@@ -79,5 +81,4 @@ module CubeTrainer
       PartialResult.new(time_s, failed_attempts, word)
     end
   end
-
 end

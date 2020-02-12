@@ -1,15 +1,16 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/console_helpers'
 require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/result'
 require 'cube_trainer/ui_helpers'
 
 module CubeTrainer
-
   class HumanTimeLearner
     include ConsoleHelpers
     include UiHelpers
     include CubePrintHelper
-    
+
     def initialize(hinter, results_model, options)
       @hinter = hinter
       @results_model = results_model
@@ -18,7 +19,7 @@ module CubeTrainer
     end
 
     attr_reader :muted
-    
+
     def execute(input)
       if @picture
         puts cube_string(input.cube_state, :color)
@@ -36,5 +37,4 @@ module CubeTrainer
       PartialResult.new(data.time_s, 0, nil)
     end
   end
-
 end

@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/utils/math_helper'
 
 describe MathHelper do
-
   include MathHelper
 
   it 'should floor to numbers starting with 1, 2 or 5' do

@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
-# coding: utf-8
+# frozen_string_literal: true
 
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'cube_trainer/cube_print_helper'
 require 'cube_trainer/cube_state'
@@ -17,4 +17,3 @@ scramble = parse_algorithm(scramble_string)
 state = ColorScheme::BERNHARD.solved_cube_state(3)
 state.apply_algorithm(scramble)
 puts ll_string(state, :color)
-

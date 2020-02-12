@@ -1,11 +1,14 @@
-module CubeTrainer
+# frozen_string_literal: true
 
+module CubeTrainer
   # Helper class that figures out what rows and columns of a commutator table have in common and what the interpretation of the table is.
   class CommonalityFinder
-
     class TableInterpretation
       def initialize(row_axis_interpretation, column_axis_interpretation, row_interpretations, column_interpretations)
-        raise ArgumentError unless [0, 1] == [row_axis_interpretation, column_axis_interpretation].sort
+        unless [row_axis_interpretation, column_axis_interpretation].sort == [0, 1]
+          raise ArgumentError
+        end
+
         @flip_letters = [row_axis_interpretation, column_axis_interpretation] == [1, 0]
         @row_interpretations = row_interpretations
         @column_interpretations = column_interpretations
@@ -18,8 +21,6 @@ module CubeTrainer
           letters = [row_interpretation, column_interpretation]
           letters.reverse! if @flip_letters
           LetterPair.new(letters)
-        else
-          nil
         end
       end
     end
@@ -55,7 +56,7 @@ module CubeTrainer
       # Only allow row interpretations that appear exactly once.
       counts = new_counter_hash
       row_interpretations.each { |i| counts[i] += 1 }
-      row_interpretations.map { |i| if counts[i] == 1 then i else nil end }
+      row_interpretations.map { |i| counts[i] == 1 ? i : nil }
     end
 
     def self.new_counter_hash
@@ -65,13 +66,12 @@ module CubeTrainer
     end
 
     def self.find_row_interpretation(row, axis_interpretation)
-      letters = row.map { |e| e.maybe_letter_pair }.select { |l| l }.map { |e| e.letters[axis_interpretation] }
+      letters = row.map(&:maybe_letter_pair).select { |l| l }.map { |e| e.letters[axis_interpretation] }
       counts = new_counter_hash
       letters.each { |l| counts[l] += 1 }
       max_count = counts.values.max
-      keys = counts.select { |k, v| v == max_count }.keys
-      if keys.length == 1 then keys.first else nil end
+      keys = counts.select { |_k, v| v == max_count }.keys
+      keys.length == 1 ? keys.first : nil
     end
   end
-
 end

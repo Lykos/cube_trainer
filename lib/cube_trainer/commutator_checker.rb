@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/core/cube_state'
 require 'cube_trainer/core/commutator'
@@ -6,16 +8,19 @@ require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/core/part_cycle_factory'
 
 module CubeTrainer
-  
   class CommutatorChecker
-
     include CubePrintHelper
-    
+
     def initialize(part_type:, buffer:, piece_name:, color_scheme:, letter_scheme:, cube_size:, verbose: false, find_fixes: false, incarnation_index: 0)
-      raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(Part)
+      unless part_type.is_a?(Class) && part_type.ancestors.include?(Part)
+        raise TypeError
+      end
       raise TypeError unless buffer.class == part_type
-      raise ArgumentError, "Unsuitable cube size #{cube_size}." unless cube_size.is_a?(Integer) && cube_size > 0
+      unless cube_size.is_a?(Integer) && cube_size > 0
+        raise ArgumentError, "Unsuitable cube size #{cube_size}."
+      end
       raise ColorScheme unless color_scheme.is_a?(ColorScheme)
+
       @part_type = part_type
       @buffer = buffer
       @piece_name = piece_name
@@ -63,9 +68,10 @@ module CubeTrainer
       if algorithm.moves.length == 1
         alg_modifications(algorithm)
       elsif algorithm.moves.length == 3
-        a, b = algorithm.moves[0], algorithm.moves[1]
+        a = algorithm.moves[0]
+        b = algorithm.moves[1]
         move_modifications(algorithm.moves[1]).flat_map do |m|
-          if a != b.inverse 
+          if a != b.inverse
             lol = [Core::Algorithm.new([a, m, a.inverse]), Core::Algorithm.new([a.inverse, m, a])]
             if a != b
               lol += [Core::Algorithm.new([b, m, b.inverse]), Core::Algorithm.new([b.inverse, m, b])]
@@ -81,7 +87,7 @@ module CubeTrainer
     end
 
     def potential_fixes(commutator)
-      if commutator.is_a?(Core::SetupCommutator) then
+      if commutator.is_a?(Core::SetupCommutator)
         alg_modifications(commutator.setup).product(potential_fixes(commutator.inner_commutator)).map { |setup, comm| Core::SetupCommutator.new(setup, comm) }
       elsif commutator.is_a?(Core::PureCommutator)
         comm_part_modifications(commutator.first_part).product(comm_part_modifications(commutator.second_part)).flat_map { |a, b| [Core::PureCommutator.new(a, b), Core::PureCommutator.new(b, a)].uniq }
@@ -95,7 +101,9 @@ module CubeTrainer
     def find_fix(commutator)
       potential_fixes(commutator).each do |fix|
         fix_alg = fix.algorithm
-        return fix if fix_alg.apply_temporarily_to(@alg_cube_state) { @cycle_cube_state == @alg_cube_state }
+        if fix_alg.apply_temporarily_to(@alg_cube_state) { @cycle_cube_state == @alg_cube_state }
+          return fix
+        end
       end
       nil
     end
@@ -114,7 +122,9 @@ module CubeTrainer
     private :count_unfixable_alg
 
     def handle_incorrect(row_description, letter_pair, commutator, alg)
-      puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} doesn't do what it's expected to do." if @verbose
+      if @verbose
+        puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} doesn't do what it's expected to do."
+      end
       @broken_algs += 1
 
       # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
@@ -126,9 +136,9 @@ module CubeTrainer
           count_unfixable_alg
           if @verbose
             puts "Couldn't find a fix for this alg."
-            puts "actual"
+            puts 'actual'
             puts alg.apply_temporarily_to(@alg_cube_state) { cube_string(@alg_cube_state, :color) }
-            puts "expected"
+            puts 'expected'
             puts cube_string(@cycle_cube_state, :color)
           end
         end
@@ -137,7 +147,7 @@ module CubeTrainer
     end
 
     class CheckAlgResult
-      def initialize(result, fix=nil)
+      def initialize(result, fix = nil)
         @result = result
         @fix = fix
       end
@@ -166,7 +176,5 @@ module CubeTrainer
         end
       end
     end
-    
   end
-  
 end

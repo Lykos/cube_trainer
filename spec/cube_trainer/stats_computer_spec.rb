@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/stats_computer'
 require 'cube_trainer/result'
 require 'cube_trainer/commutator_options'
@@ -5,27 +7,26 @@ require 'cube_trainer/input_item'
 require 'ostruct'
 
 describe StatsComputer do
-
   let(:now) { Time.at(0) }
   let(:t_10_minutes_ago) { now - 600 }
   let(:t_2_hours_ago) { now - 2 * 3600 }
   let(:t_2_days_ago) { now - 2 * 24 * 3600 }
   let(:letter_scheme) { BernhardLetterScheme.new }
-  let(:options) {
+  let(:options) do
     options = OpenStruct.new
     options.cube_size = 3
     options.letter_scheme = letter_scheme
     options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES['corners']
     options.new_item_boundary = 5
     options
-  }
-  let(:letter_pair_a) { LetterPair.new(['a', 'a']) }
-  let(:letter_pair_b) { LetterPair.new(['a', 'b']) }
-  let(:letter_pair_c) { LetterPair.new(['a', 'c']) }
+  end
+  let(:letter_pair_a) { LetterPair.new(%w[a a]) }
+  let(:letter_pair_b) { LetterPair.new(%w[a b]) }
+  let(:letter_pair_c) { LetterPair.new(%w[a c]) }
   let(:fill_letter_pairs) { ('a'..'z').map { |l| LetterPair.new(['b', l]) } }
   let(:mode) { BufferHelper.mode_for_options(options) }
-  let(:results) {
-    other_mode_results = CommutatorOptions::COMMUTATOR_TYPES.select { |k, v| k != 'corners' }.map do |k, v|
+  let(:results) do
+    other_mode_results = CommutatorOptions::COMMUTATOR_TYPES.reject { |k, _v| k == 'corners' }.map do |_k, v|
       patched_options = options.dup
       patched_options.commutator_info = v
       mode = BufferHelper.mode_for_options(patched_options)
@@ -45,14 +46,14 @@ describe StatsComputer do
       Result.new(mode, t_2_days_ago, 12.0, letter_pair_a, 0, nil),
       Result.new(mode, t_2_days_ago, 13.0, letter_pair_a, 0, nil),
       Result.new(mode, t_2_days_ago, 14.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_2_hours_ago, 10.0, letter_pair_b, 0, nil),
+      Result.new(mode, t_2_hours_ago, 10.0, letter_pair_b, 0, nil)
     ] + fill_results + other_mode_results
-  }
-  let(:results_persistence) {
+  end
+  let(:results_persistence) do
     persistence = ResultsPersistence.create_in_memory
     results.each { |r| persistence.record_result(r) }
     persistence
-  }
+  end
   let(:computer) { StatsComputer.new(now, options, results_persistence) }
 
   it 'should compute detailed averages for all our results' do
@@ -70,7 +71,7 @@ describe StatsComputer do
 
   it 'should compute how long each part of the solve takes' do
     stats = computer.expected_time_per_type_stats
-    expect(stats.map { |s| s[:name] }.sort).to be == ['corner_3twists', 'corners', 'edges', 'floating_2flips', 'floating_2twists']
+    expect(stats.map { |s| s[:name] }.sort).to be == %w[corner_3twists corners edges floating_2flips floating_2twists]
     expect(stats.map { |s| s[:weight] }.reduce(:+)).to be == 1.0
     stats.each do |s|
       expect(s[:expected_algs]).to be_a(Float)
@@ -94,5 +95,4 @@ describe StatsComputer do
     expect(computer.num_results).to be == 13 + 26
     expect(computer.num_recent_results).to be == 8
   end
-  
 end

@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
-# coding: utf-8
+# frozen_string_literal: true
 
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/skewb_scrambler'
@@ -26,7 +26,7 @@ def inserting_second_piece_is_not_optimal(skewb_state, layer_solutions)
   elsif max_score_after_one_move(skewb_state) < 2
     false
   else
-    layer_solutions.extract_algorithms.all? do |c, as|
+    layer_solutions.extract_algorithms.all? do |_c, as|
       as.all? do |a|
         SkewbLayerFinder.score_after_move(skewb_state, a.moves[0]) < 2
       end

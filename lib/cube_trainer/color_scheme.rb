@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/cube_constants'
 require 'cube_trainer/core/cube_state'
@@ -5,21 +7,22 @@ require 'cube_trainer/core/skewb_state'
 require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
-
   class ColorScheme
-
     include Core::CubeConstants
     include Utils::ArrayHelper
 
-    RESERVED_COLORS = [:transparent, :unknown, :oriented]
+    RESERVED_COLORS = %i[transparent unknown oriented].freeze
 
     class CornerMatcher
       def initialize(face_symbol_matchers)
-        raise ArgumentError, "Exactly one nil allowed in face symbol matchers." unless face_symbol_matchers.count { |s| s.nil? } == 1
+        unless face_symbol_matchers.count(&:nil?) == 1
+          raise ArgumentError, 'Exactly one nil allowed in face symbol matchers.'
+        end
+
         @face_symbol_matchers = face_symbol_matchers
       end
 
-      def matches?(corner) 
+      def matches?(corner)
         corner.face_symbols.zip(@face_symbol_matchers).all? do |face_symbol, face_symbol_matcher|
           face_symbol_matcher.nil? || face_symbol == face_symbol_matcher
         end
@@ -31,14 +34,25 @@ module CubeTrainer
     end
 
     def initialize(face_symbols_to_colors)
-      raise ArgumentError unless face_symbols_to_colors.keys.sort == FACE_SYMBOLS.sort
+      unless face_symbols_to_colors.keys.sort == FACE_SYMBOLS.sort
+        raise ArgumentError
+      end
+
       face_symbols_to_colors.values.each do |c|
         raise TypeError unless c.is_a?(Symbol)
-        raise ArgumentError, "Color #{c} cannot be part of the color scheme because it is a reserved color." if RESERVED_COLORS.include?(c)
+        if RESERVED_COLORS.include?(c)
+          raise ArgumentError, "Color #{c} cannot be part of the color scheme because it is a reserved color."
+        end
       end
-      raise ArgumentError unless face_symbols_to_colors.values.all? { |c| c.is_a?(Symbol) }
+      unless face_symbols_to_colors.values.all? { |c| c.is_a?(Symbol) }
+        raise ArgumentError
+      end
+
       num_uniq_colors = face_symbols_to_colors.values.uniq.length
-      raise ArgumentError, "Got #{num_uniq_colors} unique colors #{face_symbols_to_colors.values.uniq}, but needed #{FACE_SYMBOLS.length}." unless num_uniq_colors == FACE_SYMBOLS.length
+      unless num_uniq_colors == FACE_SYMBOLS.length
+        raise ArgumentError, "Got #{num_uniq_colors} unique colors #{face_symbols_to_colors.values.uniq}, but needed #{FACE_SYMBOLS.length}."
+      end
+
       @face_symbols_to_colors = face_symbols_to_colors
       @colors_to_face_symbols = face_symbols_to_colors.invert
     end
@@ -53,6 +67,7 @@ module CubeTrainer
 
     def part_for_colors(part_type, colors)
       raise ArgumentError unless part_type.is_a?(Class)
+
       part_type.for_face_symbols(colors.map { |c| face_symbol(c) })
     end
 
@@ -69,13 +84,13 @@ module CubeTrainer
       raise ArgumentError if opposite_color(top_color) == front_color
       raise ArgumentError unless colors.include?(top_color)
       raise ArgumentError unless colors.include?(front_color)
-      
+
       # Note: The reason that this is so complicated is that we want it to still work if the
       # chirality corner gets exchanged.
 
       # Do the obvious and handle opposites of the top and front color so we have no
       # assumptions that the chirality corner contains U and F.
-      turned_face_symbols_to_colors = {:U => top_color, :F => front_color}
+      turned_face_symbols_to_colors = { U: top_color, F: front_color }
       opposites = turned_face_symbols_to_colors.map do |face_symbol, color|
         [opposite_face_symbol(face_symbol), opposite_color(color)]
       end.to_h
@@ -95,15 +110,15 @@ module CubeTrainer
       turned_face_symbols_to_colors[opposite_face_symbol(missing_face_symbol)] = color(opposite_face_symbol(missing_face_symbol_source))
       ColorScheme.new(turned_face_symbols_to_colors)
     end
-    
-    WCA = new({
-                :U => :white,
-                :F => :green,
-                :R => :red,
-                :L => :orange,
-                :B => :blue,
-                :D => :yellow,
-              })
+
+    WCA = new(
+      U: :white,
+      F: :green,
+      R: :red,
+      L: :orange,
+      B: :blue,
+      D: :yellow
+    )
     BERNHARD = WCA.turned(:yellow, :red)
 
     def solved_cube_state(n)
@@ -117,11 +132,9 @@ module CubeTrainer
     def ordered_colors
       FACE_SYMBOLS.map { |s| color(s) }
     end
-    
+
     def solved_skewb_state
       SkewbState.for_solved_colors(@face_symbols_to_colors.dup)
     end
-
   end
-  
 end

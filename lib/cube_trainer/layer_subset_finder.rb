@@ -1,19 +1,20 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/bruteforce_finder'
 require 'cube_trainer/core/cube'
 
 module CubeTrainer
-
   class LayerSubsetFinder < BruteForceFinder
-    def initialize(color_restrictions=nil, find_all_solutions=true)
+    def initialize(color_restrictions = nil, find_all_solutions = true)
       super(find_all_solutions)
       @color_restrictions = color_restrictions
     end
 
-    def score_on_face(state, face)
+    def score_on_face(_state, _face)
       raise NotImplementedError
     end
- 
-    def face_color(state, face)
+
+    def face_color(_state, _face)
       raise NotImplementedError
     end
 
@@ -27,5 +28,4 @@ module CubeTrainer
       end.max
     end
   end
-
 end

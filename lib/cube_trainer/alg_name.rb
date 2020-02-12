@@ -1,11 +1,11 @@
+# frozen_string_literal: true
+
 module CubeTrainer
-
   class AlgName
-
     SEPARATOR = ' + '
     OPENING_BRACKET = '('
     CLOSING_BRACKET = '('
-    RESERVED_STUFF = [SEPARATOR, OPENING_BRACKET, CLOSING_BRACKET]
+    RESERVED_STUFF = [SEPARATOR, OPENING_BRACKET, CLOSING_BRACKET].freeze
 
     def self.bracketed(stuff)
       OPENING_BRACKET + stuff.to_s + CLOSING_BRACKET
@@ -14,7 +14,7 @@ module CubeTrainer
     def to_s
       raise NotImplementedError
     end
-    
+
     def bracketed_if_needed_to_s
       raise NotImplementedError
     end
@@ -28,7 +28,7 @@ module CubeTrainer
         SimpleAlgName.new(input)
       end
     end
-  
+
     def to_raw_data
       to_s
     end
@@ -36,9 +36,9 @@ module CubeTrainer
     def eql?(other)
       self.class.equal?(other.class) && to_s == other.to_s
     end
-  
+
     alias == eql?
-  
+
     def hash
       @hash ||= [self.class, to_s].hash
     end
@@ -49,22 +49,20 @@ module CubeTrainer
   end
 
   class SimpleAlgName < AlgName
-    
     def initialize(name)
       raise ArgumentError if name.include?(SEPARATOR)
+
       @to_s = name
     end
 
     attr_reader :to_s
-    
+
     def bracketed_if_needed_to_s
       to_s
     end
-
   end
 
   class CombinedAlgName < AlgName
-    
     def initialize(sub_names)
       @sub_names = sub_names
     end
@@ -76,13 +74,11 @@ module CubeTrainer
     end
 
     def to_raw_data
-      @sub_names.map { |n| n.bracketed_if_needed_to_s }.join(SEPARATOR)
+      @sub_names.map(&:bracketed_if_needed_to_s).join(SEPARATOR)
     end
 
     def bracketed_if_needed_to_s
       AlgName.bracketed(to_s)
     end
-    
   end
-
 end

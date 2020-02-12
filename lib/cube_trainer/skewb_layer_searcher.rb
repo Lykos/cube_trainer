@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/core/move'
 require 'cube_trainer/core/parser'
@@ -8,19 +10,15 @@ require 'cube_trainer/skewb_layer_fingerprinter'
 require 'set'
 
 module CubeTrainer
-
   # Searches all possible Skewb layers.
   class SkewbLayerSearcher
-
     include Core::CubePrintHelper
 
     class AlgorithmTransformation < Struct.new(:rotation, :mirror)
-      
       def transformed(algorithm)
         algorithm = algorithm.mirror(MIRROR_NORMAL_FACE) if mirror
         algorithm.rotate_by(rotation)
       end
-
     end
 
     EXAMPLE_LAYER_FACE_SYMBOL = :D
@@ -31,11 +29,13 @@ module CubeTrainer
 
     # Represents a possible Skewb layer with a solution.
     class SkewbLayerSolution
-
       def initialize(move, sub_solution)
         raise ArgumentError unless move.nil? || move.is_a?(Move)
-        raise ArgumentError unless sub_solution.nil? || sub_solution.is_a?(SkewbLayerSolution)
+        unless sub_solution.nil? || sub_solution.is_a?(SkewbLayerSolution)
+          raise ArgumentError
+        end
         raise ArgumentError unless move.nil? == sub_solution.nil?
+
         @move = move
         @sub_solution = sub_solution
         @alternative_solutions = Set[]
@@ -46,7 +46,7 @@ module CubeTrainer
       def eql?(other)
         self.class.equal?(other.class) && @move == other.move && @sub_solution == other.sub_solution
       end
-      
+
       def hash
         @hash ||= [self.class, @move, @sub_solution].hash
       end
@@ -85,6 +85,7 @@ module CubeTrainer
       # Worse solutions are ignored.
       def maybe_add_alternative_solution(layer_solution)
         raise ArgumentError unless layer_solution.is_a?(SkewbLayerSolution)
+
         case layer_solution.algorithm_length <=> algorithm_length
         when -1 then raise ArgumentError
         when 0 then @alternative_solutions.add(layer_solution)
@@ -97,15 +98,15 @@ module CubeTrainer
                    else
                      [Core::Algorithm.empty]
                    end
-        alternative_algs = @alternative_solutions.collect_concat { |s| s.extract_algorithms }
+        alternative_algs = @alternative_solutions.collect_concat(&:extract_algorithms)
         own_algs + alternative_algs
       end
-      
     end
 
     def initialize(color_scheme, verbose, max_length)
       raise TypeError unless color_scheme.is_a?(ColorScheme)
       raise TypeError unless max_length.nil? || max_length.is_a?(Integer)
+
       @verbose = verbose
       @max_length = max_length
       @good_layer_solutions = []
@@ -174,11 +175,11 @@ module CubeTrainer
       end
       has_equivalent_solution
     end
-    
-    def self.calculate(color_scheme, verbose, max_length=nil)
+
+    def self.calculate(color_scheme, verbose, max_length = nil)
       searcher = new(color_scheme, verbose, max_length)
       searcher.calculate
-      searcher.good_layer_solutions.map { |s| s.extract_algorithms }
+      searcher.good_layer_solutions.map(&:extract_algorithms)
     end
 
     def pop_candidate
@@ -209,7 +210,9 @@ module CubeTrainer
     def calculate
       until candidates_empty?
         candidate = pop_candidate
-        puts "Candidates: #{@candidates.length} Layers: #{@num_layer_solutions} Good layers: #{@good_layer_solutions.length}" if @verbose
+        if @verbose
+          puts "Candidates: #{@candidates.length} Layers: #{@num_layer_solutions} Good layers: #{@good_layer_solutions.length}"
+        end
         puts "Candidate: #{candidate}" if @verbose
         candidate.compiled_algorithm.inverse.apply_temporarily_to(@state) do
           # Is there an existing equivalent layer that we already looked at?
@@ -217,7 +220,7 @@ module CubeTrainer
 
           has_equivalent_layer ||= check_equivalent_solution(candidate)
           has_equivalent_layer ||= check_equivalent_modified_solution(candidate)
-          
+
           unless has_equivalent_layer
             # If there were no equivalent layers in any way, this is a new type of layer.
             add_layer_solution(candidate)
@@ -229,7 +232,5 @@ module CubeTrainer
         end
       end
     end
-
   end
-
 end

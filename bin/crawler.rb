@@ -1,6 +1,7 @@
 #!/usr/bin/ruby
+# frozen_string_literal: true
 
-$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'cube_trainer/wca_crawler'
 require 'cube_trainer/wca_export_reader'

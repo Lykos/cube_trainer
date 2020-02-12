@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/input_sampler'
 require 'cube_trainer/restricted_hinter'
 require 'cube_trainer/disjoint_union_hinter'
@@ -7,11 +9,9 @@ require 'cube_trainer/input_item'
 require 'cube_trainer/sequence_hinter'
 
 module CubeTrainer
-
   class AlgSet
-
     include StringHelper
-    
+
     def initialize(results_model, options)
       @results_model = results_model
       @options = options
@@ -28,7 +28,7 @@ module CubeTrainer
     def name
       snake_case_class_name(self.class)
     end
-    
+
     def hinter
       @hinter ||= create_hinter
     end
@@ -53,31 +53,23 @@ module CubeTrainer
     def generate_alg_names
       raise NotImplementedError
     end
-
   end
 
   class Plls < AlgSet
-
     def goal_badness
       1.0
     end
-
   end
 
   class OllsPlusCp < AlgSet
-    
     def goal_badness
       1.0
     end
-
   end
 
   class Colls < AlgSet
-
     def goal_badness
       1.0
     end
-
   end
-
 end

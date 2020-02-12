@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/utils/array_helper'
 
 describe ArrayHelper do
-
   include ArrayHelper
 
   it 'should permute empty arrays' do
@@ -13,7 +14,7 @@ describe ArrayHelper do
   end
 
   it 'should permute letter arrays' do
-    expect(apply_permutation(['a', 'b', 'c', 'd'], [0, 2, 1, 3])).to be == ['a', 'c', 'b', 'd']
+    expect(apply_permutation(%w[a b c d], [0, 2, 1, 3])).to be == %w[a c b d]
   end
 
   it 'should do nothing if there are no nils' do
@@ -68,9 +69,8 @@ describe ArrayHelper do
   it 'should raise an exception if a non-existing element should be replaced once in an array' do
     expect { replace_once([1, 2, 3], 5, 1) }.to raise_error ArgumentError
   end
-  
+
   it 'should raise an exception if an element that appears multiple time should be replaced once in an array' do
     expect { replace_once([1, 1, 3], 1, 5) }.to raise_error ArgumentError
   end
-  
 end

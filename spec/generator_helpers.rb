@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/coordinate'
 
@@ -43,6 +45,7 @@ end
 
 def cube_move(cube_size)
   return freq [10, :simple_move], [1, :rotation] if cube_size <= 2
+
   freq [10, :simple_move], [1, :rotation], [1, :maybe_fat_mslice_maybe_inner_mslice_move], [1, :fat_move, cube_size], [1, :maybe_fat_maybe_slice_move]
 end
 
