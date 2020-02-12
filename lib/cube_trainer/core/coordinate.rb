@@ -63,10 +63,10 @@ module CubeTrainer
         from_indices(face, cube_size, *coordinates)
       end
 
-      def self.match_coordinate_internal(_part, base_coordinate, other_face_symbols)
+      def self.match_coordinate_internal(base_coordinate, other_face_symbols)
         other_face_symbols.sort!
-        coordinate = base_coordinate.rotations.find do |coordinate|
-          face_symbols_closeby = coordinate.close_neighbor_faces.map(&:face_symbol)
+        coordinate = base_coordinate.rotations.find do |coord|
+          face_symbols_closeby = coord.close_neighbor_faces.map(&:face_symbol)
           face_symbols_closeby.sort == other_face_symbols
         end
         raise "Couldn't find a fitting coordinate on the solved face." if coordinate.nil?
@@ -84,7 +84,7 @@ module CubeTrainer
         base_coordinate = Coordinate.from_indices(part.solved_face, cube_size, *part.base_index_on_face(cube_size, incarnation_index))
         base_coordinate.coordinates; base_coordinate.cube_size
         other_face_symbols = part.corresponding_part.face_symbols[1..-1]
-        match_coordinate_internal(part, base_coordinate, other_face_symbols)
+        match_coordinate_internal(base_coordinate, other_face_symbols)
       end
 
       # The coordinate of the solved position of all stickers of this part.
@@ -98,7 +98,7 @@ module CubeTrainer
           base_coordinate = Coordinate.from_indices(face, cube_size, *base_indices)
           base_coordinate.coordinates; base_coordinate.cube_size
           other_face_symbols = [part.face_symbols[0]] + part.corresponding_part.face_symbols[1...i + 1] + part.corresponding_part.face_symbols[i + 2..-1]
-          match_coordinate_internal(part, base_coordinate, other_face_symbols)
+          match_coordinate_internal(base_coordinate, other_face_symbols)
         end
         [solved_coordinate] + other_coordinates
       end
@@ -193,8 +193,6 @@ module CubeTrainer
         raise ArgumentError unless can_jump_to?(to_face)
 
         new_coordinates = coordinates.dup
-        jump_coordinate_index = face.coordinate_index_close_to(to_face)
-        jump_coordinate = new_coordinates.delete_at(jump_coordinate_index)
         new_coordinate_index = to_face.coordinate_index_close_to(face)
         new_coordinate = make_coordinate_at_edge_to(face)
         new_coordinates.insert(new_coordinate_index, new_coordinate)
@@ -253,7 +251,7 @@ module CubeTrainer
         raise ArgumentError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
         unless coordinate.is_a?(Integer) && coordinate >= 0 && coordinate < SKEWB_STICKERS
           raise ArgumentError
-      end
+        end
 
         @coordinate = coordinate
         @native = native

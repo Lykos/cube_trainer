@@ -17,7 +17,6 @@ module CubeTrainer
 
         @namespace = namespace
         ensure_cache_directory_exists
-        @namespace
         @db = SQLite3::Database.new(cache_file(CACHE_DB_FILE).to_s)
         @db.execute('CREATE TABLE IF NOT EXISTS Cache(Namespace TEXT, Key TEXT, Value BLOB)')
         @db.execute('CREATE UNIQUE INDEX IF NOT EXISTS NamespaceKeyIndex ON Cache(Namespace, Key)')

@@ -44,7 +44,6 @@ skewb_state = ColorScheme::BERNHARD.solved_skewb_state
 
 loop do
   scramble = scrambler.random_moves(SCRAMBLE_LENGTH)
-  layer_solutions = layer_finder.find_layer(skewb_state, SEARCH_DEPTH)
   scramble.apply_to(skewb_state)
   layer_solutions = layer_finder.find_layer(skewb_state, SEARCH_DEPTH)
   if has_desired_property(skewb_state, layer_solutions)

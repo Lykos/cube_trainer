@@ -132,7 +132,7 @@ module CubeTrainer
                        verbose: @verbose,
                        find_fixes: @verbose
                      )
-                  end
+                   end
     end
 
     def parse_hint_table(hint_table)
@@ -143,7 +143,6 @@ module CubeTrainer
         row.each_with_index do |cell, col_index|
           next if cell.nil? || cell.empty? || blacklisted?(cell)
 
-          row_description = "#{('A'..'Z').to_a[col_index]}#{row_index + 1}"
           begin
             alg = parse_commutator(cell)
             # Ignore very short algorithms. They are never valid and they can be things like piece types.
@@ -161,7 +160,6 @@ module CubeTrainer
       interpretation = CommonalityFinder.interpret_table(alg_table)
 
       # Now check everything and construct the hint table.
-      errors = []
       hints = {}
       alg_table.each_with_index do |row, row_index|
         row.each_with_index do |cell, col_index|

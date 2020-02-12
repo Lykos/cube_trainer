@@ -81,7 +81,7 @@ module CubeTrainer
         raise ArgumentError, 'Setup move has to be an algorithm.' unless setup.is_a?(Algorithm)
         unless inner_commutator.is_a?(Commutator)
           raise ArgumentError, 'Inner commutator has to be a commutator.'
-      end
+        end
 
         @setup = setup
         @inner_commutator = inner_commutator

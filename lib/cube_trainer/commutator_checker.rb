@@ -127,7 +127,7 @@ module CubeTrainer
 
       # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
       if @find_fixes
-        if fix = find_fix(commutator)
+        if (fix = find_fix(commutator))
           puts "Found fix #{fix}." if @verbose
           return CheckAlgResult.new(:fix_found, fix)
         else

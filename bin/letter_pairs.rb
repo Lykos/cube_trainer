@@ -20,7 +20,7 @@ terms = if ARGV.empty?
 finder = LetterPairWordFinder.new(terms)
 
 open('/dev/tty') do |f|
-  while letter_sequence = f.gets
+  while (letter_sequence = f.gets)
     puts finder.find_term(letter_sequence)
   end
 end

@@ -25,10 +25,10 @@ module CubeTrainer
         CubeState.check_cube_size(n)
         unless stickers.length == FACE_SYMBOLS.length
           raise ArgumentError, "Cubes must have #{FACE_SYMBOLS.length} sides."
-      end
+        end
         unless stickers.all? { |p| p.length == n && p.all? { |q| q.length == n } }
           raise ArgumentError, "All sides of a #{n}x#{n} must be #{n}x#{n}."
-      end
+        end
 
         stickers_hash = FACE_SYMBOLS.zip(stickers).map do |face_symbol, face_stickers|
           face = Face.for_face_symbol(face_symbol)

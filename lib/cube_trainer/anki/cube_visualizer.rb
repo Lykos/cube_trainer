@@ -54,7 +54,7 @@ module CubeTrainer
           match = stage_mask_string.match(STAGE_MASK_REGEXP)
           if !match || !match.pre_match.empty? || !match.post_match.empty?
             raise ArgumentError, "Invalid stage mask #{stage_mask_string}."
-        end
+          end
 
           raw_base_mask, raw_rotations = match.captures
           rotations = raw_rotations ? parse_algorithm(raw_rotations) : Core::Algorithm.empty
@@ -102,11 +102,11 @@ module CubeTrainer
         attr_reader :name
 
         def extract(map)
-          serialized_value = if v = map[@name]
+          serialized_value = if (v = map[@name])
                                raise TypeError unless v.is_a?(@type)
                                unless @value_range.include?(v)
                                  raise ArgumentError, "Invalid value #{v} for parameter #{@name}."
-                             end
+                               end
 
                                @parameter_value_serializer.serialize(v)
                              elsif @required
@@ -169,7 +169,7 @@ module CubeTrainer
         invalid_keys = params.keys - URL_PARAMETER_TYPE_KEYS
         unless invalid_keys.empty?
           raise ArgumentError, "Unknown url parameter keys #{invalid_keys.join(', ')}"
-      end
+        end
 
         @params = URL_PARAMETER_TYPES.map { |p| p.extract(params) }.compact
         @color_scheme = params[:sch] || (raise ArgumentError)
@@ -193,7 +193,7 @@ module CubeTrainer
             end
           end.flatten.join
         end.join
-        extra_params = [
+        [
           [:pzl, cube_state.n],
           [:fd, serialized_cube_state]
         ]
@@ -220,7 +220,7 @@ module CubeTrainer
 
       def fetch(cube_state)
         uri = uri(cube_state)
-        if r = @cache[uri.to_s]
+        if (r = @cache[uri.to_s])
           r
         else
           @cache[uri.to_s] = really_fetch_internal(uri)

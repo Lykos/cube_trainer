@@ -20,7 +20,7 @@ module CubeTrainer
     attr_reader :name, :verbose
 
     def parse_hints_internal(raw_hints)
-      hints = raw_hints.map do |row|
+      raw_hints.map do |row|
         if row.length != 2
           puts "Invalid alg row #{row} that doesn't have 2 entries."
           next
@@ -29,7 +29,7 @@ module CubeTrainer
         alg = begin
                 parse_algorithm(raw_alg)
               rescue CommutatorParseError => e
-                puts "Couldn't parse alg: #{alg}"
+                warn "Couldn't parse alg '#{alg}': #{e}"
                 next
               end
         [SimpleAlgName.new(raw_alg_name), alg]

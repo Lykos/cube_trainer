@@ -10,11 +10,11 @@ module CubeTrainer
 
       def initialize(value)
         unless value.is_a?(Integer)
-          raise ArgumentError, "Direction value #{value} isn't an integer."
-      end
+          raise TypeError, "Direction value #{value} isn't an integer."
+        end
         unless value >= 0 && value < self.class::NUM_DIRECTIONS
           raise ArgumentError, "Invalid direction value #{value}."
-      end
+        end
 
         @value = value
       end

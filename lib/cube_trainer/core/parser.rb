@@ -83,7 +83,7 @@ module CubeTrainer
       # Parses a series of moves.
       def parse_moves
         moves = []
-        while m = begin skip_spaces; parse_move_internal end
+        while (m = begin skip_spaces; parse_move_internal end)
           moves.push(m)
         end
         Algorithm.new(moves)

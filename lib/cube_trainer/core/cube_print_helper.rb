@@ -26,7 +26,7 @@ module CubeTrainer
       def color_character(color, color_mode)
         unless COLOR_MODES.include?(color_mode)
           raise ArgumentError, "Invalid color mode #{color_mode}"
-      end
+        end
 
         char = color.to_s[0].upcase
         if color_mode == :color

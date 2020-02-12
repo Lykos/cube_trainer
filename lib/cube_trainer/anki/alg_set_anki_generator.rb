@@ -24,7 +24,7 @@ module CubeTrainer
       def initialize(options)
         unless File.exist?(options.output_dir) && File.directory?(options.output_dir) && File.writable?(options.output_dir)
           raise ArgumentError
-      end
+        end
 
         @options = options
         cache = options.cache ? Cache.new('cube_visualizer') : nil
@@ -108,7 +108,7 @@ module CubeTrainer
                .gsub('ß', 'ss')
         if name_to_alg[name]
           raise ArgumentError, "Two algs map to file name #{name}: #{alg_name} and #{name_to_alg[name]}"
-      end
+        end
 
         name_to_alg[name] = alg_name
         name

@@ -34,7 +34,7 @@ module CubeTrainer
         parts = FACE_SYMBOLS.permutation(self::FACES).select { |p| valid?(p) }.map.with_index { |p, i| new(p, i) }
         unless parts.length <= ALPHABET_SIZE
           raise "Generated #{parts.length} parts for #{self}, but the alphabet size is only #{ALPHABET_SIZE}."
-      end
+        end
 
         parts
       end
@@ -46,7 +46,6 @@ module CubeTrainer
       def self.for_face_symbols_internal(face_symbols)
         raise unless face_symbols.length == self::FACES
 
-        p self::ELEMENTS if self::ELEMENTS.select { |e| e.face_symbols == face_symbols }.length != 1
         only(self::ELEMENTS.select { |e| e.face_symbols == face_symbols })
       end
 
@@ -169,8 +168,8 @@ module CubeTrainer
       def coordinate_index_close_to(to_face)
         if same_axis?(to_face)
           raise ArgumentError, "Cannot get the coordinate index close to #{to_face.inspect} on #{inspect} because they are not neighbors."
-      end
-
+        end
+        
         to_priority = to_face.axis_priority
         if axis_priority < to_priority
           to_priority - 1
@@ -264,7 +263,7 @@ module CubeTrainer
       def initialize(corresponding_part, piece_index)
         unless corresponding_part.is_a?(Part)
           raise "Invalid corresponding part #{corresponding_part}."
-      end
+        end
 
         super([corresponding_part.face_symbols[0]], piece_index)
         @corresponding_part = corresponding_part
@@ -273,7 +272,7 @@ module CubeTrainer
       def self.for_face_symbols(face_symbols)
         unless face_symbols.length == self::CORRESPONDING_PART_CLASS::FACES
           raise ArgumentError, "Need #{self::CORRESPONDING_PART_CLASS::FACES} face_symbols for a #{self.class}, have #{face_symbols.inspect}."
-      end
+        end
 
         corresponding_part = self::CORRESPONDING_PART_CLASS.for_face_symbols(face_symbols)
         nil unless corresponding_part
@@ -378,7 +377,7 @@ module CubeTrainer
           reordered_valid = Corner.valid?(reordered_face_symbols)
           if valid == reordered_valid
             raise "Couldn't determine chirality for #{face_symbols.inspect} which is needed to parse a wing."
-        end
+          end
 
           valid ? for_face_symbols(face_symbols[0..1]) : for_face_symbols_internal(reordered_face_symbols[0..1])
         else
@@ -426,7 +425,7 @@ module CubeTrainer
         pieces = piece_candidates.select(&:valid?)
         unless pieces.length == 1
           raise "#{piece_description} is not unique to create a #{self}: #{pieces.inspect}"
-      end
+        end
 
         pieces.first
       end
@@ -434,7 +433,7 @@ module CubeTrainer
       def self.for_face_symbols(face_symbols)
         unless face_symbols.length == FACES
           raise "Invalid number of face_symbols to create a corner: #{face_symbols.inspect}"
-      end
+        end
 
         valid?(face_symbols) ? for_face_symbols_internal(face_symbols) : for_face_symbols_internal([face_symbols[0], face_symbols[2], face_symbols[1]])
       end
@@ -453,7 +452,7 @@ module CubeTrainer
         raise "Part #{self} doesn't have face symbol #{face_symbol}." unless index
         if index == 0
           raise "Part #{self} already has face symbol #{face_symbol} up, so `rotate_other_face_symbol_up(#{face_symbol}) is invalid."
-      end
+        end
 
         rotate_by(3 - index)
       end

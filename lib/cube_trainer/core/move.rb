@@ -633,45 +633,45 @@ module CubeTrainer
         match = move_string.match(REGEXP)
         if !match || !match.pre_match.empty? || !match.post_match.empty?
           raise ArgumentError "Invalid move #{move_string}."
-      end
+        end
 
         rotation, width, fat_face_name, face_name, maybe_fat_maybe_slice_name, slice_index, slice_name, mslice_name, direction_string = match.captures
         direction = parse_direction(direction_string)
         if rotation
           unless width.nil? && fat_face_name.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
             raise
-        end
+          end
 
           Rotation.new(parse_axis_face(rotation), direction)
         elsif fat_face_name
           unless rotation.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
             raise
-        end
+          end
 
           width = width == '' ? 2 : width.to_i
           FatMove.new(Face.by_name(fat_face_name), direction, width)
         elsif face_name
           unless rotation.nil? && width.nil? && fat_face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
             raise
-        end
+          end
 
           FatMove.new(Face.by_name(face_name), direction, 1)
         elsif maybe_fat_maybe_slice_name
           unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
             raise
-        end
+          end
 
           MaybeFatMaybeSliceMove.new(Face.by_name(maybe_fat_maybe_slice_name.upcase), direction)
         elsif slice_name
           unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && mslice_name.nil?
             raise
-        end
+          end
 
           SliceMove.new(Face.by_name(slice_name.upcase), direction, slice_index.to_i)
         elsif mslice_name
           unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil?
             raise
-        end
+          end
 
           fixed_direction = mslice_name == 'S' ? direction : direction.inverse
           MaybeFatMSliceMaybeInnerMSliceMove.new(Face::ELEMENTS[Move::SLICES.index(mslice_name)], fixed_direction)
@@ -711,7 +711,7 @@ module CubeTrainer
         match = move_string.match(regexp)
         if !match || !match.pre_match.empty? || !match.post_match.empty?
           raise "Invalid move #{move_string}."
-      end
+        end
 
         skewb_move_string, direction_string, rotation, rotation_direction_string = match.captures
         if skewb_move_string
