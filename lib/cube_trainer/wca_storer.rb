@@ -4,11 +4,12 @@ require 'cube_trainer/xdg_helper'
 require 'pathname'
 
 module CubeTrainer
+  # Helper class to store WCA exports locally.
   class WCAStorer
     include XDGHelper
 
     def initialize
-      ensure_data_directory_exists
+      ensure_cache_directory_exists
     end
 
     def subdirectory
@@ -16,7 +17,7 @@ module CubeTrainer
     end
 
     def wca_export_path(filename)
-      data_file(filename)
+      cache_file(filename)
     end
 
     def wca_export_file_exists?(filename)

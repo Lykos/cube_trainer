@@ -6,6 +6,7 @@ require 'cube_trainer/wca_result'
 require 'cube_trainer/parser'
 
 module CubeTrainer
+  # A clas that downloads and parses WCA exports.
   class WCAExportReader
     RANKS_AVERAGE_FILE = 'WCA_export_RanksAverage.tsv'
     RANKS_SINGLE_FILE = 'WCA_export_RanksSingle.tsv'

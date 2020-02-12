@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module CubeTrainer
+  # A result of one attempt of a person in a WCA competition.
   class WCAResult
     def initialize(type, time_centis, attempted, solved, number)
       @type = type

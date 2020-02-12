@@ -5,6 +5,7 @@ require 'pathname'
 require 'fileutils'
 
 module CubeTrainer
+  # Helper class to access the files in the XDG directories.
   module XDGHelper
     include XDG::BaseDir::Mixin
 
