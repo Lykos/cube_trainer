@@ -175,9 +175,7 @@ module CubeTrainer
           twisted_corner_pair = [c1.rotate_by(twist_number), c2.rotate_by(twist_number)]
           letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
           twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c1, c2])
-          if twist_number == 2
-            twist_sticker_cycles = twist_sticker_cycles.inverse
-          end
+          twist_sticker_cycles = twist_sticker_cycles.inverse if twist_number == 2
           twisted_cube_state = twist_sticker_cycles.apply_temporarily_to(cube_state) { cube_state.dup }
           InputItem.new(letter_pair, twisted_cube_state)
         end

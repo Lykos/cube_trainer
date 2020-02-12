@@ -23,7 +23,7 @@ module CubeTrainer
     end
 
     def self.multi(result_int)
-      if s = special_value(result_int) then return s end
+      if (s = special_value(result_int)) then return s end
 
       multi_type = case result_int / 1_000_000_000
                    when 1 then :old
@@ -53,13 +53,13 @@ module CubeTrainer
     end
 
     def self.number(result_int)
-      if s = special_value(result_int) then return s end
+      if (s = special_value(result_int)) then return s end
 
       new(:success, nil, nil, nil, result_int)
     end
 
     def self.time(result_int)
-      if s = special_value(result_int) then return s end
+      if (s = special_value(result_int)) then return s end
 
       new(:success, result_int, nil, nil, nil)
     end

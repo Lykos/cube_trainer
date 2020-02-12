@@ -61,9 +61,7 @@ module CubeTrainer
       end
 
       def external_note_inputs
-        unless @options.input && @options.alg_column && @options.name_column
-          raise ArgumentError
-      end
+        raise ArgumentError unless @options.input && @options.alg_column && @options.name_column
 
         AlgSetParser.parse(@options.input, @options.alg_column, @options.name_column)
       end
@@ -117,9 +115,7 @@ module CubeTrainer
       end
 
       def img(source)
-        unless source =~ /^[\w.+-]+$/
-          raise ArgumentError, "Got bad filename #{source}"
-      end
+        raise ArgumentError, "Got bad filename #{source}" unless source =~ /^[\w.+-]+$/
 
         # TODO: This is bad, but works with our restriction.
         "<img src='#{source}'/>"

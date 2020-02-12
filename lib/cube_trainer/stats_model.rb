@@ -43,7 +43,7 @@ module CubeTrainer
         Qt::Variant.new(@stats[row][col])
       else
         Qt::Variant.new
-             end
+      end
     end
   end
 end

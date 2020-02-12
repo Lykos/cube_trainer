@@ -24,9 +24,7 @@ Rake::ExtensionTask.new('cube_trainer/native')
 rule(%r{^lib/.*_ui\.rb$} => ->(f) { rb_to_ui(f) }) do |t|
   ui_file = t.source
   rb_file = t.name
-  unless system(RBUIC, ui_file, '-o', rb_file)
-    warn "Failed to compile #{ui_file}."
-  end
+  warn "Failed to compile #{ui_file}." unless system(RBUIC, ui_file, '-o', rb_file)
 end
 
 begin

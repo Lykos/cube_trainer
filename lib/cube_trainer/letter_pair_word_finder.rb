@@ -16,9 +16,7 @@ module CubeTrainer
       # Part of the start letter also matches the rest.
       return true if correct_start.any? { |p| p[1..-1].include?(rest) }
       # There are multiple correct starts and any part starts with the rest.
-      if correct_start.length > 1 && @normalized_parts.any? { |p| p.start_with?(rest) }
-        return true
-      end
+      return true if correct_start.length > 1 && @normalized_parts.any? { |p| p.start_with?(rest) }
       # There is one correct start and any part except for that one starts with the rest.
       if correct_start.length == 1 && @normalized_parts.any? { |p| p != correct_start.first && p.start_with?(rest) }
         return true

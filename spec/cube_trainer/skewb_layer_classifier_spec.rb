@@ -8,8 +8,8 @@ require 'cube_trainer/skewb_layer_classifier'
 include CubeTrainer
 
 describe SkewbLayerClassifier do
-  let (:color_scheme) { ColorScheme::BERNHARD }
-  let (:classifier) { SkewbLayerClassifier.new(Face::D, color_scheme) }
+  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:classifier) { SkewbLayerClassifier.new(Face::D, color_scheme) }
 
   it 'should classify the solved layer correctly' do
     expect(classifier.classify_layer(Algorithm.empty)).to be == '4_solved'

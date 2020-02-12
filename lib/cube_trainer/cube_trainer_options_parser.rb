@@ -39,8 +39,8 @@ module CubeTrainer
       end
     end
 
-    def on_output(_file_description)
-      on('-o', '--output [FILE]', String, 'Output path for the #{file_description}.') do |o|
+    def on_output(file_description)
+      on('-o', '--output [FILE]', String, "Output path for the #{file_description}.") do |o|
         @options.output = o
       end
     end

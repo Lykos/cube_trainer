@@ -21,9 +21,7 @@ module CubeTrainer
       def opposite_face_symbol(face_symbol)
         candidates = OPPOSITE_FACE_SYMBOLS.select { |ss| ss.include?(face_symbol) }
         raise if candidates.length > 1
-        if candidates.empty?
-          raise ArgumentError, "Invalid face symbol #{face_symbol}."
-      end
+        raise ArgumentError, "Invalid face symbol #{face_symbol}." if candidates.empty?
 
         only(only(candidates).reject { |s| s == face_symbol })
       end

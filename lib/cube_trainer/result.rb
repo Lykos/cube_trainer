@@ -17,14 +17,10 @@ module CubeTrainer
       raise ArgumentError, "Invalid mode #{mode}." unless mode.is_a?(Symbol)
 
       @mode = mode
-      unless timestamp.is_a?(Time)
-        raise ArgumentError, "Invalid timestamp #{timestamp}."
-      end
+      raise ArgumentError, "Invalid timestamp #{timestamp}." unless timestamp.is_a?(Time)
 
       @timestamp = timestamp
-      unless time_s.is_a?(Float)
-        raise ArgumentError, "Invalid time_s #{time_s}."
-      end
+      raise ArgumentError, "Invalid time_s #{time_s}." unless time_s.is_a?(Float)
 
       @time_s = time_s
       unless input_representation.is_a?(LetterPair) || input_representation.is_a?(PaoLetterPair) || input_representation.is_a?(AlgName) || input_representation.is_a?(LetterPairSequence)
@@ -37,9 +33,7 @@ module CubeTrainer
       end
 
       @failed_attempts = failed_attempts
-      unless word.nil? || word.is_a?(String)
-        raise ArgumentError, "Invalid word #{word}."
-      end
+      raise ArgumentError, "Invalid word #{word}." unless word.nil? || word.is_a?(String)
 
       @word = word
     end

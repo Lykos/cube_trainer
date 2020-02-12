@@ -13,8 +13,8 @@ include CubeTrainer
 include CubePrintHelper
 
 describe SkewbState do
-  let (:color_scheme) { ColorScheme::BERNHARD }
-  let (:skewb_state) { color_scheme.solved_skewb_state }
+  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:skewb_state) { color_scheme.solved_skewb_state }
 
   it 'should not be equal to a state with one sticker changed' do
     property_of do
@@ -355,7 +355,7 @@ describe SkewbState do
     end
 
     context 'when using WCA orientation' do
-      let (:color_scheme) { ColorScheme::WCA }
+      let(:color_scheme) { ColorScheme::WCA }
 
       it "should have the red layer solved after a B L' B' L sledge" do
         parse_fixed_corner_skewb_algorithm("B L' B' L").apply_to(skewb_state)

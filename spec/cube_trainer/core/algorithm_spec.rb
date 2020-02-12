@@ -4,7 +4,7 @@ require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/parser'
 
 describe Algorithm do
-  let (:cube_size) { 3 }
+  let(:cube_size) { 3 }
 
   it 'should invert algorithms correctly' do
     expect(parse_algorithm('R U').inverse).to be == parse_algorithm("U' R'")

@@ -11,11 +11,11 @@ include CubeTrainer
 include CubePrintHelper
 
 describe SkewbLayerFinder do
-  let (:color_scheme) { ColorScheme::BERNHARD }
-  let (:skewb_state) { color_scheme.solved_skewb_state }
+  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:skewb_state) { color_scheme.solved_skewb_state }
 
   context 'when restricted' do
-    let (:layer_finder) { SkewbLayerFinder.new([:white]) }
+    let(:layer_finder) { SkewbLayerFinder.new([:white]) }
 
     it 'should find an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to be == {
@@ -105,7 +105,7 @@ describe SkewbLayerFinder do
   end
 
   context 'when unrestricted' do
-    let (:layer_finder) { SkewbLayerFinder.new }
+    let(:layer_finder) { SkewbLayerFinder.new }
 
     it 'should find an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to be == {

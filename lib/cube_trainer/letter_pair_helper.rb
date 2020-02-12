@@ -5,8 +5,8 @@ require 'cube_trainer/letter_pair'
 
 module CubeTrainer
   module LetterPairHelper
-    def self.letter_pairs(c)
-      c.collect { |c| LetterPair.new(c) }
+    def self.letter_pairs(letterss)
+      letterss.collect { |ls| LetterPair.new(ls) }
     end
 
     def rotations

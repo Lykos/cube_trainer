@@ -34,9 +34,7 @@ module CubeTrainer
     end
 
     def initialize(face_symbols_to_colors)
-      unless face_symbols_to_colors.keys.sort == FACE_SYMBOLS.sort
-        raise ArgumentError
-      end
+      raise ArgumentError unless face_symbols_to_colors.keys.sort == FACE_SYMBOLS.sort
 
       face_symbols_to_colors.values.each do |c|
         raise TypeError unless c.is_a?(Symbol)
@@ -44,9 +42,7 @@ module CubeTrainer
           raise ArgumentError, "Color #{c} cannot be part of the color scheme because it is a reserved color."
         end
       end
-      unless face_symbols_to_colors.values.all? { |c| c.is_a?(Symbol) }
-        raise ArgumentError
-      end
+      raise ArgumentError unless face_symbols_to_colors.values.all? { |c| c.is_a?(Symbol) }
 
       num_uniq_colors = face_symbols_to_colors.values.uniq.length
       unless num_uniq_colors == FACE_SYMBOLS.length

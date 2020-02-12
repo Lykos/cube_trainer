@@ -6,7 +6,7 @@ require 'cube_trainer/core/parser'
 include CubeTrainer
 
 describe PureCommutator do
-  let (:commutator) { parse_commutator('[R, U\' L\' U]') }
+  let(:commutator) { parse_commutator('[R, U\' L\' U]') }
 
   it 'should be equal to the inverse of its inverse' do
     expect(commutator.inverse.inverse).to be == commutator
@@ -22,8 +22,8 @@ describe PureCommutator do
 end
 
 describe SetupCommutator do
-  let (:commutator) { parse_commutator('[U\' : [R, U\' L\' U]]') }
-  let (:rotation_commutator) { parse_commutator('[x2 : [R, U\' L\' U]]') }
+  let(:commutator) { parse_commutator('[U\' : [R, U\' L\' U]]') }
+  let(:rotation_commutator) { parse_commutator('[x2 : [R, U\' L\' U]]') }
 
   it 'should be equal to the inverse of its inverse' do
     expect(commutator.inverse.inverse).to be == commutator

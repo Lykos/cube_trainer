@@ -97,9 +97,7 @@ module CubeTrainer
       CLOSING_BRACKET = ']'
 
       def parse_open_bracket
-        unless @scanner.getch == OPENING_BRACKET
-          complain('beginning of commutator')
-      end
+        complain('beginning of commutator') unless @scanner.getch == OPENING_BRACKET
       end
 
       def parse_close_bracket
@@ -154,9 +152,7 @@ module CubeTrainer
                  second_part = parse_nonempty_moves
                  PureCommutator.new(setup_or_first_part, second_part)
                else
-                 unless @scanner.eos?
-                   complain('end of setup or middle of pure commutator')
-               end
+                 complain('end of setup or middle of pure commutator') unless @scanner.eos?
                end
         skip_spaces
         parse_close_bracket

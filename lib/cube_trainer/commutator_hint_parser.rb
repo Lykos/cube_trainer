@@ -190,9 +190,7 @@ module CubeTrainer
 
       if checker.broken_algs + checker.error_algs > 0
         msg = "#{checker.error_algs} error algs and #{checker.broken_algs} broken algs of #{checker.total_algs}."
-        if checker.unfixable_algs
-          msg += " #{checker.unfixable_algs} were unfixable."
-        end
+        msg += " #{checker.unfixable_algs} were unfixable." if checker.unfixable_algs
         raise msg if fail_comms?
 
         puts msg if warn_comms?

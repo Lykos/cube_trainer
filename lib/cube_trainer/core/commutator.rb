@@ -78,9 +78,7 @@ module CubeTrainer
 
     class SetupCommutator < Commutator
       def initialize(setup, inner_commutator)
-        unless setup.is_a?(Algorithm)
-          raise ArgumentError, 'Setup move has to be an algorithm.'
-      end
+        raise ArgumentError, 'Setup move has to be an algorithm.' unless setup.is_a?(Algorithm)
         unless inner_commutator.is_a?(Commutator)
           raise ArgumentError, 'Inner commutator has to be a commutator.'
       end

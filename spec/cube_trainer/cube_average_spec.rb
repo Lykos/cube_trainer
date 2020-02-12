@@ -3,7 +3,7 @@
 require 'cube_trainer/native'
 
 describe Native::CubeAverage do
-  let (:average_computer) { Native::CubeAverage.new(5, 6) }
+  let(:average_computer) { Native::CubeAverage.new(5, 6) }
 
   it 'should return the default average initially' do
     expect(average_computer.average).to be == 6

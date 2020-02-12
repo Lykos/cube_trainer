@@ -57,7 +57,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     state
   end
 
-  let (:cube_state) { create_interesting_cube_state(cube_size) }
+  let(:cube_state) { create_interesting_cube_state(cube_size) }
 
   it 'should not be equal to a state with one sticker changed' do
     property_of do
@@ -470,9 +470,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     if cube_size.odd? && cube_size >= 5
       construct_cycle(Midge, %w[b c]).apply_to(expected_cube_state)
     end
-    if cube_size == 3
-      construct_cycle(Edge, %w[b c]).apply_to(expected_cube_state)
-    end
+    construct_cycle(Edge, %w[b c]).apply_to(expected_cube_state) if cube_size == 3
     wing_incarnations = letter_scheme.for_letter(Wing, 'e').num_incarnations(cube_size)
     wing_incarnations.times do |incarnation_index|
       factory = PartCycleFactory.new(cube_size, incarnation_index)

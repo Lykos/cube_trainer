@@ -23,9 +23,7 @@ module CubeTrainer
     end
 
     def no_auf_score_on_face(state, face)
-      if state.n < 3
-        raise InvalidArgumentError, "Crosses for 2x2 don't make any sense."
-      end
+      raise InvalidArgumentError, "Crosses for 2x2 don't make any sense." if state.n < 3
       if state.n > 3
         raise UnimplementedError, 'Scoring for crosses on big cubes in not implemented.'
       end

@@ -64,7 +64,7 @@ module CubeTrainer
 
     def execute(input)
       stats = @input_stats[input]
-      if n = items_in_between(input)
+      if (n = items_in_between(input))
         stats.forget(n)
       end
       @indices[input] = @current_index

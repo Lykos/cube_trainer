@@ -36,15 +36,14 @@ module CubeTrainer
     def extract_redirect_url(resp)
       url = resp['location'] || resp.match(/<a href=\"([^>]+)\">/i)[1]
       raise 'No redirect URL found.' unless url
-      unless url[0...WCA_BASE_URL.length] == WCA_BASE_URL
-        raise "Redirect to foreign page #{url}."
-      end
+      raise "Redirect to foreign page #{url}." unless url[0...WCA_BASE_URL.length] == WCA_BASE_URL
 
       URI.parse(url)
     end
 
     def download_wca_export(filename)
       @storer.ensure_base_directory_exists
+      url = nil
       REDIRECT_LIMIT.times do
         url = construct_wca_export_url(filename)
         puts "Downloading #{url}"
@@ -55,7 +54,7 @@ module CubeTrainer
           File.open(@storer.wca_export_path(filename), 'wb') do |f|
             f.write(resp.body)
             puts 'Download successful.'
-            return
+            break
           end
         end
         raise 'Too many redirects.'

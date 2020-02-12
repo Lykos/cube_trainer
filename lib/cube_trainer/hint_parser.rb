@@ -38,18 +38,14 @@ module CubeTrainer
       hints = if hints_exist?
                 parse_hints_internal(read_hints)
               else
-                if verbose
-                  puts "Failed to find hint CSV file #{hint_parser.csv_file}."
-                end
+                puts "Failed to find hint CSV file #{hint_parser.csv_file}." if verbose
                 {}
               end
       hinter_class.new(hints)
     end
 
     def parse_hints
-      unless hints_exist?
-        raise ArgumentError, "No algorithm sheet found at #{csv_file}."
-      end
+      raise ArgumentError, "No algorithm sheet found at #{csv_file}." unless hints_exist?
 
       maybe_parse_hints
     end

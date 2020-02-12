@@ -13,9 +13,7 @@ module CubeTrainer
 
     class PartSequence
       def initialize(letter_scheme, parts)
-        unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
-          raise ArgumentError
-        end
+        raise ArgumentError unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
         raise ArgumentError unless parts.all? { |p| p.is_a?(Part) }
 
         @letter_scheme = letter_scheme
@@ -86,9 +84,7 @@ module CubeTrainer
         parts.each do |part|
           simplified_parts.push(part)
           # Stop after we reach a rotation of the first part (but still include that target to show the rotation or the end of the cycle).
-          if simplified_parts.length > 1 && first_part.rotations.include?(part)
-            break
-          end
+          break if simplified_parts.length > 1 && first_part.rotations.include?(part)
           # Stop when we reach the first uninteresting part (but still include that target to show where the last interesting part moves).
           break if (interesting_parts & part.rotations).empty?
         end
@@ -113,13 +109,9 @@ module CubeTrainer
     def initialize(interesting_faces, interesting_corners, staying_mode, color_scheme, letter_scheme = nil)
       raise TypeError unless interesting_faces.all? { |f| f.is_a?(Face) }
       raise TypeError unless interesting_corners.all? { |f| f.is_a?(Corner) }
-      unless %i[show_staying omit_staying].include?(staying_mode)
-        raise ArgumentError
-      end
+      raise ArgumentError unless %i[show_staying omit_staying].include?(staying_mode)
       raise TypeError unless color_scheme.is_a?(ColorScheme)
-      unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
-        raise TypeError
-      end
+      raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
 
       @interesting_faces = interesting_faces
       @interesting_corners = interesting_corners

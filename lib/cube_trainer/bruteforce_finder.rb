@@ -53,9 +53,7 @@ module CubeTrainer
   class UnionSolutionSet < SolutionSet
     def initialize(internal_solution_sets)
       @length = internal_solution_sets.empty? ? nil : internal_solution_sets.first.length
-      unless internal_solution_sets.all? { |s| s.length == @length }
-        raise ArgumentError
-      end
+      raise ArgumentError unless internal_solution_sets.all? { |s| s.length == @length }
 
       @internal_solution_sets = internal_solution_sets
     end

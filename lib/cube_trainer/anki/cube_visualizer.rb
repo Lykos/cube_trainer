@@ -42,9 +42,7 @@ module CubeTrainer
         def initialize(base_mask, rotations = Core::Algorithm.empty)
           raise ArgumentError unless BASE_MASKS.include?(base_mask)
           raise TypeError unless rotations.is_a?(Core::Algorithm)
-          unless rotations.moves.all? { |r| r.is_a?(Core::Rotation) }
-            raise TypeError
-        end
+          raise TypeError unless rotations.moves.all? { |r| r.is_a?(Core::Rotation) }
 
           @base_mask = base_mask
           @rotations = rotations
@@ -89,12 +87,8 @@ module CubeTrainer
           raise TypeError unless type.is_a?(Class)
           raise TypeError unless value_range.respond_to?(:include?)
           raise TypeError unless default_value.nil? || default_value.is_a?(type)
-          unless default_value.nil? || value_range.include?(default_value)
-            raise ArgumentError
-        end
-          unless parameter_value_serializer.respond_to?(:serialize)
-            raise TypeError
-        end
+          raise ArgumentError unless default_value.nil? || value_range.include?(default_value)
+          raise TypeError unless parameter_value_serializer.respond_to?(:serialize)
           raise ArgumentError if default_value && required
 
           @name = name
@@ -163,9 +157,7 @@ module CubeTrainer
         raise TypeError unless fetcher.respond_to?(:get)
 
         @fetcher = fetcher
-        unless cache.nil? || (cache.respond_to?(:[]) && cache.respond_to?(:[]=))
-          raise TypeError
-      end
+        raise TypeError unless cache.nil? || (cache.respond_to?(:[]) && cache.respond_to?(:[]=))
 
         @cache = cache || StubCache.new
         raise TypeError unless retries.is_a?(Integer)
@@ -189,9 +181,7 @@ module CubeTrainer
 
       def cube_state_params(cube_state)
         raise TypeError unless cube_state.is_a?(CubeState)
-        unless MIN_N <= cube_state.n && cube_state.n <= MAX_N
-          raise ArgumentError
-        end
+        raise ArgumentError unless MIN_N <= cube_state.n && cube_state.n <= MAX_N
 
         serialized_cube_state = FACE_SYMBOL_ORDER.map do |s|
           face_lines(cube_state, s) do |c|

@@ -8,9 +8,7 @@ module CubeTrainer
         raise ArgumentError unless permutation.uniq.length == permutation.length
 
         permutation.collect do |i|
-          unless i.is_a?(Integer) && i >= 0 && i < array.length
-            raise ArgumentError
-        end
+          raise ArgumentError unless i.is_a?(Integer) && i >= 0 && i < array.length
 
           array[i]
         end
@@ -41,7 +39,7 @@ module CubeTrainer
             when :middle
               state = :second_nil_part
             when :first_nil_part, :second_nil_part, :nil_middle
-              # Nop
+              nil
             when :second_part
               raise ArgumentError, "Cannot rotate out nils for #{array.inspect} since the nils are not contiguous."
             else
@@ -56,7 +54,7 @@ module CubeTrainer
             when :nil_middle
               state = :second_part
             when :first_part, :second_part, :middle
-              # Nop
+              nil
             when :second_nil_part
               raise ArgumentError, "Cannot rotate out nils for #{array.inspect} since the nils are not contiguous."
             else
@@ -71,12 +69,10 @@ module CubeTrainer
 
       # Returns the only element of an array and raises if the array has not exactly one element.
       def only(array)
-        if array.empty?
-          raise ArgumentError, "Can't take the only element of an empty array."
-      end
+        raise ArgumentError, "Can't take the only element of an empty array." if array.empty?
         unless array.length == 1
           raise ArgumentError, "Can't take the only element of an array with #{array.length} elements."
-      end
+        end
 
         array[0]
       end

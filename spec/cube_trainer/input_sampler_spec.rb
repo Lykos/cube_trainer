@@ -15,9 +15,7 @@ def compute_average(results_model, generator)
   learner = Learner.new
   trainer = Trainer.new(learner, results_model, generator)
   ITERATIONS.times { trainer.one_iteration }
-  unless learner.items_learned == generator.items.length
-    raise 'Not all inputs covered.'
-  end
+  raise 'Not all inputs covered.' unless learner.items_learned == generator.items.length
 
   learner.average_time
 end

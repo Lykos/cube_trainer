@@ -16,9 +16,7 @@ module CubeTrainer
 
     def check_on_outside_internal(skewb_state, coordinates)
       raise ArgumentError unless coordinates.length == 2
-      unless coordinates.all? { |c| c.is_a?(SkewbCoordinate) }
-        raise ArgumentError
-      end
+      raise ArgumentError unless coordinates.all? { |c| c.is_a?(SkewbCoordinate) }
 
       friends = MATCHING_CORNERS_HASH[coordinates.sort]
       return :not_adjacent unless friends
@@ -44,7 +42,7 @@ module CubeTrainer
 
     def matching_corner_coordinates(skewb_state, face)
       face_color = skewb_state[SkewbCoordinate.for_center(face)]
-      matching_coordinates = SkewbCoordinate.corners_on_face(face).select do |c|
+      SkewbCoordinate.corners_on_face(face).select do |c|
         skewb_state[c] == face_color
       end
     end

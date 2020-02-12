@@ -10,15 +10,13 @@ module CubeTrainer
         weights = array.collect(&block)
         unless weights.all? { |w| w.is_a?(Numeric) }
           raise TypeError, 'Negative weights are not allowed for sampling.'
-      end
+        end
         if weights.any? { |w| w < 0.0 }
           raise ArgumentError, 'Negative weights are not allowed for sampling.'
-      end
+        end
 
         weight_sum = weights.reduce(:+)
-        if weight_sum == 0.0
-          raise ArgumentError, "Can't sample for total weight 0.0."
-      end
+        raise ArgumentError, "Can't sample for total weight 0.0." if weight_sum == 0.0
 
         number = rand * weight_sum
         prefix_weight = 0.0

@@ -18,9 +18,7 @@ module CubeTrainer
 
       def self.check_cube_size(n)
         raise TypeError unless n.is_a?(Integer)
-        if n < 2
-          raise ArgumentError, 'Cubes of size smaller than 2 are not supported.'
-      end
+        raise ArgumentError, 'Cubes of size smaller than 2 are not supported.' if n < 2
       end
 
       def self.from_stickers(n, stickers)

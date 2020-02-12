@@ -9,9 +9,9 @@ require 'cube_trainer/cross_finder'
 include CubeTrainer
 
 describe CrossFinder do
-  let (:color_scheme) { ColorScheme::BERNHARD }
-  let (:cube_state) { color_scheme.solved_cube_state(3) }
-  let (:cross_finder) { CrossFinder.new }
+  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:cube_state) { color_scheme.solved_cube_state(3) }
+  let(:cross_finder) { CrossFinder.new }
 
   it 'should find an existing cross' do
     expect(cross_finder.find_cross(cube_state, 0).extract_algorithms).to be == {

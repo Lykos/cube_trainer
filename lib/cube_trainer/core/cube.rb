@@ -46,9 +46,7 @@ module CubeTrainer
       def self.for_face_symbols_internal(face_symbols)
         raise unless face_symbols.length == self::FACES
 
-        if self::ELEMENTS.select { |e| e.face_symbols == face_symbols }.length != 1
-          p self::ELEMENTS
-      end
+        p self::ELEMENTS if self::ELEMENTS.select { |e| e.face_symbols == face_symbols }.length != 1
         only(self::ELEMENTS.select { |e| e.face_symbols == face_symbols })
       end
 
@@ -371,9 +369,7 @@ module CubeTrainer
 
       def self.for_face_symbols(face_symbols)
         # One additional face symbol is usually mentioned for wings.
-        unless face_symbols.length == FACES || face_symbols.length == FACES + 1
-          raise
-      end
+        raise unless face_symbols.length == FACES || face_symbols.length == FACES + 1
 
         if face_symbols.length == 3
           valid = Corner.valid?(face_symbols)
@@ -454,9 +450,7 @@ module CubeTrainer
       # Rotate such that neither the current face symbol nor the given face symbol are at the position of the letter.
       def rotate_other_face_symbol_up(face_symbol)
         index = @face_symbols.index(face_symbol)
-        unless index
-          raise "Part #{self} doesn't have face symbol #{face_symbol}."
-        end
+        raise "Part #{self} doesn't have face symbol #{face_symbol}." unless index
         if index == 0
           raise "Part #{self} already has face symbol #{face_symbol} up, so `rotate_other_face_symbol_up(#{face_symbol}) is invalid."
       end

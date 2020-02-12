@@ -37,7 +37,7 @@ module CubeTrainer
                                                     generated_input_items.select { |p| p.representation.has_any_letter?(options.restrict_letters) }
                                                   else
                                                     generated_input_items
-                                                   end
+                                                  end
                          restricted_input_items.reject { |p| p.representation.has_any_letter?(options.exclude_letters) }
                        end
     end

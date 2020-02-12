@@ -21,9 +21,7 @@ module CubeTrainer
         raise TypeError unless cube_state.is_a?(CubeState)
         raise ArgumentError unless cube_state.n == @cube_size
 
-        if @sticker_cycle.length >= 2
-          cube_state.apply_sticker_cycle(@sticker_cycle)
-      end
+        cube_state.apply_sticker_cycle(@sticker_cycle) if @sticker_cycle.length >= 2
       end
 
       def inverse

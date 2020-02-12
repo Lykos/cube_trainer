@@ -19,9 +19,7 @@ module CubeTrainer
       raise ArgumentError if resultss.empty?
 
       hinters.each do |h|
-        unless h.respond_to?(:hints)
-          raise TypeError, "Got invalid hinter type #{h.class}."
-        end
+        raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints)
       end
       @cube_size = cube_size
       @valuess = resultss.map do |results|

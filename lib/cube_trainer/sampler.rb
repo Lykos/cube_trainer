@@ -23,9 +23,7 @@ module CubeTrainer
 
     def initialize(subsamplers)
       subsamplers.each do |s|
-        unless s.is_a?(SubSampler)
-          raise TypeError, "#{s.inspect} is not a subsampler."
-        end
+        raise TypeError, "#{s.inspect} is not a subsampler." unless s.is_a?(SubSampler)
         raise TypeError unless s.weight.is_a?(Numeric)
         raise ArgumentError unless s.weight > 0.0
         raise TypeError unless s.subsampler.is_a?(Sampler)

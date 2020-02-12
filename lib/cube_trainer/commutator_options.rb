@@ -95,9 +95,7 @@ module CubeTrainer
           options.exclude_letters = letters.downcase.split('')
         end
       end.parse!(args)
-      unless options.commutator_info
-        raise ArgumentError, 'Option --commutator_type is required.'
-      end
+      raise ArgumentError, 'Option --commutator_type is required.' unless options.commutator_info
 
       options
     end

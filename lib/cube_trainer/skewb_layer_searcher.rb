@@ -31,9 +31,7 @@ module CubeTrainer
     class SkewbLayerSolution
       def initialize(move, sub_solution)
         raise ArgumentError unless move.nil? || move.is_a?(Move)
-        unless sub_solution.nil? || sub_solution.is_a?(SkewbLayerSolution)
-          raise ArgumentError
-        end
+        raise ArgumentError unless sub_solution.nil? || sub_solution.is_a?(SkewbLayerSolution)
         raise ArgumentError unless move.nil? == sub_solution.nil?
 
         @move = move

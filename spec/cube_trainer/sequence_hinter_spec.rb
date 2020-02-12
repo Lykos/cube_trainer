@@ -14,25 +14,25 @@ class FakeHeterogenousSequenceHinter < HeterogenousSequenceHinter
 end
 
 describe HeterogenousSequenceHinter do
-  let (:cube_size) { 3 }
-  let (:algname_a) { SimpleAlgName.new('a') }
-  let (:algname_b) { SimpleAlgName.new('b') }
-  let (:algname_c) { SimpleAlgName.new('c') }
-  let (:algname_d) { SimpleAlgName.new('d') }
-  let (:algorithm_a) { parse_algorithm("R'") }
-  let (:algorithm_b) { parse_algorithm('R') }
-  let (:algorithm_c) { parse_algorithm('U') }
-  let (:algorithm_d) { parse_algorithm('U2') }
-  let (:result_a) { Result.new(:mode, Time.at(0), 1.0, algname_a, 0, nil) }
-  let (:result_b) { Result.new(:mode, Time.at(0), 2.0, algname_b, 0, nil) }
-  let (:result_d) { Result.new(:mode, Time.at(0), 1.0, algname_d, 0, nil) }
-  let (:results_left) { [result_a, result_b] * 5 }
-  let (:results_right) { [result_d] * 5 }
-  let (:resultss) { [results_left, results_right] }
-  let (:hinter_left) { AlgHinter.new(algname_a => algorithm_a, algname_b => algorithm_b, algname_c => algorithm_c) }
-  let (:hinter_right) { AlgHinter.new(algname_d => algorithm_d) }
-  let (:hinters) { [hinter_left, hinter_right] }
-  let (:hinter) { FakeHeterogenousSequenceHinter.new(cube_size, resultss, hinters) }
+  let(:cube_size) { 3 }
+  let(:algname_a) { SimpleAlgName.new('a') }
+  let(:algname_b) { SimpleAlgName.new('b') }
+  let(:algname_c) { SimpleAlgName.new('c') }
+  let(:algname_d) { SimpleAlgName.new('d') }
+  let(:algorithm_a) { parse_algorithm("R'") }
+  let(:algorithm_b) { parse_algorithm('R') }
+  let(:algorithm_c) { parse_algorithm('U') }
+  let(:algorithm_d) { parse_algorithm('U2') }
+  let(:result_a) { Result.new(:mode, Time.at(0), 1.0, algname_a, 0, nil) }
+  let(:result_b) { Result.new(:mode, Time.at(0), 2.0, algname_b, 0, nil) }
+  let(:result_d) { Result.new(:mode, Time.at(0), 1.0, algname_d, 0, nil) }
+  let(:results_left) { [result_a, result_b] * 5 }
+  let(:results_right) { [result_d] * 5 }
+  let(:resultss) { [results_left, results_right] }
+  let(:hinter_left) { AlgHinter.new(algname_a => algorithm_a, algname_b => algorithm_b, algname_c => algorithm_c) }
+  let(:hinter_right) { AlgHinter.new(algname_d => algorithm_d) }
+  let(:hinters) { [hinter_left, hinter_right] }
+  let(:hinter) { FakeHeterogenousSequenceHinter.new(cube_size, resultss, hinters) }
 
   it 'can give a prioritized list of hints' do
     input = CombinedAlgName.new([

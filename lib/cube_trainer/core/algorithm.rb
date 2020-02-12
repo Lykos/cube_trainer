@@ -12,9 +12,7 @@ module CubeTrainer
     class Algorithm
       def initialize(moves)
         moves.each do |m|
-          unless m.is_a?(Move)
-            raise TypeError, "#{m.inspect} is not a suitable move."
-        end
+          raise TypeError, "#{m.inspect} is not a suitable move." unless m.is_a?(Move)
         end
         @moves = moves
       end

@@ -49,9 +49,7 @@ module CubeTrainer
       return nil if part1 == @buffer
 
       part2 = @state[solved_position(part1)]
-      if part2 == @buffer
-        LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) })
-      end
+      LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) }) if part2 == @buffer
     end
 
     def find_letter_pair(alg)

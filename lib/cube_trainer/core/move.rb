@@ -44,9 +44,7 @@ module CubeTrainer
       end
 
       def self.check_move_metric(metric)
-        unless MOVE_METRICS.include?(metric)
-          raise ArgumentError, "Invalid move metric #{metric}."
-      end
+        raise ArgumentError, "Invalid move metric #{metric}." unless MOVE_METRICS.include?(metric)
       end
 
       def equivalent?(other, cube_size)
@@ -168,9 +166,7 @@ module CubeTrainer
     # Intermediate class for all types of moves that have an axis face and a direction, i.e. cube moves and rotations.
     class AxisFaceAndDirectionMove < Move
       def initialize(axis_face, direction)
-        unless axis_face.is_a?(Face)
-          raise TypeError, "Unsuitable axis face #{axis_face}."
-      end
+        raise TypeError, "Unsuitable axis face #{axis_face}." unless axis_face.is_a?(Face)
         raise TypeError unless direction.is_a?(CubeDirection)
 
         @axis_face = axis_face
@@ -345,9 +341,7 @@ module CubeTrainer
       def initialize(axis_face, direction, width = 1)
         super(axis_face, direction)
         raise TypeError unless width.is_a?(Integer)
-        unless width >= 1
-          raise ArgumentError, "Invalid width #{width} for fat move."
-      end
+        raise ArgumentError, "Invalid width #{width} for fat move." unless width >= 1
 
         @width = width
       end

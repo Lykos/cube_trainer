@@ -8,7 +8,7 @@ require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/core/parser'
 
 describe Move do
-  let (:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { ColorScheme::BERNHARD }
 
   it 'should invert M slices correctly' do
     expect(parse_move('M').inverse).to be == parse_move("M'")

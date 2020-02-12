@@ -1,9 +1,8 @@
 # frozen_string_literal: true
+
 module CubeTrainer
   module Utils
-
     module MathHelper
-  
       def floor_to_nice(number)
         divisor = 10.0**Math.log(number, 10).floor
         digit = (number / divisor).to_i
@@ -22,8 +21,6 @@ module CubeTrainer
       def floor_to_step(number, step)
         step * (number / step).floor
       end
-  
     end
   end
-
 end

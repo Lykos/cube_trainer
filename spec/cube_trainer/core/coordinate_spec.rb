@@ -6,13 +6,15 @@ require 'cube_trainer/core/cube'
 include CubeTrainer
 
 describe Coordinate do
-  let (:coordinate) { Coordinate.from_indices(Face::U, n, 0, 1) }
+  let(:coordinate) { Coordinate.from_indices(Face::U, n, 0, 1) }
 
   context 'for an uneven n' do
-    let (:n) { 7 }
+    let(:n) { 7 }
 
     it 'should check equivalence of coordinates appropriately' do
+      # rubocop:disable Lint/UselessComparison
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::U, n, 1, 0)).to be true
+      # rubocop:enable Lint/UselessComparison
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::U, n, 1, -7)).to be true
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::D, n, 1, 0)).to be false
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::U, n, 1, -1)).to be false
@@ -135,10 +137,12 @@ describe Coordinate do
   end
 
   context 'for an even n' do
-    let (:n) { 6 }
+    let(:n) { 6 }
 
     it 'should check equivalence of coordinates appropriately' do
+      # rubocop:disable Lint/UselessComparison
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::U, n, 1, 0)).to be true
+      # rubocop:enable Lint/UselessComparison
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::U, n, 1, -6)).to be true
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::D, n, 1, 0)).to be false
       expect(Coordinate.from_indices(Face::U, n, 1, 0) == Coordinate.from_indices(Face::U, n, 1, -1)).to be false

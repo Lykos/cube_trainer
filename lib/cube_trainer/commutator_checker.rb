@@ -12,9 +12,7 @@ module CubeTrainer
     include CubePrintHelper
 
     def initialize(part_type:, buffer:, piece_name:, color_scheme:, letter_scheme:, cube_size:, verbose: false, find_fixes: false, incarnation_index: 0)
-      unless part_type.is_a?(Class) && part_type.ancestors.include?(Part)
-        raise TypeError
-      end
+      raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(Part)
       raise TypeError unless buffer.class == part_type
       unless cube_size.is_a?(Integer) && cube_size > 0
         raise ArgumentError, "Unsuitable cube size #{cube_size}."

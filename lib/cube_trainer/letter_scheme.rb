@@ -6,9 +6,7 @@ module CubeTrainer
   class LetterScheme
     def initialize
       alphabet.each do |letter|
-        if letter != canonicalize_letter(letter)
-          raise "Uncanonical letter #{letter} in alphabet."
-                               end
+        raise "Uncanonical letter #{letter} in alphabet." if letter != canonicalize_letter(letter)
       end
     end
 
