@@ -15,8 +15,8 @@ module CubeTrainer
       SLICES = %w[E S M].freeze
       MOVE_METRICS = %i[qtm htm stm sqtm qstm].freeze
 
-      include StringHelper
-      include ArrayHelper
+      include Utils::StringHelper
+      include Utils::ArrayHelper
 
       def <=>(other)
         [self.class.name] + identifying_fields <=> [other.class.name] + other.identifying_fields

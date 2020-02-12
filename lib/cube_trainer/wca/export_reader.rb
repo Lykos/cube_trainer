@@ -2,12 +2,13 @@
 
 require 'csv'
 require 'zip'
-require 'cube_trainer/wca_result'
-require 'cube_trainer/parser'
+require 'cube_trainer/wca/result'
+require 'cube_trainer/core/parser'
 
 module CubeTrainer
-  # A clas that downloads and parses WCA exports.
-  class WCAExportReader
+  module WCA
+  # Parser for WCA exports
+  class ExportReader
     RANKS_AVERAGE_FILE = 'WCA_export_RanksAverage.tsv'
     RANKS_SINGLE_FILE = 'WCA_export_RanksSingle.tsv'
     PEOPLE_FILE = 'WCA_export_Persons.tsv'
@@ -25,9 +26,9 @@ module CubeTrainer
       result_int = result_string.to_i
       format = @events[eventid][:format]
       case format
-      when 'time' then WCAResult.time(result_int)
-      when 'multi' then WCAResult.multi(result_int)
-      when 'number' then WCAResult.number(result_int)
+      when 'time' then Result.time(result_int)
+      when 'multi' then Result.multi(result_int)
+      when 'number' then Result.number(result_int)
       else raise "Unknown format #{format}."
       end
     end
@@ -99,14 +100,23 @@ module CubeTrainer
       end
     end
 
+    def parse_event(row)
+      {
+        eventid: eventid,
+        name: row[1],
+        rank: row[2],
+        format: row[3],
+        cellName: row[4]
+      }
+    end
+
     def read_events_file(input_stream)
       @events = {}
       CSV.parse(input_stream, col_sep: COL_SEP) do |row|
         eventid = row[0]
         next if eventid == 'id'
 
-        @events[eventid] = { eventid: eventid, name: row[1],
-                             rank: row[2], format: row[3], cellName: row[4] }
+        @events[eventid] = parse_event(row)
       end
     end
 
@@ -170,6 +180,7 @@ module CubeTrainer
     end
 
     def parse_result(row)
+      eventid = row[1]
       values = row[10..14].reject(&:empty?).map { |v| result(eventid, v) }
       {
         competitionid: row[0],
@@ -190,9 +201,7 @@ module CubeTrainer
 
     def read_results_file(input_stream)
       @results = []
-      CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        next if row[0] == 'competitionId'
-
+      CSV.parse(input_stream, col_sep: COL_SEP, headers: true) do |row|
         @results.push(parse_result(row))
       end
     end
@@ -201,9 +210,9 @@ module CubeTrainer
       isextra = row[4].to_i == 1
       scramble = parse_algorithm(row[6])
       {
-        scrambleid: scrambleid,
+        scrambleid: row[0],
         competitionid: row[1],
-        eventid: eventid,
+        eventid: row[2],
         roundtypeid: row[2],
         groupid: row[3],
         isextra: isextra,
@@ -214,7 +223,7 @@ module CubeTrainer
 
     def read_scrambles_file(input_stream)
       @scrambles3x3 = []
-      CSV.parse(input_stream, col_sep: COL_SEP) do |row|
+      CSV.parse(input_stream, col_sep: COL_SEP, headers: true) do |row|
         next if row[0] == 'scrambleId'
         next unless row[2] == '333'
 
@@ -224,7 +233,7 @@ module CubeTrainer
 
     def initialize(filename)
       @ranks = {}
-      Zip::ZipFile.open(filename) do |z|
+      Zip::File.open(filename) do |z|
         read_continents_file(z.get_input_stream(CONTINENTS_FILE))
         read_countries_file(z.get_input_stream(COUNTRIES_FILE))
         read_formats_file(z.get_input_stream(FORMATS_FILE))
@@ -259,5 +268,6 @@ module CubeTrainer
       end
       badguys
     end
+  end
   end
 end

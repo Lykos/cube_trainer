@@ -1,14 +1,19 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/wca/storer'
+require 'cube_trainer/utils/array_helper'
 require 'net/http'
 require 'pathname'
-require 'cube_trainer/wca_storer'
 require 'wombat'
 
 module CubeTrainer
-  class WCACrawler
+  module WCA
+  # Helper class to crawl the WCA page and download the latest WCA export.
+  class Crawler
+    include Utils::ArrayHelper
+    
     def initialize
-      @storer = WCAStorer.new
+      @storer = Storer.new
     end
 
     WCA_BASE_URL = 'https://www.worldcubeassociation.org'
@@ -16,9 +21,9 @@ module CubeTrainer
 
     def extract_link(links_on_export_page)
       matching_links = links_on_export_page['links'].select do |l|
-        l =~ /WCA_export\d+_\d+\.tsv\.zip/
+        l =~ /WCA_export\d+_\w+Z\.tsv\.zip/
       end
-      only(matching_link)
+      only(matching_links)
     end
 
     def download_latest_file_name
@@ -42,21 +47,24 @@ module CubeTrainer
       URI.parse(url)
     end
 
+    def store_response(resp)
+      File.open(@storer.wca_export_path(filename), 'wb') do |f|
+        f.write(resp.body)
+        puts 'Download successful.'
+      end
+    end
+
     def download_wca_export(filename)
-      @storer.ensure_base_directory_exists
-      url = nil
+      @storer.ensure_cache_directory_exists
+      url = construct_wca_export_url(filename)
       REDIRECT_LIMIT.times do
-        url = construct_wca_export_url(filename)
         puts "Downloading #{url}"
         resp = Net::HTTP.get_response(url)
         if resp.is_a?(Net::HTTPRedirection)
           url = extract_redirect_url(resp)
         else
-          File.open(@storer.wca_export_path(filename), 'wb') do |f|
-            f.write(resp.body)
-            puts 'Download successful.'
-            break
-          end
+          store_response(resp)
+          break
         end
         raise 'Too many redirects.'
       end
@@ -73,5 +81,6 @@ module CubeTrainer
       end
       @storer.wca_export_path(filename)
     end
+  end
   end
 end
