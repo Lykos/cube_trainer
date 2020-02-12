@@ -46,7 +46,11 @@ end
 def cube_move(cube_size)
   return freq [10, :simple_move], [1, :rotation] if cube_size <= 2
 
-  freq [10, :simple_move], [1, :rotation], [1, :maybe_fat_mslice_maybe_inner_mslice_move], [1, :fat_move, cube_size], [1, :maybe_fat_maybe_slice_move]
+  freq [10, :simple_move],
+       [1, :rotation],
+       [1, :maybe_fat_mslice_maybe_inner_mslice_move],
+       [1, :fat_move, cube_size],
+       [1, :maybe_fat_maybe_slice_move]
 end
 
 def cube_algorithm(cube_size)
@@ -66,7 +70,10 @@ def skewb_algorithm
 end
 
 def cube_coordinate(cube_size)
-  Coordinate.from_indices(face, cube_size, range(0, cube_size - 1), range(0, cube_size - 1))
+  Coordinate.from_indices(face,
+                          cube_size,
+                          range(0, cube_size - 1),
+                          range(0, cube_size - 1))
 end
 
 def skewb_corner_coordinate
