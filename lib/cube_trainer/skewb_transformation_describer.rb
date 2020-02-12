@@ -83,9 +83,11 @@ module CubeTrainer
         first_part = parts.first
         parts.each do |part|
           simplified_parts.push(part)
-          # Stop after we reach a rotation of the first part (but still include that target to show the rotation or the end of the cycle).
+          # Stop after we reach a rotation of the first part
+          # (but still include that target to show the rotation or the end of the cycle).
           break if simplified_parts.length > 1 && first_part.rotations.include?(part)
-          # Stop when we reach the first uninteresting part (but still include that target to show where the last interesting part moves).
+          # Stop when we reach the first uninteresting part
+          # (but still include that target to show where the last interesting part moves).
           break if (interesting_parts & part.rotations).empty?
         end
         PartCycle.new(@letter_scheme, simplified_parts)

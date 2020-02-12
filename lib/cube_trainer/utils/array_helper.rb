@@ -14,11 +14,11 @@ module CubeTrainer
         end
       end
 
-      def turned_equals?(a, b)
-        return false if a.length != b.length
+      def turned_equals?(left, right)
+        return false if left.length != right.length
 
-        (0...a.length).any? do |r|
-          return true if a.rotate(r) == b
+        (0...left.length).any? do |r|
+          return true if left.rotate(r) == right
         end
         false
       end
@@ -26,15 +26,16 @@ module CubeTrainer
       def next_state_after_nil(array, state)
         case state
         when :start
-          state = :first_nil_part
+          :first_nil_part
         when :first_part
-          state = :nil_middle
+          :nil_middle
         when :middle
-          state = :second_nil_part
+          :second_nil_part
         when :first_nil_part, :second_nil_part, :nil_middle
-          state = state
+          state
         when :second_part
-          raise ArgumentError, "Cannot rotate out nils for #{array.inspect} since the nils are not contiguous."
+          raise ArgumentError,
+                "Cannot rotate out nils for #{array.inspect} since the nils are not contiguous."
         else
           raise "Unknown state #{state} reached."
         end
@@ -51,7 +52,8 @@ module CubeTrainer
         when :first_part, :second_part, :middle
           state
         when :second_nil_part
-          raise ArgumentError, "Cannot rotate out nils for #{array.inspect} since the nils are not contiguous."
+          raise ArgumentError,
+                "Cannot rotate out nils for #{array.inspect} since the nils are not contiguous."
         else
           raise "Unknown state #{state} reached."
         end

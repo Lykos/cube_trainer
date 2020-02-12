@@ -23,7 +23,8 @@ module CubeTrainer
       grouped_averages = @grouped_results.collect { |c, rs| [c, average_time(rs)] }
       @averages = grouped_averages.sort_by { |t| -t[1] }
 
-      old_grouped_results = results.select { |r| r.timestamp < now - 24 * 3600 }.group_by(&:input_representation)
+      old_results = results.select { |r| r.timestamp < now - 24 * 3600 }
+      old_grouped_results = old_results.group_by(&:input_representation)
       old_grouped_averages = old_grouped_results.collect { |c, rs| [c, average_time(rs)] }
       @old_averages = old_grouped_averages.sort_by { |t| -t[1] }
 
@@ -36,7 +37,8 @@ module CubeTrainer
     def input_stats(inputs)
       hashes = inputs.collect { |e| e.representation.hash }
       filtered_results = @grouped_results.select { |input, _rs| hashes.include?(input.hash) }
-      newish_elements = filtered_results.collect { |_input, rs| rs.length }.count { |l| l >= 1 && l < @options.new_item_boundary }
+      lengths = filtered_results.collect { |_input, rs| rs.length }
+      newish_elements = lengths.count { |l| l >= 1 && l < @options.new_item_boundary }
       found = filtered_results.keys.uniq.length
       total = inputs.length
       missing = total - found
@@ -49,10 +51,16 @@ module CubeTrainer
     end
 
     def expected_time_per_type_stats
-      @expected_time_per_type_stats ||= ExpectedTimeComputer.new(@now, @options, @results_persistence).compute_expected_time_per_type_stats
+      @expected_time_per_type_stats ||= begin
+                                          computer = ExpectedTimeComputer.new(@now,
+                                                                              @options,
+                                                                              @results_persistence)
+                                          computer.compute_expected_time_per_type_stats
+                                        end
     end
 
-    # Interesting time boundaries to see the number of bad results above that boundary. It allows to display things like "9 results are above 4.5 and one result is above 5"
+    # Interesting time boundaries to see the number of bad results above that boundary.
+    # It allows to display things like "9 results are above 4.5 and one result is above 5".
     def cutoffs
       return [] if @averages.length < 20
 
@@ -73,7 +81,11 @@ module CubeTrainer
     end
 
     def compute_total_average(averages)
-      averages.empty? ? Float::INFINITY : averages.collect { |_c, t| t }.reduce(:+) / averages.length
+      if averages.empty?
+        Float::INFINITY
+      else
+        averages.collect { |_c, t| t }.reduce(:+) / averages.length
+      end
     end
 
     def total_average

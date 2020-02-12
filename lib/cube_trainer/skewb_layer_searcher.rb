@@ -90,14 +90,19 @@ module CubeTrainer
         end
       end
 
+      def extract_own_algs
+        if @sub_solution
+          @sub_solution.extract_algorithms.map do |alg|
+            Core::Algorithm.move(@move) + alg
+          end
+        else
+          [Core::Algorithm.empty]
+        end
+      end
+
       def extract_algorithms
-        own_algs = if @sub_solution
-                     @sub_solution.extract_algorithms.map { |alg| Core::Algorithm.move(@move) + alg }
-                   else
-                     [Core::Algorithm.empty]
-                   end
         alternative_algs = @alternative_solutions.collect_concat(&:extract_algorithms)
-        own_algs + alternative_algs
+        extract_own_algs + alternative_algs
       end
     end
 
@@ -148,10 +153,12 @@ module CubeTrainer
     end
 
     # Find out whether there are any layers that are equivalent with rotations.
-    # In those cases, we don't add this as an alternative solution because there will be another one that's equivalent modulo rotations.
+    # In those cases, we don't add this as an alternative solution because there will be
+    # another one that's equivalent modulo rotations.
     def check_equivalent_modified_solution(candidate)
       has_equivalent_solution = false
-      # We go back to the original state and then apply a transformed version of the inverse of the algorithm.
+      # We go back to the original state and then apply
+      # a transformed version of the inverse of the algorithm.
       transformed_states = candidate.compiled_algorithm.apply_temporarily_to(@state) do
         ALGORITHM_TRANSFORMATIONS.collect do |t|
           transformed = t.transformed(candidate.compiled_algorithm).inverse
@@ -205,6 +212,14 @@ module CubeTrainer
       get_layer_solutions.push(candidate)
     end
 
+    def promote_candidate(candidate)
+      add_layer_solution(candidate)
+      @good_layer_solutions.push(candidate) if state_is_good?(candidate)
+      if @max_length.nil? || candidate.algorithm_length < @max_length
+        add_new_candidates(derived_layer_solutions(candidate))
+      end
+    end
+
     def calculate
       until candidates_empty?
         candidate = pop_candidate
@@ -219,14 +234,7 @@ module CubeTrainer
           has_equivalent_layer ||= check_equivalent_solution(candidate)
           has_equivalent_layer ||= check_equivalent_modified_solution(candidate)
 
-          unless has_equivalent_layer
-            # If there were no equivalent layers in any way, this is a new type of layer.
-            add_layer_solution(candidate)
-            @good_layer_solutions.push(candidate) if state_is_good?(candidate)
-            if @max_length.nil? || candidate.algorithm_length < @max_length
-              add_new_candidates(derived_layer_solutions(candidate))
-            end
-          end
+          promote_candidate(candidate) unless has_equivalent_layer
         end
       end
     end
