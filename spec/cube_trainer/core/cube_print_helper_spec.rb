@@ -5,8 +5,6 @@ require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/core/cube_state'
 require 'cube_trainer/core/parser'
 
-include CubeTrainer
-
 def apply_sexy(cube_state)
   parse_algorithm("R U R' U'").apply_to(cube_state)
 end
@@ -21,29 +19,29 @@ describe CubePrintHelper do
 
     it 'should print a solved state correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
-      expected = <<~EOS
+      expected = <<~CUBE.chomp
           YY
           YY
         BBRRGGOO
         BBRRGGOO
           WW
           WW
-      EOS
-      expect(cube_state.to_s).to be == expected.chomp
+      CUBE
+      expect(cube_state.to_s).to be == expected
     end
 
     it 'should print a state after sexy move correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       apply_sexy(cube_state)
-      expected = <<~EOS
+      expected = <<~CUBE.chomp
           YB
           YR
         OBRWGYOG
         BBRRYGOO
           WG
           WW
-      EOS
-      expect(cube_state.to_s).to be == expected.chomp
+      CUBE
+      expect(cube_state.to_s).to be == expected
     end
   end
 
@@ -52,7 +50,7 @@ describe CubePrintHelper do
 
     it 'should print a solved state correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
-      expected = <<~EOS
+      expected = <<~CUBE.chomp
            YYY
            YYY
            YYY
@@ -62,14 +60,14 @@ describe CubePrintHelper do
            WWW
            WWW
            WWW
-      EOS
-      expect(cube_state.to_s).to be == expected.chomp
+      CUBE
+      expect(cube_state.to_s).to be == expected
     end
 
     it 'should print a state after sexy move correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       apply_sexy(cube_state)
-      expected = <<~EOS
+      expected = <<~CUBE.chomp
            YYB
            YYR
            YYR
@@ -79,8 +77,8 @@ describe CubePrintHelper do
            WWG
            WWW
            WWW
-      EOS
-      expect(cube_state.to_s).to be == expected.chomp
+      CUBE
+      expect(cube_state.to_s).to be == expected
     end
   end
 
@@ -89,7 +87,7 @@ describe CubePrintHelper do
 
     it 'should print a solved state correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
-      expected = <<~EOS
+      expected = <<~CUBE.chomp
             YYYY
             YYYY
             YYYY
@@ -102,14 +100,14 @@ describe CubePrintHelper do
             WWWW
             WWWW
             WWWW
-      EOS
-      expect(cube_state.to_s).to be == expected.chomp
+      CUBE
+      expect(cube_state.to_s).to be == expected
     end
 
     it 'should print a state after sexy move correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       apply_sexy(cube_state)
-      expected = <<~EOS
+      expected = <<~CUBE.chomp
             YYYB
             YYYR
             YYYR
@@ -122,8 +120,8 @@ describe CubePrintHelper do
             WWWW
             WWWW
             WWWW
-      EOS
-      expect(cube_state.to_s).to be == expected.chomp
+      CUBE
+      expect(cube_state.to_s).to be == expected
     end
   end
 end

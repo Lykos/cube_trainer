@@ -2,8 +2,6 @@
 
 require 'cube_trainer/color_scheme'
 
-include CubeTrainer
-
 describe ColorScheme do
   it 'should return the right colors for the Bernhard orientation' do
     expect(ColorScheme::BERNHARD.color(:U)).to be == :yellow

@@ -5,8 +5,6 @@ require 'cube_trainer/core/cube'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/skewb_layer_classifier'
 
-include CubeTrainer
-
 describe SkewbLayerClassifier do
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:classifier) { SkewbLayerClassifier.new(Face::D, color_scheme) }

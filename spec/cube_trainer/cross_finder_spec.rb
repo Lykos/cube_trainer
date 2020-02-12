@@ -6,8 +6,6 @@ require 'cube_trainer/core/move'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/cross_finder'
 
-include CubeTrainer
-
 describe CrossFinder do
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cube_state) { color_scheme.solved_cube_state(3) }

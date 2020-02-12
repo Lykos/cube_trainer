@@ -10,9 +10,8 @@ require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
-include CubePrintHelper
-
 RSpec.shared_examples 'compiled_cube_algorithm' do |cube_size|
+  include CubePrintHelper
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cube_state) { color_scheme.solved_cube_state(cube_size) }
   let(:compile_then_transform_cube_state) { cube_state.dup }

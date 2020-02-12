@@ -6,8 +6,6 @@ require 'cube_trainer/core/cube'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/letter_scheme'
 
-include CubeTrainer
-
 describe CommutatorReverseEngineer do
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:cube_size) { 3 }

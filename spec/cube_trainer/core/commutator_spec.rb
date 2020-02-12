@@ -3,8 +3,6 @@
 require 'cube_trainer/core/commutator'
 require 'cube_trainer/core/parser'
 
-include CubeTrainer
-
 describe PureCommutator do
   let(:commutator) { parse_commutator('[R, U\' L\' U]') }
 

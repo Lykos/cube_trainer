@@ -169,7 +169,7 @@ module CubeTrainer
         if same_axis?(to_face)
           raise ArgumentError, "Cannot get the coordinate index close to #{to_face.inspect} on #{inspect} because they are not neighbors."
         end
-        
+
         to_priority = to_face.axis_priority
         if axis_priority < to_priority
           to_priority - 1

@@ -14,10 +14,8 @@ require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
-include CubeConstants
-include CubePrintHelper
-
 RSpec.shared_examples 'cube_state' do |cube_size|
+  include CubePrintHelper
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cycle_factory) { PartCycleFactory.new(cube_size, 0) }

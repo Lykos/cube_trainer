@@ -5,8 +5,6 @@ require 'cube_trainer/core/coordinate'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/letter_scheme'
 
-include CubeTrainer
-
 RSpec::Matchers.define :be_rotationally_equivalent_to do |expected|
   match do |actual|
     expected.length == actual.length && (0...expected.length).any? { |i| actual.rotate(i) == expected }

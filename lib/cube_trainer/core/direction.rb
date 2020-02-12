@@ -9,9 +9,7 @@ module CubeTrainer
       SIMPLE_SKEWB_DIRECTION_NAMES = ['0'] + POSSIBLE_SKEWB_DIRECTION_NAMES.map(&:first)
 
       def initialize(value)
-        unless value.is_a?(Integer)
-          raise TypeError, "Direction value #{value} isn't an integer."
-        end
+        raise TypeError, "Direction value #{value} isn't an integer." unless value.is_a?(Integer)
         unless value >= 0 && value < self.class::NUM_DIRECTIONS
           raise ArgumentError, "Invalid direction value #{value}."
         end

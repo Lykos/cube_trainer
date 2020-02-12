@@ -9,10 +9,9 @@ require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
-include CubeTrainer
-include CubePrintHelper
-
 describe SkewbState do
+  include CubePrintHelper
+
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:skewb_state) { color_scheme.solved_skewb_state }
 

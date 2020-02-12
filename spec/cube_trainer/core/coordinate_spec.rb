@@ -3,8 +3,6 @@
 require 'cube_trainer/core/coordinate'
 require 'cube_trainer/core/cube'
 
-include CubeTrainer
-
 describe Coordinate do
   let(:coordinate) { Coordinate.from_indices(Face::U, n, 0, 1) }
 
