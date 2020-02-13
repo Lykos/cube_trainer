@@ -1,0 +1,16 @@
+competitionId	eventId	roundTypeId	pos	best	average	personName	personId	personCountryId	formatId	value1	value2	value3	value4	value5	regionalSingleRecord	regionalAverageRecord
+BerlinKubusProjekt2017	222	1	35	302	683	Bernhard Brodowsky	2016BROD01	Germany	a	302	957	785	371	894		
+BerlinKubusProjekt2017	222	f	21	364	561	Bernhard Brodowsky	2016BROD01	Germany	a	598	753	598	488	364		
+BerlinKubusProjekt2017	333fm	f	14	35	-1	Bernhard Brodowsky	2016BROD01	Germany	m	35	-2	-2	0	0		
+BerlinKubusProjekt2017	333bf	1	7	7346	-1	Bernhard Brodowsky	2016BROD01	Germany	3	-1	-1	7346	0	0		
+BerlinKubusProjekt2017	333bf	f	17	-1	-1	Bernhard Brodowsky	2016BROD01	Germany	3	-1	-1	-1	0	0		
+BerlinKubusProjekt2017	333	1	38	1735	1827	Bernhard Brodowsky	2016BROD01	Germany	a	1735	2003	1962	1756	1762		
+BerlinKubusProjekt2017	333	2	41	1419	1872	Bernhard Brodowsky	2016BROD01	Germany	a	2320	2270	1507	1419	1838		
+BerlinKubusProjekt2017	333	f	36	1361	1724	Bernhard Brodowsky	2016BROD01	Germany	a	1361	1618	1906	1797	1758		
+BerlinKubusProjekt2017	555	d	29	13191	13462	Bernhard Brodowsky	2016BROD01	Germany	a	13514	13191	13192	13803	13681		
+BerlinKubusProjekt2017	skewb	1	15	768	1125	Bernhard Brodowsky	2016BROD01	Germany	a	1148	-1	945	768	1282		
+BerlinKubusProjekt2017	skewb	f	15	580	1021	Bernhard Brodowsky	2016BROD01	Germany	a	1215	580	952	1040	1070		
+BerlinKubusProjekt2017	333oh	d	25	2572	3118	Bernhard Brodowsky	2016BROD01	Germany	a	3338	2572	2658	3460	3359		
+BerlinKubusProjekt2017	333oh	2	29	2898	3293	Bernhard Brodowsky	2016BROD01	Germany	a	3264	3238	3384	3377	2898		
+BerlinKubusProjekt2017	444	d	37	5923	7167	Bernhard Brodowsky	2016BROD01	Germany	a	8054	5923	-1	7119	6328		
+BerlinKubusProjekt2017	444bf	f	6	-1	-1	Bernhard Brodowsky	2016BROD01	Germany	3	-1	-1	-1	0	0		
