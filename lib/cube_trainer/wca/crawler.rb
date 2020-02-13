@@ -8,79 +8,79 @@ require 'wombat'
 
 module CubeTrainer
   module WCA
-  # Helper class to crawl the WCA page and download the latest WCA export.
-  class Crawler
-    include Utils::ArrayHelper
-    
-    def initialize
-      @storer = Storer.new
-    end
+    # Helper class to crawl the WCA page and download the latest WCA export.
+    class Crawler
+      include Utils::ArrayHelper
 
-    WCA_BASE_URL = 'https://www.worldcubeassociation.org'
-    REDIRECT_LIMIT = 5
-
-    def extract_link(links_on_export_page)
-      matching_links = links_on_export_page['links'].select do |l|
-        l =~ /WCA_export\d+_\w+Z\.tsv\.zip/
+      def initialize
+        @storer = Storer.new
       end
-      only(matching_links)
-    end
 
-    def download_latest_file_name
-      links_on_export_page = Wombat.crawl do
-        base_url WCA_BASE_URL
-        path '/results/misc/export.html'
-        links({ xpath: '//a' }, :list)
-      end
-      extract_link(links_on_export_page)
-    end
+      WCA_BASE_URL = 'https://www.worldcubeassociation.org'
+      REDIRECT_LIMIT = 5
 
-    def construct_wca_export_url(filename)
-      URI.parse((WCA_BASE_URL + '/results/misc/' + filename).to_s)
-    end
-
-    def extract_redirect_url(resp)
-      url = resp['location'] || resp.match(/<a href=\"([^>]+)\">/i)[1]
-      raise 'No redirect URL found.' unless url
-      raise "Redirect to foreign page #{url}." unless url[0...WCA_BASE_URL.length] == WCA_BASE_URL
-
-      URI.parse(url)
-    end
-
-    def store_response(resp)
-      File.open(@storer.wca_export_path(filename), 'wb') do |f|
-        f.write(resp.body)
-        puts 'Download successful.'
-      end
-    end
-
-    def download_wca_export(filename)
-      @storer.ensure_cache_directory_exists
-      url = construct_wca_export_url(filename)
-      REDIRECT_LIMIT.times do
-        puts "Downloading #{url}"
-        resp = Net::HTTP.get_response(url)
-        if resp.is_a?(Net::HTTPRedirection)
-          url = extract_redirect_url(resp)
-        else
-          store_response(resp)
-          break
+      def extract_link(links_on_export_page)
+        matching_links = links_on_export_page['links'].select do |l|
+          l =~ /WCA_export\d+_\w+Z\.tsv\.zip/
         end
-        raise 'Too many redirects.'
+        only(matching_links)
       end
-    end
 
-    # Figures out what is the latest WCA export file, downloads it if we don't have it yet
-    # and returns the filename.
-    def download_latest_file
-      filename = download_latest_file_name
-      if @storer.wca_export_file_exists?(filename)
-        puts "No download since we have #{filename} already."
-      else
-        download_wca_export(filename)
+      def download_latest_file_name
+        links_on_export_page = Wombat.crawl do
+          base_url WCA_BASE_URL
+          path '/results/misc/export.html'
+          links({ xpath: '//a' }, :list)
+        end
+        extract_link(links_on_export_page)
       end
-      @storer.wca_export_path(filename)
+
+      def construct_wca_export_url(filename)
+        URI.parse((WCA_BASE_URL + '/results/misc/' + filename).to_s)
+      end
+
+      def extract_redirect_url(resp)
+        url = resp['location'] || resp.match(/<a href=\"([^>]+)\">/i)[1]
+        raise 'No redirect URL found.' unless url
+        raise "Redirect to foreign page #{url}." unless url[0...WCA_BASE_URL.length] == WCA_BASE_URL
+
+        URI.parse(url)
+      end
+
+      def store_response(resp)
+        File.open(@storer.wca_export_path(filename), 'wb') do |f|
+          f.write(resp.body)
+          puts 'Download successful.'
+        end
+      end
+
+      def download_wca_export(filename)
+        @storer.ensure_cache_directory_exists
+        url = construct_wca_export_url(filename)
+        REDIRECT_LIMIT.times do
+          puts "Downloading #{url}"
+          resp = Net::HTTP.get_response(url)
+          if resp.is_a?(Net::HTTPRedirection)
+            url = extract_redirect_url(resp)
+          else
+            store_response(resp)
+            break
+          end
+          raise 'Too many redirects.'
+        end
+      end
+
+      # Figures out what is the latest WCA export file, downloads it if we don't have it yet
+      # and returns the filename.
+      def download_latest_file
+        filename = download_latest_file_name
+        if @storer.wca_export_file_exists?(filename)
+          puts "No download since we have #{filename} already."
+        else
+          download_wca_export(filename)
+        end
+        @storer.wca_export_path(filename)
+      end
     end
-  end
   end
 end

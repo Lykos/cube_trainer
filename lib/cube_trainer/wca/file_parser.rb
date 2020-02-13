@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/parser'
 
 module CubeTrainer
@@ -15,15 +17,18 @@ module CubeTrainer
 
       STRING = new do |e, _r|
         raise ArgumentError unless e
+
         e
       end
       OPTIONAL_STRING = new { |e, _r| e unless e.nil? }
       SYMBOL = new do |e, _r|
         raise ArgumentError unless e
+
         e.to_sym
       end
       INTEGER = new do |e, _r|
         raise ArgumentError unless e
+
         Integer(e)
       end
       BOOLEAN = new do |e, _r|
@@ -45,18 +50,18 @@ module CubeTrainer
       def self.date_order_proxy(month, day)
         month * 32 + day
       end
-      
+
       END_DATE = new do |_e, r|
         end_month = r[:endmonth].to_i
         end_day = r[:endday].to_i
         end_before_start = date_order_proxy(end_month, end_day) >
-                         date_order_proxy(r[:month].to_i, r[:day].to_i)
+                           date_order_proxy(r[:month].to_i, r[:day].to_i)
         end_year = end_before_start ? r[:year].to_i + 1 : r[:year].to_i
         Time.new(end_year, r[:endmonth].to_i, r[:endday].to_i)
       end
       # TODO: Fix this
       RESULT = STRING
-      RESULT_KEYS = %i[value1 value2 value3 value4 value5]
+      RESULT_KEYS = %i[value1 value2 value3 value4 value5].freeze
       RESULTS = new do |_e, r|
         RESULT_KEYS.map { |k| RESULT.extract(r[k], r) }
       end
@@ -74,7 +79,7 @@ module CubeTrainer
         end.to_h
       end
     end
-      
+
     class FilteredRowParser
       def initialize(subparser, &block)
         @subparser = subparser
@@ -97,9 +102,9 @@ module CubeTrainer
       end
     end
 
-    class CSVFileParser      
+    class CSVFileParser
       COL_SEP = "\t"
-      
+
       def initialize(filename, row_parser)
         @filename = filename
         @row_parser = row_parser

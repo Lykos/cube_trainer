@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/parser'
 require 'cube_trainer/wca/export_parser'
 require 'tempfile'
@@ -15,15 +17,15 @@ describe WCA::ExportParser do
 
   it 'should read the scrambles of a WCA export' do
     expect(@parser.scrambles).to be == [{
-                                          scrambleid: 657918,
-                                          competitionid: 'BerlinKubusProjekt2017',
-                                          eventid: '222',
-                                          roundtypeid: :'1',
-                                          groupid: 'A',
-                                          isextra: false,
-                                          scramblenum: 1,
-                                          scramble: parse_algorithm("U2 R' U2 R U' R U F' U' R U")
-                                        }]
+      scrambleid: 657_918,
+      competitionid: 'BerlinKubusProjekt2017',
+      eventid: '222',
+      roundtypeid: :'1',
+      groupid: 'A',
+      isextra: false,
+      scramblenum: 1,
+      scramble: parse_algorithm("U2 R' U2 R U' R U F' U' R U")
+    }]
   end
 
   it 'should read the results of a WCA export' do
@@ -32,33 +34,32 @@ describe WCA::ExportParser do
   end
 
   it 'should read the countries of a WCA export' do
-    expect(@parser.countries).to be == {'Germany' => {
-                                          id: 'Germany',
-                                          name: 'Germany',
-                                          continentid: '_Europe',
-                                          iso2: 'DE'
-                                        }}
+    expect(@parser.countries).to be == { 'Germany' => {
+      id: 'Germany',
+      name: 'Germany',
+      continentid: '_Europe',
+      iso2: 'DE'
+    } }
   end
-  
+
   it 'should read the continents of a WCA export' do
-    expect(@parser.continents).to be == {'_Europe' => {
-                                           id: '_Europe',
-                                           name: 'Europe',
-                                           recordname: 'ER',
-                                           latitude: 58299984,
-                                           longitude: 23049300,
-                                           zoom: 3
-                                         }}
+    expect(@parser.continents).to be == { '_Europe' => {
+      id: '_Europe',
+      name: 'Europe',
+      recordname: 'ER',
+      latitude: 58_299_984,
+      longitude: 23_049_300,
+      zoom: 3
+    } }
   end
-  
+
   it 'should figure out whether someone nemesizes someone' do
     expect(@parser.nemesis?('2016BROD01', '2017BROD01')).to be true
     expect(@parser.nemesis?('2017BROD01', '2016BROD01')).to be false
   end
-  
+
   it 'should find nemeses' do
     expect(@parser.nemeses('2016BROD01')).to be == []
     expect(@parser.nemeses('2017BROD01')).to be == ['2016BROD01']
   end
-  
 end

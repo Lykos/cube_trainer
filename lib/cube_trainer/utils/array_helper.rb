@@ -40,7 +40,7 @@ module CubeTrainer
           raise "Unknown state #{state} reached."
         end
       end
-      
+
       def next_state_after_non_nil(array, state)
         case state
         when :start
