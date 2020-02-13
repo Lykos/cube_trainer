@@ -22,17 +22,6 @@ module CubeTrainer
       ROUND_TYPES_FILE = 'WCA_export_RoundTypes.tsv'
       SCRAMBLES_FILE = 'WCA_export_Scrambles.tsv'
 
-      def result(eventid, result_string)
-        result_int = result_string.to_i
-        format = @events[eventid][:format]
-        case format
-        when 'time' then Result.time(result_int)
-        when 'multi' then Result.multi(result_int)
-        when 'number' then Result.number(result_int)
-        else raise "Unknown format #{format}."
-        end
-      end
-
       SCRAMBLE_SUPPORTED_EVENT_IDS = %w[
         222
         333
@@ -265,6 +254,17 @@ module CubeTrainer
           person_ranks = (ranks[personid] ||= {})
           eventid = "#{e[:eventid]}_#{eventid_suffix}".to_sym
           person_ranks[eventid] = e
+        end
+      end
+
+      def result(eventid, result_string)
+        result_int = result_string.to_i
+        format = @events[eventid][:format]
+        case format
+        when 'time' then Result.time(result_int)
+        when 'multi' then Result.multi(result_int)
+        when 'number' then Result.number(result_int)
+        else raise "Unknown format #{format}."
         end
       end
     end
