@@ -2,16 +2,17 @@
 
 require 'csv'
 require 'zip'
+require 'cube_trainer/wca/file_parser'
 require 'cube_trainer/wca/result'
 require 'cube_trainer/core/parser'
 
 module CubeTrainer
   module WCA
   # Parser for WCA exports
-  class ExportReader
+  class ExportParser
     RANKS_AVERAGE_FILE = 'WCA_export_RanksAverage.tsv'
     RANKS_SINGLE_FILE = 'WCA_export_RanksSingle.tsv'
-    PEOPLE_FILE = 'WCA_export_Persons.tsv'
+    PERSONS_FILE = 'WCA_export_Persons.tsv'
     CONTINENTS_FILE = 'WCA_export_Continents.tsv'
     COUNTRIES_FILE = 'WCA_export_Countries.tsv'
     EVENTS_FILE = 'WCA_export_Events.tsv'
@@ -20,7 +21,6 @@ module CubeTrainer
     FORMATS_FILE = 'WCA_export_Formats.tsv'
     RESULTS_FILE = 'WCA_export_Results.tsv'
     SCRAMBLES_FILE = 'WCA_export_Scrambles.tsv'
-    COL_SEP = "\t"
 
     def result(eventid, result_string)
       result_int = result_string.to_i
@@ -33,222 +33,177 @@ module CubeTrainer
       end
     end
 
-    def read_ranks_file(input_stream, prefix)
-      CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        personid = row[0]
-        eventid = row[1]
-        worldrank = row[2].to_i
-        next if eventid == 'eventId'
+    SCRAMBLE_SUPPORTED_EVENT_IDS = [
+      '222',
+      '333',
+      '444',
+      '555',
+      '666',
+      '777',
+      '333bf',
+      '333fm',
+      '333ft',
+      '333oh',
+      '333mbf',
+      '333mbo',
+      '444bf',
+      '555bf'
+    ]
 
-        @ranks[personid] ||= {}
-        @ranks[personid][prefix + eventid] = worldrank
+    def self.filter_scrambles(row)
+      SCRAMBLE_SUPPORTED_EVENT_IDS.include?(row[:eventid])
+    end
+
+    RANK_ROW_PARSER = CSVRowParser.new(
+      personid: Column::STRING,
+      eventid: Column::STRING,
+      best: Column::RESULT,
+      worldrank: Column::INTEGER,
+      continentrank: Column::INTEGER,
+      countryrank: Column::INTEGER)
+
+    FILE_PARSERS = {
+      competitions: CSVFileParser.new(COMPETITIONS_FILE,
+                                      # TODO: Parse more of these
+                                      CSVRowParser.new(
+                                        id: Column::STRING,
+                                        name: Column::STRING,
+                                        cityname: Column::STRING,
+                                        countryid: Column::STRING,
+                                        information: Column::STRING,
+                                        year: Column::INTEGER,
+                                        month: Column::INTEGER,
+                                        day: Column::INTEGER,
+                                        endmonth: Column::INTEGER,
+                                        endday: Column::INTEGER,
+                                        eventspecs: Column::STRING,
+                                        wcadelegate: Column::STRING,
+                                        organiser: Column::STRING,
+                                        venue: Column::STRING,
+                                        venueaddress: Column::STRING,
+                                        venuedetails: Column::STRING,
+                                        externalwebsite: Column::STRING,
+                                        cellname: Column::STRING,
+                                        latitude: Column::INTEGER,
+                                        longitude: Column::INTEGER,
+                                        startdate: Column::START_DATE,
+                                        enddate: Column::END_DATE)),
+      countries: CSVFileParser.new(COUNTRIES_FILE,
+                                   CSVRowParser.new(
+                                     id: Column::STRING,
+                                     name: Column::STRING,
+                                     continentid: Column::STRING,
+                                     iso2: Column::STRING)),
+      continents: CSVFileParser.new(CONTINENTS_FILE,
+                                    CSVRowParser.new(
+                                      id: Column::STRING,
+                                      name: Column::STRING,
+                                      recordname: Column::STRING,
+                                      latitude: Column::INTEGER,
+                                      longitude: Column::INTEGER,
+                                      zoom: Column::INTEGER)),
+      events: CSVFileParser.new(EVENTS_FILE,
+                                CSVRowParser.new(
+                                  id: Column::STRING,
+                                  name: Column::STRING,
+                                  rank: Column::INTEGER,
+                                  format: Column::SYMBOL,
+                                  cellname: Column::STRING)),
+      formats: CSVFileParser.new(FORMATS_FILE,
+                                 CSVRowParser.new(
+                                   id: Column::SYMBOL,
+                                   name: Column::STRING,
+                                   sort_by: Column::SYMBOL,
+                                   sort_by_second: Column::SYMBOL,
+                                   expected_solve_count: Column::INTEGER,
+                                   trim_fastest_n: Column::INTEGER,
+                                   trim_slowest_n: Column::INTEGER)),
+      persons: CSVFileParser.new(PERSONS_FILE,
+                                 CSVRowParser.new(
+                                   id: Column::STRING,
+                                   subid: Column::INTEGER,
+                                   name: Column::STRING,
+                                   countryid: Column::SYMBOL,
+                                   gender: Column::SYMBOL)),
+      ranks_average: CSVFileParser.new(RANKS_AVERAGE_FILE, RANK_ROW_PARSER),
+      ranks_single: CSVFileParser.new(RANKS_SINGLE_FILE, RANK_ROW_PARSER),
+      results: CSVFileParser.new(RESULTS_FILE,
+                                 CSVRowParser.new(
+                                   competitionid: Column::STRING,
+                                   eventid: Column::STRING,
+                                   roundtypeid: Column::SYMBOL,
+                                   pos: Column::INTEGER,
+                                   best: Column::RESULT,
+                                   average: Column::RESULT,
+                                   personname: Column::STRING,
+                                   personid: Column::STRING,
+                                   personcountryid: Column::STRING,
+                                   formatid: Column::SYMBOL,
+                                   value1: Column::RESULT,
+                                   value2: Column::RESULT,
+                                   value3: Column::RESULT,
+                                   value4: Column::RESULT,
+                                   value5: Column::RESULT,
+                                   values: Column::RESULTS,
+                                   regionalsinglerecord: Column::OPTIONAL_STRING,
+                                   regionalaveragerecord: Column::OPTIONAL_STRING)),
+      round_types: CSVFileParser.new(ROUND_TYPES_FILE,
+                                     CSVRowParser.new(
+                                       id: Column::SYMBOL,
+                                       rank: Column::INTEGER,
+                                       name: Column::STRING,
+                                       cellname: Column::SYMBOL,
+                                       final: Column::BOOLEAN)),
+      scrambles: CSVFileParser.new(SCRAMBLES_FILE,
+                                   FilteredRowParser.new(
+                                     CSVRowParser.new(
+                                       scrambleid: Column::INTEGER,
+                                       competitionid: Column::STRING,
+                                       eventid: Column::STRING,
+                                       roundtypeid: Column::SYMBOL,
+                                       groupid: Column::STRING,
+                                       isextra: Column::BOOLEAN,
+                                       scramblenum: Column::INTEGER,
+                                       scramble: Column::ALGORITHM), &method(:filter_scrambles)))
+    }
+
+    def initialize(competitions:,
+                   countries:,
+                   continents:,
+                   events:,
+                   formats:,
+                   persons:,
+                   ranks_average:,
+                   ranks_single:,
+                   results:,
+                   round_types:,
+                   scrambles:)
+      @competitions = competitions
+      @countries = countries
+      @continents = continents
+      @events = events
+      @formats = formats
+      @persons = persons
+      @ranks_average = ranks_average
+      @ranks_single = ranks_single
+      @results = results
+      @round_types = round_types
+      @scrambles = scrambles
+    end
+
+    private_class_method :new
+
+    def self.parse(filename)
+      data = {}
+      Zip::File.open(filename) do |zipfile|
+        FILE_PARSERS.each do |key, parser|
+          data[key] = parser.parse_from(zipfile)
+        end
       end
+      new(**data)
     end
 
-    def parse_person(row)
-      {
-        personid: row[0],
-        subid: row[1],
-        name: row[2],
-        country: row[3],
-        gender: row[4]
-      }
-    end
-
-    def read_people_file(input_stream)
-      @people = {}
-      CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        personid = row[0]
-        next if personid == 'id'
-
-        @people[personid] = parse_person(row)
-      end
-    end
-
-    def read_continents_file(input_stream)
-      @continents = {}
-      CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        continentid = row[0]
-        next if continentid == 'id'
-
-        @continents[continentid] = { continentid: continentid, name: row[1],
-                                     recordName: row[2], latitude: row[4],
-                                     longitude: row[5], zoom: row[6] }
-      end
-    end
-
-    def read_countries_file(input_stream)
-      @countries = {}
-      CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        countryid = row[0]
-        next if countryid == 'id'
-
-        @countries[countryid] = { countryid: countryid, name: row[1],
-                                  continentid: row[2], iso2: row[3] }
-      end
-    end
-
-    def read_formats_file(input_stream)
-      @formats = {}
-      CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        formatid = row[0]
-        next if formatid == 'id'
-
-        @formats[formatid] = { formatid: formatid, name: row[1],
-                               sortby: row[2], sortbysecond: row[3], expectedsolvecount: row[4],
-                               trim_fastest_n: row[5].to_i, trim_slowest_n: row[6].to_i }
-      end
-    end
-
-    def parse_event(row)
-      {
-        eventid: eventid,
-        name: row[1],
-        rank: row[2],
-        format: row[3],
-        cellName: row[4]
-      }
-    end
-
-    def read_events_file(input_stream)
-      @events = {}
-      CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        eventid = row[0]
-        next if eventid == 'id'
-
-        @events[eventid] = parse_event(row)
-      end
-    end
-
-    def parse_competition(row)
-      year = row[5].to_i
-      startdate = Time.new(year, row[6].to_i, row[7].to_i)
-      enddate = Time.new(year, row[8].to_i, row[9].to_i)
-      eventspecs = row[10].split(' ')
-      # TODO: parse these
-      wcadelegate = row[11]
-      organizer = row[12]
-      venue = row[13]
-      {
-        competitionid: row[0],
-        name: row[1],
-        cityname: row[2],
-        countryid: row[3],
-        information: row[4],
-        startdate: startdate,
-        enddate: enddate,
-        eventspecs: eventspecs,
-        wcadelegate: wcadelegate,
-        organizer: organizer,
-        venue: venue,
-        venueaddress: row[14],
-        venuedetails: row[15],
-        externalwebsite: row[16],
-        cellname: row[17],
-        latitude: row[18],
-        longitude: row[19]
-      }
-    end
-
-    def read_competitions_file(input_stream)
-      @competitions = {}
-      CSV.parse(input_stream, col_sep: COL_SEP, quote_char: "\x00") do |row|
-        competitionid = row[0]
-        next if competitionid == 'id'
-
-        @competitions[competitionid] = parse_competition(row)
-      end
-    end
-
-    def parse_round_type(row)
-      {
-        roundtypeid: row[0],
-        rank: row[1].to_i,
-        name: row[2],
-        cellname: row[3],
-        final: row[4].to_i.positive?
-      }
-    end
-
-    def read_round_types_file(input_stream)
-      @round_types = []
-      CSV.parse(input_stream, col_sep: COL_SEP) do |row|
-        next if row[0] == 'id'
-
-        @round_types.push(parse_round_type(row))
-      end
-    end
-
-    def parse_result(row)
-      eventid = row[1]
-      values = row[10..14].reject(&:empty?).map { |v| result(eventid, v) }
-      {
-        competitionid: row[0],
-        eventid: eventid,
-        roundtypeid: row[2],
-        pos: row[3].to_i,
-        best: result(eventid, row[4]),
-        average: result(eventid, row[5]),
-        personname: row[6],
-        personid: row[7],
-        personcountryid: row[8],
-        formatid: row[9],
-        values: values,
-        regionalsinglerecord: row[15],
-        regionalaveragerecord: row[16]
-      }
-    end
-
-    def read_results_file(input_stream)
-      @results = []
-      CSV.parse(input_stream, col_sep: COL_SEP, headers: true) do |row|
-        @results.push(parse_result(row))
-      end
-    end
-
-    def parse_scramble3x3(row)
-      isextra = row[4].to_i == 1
-      scramble = parse_algorithm(row[6])
-      {
-        scrambleid: row[0],
-        competitionid: row[1],
-        eventid: row[2],
-        roundtypeid: row[2],
-        groupid: row[3],
-        isextra: isextra,
-        scramblenum: row[5].to_i,
-        scramble: scramble
-      }
-    end
-
-    def read_scrambles_file(input_stream)
-      @scrambles3x3 = []
-      CSV.parse(input_stream, col_sep: COL_SEP, headers: true) do |row|
-        next if row[0] == 'scrambleId'
-        next unless row[2] == '333'
-
-        @scrambles3x3.push(parse_scramble3x3(row))
-      end
-    end
-
-    def initialize(filename)
-      @ranks = {}
-      Zip::File.open(filename) do |z|
-        read_continents_file(z.get_input_stream(CONTINENTS_FILE))
-        read_countries_file(z.get_input_stream(COUNTRIES_FILE))
-        read_formats_file(z.get_input_stream(FORMATS_FILE))
-        read_round_types_file(z.get_input_stream(ROUND_TYPES_FILE))
-        read_events_file(z.get_input_stream(EVENTS_FILE))
-        read_competitions_file(z.get_input_stream(COMPETITIONS_FILE))
-        read_results_file(z.get_input_stream(RESULTS_FILE))
-        read_people_file(z.get_input_stream(PEOPLE_FILE))
-        read_ranks_file(z.get_input_stream(RANKS_AVERAGE_FILE), 'Average')
-        read_ranks_file(z.get_input_stream(RANKS_SINGLE_FILE), 'Single')
-        read_scrambles_file(z.get_input_stream(SCRAMBLES_FILE))
-      end
-    end
-
-    attr_reader :results, :continents, :countries, :competitions, :events, :people, :round_types
+    attr_reader :results, :continents, :countries, :competitions, :events, :people, :round_types, :scrambles
 
     def nemesis?(badguy, victim)
       badranks = @ranks[badguy]
