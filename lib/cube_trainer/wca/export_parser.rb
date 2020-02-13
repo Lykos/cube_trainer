@@ -10,16 +10,16 @@ module CubeTrainer
   module WCA
   # Parser for WCA exports
   class ExportParser
-    RANKS_AVERAGE_FILE = 'WCA_export_RanksAverage.tsv'
-    RANKS_SINGLE_FILE = 'WCA_export_RanksSingle.tsv'
-    PERSONS_FILE = 'WCA_export_Persons.tsv'
+    COMPETITIONS_FILE = 'WCA_export_Competitions.tsv'
     CONTINENTS_FILE = 'WCA_export_Continents.tsv'
     COUNTRIES_FILE = 'WCA_export_Countries.tsv'
     EVENTS_FILE = 'WCA_export_Events.tsv'
-    ROUND_TYPES_FILE = 'WCA_export_RoundTypes.tsv'
-    COMPETITIONS_FILE = 'WCA_export_Competitions.tsv'
     FORMATS_FILE = 'WCA_export_Formats.tsv'
+    PERSONS_FILE = 'WCA_export_Persons.tsv'
+    RANKS_AVERAGE_FILE = 'WCA_export_RanksAverage.tsv'
+    RANKS_SINGLE_FILE = 'WCA_export_RanksSingle.tsv'
     RESULTS_FILE = 'WCA_export_Results.tsv'
+    ROUND_TYPES_FILE = 'WCA_export_RoundTypes.tsv'
     SCRAMBLES_FILE = 'WCA_export_Scrambles.tsv'
 
     def result(eventid, result_string)
@@ -54,14 +54,6 @@ module CubeTrainer
       SCRAMBLE_SUPPORTED_EVENT_IDS.include?(row[:eventid])
     end
 
-    RANK_ROW_PARSER = CSVRowParser.new(
-      personid: Column::STRING,
-      eventid: Column::STRING,
-      best: Column::RESULT,
-      worldrank: Column::INTEGER,
-      continentrank: Column::INTEGER,
-      countryrank: Column::INTEGER)
-
     FILE_PARSERS = {
       competitions: CSVFileParser.new(COMPETITIONS_FILE,
                                       # TODO: Parse more of these
@@ -70,7 +62,7 @@ module CubeTrainer
                                         name: Column::STRING,
                                         cityname: Column::STRING,
                                         countryid: Column::STRING,
-                                        information: Column::STRING,
+                                        information: Column::OPTIONAL_STRING,
                                         year: Column::INTEGER,
                                         month: Column::INTEGER,
                                         day: Column::INTEGER,
@@ -78,11 +70,11 @@ module CubeTrainer
                                         endday: Column::INTEGER,
                                         eventspecs: Column::STRING,
                                         wcadelegate: Column::STRING,
-                                        organiser: Column::STRING,
-                                        venue: Column::STRING,
-                                        venueaddress: Column::STRING,
-                                        venuedetails: Column::STRING,
-                                        externalwebsite: Column::STRING,
+                                        organiser: Column::OPTIONAL_STRING,
+                                        venue: Column::OPTIONAL_STRING,
+                                        venueaddress: Column::OPTIONAL_STRING,
+                                        venuedetails: Column::OPTIONAL_STRING,
+                                        external_website: Column::OPTIONAL_STRING,
                                         cellname: Column::STRING,
                                         latitude: Column::INTEGER,
                                         longitude: Column::INTEGER,
@@ -98,7 +90,7 @@ module CubeTrainer
                                     CSVRowParser.new(
                                       id: Column::STRING,
                                       name: Column::STRING,
-                                      recordname: Column::STRING,
+                                      recordname: Column::OPTIONAL_STRING,
                                       latitude: Column::INTEGER,
                                       longitude: Column::INTEGER,
                                       zoom: Column::INTEGER)),
@@ -124,29 +116,7 @@ module CubeTrainer
                                    subid: Column::INTEGER,
                                    name: Column::STRING,
                                    countryid: Column::SYMBOL,
-                                   gender: Column::SYMBOL)),
-      ranks_average: CSVFileParser.new(RANKS_AVERAGE_FILE, RANK_ROW_PARSER),
-      ranks_single: CSVFileParser.new(RANKS_SINGLE_FILE, RANK_ROW_PARSER),
-      results: CSVFileParser.new(RESULTS_FILE,
-                                 CSVRowParser.new(
-                                   competitionid: Column::STRING,
-                                   eventid: Column::STRING,
-                                   roundtypeid: Column::SYMBOL,
-                                   pos: Column::INTEGER,
-                                   best: Column::RESULT,
-                                   average: Column::RESULT,
-                                   personname: Column::STRING,
-                                   personid: Column::STRING,
-                                   personcountryid: Column::STRING,
-                                   formatid: Column::SYMBOL,
-                                   value1: Column::RESULT,
-                                   value2: Column::RESULT,
-                                   value3: Column::RESULT,
-                                   value4: Column::RESULT,
-                                   value5: Column::RESULT,
-                                   values: Column::RESULTS,
-                                   regionalsinglerecord: Column::OPTIONAL_STRING,
-                                   regionalaveragerecord: Column::OPTIONAL_STRING)),
+                                   gender: Column::OPTIONAL_STRING)),
       round_types: CSVFileParser.new(ROUND_TYPES_FILE,
                                      CSVRowParser.new(
                                        id: Column::SYMBOL,
@@ -154,69 +124,123 @@ module CubeTrainer
                                        name: Column::STRING,
                                        cellname: Column::SYMBOL,
                                        final: Column::BOOLEAN)),
-      scrambles: CSVFileParser.new(SCRAMBLES_FILE,
-                                   FilteredRowParser.new(
-                                     CSVRowParser.new(
-                                       scrambleid: Column::INTEGER,
-                                       competitionid: Column::STRING,
-                                       eventid: Column::STRING,
-                                       roundtypeid: Column::SYMBOL,
-                                       groupid: Column::STRING,
-                                       isextra: Column::BOOLEAN,
-                                       scramblenum: Column::INTEGER,
-                                       scramble: Column::ALGORITHM), &method(:filter_scrambles)))
     }
 
-    def initialize(competitions:,
-                   countries:,
+    RANK_ROW_PARSER = CSVRowParser.new(
+      personid: Column::STRING,
+      eventid: Column::STRING,
+      best: Column::RESULT,
+      worldrank: Column::INTEGER,
+      continentrank: Column::INTEGER,
+      countryrank: Column::INTEGER)
+    RANKS_AVERAGE_FILE_PARSER = CSVFileParser.new(RANKS_AVERAGE_FILE, RANK_ROW_PARSER)
+    RANKS_SINGLE_FILE_PARSER = CSVFileParser.new(RANKS_SINGLE_FILE, RANK_ROW_PARSER)
+
+    RESULTS_FILE_PARSER = CSVFileParser.new(RESULTS_FILE,
+                                            CSVRowParser.new(
+                                              competitionid: Column::STRING,
+                                              eventid: Column::STRING,
+                                              roundtypeid: Column::SYMBOL,
+                                              pos: Column::INTEGER,
+                                              best: Column::RESULT,
+                                              average: Column::RESULT,
+                                              personname: Column::STRING,
+                                              personid: Column::STRING,
+                                              personcountryid: Column::STRING,
+                                              formatid: Column::SYMBOL,
+                                              value1: Column::RESULT,
+                                              value2: Column::RESULT,
+                                              value3: Column::RESULT,
+                                              value4: Column::RESULT,
+                                              value5: Column::RESULT,
+                                              values: Column::RESULTS,
+                                              regionalsinglerecord: Column::OPTIONAL_STRING,
+                                              regionalaveragerecord: Column::OPTIONAL_STRING))
+    SCRAMBLES_FILE_PARSER = CSVFileParser.new(SCRAMBLES_FILE,
+                                              FilteredRowParser.new(
+                                                CSVRowParser.new(
+                                                  scrambleid: Column::INTEGER,
+                                                  competitionid: Column::STRING,
+                                                  eventid: Column::STRING,
+                                                  roundtypeid: Column::SYMBOL,
+                                                  groupid: Column::STRING,
+                                                  isextra: Column::BOOLEAN,
+                                                  scramblenum: Column::INTEGER,
+                                                  scramble: Column::ALGORITHM), &method(:filter_scrambles)))
+
+    def initialize(filename:,
+                   competitions:,
                    continents:,
+                   countries:,
                    events:,
                    formats:,
                    persons:,
-                   ranks_average:,
-                   ranks_single:,
-                   results:,
-                   round_types:,
-                   scrambles:)
-      @competitions = competitions
-      @countries = countries
-      @continents = continents
-      @events = events
-      @formats = formats
-      @persons = persons
-      @ranks_average = ranks_average
-      @ranks_single = ranks_single
-      @results = results
-      @round_types = round_types
-      @scrambles = scrambles
+                   round_types:)
+      @filename = filename
+      @competitions = competitions.map { |e| [e[:competitionid], e] }.to_h
+      @countries = countries.map { |e| [e[:id], e] }.to_h
+      @continents = continents.map { |e| [e[:id], e] }.to_h
+      @events = events.map { |e| [e[:id], e] }.to_h
+      @formats = formats.map { |e| [e[:id], e] }.to_h
+      @persons = persons.map { |e| [e[:id], e] }.to_h
+      @round_types = round_types.map { |e| [e[:id], e] }.to_h
     end
 
     private_class_method :new
 
     def self.parse(filename)
+      new(filename: filename, **parse_internal(filename, FILE_PARSERS))
+    end
+    
+    def self.parse_internal(filename, parsers)
       data = {}
       Zip::File.open(filename) do |zipfile|
-        FILE_PARSERS.each do |key, parser|
+        parsers.each do |key, parser|
           data[key] = parser.parse_from(zipfile)
         end
       end
-      new(**data)
+      data
     end
 
-    attr_reader :results, :continents, :countries, :competitions, :events, :people, :round_types, :scrambles
+    attr_reader :competitions, :continents, :countries, :events, :formats, :persons, :ranks, :round_types
+
+    def ranks
+      @ranks ||= begin
+                   ranks_single_and_average = self.class.parse_internal(@filename,
+                                                                        ranks_single: RANKS_SINGLE_FILE_PARSER,
+                                                                        ranks_average: RANKS_AVERAGE_FILE_PARSER)
+                   ranks = {}
+                   ranks.default_proc = proc { |h, k| h[k] = {} }
+                   ranks_single_and_average[:ranks_average].each do |e|
+                     ranks[e[:personid]]["#{e[:eventid]}_average".to_sym] = e
+                   end
+                   ranks_single_and_average[:ranks_single].each do |e|
+                     ranks[e[:personid]]["#{e[:eventid]}_single".to_sym] = e
+                   end
+                   ranks.default_proc = nil
+                   ranks
+                 end.freeze
+    end
+
+    def scrambles
+      @scrambles ||= self.class.parse_internal(@filename, scrambles: SCRAMBLES_FILE_PARSER)[:scrambles].freeze
+    end
+
+    def results
+      @results ||= self.class.parse_internal(@filename, results: RESULTS_FILE_PARSER)[:results].freeze
+    end
 
     def nemesis?(badguy, victim)
-      badranks = @ranks[badguy]
-      victimranks = @ranks[victim]
+      badranks = ranks[badguy]
+      victimranks = ranks[victim]
       victimranks.all? do |k, v|
-        badranks&.key?(k) && badranks[k] < v
+        badranks&.key?(k) && badranks[k][:worldrank] < v[:worldrank]
       end
     end
 
     def nemeses(wcaid)
       badguys = []
-      @people.each_value do |person|
-        id = person[:personid]
+      @persons.each do |id, person|
         next if id == wcaid
 
         badguys.push(id) if nemesis?(id, wcaid)

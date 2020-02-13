@@ -26,24 +26,39 @@ describe WCA::ExportParser do
                                         }]
   end
 
+  it 'should read the results of a WCA export' do
+    # TODO: Improve this
+    expect(@parser.results.first[:personid]).to be == '2016BROD01'
+  end
+
   it 'should read the countries of a WCA export' do
-    expect(@parser.countries).to be == [{
+    expect(@parser.countries).to be == {'Germany' => {
                                           id: 'Germany',
                                           name: 'Germany',
                                           continentid: '_Europe',
                                           iso2: 'DE'
-                                        }]
+                                        }}
   end
   
   it 'should read the continents of a WCA export' do
-    expect(@parser.continents).to be == [{
+    expect(@parser.continents).to be == {'_Europe' => {
                                            id: '_Europe',
                                            name: 'Europe',
                                            recordname: 'ER',
                                            latitude: 58299984,
                                            longitude: 23049300,
                                            zoom: 3
-                                         }]
+                                         }}
+  end
+  
+  it 'should figure out whether someone nemesizes someone' do
+    expect(@parser.nemesis?('2016BROD01', '2017BROD01')).to be true
+    expect(@parser.nemesis?('2017BROD01', '2016BROD01')).to be false
+  end
+  
+  it 'should find nemeses' do
+    expect(@parser.nemeses('2016BROD01')).to be == []
+    expect(@parser.nemeses('2017BROD01')).to be == ['2016BROD01']
   end
   
 end

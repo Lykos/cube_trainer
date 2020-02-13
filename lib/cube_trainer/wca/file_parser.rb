@@ -17,14 +17,14 @@ module CubeTrainer
         raise ArgumentError unless e
         e
       end
-      OPTIONAL_STRING = new { |e, _r| e unless e.nil? || e.empty? }
+      OPTIONAL_STRING = new { |e, _r| e unless e.nil? }
       SYMBOL = new do |e, _r|
         raise ArgumentError unless e
         e.to_sym
       end
       INTEGER = new do |e, _r|
         raise ArgumentError unless e
-        e.to_i
+        Integer(e)
       end
       BOOLEAN = new do |e, _r|
         case e
@@ -109,6 +109,7 @@ module CubeTrainer
         result = []
         CSV.parse(zipfile.get_input_stream(@filename),
                   col_sep: COL_SEP,
+                  liberal_parsing: true,
                   headers: true,
                   header_converters: :symbol) do |row|
           parsed_row = @row_parser.parse_row(row)
