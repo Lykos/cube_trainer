@@ -217,28 +217,26 @@ module CubeTrainer
 
       def ranks
         @ranks ||= begin
-                     ranks_single_and_average = self.class.parse_internal(@filename,
-                                                                          ranks_single: RANKS_SINGLE_FILE_PARSER,
-                                                                          ranks_average: RANKS_AVERAGE_FILE_PARSER)
+                     ranks_single_and_average = self.class.parse_internal(
+                       @filename,
+                       ranks_single: RANKS_SINGLE_FILE_PARSER,
+                       ranks_average: RANKS_AVERAGE_FILE_PARSER
+                     )
                      ranks = {}
-                     ranks.default_proc = proc { |h, k| h[k] = {} }
-                     ranks_single_and_average[:ranks_average].each do |e|
-                       ranks[e[:personid]]["#{e[:eventid]}_average".to_sym] = e
-                     end
-                     ranks_single_and_average[:ranks_single].each do |e|
-                       ranks[e[:personid]]["#{e[:eventid]}_single".to_sym] = e
-                     end
-                     ranks.default_proc = nil
+                     add_rank_rows(ranks_single_and_average[:ranks_average], ranks, 'average')
+                     add_rank_rows(ranks_single_and_average[:ranks_single], ranks, 'single')
                      ranks
                    end.freeze
       end
 
       def scrambles
-        @scrambles ||= self.class.parse_internal(@filename, scrambles: SCRAMBLES_FILE_PARSER)[:scrambles].freeze
+        @scrambles ||=
+          self.class.parse_internal(@filename, scrambles: SCRAMBLES_FILE_PARSER)[:scrambles].freeze
       end
 
       def results
-        @results ||= self.class.parse_internal(@filename, results: RESULTS_FILE_PARSER)[:results].freeze
+        @results ||=
+          self.class.parse_internal(@filename, results: RESULTS_FILE_PARSER)[:results].freeze
       end
 
       def nemesis?(badguy, victim)
@@ -257,6 +255,17 @@ module CubeTrainer
           badguys.push(id) if nemesis?(id, wcaid)
         end
         badguys
+      end
+
+      private
+
+      def add_rank_rows(rank_rows, ranks, eventid_suffix)
+        rank_rows.each do |e|
+          personid = e[:personid]
+          person_ranks = (ranks[personid] ||= {})
+          eventid = "#{e[:eventid]}_#{eventid_suffix}".to_sym
+          person_ranks[eventid] = e
+        end
       end
     end
   end

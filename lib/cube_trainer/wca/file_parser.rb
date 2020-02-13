@@ -4,6 +4,7 @@ require 'cube_trainer/core/parser'
 
 module CubeTrainer
   module WCA
+    # Represents one column in a CSV file from the WCA export and contains parsing utilities.
     class Column
       def initialize(&block)
         @transformation = block
@@ -67,6 +68,7 @@ module CubeTrainer
       end
     end
 
+    # Helper class to parse rows from a WCA export CSV file.
     class CSVRowParser
       def initialize(columns)
         @columns = columns
@@ -80,6 +82,7 @@ module CubeTrainer
       end
     end
 
+    # Helper class to filter rows from a WCA export CSV file before parsing.
     class FilteredRowParser
       def initialize(subparser, &block)
         @subparser = subparser
@@ -91,6 +94,7 @@ module CubeTrainer
       end
     end
 
+    # Helper class to map parsed rows from a WCA export CSV file.
     class MappedRowParser
       def initialize(subparser, &block)
         @subparser = subparser
@@ -102,6 +106,7 @@ module CubeTrainer
       end
     end
 
+    # Helper class to parse WCA export CSV files.
     class CSVFileParser
       COL_SEP = "\t"
 
