@@ -1,30 +1,43 @@
 # frozen_string_literal: true
 
 require 'Qt4'
+require 'cube_trainer/native'
 require 'cube_trainer/ui_helpers'
-require 'cube_trainer/stats_computer'
 
 module CubeTrainer
   class StatsModel < Qt::AbstractTableModel
     include UiHelpers
 
-    def initialize
-      super
-      @computer = StatsComputer.new
-      compute_stats([])
+    AVERAGE_SIZES = [5, 12, 50, 100, 1000]
+
+    def initialize(results_model)
+      super()
+      @results_model = results_model
+      reset
+      @results_model.add_result_listener(self)
     end
 
-    def compute_stats(results)
-      @stats = @computer.compute_stats(results)
+    def reset
+      @averages = AVERAGE_SIZES.map { |s| Native::CubeAverage.new(s, 0.0) }
+      @results_model.results.each { |r| push_result(r) }
+      emit dataChanged(createIndex(0, 0), createIndex(1, @averages.length - 1))
+    end
+
+    def push_result(result)
+      @averages.each { |a| a.push(result.time_s) }
+    end
+
+    def delete_after_time(timestamp)
+      reset
+    end
+
+    def record_result(result)
+      push_result(result)
+      emit dataChanged(createIndex(0, 0), createIndex(1, @averages.length - 1))
     end
 
     def format_stats(stats)
       stats.collect { |name, stat| [name, format_time(stat)] }
-    end
-
-    def recompute(results)
-      @stats = format_stats(compute_stats(results))
-      emit dataChanged(createIndex(0, 0), createIndex(1, @stats.length - 1))
     end
 
     def columnCount(_parent)
@@ -32,7 +45,7 @@ module CubeTrainer
     end
 
     def rowCount(_parent)
-      @stats.length
+      @averages.length
     end
 
     def data(index, role)
@@ -40,7 +53,11 @@ module CubeTrainer
       when Qt::DisplayRole
         row = index.row
         col = index.column
-        Qt::Variant.new(@stats[row][col])
+        case col
+        when 0 then Qt::Variant.new("average of #{@averages[row].capacity}")
+        when 1 then Qt::Variant.new(@averages[row].average)
+        else raise ArgumentError
+        end
       else
         Qt::Variant.new
       end

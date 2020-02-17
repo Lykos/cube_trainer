@@ -57,7 +57,5 @@ module CubeTrainer
     def display_time
       @widget.setText(format_time(time_s))
     end
-
-    private :elapsed_time_s, :current_time
   end
 end

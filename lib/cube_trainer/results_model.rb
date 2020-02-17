@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/results_persistence'
 require 'cube_trainer/result'
 
 module CubeTrainer

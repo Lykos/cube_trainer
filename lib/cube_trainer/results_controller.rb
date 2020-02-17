@@ -1,17 +1,27 @@
 # frozen_string_literal: true
 
 require 'Qt4'
-require 'cube_trainer/results_model'
 require 'cube_trainer/result'
+require 'cube_trainer/results_model'
+require 'cube_trainer/results_persistence'
 
 module CubeTrainer
   class ResultsController
-    def initialize(table)
+    def initialize(table, model)
       @table = table
-      @model = ResultsModel.new(:cubie_to_letter)
+      @model = model
+      reset
+      @model.add_result_listener(self)
+    end
+
+    def reset
       @table.setRowCount(results.length)
       @table.setColumnCount(Result::COLUMNS)
       results.each_with_index { |r, i| set_result(i, r) }
+    end
+
+    def delete_after_time(timestamp)
+      reset
     end
 
     def results
@@ -19,7 +29,6 @@ module CubeTrainer
     end
 
     def record_result(result)
-      @model.record_result(result)
       @table.insertRow(0)
       set_result(0, result)
     end

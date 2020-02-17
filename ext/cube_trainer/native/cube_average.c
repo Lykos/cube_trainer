@@ -78,6 +78,18 @@ static VALUE CubeAverage_initialize(const VALUE self, const VALUE capacity, cons
   return self;
 }
 
+static VALUE CubeAverage_capacity(const VALUE self) {
+  const CubeAverageData* data;
+  GetInitializedCubeAverageData(self, data);
+  return INT2NUM(data->capacity);
+}
+
+static VALUE CubeAverage_length(const VALUE self) {
+  const CubeAverageData* data;
+  GetInitializedCubeAverageData(self, data);
+  return INT2NUM(data->size);
+}
+
 static int saturated(const CubeAverageData* const data) {
   return data->size == data->capacity;
 }
@@ -139,6 +151,8 @@ void init_cube_average_class_under(const VALUE module) {
   CubeAverageClass = rb_define_class_under(module, "CubeAverage", rb_cObject);
   rb_define_alloc_func(CubeAverageClass, CubeAverage_alloc);
   rb_define_method(CubeAverageClass, "initialize", CubeAverage_initialize, 2);
+  rb_define_method(CubeAverageClass, "capacity", CubeAverage_capacity, 0);
+  rb_define_method(CubeAverageClass, "length", CubeAverage_length, 0);
   rb_define_method(CubeAverageClass, "push", CubeAverage_push, 1);
   rb_define_method(CubeAverageClass, "saturated?", CubeAverage_saturated, 0);
   rb_define_method(CubeAverageClass, "average", CubeAverage_average, 0);

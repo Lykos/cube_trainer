@@ -7,25 +7,17 @@ require 'cube_trainer/ui_helpers'
 
 module CubeTrainer
   class TimeHistory
-    def initialize(widget)
+    def initialize(widget, results_model)
       @widget = widget
 
+      @results_model = results_model
+
       results_table = widget.find_child(Qt::TableWidget, 'results_table')
-      @results_controller = ResultsController.new(results_table)
+      @results_controller = ResultsController.new(results_table, results_model)
 
       stats_table = widget.find_child(Qt::TableView, 'stats_table')
-      @stats_model = StatsModel.new
+      @stats_model = StatsModel.new(results_model)
       stats_table.model = @stats_model
-      recompute_stats
-    end
-
-    def recompute_stats
-      @stats_model.recompute(@results_controller.results)
-    end
-
-    def record_result(result)
-      @results_controller.record_result(result)
-      recompute_stats
     end
   end
 end

@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require 'Qt4'
-require 'cube_trainer/cube'
+require 'cube_trainer/core/cube'
 
 module CubeTrainer
   class CubieController
-    def initialize(widget)
+    PARTS = Core::Corner::ELEMENTS + Core::Edge::ELEMENTS
+
+    def initialize(widget, color_scheme)
       @widget = widget
+      @color_scheme = color_scheme
     end
 
     def scene
@@ -23,19 +26,27 @@ module CubeTrainer
 
     attr_reader :cubie
 
+    def random_cubie
+      PARTS.sample
+    end
+
     def random_new_cubie
       return random_cubie unless @cubie
 
       new_cubie = @cubie
-      new_cubie = random_cubie while new_cubie.letter == @cubie.letter
+      new_cubie = random_cubie while new_cubie == @cubie
       new_cubie
+    end
+
+    def colors(cubie)
+      cubie.face_symbols.map { |f| @color_scheme.color(f) }
     end
 
     def select_cubie
       scene.clear
 
       @cubie = random_new_cubie
-      colors = cubie.class == Corner ? @cubie.colors.rotate(2).reverse : @cubie.colors
+      colors = cubie.class == Core::Corner ? colors(@cubie).rotate(2).reverse : colors(@cubie)
       colors.each_with_index { |c, i| add_to_scene(c, i, colors.length) }
       @widget.viewport.update
     end
