@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'rake/extensiontask'
-require 'rspec/core/rake_task'
 
 RBUIC = '/usr/local/bin/rbuic4'
 UIFILES = FileList.new('ui/**/*.ui')
@@ -23,13 +21,20 @@ rule(%r{^lib/.*_ui\.rb$} => ->(f) { rb_to_ui(f) }) do |t|
   warn "Failed to compile #{ui_file}." unless system(RBUIC, ui_file, '-o', rb_file)
 end
 
-Rake::ExtensionTask.new('cube_trainer/native')
-
-RSpec::Core::RakeTask.new(:spec, [] => :compile) do |t|
-  # TODO: Find the proper way to do this
-  ENV['RANTLY_VERBOSE'] ||= '0'
+begin
+  require 'rake/extensiontask'
+  Rake::ExtensionTask.new('cube_trainer/native')
+rescue LoadError => e
+  warn "Couldn't create extension task: #{e}"
 end
-
-
-task default: :spec
-
+  
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec, [] => :compile) do |t|
+    # TODO: Find the proper way to do this
+    ENV['RANTLY_VERBOSE'] ||= '0'
+  end
+  task default: :spec
+rescue LoadError => e
+  warn "Couldn't create spec task: #{e}"
+end
