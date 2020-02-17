@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/color_scheme'
+require 'cube_trainer/core/algorithm_transformation'
 require 'cube_trainer/core/move'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/core/cube'
@@ -14,18 +15,9 @@ module CubeTrainer
   class SkewbLayerSearcher
     include Core::CubePrintHelper
 
-    AlgorithmTransformation = Struct.new(:rotation, :mirror) do
-      def transformed(algorithm)
-        algorithm = algorithm.mirror(MIRROR_NORMAL_FACE) if mirror
-        algorithm.rotate_by(rotation)
-      end
-    end
-
     EXAMPLE_LAYER_FACE_SYMBOL = :D
     EXAMPLE_LAYER_FACE = Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
-    MIRROR_NORMAL_FACE = EXAMPLE_LAYER_FACE.neighbors.first
-    AROUND_FACE_ROTATIONS = CubeDirection::ALL_DIRECTIONS.map { |d| Rotation.new(EXAMPLE_LAYER_FACE, d) }
-    ALGORITHM_TRANSFORMATIONS = AROUND_FACE_ROTATIONS.product([true, false]).select { |r, m| r.direction.is_non_zero? || m }.map { |r, m| AlgorithmTransformation.new(r, m) }
+    ALGORITHM_TRANSFORMATIONS = Core::AlgorithmTransformation.around_face_without_identity(EXAMPLE_LAYER_FACE)
 
     # Represents a possible Skewb layer with a solution.
     class SkewbLayerSolution

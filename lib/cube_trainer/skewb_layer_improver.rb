@@ -13,16 +13,12 @@ module CubeTrainer
       raise ArgumentError unless face.is_a?(Face)
 
       @state = color_scheme.solved_skewb_state
-      @face = face
-      @solved_color = color_scheme.color(@face)
+      @solved_color = color_scheme.color(face)
+      @alg_transformations = Core::AlgorithmTransformation.around_face(face)
     end
 
     def alg_variations(algorithm)
-      mirror_normal = @face.neighbors.first
-      (0..3).map { |d| CubeDirection.new(d) }.product([true, false]).map do |d, m|
-        alg = algorithm.rotate_by(Rotation.new(@face, d))
-        m ? alg.mirror(mirror_normal) : alg
-      end
+      @alg_transformations.map { |t| t.transformed(algorithm) }
     end
 
     def improve_layer(algorithm)

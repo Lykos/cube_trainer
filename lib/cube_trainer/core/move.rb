@@ -43,6 +43,10 @@ module CubeTrainer
         self.class.new(*fields)
       end
 
+      def identity?
+        direction.is_zero?
+      end
+
       def self.check_move_metric(metric)
         raise ArgumentError, "Invalid move metric #{metric}." unless MOVE_METRICS.include?(metric)
       end
