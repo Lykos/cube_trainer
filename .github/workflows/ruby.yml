@@ -14,7 +14,7 @@ jobs:
     - name: Install Package Dependencies
       uses: mstksg/get-package@v1
       with:
-        apt-get: |
+        apt-get: >
           libsqlite3-dev build-essential bison openssl libreadline5
           libreadline-dev curl git-core zlib1g zlib1g-dev libssl-dev vim
           libsqlite3-0 libsqlite3-dev sqlite3
