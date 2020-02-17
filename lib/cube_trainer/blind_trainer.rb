@@ -3,7 +3,7 @@
 require 'Qt4'
 require 'cube_trainer/stop_watch'
 require 'cube_trainer/time_history'
-require 'blind_trainer_ui'
+require 'cube_trainer/blind_trainer_ui'
 require 'cube_trainer/cubie_controller'
 require 'cube_trainer/ui_helpers'
 
