@@ -6,7 +6,9 @@ require 'cube_trainer/commutator_hint_parser'
 require 'cube_trainer/letter_scheme'
 
 describe HintParser do
-  let(:part_type) { Corner }
+  include Core
+
+  let(:part_type) { Core::Corner }
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:buffer) { letter_scheme.default_buffer(part_type) }
   let(:hint_parser) do

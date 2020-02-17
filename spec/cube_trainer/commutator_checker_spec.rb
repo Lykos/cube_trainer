@@ -8,7 +8,9 @@ require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_scheme'
 
 describe CommutatorChecker do
-  let(:part_type) { Corner }
+  include Core
+
+  let(:part_type) { Core::Corner }
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cube_size) { 3 }

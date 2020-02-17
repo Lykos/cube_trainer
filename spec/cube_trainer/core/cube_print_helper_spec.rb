@@ -10,6 +10,7 @@ def apply_sexy(cube_state)
 end
 
 describe Core::CubePrintHelper do
+  include Core
   include Core::CubePrintHelper
 
   let(:color_scheme) { ColorScheme::BERNHARD }

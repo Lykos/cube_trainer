@@ -4,8 +4,10 @@ require 'cube_trainer/anki/image_checker'
 require 'cube_trainer/anki/cache'
 require 'cube_trainer/anki/exponential_backoff'
 require 'cube_trainer/color_scheme'
+require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/cube_constants'
 require 'cube_trainer/core/move'
+require 'cube_trainer/core/parser'
 require 'cube_trainer/core/cube_print_helper'
 require 'uri'
 
@@ -39,6 +41,8 @@ module CubeTrainer
       end
 
       class StageMask
+        extend Core
+
         def initialize(base_mask, rotations = Core::Algorithm.empty)
           raise ArgumentError unless BASE_MASKS.include?(base_mask)
           raise TypeError unless rotations.is_a?(Core::Algorithm)
@@ -180,7 +184,7 @@ module CubeTrainer
       BASE_URI = URI('http://cube.crider.co.uk/visualcube.php')
 
       def cube_state_params(cube_state)
-        raise TypeError unless cube_state.is_a?(CubeState)
+        raise TypeError unless cube_state.is_a?(Core::CubeState)
         raise ArgumentError unless MIN_N <= cube_state.n && cube_state.n <= MAX_N
 
         serialized_cube_state = FACE_SYMBOL_ORDER.map do |s|

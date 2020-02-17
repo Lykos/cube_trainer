@@ -16,7 +16,7 @@ module CubeTrainer
     include Core::CubePrintHelper
 
     EXAMPLE_LAYER_FACE_SYMBOL = :D
-    EXAMPLE_LAYER_FACE = Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
+    EXAMPLE_LAYER_FACE = Core::Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
     ALGORITHM_TRANSFORMATIONS = Core::AlgorithmTransformation.around_face_without_identity(EXAMPLE_LAYER_FACE)
 
     # Represents a possible Skewb layer with a solution.

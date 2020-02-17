@@ -220,8 +220,8 @@ describe Core::Algorithm do
   end
 
   it 'should mirror algorithms correctly' do
-    expect(parse_algorithm("M' D D2 F2 D2 F2").mirror(Face::D)).to be == parse_algorithm("M U' U2 F2 U2 F2")
-    expect(parse_algorithm('2u 2f').mirror(Face::D)).to be == parse_algorithm("2d' 2f'")
+    expect(parse_algorithm("M' D D2 F2 D2 F2").mirror(Core::Face::D)).to be == parse_algorithm("M U' U2 F2 U2 F2")
+    expect(parse_algorithm('2u 2f').mirror(Core::Face::D)).to be == parse_algorithm("2d' 2f'")
   end
 
   it 'should apply a rotation correctly to Sarahs skewb algorithm' do
@@ -242,14 +242,14 @@ describe Core::Algorithm do
   end
 
   it 'should mirror Sarahs skewb algorithms correctly' do
-    expect(parse_sarahs_skewb_algorithm("F R'").mirror(Face::R)).to be == parse_sarahs_skewb_algorithm("L' B")
-    expect(parse_sarahs_skewb_algorithm("L F'").mirror(Face::R)).to be == parse_sarahs_skewb_algorithm("F' L")
-    expect(parse_sarahs_skewb_algorithm("B L'").mirror(Face::R)).to be == parse_sarahs_skewb_algorithm("R' F")
-    expect(parse_sarahs_skewb_algorithm("R B'").mirror(Face::R)).to be == parse_sarahs_skewb_algorithm("B' R")
+    expect(parse_sarahs_skewb_algorithm("F R'").mirror(Core::Face::R)).to be == parse_sarahs_skewb_algorithm("L' B")
+    expect(parse_sarahs_skewb_algorithm("L F'").mirror(Core::Face::R)).to be == parse_sarahs_skewb_algorithm("F' L")
+    expect(parse_sarahs_skewb_algorithm("B L'").mirror(Core::Face::R)).to be == parse_sarahs_skewb_algorithm("R' F")
+    expect(parse_sarahs_skewb_algorithm("R B'").mirror(Core::Face::R)).to be == parse_sarahs_skewb_algorithm("B' R")
 
-    expect(parse_sarahs_skewb_algorithm("F R'").mirror(Face::F)).to be == parse_sarahs_skewb_algorithm("R' F")
-    expect(parse_sarahs_skewb_algorithm("L F'").mirror(Face::F)).to be == parse_sarahs_skewb_algorithm("B' R")
-    expect(parse_sarahs_skewb_algorithm("B L'").mirror(Face::F)).to be == parse_sarahs_skewb_algorithm("L' B")
-    expect(parse_sarahs_skewb_algorithm("R B'").mirror(Face::F)).to be == parse_sarahs_skewb_algorithm("F' L")
+    expect(parse_sarahs_skewb_algorithm("F R'").mirror(Core::Face::F)).to be == parse_sarahs_skewb_algorithm("R' F")
+    expect(parse_sarahs_skewb_algorithm("L F'").mirror(Core::Face::F)).to be == parse_sarahs_skewb_algorithm("B' R")
+    expect(parse_sarahs_skewb_algorithm("B L'").mirror(Core::Face::F)).to be == parse_sarahs_skewb_algorithm("L' B")
+    expect(parse_sarahs_skewb_algorithm("R B'").mirror(Core::Face::F)).to be == parse_sarahs_skewb_algorithm("F' L")
   end
 end

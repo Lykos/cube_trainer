@@ -28,7 +28,7 @@ shared_examples 'cube_state' do |cube_size|
 
   def expect_stickers_changed(cube_state, changed_parts)
     original_state = create_interesting_cube_state(cube_state.n)
-    CubeConstants::FACE_SYMBOLS.each do |s|
+    Core::CubeConstants::FACE_SYMBOLS.each do |s|
       cube_state.n.times do |x|
         cube_state.n.times do |y|
           coordinate = Core::Coordinate.from_indices(Core::Face.for_face_symbol(s), cube_state.n, x, y)
