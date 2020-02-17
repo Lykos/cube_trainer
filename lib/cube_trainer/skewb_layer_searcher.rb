@@ -14,7 +14,7 @@ module CubeTrainer
   class SkewbLayerSearcher
     include Core::CubePrintHelper
 
-    class AlgorithmTransformation < Struct.new(:rotation, :mirror)
+    AlgorithmTransformation = Struct.new(:rotation, :mirror) do
       def transformed(algorithm)
         algorithm = algorithm.mirror(MIRROR_NORMAL_FACE) if mirror
         algorithm.rotate_by(rotation)
