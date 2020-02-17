@@ -10,8 +10,10 @@ require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
-RSpec.shared_examples 'compiled_cube_algorithm' do |cube_size|
-  include CubePrintHelper
+shared_examples 'compiled_cube_algorithm' do |cube_size|
+  include Core
+  include Core::CubePrintHelper
+
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cube_state) { color_scheme.solved_cube_state(cube_size) }
   let(:compile_then_transform_cube_state) { cube_state.dup }
@@ -69,7 +71,7 @@ RSpec.shared_examples 'compiled_cube_algorithm' do |cube_size|
   end
 end
 
-describe CompiledCubeAlgorithm do
+describe Core::CompiledCubeAlgorithm do
   context 'when the cube size is 3' do
     it_behaves_like 'compiled_cube_algorithm', 3
   end

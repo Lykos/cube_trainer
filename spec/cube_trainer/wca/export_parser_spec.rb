@@ -5,6 +5,8 @@ require 'cube_trainer/wca/export_parser'
 require 'tempfile'
 
 describe WCA::ExportParser do
+  include Core
+
   before(:all) do
     filename = Tempfile.new(['WCA_export_example', '.tsv.zip'])
     Zip::File.open(filename, Zip::File::CREATE) do |zipfile|

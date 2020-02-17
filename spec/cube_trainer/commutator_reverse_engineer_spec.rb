@@ -7,13 +7,15 @@ require 'cube_trainer/core/parser'
 require 'cube_trainer/letter_scheme'
 
 describe CommutatorReverseEngineer do
+  include Core
+
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:cube_size) { 3 }
   let(:engineer) { CommutatorReverseEngineer.new(part_type, buffer, letter_scheme, cube_size) }
 
   context 'for corners' do
-    let(:part_type) { Corner }
-    let(:buffer) { Corner.for_face_symbols(%i[U L B]) }
+    let(:part_type) { Core::Corner }
+    let(:buffer) { Core::Corner.for_face_symbols(%i[U L B]) }
 
     it 'should find the letters of ig' do
       alg = parse_commutator("[L', U R U']").algorithm
@@ -47,8 +49,8 @@ describe CommutatorReverseEngineer do
   end
 
   context 'for edges' do
-    let(:part_type) { Edge }
-    let(:buffer) { Edge.for_face_symbols(%i[U F]) }
+    let(:part_type) { Core::Edge }
+    let(:buffer) { Core::Edge.for_face_symbols(%i[U F]) }
 
     it 'should find the letters of a simple alg' do
       alg = parse_commutator("[R' F R, S]").algorithm

@@ -9,7 +9,7 @@ module CubeTrainer
   class HumanTimeLearner
     include ConsoleHelpers
     include UiHelpers
-    include CubePrintHelper
+    include Core::CubePrintHelper
 
     def initialize(hinter, results_model, options)
       @hinter = hinter

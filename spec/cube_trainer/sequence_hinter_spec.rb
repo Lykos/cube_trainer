@@ -14,6 +14,8 @@ class FakeHeterogenousSequenceHinter < HeterogenousSequenceHinter
 end
 
 describe HeterogenousSequenceHinter do
+  include Core
+
   let(:cube_size) { 3 }
   let(:algname_a) { SimpleAlgName.new('a') }
   let(:algname_b) { SimpleAlgName.new('b') }

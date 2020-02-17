@@ -8,7 +8,7 @@ require 'cube_trainer/utils/math_helper'
 
 module CubeTrainer
   class StatsComputer
-    include MathHelper
+    include Utils::MathHelper
 
     def initialize(now, options, results_persistence = ResultsPersistence.create_for_production)
       raise TypeError unless now.is_a?(Time)

@@ -10,8 +10,10 @@ require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
-describe CompiledCubeAlgorithm do
-  include CubePrintHelper
+describe Core::CompiledCubeAlgorithm do
+  include Core
+  include Core::CubePrintHelper
+
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:skewb_state) { color_scheme.solved_skewb_state }
   let(:compile_then_transform_skewb_state) { skewb_state.dup }

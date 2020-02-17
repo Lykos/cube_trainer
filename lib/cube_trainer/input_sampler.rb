@@ -4,11 +4,10 @@ require 'cube_trainer/input_item'
 require 'cube_trainer/native'
 require 'cube_trainer/sampler'
 require 'cube_trainer/utils/random_helper'
-require 'cube_trainer/utils/sampling_helper'
 
 module CubeTrainer
   class InputSampler
-    include RandomHelper
+    include Utils::RandomHelper
 
     # Minimum score that we always give to each element in order not to screw up our sampling if all weights become 0 or so.
     EPSILON_SCORE = 0.000000001

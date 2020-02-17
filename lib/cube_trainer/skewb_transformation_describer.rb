@@ -14,7 +14,7 @@ module CubeTrainer
     class PartSequence
       def initialize(letter_scheme, parts)
         raise ArgumentError unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
-        raise ArgumentError unless parts.all? { |p| p.is_a?(Part) }
+        raise ArgumentError unless parts.all? { |p| p.is_a?(Core::Part) }
 
         @letter_scheme = letter_scheme
         @parts = parts
@@ -109,8 +109,8 @@ module CubeTrainer
     end
 
     def initialize(interesting_faces, interesting_corners, staying_mode, color_scheme, letter_scheme = nil)
-      raise TypeError unless interesting_faces.all? { |f| f.is_a?(Face) }
-      raise TypeError unless interesting_corners.all? { |f| f.is_a?(Corner) }
+      raise TypeError unless interesting_faces.all? { |f| f.is_a?(Core::Face) }
+      raise TypeError unless interesting_corners.all? { |f| f.is_a?(Core::Corner) }
       raise ArgumentError unless %i[show_staying omit_staying].include?(staying_mode)
       raise TypeError unless color_scheme.is_a?(ColorScheme)
       raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
@@ -169,16 +169,16 @@ module CubeTrainer
     # Describes where each interesting piece comes from.
     def source_descriptions(algorithm)
       algorithm.apply_temporarily_to(@skewb_state) do
-        find_part_sources(@interesting_faces, &SkewbCoordinate.method(:for_center)) +
-          find_part_sources(@interesting_corners, &SkewbCoordinate.method(:for_corner))
+        find_part_sources(@interesting_faces, &Core::SkewbCoordinate.method(:for_center)) +
+          find_part_sources(@interesting_corners, &Core::SkewbCoordinate.method(:for_corner))
       end.sort
     end
 
     # Describes what kind of tranformation the alg does in terms of piece cycles.
     def transformation_descriptions(algorithm)
       algorithm.apply_temporarily_to(@skewb_state) do
-        find_part_target_cycles(@interesting_faces, &SkewbCoordinate.method(:for_center)) +
-          find_part_target_cycles(@interesting_corners, &SkewbCoordinate.method(:for_corner))
+        find_part_target_cycles(@interesting_faces, &Core::SkewbCoordinate.method(:for_center)) +
+          find_part_target_cycles(@interesting_corners, &Core::SkewbCoordinate.method(:for_corner))
       end.sort
     end
   end

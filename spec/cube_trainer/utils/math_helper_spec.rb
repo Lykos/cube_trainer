@@ -2,8 +2,8 @@
 
 require 'cube_trainer/utils/math_helper'
 
-describe MathHelper do
-  include MathHelper
+describe Utils::MathHelper do
+  include Utils::MathHelper
 
   it 'should floor to numbers starting with 1, 2 or 5' do
     expect(floor_to_nice(1.5)).to be_within(0.0001).of(1)

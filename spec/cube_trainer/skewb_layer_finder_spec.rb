@@ -8,7 +8,8 @@ require 'cube_trainer/core/parser'
 require 'cube_trainer/skewb_layer_finder'
 
 describe SkewbLayerFinder do
-  include CubePrintHelper
+  include Core
+  include Core::CubePrintHelper
 
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:skewb_state) { color_scheme.solved_skewb_state }
@@ -18,7 +19,7 @@ describe SkewbLayerFinder do
 
     it 'should find an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to be == {
-        white: [Algorithm.empty]
+        white: [Core::Algorithm.empty]
       }
     end
 
@@ -108,12 +109,12 @@ describe SkewbLayerFinder do
 
     it 'should find an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to be == {
-        yellow: [Algorithm.empty],
-        red: [Algorithm.empty],
-        green: [Algorithm.empty],
-        blue: [Algorithm.empty],
-        orange: [Algorithm.empty],
-        white: [Algorithm.empty]
+        yellow: [Core::Algorithm.empty],
+        red: [Core::Algorithm.empty],
+        green: [Core::Algorithm.empty],
+        blue: [Core::Algorithm.empty],
+        orange: [Core::Algorithm.empty],
+        white: [Core::Algorithm.empty]
       }
     end
 

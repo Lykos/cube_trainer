@@ -8,7 +8,7 @@ module CubeTrainer
     include SkewbLayerHelper
 
     def initialize(face, color_scheme)
-      raise ArgumentError unless face.is_a?(Face)
+      raise ArgumentError unless face.is_a?(Core::Face)
 
       @state = color_scheme.solved_skewb_state
       @face = face

@@ -19,7 +19,7 @@ module CubeTrainer
     end
 
     def state_score(state)
-      Face::ELEMENTS.collect do |f|
+      Core::Face::ELEMENTS.collect do |f|
         if @color_restrictions.nil? || @color_restrictions.include?(face_color(state, f))
           score_on_face(state, f)
         else

@@ -9,8 +9,9 @@ require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
-describe SkewbState do
-  include CubePrintHelper
+describe Core::SkewbState do
+  include Core
+  include Core::CubePrintHelper
 
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:skewb_state) { color_scheme.solved_skewb_state }
@@ -773,7 +774,7 @@ describe SkewbState do
     end
 
     it "should have the right state after a F' R' F' B algorithm mirrored along the F normal" do
-      parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.mirror(Face::F).apply_to(skewb_state)
+      parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.mirror(Core::Face::F).apply_to(skewb_state)
       expect(skewb_state.to_s).to be == <<~SKEWB.chomp
              BBOYY
              BOOOY

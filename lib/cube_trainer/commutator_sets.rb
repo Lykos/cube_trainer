@@ -12,7 +12,7 @@ require 'cube_trainer/letter_pair_alg_set'
 require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
-  ORIENTATION_FACES = [Face::U, Face::D].freeze
+  ORIENTATION_FACES = [Core::Face::U, Core::Face::D].freeze
 
   def orientation_face(part)
     faces = ORIENTATION_FACES.select { |f| part.face_symbols.include?(f.face_symbol) }
@@ -28,7 +28,7 @@ module CubeTrainer
   end
 
   class FloatingCorner2Twists < LetterPairAlgSet
-    PART_TYPE = Corner
+    PART_TYPE = Core::Corner
 
     def initialize(result_model, options)
       super
@@ -43,7 +43,7 @@ module CubeTrainer
 
     def generate_input_items
       cube_state = @color_scheme.solved_cube_state(options.cube_size)
-      part_cycle_factory = PartCycleFactory.new(options.cube_size, 0)
+      part_cycle_factory = Core::PartCycleFactory.new(options.cube_size, 0)
       non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       two_twists = correctly_oriented_corners.permutation(2).map do |c1, c2|
@@ -79,7 +79,7 @@ module CubeTrainer
   end
 
   class CornerTwistsPlusParities < LetterPairAlgSet
-    PART_TYPE = Corner
+    PART_TYPE = Core::Corner
 
     def initialize(result_model, options)
       super
@@ -131,7 +131,7 @@ module CubeTrainer
         twist_letter = only(twist_letter_pair.letters)
         twisted_part = @letter_scheme.for_letter(PART_TYPE, twist_letter)
         solved_twist_part = rotate_orientation_face_up(twisted_part)
-        Corner::FACES.times.map do |rot|
+        Core::Corner::FACES.times.map do |rot|
           twist_entry_letter = @letter_scheme.letter(twisted_part.rotate_by(rot))
           twist_exit_letter = @letter_scheme.letter(solved_twist_part.rotate_by(rot))
           comm = LetterPair.new([parity_letter, twist_entry_letter])
@@ -143,9 +143,7 @@ module CubeTrainer
   end
 
   class Corner3Twists < LetterPairAlgSet
-    PART_TYPE = Corner
-
-    include CubePrintHelper
+    PART_TYPE = Core::Corner
 
     def initialize(result_model, options)
       super
@@ -165,7 +163,7 @@ module CubeTrainer
 
     def generate_input_items
       cube_state = @color_scheme.solved_cube_state(options.cube_size)
-      part_cycle_factory = PartCycleFactory.new(options.cube_size, 0)
+      part_cycle_factory = Core::PartCycleFactory.new(options.cube_size, 0)
       non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
       correctly_oriented_corners = non_buffer_corners.select { |c| ORIENTATION_FACES.include?(c.solved_face) }
       buffer_twist = part_cycle_factory.multi_corner_twist([buffer])
@@ -220,7 +218,7 @@ module CubeTrainer
         ]
 
         # Now we generate additional solutions by rotating both colors in one direction.
-        extended_solutions = Corner::FACES.times.collect do |rot|
+        extended_solutions = Core::Corner::FACES.times.collect do |rot|
           solution_corners.map do |comm|
             comm.map { |p| p.rotate_by(rot) }
           end
@@ -228,7 +226,7 @@ module CubeTrainer
 
         # Now we generate even more additional solutions by rotating the second corner of the first
         # comm and the first corner of the second comm in opposite directions.
-        extended_solutions = Corner::FACES.times.collect_concat do |rot|
+        extended_solutions = Core::Corner::FACES.times.collect_concat do |rot|
           extended_solutions.map do |solution|
             raise unless solution.length == 2
 
@@ -250,7 +248,7 @@ module CubeTrainer
   end
 
   class FloatingEdgeFlips < LetterPairAlgSet
-    PART_TYPE = Edge
+    PART_TYPE = Core::Edge
 
     def initialize(result_model, options)
       super
@@ -280,7 +278,7 @@ module CubeTrainer
   end
 
   class CornerCommutators < CommutatorSet
-    PART_TYPE = Corner
+    PART_TYPE = Core::Corner
 
     def generate_letter_pairs
       letter_pairs_for_piece - rotations
@@ -292,7 +290,7 @@ module CubeTrainer
   end
 
   class EdgeCommutators < CommutatorSet
-    PART_TYPE = Edge
+    PART_TYPE = Core::Edge
 
     def generate_letter_pairs
       letter_pairs_for_piece - rotations
@@ -304,7 +302,7 @@ module CubeTrainer
   end
 
   class WingCommutators < CommutatorSet
-    PART_TYPE = Wing
+    PART_TYPE = Core::Wing
 
     def generate_letter_pairs
       letter_pairs_for_piece - rotations
@@ -316,7 +314,7 @@ module CubeTrainer
   end
 
   class XCenterCommutators < CommutatorSet
-    PART_TYPE = XCenter
+    PART_TYPE = Core::XCenter
 
     def generate_letter_pairs
       letter_pairs_for_piece - neighbors
@@ -328,7 +326,7 @@ module CubeTrainer
   end
 
   class TCenterCommutators < CommutatorSet
-    PART_TYPE = TCenter
+    PART_TYPE = Core::TCenter
 
     def generate_letter_pairs
       letter_pairs_for_piece - neighbors
@@ -340,7 +338,7 @@ module CubeTrainer
   end
 
   class CornerParities < LetterPairAlgSet
-    PART_TYPE = Corner
+    PART_TYPE = Core::Corner
 
     def initialize(result_model, options)
       super

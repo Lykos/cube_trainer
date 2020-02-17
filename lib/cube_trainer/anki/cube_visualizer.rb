@@ -12,14 +12,14 @@ require 'uri'
 module CubeTrainer
   module Anki
     class CubeVisualizer
-      include CubePrintHelper
+      include Core::CubePrintHelper
 
       MIN_N = 1
       MAX_N = 10
 
       # Order of the faces for the color scheme
       FACE_SYMBOL_ORDER = %i[U R F D L B].freeze
-      raise unless FACE_SYMBOL_ORDER.sort == CubeConstants::FACE_SYMBOLS.sort
+      raise unless FACE_SYMBOL_ORDER.sort == Core::CubeConstants::FACE_SYMBOLS.sort
 
       BASE_MASKS = %i[fl f2l ll cll ell oll ocll oell coll ocell wv vh els cls cmll cross f2l_3 f2l_2 f2l_sm f2l_1 f2b line 2x2x2 2x2x3].freeze
       STAGE_MASK_REGEXP = Regexp.new("(#{BASE_MASKS.join('|')})(?:-([xyz]['2]?+))?")

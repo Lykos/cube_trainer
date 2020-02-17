@@ -2,8 +2,8 @@
 
 require 'cube_trainer/utils/array_helper'
 
-describe ArrayHelper do
-  include ArrayHelper
+describe Utils::ArrayHelper do
+  include Utils::ArrayHelper
 
   it 'should permute empty arrays' do
     expect(apply_permutation([], [])).to be == []

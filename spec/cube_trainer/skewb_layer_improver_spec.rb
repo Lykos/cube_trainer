@@ -6,7 +6,9 @@ require 'cube_trainer/core/parser'
 require 'cube_trainer/skewb_layer_improver'
 
 describe SkewbLayerImprover do
-  let(:face) { Face::U }
+  include Core
+
+  let(:face) { Core::Face::U }
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:improver) { SkewbLayerImprover.new(face, color_scheme) }
 

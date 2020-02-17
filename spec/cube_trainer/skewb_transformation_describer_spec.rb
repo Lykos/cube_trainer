@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/core/cube'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/skewb_transformation_describer'
 
@@ -26,9 +27,11 @@ RSpec::Matchers.define :be_the_same_descriptions_as do |expected|
 end
 
 describe SkewbTransformationDescriber do
-  let(:top_corners) { Corner::ELEMENTS.select { |c| c.face_symbols.first == :U } }
-  let(:bottom_corners) { Corner::ELEMENTS.select { |c| c.face_symbols.first == :D } }
-  let(:non_bottom_faces) { Face::ELEMENTS.reject { |c| c.face_symbol == :D } }
+  include Core
+
+  let(:top_corners) { Core::Corner::ELEMENTS.select { |c| c.face_symbols.first == :U } }
+  let(:bottom_corners) { Core::Corner::ELEMENTS.select { |c| c.face_symbols.first == :D } }
+  let(:non_bottom_faces) { Core::Face::ELEMENTS.reject { |c| c.face_symbol == :D } }
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:top_corners_describer) do
     SkewbTransformationDescriber.new([], top_corners, :show_staying, color_scheme)

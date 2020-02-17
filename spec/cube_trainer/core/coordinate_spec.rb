@@ -3,7 +3,9 @@
 require 'cube_trainer/core/coordinate'
 require 'cube_trainer/core/cube'
 
-describe Coordinate do
+describe Core::Coordinate do
+  include Core
+
   let(:coordinate) { Coordinate.from_indices(Face::U, n, 0, 1) }
 
   context 'for an uneven n' do

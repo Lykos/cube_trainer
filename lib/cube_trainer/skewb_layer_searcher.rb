@@ -22,15 +22,15 @@ module CubeTrainer
     end
 
     EXAMPLE_LAYER_FACE_SYMBOL = :D
-    EXAMPLE_LAYER_FACE = Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
+    EXAMPLE_LAYER_FACE = Core::Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
     MIRROR_NORMAL_FACE = EXAMPLE_LAYER_FACE.neighbors.first
-    AROUND_FACE_ROTATIONS = CubeDirection::ALL_DIRECTIONS.map { |d| Rotation.new(EXAMPLE_LAYER_FACE, d) }
+    AROUND_FACE_ROTATIONS = Core::CubeDirection::ALL_DIRECTIONS.map { |d| Core::Rotation.new(EXAMPLE_LAYER_FACE, d) }
     ALGORITHM_TRANSFORMATIONS = AROUND_FACE_ROTATIONS.product([true, false]).select { |r, m| r.direction.is_non_zero? || m }.map { |r, m| AlgorithmTransformation.new(r, m) }
 
     # Represents a possible Skewb layer with a solution.
     class SkewbLayerSolution
       def initialize(move, sub_solution)
-        raise ArgumentError unless move.nil? || move.is_a?(Move)
+        raise ArgumentError unless move.nil? || move.is_a?(Core::Move)
         raise ArgumentError unless sub_solution.nil? || sub_solution.is_a?(SkewbLayerSolution)
         raise ArgumentError unless move.nil? == sub_solution.nil?
 
@@ -126,7 +126,7 @@ module CubeTrainer
     attr_reader :good_layer_solutions
 
     def derived_layer_solutions(layer_solution)
-      SarahsSkewbMove::ALL.reverse.collect_concat do |m|
+      Core::SarahsSkewbMove::ALL.reverse.collect_concat do |m|
         # Ignore possible moves along the same axis as the last move.
         if layer_solution.move && layer_solution.move.axis_corner == m.axis_corner
           []

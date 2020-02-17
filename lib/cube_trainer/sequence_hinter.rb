@@ -11,10 +11,10 @@ module CubeTrainer
   # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
   # e.g. solving a corner twist and a parity by a comm and a parity.
   class HeterogenousSequenceHinter
-    include ArrayHelper
+    include Utils::ArrayHelper
 
     def initialize(cube_size, resultss, hinters)
-      CubeState.check_cube_size(cube_size)
+      Core::CubeState.check_cube_size(cube_size)
       raise ArgumentError if resultss.length != hinters.length
       raise ArgumentError if resultss.empty?
 
@@ -185,7 +185,7 @@ module CubeTrainer
   end
 
   class AlgSequenceHinter
-    include ArrayHelper
+    include Utils::ArrayHelper
 
     def initialize(hinters)
       hinters.each do |h|

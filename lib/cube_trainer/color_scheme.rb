@@ -121,7 +121,7 @@ module CubeTrainer
       stickers = ordered_colors.map do |c|
         (0...n).collect { [c] * n }
       end
-      CubeState.from_stickers(n, stickers)
+      Core::CubeState.from_stickers(n, stickers)
     end
 
     # Colors in the order of the face symbols.
@@ -130,7 +130,7 @@ module CubeTrainer
     end
 
     def solved_skewb_state
-      SkewbState.for_solved_colors(@face_symbols_to_colors.dup)
+      Core::SkewbState.for_solved_colors(@face_symbols_to_colors.dup)
     end
   end
 end

@@ -2,8 +2,8 @@
 
 require 'cube_trainer/utils/string_helper'
 
-describe StringHelper do
-  include StringHelper
+describe Utils::StringHelper do
+  include Utils::StringHelper
 
   it 'should transform to camel case correctly' do
     expect(camel_case_to_snake_case('TheOldShitIsDumb')).to be == 'the_old_shit_is_dumb'

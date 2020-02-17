@@ -14,12 +14,13 @@ require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
-RSpec.shared_examples 'cube_state' do |cube_size|
-  include CubePrintHelper
+shared_examples 'cube_state' do |cube_size|
+  include Core
+  include Core::CubePrintHelper
 
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:color_scheme) { ColorScheme::BERNHARD }
-  let(:cycle_factory) { PartCycleFactory.new(cube_size, 0) }
+  let(:cycle_factory) { Core::PartCycleFactory.new(cube_size, 0) }
 
   def construct_cycle(part_type, letters)
     cycle_factory.construct(letters.map { |l| letter_scheme.for_letter(part_type, l) })
@@ -30,7 +31,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     CubeConstants::FACE_SYMBOLS.each do |s|
       cube_state.n.times do |x|
         cube_state.n.times do |y|
-          coordinate = Coordinate.from_indices(Face.for_face_symbol(s), cube_state.n, x, y)
+          coordinate = Core::Coordinate.from_indices(Core::Face.for_face_symbol(s), cube_state.n, x, y)
           expected_color = changed_parts[[s, x, y]] || original_state[coordinate]
           expect(cube_state[coordinate]).to be == expected_color
         end
@@ -42,17 +43,17 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     state = color_scheme.solved_cube_state(cube_size)
     # The state is like a r2 b2 to make turns a bit more interesting than solved faces.
     0.upto(cube_size - 1) do |a|
-      state[Coordinate.from_indices(Face::D, cube_size, a, 1)] = :yellow
-      state[Coordinate.from_indices(Face::D, cube_size, -2, a)] = :yellow
-      state[Coordinate.from_indices(Face::U, cube_size, a, 1)] = :white
-      state[Coordinate.from_indices(Face::U, cube_size, -2, a)] = :white
-      state[Coordinate.from_indices(Face::F, cube_size, a, 1)] = :orange
-      state[Coordinate.from_indices(Face::B, cube_size, a, 1)] = :red
-      state[Coordinate.from_indices(Face::L, cube_size, a, -2)] = :green
-      state[Coordinate.from_indices(Face::R, cube_size, a, -2)] = :blue
+      state[Core::Coordinate.from_indices(Core::Face::D, cube_size, a, 1)] = :yellow
+      state[Core::Coordinate.from_indices(Core::Face::D, cube_size, -2, a)] = :yellow
+      state[Core::Coordinate.from_indices(Core::Face::U, cube_size, a, 1)] = :white
+      state[Core::Coordinate.from_indices(Core::Face::U, cube_size, -2, a)] = :white
+      state[Core::Coordinate.from_indices(Core::Face::F, cube_size, a, 1)] = :orange
+      state[Core::Coordinate.from_indices(Core::Face::B, cube_size, a, 1)] = :red
+      state[Core::Coordinate.from_indices(Core::Face::L, cube_size, a, -2)] = :green
+      state[Core::Coordinate.from_indices(Core::Face::R, cube_size, a, -2)] = :blue
     end
-    state[Coordinate.from_indices(Face::D, cube_size, -2, -2)] = :white
-    state[Coordinate.from_indices(Face::U, cube_size, -2, -2)] = :yellow
+    state[Core::Coordinate.from_indices(Core::Face::D, cube_size, -2, -2)] = :white
+    state[Core::Coordinate.from_indices(Core::Face::U, cube_size, -2, -2)] = :yellow
     state
   end
 
@@ -69,7 +70,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   end
 
   it 'should have the right state after applying a nice corner commutator' do
-    construct_cycle(Corner, %w[c d k]).apply_to(cube_state)
+    construct_cycle(Core::Corner, %w[c d k]).apply_to(cube_state)
     changed_parts = {
       [:U, cube_size - 1, cube_size - 1] => :green,
       [:R, 0, cube_size - 1] => :orange,
@@ -83,7 +84,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   end
 
   it 'should have the right state after applying a nasty corner commutator' do
-    construct_cycle(Corner, %w[c h g]).apply_to(cube_state)
+    construct_cycle(Core::Corner, %w[c h g]).apply_to(cube_state)
     changed_parts = {
       [:U, cube_size - 1, cube_size - 1] => :red,
       [:U, 0, cube_size - 1] => :blue,
@@ -448,7 +449,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   it 'should do a Niklas alg properly' do
     parse_algorithm("U' L' U R U' L U R'").apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
-    construct_cycle(Corner, %w[c i j]).apply_to(expected_cube_state)
+    construct_cycle(Core::Corner, %w[c i j]).apply_to(expected_cube_state)
     expect(cube_state).to be == expected_cube_state
   end
 
@@ -456,7 +457,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     if cube_size >= 4
       parse_algorithm("U' R' U r2 U' R U r2").apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
-      construct_cycle(Wing, %w[e t k]).apply_to(expected_cube_state)
+      construct_cycle(Core::Wing, %w[e t k]).apply_to(expected_cube_state)
       expect(cube_state).to be == expected_cube_state
     end
   end
@@ -465,16 +466,16 @@ RSpec.shared_examples 'cube_state' do |cube_size|
     cube_state = color_scheme.solved_cube_state(cube_size)
     parse_algorithm("R U R' U' R' F R2 U' R' U' R U R' F'").apply_to(cube_state)
     expected_cube_state = color_scheme.solved_cube_state(cube_size)
-    construct_cycle(Corner, %w[b d]).apply_to(expected_cube_state)
+    construct_cycle(Core::Corner, %w[b d]).apply_to(expected_cube_state)
     if cube_size.odd? && cube_size >= 5
-      construct_cycle(Midge, %w[b c]).apply_to(expected_cube_state)
+      construct_cycle(Core::Midge, %w[b c]).apply_to(expected_cube_state)
     end
-    construct_cycle(Edge, %w[b c]).apply_to(expected_cube_state) if cube_size == 3
-    wing_incarnations = letter_scheme.for_letter(Wing, 'e').num_incarnations(cube_size)
+    construct_cycle(Core::Edge, %w[b c]).apply_to(expected_cube_state) if cube_size == 3
+    wing_incarnations = letter_scheme.for_letter(Core::Wing, 'e').num_incarnations(cube_size)
     wing_incarnations.times do |incarnation_index|
-      factory = PartCycleFactory.new(cube_size, incarnation_index)
-      factory.construct([letter_scheme.for_letter(Wing, 'b'), letter_scheme.for_letter(Wing, 'c')]).apply_to(expected_cube_state)
-      factory.construct([letter_scheme.for_letter(Wing, 'm'), letter_scheme.for_letter(Wing, 'i')]).apply_to(expected_cube_state)
+      factory = Core::PartCycleFactory.new(cube_size, incarnation_index)
+      factory.construct([letter_scheme.for_letter(Core::Wing, 'b'), letter_scheme.for_letter(Core::Wing, 'c')]).apply_to(expected_cube_state)
+      factory.construct([letter_scheme.for_letter(Core::Wing, 'm'), letter_scheme.for_letter(Core::Wing, 'i')]).apply_to(expected_cube_state)
     end
     expect(cube_state).to be == expected_cube_state
   end
@@ -546,7 +547,7 @@ RSpec.shared_examples 'cube_state' do |cube_size|
   end
 end
 
-describe CubeState do
+describe Core::CubeState do
   context 'when the cube size is 3' do
     it_behaves_like 'cube_state', 3
   end

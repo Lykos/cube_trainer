@@ -7,18 +7,20 @@ require 'cube_trainer/core/parser'
 require 'cube_trainer/cross_finder'
 
 describe CrossFinder do
+  include Core
+
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cube_state) { color_scheme.solved_cube_state(3) }
   let(:cross_finder) { CrossFinder.new }
 
   it 'should find an existing cross' do
     expect(cross_finder.find_cross(cube_state, 0).extract_algorithms).to be == {
-      yellow: [Algorithm.empty],
-      red: [Algorithm.empty],
-      green: [Algorithm.empty],
-      blue: [Algorithm.empty],
-      orange: [Algorithm.empty],
-      white: [Algorithm.empty]
+      yellow: [Core::Algorithm.empty],
+      red: [Core::Algorithm.empty],
+      green: [Core::Algorithm.empty],
+      blue: [Core::Algorithm.empty],
+      orange: [Core::Algorithm.empty],
+      white: [Core::Algorithm.empty]
     }
   end
 

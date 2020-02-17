@@ -38,6 +38,7 @@ module CubeTrainer
     TEST_COMMS_MODES = %i[ignore warn fail].freeze
 
     include Utils::StringHelper
+    include Core
 
     def initialize(part_type:, buffer:, letter_scheme:, color_scheme:, verbose:, cube_size:, test_comms_mode:)
       unless TEST_COMMS_MODES.include?(test_comms_mode)
@@ -60,7 +61,7 @@ module CubeTrainer
 
     attr_reader :name, :part_type, :buffer, :verbose, :cube_size, :test_comms_mode
 
-    FACE_REGEXP = Regexp.new("[#{(CubeConstants::FACE_NAMES + CubeConstants::FACE_NAMES.map(&:downcase)).join('')}]{2,3}")
+    FACE_REGEXP = Regexp.new("[#{(Core::CubeConstants::FACE_NAMES + Core::CubeConstants::FACE_NAMES.map(&:downcase)).join('')}]{2,3}")
 
     def letter_pair(part0, part1)
       LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) })
@@ -150,7 +151,7 @@ module CubeTrainer
 
             maybe_letter_pair = reverse_engineer.find_letter_pair(alg.algorithm)
             alg_table[row_index][col_index] = AlgEntry.new(maybe_letter_pair, alg)
-          rescue CommutatorParseError => e
+          rescue Core::CommutatorParseError => e
             alg_table[row_index][col_index] = ErrorEntry.new("Couldn't parse commutator: #{e}")
           end
         end

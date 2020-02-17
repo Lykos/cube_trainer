@@ -7,10 +7,10 @@ require 'cube_trainer/core/skewb_state'
 
 module CubeTrainer
   class SkewbLayerImprover
-    include CubePrintHelper
+    include Core::CubePrintHelper
 
     def initialize(face, color_scheme)
-      raise ArgumentError unless face.is_a?(Face)
+      raise ArgumentError unless face.is_a?(Core::Face)
 
       @state = color_scheme.solved_skewb_state
       @face = face
@@ -19,8 +19,8 @@ module CubeTrainer
 
     def alg_variations(algorithm)
       mirror_normal = @face.neighbors.first
-      (0..3).map { |d| CubeDirection.new(d) }.product([true, false]).map do |d, m|
-        alg = algorithm.rotate_by(Rotation.new(@face, d))
+      (0..3).map { |d| Core::CubeDirection.new(d) }.product([true, false]).map do |d, m|
+        alg = algorithm.rotate_by(Core::Rotation.new(@face, d))
         m ? alg.mirror(mirror_normal) : alg
       end
     end
@@ -35,7 +35,7 @@ module CubeTrainer
 
     FACE_SYMBOLS_ORDERED_BY_PRIORITY = %i[D U F R L B].freeze
 
-    CORNER_COORDINATES_ORDERED_BY_PRIORITY = Corner::ELEMENTS.sort_by do |c|
+    CORNER_COORDINATES_ORDERED_BY_PRIORITY = Core::Corner::ELEMENTS.sort_by do |c|
       face_index = FACE_SYMBOLS_ORDERED_BY_PRIORITY.index(c.face_symbols.first)
       within_face_index = if c.face_symbols.first == :D
                             case c.piece_index % 4
@@ -49,7 +49,7 @@ module CubeTrainer
                             3 - c.piece_index % 4
                           end
       face_index * 4 + within_face_index
-    end.map { |c| SkewbCoordinate.for_corner(c) }
+    end.map { |c| Core::SkewbCoordinate.for_corner(c) }
 
     # How nice a particular variation of a layer is. E.g. for adjacent solved corners, we want them in the back.
     # Higher scores are better.

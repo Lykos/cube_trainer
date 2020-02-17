@@ -10,7 +10,7 @@ require 'cube_trainer/sequence_hinter'
 
 module CubeTrainer
   class AlgSet
-    include StringHelper
+    include Utils::StringHelper
 
     def initialize(results_model, options)
       @results_model = results_model

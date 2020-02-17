@@ -6,11 +6,13 @@ require 'cube_trainer/core/parser'
 require 'cube_trainer/skewb_layer_classifier'
 
 describe SkewbLayerClassifier do
+  include Core
+
   let(:color_scheme) { ColorScheme::BERNHARD }
-  let(:classifier) { SkewbLayerClassifier.new(Face::D, color_scheme) }
+  let(:classifier) { SkewbLayerClassifier.new(Core::Face::D, color_scheme) }
 
   it 'should classify the solved layer correctly' do
-    expect(classifier.classify_layer(Algorithm.empty)).to be == '4_solved'
+    expect(classifier.classify_layer(Core::Algorithm.empty)).to be == '4_solved'
     expect(classifier.classify_layer(parse_sarahs_skewb_algorithm("R' F R F'"))).to be == '4_solved'
   end
 

@@ -3,7 +3,9 @@
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/parser'
 
-describe Algorithm do
+describe Core::Algorithm do
+  include Core
+
   let(:cube_size) { 3 }
 
   it 'should invert algorithms correctly' do

@@ -57,11 +57,11 @@ module CubeTrainer
     end
 
     PART_TYPE_BUFFERS = {
-      Corner => Corner.for_face_symbols(%i[U L B]),
-      Edge => Edge.for_face_symbols(%i[U F]),
-      Wing => Wing.for_face_symbols(%i[F U]),
-      XCenter => XCenter.for_face_symbols(%i[U R F]),
-      TCenter => TCenter.for_face_symbols(%i[U F])
+      Core::Corner => Core::Corner.for_face_symbols(%i[U L B]),
+      Core::Edge => Core::Edge.for_face_symbols(%i[U F]),
+      Core::Wing => Core::Wing.for_face_symbols(%i[F U]),
+      Core::XCenter => Core::XCenter.for_face_symbols(%i[U R F]),
+      Core::TCenter => Core::TCenter.for_face_symbols(%i[U F])
     }.freeze
 
     def default_buffer(part_type)

@@ -9,10 +9,10 @@ require 'cube_trainer/core/part_cycle_factory'
 
 module CubeTrainer
   class CommutatorChecker
-    include CubePrintHelper
+    include Core::CubePrintHelper
 
     def initialize(part_type:, buffer:, piece_name:, color_scheme:, letter_scheme:, cube_size:, verbose: false, find_fixes: false, incarnation_index: 0)
-      raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(Part)
+      raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(Core::Part)
       raise TypeError unless buffer.class == part_type
       unless cube_size.is_a?(Integer) && cube_size > 0
         raise ArgumentError, "Unsuitable cube size #{cube_size}."
@@ -35,7 +35,7 @@ module CubeTrainer
       # Unknown by default. Only relevant if we actually search for fixes.
       @unfixable_algs = nil
       @error_algs = 0
-      @part_cycle_factory = PartCycleFactory.new(cube_size, incarnation_index)
+      @part_cycle_factory = Core::PartCycleFactory.new(cube_size, incarnation_index)
     end
 
     attr_reader :total_algs, :broken_algs, :unfixable_algs, :error_algs

@@ -21,7 +21,4 @@ require 'shrink_helpers'
 
 # rubocop:disable Style/MixinUsage
 include CubeTrainer
-include Anki
-include Core
-include Utils
 # rubocop:enable Style/MixinUsage

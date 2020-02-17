@@ -4,31 +4,31 @@ require 'cube_trainer/core/cube'
 require 'cube_trainer/core/coordinate'
 
 def face
-  choose(*Face::ELEMENTS)
+  choose(*Core::Face::ELEMENTS)
 end
 
 def corner
-  choose(*Corner::ELEMENTS)
+  choose(*Core::Corner::ELEMENTS)
 end
 
 def non_zero_cube_direction
-  choose(*CubeDirection::NON_ZERO_DIRECTIONS)
+  choose(*Core::CubeDirection::NON_ZERO_DIRECTIONS)
 end
 
 def non_zero_skewb_direction
-  choose(*SkewbDirection::NON_ZERO_DIRECTIONS)
+  choose(*Core::SkewbDirection::NON_ZERO_DIRECTIONS)
 end
 
 def rotation
-  Rotation.new(face, non_zero_cube_direction)
+  Core::Rotation.new(face, non_zero_cube_direction)
 end
 
 def simple_move
-  FatMove.new(face, non_zero_cube_direction, 1)
+  Core::FatMove.new(face, non_zero_cube_direction, 1)
 end
 
 def maybe_fat_mslice_maybe_inner_mslice_move
-  MaybeFatMSliceMaybeInnerMSliceMove.new(face, non_zero_cube_direction)
+  Core::MaybeFatMSliceMaybeInnerMSliceMove.new(face, non_zero_cube_direction)
 end
 
 def width(cube_size)
@@ -36,11 +36,11 @@ def width(cube_size)
 end
 
 def fat_move(cube_size)
-  FatMove.new(face, non_zero_cube_direction, width(cube_size))
+  Core::FatMove.new(face, non_zero_cube_direction, width(cube_size))
 end
 
 def maybe_fat_maybe_slice_move
-  MaybeFatMaybeSliceMove.new(face, non_zero_cube_direction)
+  Core::MaybeFatMaybeSliceMove.new(face, non_zero_cube_direction)
 end
 
 def cube_move(cube_size)
@@ -54,11 +54,11 @@ def cube_move(cube_size)
 end
 
 def cube_algorithm(cube_size)
-  Algorithm.new(size.times.map { cube_move(cube_size) })
+  Core::Algorithm.new(size.times.map { cube_move(cube_size) })
 end
 
 def skewb_corner_move
-  SkewbMove.new(corner, non_zero_skewb_direction)
+  Core::SkewbMove.new(corner, non_zero_skewb_direction)
 end
 
 def skewb_move
@@ -66,22 +66,22 @@ def skewb_move
 end
 
 def skewb_algorithm
-  Algorithm.new(size.times.map { skewb_move })
+  Core::Algorithm.new(size.times.map { skewb_move })
 end
 
 def cube_coordinate(cube_size)
-  Coordinate.from_indices(face,
-                          cube_size,
-                          range(0, cube_size - 1),
-                          range(0, cube_size - 1))
+  Core::Coordinate.from_indices(face,
+                                cube_size,
+                                range(0, cube_size - 1),
+                                range(0, cube_size - 1))
 end
 
 def skewb_corner_coordinate
-  SkewbCoordinate.for_corner(corner)
+  Core::SkewbCoordinate.for_corner(corner)
 end
 
 def skewb_center_coordinate
-  SkewbCoordinate.for_center(face)
+  Core::SkewbCoordinate.for_center(face)
 end
 
 def skewb_coordinate

@@ -33,7 +33,9 @@ class FakeChecker
   end
 end
 
-describe CubeVisualizer do
+describe Anki::CubeVisualizer do
+  include Anki
+
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cube_size) { 3 }
   let(:cube_state) { color_scheme.solved_cube_state(cube_size) }

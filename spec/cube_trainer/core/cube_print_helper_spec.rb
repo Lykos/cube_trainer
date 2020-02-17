@@ -9,8 +9,8 @@ def apply_sexy(cube_state)
   parse_algorithm("R U R' U'").apply_to(cube_state)
 end
 
-describe CubePrintHelper do
-  include CubePrintHelper
+describe Core::CubePrintHelper do
+  include Core::CubePrintHelper
 
   let(:color_scheme) { ColorScheme::BERNHARD }
 
