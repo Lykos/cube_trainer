@@ -125,7 +125,7 @@ module CubeTrainer
       @valuess[index][input] ||= UNKNOWN_SCORE
     end
 
-    class DescriptionAndValue < Struct.new(:description, :value, :cancellations)
+    DescriptionAndValue = Struct.new(:description, :value, :cancellations) do
       def <=>(other)
         [-cancellations, value, description] <=> [-other.cancellations, other.value, other.description]
       end
