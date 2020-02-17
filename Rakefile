@@ -8,7 +8,7 @@ def rb_to_ui(f)
   f.sub(%r{^lib/}, 'ui/').sub(/_ui\.rb$/, '.ui')
 end
 
-rule(%r{^lib/.*_ui\.rb$} => ->(f) { rb_to_ui(f) }) do |t|
+rule(%r{^lib/.*_ui\.rb$} => [->(f) { rbf = rb_to_ui(f); [rbf, File.dirname(rbf)] }]) do |t|
   ui_file = t.source
   rb_file = t.name
   warn "Failed to compile #{ui_file}." unless system(RBUIC, ui_file, '-o', rb_file)
@@ -17,6 +17,9 @@ end
 RBUIC = '/usr/local/bin/rbuic4'
 UIFILES = FileList['ui/**/*.ui']
 COMPILED_UIFILES = UIFILES.map { |f| ui_to_rb(f) }
+COMPILED_UIFILES_DIRECTORIES = COMPILED_UIFILES.map { |f| File.dirname(f) }.uniq
+
+COMPILED_UIFILES_DIRECTORIES.each { |d| directory d }
 
 desc 'generate all Qt UI files using rbuic4'
 task uic: COMPILED_UIFILES
