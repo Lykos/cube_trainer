@@ -6,9 +6,6 @@ require 'rspec/core/rake_task'
 RBUIC = '/usr/local/bin/rbuic4'
 UIFILES = FileList.new('ui/**/*.ui')
 
-# TODO: Find the proper way to do this
-ENV['RANTLY_VERBOSE'] ||= '0'
-
 def ui_to_rb(f)
   f.sub(%r{^ui/}, 'lib/').sub(/.ui$/, '_ui.rb')
 end
@@ -28,7 +25,11 @@ end
 
 Rake::ExtensionTask.new('cube_trainer/native')
 
-RSpec::Core::RakeTask.new(:spec)
+RSpec::Core::RakeTask.new(:spec, [] => :compile) do |t|
+  # TODO: Find the proper way to do this
+  ENV['RANTLY_VERBOSE'] ||= '0'
+end
+
 
 task default: :spec
 
