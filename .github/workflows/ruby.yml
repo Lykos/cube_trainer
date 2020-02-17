@@ -14,11 +14,15 @@ jobs:
     - name: Install Package Dependencies
       uses: mstksg/get-package@v1
       with:
-        apt-get: libsqlite3-dev
+        apt-get: |
+          libsqlite3-dev build-essential bison openssl libreadline5
+          libreadline-dev curl git-core zlib1g zlib1g-dev libssl-dev vim
+          libsqlite3-0 libsqlite3-dev sqlite3
+          libxml2-dev git-core subversion autoconf xorg-dev libgl1-mesa-dev
+          libglu1-mesa-dev
     - name: Build and test with Rake
       run: |
         gem install bundler
-        bundle config set without 'ui'
         bundle install --jobs 4 --retry 3
         bundle exec rake compile
         bundle exec rake
