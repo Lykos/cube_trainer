@@ -18,7 +18,7 @@ jobs:
           libsqlite3-dev build-essential bison openssl libreadline5
           libreadline-dev git-core zlib1g zlib1g-dev libssl-dev vim
           libsqlite3-0 sqlite3 libqt4-dev
-          libxml2-dev git-core subversion autoconf xorg-dev libgl1-mesa-dev
+          libxml2-dev autoconf xorg-dev libgl1-mesa-dev
           libglu1-mesa-dev
     - name: Install gem dependencies
       run: |
