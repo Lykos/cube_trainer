@@ -4,6 +4,8 @@ require 'cube_trainer/core/skewb_state'
 require 'cube_trainer/skewb_layer_helper'
 
 module CubeTrainer
+  # Helper class to give a human readable description like '2_opposite_solved'
+  # for a Skewb layer.
   class SkewbLayerClassifier
     include SkewbLayerHelper
 
@@ -17,16 +19,19 @@ module CubeTrainer
     def classify_layer(algorithm)
       algorithm.apply_temporarily_to(@state) do
         score = score_on_face(@state, @face)
-        if score == 2
-          matching_coordinates = matching_corner_coordinates(@state, @face)
-          if matching_coordinates.length > 2 || has_not_adjacent_on_outside(@state, matching_coordinates)
-            '2_opposite_solved'
-          else
-            '2_adjacent_solved'
-          end
-        else
-          "#{score}_solved"
-        end
+        score == 2 ? classify_score2_layer : "#{score}_solved"
+      end
+    end
+
+    private
+
+    def classify_score2_layer
+      matching_coordinates = matching_corner_coordinates(@state, @face)
+      if matching_coordinates.length > 2 ||
+         contains_not_adjacent_on_outside?(@state, matching_coordinates)
+        '2_opposite_solved'
+      else
+        '2_adjacent_solved'
       end
     end
   end

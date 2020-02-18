@@ -6,6 +6,7 @@ require 'common_options'
 require 'cube_trainer/color_scheme'
 
 module CubeTrainer
+  # Command line options for the skewb layer finder binary.
   class SkewbLayerFinderOptions
     def self.default_options
       options = OpenStruct.new
@@ -17,8 +18,11 @@ module CubeTrainer
       options = default_options
 
       CubeTrainerOptionsParser.new(options) do |opts|
-        opts.on('-x', '--restrict_colors COLORLIST', /[yrbgow]+/, 'Restrict colors to find a layer for.') do |colors|
-          options.restrict_colors = colors.each_char.collect { |c| options.color_scheme.colors.find { |o| o.to_s[0] == c } }
+        opts.on('-x', '--restrict_colors COLORLIST',
+                /[yrbgow]+/, 'Restrict colors to find a layer for.') do |colors|
+          options.restrict_colors = colors.each_char.collect do |c|
+            options.color_scheme.colors.find { |o| o.to_s[0] == c }
+          end
         end
       end.parse!(args)
       options

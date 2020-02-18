@@ -4,6 +4,7 @@ require 'cube_trainer/core/coordinate'
 require 'cube_trainer/core/skewb_state'
 
 module CubeTrainer
+  # Module with common helper methods related to Skewb layers.
   module SkewbLayerHelper
     MATCHING_CORNERS_HASH =
       begin
@@ -29,13 +30,13 @@ module CubeTrainer
       end
     end
 
-    def has_mismatch_on_outside(skewb_state, coordinates)
+    def mismatch_on_outside?(skewb_state, coordinates)
       coordinates.combination(2).any? do |cs|
         check_on_outside_internal(skewb_state, cs) == :mismatch
       end
     end
 
-    def has_not_adjacent_on_outside(skewb_state, coordinates)
+    def contains_not_adjacent_on_outside?(skewb_state, coordinates)
       coordinates.combination(2).any? do |cs|
         check_on_outside_internal(skewb_state, cs) == :not_adjacent
       end
@@ -51,7 +52,7 @@ module CubeTrainer
     def score_on_face(skewb_state, face)
       matching_coordinates = matching_corner_coordinates(skewb_state, face)
       naive_score = matching_coordinates.length
-      has_mismatch = has_mismatch_on_outside(skewb_state, matching_coordinates)
+      has_mismatch = mismatch_on_outside?(skewb_state, matching_coordinates)
       has_mismatch ? naive_score - naive_score / 2 : naive_score
     end
   end

@@ -4,6 +4,7 @@ require 'cube_trainer/core/cube'
 require 'cube_trainer/color_scheme'
 
 module CubeTrainer
+  # Helper class to give a fingerprint for a Skewb layer.
   class SkewbLayerFingerprinter
     def initialize(face)
       raise ArgumentError unless face.is_a?(Core::Face)
