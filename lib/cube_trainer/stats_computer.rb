@@ -7,8 +7,11 @@ require 'cube_trainer/results_persistence'
 require 'cube_trainer/utils/math_helper'
 
 module CubeTrainer
+  # Helper class to compute all kinds of cubing stats
   class StatsComputer
     include Utils::MathHelper
+
+    RECENCY_THRESHOLD_SECONDS = 24 * 60 * 60
 
     def initialize(now, options, results_persistence = ResultsPersistence.create_for_production)
       raise TypeError unless now.is_a?(Time)
@@ -17,35 +20,27 @@ module CubeTrainer
       @now = now
       @options = options
       @results_persistence = results_persistence
-      mode = BufferHelper.mode_for_options(options)
-      results = @results_persistence.load_results(mode)
-      @grouped_results = results.group_by(&:input_representation)
-      grouped_averages = @grouped_results.collect { |c, rs| [c, average_time(rs)] }
-      @averages = grouped_averages.sort_by { |t| -t[1] }
-
-      old_results = results.select { |r| r.timestamp < now - 24 * 3600 }
-      old_grouped_results = old_results.group_by(&:input_representation)
-      old_grouped_averages = old_grouped_results.collect { |c, rs| [c, average_time(rs)] }
-      @old_averages = old_grouped_averages.sort_by { |t| -t[1] }
-
-      @num_results = results.length
-      @num_recent_results = results.count { |r| r.timestamp > now - 24 * 3600 }
     end
 
-    attr_reader :averages, :old_averages, :num_results, :num_recent_results
-
-    def input_stats(inputs)
+    def results_for_inputs(inputs)
       hashes = inputs.collect { |e| e.representation.hash }
-      filtered_results = @grouped_results.select { |input, _rs| hashes.include?(input.hash) }
+      filtered_results = grouped_results.select { |input, _rs| hashes.include?(input.hash) }
+    end
+
+    def newish_elements(filtered_results)
       lengths = filtered_results.collect { |_input, rs| rs.length }
       newish_elements = lengths.count { |l| l >= 1 && l < @options.new_item_boundary }
+    end
+
+    def input_stats(inputs)
+      filtered_results = results_for_inputs(inputs)
       found = filtered_results.keys.uniq.length
       total = inputs.length
       missing = total - found
       {
         found: found,
         total: total,
-        newish_elements: newish_elements,
+        newish_elements: newish_elements(filtered_results),
         missing: missing
       }
     end
@@ -57,19 +52,6 @@ module CubeTrainer
                                                                               @results_persistence)
                                           computer.compute_expected_time_per_type_stats
                                         end
-    end
-
-    # Interesting time boundaries to see the number of bad results above that boundary.
-    # It allows to display things like "9 results are above 4.5 and one result is above 5".
-    def cutoffs
-      return [] if @averages.length < 20
-
-      # TODO: Take mode and target into account
-      some_bad_result = @averages[9][1]
-      step = floor_to_nice(some_bad_result / 10)
-      start = floor_to_step(some_bad_result, step)
-      finish = start + step * 5
-      start.step(finish, step).to_a
     end
 
     def bad_results
@@ -89,11 +71,11 @@ module CubeTrainer
     end
 
     def total_average
-      @total_average ||= compute_total_average(@averages)
+      @total_average ||= compute_total_average(averages)
     end
 
     def old_total_average
-      @old_total_average ||= compute_total_average(@old_averages)
+      @old_total_average ||= compute_total_average(old_averages)
     end
 
     def average_time(results)
@@ -102,6 +84,68 @@ module CubeTrainer
       avg.average
     end
 
-    def float_times_s(results); end
+    def num_results
+      @num_results ||= results.length
+    end
+
+    def recently
+      @now - RECENCY_THRESHOLD_SECONDS
+    end
+
+    def num_recent_results
+      @num_recent_results ||= results.count { |r| r.timestamp >= recently }
+    end
+
+    def averages
+      @averages ||= compute_averages(grouped_results)
+    end
+
+    def old_averages
+      @old_averages ||= compute_averages(old_grouped_results)
+    end
+
+    private
+
+    def compute_averages(grouped_results)
+      grouped_averages = grouped_results.collect { |c, rs| [c, average_time(rs)] }
+      grouped_averages.sort_by { |t| -t[1] }.freeze
+    end
+
+    def mode
+      @mode ||= BufferHelper.mode_for_options(@options)
+    end
+
+    def results
+      @results ||= @results_persistence.load_results(mode).freeze
+    end
+    
+    def old_results
+      @old_results ||= results.select { |r| r.timestamp < recently }
+    end
+
+    def grouped_results
+      @grouped_results ||= group_results(results)
+    end
+
+    def old_grouped_results
+      @old_grouped_results ||= group_results(old_results)
+    end
+
+    def group_results(results)
+      results.group_by(&:input_representation).freeze
+    end
+
+    # Interesting time boundaries to see the number of bad results above that boundary.
+    # It allows to display things like "9 results are above 4.5 and one result is above 5".
+    def cutoffs
+      return [] if averages.length < 20
+
+      # TODO: Take mode and target into account
+      some_bad_result = averages[9][1]
+      step = floor_to_nice(some_bad_result / 10)
+      start = floor_to_step(some_bad_result, step)
+      finish = start + step * 5
+      start.step(finish, step).to_a
+    end
   end
 end
