@@ -1,3 +1,6 @@
+AllCops:
+  Exclude:
+  - 'lib/**/*_ui.rb'
 Layout/LineLength:
   Max: 100
   # TODO: This is temporary
