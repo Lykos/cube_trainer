@@ -17,6 +17,7 @@ module CubeTrainer
     end
   end
 
+  # A sampler that consists of subsamplers and weights.
   class CombinedSampler < Sampler
     include Utils::SamplingHelper
     SubSampler = Struct.new(:subsampler, :weight)

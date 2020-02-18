@@ -5,6 +5,7 @@ require 'cube_trainer/core/cube'
 
 module CubeTrainer
   module Ui
+    # Controller for the view that displays a cubie
     class CubieController
       PARTS = Core::Corner::ELEMENTS + Core::Edge::ELEMENTS
 
@@ -14,16 +15,12 @@ module CubeTrainer
       end
 
       def scene
-        @scene ||= create_scene
+        @scene ||= begin
+                     scene = Qt::GraphicsScene.new
+                     @widget.setScene(scene)
+                     scene
+                   end
       end
-
-      def create_scene
-        scene = Qt::GraphicsScene.new
-        @widget.setScene(scene)
-        scene
-      end
-
-      private :create_scene
 
       attr_reader :cubie
 
@@ -52,18 +49,19 @@ module CubeTrainer
         @widget.viewport.update
       end
 
-      def add_to_scene(c, i, n)
-        if n == 2
-          scene.addRect(rectangle(i), BLACK_PEN, brush(c))
-        elsif n > 2
-          scene.addPolygon(polygon(i, n), BLACK_PEN, brush(c))
+      def add_to_scene(color, index, num_colors)
+        b = brush(color)
+        if num_colors == 2
+          scene.addRect(rectangle(index), BLACK_PEN, b)
+        elsif num_colors > 2
+          scene.addPolygon(polygon(index, num_colors), BLACK_PEN, b)
         else
-          raise "Unsupported cubie size #{n}."
+          raise ArgumentError, "Unsupported cubie size #{num_colors}."
         end
       end
 
-      def brush(c)
-        Qt::Brush.new(map_color(c))
+      def brush(color)
+        Qt::Brush.new(map_color(color))
       end
 
       BLACK_PEN = Qt::Pen.new(Qt.black)
@@ -76,13 +74,14 @@ module CubeTrainer
         Qt::PointF.new(cubie_size * Math.sin(angle), cubie_size * Math.cos(angle))
       end
 
-      def rectangle(i)
-        sign = [-1, 1][i]
-        Qt::RectF.new(Qt::PointF.new(-cubie_size / 3, 0), Qt::PointF.new(cubie_size / 3, sign * cubie_size * 2 / 3))
+      def rectangle(index)
+        sign = [-1, 1][index]
+        Qt::RectF.new(Qt::PointF.new(-cubie_size / 3, 0),
+                      Qt::PointF.new(cubie_size / 3, sign * cubie_size * 2 / 3))
       end
 
-      def polygon(i, n)
-        angles = [angle(i, n), angle(i + 1, n)]
+      def polygon(index, number)
+        angles = [angle(index, number), angle(index + 1, number)]
         corners = angles.collect { |a| point_on_circle(a) }
         corners.push(MIDDLE_POINT)
         Qt::PolygonF.new(corners)
@@ -90,8 +89,8 @@ module CubeTrainer
 
       MIDDLE_POINT = Qt::PointF.new(0.0, 0.0)
 
-      def angle(i, n)
-        i * 2 * Math::PI / n
+      def angle(index, number)
+        index * 2 * Math::PI / number
       end
 
       def map_color(color)

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module CubeTrainer
+  # Class that gives random inputs to a learner class and measures and records how well the learner
+  # performs.
   class Trainer
     def initialize(learner, results_model, generator)
       @learner = learner
