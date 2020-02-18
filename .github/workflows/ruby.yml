@@ -20,9 +20,11 @@ jobs:
           libsqlite3-0 sqlite3 libqt4-dev
           libxml2-dev git-core subversion autoconf xorg-dev libgl1-mesa-dev
           libglu1-mesa-dev
-    - name: Build and test with Rake
+    - name: Install gem dependencies
       run: |
         gem install bundler
         bundle install --jobs 4 --retry 3
+    - name: Build and test with Rake
+      run: |
         bundle exec rake uic
         bundle exec rake
