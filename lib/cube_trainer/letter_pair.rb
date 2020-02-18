@@ -19,7 +19,7 @@ module CubeTrainer
 
     attr_reader :letters
 
-    def has_any_letter?(letters)
+    def contains_any_letter?(letters)
       !(@letters & letters).empty?
     end
 

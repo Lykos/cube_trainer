@@ -8,6 +8,7 @@ module CubeTrainer
   TWIST_LAST_CORNER_WITH_PARITY = true
   FLIP_LAST_EDGE_WITH_COMM = false
 
+  # Common base class for expected number of algs computers.
   class AbstractExpectedAlgsComputer
     def initialize(cube_numbers)
       @cube_numbers = cube_numbers
@@ -44,8 +45,13 @@ module CubeTrainer
     def compute_expected_algs_for_num_targets(_num_targets, _num_twists)
       raise NotImplementedError
     end
+
+    def bool_to_i(bool)
+      bool ? 1 : 0
+    end
   end
 
+  # Class that computes the expected number of corner commutators.
   class CornerCommutatorsComputer < AbstractExpectedAlgsComputer
     def cube_numbers_key
       :corner_targets_twists
@@ -55,12 +61,14 @@ module CubeTrainer
       # We need one alg for 2 targets.
       # The parity alg is not a corner comm, so we round down.
       corner_comms = num_targets / 2
-      # We have to do a 2 twist for the last twisted corner unless it's a parity in which case we instead need one comm more.
-      maybe_last_twist_comm = last_twist_with_parity?(num_targets, num_twists) && num_twists.odd? ? 1 : 0
-      corner_comms + maybe_last_twist_comm
+      # We have to do a 2 twist for the last twisted corner unless it's a parity in which
+      # case we instead need one comm more.
+      has_last_twist_comm = last_twist_with_parity?(num_targets, num_twists) && num_twists.odd?
+      corner_comms + bool_to_i(has_last_twist_comm)
     end
   end
 
+  # Class that computes the expected number of edge commutators.
   class EdgeCommutatorsComputer < AbstractExpectedAlgsComputer
     # With our system of swapping two edges, there is never edge parity.
     def cube_numbers_key
@@ -71,11 +79,12 @@ module CubeTrainer
       # We need one alg for 2 targets.
       # With our system of swapping two edges, there is never edge parity.
       edge_comms = num_targets / 2
-      maybe_last_flip_comm = last_flip_with_comm?(num_flips) && num_flips.odd? ? 1 : 0
-      edge_comms + maybe_last_flip_comm
+      has_last_flip_comm = last_flip_with_comm?(num_flips) && num_flips.odd?
+      edge_comms + bool_to_i(has_last_flip_comm)
     end
   end
 
+  # Class that computes the expected number of corner 3 twists.
   class Corner3TwistsComputer < AbstractExpectedAlgsComputer
     def cube_numbers_key
       :corner_targets_twists
@@ -88,6 +97,7 @@ module CubeTrainer
     end
   end
 
+  # Class that computes the expected number of floating corner 2 twists.
   class Floating2TwistsComputer < AbstractExpectedAlgsComputer
     def cube_numbers_key
       :corner_targets_twists
@@ -96,12 +106,14 @@ module CubeTrainer
     def compute_expected_algs_for_num_targets(num_targets, num_twists)
       # We only need one alg for 2 targets and only half of the times it's a 2 twist.
       floating2twists = (num_twists / 2) * 0.5
-      # We have to do a 2 twist for the last twisted corner unless it's a parity in which case we instead need one comm more.
-      maybe_last_twist = !last_twist_with_parity?(num_targets, num_twists) && num_twists.even? ? 1 : 0
-      floating2twists + maybe_last_twist
+      # We have to do a 2 twist for the last twisted corner unless it's a parity in which
+      # case we instead need one comm more.
+      has_last_twist = !last_twist_with_parity?(num_targets, num_twists) && num_twists.even?
+      floating2twists + bool_to_i(has_last_twist)
     end
   end
 
+  # Class that computes the expected number of floating edge 2 flips.
   class Floating2FlipsComputer < AbstractExpectedAlgsComputer
     def cube_numbers_key
       :edge_targets_flips_no_parity
@@ -116,6 +128,7 @@ module CubeTrainer
     end
   end
 
+  # Class that computes the expected number of corner parities.
   class CornerParitiesComputer < AbstractExpectedAlgsComputer
     def cube_numbers_key
       :corner_targets_twists
@@ -126,6 +139,7 @@ module CubeTrainer
     end
   end
 
+  # Class that computes the expected time for BLD execution.
   class ExpectedTimeComputer
     EXPECTED_ALGS_COMPUTER_CLASSES = {
       corner_commutators: CornerCommutatorsComputer,
@@ -146,15 +160,28 @@ module CubeTrainer
       @cube_numbers ||= YAML.load_file('data/cube_numbers.yml')
     end
 
+    def expected_algs(key)
+      EXPECTED_ALGS_COMPUTER_CLASSES[key].new(cube_numbers).compute_expected_algs
+    end
+
+    def per_type_stats(key, commutator_type)
+      patched_options = @options.dup
+      patched_options.commutator_info = commutator_type
+      average = StatsComputer.new(@now, patched_options, @results_persistence).total_average
+      expected_algs = expected_algs(commutator_type.result_symbol)
+      {
+        name: key,
+        expected_algs: expected_algs,
+        average: average,
+        total_time: expected_algs * average
+      }
+    end
+
     def compute_expected_time_per_type_stats
-      relevant_commutator_types = CommutatorOptions::COMMUTATOR_TYPES.select { |_k, c| EXPECTED_ALGS_COMPUTER_CLASSES.key?(c.result_symbol) }
-      per_type_stats = relevant_commutator_types.map do |k, c|
-        patched_options = @options.dup
-        patched_options.commutator_info = c
-        average = StatsComputer.new(@now, patched_options, @results_persistence).total_average
-        expected_algs = EXPECTED_ALGS_COMPUTER_CLASSES[c.result_symbol].new(cube_numbers).compute_expected_algs
-        { name: k, expected_algs: expected_algs, average: average, total_time: expected_algs * average }
+      relevant_commutator_types = CommutatorOptions::COMMUTATOR_TYPES.select do |_k, c|
+        EXPECTED_ALGS_COMPUTER_CLASSES.key?(c.result_symbol)
       end
+      per_type_stats = relevant_commutator_types.map { |k, c| per_type_stats(k, c) }
       total_time = per_type_stats.map { |stats| stats[:total_time] }.reduce(:+)
       per_type_stats.each { |stats| stats[:weight] = stats[:total_time] / total_time }
       per_type_stats

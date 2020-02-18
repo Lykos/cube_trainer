@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module CubeTrainer
+  # A term that has been processed s.t. we can easily check whether it matches a letter sequence.
   class ProcessedTerm
     def initialize(term)
       @term = term
@@ -8,6 +9,12 @@ module CubeTrainer
     end
 
     attr_reader :term
+
+    def matches_unique_correct_start?(correct_start)
+      correct_start.length == 1 && @normalized_parts.any? do |p|
+        p != correct_start.first && p.start_with?(rest)
+      end
+    end
 
     def matches?(start, rest)
       correct_start = @normalized_parts.select { |p| p.start_with?(start) }
@@ -18,14 +25,13 @@ module CubeTrainer
       # There are multiple correct starts and any part starts with the rest.
       return true if correct_start.length > 1 && @normalized_parts.any? { |p| p.start_with?(rest) }
       # There is one correct start and any part except for that one starts with the rest.
-      if correct_start.length == 1 && @normalized_parts.any? { |p| p != correct_start.first && p.start_with?(rest) }
-        return true
-      end
+      return true if matches_unique_correct_start?(correct_start, rest)
 
       false
     end
   end
 
+  # Helper class to find words that fit a certain letter sequence.
   class LetterPairWordFinder
     def initialize(terms)
       @processed_terms = terms.map { |t| ProcessedTerm.new(t) }

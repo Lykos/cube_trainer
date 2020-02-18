@@ -3,6 +3,7 @@
 require 'cube_trainer/core/cube'
 
 module CubeTrainer
+  # Letter scheme that maps stickers to letters.
   class LetterScheme
     def initialize
       alphabet.each do |letter|
@@ -19,7 +20,7 @@ module CubeTrainer
       part_type::ELEMENTS.find { |e| letter(e) == canonicalized_letter }
     end
 
-    def has_letter?(letter)
+    def valid_letter?(letter)
       alphabet.include?(canonicalize_letter(letter))
     end
 
@@ -32,7 +33,7 @@ module CubeTrainer
     end
 
     def parse_part(part_type, part_string)
-      if has_letter?(part_string)
+      if valid_letter?(part_string)
         for_letter(part_type, part_string)
       else
         part_type.parse(part_string)
@@ -42,6 +43,7 @@ module CubeTrainer
     alias parse_buffer parse_part
   end
 
+  # Letter scheme used by Bernhard Brodowsky.
   class BernhardLetterScheme < LetterScheme
     def alphabet
       @alphabet ||= 'a'.upto('x').to_a

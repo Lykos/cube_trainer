@@ -3,6 +3,7 @@
 require 'cube_trainer/result'
 
 module CubeTrainer
+  # Class that handles storing and querying results.
   class ResultsModel
     def initialize(mode, results_persistence)
       @mode = mode
@@ -31,7 +32,9 @@ module CubeTrainer
     end
 
     def last_word_for_input(input_representation)
-      result = results.select { |r| r.input_representation == input_representation }.max_by(&:timestamp)
+      result = results.select do |r|
+        r.input_representation == input_representation
+      end.max_by(&:timestamp)
       result.nil? ? nil : result.word
     end
 

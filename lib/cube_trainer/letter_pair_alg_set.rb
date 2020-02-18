@@ -34,11 +34,11 @@ module CubeTrainer
       @input_items ||= begin
                          generated_input_items = generate_input_items
                          restricted_input_items = if options.restrict_letters && !options.restrict_letters.empty?
-                                                    generated_input_items.select { |p| p.representation.has_any_letter?(options.restrict_letters) }
+                                                    generated_input_items.select { |p| p.representation.contains_any_letter?(options.restrict_letters) }
                                                   else
                                                     generated_input_items
                                                   end
-                         restricted_input_items.reject { |p| p.representation.has_any_letter?(options.exclude_letters) }
+                         restricted_input_items.reject { |p| p.representation.contains_any_letter?(options.exclude_letters) }
                        end
     end
 

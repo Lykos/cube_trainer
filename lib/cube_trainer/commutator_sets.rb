@@ -27,6 +27,7 @@ module CubeTrainer
     part.rotate_face_up(orientation_face(part))
   end
 
+  # Class that generates input items for floating corner 2 twists.
   class FloatingCorner2Twists < LetterPairAlgSet
     PART_TYPE = Core::Corner
 
@@ -72,12 +73,14 @@ module CubeTrainer
     end
   end
 
+  # Class that generates input items for floating corner 2 twists and 3 twists.
   class FloatingCorner2TwistsAnd3Twists < DisjointUnionLetterPairAlgSet
     def initialize(results_model, options)
       super(results_model, options, FloatingCorner2Twists.new(results_model, options), Corner3Twists.new(results_model, options))
     end
   end
 
+  # Class that generates input items for corner twists plus parities.
   class CornerTwistsPlusParities < LetterPairAlgSet
     PART_TYPE = Core::Corner
 
@@ -114,6 +117,7 @@ module CubeTrainer
       end
     end
 
+    # Class that creates hints for corner twists plus parities.
     class CornerTwistPlusParityHinter < HeterogenousSequenceHinter
       include Utils::ArrayHelper
 
@@ -142,6 +146,7 @@ module CubeTrainer
     end
   end
 
+  # Class that generates input items for corner 3 twists.
   class Corner3Twists < LetterPairAlgSet
     PART_TYPE = Core::Corner
 
@@ -180,6 +185,7 @@ module CubeTrainer
       end
     end
 
+    # Class that creates hints for corner 3 twists.
     class Corner3TwistHinter < HomogenousSequenceHinter
       # Note that this should be the results for corner comms, not for corner 3 twists.
       def initialize(corner_results, corner_hinter, options)
@@ -247,6 +253,7 @@ module CubeTrainer
     end
   end
 
+  # Class that generates input items for floating edge flips.
   class FloatingEdgeFlips < LetterPairAlgSet
     PART_TYPE = Core::Edge
 
@@ -267,6 +274,7 @@ module CubeTrainer
     end
   end
 
+  # Class that generates input items for commutators.
   class CommutatorSet < LetterPairAlgSet
     # If restrict_letters is not nil, only commutators for those letters are used.
     def initialize(results_model, options)
@@ -277,6 +285,7 @@ module CubeTrainer
     attr_reader :hinter
   end
 
+  # Class that generates input items for corner commutators.
   class CornerCommutators < CommutatorSet
     PART_TYPE = Core::Corner
 
@@ -289,6 +298,7 @@ module CubeTrainer
     end
   end
 
+  # Class that generates input items for edge commutators.
   class EdgeCommutators < CommutatorSet
     PART_TYPE = Core::Edge
 
@@ -301,6 +311,7 @@ module CubeTrainer
     end
   end
 
+  # Class that generates input items for wing commutators.
   class WingCommutators < CommutatorSet
     PART_TYPE = Core::Wing
 
@@ -313,6 +324,7 @@ module CubeTrainer
     end
   end
 
+  # Class that generates input items for X center commutators.
   class XCenterCommutators < CommutatorSet
     PART_TYPE = Core::XCenter
 
@@ -325,6 +337,7 @@ module CubeTrainer
     end
   end
 
+  # Class that generates input items for T center commutators.
   class TCenterCommutators < CommutatorSet
     PART_TYPE = Core::TCenter
 
@@ -337,6 +350,7 @@ module CubeTrainer
     end
   end
 
+  # Class that generates input items for corner parities.
   class CornerParities < LetterPairAlgSet
     PART_TYPE = Core::Corner
 

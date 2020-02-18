@@ -3,6 +3,7 @@
 require 'cube_trainer/letter_pair'
 
 module CubeTrainer
+  # A sequence of letter pairs.
   class LetterPairSequence
     SEPARATOR = ';'
 
@@ -29,8 +30,8 @@ module CubeTrainer
       LetterSequence.new(data.split(SEPARATOR).map { |d| LetterSequence.from_raw_data(d) })
     end
 
-    def has_any_letter?(letters)
-      @letter_pairs.any? { |ls| ls.has_any_letter?(letters) }
+    def contains_any_letter?(letters)
+      @letter_pairs.any? { |ls| ls.contains_any_letter?(letters) }
     end
 
     # Serialize to data stored in the db.

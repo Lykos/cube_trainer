@@ -15,14 +15,20 @@ module CubeTrainer
 
     def initialize(cube_size, resultss, hinters)
       Core::CubeState.check_cube_size(cube_size)
-      raise ArgumentError if resultss.length != hinters.length
-      raise ArgumentError if resultss.empty?
+      raise ArgumentError if resultss.length != hinters.length || resultss.empty?
 
       hinters.each do |h|
         raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints)
       end
       @cube_size = cube_size
-      @valuess = resultss.map do |results|
+      @valuess = compute_valuess(resultss)
+      @hinters = hinters
+      @hints = {}
+      @metric = :sqtm
+    end
+
+    def compute_valuess(resultss)
+      resultss.map do |results|
         values = {}
         results.group_by(&:input_representation).each do |l, rs|
           avg = Native::CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
@@ -31,22 +37,21 @@ module CubeTrainer
         end
         values
       end
-      @hinters = hinters
-      @hints = {}
     end
 
     def length
       @hinters.length
     end
 
+    # Represents a score that is not present and unknown.
     class UnknownScore
-      def <=>(score)
-        -score.unknown_compare
+      def <=>(other)
+        -other.unknown_compare
       end
 
       include Comparable
 
-      def +(_score)
+      def +(_other)
         self
       end
 
@@ -77,19 +82,20 @@ module CubeTrainer
 
     UNKNOWN_SCORE = UnknownScore.new
 
+    # Represents a score that is actually present and known.
     class ActualScore
       def initialize(value)
         @value = value
       end
 
-      def <=>(score)
-        -score.actual_compare(@value)
+      def <=>(other)
+        -other.actual_compare(@value)
       end
 
       include Comparable
 
-      def +(score)
-        score.plus_actual(@value)
+      def +(other)
+        other.plus_actual(@value)
       end
 
       def actual_compare(value)
@@ -127,7 +133,8 @@ module CubeTrainer
 
     DescriptionAndValue = Struct.new(:description, :value, :cancellations) do
       def <=>(other)
-        [-cancellations, value, description] <=> [-other.cancellations, other.value, other.description]
+        [-cancellations, value, description] <=>
+          [-other.cancellations, other.value, other.description]
       end
 
       def to_s
@@ -153,17 +160,25 @@ module CubeTrainer
       end
     end
 
+    def binary_cancellation_score(left, right)
+      if left && right
+        ActualScore.new(left.cancellations(right, @cube_size, @metric))
+      else
+        UNKNOWN_SCORE
+      end
+    end
+
+    def sequence_cancellation_score(sequence)
+      sequence[0..-2].zip(sequence[1..-1]).map do |left, right|
+        binary_cancellation_score(left, right)
+      end.reduce(:+)
+    end
+
     def descriptions_and_values(combinations_with_base_hints)
       combinations_with_base_hints.map do |ls, hs|
         description = ls.join(', ')
         value = ls.map.with_index { |l, i| value(i, l) }.reduce(:+)
-        cancellations = hs[0..-2].zip(hs[1..-1]).map do |left, right|
-          if left && right
-            ActualScore.new(left.cancellations(right, @cube_size, :sqtm))
-          else
-            UNKNOWN_SCORE
-          end
-        end.reduce(:+)
+        cancellations = sequence_cancellation_score(hs)
         DescriptionAndValue.new(description, value, cancellations)
       end
     end

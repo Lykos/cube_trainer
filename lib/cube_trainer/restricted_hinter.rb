@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module CubeTrainer
+  # A restricted hinter that works like a given hinter, but only works on a certain set of inputs.
   class RestrictedHinter
     def initialize(inputs, hinter)
       raise TypeError, "Invalid input type #{inputs.class}." unless inputs.respond_to?(:include?)
@@ -8,10 +9,10 @@ module CubeTrainer
 
       @inputs = inputs
       @hinter = hinter
-      if hinter.respond_to?(:entries)
-        @entries = @hinter.entries.select { |a, _b| in_domain?(a) }
-        self.class.attr_reader :entries
-      end
+      return unless hinter.respond_to?(:entries)
+
+      @entries = @hinter.entries.select { |a, _b| in_domain?(a) }
+      self.class.attr_reader :entries
     end
 
     def self.trivially_restricted(hinter)

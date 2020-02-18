@@ -7,6 +7,7 @@ require 'cube_trainer/pao_letter_pair'
 require 'cube_trainer/dict'
 
 module CubeTrainer
+  # Class that generates input items for mapping letter pairs to words.
   class LettersToWord < LetterPairAlgSet
     def initialize(results_model, options)
       super
@@ -38,15 +39,21 @@ module CubeTrainer
       @dict ||= Dict.new
     end
 
-    def hints(pao_letter_pair)
+    # rubocop:disable Metrics/AbcSize
+    def hints_for_new_word(pao_letter_pair)
       letter_pair = pao_letter_pair.letter_pair
+      if letter_pair.letters.first.downcase == 'x'
+        dict.words_for_regexp(letter_pair.letters[1], Regexp.new(letter_pair.letters[1]))
+      else
+        dict.words_for_regexp(letter_pair.letters.first, letter_pair.regexp)
+      end
+    end
+    # rubocop:enable Metrics/AbcSize
+
+    def hints(pao_letter_pair)
       word = @results_model.last_word_for_input(pao_letter_pair)
       if word.nil?
-        if letter_pair.letters.first.downcase == 'x'
-          dict.words_for_regexp(letter_pair.letters[1], Regexp.new(letter_pair.letters[1]))
-        else
-          dict.words_for_regexp(letter_pair.letters.first, letter_pair.regexp)
-        end
+        hints_for_new_word(pao_letter_pair)
       else
         [word]
       end

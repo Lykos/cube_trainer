@@ -7,6 +7,7 @@ module CubeTrainer
   class SamplingError < CubeTrainerError
   end
 
+  # Abstract sampler class
   class Sampler
     def random_item
       raise NotImplementedError
@@ -48,6 +49,8 @@ module CubeTrainer
     end
   end
 
+  # A sampler that has an ordered list of subsamplers that it tries to
+  # use in order.
   class PrioritizedSampler < Sampler
     def initialize(subsamplers)
       raise TypeError unless subsamplers.all? { |s| s.is_a?(Sampler) }
@@ -67,6 +70,7 @@ module CubeTrainer
     end
   end
 
+  # An adaptive sampler that has changing weights.
   class AdaptiveSampler < Sampler
     include Utils::SamplingHelper
 
@@ -85,7 +89,7 @@ module CubeTrainer
     end
 
     def items
-      @items.select { |e| @get_weight_proc.call(e) > 0 }
+      @items.select { |e| @get_weight_proc.call(e).positive? }
     end
 
     def ready?
