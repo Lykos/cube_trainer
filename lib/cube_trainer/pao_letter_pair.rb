@@ -22,12 +22,6 @@ module CubeTrainer
       @letter_pair.letters
     end
 
-    # Encoding for YAML (and possibly others)
-    def encode_with(coder)
-      coder['pao_type'] = @pao_type
-      coder['letter_pair'] = @letter_pair
-    end
-
     def matches_word?(word)
       @letter_pair.matches_word?(word)
     end

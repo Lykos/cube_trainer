@@ -20,11 +20,6 @@ module CubeTrainer
 
     attr_reader :letter_pairs
 
-    # Encoding for YAML (and possibly others)
-    def encode_with(coder)
-      coder['letters'] = @letters
-    end
-
     # Construct from data stored in the db.
     def self.from_raw_data(data)
       LetterSequence.new(data.split(SEPARATOR).map { |d| LetterSequence.from_raw_data(d) })
