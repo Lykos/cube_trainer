@@ -17,7 +17,7 @@ module CubeTrainer
       def snake_case_class_name(clazz)
         camel_case_to_snake_case(simple_class_name(clazz))
       end
-      
+
       def format_time(time_s)
         format('%<time_s>.2f', time_s: time_s)
       end
