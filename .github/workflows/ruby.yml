@@ -14,12 +14,13 @@ jobs:
     - name: Install Package Dependencies
       uses: mstksg/get-package@v1
       with:
-        apt-get: libsqlite3-dev libqt4-dev ruby-dev
+        apt-get: libsqlite3-dev # libqt4-dev ruby-dev
     - name: Install gem dependencies
       run: |
         gem install bundler
+        bundle config set without 'ui'
         bundle install --jobs 4 --retry 3
     - name: Build and test with Rake
       run: |
-        bundle exec rake uic
+        # bundle exec rake uic
         bundle exec rake
