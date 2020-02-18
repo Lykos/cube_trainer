@@ -2,6 +2,7 @@
 
 module CubeTrainer
   module Utils
+    # A few math related helper methods.
     module MathHelper
       def next_lower_nice_digit(digit)
         if digit >= 5

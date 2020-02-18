@@ -8,7 +8,7 @@ module CubeTrainer
   class StatsModel < Qt::AbstractTableModel
     include UiHelpers
 
-    AVERAGE_SIZES = [5, 12, 50, 100, 1000]
+    AVERAGE_SIZES = [5, 12, 50, 100, 1000].freeze
 
     def initialize(results_model)
       super()
@@ -27,7 +27,7 @@ module CubeTrainer
       @averages.each { |a| a.push(result.time_s) }
     end
 
-    def delete_after_time(timestamp)
+    def delete_after_time(_timestamp)
       reset
     end
 

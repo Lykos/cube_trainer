@@ -45,8 +45,29 @@ module CubeTrainer
       # TODO: Provide more powerful creation methods for columns and
       # move these overly specific ones out of this file
 
+      NXN_EVENT_IDS = %w[
+        222
+        333
+        444
+        555
+        666
+        777
+        333bf
+        333fm
+        333ft
+        333oh
+        333mbf
+        333mbo
+        444bf
+        555bf
+      ].freeze
+
       # TODO: Use event id to parse skewb and stuff
-      ALGORITHM = new { |e, _r| parse_algorithm(e) }
+      def self.parse_algorithm_for_eventid(alg_string, eventid)
+        NXN_EVENT_IDS.include?(eventid) ? parse_algorithm(alg_string) : nil
+      end
+
+      ALGORITHM = new { |e, r| parse_algorithm_for_eventid(e, r[:eventid]) }
       START_DATE = new { |_e, r| Time.new(r[:year], r[:month], r[:day]) }
 
       # Returns a number that can be used to order the given month/day combination.
@@ -62,7 +83,8 @@ module CubeTrainer
         end_year = end_before_start ? r[:year].to_i + 1 : r[:year].to_i
         Time.new(end_year, r[:endmonth].to_i, r[:endday].to_i)
       end
-      # TODO: Fix this
+
+      # TODO: Fix this. The problem is that we need info about the event to parse it.
       RESULT = STRING
       RESULT_KEYS = %i[value1 value2 value3 value4 value5].freeze
       RESULTS = new do |_e, r|

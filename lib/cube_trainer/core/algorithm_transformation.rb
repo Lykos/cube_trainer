@@ -23,7 +23,7 @@ module CubeTrainer
       end
 
       def self.around_face_without_identity(face)
-        around_face(face).reject { |t| t.identity?  }
+        around_face(face).reject(&:identity?)
       end
     end
   end

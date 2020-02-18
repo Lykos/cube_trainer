@@ -54,20 +54,25 @@ module CubeTrainer
         end
       end
 
+      def fetch(url)
+        puts "Fetching #{url}"
+        Net::HTTP.get_response(url)
+      end
+
       def download_wca_export(filename)
         @storer.ensure_cache_directory_exists
         url = construct_wca_export_url(filename)
+        store_response(fetch_with_redirects(url))
+      end
+
+      def fetch_with_redirects(url)
         REDIRECT_LIMIT.times do
-          puts "Downloading #{url}"
-          resp = Net::HTTP.get_response(url)
-          if resp.is_a?(Net::HTTPRedirection)
-            url = extract_redirect_url(resp)
-          else
-            store_response(resp)
-            break
-          end
-          raise 'Too many redirects.'
+          resp = fetch(url)
+          return resp unless resp.is_a?(Net::HTTPRedirection)
+
+          url = extract_redirect_url(resp)
         end
+        raise 'Too many redirects.'
       end
 
       # Figures out what is the latest WCA export file, downloads it if we don't have it yet

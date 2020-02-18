@@ -2,6 +2,7 @@
 
 module CubeTrainer
   module Utils
+    # A few randomness related helper methods.
     module RandomHelper
       # Distort the given value randomly by up to the given factor.
       def distort(value, factor)

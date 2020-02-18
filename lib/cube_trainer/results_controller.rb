@@ -20,7 +20,7 @@ module CubeTrainer
       results.each_with_index { |r, i| set_result(i, r) }
     end
 
-    def delete_after_time(timestamp)
+    def delete_after_time(_timestamp)
       reset
     end
 

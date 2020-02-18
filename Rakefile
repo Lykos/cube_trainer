@@ -37,10 +37,10 @@ begin
 rescue LoadError => e
   warn "Couldn't create extension task: #{e}"
 end
-  
+
 begin
   require 'rspec/core/rake_task'
-  RSpec::Core::RakeTask.new(:spec, [] => :compile) do |t|
+  RSpec::Core::RakeTask.new(:spec, [] => :compile) do |_t|
     # TODO: Find the proper way to do this
     ENV['RANTLY_VERBOSE'] ||= '0'
   end

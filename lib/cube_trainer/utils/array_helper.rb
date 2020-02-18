@@ -2,6 +2,7 @@
 
 module CubeTrainer
   module Utils
+    # A few array related helper methods.
     module ArrayHelper
       def apply_permutation(array, permutation)
         raise ArgumentError unless array.length == permutation.length
@@ -23,43 +24,46 @@ module CubeTrainer
         false
       end
 
+      private
+
       def next_state_after_nil(array, state)
         case state
-        when :start
-          :first_nil_part
-        when :first_part
-          :nil_middle
-        when :middle
-          :second_nil_part
-        when :first_nil_part, :second_nil_part, :nil_middle
-          state
+        when :start then :first_nil_part
+        when :first_part then :nil_middle
+        when :middle then :second_nil_part
+        when :first_nil_part, :second_nil_part, :nil_middle then state
         when :second_part
           raise ArgumentError,
                 "Cannot rotate out nils for #{array.inspect} since the nils are not contiguous."
-        else
-          raise "Unknown state #{state} reached."
+        else raise "Unknown state #{state} reached."
         end
       end
 
       def next_state_after_non_nil(array, state)
         case state
-        when :start
-          :first_part
-        when :first_nil_part
-          :middle
-        when :nil_middle
-          :second_part
-        when :first_part, :second_part, :middle
-          state
+        when :start then :first_part
+        when :first_nil_part then :middle
+        when :nil_middle then :second_part
+        when :first_part, :second_part, :middle then state
         when :second_nil_part
           raise ArgumentError,
                 "Cannot rotate out nils for #{array.inspect} since the nils are not contiguous."
-        else
-          raise "Unknown state #{state} reached."
+        else raise "Unknown state #{state} reached."
         end
       end
 
-      private :next_state_after_nil, :next_state_after_non_nil
+      def next_state(state, array, element, first_part, second_part)
+        if element.nil?
+          next_state_after_nil(array, state)
+        else
+          state = next_state_after_non_nil(array, state)
+          current_part = state == :second_part ? second_part : first_part
+          current_part.push(element)
+          state
+        end
+      end
+
+      public
 
       def rotate_out_nils(array)
         first_part = []
@@ -67,14 +71,8 @@ module CubeTrainer
         # Valid input goes either start -> first_part -> nil_middle -> second_part
         # or start -> first_nil_part -> middle -> second_nil_part
         state = :start
-        array.each do |a|
-          if a.nil?
-            state = next_state_after_nil(array, state)
-          else
-            state = next_state_after_non_nil(array, state)
-            current_part = state == :second_part ? second_part : first_part
-            current_part.push(a)
-          end
+        array.each do |element|
+          state = next_state(state, array, element, first_part, second_part)
         end
         second_part + first_part
       end
@@ -83,7 +81,8 @@ module CubeTrainer
       def only(array)
         raise ArgumentError, "Can't take the only element of an empty array." if array.empty?
         unless array.length == 1
-          raise ArgumentError, "Can't take the only element of an array with #{array.length} elements."
+          raise ArgumentError,
+                "Can't take the only element of an array with #{array.length} elements."
         end
 
         array[0]
