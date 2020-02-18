@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'Qt4'
-require 'cube_trainer/results_controller'
-require 'cube_trainer/stats_model'
+require 'cube_trainer/ui/results_controller'
+require 'cube_trainer/ui/stats_model'
 
 module CubeTrainer
   class TimeHistory
