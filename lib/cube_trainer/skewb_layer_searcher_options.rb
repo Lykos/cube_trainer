@@ -6,6 +6,7 @@ require 'cube_trainer/cube_trainer_options_parser'
 require 'ostruct'
 
 module CubeTrainer
+  # Command line options for the skewb layer searcher binary.
   class SkewbLayerSearcherOptions
     def self.default_options
       options = OpenStruct.new
@@ -14,6 +15,7 @@ module CubeTrainer
       options
     end
 
+    # rubocop:disable Metrics/MethodLength
     def self.parse(args)
       options = default_options
 
@@ -42,5 +44,6 @@ module CubeTrainer
       end.parse!(args)
       options
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end

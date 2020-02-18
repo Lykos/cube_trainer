@@ -6,11 +6,14 @@ require 'cube_trainer/color_scheme'
 require 'cube_trainer/letter_scheme'
 
 module CubeTrainer
+  # Helper class to generate a concise human readable description of how a Skewb algorithm
+  # moves parts around.
   class SkewbTransformationDescriber
     TOP_BOTTOM_CORNERS =
       DOUBLE_ARROW = ' ↔ '
     ARROW = ' → '
 
+    # Represents a sequence of Skewb parts.
     class PartSequence
       def initialize(letter_scheme, parts)
         raise ArgumentError unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
@@ -43,6 +46,7 @@ module CubeTrainer
       end
     end
 
+    # Represents a move of a Skewb part to the place of another Skewb part.
     class PartMove < PartSequence
       def initialize(letter_scheme, parts)
         raise ArgumentError unless parts.length == 2
@@ -71,6 +75,7 @@ module CubeTrainer
       end
     end
 
+    # Represents a cycle of Skewb parts.
     class PartCycle < PartSequence
       def first_move
         PartMove.new(@letter_scheme, @parts[0..1])
@@ -108,7 +113,14 @@ module CubeTrainer
       end
     end
 
-    def initialize(interesting_faces, interesting_corners, staying_mode, color_scheme, letter_scheme = nil)
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/MethodLength
+    def initialize(interesting_faces,
+                   interesting_corners,
+                   staying_mode,
+                   color_scheme,
+                   letter_scheme = nil)
       raise TypeError unless interesting_faces.all? { |f| f.is_a?(Core::Face) }
       raise TypeError unless interesting_corners.all? { |f| f.is_a?(Core::Corner) }
       raise ArgumentError unless %i[show_staying omit_staying].include?(staying_mode)
@@ -122,6 +134,9 @@ module CubeTrainer
       @skewb_state = @color_scheme.solved_skewb_state
       @letter_scheme = letter_scheme
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/AbcSize
 
     def find_complete_source_cycle(part)
       complete_cycle = []
@@ -139,19 +154,14 @@ module CubeTrainer
     # Finds permutation cycles of parts.
     def find_part_target_cycles(interesting_parts, &make_coordinate)
       used_parts = []
-      interesting_parts.collect_concat do |part|
-        if (used_parts & part.rotations).empty?
-          cycle = find_complete_source_cycle(part, &make_coordinate).simplify(interesting_parts).reverse
-          used_parts += cycle.parts
-          if @show_staying || !cycle.trivial?
-            [cycle]
-          else
-            []
-          end
-        else
-          []
-        end
-      end
+      interesting_parts.collect do |part|
+        next unless (used_parts & part.rotations).empty?
+
+        cycle = find_complete_source_cycle(part, &make_coordinate)
+                .simplify(interesting_parts).reverse
+        used_parts += cycle.parts
+        @show_staying || !cycle.trivial? ? cycle : nil
+      end.compact
     end
 
     # Finds where each part comes from.

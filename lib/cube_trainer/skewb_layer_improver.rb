@@ -6,6 +6,8 @@ require 'cube_trainer/core/move'
 require 'cube_trainer/core/skewb_state'
 
 module CubeTrainer
+  # Helper class that improves a Skewb layer solution to one that is equivalent
+  # modulo rotations and mirrors, but better according to some canonical metric.
   class SkewbLayerImprover
     include Core::CubePrintHelper
 
@@ -31,7 +33,7 @@ module CubeTrainer
 
     FACE_SYMBOLS_ORDERED_BY_PRIORITY = %i[D U F R L B].freeze
 
-    CORNER_COORDINATES_ORDERED_BY_PRIORITY = Core::Corner::ELEMENTS.sort_by do |c|
+    CORNERS_ORDERED_BY_PRIORITY = Core::Corner::ELEMENTS.sort_by do |c|
       face_index = FACE_SYMBOLS_ORDERED_BY_PRIORITY.index(c.face_symbols.first)
       within_face_index = if c.face_symbols.first == :D
                             case c.piece_index % 4
@@ -45,9 +47,12 @@ module CubeTrainer
                             3 - c.piece_index % 4
                           end
       face_index * 4 + within_face_index
-    end.map { |c| Core::SkewbCoordinate.for_corner(c) }
+    end
+    CORNER_COORDINATES_ORDERED_BY_PRIORITY =
+      CORNERS_ORDERED_BY_PRIORITY.map { |c| Core::SkewbCoordinate.for_corner(c) }
 
-    # How nice a particular variation of a layer is. E.g. for adjacent solved corners, we want them in the back.
+    # How nice a particular variation of a layer is. E.g. for adjacent solved corners,
+    # we want them in the back.
     # Higher scores are better.
     def layer_score
       CORNER_COORDINATES_ORDERED_BY_PRIORITY.inject(0) do |sum, c|

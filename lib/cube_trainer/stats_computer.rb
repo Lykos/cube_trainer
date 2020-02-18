@@ -11,8 +11,6 @@ module CubeTrainer
   class StatsComputer
     include Utils::MathHelper
 
-    RECENCY_THRESHOLD_SECONDS = 24 * 60 * 60
-
     def initialize(now, options, results_persistence = ResultsPersistence.create_for_production)
       raise TypeError unless now.is_a?(Time)
       raise TypeError unless results_persistence.respond_to?(:load_results)
@@ -24,12 +22,12 @@ module CubeTrainer
 
     def results_for_inputs(inputs)
       hashes = inputs.collect { |e| e.representation.hash }
-      filtered_results = grouped_results.select { |input, _rs| hashes.include?(input.hash) }
+      grouped_results.select { |input, _rs| hashes.include?(input.hash) }
     end
 
     def newish_elements(filtered_results)
       lengths = filtered_results.collect { |_input, rs| rs.length }
-      newish_elements = lengths.count { |l| l >= 1 && l < @options.new_item_boundary }
+      lengths.count { |l| l >= 1 && l < @options.new_item_boundary }
     end
 
     def input_stats(inputs)
@@ -38,20 +36,18 @@ module CubeTrainer
       total = inputs.length
       missing = total - found
       {
-        found: found,
-        total: total,
+        found: found, total: total,
         newish_elements: newish_elements(filtered_results),
         missing: missing
       }
     end
 
     def expected_time_per_type_stats
-      @expected_time_per_type_stats ||= begin
-                                          computer = ExpectedTimeComputer.new(@now,
-                                                                              @options,
-                                                                              @results_persistence)
-                                          computer.compute_expected_time_per_type_stats
-                                        end
+      @expected_time_per_type_stats ||=
+        begin
+          computer = ExpectedTimeComputer.new(@now, @options, @results_persistence)
+          computer.compute_expected_time_per_type_stats
+        end
     end
 
     def bad_results
@@ -75,7 +71,11 @@ module CubeTrainer
     end
 
     def old_total_average
-      @old_total_average ||= compute_total_average(old_averages)
+      @old_total_average ||= begin
+                               old_results = results.select { |r| r.timestamp < recently }
+                               old_averages = compute_averages(group_results(old_results))
+                               compute_total_average(old_averages)
+                             end
     end
 
     def average_time(results)
@@ -89,7 +89,7 @@ module CubeTrainer
     end
 
     def recently
-      @now - RECENCY_THRESHOLD_SECONDS
+      @now - 24 * 60 * 60
     end
 
     def num_recent_results
@@ -98,10 +98,6 @@ module CubeTrainer
 
     def averages
       @averages ||= compute_averages(grouped_results)
-    end
-
-    def old_averages
-      @old_averages ||= compute_averages(old_grouped_results)
     end
 
     private
@@ -118,17 +114,9 @@ module CubeTrainer
     def results
       @results ||= @results_persistence.load_results(mode).freeze
     end
-    
-    def old_results
-      @old_results ||= results.select { |r| r.timestamp < recently }
-    end
 
     def grouped_results
       @grouped_results ||= group_results(results)
-    end
-
-    def old_grouped_results
-      @old_grouped_results ||= group_results(old_results)
     end
 
     def group_results(results)

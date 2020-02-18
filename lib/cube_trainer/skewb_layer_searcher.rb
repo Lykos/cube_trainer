@@ -11,13 +11,15 @@ require 'cube_trainer/skewb_layer_fingerprinter'
 require 'set'
 
 module CubeTrainer
+  # rubocop:disable Metrics/ClassLength
   # Searches all possible Skewb layers.
   class SkewbLayerSearcher
     include Core::CubePrintHelper
 
     EXAMPLE_LAYER_FACE_SYMBOL = :D
     EXAMPLE_LAYER_FACE = Core::Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
-    ALGORITHM_TRANSFORMATIONS = Core::AlgorithmTransformation.around_face_without_identity(EXAMPLE_LAYER_FACE)
+    ALGORITHM_TRANSFORMATIONS =
+      Core::AlgorithmTransformation.around_face_without_identity(EXAMPLE_LAYER_FACE)
 
     # Represents a possible Skewb layer with a solution.
     class SkewbLayerSolution
@@ -48,22 +50,19 @@ module CubeTrainer
       attr_reader :move, :sub_solution
 
       def algorithm
-        @algorithm ||= begin
-                         if move.nil?
-                           Core::Algorithm.empty
-                         else
-                           Core::Algorithm.move(@move) + @sub_solution.algorithm
-                         end
+        @algorithm ||= if move.nil?
+                         Core::Algorithm.empty
+                       else
+                         Core::Algorithm.move(@move) + @sub_solution.algorithm
                        end
       end
 
       def compiled_algorithm
-        @compiled_algorithm ||= begin
-                                  if move.nil?
-                                    Core::CompiledSkewbAlgorithm::EMPTY
-                                  else
-                                    Core::Algorithm.move(@move).compiled_for_skewb + @sub_solution.compiled_algorithm
-                                  end
+        @compiled_algorithm ||= if move.nil?
+                                  Core::CompiledSkewbAlgorithm::EMPTY
+                                else
+                                  Core::Algorithm.move(@move).compiled_for_skewb +
+                                    @sub_solution.compiled_algorithm
                                 end
       end
 
@@ -98,6 +97,8 @@ module CubeTrainer
       end
     end
 
+    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/AbcSize
     def initialize(color_scheme, verbose, max_length)
       raise TypeError unless color_scheme.is_a?(ColorScheme)
       raise TypeError unless max_length.nil? || max_length.is_a?(Integer)
@@ -114,6 +115,8 @@ module CubeTrainer
       @layer_solutions = {}
       @num_layer_solutions = 0
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     attr_reader :good_layer_solutions
 
@@ -131,46 +134,45 @@ module CubeTrainer
     # Find out whether there are any layers that are equivalent without rotations.
     # In those cases, we add this as an alternative solution.
     def check_equivalent_solution(candidate)
-      has_equivalent_solution = false
-      get_layer_solutions.each do |l|
-        l.compiled_algorithm.apply_temporarily_to(@state) do
-          if @state.layer_at_face_solved?(EXAMPLE_LAYER_FACE)
-            l.maybe_add_alternative_solution(candidate)
-            has_equivalent_solution = true
-            puts "equivalent to #{l}" if @verbose
-          end
+      layer_solution = relevant_layer_solutions.find { |l| solves?(l, @state) }
+      if layer_solution
+        layer_solution.maybe_add_alternative_solution(candidate)
+        puts "equivalent to #{layer_solution}" if @verbose
+      end
+      layer_solution
+    end
+
+    def create_transformed_states(candidate)
+      # We go back to the original state and then apply
+      # a transformed version of the inverse of the algorithm.
+      candidate.compiled_algorithm.apply_temporarily_to(@state) do
+        ALGORITHM_TRANSFORMATIONS.collect do |t|
+          transformed = t.transformed(candidate.compiled_algorithm).inverse
+          transformed.apply_temporarily_to(@state) { @state.dup }
         end
       end
-      has_equivalent_solution
+    end
+
+    def solves?(layer_solution, state)
+      layer_solution.compiled_algorithm.apply_temporarily_to(state) do
+        state.layer_at_face_solved?(EXAMPLE_LAYER_FACE)
+      end
     end
 
     # Find out whether there are any layers that are equivalent with rotations.
     # In those cases, we don't add this as an alternative solution because there will be
     # another one that's equivalent modulo rotations.
     def check_equivalent_modified_solution(candidate)
-      has_equivalent_solution = false
-      # We go back to the original state and then apply
-      # a transformed version of the inverse of the algorithm.
-      transformed_states = candidate.compiled_algorithm.apply_temporarily_to(@state) do
-        ALGORITHM_TRANSFORMATIONS.collect do |t|
-          transformed = t.transformed(candidate.compiled_algorithm).inverse
-          transformed.apply_temporarily_to(@state) { @state.dup }
+      equivalent_index = nil
+      transformed_states = create_transformed_states(candidate)
+      relevant_layer_solutions.each do |l|
+        equivalent_index = transformed_states.find_index { |s| solves?(l, s) }
+        if equivalent_index
+          puts "transformed #{equivalent_index} equivalent to #{l}" if @verbose
+          break
         end
       end
-      get_layer_solutions.each do |l|
-        transformed_states.each.with_index do |s, i|
-          l.compiled_algorithm.apply_temporarily_to(s) do
-            if s.layer_at_face_solved?(EXAMPLE_LAYER_FACE)
-              has_equivalent_solution = true
-              puts "transformed #{i} equivalent to #{l}" if @verbose
-              raise if candidate.algorithm_length == 2
-            end
-          end
-          break if has_equivalent_solution
-        end
-        break if has_equivalent_solution
-      end
-      has_equivalent_solution
+      !equivalent_index.nil?
     end
 
     def self.calculate(color_scheme, verbose, max_length = nil)
@@ -195,40 +197,42 @@ module CubeTrainer
       @finder.state_score(@state) >= 2 || candidate.algorithm_length <= 3
     end
 
-    def get_layer_solutions
+    def relevant_layer_solutions
       @layer_solutions[@fingerprinter.fingerprint(@state)] ||= []
     end
 
     def add_layer_solution(candidate)
       @num_layer_solutions += 1
-      get_layer_solutions.push(candidate)
+      relevant_layer_solutions.push(candidate)
     end
 
     def promote_candidate(candidate)
       add_layer_solution(candidate)
       @good_layer_solutions.push(candidate) if state_is_good?(candidate)
-      if @max_length.nil? || candidate.algorithm_length < @max_length
-        add_new_candidates(derived_layer_solutions(candidate))
-      end
+      return unless @max_length.nil? || candidate.algorithm_length < @max_length
+
+      add_new_candidates(derived_layer_solutions(candidate))
+    end
+
+    def puts_state
+      puts "Candidates: #{@candidates.length} Layers: #{@num_layer_solutions} " \
+           "Good layers: #{@good_layer_solutions.length}"
     end
 
     def calculate
       until candidates_empty?
         candidate = pop_candidate
-        if @verbose
-          puts "Candidates: #{@candidates.length} Layers: #{@num_layer_solutions} Good layers: #{@good_layer_solutions.length}"
-        end
+        puts_state if @verbose
         puts "Candidate: #{candidate}" if @verbose
         candidate.compiled_algorithm.inverse.apply_temporarily_to(@state) do
           # Is there an existing equivalent layer that we already looked at?
-          has_equivalent_layer = false
-
-          has_equivalent_layer ||= check_equivalent_solution(candidate)
-          has_equivalent_layer ||= check_equivalent_modified_solution(candidate)
+          has_equivalent_layer = check_equivalent_solution(candidate) ||
+                                 check_equivalent_modified_solution(candidate)
 
           promote_candidate(candidate) unless has_equivalent_layer
         end
       end
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
