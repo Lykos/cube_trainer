@@ -147,26 +147,40 @@ module CubeTrainer
       hints.empty? ? nil : only(hints)
     end
 
+    def combinations_with_base_hints(combinations)
+      combinations.map do |ls|
+        [ls, ls.map.with_index { |l, i| base_hint(i, l) }]
+      end
+    end
+
+    def descriptions_and_values(combinations_with_base_hints)
+      combinations_with_base_hints.map do |ls, hs|
+        description = ls.join(', ')
+        value = ls.map.with_index { |l, i| value(i, l) }.reduce(:+)
+        cancellations = hs[0..-2].zip(hs[1..-1]).map do |left, right|
+          if left && right
+            ActualScore.new(left.cancellations(right, @cube_size, :sqtm))
+          else
+            UNKNOWN_SCORE
+          end
+        end.reduce(:+)
+        DescriptionAndValue.new(description, value, cancellations)
+      end
+    end
+
+    def base_hints_descriptions(combinations_with_base_hints)
+      combinations_with_base_hints.map do |ls, hs|
+        ls.zip(hs).select { |_l, h| h }.map { |l, h| "#{l}: #{h}" }
+      end.flatten.uniq
+    end
+
     def hints(input)
       @hints[input] ||= begin
                           combinations = generate_combinations(input)
-                          base_hints = combinations.map { |ls| ls.map.with_index { |l, i| base_hint(i, l) } }
-                          descriptions_and_values = combinations.zip(base_hints).map do |ls, hs|
-                            description = ls.join(', ')
-                            value = ls.map.with_index { |l, i| value(i, l) }.reduce(:+)
-                            cancellations = hs[0..-2].zip(hs[1..-1]).map do |left, right|
-                              if left && right
-                                ActualScore.new(left.cancellations(right, @cube_size, :sqtm))
-                              else
-                                UNKNOWN_SCORE
-                              end
-                            end.reduce(:+)
-                            DescriptionAndValue.new(description, value, cancellations)
-                          end
-                          base_hints_descriptions = combinations.zip(base_hints).map { |ls, hs| ls.zip(hs).select { |_l, h| h }.map { |l, h| "#{l}: #{h}" } }.flatten.uniq
+                          stuff = combinations_with_base_hints(combinations)
                           [
-                            descriptions_and_values.sort.join("\n"),
-                            base_hints_descriptions.sort.join("\n")
+                            descriptions_and_values(stuff).sort.join("\n"),
+                            base_hints_descriptions(stuff).sort.join("\n")
                           ]
                         end
     end
@@ -184,6 +198,7 @@ module CubeTrainer
     end
   end
 
+  # Hinter that gives hints on how to solve a sequence of algs.
   class AlgSequenceHinter
     include Utils::ArrayHelper
 
