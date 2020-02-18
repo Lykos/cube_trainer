@@ -19,7 +19,7 @@ jobs:
           libreadline-dev git-core zlib1g zlib1g-dev libssl-dev vim
           libsqlite3-0 sqlite3 libqt4-dev
           libxml2-dev autoconf xorg-dev libgl1-mesa-dev
-          libglu1-mesa-dev
+          libglu1-mesa-dev ruby-dev
     - name: Install gem dependencies
       run: |
         gem install bundler
