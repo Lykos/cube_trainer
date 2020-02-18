@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/ui_helpers'
 require 'cube_trainer/console_helpers'
 require 'cube_trainer/result'
+require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
   class HumanWordLearner
     include ConsoleHelpers
-    include UiHelpers
+    include Utils::StringHelper
 
     def initialize(hinter, results_model, options)
       @hinter = hinter

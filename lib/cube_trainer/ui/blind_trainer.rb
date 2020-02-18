@@ -2,20 +2,21 @@
 
 require 'Qt4'
 require 'cube_trainer/color_scheme'
-require 'cube_trainer/cubie_controller'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_scheme'
 require 'cube_trainer/results_persistence'
-require 'cube_trainer/stop_watch'
-require 'cube_trainer/time_history'
-require 'cube_trainer/ui_helpers'
+require 'cube_trainer/ui/cubie_controller'
+require 'cube_trainer/ui/results_model'
+require 'cube_trainer/ui/stop_watch'
+require 'cube_trainer/ui/time_history'
 require 'cube_trainer/ui/blind_trainer_ui'
+require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
   class BlindTrainer < Qt::MainWindow
     slots 'start_stop_clicked()'
 
-    include UiHelpers
+    include Utils::StringHelper
 
     def start_stop_clicked
       if running?

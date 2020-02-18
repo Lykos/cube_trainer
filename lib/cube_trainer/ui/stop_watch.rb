@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 require 'Qt4'
-require 'cube_trainer/ui_helpers'
+require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
   class StopWatch < Qt::Object
     slots 'start()', 'stop()', 'update()'
 
-    include UiHelpers
+    include Utils::StringHelper
 
     def initialize(widget)
       super

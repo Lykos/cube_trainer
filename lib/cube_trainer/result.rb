@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/ui_helpers'
-require 'cube_trainer/pao_letter_pair'
-require 'cube_trainer/letter_pair'
-require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/alg_name'
 require 'cube_trainer/input_item'
+require 'cube_trainer/letter_pair'
+require 'cube_trainer/letter_pair_sequence'
+require 'cube_trainer/pao_letter_pair'
+require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
   # The part of the result that basically comes from the input of whoever is
@@ -13,6 +13,8 @@ module CubeTrainer
   PartialResult = Struct.new(:time_s, :failed_attempts, :word)
 
   class Result
+    include Utils::StringHelper
+
     def initialize(mode, timestamp, time_s, input_representation, failed_attempts, word)
       raise ArgumentError, "Invalid mode #{mode}." unless mode.is_a?(Symbol)
 
@@ -71,8 +73,6 @@ module CubeTrainer
     COLUMNS = 3
 
     attr_reader :mode, :timestamp, :time_s, :input_representation, :failed_attempts, :word
-
-    include UiHelpers
 
     def formatted_time
       format_time(@time_s)

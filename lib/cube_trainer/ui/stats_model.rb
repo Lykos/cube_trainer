@@ -2,11 +2,11 @@
 
 require 'Qt4'
 require 'cube_trainer/native'
-require 'cube_trainer/ui_helpers'
+require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
   class StatsModel < Qt::AbstractTableModel
-    include UiHelpers
+    include Utils::StringHelper
 
     AVERAGE_SIZES = [5, 12, 50, 100, 1000].freeze
 

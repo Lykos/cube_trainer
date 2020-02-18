@@ -3,7 +3,6 @@
 require 'Qt4'
 require 'cube_trainer/results_controller'
 require 'cube_trainer/stats_model'
-require 'cube_trainer/ui_helpers'
 
 module CubeTrainer
   class TimeHistory

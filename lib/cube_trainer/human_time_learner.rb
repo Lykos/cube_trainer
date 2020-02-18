@@ -3,12 +3,12 @@
 require 'cube_trainer/console_helpers'
 require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/result'
-require 'cube_trainer/ui_helpers'
+require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
   class HumanTimeLearner
     include ConsoleHelpers
-    include UiHelpers
+    include Utils::StringHelper
     include Core::CubePrintHelper
 
     def initialize(hinter, results_model, options)
