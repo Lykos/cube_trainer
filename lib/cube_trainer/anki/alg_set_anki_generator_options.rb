@@ -8,6 +8,7 @@ require 'cube_trainer/cube_trainer_options_parser'
 
 module CubeTrainer
   module Anki
+    # Command line optiona for the `alg_set_anki_generator` binary.
     class AlgSetAnkiGeneratorOptions
       def self.default_options
         options = OpenStruct.new
