@@ -671,9 +671,49 @@ module CubeTrainer
         @move_class.new(*fields)
       end
     end
+    
+    class AbstractMoveParser
+      def regexp
+        raise NotImplementedError
+      end
+
+      def parse_part_key(name)
+        raise NotImplementedError
+      end
+
+      def parse_move_part(name, string)
+        raise NotImplementedError
+      end
+
+      def move_type_creators
+        raise NotImplementedError
+      end
+
+      def parse_named_captures(match)
+        present_named_captures = match.named_captures.select { |n, v| !v.nil? }
+        parsed_parts = present_named_captures.map do |name, string|
+          key = parse_part_key(name).to_sym
+          value = parse_move_part(name, string)
+          [key, value]
+        end.to_h
+      end
+
+      def parse_move(move_string)
+        match = move_string.match(regexp)
+        if !match || !match.pre_match.empty? || !match.post_match.empty?
+          raise ArgumentError "Invalid move #{move_string}."
+        end
+
+        parsed_parts = parse_named_captures(match)
+        move_type_creators.each do |parser|
+          return parser.create(parsed_parts) if parser.applies_to?(parsed_parts)
+        end
+        raise "No move type creator applies to #{parsed_parts}"
+      end
+    end
 
     # Parser for cube moves.
-    class CubeMoveParser
+    class CubeMoveParser < AbstractMoveParser
       REGEXP = begin
                  axes_part = "(?<axis_name>[#{Move::AXES.join}])"
                  fat_move_part =
@@ -707,6 +747,14 @@ module CubeTrainer
 
       def regexp
         REGEXP
+      end
+
+      def move_type_creators
+        MOVE_TYPE_CREATORS
+      end
+
+      def parse_part_key(name)
+        name.sub('_name', '_face').sub('face_face', 'face')
       end
 
       def parse_direction(direction_string)
@@ -743,29 +791,16 @@ module CubeTrainer
         end
       end
       
-      def parse_move(move_string)
-        match = move_string.match(REGEXP)
-        if !match || !match.pre_match.empty? || !match.post_match.empty?
-          raise ArgumentError "Invalid move #{move_string}."
-        end
-
-        present_named_captures = match.named_captures.select { |n, v| !v.nil? }
-        parsed_parts = present_named_captures.map do |name, string|
-          key = name.sub('_name', '_face').sub('face_face', 'face').to_sym
-          value = parse_move_part(name, string)
-          [key, value]
-        end.to_h
-        MOVE_TYPE_CREATORS.each do |parser|
-          return parser.create(parsed_parts) if parser.applies_to?(parsed_parts)
-        end
-        raise "No move type creator applies to #{parsed_parts}"
-      end
-
       INSTANCE = CubeMoveParser.new
     end
 
     # Parser for Skewb moves.
-    class SkewbMoveParser
+    class SkewbMoveParser < AbstractMoveParser
+      MOVE_TYPE_CREATORS = [
+        MoveTypeCreator.new([:axis_face, :cube_direction], Rotation),
+        MoveTypeCreator.new([:axis_corner, :skewb_direction], SkewbMove),
+      ]
+      
       def initialize(moved_corners)
         @moved_corners = moved_corners
       end
@@ -774,15 +809,19 @@ module CubeTrainer
         @regexp ||= begin
                       skewb_direction_names =
                         AbstractDirection::POSSIBLE_SKEWB_DIRECTION_NAMES.flatten
-                      move_part = "(?:([#{@moved_corners.keys.join}])" \
-                                  "([#{skewb_direction_names.join}]?))"
+                      move_part = "(?:(?<skewb_move>[#{@moved_corners.keys.join}])" \
+                                  "(?<skewb_direction>[#{skewb_direction_names.join}]?))"
                       rotation_direction_names =
                         AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
                       rotation_direction_names.sort_by! { |e| -e.length }
-                      rotation_part = "(?:([#{Move::AXES.join}])" \
-                                      "(#{rotation_direction_names.join('|')}))"
+                      rotation_part = "(?:(?<axis_name>[#{Move::AXES.join}])" \
+                                      "(?<cube_direction>#{rotation_direction_names.join('|')}))"
                       Regexp.new("#{move_part}|#{rotation_part}")
                     end
+      end
+
+      def move_type_creators
+        MOVE_TYPE_CREATORS
       end
 
       def parse_skewb_direction(direction_string)
@@ -795,27 +834,17 @@ module CubeTrainer
         end
       end
 
-      # Parses WCA Skewb moves.
-      def parse_move(move_string)
-        match = move_string.match(regexp)
-        if !match || !match.pre_match.empty? || !match.post_match.empty?
-          raise "Invalid move #{move_string}."
-        end
+      def parse_part_key(name)
+        name.sub('name', 'face').sub('skewb_move', 'axis_corner')
+      end
 
-        skewb_move_string, direction_string, rotation, rotation_direction_string = match.captures
-        if skewb_move_string
-          raise unless rotation.nil? && rotation_direction_string.nil?
-
-          axis_corner = @moved_corners[skewb_move_string]
-          direction = parse_skewb_direction(direction_string)
-          SkewbMove.new(axis_corner, direction)
-        elsif rotation
-          raise unless skewb_move_string.nil? && direction_string.nil?
-
-          Rotation.new(CubeMoveParser::INSTANCE.parse_axis_face(rotation),
-                       CubeMoveParser::INSTANCE.parse_direction(rotation_direction_string))
-        else
-          raise
+      def parse_move_part(name, value)
+        case name
+        when 'axis_name' then CubeMoveParser::INSTANCE.parse_axis_face(value)
+        when 'cube_direction' then CubeMoveParser::INSTANCE.parse_direction(value)
+        when 'skewb_move' then @moved_corners[value]
+        when 'skewb_direction' then parse_skewb_direction(value)
+        else raise
         end
       end
 
