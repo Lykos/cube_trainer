@@ -3,10 +3,12 @@
 require 'io/console'
 
 module CubeTrainer
+  # Helper functions to interact with a user on the command line.
   module ConsoleHelpers
     # Minimum time until we accept the next input.
     MINIMUM_WAIT_TIME = 0.1
 
+    # TODO use the one from StringHelpers
     def camel_to_snake(string)
       string.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').tr('-', '_').downcase
     end
