@@ -4,6 +4,7 @@ require 'cube_trainer/core/compiled_algorithm'
 
 module CubeTrainer
   module Core
+    # Wrapper of the native C implementation of a compiled algorithm for a particular cube size.
     class CompiledCubeAlgorithm < CompiledAlgorithm
       def self.transform_move(move, cube_size)
         decided_move = move.decide_meaning(cube_size)
