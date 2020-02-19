@@ -12,23 +12,28 @@ require 'cube_trainer/letter_pair_alg_set'
 require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
-  ORIENTATION_FACES = [Core::Face::U, Core::Face::D].freeze
+  # Module containing useful methods for various sets of corner twists.
+  module CornerTwistSetsHelper
+    ORIENTATION_FACES = [Core::Face::U, Core::Face::D].freeze
 
-  def orientation_face(part)
-    faces = ORIENTATION_FACES.select { |f| part.face_symbols.include?(f.face_symbol) }
-    unless faces.length == 1
-      raise "Couldn't determine unique orientation face for #{part}: #{faces}"
+    def orientation_face(part)
+      faces = ORIENTATION_FACES.select { |f| part.face_symbols.include?(f.face_symbol) }
+      unless faces.length == 1
+        raise "Couldn't determine unique orientation face for #{part}: #{faces}"
+      end
+
+      faces.first
     end
 
-    faces.first
-  end
-
-  def rotate_orientation_face_up(part)
-    part.rotate_face_up(orientation_face(part))
+    def rotate_orientation_face_up(part)
+      part.rotate_face_up(orientation_face(part))
+    end
   end
 
   # Class that generates input items for floating corner 2 twists.
   class FloatingCorner2Twists < LetterPairAlgSet
+    include CornerTwistSetsHelper
+
     PART_TYPE = Core::Corner
 
     def initialize(result_model, options)
@@ -82,6 +87,8 @@ module CubeTrainer
 
   # Class that generates input items for corner twists plus parities.
   class CornerTwistsPlusParities < LetterPairAlgSet
+    include CornerTwistSetsHelper
+
     PART_TYPE = Core::Corner
 
     def initialize(result_model, options)
@@ -119,6 +126,7 @@ module CubeTrainer
 
     # Class that creates hints for corner twists plus parities.
     class CornerTwistPlusParityHinter < HeterogenousSequenceHinter
+      include CornerTwistSetsHelper
       include Utils::ArrayHelper
 
       def initialize(corner_results, parity_results, corner_hinter, parity_hinter, options)
@@ -148,6 +156,8 @@ module CubeTrainer
 
   # Class that generates input items for corner 3 twists.
   class Corner3Twists < LetterPairAlgSet
+    include CornerTwistSetsHelper
+
     PART_TYPE = Core::Corner
 
     def initialize(result_model, options)
@@ -187,6 +197,8 @@ module CubeTrainer
 
     # Class that creates hints for corner 3 twists.
     class Corner3TwistHinter < HomogenousSequenceHinter
+      include CornerTwistSetsHelper
+
       # Note that this should be the results for corner comms, not for corner 3 twists.
       def initialize(corner_results, corner_hinter, options)
         super(options.cube_size, corner_results, corner_hinter)
