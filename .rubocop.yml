@@ -16,13 +16,9 @@ Metrics/AbcSize:
   Max: 20
   Exclude:
   - 'spec/**/*_spec.rb'
-  # TODO: This is temporary
-  - 'lib/cube_trainer/wca_export_reader.rb'
 Metrics/MethodLength:
   Max: 15
   Exclude:
   - 'spec/**/*_spec.rb'
-  # TODO: This is temporary
-  - 'lib/cube_trainer/wca_export_reader.rb'
 Metrics/ClassLength:
   Max: 200
