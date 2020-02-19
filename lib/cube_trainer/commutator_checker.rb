@@ -8,10 +8,20 @@ require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/core/part_cycle_factory'
 
 module CubeTrainer
+  # Class that checks whether a commutator algorithm does
+  # what it's supposed to do and potentially fixes broken ones.
   class CommutatorChecker
     include Core::CubePrintHelper
 
-    def initialize(part_type:, buffer:, piece_name:, color_scheme:, letter_scheme:, cube_size:, verbose: false, find_fixes: false, incarnation_index: 0)
+    def initialize(part_type:,
+                   buffer:,
+                   piece_name:,
+                   color_scheme:,
+                   letter_scheme:,
+                   cube_size:,
+                   verbose: false,
+                   find_fixes: false,
+                   incarnation_index: 0)
       raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(Core::Part)
       raise TypeError unless buffer.class == part_type
       unless cube_size.is_a?(Integer) && cube_size > 0
