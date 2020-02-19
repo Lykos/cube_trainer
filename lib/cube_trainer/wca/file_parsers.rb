@@ -86,39 +86,49 @@ module CubeTrainer
                                        ))
       }.freeze
 
-      RANK_ROW_PARSER = CSVRowParser.new(
-        personid: Column::STRING,
-        eventid: Column::STRING,
-        best: Column::RESULT,
-        worldrank: Column::INTEGER,
-        continentrank: Column::INTEGER,
-        countryrank: Column::INTEGER
-      )
+      def rank_row_parser(events)
+        CSVRowParser.new(
+          personid: Column::STRING,
+          eventid: Column::STRING,
+          best: Column.result(events),
+          worldrank: Column::INTEGER,
+          continentrank: Column::INTEGER,
+          countryrank: Column::INTEGER
+        )
+      end
 
-      RANKS_AVERAGE_FILE_PARSER = CSVFileParser.new('WCA_export_RanksAverage.tsv', RANK_ROW_PARSER)
-      RANKS_SINGLE_FILE_PARSER = CSVFileParser.new('WCA_export_RanksSingle.tsv', RANK_ROW_PARSER)
+      def ranks_average_file_parser(events)
+        CSVFileParser.new('WCA_export_RanksAverage.tsv', rank_row_parser(events))
+      end
 
-      RESULTS_FILE_PARSER = CSVFileParser.new('WCA_export_Results.tsv',
-                                              CSVRowParser.new(
-                                                competitionid: Column::STRING,
-                                                eventid: Column::STRING,
-                                                roundtypeid: Column::SYMBOL,
-                                                pos: Column::INTEGER,
-                                                best: Column::RESULT,
-                                                average: Column::RESULT,
-                                                personname: Column::STRING,
-                                                personid: Column::STRING,
-                                                personcountryid: Column::STRING,
-                                                formatid: Column::SYMBOL,
-                                                value1: Column::RESULT,
-                                                value2: Column::RESULT,
-                                                value3: Column::RESULT,
-                                                value4: Column::RESULT,
-                                                value5: Column::RESULT,
-                                                values: Column::RESULTS,
-                                                regionalsinglerecord: Column::OPTIONAL_STRING,
-                                                regionalaveragerecord: Column::OPTIONAL_STRING
-                                              ))
+      def ranks_single_file_parser(events)
+        CSVFileParser.new('WCA_export_RanksSingle.tsv', rank_row_parser(events))
+      end
+
+      def results_file_parser(events)
+        CSVFileParser.new('WCA_export_Results.tsv',
+                          CSVRowParser.new(
+                            competitionid: Column::STRING,
+                            eventid: Column::STRING,
+                            roundtypeid: Column::SYMBOL,
+                            pos: Column::INTEGER,
+                            best: Column.result(events),
+                            average: Column.result(events),
+                            personname: Column::STRING,
+                            personid: Column::STRING,
+                            personcountryid: Column::STRING,
+                            formatid: Column::SYMBOL,
+                            value1: Column.result(events),
+                            value2: Column.result(events),
+                            value3: Column.result(events),
+                            value4: Column.result(events),
+                            value5: Column.result(events),
+                            values: Column.results(events),
+                            regionalsinglerecord: Column::OPTIONAL_STRING,
+                            regionalaveragerecord: Column::OPTIONAL_STRING
+                          ))
+      end
+
       SCRAMBLES_FILE_PARSER = CSVFileParser.new('WCA_export_Scrambles.tsv',
                                                 CSVRowParser.new(
                                                   scrambleid: Column::INTEGER,

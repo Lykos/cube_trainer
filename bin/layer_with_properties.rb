@@ -52,7 +52,7 @@ loop do
     if desired_property?(layer_finder, skewb_state, layer_solutions)
       puts scramble
       puts
-      puts skewb_state
+      puts skewb_state.colored_to_s
       puts
       layer_solutions.extract_algorithms.each do |color, algs|
         puts color

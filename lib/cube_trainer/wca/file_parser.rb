@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/core/parser'
+require 'cube_trainer/wca/result'
 
 module CubeTrainer
   module WCA
@@ -84,11 +85,31 @@ module CubeTrainer
         Time.new(end_year, r[:endmonth].to_i, r[:endday].to_i)
       end
 
-      # TODO: Fix this. The problem is that we need info about the event to parse it.
-      RESULT = STRING
+      def self.parse_result(result_string, format)
+        result_int = result_string.to_i
+        case format
+        when :time then Result.time(result_int)
+        when :multi then Result.multi(result_int)
+        when :number then Result.number(result_int)
+        else raise "Unknown format #{format}."
+        end
+      end
+
+      def self.result(events)
+        new do |e, r|
+          eventid = r[:eventid]
+          format = events[eventid][:format]
+          parse_result(e, format)
+        end
+      end
+
       RESULT_KEYS = %i[value1 value2 value3 value4 value5].freeze
-      RESULTS = new do |_e, r|
-        RESULT_KEYS.map { |k| RESULT.extract(r[k], r) }
+
+      def self.results(events)
+        result = result(events)
+        new do |_e, r|
+          RESULT_KEYS.map { |k| result.extract(r[k], r) }
+        end
       end
     end
 

@@ -67,7 +67,7 @@ module CubeTrainer
 
       def results
         @results ||=
-          self.class.parse_internal(@filename, results: RESULTS_FILE_PARSER)[:results].freeze
+          self.class.parse_internal(@filename, results: results_file_parser(@events))[:results].freeze
       end
 
       private
@@ -75,8 +75,8 @@ module CubeTrainer
       def parse_ranks_single_and_average
         self.class.parse_internal(
           @filename,
-          ranks_single: RANKS_SINGLE_FILE_PARSER,
-          ranks_average: RANKS_AVERAGE_FILE_PARSER
+          ranks_average: ranks_average_file_parser(@events),
+          ranks_single: ranks_single_file_parser(@events)
         )
       end
 
@@ -86,17 +86,6 @@ module CubeTrainer
           person_ranks = (ranks[personid] ||= {})
           eventid = "#{e[:eventid]}_#{eventid_suffix}".to_sym
           person_ranks[eventid] = e
-        end
-      end
-
-      def result(eventid, result_string)
-        result_int = result_string.to_i
-        format = @events[eventid][:format]
-        case format
-        when 'time' then Result.time(result_int)
-        when 'multi' then Result.multi(result_int)
-        when 'number' then Result.number(result_int)
-        else raise "Unknown format #{format}."
         end
       end
 
