@@ -10,13 +10,15 @@ source 'https://rubygems.org' do
   gem 'wombat'
   gem 'xdg'
 
+  group :development, :test do
+    gem 'rake'
+  end
   group :development do
-    # Rake would be here as well, but it's in group test.
     gem 'rake-compiler'
     gem 'rubocop'
+    gem 'rubocop-performance', require: false
   end
   group :test do
-    gem 'rake', group: :development
     gem 'rantly'
     gem 'rspec'
     gem 'rspec-prof'

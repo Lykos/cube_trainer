@@ -67,7 +67,8 @@ module CubeTrainer
 
       def results
         @results ||=
-          self.class.parse_internal(@filename, results: results_file_parser(@events))[:results].freeze
+          self.class.parse_internal(@filename,
+                                    results: results_file_parser(@events))[:results].freeze
       end
 
       private

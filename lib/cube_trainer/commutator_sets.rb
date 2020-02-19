@@ -180,7 +180,7 @@ module CubeTrainer
         twist_letter = only(twist_letter_pair.letters)
         twisted_part = @letter_scheme.for_letter(PART_TYPE, twist_letter)
         solved_twist_part = rotate_orientation_face_up(twisted_part)
-        Core::Corner::FACES.times.map do |rot|
+        Array.new(Core::Corner::FACES) do |rot|
           twist_entry_letter = @letter_scheme.letter(twisted_part.rotate_by(rot))
           twist_exit_letter = @letter_scheme.letter(solved_twist_part.rotate_by(rot))
           comm = LetterPair.new([parity_letter, twist_entry_letter])
@@ -286,7 +286,7 @@ module CubeTrainer
         ]
 
         # Now we generate additional solutions by rotating both colors in one direction.
-        extended_solutions = Core::Corner::FACES.times.collect do |rot|
+        extended_solutions = Array.new(Core::Corner::FACES) do |rot|
           solution_corners.map do |comm|
             comm.map { |p| p.rotate_by(rot) }
           end

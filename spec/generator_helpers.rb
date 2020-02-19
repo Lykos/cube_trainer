@@ -54,7 +54,7 @@ def cube_move(cube_size)
 end
 
 def cube_algorithm(cube_size)
-  Core::Algorithm.new(size.times.map { cube_move(cube_size) })
+  Core::Algorithm.new(Array.new(size) { cube_move(cube_size) })
 end
 
 def skewb_corner_move
@@ -66,7 +66,7 @@ def skewb_move
 end
 
 def skewb_algorithm
-  Core::Algorithm.new(size.times.map { skewb_move })
+  Core::Algorithm.new(Array.new(size) { skewb_move })
 end
 
 def cube_coordinate(cube_size)

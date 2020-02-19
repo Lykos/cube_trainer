@@ -105,28 +105,33 @@ module CubeTrainer
         CSVFileParser.new('WCA_export_RanksSingle.tsv', rank_row_parser(events))
       end
 
+      # Columns that are independent of the event formats.
+      RESULTS_INDEPENDENT_COLUMNS = {
+        competitionid: Column::STRING,
+        eventid: Column::STRING,
+        roundtypeid: Column::SYMBOL,
+        pos: Column::INTEGER,
+        personname: Column::STRING,
+        personid: Column::STRING,
+        personcountryid: Column::STRING,
+        formatid: Column::SYMBOL,
+        regionalsinglerecord: Column::OPTIONAL_STRING,
+        regionalaveragerecord: Column::OPTIONAL_STRING
+      }.freeze
+
       def results_file_parser(events)
-        CSVFileParser.new('WCA_export_Results.tsv',
-                          CSVRowParser.new(
-                            competitionid: Column::STRING,
-                            eventid: Column::STRING,
-                            roundtypeid: Column::SYMBOL,
-                            pos: Column::INTEGER,
-                            best: Column.result(events),
-                            average: Column.result(events),
-                            personname: Column::STRING,
-                            personid: Column::STRING,
-                            personcountryid: Column::STRING,
-                            formatid: Column::SYMBOL,
-                            value1: Column.result(events),
-                            value2: Column.result(events),
-                            value3: Column.result(events),
-                            value4: Column.result(events),
-                            value5: Column.result(events),
-                            values: Column.results(events),
-                            regionalsinglerecord: Column::OPTIONAL_STRING,
-                            regionalaveragerecord: Column::OPTIONAL_STRING
-                          ))
+        columns = {
+          best: Column.result(events),
+          average: Column.result(events),
+          value1: Column.result(events),
+          value2: Column.result(events),
+          value3: Column.result(events),
+          value4: Column.result(events),
+          value5: Column.result(events),
+          values: Column.results(events)
+        }
+        columns.merge!(RESULTS_INDEPENDENT_COLUMNS)
+        CSVFileParser.new('WCA_export_Results.tsv', CSVRowParser.new(**columns))
       end
 
       SCRAMBLES_FILE_PARSER = CSVFileParser.new('WCA_export_Scrambles.tsv',

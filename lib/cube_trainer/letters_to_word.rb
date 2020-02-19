@@ -41,7 +41,7 @@ module CubeTrainer
 
     def hints_for_new_word(pao_letter_pair)
       letter_pair = pao_letter_pair.letter_pair
-      if letter_pair.letters.first.downcase == 'x'
+      if letter_pair.letters.first.casecmp('x').zero?
         dict.words_for_regexp(letter_pair.letters[1], Regexp.new(letter_pair.letters[1]))
       else
         dict.words_for_regexp(letter_pair.letters.first, letter_pair.regexp)
