@@ -4,6 +4,7 @@ require 'cube_trainer/core/cube'
 require 'cube_trainer/letter_pair'
 
 module CubeTrainer
+  # Module to generate letter pairs that have certain meanings on the cube.
   module LetterPairHelper
     def self.letter_pairs(letterss)
       letterss.collect { |ls| LetterPair.new(ls) }
@@ -29,20 +30,12 @@ module CubeTrainer
 
     def letter_pairs_for_piece
       @letter_pairs_for_piece ||= begin
-                                    buffer_letters = buffer.rotations.collect { |c| letter_scheme.letter(c) }
+                                    buffer_letters = buffer.rotations.collect do |c|
+                                      letter_scheme.letter(c)
+                                    end
                                     valid_letters = letter_scheme.alphabet - buffer_letters
                                     LetterPairHelper.letter_pairs(valid_letters.permutation(2))
                                   end
-    end
-
-    def redundant_twists
-      @redunant_twists ||= begin
-                             if self.class::PART_TYPE != Corner
-                               raise 'Redundant twists are only defined for corners.'
-                             end
-
-                             rotations.reject { |_l| letter_scheme.shoot_letters(self.class::PART_TYPE).include?(letter_scheme.letter(c)) }
-                           end
     end
   end
 end

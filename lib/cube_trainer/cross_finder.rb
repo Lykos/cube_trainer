@@ -29,14 +29,23 @@ module CubeTrainer
       end
 
       cross_color = state[Core::Coordinate.center(face, 3)]
-      face.neighbors.count do |neighbor|
-        # There are two, but we just take one
-        other_neighbor = (neighbor.neighbors & face.neighbors).first
-        outer_coordinate = Core::Coordinate.from_face_distances(neighbor, 3, [[face, 0], [other_neighbor, 1]])
-        inner_coordinate = Core::Coordinate.from_face_distances(face, 3, [[neighbor, 0], [other_neighbor, 1]])
-        neighbor_color = state[Core::Coordinate.center(neighbor, 3)]
-        state[outer_coordinate] == neighbor_color && state[inner_coordinate] == cross_color
-      end
+      face.neighbors.count { |neighbor| cross_part_solved?(state, face, cross_color, neighbor) }
+    end
+
+    def cross_part_solved?(state, face, cross_color, neighbor)
+      # There are two, but we just take one
+      other_neighbor = (neighbor.neighbors & face.neighbors).first
+      neighbor_color = state[Core::Coordinate.center(neighbor, 3)]
+      state[outer_coordinate(face, neighbor, other_neighbor)] == neighbor_color &&
+        state[inner_coordinate(face, neighbor, other_neighbor)] == cross_color
+    end
+
+    def outer_coordinate(face, neighbor, other_neighbor)
+      Core::Coordinate.from_face_distances(neighbor, 3, [[face, 0], [other_neighbor, 1]])
+    end
+
+    def inner_coordinate(face, neighbor, other_neighbor)
+      Core::Coordinate.from_face_distances(face, 3, [[neighbor, 0], [other_neighbor, 1]])
     end
 
     def face_color(_state, face)
@@ -48,7 +57,10 @@ module CubeTrainer
     end
 
     def solved_colors(state)
-      Core::Face::ELEMENTS.select { |f| no_auf_score_on_face(state, f) + 1 == solution_score }.collect { |f| state[Core::Coordinate.center(f, 3)] }
+      solved_faces = Core::Face::ELEMENTS.select do |f|
+        no_auf_score_on_face(state, f) + 1 == solution_score
+      end
+      solved_faces.collect { |f| state[Core::Coordinate.center(f, 3)] }
     end
 
     def generate_moves(_state)

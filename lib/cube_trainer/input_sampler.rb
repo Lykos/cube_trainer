@@ -6,16 +6,21 @@ require 'cube_trainer/sampler'
 require 'cube_trainer/utils/random_helper'
 
 module CubeTrainer
+  # rubocop:disable Metrics/ClassLength
+  # An input sampler that tries to adaptively sample items that are useful inputs for the learner.
   class InputSampler
     include Utils::RandomHelper
 
-    # Minimum score that we always give to each element in order not to screw up our sampling if all weights become 0 or so.
+    # Minimum score that we always give to each element in order not to screw up our sampling if all
+    # weights become 0 or so.
     EPSILON_SCORE = 0.000000001
 
-    # Boundary at which we don't punish repeating the same item again. But note that this will be adjusted in case of a small total number of items.
+    # Boundary at which we don't punish repeating the same item again. But note that this will be
+    # adjusted in case of a small total number of items.
     REPETITION_BOUNDARY = 4
 
-    # Exponent that is applied to the time since the last occurrence to punish items that haven't been seen in a long time for coverage samples.
+    # Exponent that is applied to the time since the last occurrence to punish items that haven't
+    # been seen in a long time for coverage samples.
     INDEX_EXPONENT = 2
 
     # Base that is taken to the power of the badness to punish bad samples.
@@ -28,11 +33,14 @@ module CubeTrainer
     # Number of seconds that are equivalent to one failed attempt. (Used for calculating badness)
     FAILED_SECONDS = 60
 
-    # Fractions that will be used for each type of sampling. Note that the actual sampling also depends on whether or not there are actually
-    # new items available or whether items have to be repeated.
+    # Fractions that will be used for each type of sampling. Note that the actual sampling also
+    # depends on whether or not there are actually new items available or whether items have to
+    # be repeated.
     SAMPLING_FRACTIONS = {
-      # In case there are still completely new items available, this is the fraction of times that such an item will be chosen.
-      # Note that completely new items will never be chosen if a relatively new item needs to be repeated.
+      # In case there are still completely new items available, this is the fraction of times
+      # that such an item will be chosen.
+      # Note that completely new items will never be chosen if a relatively new item needs to be
+      # repeated.
       new: 0.1,
 
       # Fraction of the samples that use uniform samples to even occasionally cover easy cases.
@@ -44,10 +52,17 @@ module CubeTrainer
 
     TaggedInputItem = Struct.new(:tag, :input_item)
 
-    # `items` are the items from which we get samples. They have to be an array of InputItem. But the representation inside InputItem can be anything.
+    # rubocop:disable Metrics/MethodLength
+    # `items` are the items from which we get samples. They have to be an array of InputItem.
+    #         But the representation inside InputItem can be anything.
     # `results_model` is a helper object that retrieves results to get historic scores.
-    # `new_item_bounary` is the number of repetitions at which we stop considering an item a "new item" that needs to be repeated occasionally.
-    def initialize(items, results_model, goal_badness = 1.0, verbose = false, repeat_item_boundary = 11)
+    # `repeat_item_bounary` is the number of repetitions at which we stop considering an item a
+    #                       "new item" that needs to be repeated occasionally.
+    def initialize(items,
+                   results_model,
+                   goal_badness = 1.0,
+                   verbose = false,
+                   repeat_item_boundary = 11)
       raise ArgumentError unless items.is_a?(Array)
       unless items.all? { |e| e.is_a?(InputItem) }
         raise ArgumentError, "Invalid items #{items.inspect}."
@@ -61,10 +76,17 @@ module CubeTrainer
       @results_model.add_result_listener(self)
       @verbose = verbose
       @repeat_item_boundary = repeat_item_boundary
-      repeat_sampler = create_adaptive_sampler(:repeat)
-      combined_sampler = CombinedSampler.new([create_adaptive_subsampler(:new), create_adaptive_subsampler(:badness), create_adaptive_subsampler(:coverage)])
-      @sampler = PrioritizedSampler.new([repeat_sampler, combined_sampler])
+      @sampler = create_sampler
       reset
+    end
+    # rubocop:enable Metrics/MethodLength
+
+    def create_sampler
+      repeat_sampler = create_adaptive_sampler(:repeat)
+      combined_sampler = CombinedSampler.new([create_adaptive_subsampler(:new),
+                                              create_adaptive_subsampler(:badness),
+                                              create_adaptive_subsampler(:coverage)])
+      PrioritizedSampler.new([repeat_sampler, combined_sampler])
     end
 
     def sampling_tag_score_method(tag)
@@ -85,13 +107,17 @@ module CubeTrainer
 
     attr_reader :items
 
+    def new_cube_average
+      Native::CubeAverage.new(BADNESS_MEMORY, EPSILON_SCORE)
+    end
+
     # Reset caches and incremental state, recompute everything from scratch.
     def reset
       @current_occurrence_index = 0
       @occurrence_indices = {}
       @repetition_indices = {}
       @badness_histories = {}
-      @badness_histories.default_proc = proc { |h, k| h[k] = Native::CubeAverage.new(BADNESS_MEMORY, EPSILON_SCORE) }
+      @badness_histories.default_proc = ->(h, k) { h[k] = new_cube_average }
       @occurrences = {}
       @occurrences.default = 0
       @results_model.results.sort_by(&:timestamp).each do |r|
@@ -116,7 +142,8 @@ module CubeTrainer
       result.time_s + FAILED_SECONDS * result.failed_attempts
     end
 
-    # Returns how many items have occurred since the last occurrence of this item (0 if it was the last picked item).
+    # Returns how many items have occurred since the last occurrence of this item
+    # (0 if it was the last picked item).
     def items_since_last_occurrence(item)
       occ = @occurrence_indices[item.representation]
       return nil if occ.nil?
@@ -172,7 +199,8 @@ module CubeTrainer
     def repetition_index(occ)
       @repetition_indices[occ] ||= begin
                                      rep_index = 2**occ
-                                     # Do a bit of random distortion to avoid completely mechanic repetition.
+                                     # Do a bit of random distortion to avoid completely
+                                     # mechanic repetition.
                                      distorted_rep_index = distort(rep_index, 0.2)
                                      # At least 1 other item should always come in between.
                                      [distorted_rep_index.to_i, 1].max
@@ -186,23 +214,10 @@ module CubeTrainer
     # Score for items that are either completely new
     # For all other items, it's 0.
     def new_score(item)
-      occurrences(item) == 0 ? 1 : 0
+      occurrences(item).zero? ? 1 : 0
     end
 
-    # Score for items that have occored at least once and have occurred less than `@repeat_item_boundary` times.
-    def repeat_score(item)
-      occ = occurrences(item)
-      if occ == 0 || occ >= @repeat_item_boundary
-        # No repetitions necessary any more.
-        return 0
-      end
-
-      # When the item is completely new, repeat often, then less and less often, but also
-      # adjust to the total number of items.
-      rep_index = repetition_index(occ)
-      index = items_since_last_occurrence(item)
-      raise 'Not completely new item has no index.' if index.nil?
-
+    def rep_index_score(index, rep_index)
       if index >= rep_index
         if index < [rep_index * 1.5, rep_index + 10].max
           # The sweet spot to repeat items is kind of close to the desired repetition index.
@@ -218,18 +233,38 @@ module CubeTrainer
       end
     end
 
+    # Score for items that have occored at least once and have occurred less
+    # than `@repeat_item_boundary` times.
+    def repeat_score(item)
+      occ = occurrences(item)
+      # No repetitions necessary (any more).
+      return 0 if occ.zero? || occ >= @repeat_item_boundary
+
+      # When the item is completely new, repeat often, then less and less often, but also
+      # adjust to the total number of items.
+      rep_index = repetition_index(occ)
+      index = items_since_last_occurrence(item)
+      raise 'Not completely new item has no index.' if index.nil?
+
+      rep_index_score(index, rep_index)
+    end
+
     def random_item
       tagged_sample = @sampler.random_item
       item = tagged_sample.input_item
       if @verbose
         tag = tagged_sample.tag
         score = sampling_tag_score_method(tag).call(tagged_sample)
-        puts "sampling tag: #{tag}; score: #{score}; items since last occurrence #{items_since_last_occurrence(item)}; occurrences: #{occurrences(item)}"
+        puts "sampling tag: #{tag}; score: #{score}; " \
+             "items since last occurrence #{items_since_last_occurrence(item)}; " \
+             "occurrences: #{occurrences(item)}"
       end
       item
     end
   end
+  # rubocop:enable Metrics/ClassLength
 
+  # A random input sampler that doesn't do anything special or smart.
   class RandomSampler
     def initialize(items)
       @items = items

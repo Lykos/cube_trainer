@@ -5,6 +5,7 @@ require 'cube_trainer/result'
 require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
+  # Learner class that prints letter pairs to the console and has the human input fitting words.
   class HumanWordLearner
     include ConsoleHelpers
     include Utils::StringHelper
@@ -29,6 +30,10 @@ module CubeTrainer
 
     COMMANDS = %w[hint replace delete quit].freeze
 
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     def execute(input)
       puts_and_say(input)
       time_s = nil
@@ -63,8 +68,6 @@ module CubeTrainer
           if last_word.nil? || COMMANDS.include?(last_word)
             puts_and_say('Can only replace with a valid word that is not a special command.')
           elsif input.matches_word?(last_word)
-            raise if last_failed_attempts.nil? || last_time_s.nil?
-
             failed_attempts = last_failed_attempts
             word = last_word
             time_s = last_time_s
@@ -80,5 +83,9 @@ module CubeTrainer
       puts "Time: #{format_time(time_s)}; Failed attempts: #{failed_attempts}; Word: #{word}"
       PartialResult.new(time_s, failed_attempts, word)
     end
+    # rubocop:enable Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
   end
 end

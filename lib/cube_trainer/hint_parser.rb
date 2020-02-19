@@ -4,6 +4,7 @@ require 'cube_trainer/utils/string_helper'
 require 'csv'
 
 module CubeTrainer
+  # Class that parses hints from an algorithm or commutator file.
   class HintParser
     include Utils::StringHelper
 

@@ -6,6 +6,7 @@ require 'cube_trainer/buffer_helper'
 require 'cube_trainer/input_item'
 
 module CubeTrainer
+  # Class that generates input items for items that can be represented by letter pairs.
   class LetterPairAlgSet
     include LetterPairHelper
 
@@ -13,7 +14,11 @@ module CubeTrainer
       @letter_scheme = options.letter_scheme
       @color_scheme = options.color_scheme
       @options = options
-      @input_sampler = InputSampler.new(input_items, results_model, goal_badness, options.verbose, options.new_item_boundary)
+      @input_sampler = InputSampler.new(input_items,
+                                        results_model,
+                                        goal_badness,
+                                        options.verbose,
+                                        options.new_item_boundary)
     end
 
     attr_reader :input_sampler, :letter_scheme, :options
@@ -30,16 +35,20 @@ module CubeTrainer
       generate_letter_pairs.map { |e| InputItem.new(e) }
     end
 
+    def restricted_input_items
+      if options.restrict_letters && !options.restrict_letters.empty?
+        generate_input_items.select do |p|
+          p.representation.contains_any_letter?(options.restrict_letters)
+        end
+      else
+        generate_input_items
+      end
+    end
+
     def input_items
-      @input_items ||= begin
-                         generated_input_items = generate_input_items
-                         restricted_input_items = if options.restrict_letters && !options.restrict_letters.empty?
-                                                    generated_input_items.select { |p| p.representation.contains_any_letter?(options.restrict_letters) }
-                                                  else
-                                                    generated_input_items
-                                                  end
-                         restricted_input_items.reject { |p| p.representation.contains_any_letter?(options.exclude_letters) }
-                       end
+      @input_items ||= restricted_input_items.reject do |p|
+        p.representation.contains_any_letter?(options.exclude_letters)
+      end
     end
 
     def generate_letter_pairs

@@ -3,9 +3,11 @@
 require 'cube_trainer/result'
 
 module CubeTrainer
+  # A fake learner that learns stuff and forgets it after a while.
   class Learner
     FORGET_RATE = 0.01
 
+    # Learn stats of the fake learner.
     class LearnStats
       def initialize(seed)
         @rng = Random.new(seed)
@@ -22,10 +24,10 @@ module CubeTrainer
         FORGET_RATE**@practiced
       end
 
-      def forget(n)
-        return unless n
+      def forget(number)
+        return unless number
 
-        remembered_stuff = (1 - forget_rate)**n
+        remembered_stuff = (1 - forget_rate)**number
         @current_time * remembered_stuff + @initial_time * (1 - remembered_stuff)
       end
 

@@ -4,6 +4,7 @@ require 'cube_trainer/bruteforce_finder'
 require 'cube_trainer/core/cube'
 
 module CubeTrainer
+  # Class that finds a solution that is related to a score on a face.
   class LayerSubsetFinder < BruteForceFinder
     def initialize(color_restrictions = nil, find_all_solutions = true)
       super(find_all_solutions)
