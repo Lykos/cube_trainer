@@ -4,7 +4,7 @@ require 'cube_trainer/core/reversible_applyable'
 
 module CubeTrainer
   module Core
-    # Wrapper of the native C implementation of a compiled algorithm for a particular cube size.
+    # Base class for a compiled algorithm for a particular puzzle.
     class CompiledAlgorithm
       include ReversibleApplyable
 
