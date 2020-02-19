@@ -93,6 +93,10 @@ module CubeTrainer
         array[0]
       end
 
+      def find_only(array, &block)
+        only(array.select(&block))
+      end
+
       def replace_once(array, old_element, new_element)
         raise ArgumentError unless array.count { |e| e == old_element } == 1
 

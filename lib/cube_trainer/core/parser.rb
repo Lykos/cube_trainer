@@ -5,7 +5,9 @@ require 'cube_trainer/core/commutator'
 require 'cube_trainer/cube_trainer_error'
 
 module CubeTrainer
+  # rubocop:disable Style/Documentation
   module Core
+    # rubocop:enable Style/Documentation
     class CommutatorParseError < CubeTrainerError
     end
 

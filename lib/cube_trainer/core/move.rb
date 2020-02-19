@@ -87,7 +87,7 @@ module CubeTrainer
         Move.check_move_metric(metric)
         return 0 if direction.zero?
 
-        slice_factor = decide_meaning(cube_size).is_slice_move? ? 2 : 1
+        slice_factor = decide_meaning(cube_size).slice_move? ? 2 : 1
         direction_factor = direction.double_move? ? 2 : 1
         case metric
         when :qtm
@@ -105,7 +105,7 @@ module CubeTrainer
         end
       end
 
-      def is_slice_move?
+      def slice_move?
         raise NotImplementedError, "Not implemented for #{self}:#{self.class}."
       end
 
@@ -243,7 +243,7 @@ module CubeTrainer
         [Puzzle::SKEWB, Puzzle::NXN_CUBE]
       end
 
-      def is_slice_move?
+      def slice_move?
         false
       end
 
@@ -311,7 +311,7 @@ module CubeTrainer
         nil
       end
 
-      def is_slice_move?
+      def slice_move?
         true
       end
 
@@ -362,7 +362,7 @@ module CubeTrainer
         "#{@width > 2 ? @width : ''}#{@axis_face.name}#{@width > 1 ? 'w' : ''}#{@direction.name}"
       end
 
-      def is_slice_move?
+      def slice_move?
         false
       end
 
@@ -441,7 +441,7 @@ module CubeTrainer
         "#{@slice_index > 1 ? @slice_index : ''}#{@axis_face.name.downcase}#{@direction.name}"
       end
 
-      def is_slice_move?
+      def slice_move?
         true
       end
 
@@ -459,11 +459,8 @@ module CubeTrainer
       end
 
       def equivalent_internal?(other, cube_size)
-        if other.is_a?(FatMSliceMove)
-          return other.equivalent_internal?(self, cube_size)
-        elsif other.is_a?(SliceMove)
-          return simplified(cube_size) == other.simplified(cube_size)
-        end
+        return other.equivalent_internal?(self, cube_size) if other.is_a?(FatMSliceMove)
+        return simplified(cube_size) == other.simplified(cube_size) if other.is_a?(SliceMove)
 
         false
       end
@@ -502,24 +499,31 @@ module CubeTrainer
 
         # Only for 4x4, we can join two adjacent slice moves into a fat m slice move.
         this = simplified(cube_size)
-        if cube_size == 4 && this.slice_index == 1 && mirror(@axis_face).equivalent_internal?(other, cube_size)
-          Algorithm.move(FatMSliceMove.new(other.axis_face, other.direction))
-        else
-          other = other.simplified(cube_size)
-          if this.axis_face == other.axis_face && this.slice_index == other.slice_index
-            Algorithm.move(SliceMove.new(other.axis_face, other.direction + this.translated_direction(other.axis_face), other.slice_index))
-          end
+        if cube_size == 4 && this.slice_index == 1 &&
+           mirror(@axis_face).equivalent_internal?(other, cube_size)
+          return Algorithm.move(FatMSliceMove.new(other.axis_face, other.direction))
+        end
+        other = other.simplified(cube_size)
+        if this.axis_face == other.axis_face && this.slice_index == other.slice_index
+          Algorithm.move(
+            SliceMove.new(other.axis_face,
+                          other.direction + this.translated_direction(other.axis_face),
+                          other.slice_index)
+          )
         end
       end
     end
 
+    # Inner M slice moves that move only one middle layer.
     class InnerMSliceMove < SliceMove
       include MSlicePrintHelper
     end
 
-    # Not that this represents a move that is written as 'u' which is a slice move on bigger cubes but a fat move on 3x3...
+    # Not that this represents a move that is written as 'u' which is a slice move on bigger cubes
+    # but a fat move on 3x3...
     class MaybeFatMaybeSliceMove < CubeMove
-      # We handle the annoying inconsistency that u is a slice move for bigger cubes, but a fat move for 3x3.
+      # We handle the annoying inconsistency that u is a slice move for bigger cubes, but a fat move
+      # for 3x3.
       def decide_meaning(cube_size)
         case cube_size
         when 2 then raise ArgumentError
@@ -533,6 +537,7 @@ module CubeTrainer
       end
     end
 
+    # Base class for skewb moves.
     class SkewbMove < Move
       def initialize(axis_corner, direction)
         raise TypeError unless axis_corner.is_a?(Corner)
@@ -552,7 +557,7 @@ module CubeTrainer
         "#{@axis_corner}#{@direction.name}"
       end
 
-      def is_slice_move?
+      def slice_move?
         false
       end
 
@@ -569,18 +574,22 @@ module CubeTrainer
       end
 
       def rotate_by(rotation)
-        nice_face = only(@axis_corner.adjacent_faces.select { |f| f.same_axis?(rotation.axis_face) })
+        nice_face = find_only(@axis_corner.adjacent_faces) do |f|
+          f.same_axis?(rotation.axis_face)
+        end
         nice_direction = rotation.translated_direction(nice_face)
         nice_face_corners = nice_face.clockwise_corners
         on_nice_face_index = nice_face_corners.index { |c| c.turned_equals?(@axis_corner) }
-        new_corner = nice_face_corners[(on_nice_face_index + nice_direction.value) % nice_face_corners.length]
+        new_corner =
+          nice_face_corners[(on_nice_face_index + nice_direction.value) % nice_face_corners.length]
         self.class.new(new_corner, @direction)
       end
 
       def mirror(normal_face)
         faces = @axis_corner.adjacent_faces
-        replaced_face = only(faces.select { |f| f.same_axis?(normal_face) })
-        new_corner = Corner.between_faces(replace_once(faces, replaced_face, replaced_face.opposite))
+        replaced_face = find_only(faces) { |f| f.same_axis?(normal_face) }
+        new_corner =
+          Corner.between_faces(replace_once(faces, replaced_face, replaced_face.opposite))
         self.class.new(new_corner, @direction.inverse)
       end
     end
@@ -593,7 +602,9 @@ module CubeTrainer
         'L' => Corner.for_face_symbols(%i[D F L]),
         'B' => Corner.for_face_symbols(%i[D B L])
       }.freeze
-      ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map { |m, d| SkewbMove.new(m, d) }
+      ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map do |m, d|
+        SkewbMove.new(m, d)
+      end.freeze
     end
 
     # TODO: Get rid of this legacy class
@@ -604,9 +615,12 @@ module CubeTrainer
         'B' => Corner.for_face_symbols(%i[U L B]),
         'L' => Corner.for_face_symbols(%i[U F L])
       }.freeze
-      ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map { |m, d| SkewbMove.new(m, d) }
+      ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map do |m, d|
+        SkewbMove.new(m, d)
+      end.freeze
     end
 
+    # Parser for cube moves.
     class CubeMoveParser
       REGEXP = begin
                  axes_part = "([#{Move::AXES.join}])"
@@ -615,8 +629,15 @@ module CubeTrainer
                  maybe_fat_maybe_slice_move_part = "([#{CubeConstants::FACE_NAMES.join.downcase}])"
                  slice_move_part = "(\\d+)([#{CubeConstants::FACE_NAMES.join.downcase}])"
                  mslice_move_part = "([#{Move::SLICES.join}])"
-                 move_part = "(?:#{axes_part}|#{fat_move_part}|#{normal_move_part}|#{maybe_fat_maybe_slice_move_part}|#{slice_move_part}|#{mslice_move_part})"
-                 direction_part = "(#{AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten.sort_by { |e| -e.length }.join('|')})"
+                 move_part = "(?:#{axes_part}|" \
+                             "#{fat_move_part}|" \
+                             "#{normal_move_part}|" \
+                             "#{maybe_fat_maybe_slice_move_part}|" \
+                             "#{slice_move_part}|#{mslice_move_part})"
+                 direction_names =
+                   AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
+                 direction_names.sort_by! { |e| -e.length }
+                 direction_part = "(#{direction_names.join('|')})"
                  Regexp.new("#{move_part}#{direction_part}")
                end
 
@@ -625,7 +646,9 @@ module CubeTrainer
       end
 
       def parse_direction(direction_string)
-        value = AbstractDirection::POSSIBLE_DIRECTION_NAMES.index { |ds| ds.include?(direction_string) } + 1
+        value = AbstractDirection::POSSIBLE_DIRECTION_NAMES.index do |ds|
+          ds.include?(direction_string)
+        end + 1
         CubeDirection.new(value)
       end
 
@@ -642,43 +665,79 @@ module CubeTrainer
         rotation, width, fat_face_name, face_name, maybe_fat_maybe_slice_name, slice_index, slice_name, mslice_name, direction_string = match.captures
         direction = parse_direction(direction_string)
         if rotation
-          unless width.nil? && fat_face_name.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
+          unless width.nil? &&
+                 fat_face_name.nil? &&
+                 face_name.nil? &&
+                 maybe_fat_maybe_slice_name.nil? &&
+                 slice_name.nil? &&
+                 slice_index.nil? &&
+                 mslice_name.nil?
             raise
           end
 
           Rotation.new(parse_axis_face(rotation), direction)
         elsif fat_face_name
-          unless rotation.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
+          unless rotation.nil? &&
+                 face_name.nil? &&
+                 maybe_fat_maybe_slice_name.nil? &&
+                 slice_name.nil? &&
+                 slice_index.nil? &&
+                 mslice_name.nil?
             raise
           end
 
           width = width == '' ? 2 : width.to_i
           FatMove.new(Face.by_name(fat_face_name), direction, width)
         elsif face_name
-          unless rotation.nil? && width.nil? && fat_face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
+          unless rotation.nil? &&
+                 width.nil? &&
+                 fat_face_name.nil? &&
+                 maybe_fat_maybe_slice_name.nil? &&
+                 slice_name.nil? &&
+                 slice_index.nil? &&
+                 mslice_name.nil?
             raise
           end
 
           FatMove.new(Face.by_name(face_name), direction, 1)
         elsif maybe_fat_maybe_slice_name
-          unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil? && slice_name.nil? && slice_index.nil? && mslice_name.nil?
+          unless rotation.nil? &&
+                 width.nil? &&
+                 fat_face_name.nil? &&
+                 face_name.nil? &&
+                 slice_name.nil? &&
+                 slice_index.nil? &&
+                 mslice_name.nil?
             raise
           end
 
           MaybeFatMaybeSliceMove.new(Face.by_name(maybe_fat_maybe_slice_name.upcase), direction)
         elsif slice_name
-          unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && mslice_name.nil?
+          unless rotation.nil? &&
+                 width.nil? &&
+                 fat_face_name.nil? &&
+                 face_name.nil? &&
+                 maybe_fat_maybe_slice_name.nil? &&
+                 mslice_name.nil?
             raise
           end
 
           SliceMove.new(Face.by_name(slice_name.upcase), direction, slice_index.to_i)
         elsif mslice_name
-          unless rotation.nil? && width.nil? && fat_face_name.nil? && face_name.nil? && maybe_fat_maybe_slice_name.nil? && slice_name.nil? && slice_index.nil?
+          unless rotation.nil? &&
+                 width.nil? &&
+                 fat_face_name.nil? &&
+                 face_name.nil? &&
+                 maybe_fat_maybe_slice_name.nil? &&
+                 slice_name.nil? &&
+                 slice_index.nil?
             raise
           end
 
           fixed_direction = mslice_name == 'S' ? direction : direction.inverse
-          MaybeFatMSliceMaybeInnerMSliceMove.new(Face::ELEMENTS[Move::SLICES.index(mslice_name)], fixed_direction)
+          MaybeFatMSliceMaybeInnerMSliceMove.new(
+            Face::ELEMENTS[Move::SLICES.index(mslice_name)], fixed_direction
+          )
         else
           raise
         end
@@ -687,6 +746,7 @@ module CubeTrainer
       INSTANCE = CubeMoveParser.new
     end
 
+    # Parser for Skewb moves.
     class SkewbMoveParser
       def initialize(moved_corners)
         @moved_corners = moved_corners
@@ -694,8 +754,15 @@ module CubeTrainer
 
       def regexp
         @regexp ||= begin
-                      move_part = "(?:([#{@moved_corners.keys.join}])([#{AbstractDirection::POSSIBLE_SKEWB_DIRECTION_NAMES.flatten.join}]?))"
-                      rotation_part = "(?:([#{Move::AXES.join}])(#{AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten.sort_by { |e| -e.length }.join('|')}))"
+                      skewb_direction_names =
+                        AbstractDirection::POSSIBLE_SKEWB_DIRECTION_NAMES.flatten
+                      move_part = "(?:([#{@moved_corners.keys.join}])" \
+                                  "([#{skewb_direction_names.join}]?))"
+                      rotation_direction_names =
+                        AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
+                      rotation_direction_names.sort_by! { |e| -e.length }
+                      rotation_part = "(?:([#{Move::AXES.join}])" \
+                                      "(#{rotation_direction_names.join('|')}))"
                       Regexp.new("#{move_part}|#{rotation_part}")
                     end
       end

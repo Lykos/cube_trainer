@@ -5,9 +5,9 @@ module CubeTrainer
     # Base class for directions.
     class AbstractDirection
       POSSIBLE_DIRECTION_NAMES = [[''], ['2', '2\''], ['\'', '3']].freeze
-      SIMPLE_DIRECTION_NAMES = ['0'] + POSSIBLE_DIRECTION_NAMES.map(&:first)
+      SIMPLE_DIRECTION_NAMES = (['0'] + POSSIBLE_DIRECTION_NAMES.map(&:first)).freeze
       POSSIBLE_SKEWB_DIRECTION_NAMES = [['', '2\''], ['\'', '2']].freeze
-      SIMPLE_SKEWB_DIRECTION_NAMES = ['0'] + POSSIBLE_SKEWB_DIRECTION_NAMES.map(&:first)
+      SIMPLE_SKEWB_DIRECTION_NAMES = (['0'] + POSSIBLE_SKEWB_DIRECTION_NAMES.map(&:first)).freeze
 
       def initialize(value)
         raise TypeError, "Direction value #{value} isn't an integer." unless value.is_a?(Integer)
@@ -56,8 +56,8 @@ module CubeTrainer
     # Represents the direction of a Skewb move except a rotation.
     class SkewbDirection < AbstractDirection
       NUM_DIRECTIONS = 3
-      NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }
-      ALL_DIRECTIONS = (0...NUM_DIRECTIONS).map { |d| new(d) }
+      NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }.freeze
+      ALL_DIRECTIONS = (0...NUM_DIRECTIONS).map { |d| new(d) }.freeze
       FORWARD = new(1)
       BACKWARD = new(2)
 
@@ -73,8 +73,8 @@ module CubeTrainer
     # Represents the direction of a cube move or rotation.
     class CubeDirection < AbstractDirection
       NUM_DIRECTIONS = 4
-      NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }
-      ALL_DIRECTIONS = (0...NUM_DIRECTIONS).map { |d| new(d) }
+      NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }.freeze
+      ALL_DIRECTIONS = (0...NUM_DIRECTIONS).map { |d| new(d) }.freeze
       FORWARD = new(1)
       DOUBLE = new(2)
       BACKWARD = new(3)
