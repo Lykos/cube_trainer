@@ -8,6 +8,7 @@ require 'cube_trainer/letter_pair'
 require 'cube_trainer/color_scheme'
 
 module CubeTrainer
+  # Class that figures out what cycle a given commutator alg performs.
   class CommutatorReverseEngineer
     def initialize(part_type, buffer, letter_scheme, cube_size)
       raise TypeError unless part_type.is_a?(Class)
