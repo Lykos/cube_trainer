@@ -3,6 +3,7 @@
 require 'cube_trainer/core/algorithm'
 
 module CubeTrainer
+  # Partial set of solutions to get from a given puzzle state to one with some desired properties.
   class SolutionSet
     # Shorter solutions should be treated as better. Unsolved is equivalent to infinity length.
     def strictly_better_than?(other)
@@ -17,6 +18,7 @@ module CubeTrainer
     end
   end
 
+  # Trivial set of solutions where nothing has to be done.
   class AlreadySolvedSolutionSet < SolutionSet
     def initialize(colors)
       raise ArgumentError if colors.empty?
@@ -35,6 +37,7 @@ module CubeTrainer
     end
   end
 
+  # Empty set of solutions that represents the case that there are no solutions.
   class NoSolutionSet < SolutionSet
     def extract_algorithms
       []
@@ -45,6 +48,7 @@ module CubeTrainer
     end
   end
 
+  # Union of several solution sets.
   class UnionSolutionSet < SolutionSet
     def initialize(internal_solution_sets)
       @length = internal_solution_sets.empty? ? nil : internal_solution_sets.first.length
@@ -66,6 +70,7 @@ module CubeTrainer
     end
   end
 
+  # Solution sets that starts with one move and then another set of solutions.
   class FirstMovePlusSolutions < SolutionSet
     def initialize(extra_move, internal_solution_set)
       @length = internal_solution_set.length + 1
@@ -86,6 +91,9 @@ module CubeTrainer
 
   NO_SOLUTIONS = UnionSolutionSet.new([])
 
+  # Base class for classes that search how to get from
+  # a given puzzle state to a state with some desired
+  # properties.
   class BruteForceFinder
     def initialize(find_all_solutions = true)
       @find_all_solutions = find_all_solutions
