@@ -46,7 +46,7 @@ module CubeTrainer
       def self.for_face_symbols_internal(face_symbols)
         raise unless face_symbols.length == self::FACES
 
-        only(self::ELEMENTS.select { |e| e.face_symbols == face_symbols })
+        find_only(self::ELEMENTS) { |e| e.face_symbols == face_symbols }
       end
 
       def self.for_face_symbols(face_symbols)
@@ -153,7 +153,9 @@ module CubeTrainer
       end
 
       def coordinate_index_base_face(coordinate_index)
-        (@coordinate_index_base_face ||= {})[coordinate_index] ||= only(neighbors.select { |n| n.close_to_smaller_indices? && coordinate_index_close_to(n) == coordinate_index })
+        (@coordinate_index_base_face ||= {})[coordinate_index] ||= find_only(neighbors) do |n|
+          n.close_to_smaller_indices? && coordinate_index_close_to(n) == coordinate_index
+        end
       end
 
       def opposite
@@ -276,7 +278,7 @@ module CubeTrainer
 
         corresponding_part = self::CORRESPONDING_PART_CLASS.for_face_symbols(face_symbols)
         nil unless corresponding_part
-        only(self::ELEMENTS.select { |e| e.corresponding_part == corresponding_part })
+        find_only(self::ELEMENTS) { |e| e.corresponding_part == corresponding_part }
       end
 
       def self.create_for_face_symbols(face_symbols)
@@ -387,8 +389,10 @@ module CubeTrainer
 
       def corresponding_part
         @corresponding_part ||= begin
-                                  corners = FACE_SYMBOLS.select { |c| !@face_symbols.include?(c) && Corner.valid?(@face_symbols + [c]) }.map { |c| Corner.for_face_symbols(@face_symbols + [c]) }
-                                  only(corners)
+                                  face_symbol = find_only(FACE_SYMBOLS) do |c|
+                                    !@face_symbols.include?(c) && Corner.valid?(@face_symbols + [c])
+                                  end
+                                  Corner.for_face_symbols(@face_symbols + [face_symbol])
                                 end
       end
 
@@ -422,12 +426,7 @@ module CubeTrainer
 
       def self.create_for_face_symbols(face_symbols)
         piece_candidates = face_symbols[1..-1].permutation.collect { |cs| new([face_symbols[0]] + cs) }
-        pieces = piece_candidates.select(&:valid?)
-        unless pieces.length == 1
-          raise "#{piece_description} is not unique to create a #{self}: #{pieces.inspect}"
-        end
-
-        pieces.first
+        find_only(piece_candidates, &:valid?)
       end
 
       def self.for_face_symbols(face_symbols)
@@ -449,9 +448,10 @@ module CubeTrainer
       # Rotate such that neither the current face symbol nor the given face symbol are at the position of the letter.
       def rotate_other_face_symbol_up(face_symbol)
         index = @face_symbols.index(face_symbol)
-        raise "Part #{self} doesn't have face symbol #{face_symbol}." unless index
-        if index == 0
-          raise "Part #{self} already has face symbol #{face_symbol} up, so `rotate_other_face_symbol_up(#{face_symbol}) is invalid."
+        raise ArgumentError, "Part #{self} doesn't have face symbol #{face_symbol}." unless index
+        if index.zero?
+          raise ArgumentError, "Part #{self} already has face symbol #{face_symbol} up, so " \
+                               "`rotate_other_face_symbol_up(#{face_symbol}) is invalid."
         end
 
         rotate_by(3 - index)
