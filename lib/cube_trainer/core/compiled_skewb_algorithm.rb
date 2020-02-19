@@ -4,6 +4,7 @@ require 'cube_trainer/core/compiled_algorithm'
 
 module CubeTrainer
   module Core
+    # Wrapper of the native C implementation of a compiled algorithm for a particular cube size.
     class CompiledSkewbAlgorithm < CompiledAlgorithm
       def self.transform_move(move)
         if move.is_a?(Rotation) then [:rotation, move.axis_face.face_symbol, move.direction.value]
