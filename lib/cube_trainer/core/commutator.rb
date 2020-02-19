@@ -7,6 +7,7 @@ require 'cube_trainer/core/move'
 
 module CubeTrainer
   module Core
+    # Base class for Commutators.
     class Commutator
       def cancellations(other, cube_size, metric = :htm)
         algorithm.cancellations(other.algorithm, cube_size, metric)
@@ -42,6 +43,7 @@ module CubeTrainer
       end
     end
 
+    # Pure commutator of the form A B A' B'.
     class PureCommutator < Commutator
       def initialize(first_part, second_part)
         raise ArgumentError unless first_part.is_a?(Algorithm)
@@ -76,6 +78,7 @@ module CubeTrainer
       end
     end
 
+    # Setup commutator of the form A B A'.
     class SetupCommutator < Commutator
       def initialize(setup, inner_commutator)
         raise ArgumentError, 'Setup move has to be an algorithm.' unless setup.is_a?(Algorithm)
