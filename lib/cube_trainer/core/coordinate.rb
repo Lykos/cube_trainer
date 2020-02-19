@@ -119,7 +119,7 @@ module CubeTrainer
       def self.from_indices(face, cube_size, x, y)
         raise TypeError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
         raise TypeError unless cube_size.is_a?(Integer)
-        raise ArgumentError unless cube_size > 0
+        raise ArgumentError unless cube_size.positive?
 
         x = Coordinate.canonicalize(x, cube_size)
         y = Coordinate.canonicalize(y, cube_size)
@@ -183,7 +183,7 @@ module CubeTrainer
 
         jump_coordinate_index = face.coordinate_index_close_to(to_face)
         jump_coordinate = coordinates[jump_coordinate_index]
-        (jump_coordinate == 0 && to_face.close_to_smaller_indices?) ||
+        (jump_coordinate.zero? && to_face.close_to_smaller_indices?) ||
           (jump_coordinate == Coordinate.highest_coordinate(cube_size) && !to_face.close_to_smaller_indices?)
       end
 
