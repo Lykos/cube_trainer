@@ -2,6 +2,7 @@
 
 module CubeTrainer
   module Core
+    # Represents one type of puzzle.
     class Puzzle
       def initialize(name)
         @name = name

@@ -8,6 +8,7 @@ require 'cube_trainer/core/cube_constants'
 
 module CubeTrainer
   module Core
+    # Represents the state (i.e. the sticker positions) of a Skewb.
     class SkewbState
       include CubePrintHelper
       include StateHelper
@@ -41,7 +42,9 @@ module CubeTrainer
         raise TypeError unless face.is_a?(Face)
 
         center_sticker = self[SkewbCoordinate.for_center(face)]
-        corner_stickers = face.clockwise_corners.sort.map { |c| self[SkewbCoordinate.for_corner(c)] }
+        corner_stickers = face.clockwise_corners.sort.map do |c|
+          self[SkewbCoordinate.for_corner(c)]
+        end
         [center_sticker] + corner_stickers
       end
 
@@ -80,11 +83,14 @@ module CubeTrainer
 
       # Returns the color of all solved layers. Empty if there is none.
       def solved_layers
-        Face::ELEMENTS.select { |f| layer_at_face_solved?(f) }.collect { |f| self[SkewbCoordinate.for_center(f)] }
+        solved_faces = Face::ELEMENTS.select { |f| layer_at_face_solved?(f) }
+        solved_faces.collect { |f| self[SkewbCoordinate.for_center(f)] }
       end
 
       def layer_solved?(color)
-        Face::ELEMENTS.any? { |f| self[SkewbCoordinate.for_center(f)] == color && layer_at_face_solved?(f) }
+        Face::ELEMENTS.any? do |f|
+          self[SkewbCoordinate.for_center(f)] == color && layer_at_face_solved?(f)
+        end
       end
 
       def center_face(color)
@@ -105,7 +111,8 @@ module CubeTrainer
                 next unless c2.face_symbols.include?(c1_rot.face_symbols.first)
 
                 c2_rot = c2.rotate_face_symbol_up(c1_rot.face_symbols.first)
-                check_parts.push([SkewbCoordinate.for_corner(c1_rot), SkewbCoordinate.for_corner(c2_rot)])
+                check_parts.push([SkewbCoordinate.for_corner(c1_rot),
+                                  SkewbCoordinate.for_corner(c2_rot)])
               end
               matching_corners.push(check_parts)
             end
@@ -113,8 +120,8 @@ module CubeTrainer
           matching_corners.uniq
         end
 
-      # Pairs of stickers that can be used to check whether the "outside" of a layer on the given face is
-      # a proper layer.
+      # Pairs of stickers that can be used to check whether the "outside" of a layer on the given
+      # face is a proper layer.
       LAYER_CHECK_NEIGHBORS =
         begin
           layer_check_neighbors = {}
@@ -141,7 +148,8 @@ module CubeTrainer
 
       def rotate_face(face, direction)
         neighbors = face.neighbors
-        inverse_order_face = face.coordinate_index_close_to(neighbors[0]) < face.coordinate_index_close_to(neighbors[1])
+        inverse_order_face = face.coordinate_index_close_to(neighbors[0]) <
+                             face.coordinate_index_close_to(neighbors[1])
         direction = direction.inverse if inverse_order_face
         cycle = SkewbCoordinate.corners_on_face(face)
         apply_4sticker_cycle(cycle, direction)

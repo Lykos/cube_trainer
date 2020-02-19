@@ -7,7 +7,6 @@ require 'cube_trainer/anki/cube_mask'
 module CubeTrainer
   # Common command line options for different binaries.
   class CubeTrainerOptionsParser < OptionParser
-    # rubocop:disable Metrics/MethodLength
     def initialize(options, &block)
       @options = options
       super do |opts|
@@ -28,7 +27,6 @@ module CubeTrainer
         end
       end
     end
-    # rubocop:enable Metrics/MethodLength
 
     def on_cache
       on('-c', '--[no-]use-cache', 'Use a cache for fetches from the web.') do |c|

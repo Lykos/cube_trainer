@@ -19,7 +19,6 @@ module CubeTrainer
     INPUT_REPRESENTATION_CLASSES = [LetterPair, PaoLetterPair, AlgName, LetterPairSequence].freeze
 
     # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/ParameterLists
     def initialize(mode, timestamp, time_s, input_representation, failed_attempts, word)
       raise TypeError, "Invalid mode #{mode}." unless mode.is_a?(Symbol)
@@ -39,7 +38,6 @@ module CubeTrainer
       @word = word
     end
     # rubocop:enable Metrics/ParameterLists
-    # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/CyclomaticComplexity
 
     def check_input_representation(input_representation)

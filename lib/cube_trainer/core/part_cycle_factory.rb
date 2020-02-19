@@ -4,6 +4,7 @@ require 'cube_trainer/core/sticker_cycle'
 
 module CubeTrainer
   module Core
+    # Factory for sticker cycles given part cycles.
     class PartCycleFactory
       def initialize(cube_size, incarnation_index)
         CubeState.check_cube_size(cube_size)
@@ -40,7 +41,8 @@ module CubeTrainer
           raise TypeError, "Cycles of heterogenous piece types #{parts.inspect} are not supported."
         end
         unless @incarnation_index < parts.first.num_incarnations(@cube_size)
-          raise ArgumentError, "Incarnation index #{@incarnation_index} for cube size #{@cube_size} is not supported for #{parts.first.inspect}."
+          raise ArgumentError, "Incarnation index #{@incarnation_index} for cube size " \
+                               "#{@cube_size} is not supported for #{parts.first.inspect}."
         end
 
         part_coordinates = parts.map { |p| coordinates(p) }

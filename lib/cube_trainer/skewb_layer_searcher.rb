@@ -11,7 +11,6 @@ require 'cube_trainer/skewb_layer_fingerprinter'
 require 'set'
 
 module CubeTrainer
-  # rubocop:disable Metrics/ClassLength
   # Searches all possible Skewb layers.
   class SkewbLayerSearcher
     include Core::CubePrintHelper
@@ -97,8 +96,6 @@ module CubeTrainer
       end
     end
 
-    # rubocop:disable Metrics/MethodLength
-    # rubocop:disable Metrics/AbcSize
     def initialize(color_scheme, verbose, max_length)
       raise TypeError unless color_scheme.is_a?(ColorScheme)
       raise TypeError unless max_length.nil? || max_length.is_a?(Integer)
@@ -115,8 +112,6 @@ module CubeTrainer
       @layer_solutions = {}
       @num_layer_solutions = 0
     end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/MethodLength
 
     attr_reader :good_layer_solutions
 
@@ -234,5 +229,4 @@ module CubeTrainer
       end
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end

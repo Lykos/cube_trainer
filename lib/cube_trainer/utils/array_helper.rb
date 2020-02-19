@@ -77,6 +77,10 @@ module CubeTrainer
         second_part + first_part
       end
 
+      def check_types(array, type)
+        array.each { |e| raise TypeError unless e.is_a?(type) }
+      end
+
       # Returns the only element of an array and raises if the array has not exactly one element.
       def only(array)
         raise ArgumentError, "Can't take the only element of an empty array." if array.empty?

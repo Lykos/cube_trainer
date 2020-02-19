@@ -5,6 +5,7 @@ require 'cube_trainer/core/move'
 require 'cube_trainer/layer_subset_finder'
 
 module CubeTrainer
+  # Class that finds a cross solution on a given 3x3 scramble.
   class CrossFinder < LayerSubsetFinder
     alias find_cross find_solutions
 

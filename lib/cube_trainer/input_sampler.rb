@@ -6,7 +6,6 @@ require 'cube_trainer/sampler'
 require 'cube_trainer/utils/random_helper'
 
 module CubeTrainer
-  # rubocop:disable Metrics/ClassLength
   # An input sampler that tries to adaptively sample items that are useful inputs for the learner.
   class InputSampler
     include Utils::RandomHelper
@@ -52,7 +51,6 @@ module CubeTrainer
 
     TaggedInputItem = Struct.new(:tag, :input_item)
 
-    # rubocop:disable Metrics/MethodLength
     # `items` are the items from which we get samples. They have to be an array of InputItem.
     #         But the representation inside InputItem can be anything.
     # `results_model` is a helper object that retrieves results to get historic scores.
@@ -79,7 +77,6 @@ module CubeTrainer
       @sampler = create_sampler
       reset
     end
-    # rubocop:enable Metrics/MethodLength
 
     def create_sampler
       repeat_sampler = create_adaptive_sampler(:repeat)
@@ -262,7 +259,6 @@ module CubeTrainer
       item
     end
   end
-  # rubocop:enable Metrics/ClassLength
 
   # A random input sampler that doesn't do anything special or smart.
   class RandomSampler

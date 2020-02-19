@@ -7,6 +7,7 @@ require 'cube_trainer/core/reversible_applyable'
 
 module CubeTrainer
   module Core
+    # A sticker cycle that can be applied to a cube state.
     class StickerCycle
       include ReversibleApplyable
 
@@ -29,6 +30,7 @@ module CubeTrainer
       end
     end
 
+    # A set of disjoint sticker cycles that can be applied to a cube state together
     class StickerCycles
       include ReversibleApplyable
 

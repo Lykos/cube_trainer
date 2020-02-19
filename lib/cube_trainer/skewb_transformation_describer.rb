@@ -2,6 +2,7 @@
 
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/skewb_state'
+require 'cube_trainer/utils/array_helper'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/letter_scheme'
 
@@ -9,6 +10,8 @@ module CubeTrainer
   # Helper class to generate a concise human readable description of how a Skewb algorithm
   # moves parts around.
   class SkewbTransformationDescriber
+    include Utils::ArrayHelper
+
     TOP_BOTTOM_CORNERS =
       DOUBLE_ARROW = ' ↔ '
     ARROW = ' → '
@@ -113,20 +116,17 @@ module CubeTrainer
       end
     end
 
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/MethodLength
     def initialize(interesting_faces,
                    interesting_corners,
                    staying_mode,
                    color_scheme,
                    letter_scheme = nil)
-      raise TypeError unless interesting_faces.all? { |f| f.is_a?(Core::Face) }
-      raise TypeError unless interesting_corners.all? { |f| f.is_a?(Core::Corner) }
       raise ArgumentError unless %i[show_staying omit_staying].include?(staying_mode)
       raise TypeError unless color_scheme.is_a?(ColorScheme)
       raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
 
+      check_types(interesting_faces, Core::Face)
+      check_types(interesting_corners, Core::Corner)
       @interesting_faces = interesting_faces
       @interesting_corners = interesting_corners
       @show_staying = staying_mode == :show_staying
@@ -134,9 +134,6 @@ module CubeTrainer
       @skewb_state = @color_scheme.solved_skewb_state
       @letter_scheme = letter_scheme
     end
-    # rubocop:enable Metrics/MethodLength
-    # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/AbcSize
 
     def find_complete_source_cycle(part)
       complete_cycle = []

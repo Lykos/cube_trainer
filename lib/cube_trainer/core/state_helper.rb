@@ -4,6 +4,7 @@ require 'cube_trainer/core/direction'
 
 module CubeTrainer
   module Core
+    # Common utilities for different puzzle states.
     # TODO: Remove
     module StateHelper
       def apply_sticker_cycle(cycle)
