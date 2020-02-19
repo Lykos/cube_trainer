@@ -13,7 +13,8 @@ module CubeTrainer
     # Base class for moves.
     class Move
       AXES = %w[y z x].freeze
-      SLICES = %w[E S M].freeze
+      SLICE_FACES = {'E' => Face::D, 'S' => Face::F, 'M' => Face::L}.freeze
+      SLICE_NAMES = SLICE_FACES.invert.freeze
       MOVE_METRICS = %i[qtm htm stm sqtm qstm].freeze
 
       include Utils::StringHelper
@@ -170,9 +171,11 @@ module CubeTrainer
     # Helper class to print various types of M slice moves.
     module MSlicePrintHelper
       def to_s
-        slice_name = Move::SLICES[@axis_face.axis_priority]
-        broken_direction = slice_name == 'S' ? canonical_direction : canonical_direction.inverse
-        "#{slice_name}#{broken_direction.name}"
+        use_face = Move::SLICE_NAMES.has_key?(@axis_face)
+        axis_face = use_face ? @axis_face : @axis_face.opposite
+        direction = use_face ? @direction : @direction.inverse
+        slice_name = Move::SLICE_NAMES[axis_face]
+        "#{slice_name}#{direction.name}"
       end
     end
 
@@ -650,15 +653,37 @@ module CubeTrainer
       end.freeze
     end
 
+    # Class for parsing one move type
+    class MoveTypeCreator
+      def initialize(capture_keys, move_class)
+        @capture_keys = capture_keys.freeze
+        @move_class = move_class
+      end
+
+      def applies_to?(parsed_parts)
+        parsed_parts.keys.sort == @capture_keys.sort
+      end
+
+      def create(parsed_parts)
+        raise ArgumentError unless applies_to?(parsed_parts)
+
+        fields = @capture_keys.map { |name| parsed_parts[name] }
+        @move_class.new(*fields)
+      end
+    end
+
     # Parser for cube moves.
     class CubeMoveParser
       REGEXP = begin
-                 axes_part = "([#{Move::AXES.join}])"
-                 fat_move_part = "(\\d*)([#{CubeConstants::FACE_NAMES.join}])w"
-                 normal_move_part = "([#{CubeConstants::FACE_NAMES.join}])"
-                 maybe_fat_maybe_slice_move_part = "([#{CubeConstants::FACE_NAMES.join.downcase}])"
-                 slice_move_part = "(\\d+)([#{CubeConstants::FACE_NAMES.join.downcase}])"
-                 mslice_move_part = "([#{Move::SLICES.join}])"
+                 axes_part = "(?<axis_name>[#{Move::AXES.join}])"
+                 fat_move_part =
+                   "(?<width>\\d*)(?<fat_face_name>[#{CubeConstants::FACE_NAMES.join}])w"
+                 normal_move_part = "(?<face_name>[#{CubeConstants::FACE_NAMES.join}])"
+                 maybe_fat_maybe_slice_move_part =
+                   "(?<maybe_fat_face_maybe_slice_name>[#{CubeConstants::FACE_NAMES.join.downcase}])"
+                 slice_move_part =
+                   "(?<slice_index>\\d+)(?<slice_name>[#{CubeConstants::FACE_NAMES.join.downcase}])"
+                 mslice_move_part = "(?<mslice_name>[#{Move::SLICE_FACES.keys.join}])"
                  move_part = "(?:#{axes_part}|" \
                              "#{fat_move_part}|" \
                              "#{normal_move_part}|" \
@@ -667,9 +692,18 @@ module CubeTrainer
                  direction_names =
                    AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
                  direction_names.sort_by! { |e| -e.length }
-                 direction_part = "(#{direction_names.join('|')})"
+                 direction_part = "(?<direction>#{direction_names.join('|')})"
                  Regexp.new("#{move_part}#{direction_part}")
                end
+      
+      MOVE_TYPE_CREATORS = [
+        MoveTypeCreator.new([:axis_face, :direction], Rotation),
+        MoveTypeCreator.new([:fat_face, :direction, :width], FatMove),
+        MoveTypeCreator.new([:face, :direction], FatMove),
+        MoveTypeCreator.new([:maybe_fat_face_maybe_slice_face, :direction], MaybeFatMaybeSliceMove),
+        MoveTypeCreator.new([:slice_face, :direction, :slice_index], SliceMove),
+        MoveTypeCreator.new([:mslice_face, :direction], MaybeFatMSliceMaybeInnerMSliceMove),
+      ]
 
       def regexp
         REGEXP
@@ -686,91 +720,45 @@ module CubeTrainer
         Face::ELEMENTS[Move::AXES.index(axis_face_string)]
       end
 
+      def parse_mslice_face(mslice_name)
+        Move::SLICE_FACES[mslice_name]
+      end
+
+      def parse_width(width_string)
+        width_string.empty? ? 2 : Integer(width_string)
+      end
+
+      def parse_move_part(name, value)
+        case name
+        when 'axis_name' then parse_axis_face(value)
+        when 'width' then parse_width(value)
+        when 'slice_index' then Integer(value)
+        when 'fat_face_name', 'face_name' then Face.by_name(value)
+        when 'maybe_fat_face_maybe_slice_name', 'slice_name'
+          Face.by_name(value.upcase)
+        when 'mslice_name' then
+          parse_mslice_face(value)
+        when 'direction' then parse_direction(value)
+        else raise
+        end
+      end
+      
       def parse_move(move_string)
         match = move_string.match(REGEXP)
         if !match || !match.pre_match.empty? || !match.post_match.empty?
           raise ArgumentError "Invalid move #{move_string}."
         end
 
-        rotation, width, fat_face_name, face_name, maybe_fat_maybe_slice_name, slice_index, slice_name, mslice_name, direction_string = match.captures
-        direction = parse_direction(direction_string)
-        if rotation
-          unless width.nil? &&
-                 fat_face_name.nil? &&
-                 face_name.nil? &&
-                 maybe_fat_maybe_slice_name.nil? &&
-                 slice_name.nil? &&
-                 slice_index.nil? &&
-                 mslice_name.nil?
-            raise
-          end
-
-          Rotation.new(parse_axis_face(rotation), direction)
-        elsif fat_face_name
-          unless rotation.nil? &&
-                 face_name.nil? &&
-                 maybe_fat_maybe_slice_name.nil? &&
-                 slice_name.nil? &&
-                 slice_index.nil? &&
-                 mslice_name.nil?
-            raise
-          end
-
-          width = width == '' ? 2 : width.to_i
-          FatMove.new(Face.by_name(fat_face_name), direction, width)
-        elsif face_name
-          unless rotation.nil? &&
-                 width.nil? &&
-                 fat_face_name.nil? &&
-                 maybe_fat_maybe_slice_name.nil? &&
-                 slice_name.nil? &&
-                 slice_index.nil? &&
-                 mslice_name.nil?
-            raise
-          end
-
-          FatMove.new(Face.by_name(face_name), direction, 1)
-        elsif maybe_fat_maybe_slice_name
-          unless rotation.nil? &&
-                 width.nil? &&
-                 fat_face_name.nil? &&
-                 face_name.nil? &&
-                 slice_name.nil? &&
-                 slice_index.nil? &&
-                 mslice_name.nil?
-            raise
-          end
-
-          MaybeFatMaybeSliceMove.new(Face.by_name(maybe_fat_maybe_slice_name.upcase), direction)
-        elsif slice_name
-          unless rotation.nil? &&
-                 width.nil? &&
-                 fat_face_name.nil? &&
-                 face_name.nil? &&
-                 maybe_fat_maybe_slice_name.nil? &&
-                 mslice_name.nil?
-            raise
-          end
-
-          SliceMove.new(Face.by_name(slice_name.upcase), direction, slice_index.to_i)
-        elsif mslice_name
-          unless rotation.nil? &&
-                 width.nil? &&
-                 fat_face_name.nil? &&
-                 face_name.nil? &&
-                 maybe_fat_maybe_slice_name.nil? &&
-                 slice_name.nil? &&
-                 slice_index.nil?
-            raise
-          end
-
-          fixed_direction = mslice_name == 'S' ? direction : direction.inverse
-          MaybeFatMSliceMaybeInnerMSliceMove.new(
-            Face::ELEMENTS[Move::SLICES.index(mslice_name)], fixed_direction
-          )
-        else
-          raise
+        present_named_captures = match.named_captures.select { |n, v| !v.nil? }
+        parsed_parts = present_named_captures.map do |name, string|
+          key = name.sub('_name', '_face').sub('face_face', 'face').to_sym
+          value = parse_move_part(name, string)
+          [key, value]
+        end.to_h
+        MOVE_TYPE_CREATORS.each do |parser|
+          return parser.create(parsed_parts) if parser.applies_to?(parsed_parts)
         end
+        raise "No move type creator applies to #{parsed_parts}"
       end
 
       INSTANCE = CubeMoveParser.new
