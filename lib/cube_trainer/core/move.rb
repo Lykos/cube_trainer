@@ -133,8 +133,8 @@ module CubeTrainer
 
       # Return an algorithm from cancelling this move with `other` and cancelling as much as
       # possible.
-      # Note that it doesn't cancel rotations even if we theoretically could do this by using
-      # uncanonical wide moves.
+      # Note that it doesn't cancel rotations with moves even if we theoretically could do this by
+      # using uncanonical wide moves.
       # Expects prepend_xyz methods to be present. That one can return a cancelled implementation
       # or nil if nothing can be cancelled.
       def join_with_cancellation(other, cube_size)
@@ -339,14 +339,22 @@ module CubeTrainer
       end
 
       def equivalent_internal?(other, cube_size)
-        if other.is_a?(SliceMove)
-          return cube_size == 3 && other.slice_index == 1 &&
-                 (@axis_face == other.axis_face && @direction == other.direction ||
-                  @axis_face == other.axis_face.opposite && @direction == other.direction.inverse)
-        elsif other.is_a?(FatMSliceMove)
+        case other
+        when SliceMove
+          return equivalent_slice_move?(other, cube_size)
+        when FatMSliceMove
           return @axis_face == other.axis_face.opposite && @direction == other.direction.inverse
         end
+
         false
+      end
+
+      protected
+
+      def equivalent_slice_move?(other, cube_size)
+        cube_size == 3 && other.slice_index == 1 &&
+          (@axis_face == other.axis_face && @direction == other.direction ||
+           @axis_face == other.axis_face.opposite && @direction == other.direction.inverse)
       end
     end
 
@@ -409,25 +417,20 @@ module CubeTrainer
       end
 
       def prepend_fat_m_slice_move(other, cube_size)
-        if same_axis?(other) && @width == 1 && @direction == other.translated_direction(@axis_face)
+        if adjacent_mslice_move?(other)
           Algorithm.move(FatMove.new(@axis_face, @direction, cube_size - 1))
-        elsif same_axis?(other) && @width == cube_size - 1 &&
-              @direction == other.translated_direction(@axis_face).inverse
+        elsif contained_mslice_move?(other, cube_size)
           Algorithm.move(FatMove.new(@axis_face, @direction, 1))
         end
       end
 
       def prepend_fat_move(other, cube_size)
-        if @axis_face == other.axis_face && @width == other.width
+        if same_fat_block?(other)
           Algorithm.move(FatMove.new(@axis_face, @direction + other.direction, @width))
-        elsif @axis_face == other.axis_face.opposite && @width + other.width == cube_size
-          if @direction == other.direction.inverse
-            Algorithm.move(Rotation.new(@axis_face, @direction))
-          else
-            move = FatMove.new(other.axis_face, other.direction + @direction, other.width)
-            rotation = Rotation.new(@axis_face, @direction)
-            Algorithm.new([move, rotation])
-          end
+        elsif opposite_fat_block?(other, cube_size)
+          rotation = Rotation.new(@axis_face, @direction)
+          move = FatMove.new(other.axis_face, other.direction + @direction, other.width)
+          Algorithm.new([move, rotation])
         end
       end
 
@@ -449,6 +452,25 @@ module CubeTrainer
                  return nil
                end
         Algorithm.move(move)
+      end
+
+      protected
+
+      def contained_mslice_move?(other, cube_size)
+        same_axis?(other) && @width == cube_size - 1 &&
+          @direction == other.translated_direction(@axis_face).inverse
+      end
+
+      def adjacent_mslice_move?(other)
+        same_axis?(other) && @width == 1 && @direction == other.translated_direction(@axis_face)
+      end
+
+      def same_fat_block?(other)
+        @axis_face == other.axis_face && @width == other.width
+      end
+
+      def opposite_fat_block?(other, cube_size)
+        @axis_face == other.axis_face.opposite && @width + other.width == cube_size
       end
     end
 
@@ -476,16 +498,11 @@ module CubeTrainer
         true
       end
 
-      def invert_slice_index(cube_size)
-        cube_size - 1 - @slice_index
-      end
-
-      def translated_slice_index(other_axis_face, cube_size)
-        case @axis_face
-        when other_axis_face then @slice_index
-        when other_axis_face.opposite then invert_slice_index(cube_size)
+      def mirror(normal_face)
+        if normal_face.same_axis?(@axis_face)
+          SliceMove.new(@axis_face.opposite, @direction.inverse, @slice_index)
         else
-          raise ArgumentError
+          inverse
         end
       end
 
@@ -496,19 +513,12 @@ module CubeTrainer
         false
       end
 
-      def mirror(normal_face)
-        if normal_face.same_axis?(@axis_face)
-          SliceMove.new(@axis_face.opposite, @direction.inverse, @slice_index)
+      def translated_slice_index(other_axis_face, cube_size)
+        case @axis_face
+        when other_axis_face then @slice_index
+        when other_axis_face.opposite then invert_slice_index(cube_size)
         else
-          inverse
-        end
-      end
-
-      def simplified(cube_size)
-        if @slice_index >= (cube_size + 1) / 2
-          SliceMove.new(@axis_face.opposite, @direction.inverse, invert_slice_index(cube_size))
-        else
-          self
+          raise ArgumentError
         end
       end
 
@@ -531,19 +541,47 @@ module CubeTrainer
 
         # Only for 4x4, we can join two adjacent slice moves into a fat m slice move.
         this = simplified(cube_size)
-        if cube_size == 4 && this.slice_index == 1 &&
-           mirror(@axis_face).equivalent_internal?(other, cube_size)
+        if this.can_join_to_fat_mslice?(other, cube_size)
           return Algorithm.move(FatMSliceMove.new(other.axis_face, other.direction))
         end
 
         other = other.simplified(cube_size)
-        return unless this.axis_face == other.axis_face && this.slice_index == other.slice_index
+        return unless this.same_slice?(other)
 
         Algorithm.move(
           SliceMove.new(other.axis_face,
                         other.direction + this.translated_direction(other.axis_face),
                         other.slice_index)
         )
+      end
+
+      protected
+
+      def simplified(cube_size)
+        if @slice_index >= (cube_size + 1) / 2
+          SliceMove.new(@axis_face.opposite, @direction.inverse, invert_slice_index(cube_size))
+        else
+          self
+        end
+      end
+
+      def invert_slice_index(cube_size)
+        cube_size - 1 - @slice_index
+      end
+
+      # Note that this is only a partial implementation of what we need internally.
+      # It does NOT get all cases correctly because there might be equivalent versions of the
+      # same slice move.
+      def can_join_to_fat_mslice?(other, cube_size)
+        cube_size == 4 && @slice_index == 1 &&
+          mirror(@axis_face).equivalent_internal?(other, cube_size)
+      end
+
+      # Note that this is only a partial implementation of what we need internally.
+      # It does NOT get all cases correctly because there might be equivalent versions of the
+      # same slice move.
+      def same_slice?(other)
+        @axis_face == other.axis_face && @slice_index == other.slice_index
       end
     end
 
