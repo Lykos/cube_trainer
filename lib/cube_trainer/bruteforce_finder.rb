@@ -135,7 +135,7 @@ module CubeTrainer
 
         return AlreadySolvedSolutionSet.new(sols)
       end
-      return NO_SOLUTIONS if limit == 0
+      return NO_SOLUTIONS if limit.zero?
 
       moves = generate_moves(state).collect do |m|
         [m, score_after_move(state, m)]
@@ -157,7 +157,7 @@ module CubeTrainer
         if adjusted_solutions.strictly_better_than?(best_solutions)
           best_solutions = adjusted_solutions
           inner_limit = new_move_limit(solutions.length)
-          break if inner_limit < 0
+          break if inner_limit.negative?
         else
           best_solutions = UnionSolutionSet.new([best_solutions, adjusted_solutions])
         end
