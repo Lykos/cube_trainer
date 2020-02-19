@@ -20,9 +20,11 @@ module CubeTrainer
         options
       end
 
+      # rubocop:disable Metrics/MethodLength
       def self.parse(args)
         options = default_options
 
+        # rubocop:disable Metrics/BlockLength
         CubeTrainerOptionsParser.new(options) do |opts|
           opts.on_cache
           opts.on_size
@@ -30,23 +32,32 @@ module CubeTrainer
           opts.on_stage_mask
           opts.on_solved_mask
 
-          opts.on('-d', '--output_dir [FILE]', String, 'Output directory path for the media.') do |d|
+          opts.on('-d', '--output_dir [FILE]', String,
+                  'Output directory path for the media.') do |d|
             options.output_dir = d
           end
 
-          opts.on('-a', '--alg_set [ALG_SET]', String, 'Internal algorithm set to be used to generate cards. Either this or --input and --alg_column can be set.') do |a|
+          opts.on('-a', '--alg_set [ALG_SET]', String,
+                  'Internal algorithm set to be used to generate cards. ' \
+                  'Either this or --input and --alg_column can be set.') do |a|
             options.alg_set = a
           end
 
-          opts.on('-i', '--input [FILE]', String, 'TSV with an external algorithm set to be used to generate cards. Either this and --alg_column or --alg_set can be set.') do |i|
+          opts.on('-i', '--input [FILE]', String,
+                  'TSV with an external algorithm set to be used to generate cards. ' \
+                  'Either this and --alg_column or --alg_set can be set.') do |i|
             options.input = i
           end
 
-          opts.on('-c', '--alg_column [INTEGER]', Integer, 'Column index at which the algorithms are positioned for an external alg set. Starts at 0.') do |c|
+          opts.on('-c', '--alg_column [INTEGER]', Integer,
+                  'Column index at which the algorithms are positioned for an external alg set. ' \
+                  'Starts at 0.') do |c|
             options.alg_column = c
           end
 
-          opts.on('-n', '--name_column [INTEGER]', Integer, 'Column index at which the names are positioned for an external alg set. Starts at 0.') do |n|
+          opts.on('-n', '--name_column [INTEGER]', Integer,
+                  'Column index at which the names are positioned for an external alg set. ' \
+                  'Starts at 0.') do |n|
             options.name_column = n
           end
 
@@ -56,6 +67,8 @@ module CubeTrainer
         end.parse!(args)
         options
       end
+      # rubocop:enable Metrics/BlockLength
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end

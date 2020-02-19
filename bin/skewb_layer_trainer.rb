@@ -6,7 +6,6 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/skewb_scrambler'
 require 'cube_trainer/color_scheme'
-include CubeTrainer
 
 SCRAMBLE_LENGTH = 15
 SEARCH_DEPTH = 7
@@ -14,10 +13,10 @@ MAX_QUEUE_LENGTH = 100
 
 queue = Queue.new
 
-Producer = Thread.new do
-  layer_finder = SkewbLayerFinder.new
-  scrambler = SkewbScrambler.new
-  skewb_state = ColorScheme::BERNHARD.solved_skewb_state
+Thread.new do
+  layer_finder = CubeTrainer::SkewbLayerFinder.new
+  scrambler = CubeTrainer::SkewbScrambler.new
+  skewb_state = CubeTrainer::ColorScheme::BERNHARD.solved_skewb_state
 
   loop do
     scramble = scrambler.random_moves(SCRAMBLE_LENGTH)

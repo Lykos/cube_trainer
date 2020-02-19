@@ -29,7 +29,8 @@ module CubeTrainer
           opts.on_stage_mask
           opts.on_solved_mask
 
-          opts.on('-a', '--algorithm [ALGORITHM]', String, 'Algorithm to be applied before visualization.') do |a|
+          opts.on('-a', '--algorithm [ALGORITHM]', String,
+                  'Algorithm to be applied before visualization.') do |a|
             options.algorithm = parse_algorithm(a)
           end
         end.parse!(args)

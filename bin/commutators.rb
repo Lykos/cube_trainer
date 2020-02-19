@@ -17,7 +17,7 @@ results_model = CubeTrainer::ResultsModel.new(
 )
 generator = options.commutator_info.generator_class.new(results_model, options)
 learner = options.commutator_info.learner_class.new(generator.hinter, results_model, options)
-stats_computer = CubeTrainer::StatsComputer.new(options, results_persistence)
+stats_computer = CubeTrainer::StatsComputer.new(Time.now, options, results_persistence)
 
 stats = stats_computer.input_stats(generator.input_items)
 puts "#{stats[:found]} of #{stats[:total]} items found, #{stats[:newish_elements]} of them " \

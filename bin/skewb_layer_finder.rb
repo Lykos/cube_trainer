@@ -12,9 +12,6 @@ require 'cube_trainer/skewb_state'
 require 'cube_trainer/parser'
 require 'cube_trainer/cube_print_helper'
 
-include CubeTrainer
-include Core::CubePrintHelper
-
 SEARCH_DEPTH = 6
 
 options = SkewbLayerFinderOptions.parse(ARGV)
@@ -27,7 +24,7 @@ scramble = parse_fixed_corner_skewb_algorithm(scramble_string)
 layer_finder = SkewbLayerFinder.new(options.restrict_colors)
 skewb_state = options.color_scheme.solved_skewb_state
 scramble.apply_to(skewb_state)
-puts skewb_string(skewb_state, :color)
+puts skewb_state.colored_to_s
 
 layer_solutions = layer_finder.find_solutions(skewb_state, SEARCH_DEPTH)
 if layer_solutions.solved?

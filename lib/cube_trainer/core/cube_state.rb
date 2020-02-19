@@ -98,6 +98,10 @@ module CubeTrainer
         cube_string(self, :nocolor)
       end
 
+      def colored_to_s
+        cube_string(self, :color)
+      end
+
       def [](coordinate)
         @native[coordinate.native]
       end

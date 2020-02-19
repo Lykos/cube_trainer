@@ -45,6 +45,7 @@ module CubeTrainer
                    verbose:,
                    cube_size:,
                    test_comms_mode:)
+      CubeState.check_cube_size(cube_size)
       unless TEST_COMMS_MODES.include?(test_comms_mode)
         raise ArgumentError, "Invalid test comms mode #{test_comms_mode}. " \
                              "Allowed are: #{TEST_COMMS_MODES.inspect}"
@@ -52,7 +53,6 @@ module CubeTrainer
       if test_comms_mode == :warn && !verbose
         raise ArgumentError, 'Having test_comms_mode == :warn, but !verbose is pointless.'
       end
-      raise ArgumentError unless cube_size.is_a?(Integer)
 
       @part_type = part_type
       @buffer = buffer

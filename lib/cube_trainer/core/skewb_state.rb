@@ -56,6 +56,10 @@ module CubeTrainer
         skewb_string(self, :nocolor)
       end
 
+      def colored_to_s
+        skewb_string(self, :color)
+      end
+
       def apply_move(move)
         move.apply_to(self)
       end

@@ -3,9 +3,9 @@
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_trainer/stats_computer'
-require 'cube_trainer/cube'
 require 'cube_trainer/commutator_options'
+require 'cube_trainer/core/cube'
+require 'cube_trainer/stats_computer'
 require 'yaml'
 
 options = CubeTrainer::CommutatorOptions.parse(ARGV)

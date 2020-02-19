@@ -137,7 +137,7 @@ module CubeTrainer
         -score
       end.map(&:first)
     end
-    
+
     def find_solutions(state, limit)
       raise TypeError unless limit.is_a?(Integer)
 
@@ -153,7 +153,7 @@ module CubeTrainer
 
         return AlreadySolvedSolutionSet.new(sols)
       end
-      return nil
+      nil
     end
 
     def prepend_move(move, solutions)

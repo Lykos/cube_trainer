@@ -25,7 +25,8 @@ module CubeTrainer
       FACE_SYMBOL_ORDER = %i[U R F D L B].freeze
       raise unless FACE_SYMBOL_ORDER.sort == Core::CubeConstants::FACE_SYMBOLS.sort
 
-      BASE_MASKS = %i[fl f2l ll cll ell oll ocll oell coll ocell wv vh els cls cmll cross f2l_3 f2l_2 f2l_sm f2l_1 f2b line 2x2x2 2x2x3].freeze
+      BASE_MASKS = %i[fl f2l ll cll ell oll ocll oell coll ocell wv vh els cls cmll
+                      cross f2l_3 f2l_2 f2l_sm f2l_1 f2b line 2x2x2 2x2x3].freeze
       STAGE_MASK_REGEXP = Regexp.new("(#{BASE_MASKS.join('|')})(?:-([xyz]['2]?+))?")
 
       # Helper class to serialize a URL parameter via invoking `#to_s`.
@@ -89,6 +90,10 @@ module CubeTrainer
 
       # Represents one type of URL parameter.
       class UrlParameterType
+        # rubocop:disable Metrics/ParameterLists
+        # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/PerceivedComplexity
         def initialize(name,
                        type,
                        value_range,
@@ -105,11 +110,16 @@ module CubeTrainer
 
           @name = name
           @type = type
-          @serialized_default_value = default_value.nil? ? nil : parameter_value_serializer.serialize(default_value)
+          @serialized_default_value =
+            default_value.nil? ? nil : parameter_value_serializer.serialize(default_value)
           @parameter_value_serializer = parameter_value_serializer
           @value_range = value_range
           @required = required
         end
+        # rubocop:enable Metrics/PerceivedComplexity
+        # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/AbcSize
+        # rubocop:enable Metrics/ParameterLists
 
         attr_reader :name
 
@@ -145,8 +155,11 @@ module CubeTrainer
         UrlParameterType.new(:fmt, Symbol, %i[png gif jpg svg tiff ico], required: true),
         UrlParameterType.new(:size, Integer, (0..1024)),
         UrlParameterType.new(:view, Symbol, %i[plain trans]),
-        UrlParameterType.new(:stage, StageMask, FAKE_INFINITE_RANGE, parameter_value_serializer: STAGE_MASK_URL_PARAMETER_SERIALIZER),
-        UrlParameterType.new(:sch, ColorScheme, FAKE_INFINITE_RANGE, required: true, parameter_value_serializer: COLOR_SCHEME_URL_PARAMETER_SERIALIZER),
+        UrlParameterType.new(:stage, StageMask, FAKE_INFINITE_RANGE,
+                             parameter_value_serializer: STAGE_MASK_URL_PARAMETER_SERIALIZER),
+        UrlParameterType.new(:sch, ColorScheme, FAKE_INFINITE_RANGE,
+                             required: true,
+                             parameter_value_serializer: COLOR_SCHEME_URL_PARAMETER_SERIALIZER),
         UrlParameterType.new(:bg, Symbol, COLORS),
         UrlParameterType.new(:cc, Symbol, COLORS),
         UrlParameterType.new(:co, Integer, (0..99)),
@@ -167,45 +180,67 @@ module CubeTrainer
         def []=(key, value); end
       end
 
-      def initialize(fetcher:, cache: nil, retries: 5, checker: nil, **params)
-        raise TypeError unless fetcher.respond_to?(:get)
+      def check_param_keys(keys)
+        invalid_keys = keys - URL_PARAMETER_TYPE_KEYS
+        return if invalid_keys.empty?
 
-        @fetcher = fetcher
+        raise ArgumentError, "Unknown url parameter keys #{invalid_keys.join(', ')}"
+      end
+
+      def check_cache(cache)
         raise TypeError unless cache.nil? || (cache.respond_to?(:[]) && cache.respond_to?(:[]=))
+      end
 
-        @cache = cache || StubCache.new
+      def check_checker(checker)
+        raise TypeError unless checker.nil? || checker.respond_to?(:valid?)
+      end
+
+      def extract_url_params(params)
+        URL_PARAMETER_TYPES.map { |p| p.extract(params) }.compact
+      end
+
+      def extract_color_scheme(params)
+        params[:sch] || (raise ArgumentError)
+      end
+
+      def extract_format(params)
+        params[:fmt] || (raise ArgumentError)
+      end
+
+      def initialize(fetcher:, cache: nil, retries: 5, checker: nil, **params)
+        check_param_keys(params.keys)
+        check_cache(cache)
+        check_checker(checker)
+        raise TypeError unless fetcher.respond_to?(:get)
         raise TypeError unless retries.is_a?(Integer)
         raise ArgumentError if retries.negative?
 
+        @fetcher = fetcher
+        @cache = cache || StubCache.new
         @retries = retries
-        raise TypeError unless checker.nil? || checker.respond_to?(:valid?)
-
-        invalid_keys = params.keys - URL_PARAMETER_TYPE_KEYS
-        unless invalid_keys.empty?
-          raise ArgumentError, "Unknown url parameter keys #{invalid_keys.join(', ')}"
-        end
-
-        @params = URL_PARAMETER_TYPES.map { |p| p.extract(params) }.compact
-        @color_scheme = params[:sch] || (raise ArgumentError)
-        format = params[:fmt] || (raise ArgumentError)
+        @url_params = extract_url_params(params)
+        @color_scheme = extract_color_scheme(params)
+        format = extract_format(params)
         @checker = checker || ImageChecker.new(format)
       end
 
       BASE_URI = URI('http://cube.crider.co.uk/visualcube.php')
+
+      def serialize_color(color)
+        case color
+        when :transparent then 't'
+        when :unknown then 'n'
+        when :oriented then 'o'
+        else @color_scheme.face_symbol(color).to_s.downcase
+        end
+      end
 
       def cube_state_params(cube_state)
         raise TypeError unless cube_state.is_a?(Core::CubeState)
         raise ArgumentError unless MIN_N <= cube_state.n && cube_state.n <= MAX_N
 
         serialized_cube_state = FACE_SYMBOL_ORDER.map do |s|
-          face_lines(cube_state, s) do |c|
-            case c
-            when :transparent then 't'
-            when :unknown then 'n'
-            when :oriented then 'o'
-            else @color_scheme.face_symbol(c).to_s.downcase
-            end
-          end.flatten.join
+          face_lines(cube_state, s, &method(:serialize_color)).flatten.join
         end.join
         [
           [:pzl, cube_state.n],
@@ -215,7 +250,7 @@ module CubeTrainer
 
       def uri(cube_state)
         uri = BASE_URI.dup
-        uri.query = URI.encode_www_form(@params + cube_state_params(cube_state))
+        uri.query = URI.encode_www_form(@url_params + cube_state_params(cube_state))
         uri
       end
 
