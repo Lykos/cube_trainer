@@ -74,6 +74,7 @@ module CubeTrainer
 
       COLOR_SCHEME_URL_PARAMETER_SERIALIZER = ColorSchemeUrlParameterSerializer.new
 
+      # Helper class to serialize a stage mask as a URL paramer by setting the list of colors.
       class StageMaskUrlParameterSerializer
         def serialize(value)
           if value.rotations.empty?
