@@ -13,6 +13,7 @@ require 'cube_trainer/commutator_checker'
 require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
+  # Stub commutator checker that just says everything is always okay.
   class CommutatorCheckerStub
     def initialize
       @total_algs = 0
@@ -34,6 +35,7 @@ module CubeTrainer
     end
   end
 
+  # Class that parses a commutator file.
   class CommutatorHintParser < HintParser
     TEST_COMMS_MODES = %i[ignore warn fail].freeze
 
@@ -82,6 +84,7 @@ module CubeTrainer
       BLACKLIST.include?(value.downcase)
     end
 
+    # Represents an entry with an alg in a commutator table.
     class AlgEntry
       def initialize(letter_pair, algorithm)
         @maybe_letter_pair = letter_pair
@@ -92,6 +95,7 @@ module CubeTrainer
       attr_accessor :maybe_letter_pair
     end
 
+    # Represents an empty entry in a commutator table.
     class EmptyEntry
       def initialize
         @maybe_letter_pair = nil
@@ -100,6 +104,7 @@ module CubeTrainer
       attr_accessor :maybe_letter_pair
     end
 
+    # Represents an erroneous entry in a commutator table.
     class ErrorEntry
       def initialize(error_message)
         @error_message = error_message
