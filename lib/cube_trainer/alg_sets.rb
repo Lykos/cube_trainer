@@ -9,6 +9,7 @@ require 'cube_trainer/input_item'
 require 'cube_trainer/sequence_hinter'
 
 module CubeTrainer
+  # Base class for alg sets (e.g. PLLs).
   class AlgSet
     include Utils::StringHelper
 
@@ -62,18 +63,21 @@ module CubeTrainer
     end
   end
 
+  # PLLs alg set.
   class Plls < AlgSet
     def goal_badness
       1.0
     end
   end
 
+  # Alg set for solving OLL first and then CP with a PLL.
   class OllsPlusCp < AlgSet
     def goal_badness
       1.0
     end
   end
 
+  # COLLs alg set.
   class Colls < AlgSet
     def goal_badness
       1.0
