@@ -3,6 +3,7 @@
 module CubeTrainer
   # Helper class that figures out what rows and columns of a commutator table have in common and what the interpretation of the table is.
   class CommonalityFinder
+    # Represents the chosen way to interpret a table of commutators.
     class TableInterpretation
       def initialize(row_axis_interpretation, column_axis_interpretation, row_interpretations, column_interpretations)
         unless [row_axis_interpretation, column_axis_interpretation].sort == [0, 1]
