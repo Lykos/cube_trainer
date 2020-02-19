@@ -7,12 +7,15 @@ require 'cube_trainer/core/skewb_state'
 require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
+  # A color scheme that assigns a color to each face.
   class ColorScheme
     include Core::CubeConstants
     include Utils::ArrayHelper
 
     RESERVED_COLORS = %i[transparent unknown oriented].freeze
 
+    # Corner matcher that finds a corner that has one arbitrary
+    # face symbol and two given face symbol.
     class CornerMatcher
       def initialize(face_symbol_matchers)
         unless face_symbol_matchers.count(&:nil?) == 1
