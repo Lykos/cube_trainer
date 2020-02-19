@@ -3,8 +3,6 @@
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'options'
+require 'cube_trainer/commutator_options'
 
-include CubeTrainer
-
-puts Options::COMMUTATOR_TYPES.keys
+puts CubeTrainer::CommutatorOptions::COMMUTATOR_TYPES.keys

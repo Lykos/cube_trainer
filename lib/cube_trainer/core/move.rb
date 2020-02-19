@@ -44,7 +44,7 @@ module CubeTrainer
       end
 
       def identity?
-        direction.is_zero?
+        direction.zero?
       end
 
       def self.check_move_metric(metric)
@@ -85,10 +85,10 @@ module CubeTrainer
         raise TypeError unless cube_size.is_a?(Integer)
 
         Move.check_move_metric(metric)
-        return 0 if direction.is_zero?
+        return 0 if direction.zero?
 
         slice_factor = decide_meaning(cube_size).is_slice_move? ? 2 : 1
-        direction_factor = direction.is_double_move? ? 2 : 1
+        direction_factor = direction.double_move? ? 2 : 1
         case metric
         when :qtm
           slice_factor * direction_factor
@@ -141,9 +141,9 @@ module CubeTrainer
 
         maybe_alg = other.method(method_symbol).call(this, cube_size)
         if maybe_alg
-          Algorithm.new(maybe_alg.moves.select { |m| m.direction.is_non_zero? })
+          Algorithm.new(maybe_alg.moves.select { |m| m.direction.non_zero? })
         else
-          Algorithm.new([self, other].select { |m| m.direction.is_non_zero? })
+          Algorithm.new([self, other].select { |m| m.direction.non_zero? })
         end
       end
 
@@ -727,7 +727,8 @@ module CubeTrainer
         elsif rotation
           raise unless skewb_move_string.nil? && direction_string.nil?
 
-          Rotation.new(CubeMoveParser::INSTANCE.parse_axis_face(rotation), CubeMoveParser::INSTANCE.parse_direction(rotation_direction_string))
+          Rotation.new(CubeMoveParser::INSTANCE.parse_axis_face(rotation),
+                       CubeMoveParser::INSTANCE.parse_direction(rotation_direction_string))
         else
           raise
         end

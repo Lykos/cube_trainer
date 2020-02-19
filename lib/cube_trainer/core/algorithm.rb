@@ -113,7 +113,7 @@ module CubeTrainer
       # Note that this is not implemented for all moves.
       def rotate_by(rotation)
         raise TypeError unless rotation.is_a?(Rotation)
-        return self if rotation.direction.is_zero?
+        return self if rotation.direction.zero?
 
         Algorithm.new(@moves.map { |m| m.rotate_by(rotation) })
       end

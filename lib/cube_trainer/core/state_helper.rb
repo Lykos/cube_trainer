@@ -19,7 +19,7 @@ module CubeTrainer
         raise ArgumentError unless cycle.length == 4
         raise TypeError unless direction.is_a?(AbstractDirection)
 
-        if direction.is_double_move?
+        if direction.double_move?
           apply_sticker_cycle([cycle[0], cycle[2]])
           apply_sticker_cycle([cycle[1], cycle[3]])
         else

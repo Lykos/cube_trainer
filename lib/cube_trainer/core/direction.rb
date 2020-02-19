@@ -2,6 +2,7 @@
 
 module CubeTrainer
   module Core
+    # Base class for directions.
     class AbstractDirection
       POSSIBLE_DIRECTION_NAMES = [[''], ['2', '2\''], ['\'', '3']].freeze
       SIMPLE_DIRECTION_NAMES = ['0'] + POSSIBLE_DIRECTION_NAMES.map(&:first)
@@ -25,12 +26,12 @@ module CubeTrainer
 
       include Comparable
 
-      def is_zero?
-        @value == 0
+      def zero?
+        @value.zero?
       end
 
-      def is_non_zero?
-        @value > 0
+      def non_zero?
+        @value.positive?
       end
 
       def inverse
@@ -52,6 +53,7 @@ module CubeTrainer
       end
     end
 
+    # Represents the direction of a Skewb move except a rotation.
     class SkewbDirection < AbstractDirection
       NUM_DIRECTIONS = 3
       NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }
@@ -63,11 +65,12 @@ module CubeTrainer
         SIMPLE_SKEWB_DIRECTION_NAMES[@value]
       end
 
-      def is_double_move?
+      def double_move?
         false
       end
     end
 
+    # Represents the direction of a cube move or rotation.
     class CubeDirection < AbstractDirection
       NUM_DIRECTIONS = 4
       NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }
@@ -80,7 +83,7 @@ module CubeTrainer
         SIMPLE_DIRECTION_NAMES[@value]
       end
 
-      def is_double_move?
+      def double_move?
         @value == 2
       end
     end

@@ -17,6 +17,16 @@ include CubeTrainer
 include Core
 include CubePrintHelper
 
+TITLE_ROW = [
+  'case description',
+  'main alg',
+  'center_transformations',
+  'top_corner_transformations',
+  'alternative algs',
+  'name',
+  'tags'
+].freeze
+
 options = SkewbLayerSearcherOptions.parse(ARGV)
 solutions = SkewbLayerSearcher.calculate(options.color_scheme, options.verbose, options.depth)
 layer_improver = SkewbLayerImprover.new(Face::D, options.color_scheme)
@@ -54,20 +64,28 @@ if options.output
   bottom_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == :D }
   non_bottom_faces = Face::ELEMENTS.reject { |c| c.face_symbol == :D }
   layer_corners_letter_scheme = options.layer_corners_as_letters ? options.letter_scheme : nil
-  layer_describer = SkewbTransformationDescriber.new([], bottom_corners, :omit_staying, options.color_scheme, layer_corners_letter_scheme)
-  center_describer = SkewbTransformationDescriber.new(non_bottom_faces, [], :omit_staying, options.color_scheme)
+  layer_describer = SkewbTransformationDescriber.new(
+    [], bottom_corners, :omit_staying, options.color_scheme, layer_corners_letter_scheme
+  )
+  center_describer = SkewbTransformationDescriber.new(
+    non_bottom_faces, [], :omit_staying, options.color_scheme
+  )
   top_corners_letter_scheme = options.top_corners_as_letters ? options.letter_scheme : nil
-  top_corner_describer = SkewbTransformationDescriber.new([], top_corners, :show_staying, options.color_scheme, top_corners_letter_scheme)
+  top_corner_describer = SkewbTransformationDescriber.new(
+    [], top_corners, :show_staying, options.color_scheme, top_corners_letter_scheme
+  )
   layer_classifier = SkewbLayerClassifier.new(Face::D, options.color_scheme)
 
   CSV.open(options.output, 'wb', col_sep: "\t") do |csv|
-    csv << ['case description', 'main alg', 'center_transformations', 'top_corner_transformations', 'alternative algs', 'name', 'tags']
+    csv << TITLE_ROW
     solutions.each do |algs|
       main_alg = algs[0]
       alternative_algs = algs[1..-1]
       classification = layer_classifier.classify_layer(algs[0])
       source_descriptions = layer_describer.source_descriptions(main_alg)
-      name_letters = source_descriptions.map(&:source).map { |p| options.letter_scheme.letter(p).capitalize }
+      name_letters = source_descriptions.map(&:source).map do |p|
+        options.letter_scheme.letter(p).capitalize
+      end
       letter_pairs = name_letters.each_slice(2).map(&:join)
       name = letter_pairs.map do |letter_pair|
         key = letter_pair.length == 2 ? letter_pair : letter_pair * 2

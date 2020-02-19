@@ -9,6 +9,7 @@ module CubeTrainer
     class CommutatorParseError < CubeTrainerError
     end
 
+    # Parser for commutators and algorithms.
     class Parser
       def initialize(alg_string, move_parser)
         @alg_string = alg_string
@@ -90,7 +91,11 @@ module CubeTrainer
       end
 
       def complain(parsed_object)
-        raise CommutatorParseError, "Couldn't parse #{parsed_object} here:\n#{@alg_string}\n#{' ' * @scanner.pos}^"
+        raise CommutatorParseError, <<~ERROR.chomp
+          Couldn't parse #{parsed_object} here:
+            #{@alg_string}
+            #{' ' * @scanner.pos}^"
+        ERROR
       end
 
       OPENING_BRACKET = '['
@@ -139,21 +144,25 @@ module CubeTrainer
         PureCommutator.new(first_part, second_part)
       end
 
+      def parse_commutator_internal_after_separator(setup_or_first_part, separator)
+        if [':', ';'].include?(separator)
+          inner_commutator = parse_setup_commutator_inner
+          SetupCommutator.new(setup_or_first_part, inner_commutator)
+        elsif separator == ','
+          second_part = parse_nonempty_moves
+          PureCommutator.new(setup_or_first_part, second_part)
+        else
+          complain('end of setup or middle of pure commutator') unless @scanner.eos?
+        end
+      end
+
       def parse_commutator_internal
         skip_spaces
         parse_open_bracket
         setup_or_first_part = parse_nonempty_moves
         skip_spaces
-        char = @scanner.getch
-        comm = if char == ':' || char == ';'
-                 inner_commutator = parse_setup_commutator_inner
-                 SetupCommutator.new(setup_or_first_part, inner_commutator)
-               elsif char == ','
-                 second_part = parse_nonempty_moves
-                 PureCommutator.new(setup_or_first_part, second_part)
-               else
-                 complain('end of setup or middle of pure commutator') unless @scanner.eos?
-               end
+        separator = @scanner.getch
+        comm = parse_commutator_internal_after_separator(setup_or_first_part, separator)
         skip_spaces
         parse_close_bracket
         skip_spaces

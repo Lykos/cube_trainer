@@ -8,10 +8,8 @@ require 'cube_trainer/cube'
 require 'cube_trainer/commutator_options'
 require 'yaml'
 
-include CubeTrainer
-
-options = CommutatorOptions.parse(ARGV)
-computer = StatsComputer.new(Time.now, options)
+options = CubeTrainer::CommutatorOptions.parse(ARGV)
+computer = CubeTrainer::StatsComputer.new(Time.now, options)
 
 # Detailed stats
 computer.averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }
@@ -36,8 +34,10 @@ puts '# Stats'
 lolstats = computer.expected_time_per_type_stats
 lolstats.each do |stats|
   puts "#{stats[:name]}: "
-  puts "On average #{stats[:expected_algs].round(2)} algs taking #{stats[:average].round(2)} s each on average."
-  puts "Average time spent in total: #{stats[:total_time].round(2)} s (#{(stats[:weight] * 100).round(2)}%)"
+  puts "On average #{stats[:expected_algs].round(2)} algs taking #{stats[:average].round(2)} s " \
+       'each on average.'
+  puts "Average time spent in total: #{stats[:total_time].round(2)} s " \
+       "(#{(stats[:weight] * 100).round(2)}%)"
   puts
 end
 puts "Total time: #{lolstats.map { |stats| stats[:total_time] }.reduce(:+)} s"

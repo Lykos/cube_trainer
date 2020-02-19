@@ -18,7 +18,14 @@ module CubeTrainer
     end
 
     def input_sampler
-      @input_sampler ||= InputSampler.new(input_items, @results_model, goal_badness, @options.verbose, @options.new_item_boundary)
+      @input_sampler ||=
+        InputSampler.new(
+          input_items,
+          @results_model,
+          goal_badness,
+          @options.verbose,
+          @options.new_item_boundary
+        )
     end
 
     def goal_badness
