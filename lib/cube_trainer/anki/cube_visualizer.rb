@@ -13,6 +13,8 @@ require 'uri'
 
 module CubeTrainer
   module Anki
+    # Class that fetches images from
+    # http://cube.crider.co.uk/visualcube.php
     class CubeVisualizer
       include Core::CubePrintHelper
 
