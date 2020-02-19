@@ -95,11 +95,12 @@ module CubeTrainer
     end
 
     def potential_fixes(commutator)
-      if commutator.is_a?(Core::SetupCommutator)
+      case commutator
+      when Core::SetupCommutator
         alg_modifications(commutator.setup).product(potential_fixes(commutator.inner_commutator)).map { |setup, comm| Core::SetupCommutator.new(setup, comm) }
-      elsif commutator.is_a?(Core::PureCommutator)
+      when Core::PureCommutator
         comm_part_modifications(commutator.first_part).product(comm_part_modifications(commutator.second_part)).flat_map { |a, b| [Core::PureCommutator.new(a, b), Core::PureCommutator.new(b, a)].uniq }
-      elsif commutator.is_a?(Core::FakeCommutator)
+      when Core::FakeCommutator
         alg_modifications(commutator.algorithm).map { |a| Core::FakeCommutator.new(a) }
       else
         raise ArgumentError
