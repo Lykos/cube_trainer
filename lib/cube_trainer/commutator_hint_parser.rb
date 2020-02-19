@@ -192,7 +192,7 @@ module CubeTrainer
         end
       end
 
-      if checker.broken_algs + checker.error_algs > 0
+      if checker.broken_algs.positive? || checker.error_algs.positive?
         msg = "#{checker.error_algs} error algs and #{checker.broken_algs} broken algs of #{checker.total_algs}."
         msg += " #{checker.unfixable_algs} were unfixable." if checker.unfixable_algs
         raise msg if fail_comms?
