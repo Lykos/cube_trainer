@@ -9,6 +9,7 @@ require 'cube_trainer/restricted_hinter'
 require 'cube_trainer/sequence_hinter'
 
 module CubeTrainer
+  # Parses hints for an alg set (e.g. for PLLs).
   class AlgHintParser < HintParser
     include Utils::StringHelper
     include Core
