@@ -8,6 +8,7 @@ require 'ostruct'
 
 module CubeTrainer
   module Anki
+    # Command line options for the `cube_visualizer` binary.
     class CubeVisualizerOptions
       def self.default_options
         options = OpenStruct.new
