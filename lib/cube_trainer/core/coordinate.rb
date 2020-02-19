@@ -6,7 +6,7 @@ require 'cube_trainer/native'
 
 module CubeTrainer
   module Core
-    # Coordinate of a sticker on the cube
+    # Coordinate of a sticker on the cube.
     class Coordinate
       def self.highest_coordinate(cube_size)
         cube_size - 1
@@ -246,6 +246,7 @@ module CubeTrainer
       end
     end
 
+    # Coordinate of a sticker on the Skewb.
     class SkewbCoordinate
       def initialize(face, coordinate, native)
         raise ArgumentError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
