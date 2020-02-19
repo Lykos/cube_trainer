@@ -4,6 +4,9 @@ require 'filemagic'
 
 module CubeTrainer
   module Anki
+    # Class that checks whether an image is invalid.
+    # Note that this is not very good currently.
+    # It just checks very obvious things.
     class ImageChecker
       def initialize(format)
         @format = format
