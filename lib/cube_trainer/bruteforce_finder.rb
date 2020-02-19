@@ -6,8 +6,8 @@ module CubeTrainer
   class SolutionSet
     # Shorter solutions should be treated as better. Unsolved is equivalent to infinity length.
     def strictly_better_than?(other)
-      return false if !solved?
-      return true if !other.solved?
+      return false unless solved?
+      return true unless other.solved?
 
       length < other.length
     end

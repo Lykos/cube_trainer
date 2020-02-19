@@ -27,6 +27,7 @@ module CubeTrainer
         unless stickers.length == FACE_SYMBOLS.length
           raise ArgumentError, "Cubes must have #{FACE_SYMBOLS.length} sides."
         end
+
         unless stickers.all? { |p| p.length == cube_size && p.all? { |q| q.length == cube_size } }
           raise ArgumentError,
                 "All sides of a #{cube_size}x#{cube_size} must be #{cube_size}x#{cube_size}."
