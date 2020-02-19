@@ -175,7 +175,7 @@ module CubeTrainer
 
         @cache = cache || StubCache.new
         raise TypeError unless retries.is_a?(Integer)
-        raise ArgumentError if retries < 0
+        raise ArgumentError if retries.negative?
 
         @retries = retries
         raise TypeError unless checker.nil? || checker.respond_to?(:valid?)
