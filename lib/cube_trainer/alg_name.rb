@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module CubeTrainer
+  # Base class of names of algorithm cases, e.g. 'Ja' or 'U2 + Ja'.
   class AlgName
     SEPARATOR = ' + '
     OPENING_BRACKET = '('
@@ -50,6 +51,7 @@ module CubeTrainer
     end
   end
 
+  # Simple names of algorithm cases, e.g. 'Ja'.
   class SimpleAlgName < AlgName
     def initialize(name)
       raise ArgumentError if name.include?(SEPARATOR)
@@ -64,6 +66,7 @@ module CubeTrainer
     end
   end
 
+  # Combined names of algorithm cases, e.g. 'U2 + Ja'.
   class CombinedAlgName < AlgName
     def initialize(sub_names)
       @sub_names = sub_names
