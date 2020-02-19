@@ -6,6 +6,7 @@ require 'cube_trainer/core/cube_state'
 
 module CubeTrainer
   module Core
+    # Helper class to figure out information about the cancellation between two algs.
     module CancellationHelper
       def self.swap_to_end(algorithm, index)
         new_moves = algorithm.moves.dup
