@@ -93,20 +93,7 @@ module CubeTrainer
 
         slice_factor = decide_meaning(cube_size).slice_move? ? 2 : 1
         direction_factor = direction.double_move? ? 2 : 1
-        case metric
-        when :qtm
-          slice_factor * direction_factor
-        when :htm
-          slice_factor
-        when :stm
-          1
-        when :qstm
-          direction_factor
-        when :sqtm
-          direction_factor
-        else
-          raise
-        end
+        move_count_internal(metric, slice_factor, direction_factor)
       end
 
       def slice_move?
@@ -140,14 +127,7 @@ module CubeTrainer
       def join_with_cancellation(other, cube_size)
         raise ArgumentError if (puzzles & other.puzzles).empty?
 
-        this = decide_meaning(cube_size)
-        other = other.decide_meaning(cube_size)
-        method_symbol = "prepend_#{snake_case_class_name(this.class)}".to_sym
-        unless other.respond_to?(method_symbol)
-          raise NotImplementedError, "#{other.class}##{method_symbol} is not implemented"
-        end
-
-        maybe_alg = other.method(method_symbol).call(this, cube_size)
+        maybe_alg = prepend_to(other, cube_size)
         if maybe_alg
           Algorithm.new(maybe_alg.moves.select { |m| m.direction.non_zero? })
         else
@@ -165,6 +145,30 @@ module CubeTrainer
       # In terms of prepending, inner M slice moves are exactly like other slice moves.
       def prepend_inner_m_slice_move(other, cube_size)
         prepend_slice_move(other, cube_size)
+      end
+
+      private
+
+      def move_count_internal(metric, slice_factor, direction_factor)
+        case metric
+        when :qtm then slice_factor * direction_factor
+        when :htm then slice_factor
+        when :stm then 1
+        when :qstm then direction_factor
+        when :sqtm then direction_factor
+        else raise ArgumentError, "Invalid move metric #{metric.inspect}."
+        end
+      end
+
+      def prepend_to(other, cube_size)
+        this = decide_meaning(cube_size)
+        other = other.decide_meaning(cube_size)
+        method_symbol = "prepend_#{snake_case_class_name(this.class)}".to_sym
+        unless other.respond_to?(method_symbol)
+          raise NotImplementedError, "#{other.class}##{method_symbol} is not implemented"
+        end
+
+        other.method(method_symbol).call(this, cube_size)
       end
     end
 
@@ -209,7 +213,7 @@ module CubeTrainer
       end
 
       def canonical_direction
-        @axis_face.is_canonical_axis_face? ? @direction : @direction.inverse
+        @axis_face.canonical_axis_face? ? @direction : @direction.inverse
       end
 
       def can_swap?(other)
@@ -427,13 +431,13 @@ module CubeTrainer
         end
       end
 
+      # rubocop:disable Metrics/PerceivedComplexity
+      # rubocop:disable Metrics/CyclomaticComplexity
       def prepend_fat_move(other, cube_size)
         if same_fat_block?(other)
-          Algorithm.move(FatMove.new(@axis_face, @direction + other.direction, @width))
+          merge_with_same_fat_block(other)
         elsif opposite_fat_block?(other, cube_size)
-          rotation = Rotation.new(@axis_face, @direction)
-          move = FatMove.new(other.axis_face, other.direction + @direction, other.width)
-          Algorithm.new([move, rotation])
+          merge_with_opposite_fat_block(other)
         elsif leaves_inner_slice_move?(other)
           Algorithm.move(inner_slice_move)
         elsif other.leaves_inner_slice_move?(self)
@@ -444,6 +448,8 @@ module CubeTrainer
           Algorithm.move(other.inner_fat_mslice_move(cube_size))
         end
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/PerceivedComplexity
 
       def prepend_slice_move(other, cube_size)
         return nil unless same_axis?(other)
@@ -466,6 +472,16 @@ module CubeTrainer
       end
 
       protected
+
+      def merge_with_same_fat_block(other)
+        Algorithm.move(FatMove.new(@axis_face, @direction + other.direction, @width))
+      end
+
+      def merge_with_opposite_fat_block(other)
+        rotation = Rotation.new(@axis_face, @direction)
+        move = FatMove.new(other.axis_face, other.direction + @direction, other.width)
+        Algorithm.new([move, rotation])
+      end
 
       # The outermost slice move inside this fat move.
       def inner_slice_move

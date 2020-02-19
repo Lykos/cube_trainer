@@ -18,8 +18,11 @@ module CubeTrainer
         if face_symbols.any? { |c| c.class != Symbol || !FACE_SYMBOLS.include?(c) }
           raise ArgumentError, "Faces symbols contain invalid item: #{face_symbols.inspect}"
         end
+
         if face_symbols.length != clazz::FACES
-          raise ArgumentError, "Invalid number of face symbols #{face_symbols.length} for #{clazz}. Must be #{clazz::FACES}. Got face symbols: #{face_symbols.inspect}"
+          raise ArgumentError, "Invalid number of face symbols #{face_symbols.length} for " \
+                               "#{clazz}. Must be #{clazz::FACES}. Got face symbols: " \
+                               "#{face_symbols.inspect}"
         end
         if face_symbols.uniq != face_symbols
           raise ArgumentError, "Non-unique face symbols #{face_symbols} for #{clazz}."
@@ -32,9 +35,13 @@ module CubeTrainer
       attr_reader :piece_index, :face_symbols
 
       def self.generate_parts
-        parts = FACE_SYMBOLS.permutation(self::FACES).select { |p| valid?(p) }.map.with_index { |p, i| new(p, i) }
+        valid_face_symbol_combinations = FACE_SYMBOLS.permutation(self::FACES).select do |p|
+          valid?(p)
+        end
+        parts = valid_face_symbol_combinations.map.with_index { |p, i| new(p, i) }
         unless parts.length <= ALPHABET_SIZE
-          raise "Generated #{parts.length} parts for #{self}, but the alphabet size is only #{ALPHABET_SIZE}."
+          raise "Generated #{parts.length} parts for #{self}, but the alphabet size is only " \
+                "#{ALPHABET_SIZE}."
         end
 
         parts
@@ -54,8 +61,8 @@ module CubeTrainer
         for_face_symbols_internal(face_symbols)
       end
 
-      def self.for_index(i)
-        self::ELEMENTS[i]
+      def self.for_index(index)
+        self::ELEMENTS[index]
       end
 
       def <=>(other)
@@ -86,28 +93,25 @@ module CubeTrainer
       end
 
       # Rotate a piece such that the given face symbol is the first face symbol.
-      def rotate_face_symbol_up(c)
-        index = @face_symbols.index(c)
+      def rotate_face_symbol_up(face_symbol)
+        index = @face_symbols.index(face_symbol)
         raise "Part #{self} doesn't have face symbol #{c}." unless index
 
         rotate_by(index)
       end
 
-      def rotate_face_up(f)
-        rotate_face_symbol_up(f.face_symbol)
+      def rotate_face_up(face)
+        rotate_face_symbol_up(face.face_symbol)
       end
 
-      def rotate_by(n)
-        self.class.for_face_symbols(@face_symbols.rotate(n))
-      end
-
-      def has_face_symbol?(c)
-        @face_symbols.include?(c)
+      def rotate_by(number)
+        self.class.for_face_symbols(@face_symbols.rotate(number))
       end
 
       # Returns true if the pieces are equal modulo rotation.
       def turned_equals?(other)
-        @face_symbols.include?(other.face_symbols.first) && rotate_face_symbol_up(other.face_symbols.first) == other
+        @face_symbols.include?(other.face_symbols.first) &&
+          rotate_face_symbol_up(other.face_symbols.first) == other
       end
 
       def rotations
@@ -120,7 +124,7 @@ module CubeTrainer
 
       def self.parse(piece_description)
         face_symbols = piece_description.upcase.strip.split('').collect do |e|
-          FACE_SYMBOLS[FACE_NAMES.index(e)] || (raise "Invalid #{name} #{piece_description}: #{e} is not a valid face name.")
+          FACE_SYMBOLS[FACE_NAMES.index(e)]
         end
         for_face_symbols(face_symbols)
       end
@@ -167,10 +171,12 @@ module CubeTrainer
         axis_priority == other.axis_priority
       end
 
-      # Returns the index of the coordinate that is used to determine how close a sticker on `on_face` is to `to_face`.
+      # Returns the index of the coordinate that is used to determine how close a sticker on
+      # `on_face` is to `to_face`.
       def coordinate_index_close_to(to_face)
         if same_axis?(to_face)
-          raise ArgumentError, "Cannot get the coordinate index close to #{to_face.inspect} on #{inspect} because they are not neighbors."
+          raise ArgumentError, "Cannot get the coordinate index close to #{to_face.inspect} " \
+                               "on #{inspect} because they are not neighbors."
         end
 
         to_priority = to_face.axis_priority
@@ -187,7 +193,7 @@ module CubeTrainer
         @axis_priority ||= [@piece_index, CubeConstants::FACE_SYMBOLS.length - 1 - @piece_index].min
       end
 
-      def is_canonical_axis_face?
+      def canonical_axis_face?
         close_to_smaller_indices?
       end
 
@@ -213,14 +219,10 @@ module CubeTrainer
       # Neighbor faces in clockwise order.
       def neighbors
         @neighbors ||= begin
-                         partial_neighbors = self.class::ELEMENTS.select { |e| !same_axis?(e) && e.is_canonical_axis_face? }
-                         ordered_partial_neighbors = if Corner.valid_between_faces?([self] + partial_neighbors)
-                                                       partial_neighbors
-                                                     elsif Corner.valid_between_faces?([self] + partial_neighbors.reverse)
-                                                       partial_neighbors.reverse
-                                                     else
-                                                       raise "Couldn't find a proper order for the neighbor faces #{partial_neighbors.inspect} of #{inspect}."
-                                                     end
+                         partial_neighbors = self.class::ELEMENTS.select do |e|
+                           !same_axis?(e) && e.canonical_axis_face?
+                         end
+                         ordered_partial_neighbors = sort_partial_neighbors(partial_neighbors)
                          ordered_partial_neighbors + ordered_partial_neighbors.collect(&:opposite)
                        end
       end
@@ -238,29 +240,49 @@ module CubeTrainer
           Algorithm.empty
         else
           # There can be multiple solutions.
-          axis_face = self.class::ELEMENTS.find { |e| !same_axis?(e) && !other.same_axis?(e) && e.is_canonical_axis_face? }
-          direction = if other == opposite
-                        CubeDirection::DOUBLE
-                      else
-                        if close_to_smaller_indices? ^ other.close_to_smaller_indices? ^ (axis_priority > other.axis_priority)
-                          CubeDirection::FORWARD
-                        else
-                          CubeDirection::BACKWARD
-                        end
-                      end
-          Algorithm.new([Rotation.new(axis_face, direction)])
+          axis_face = self.class::ELEMENTS.find do |e|
+            !same_axis?(e) && !other.same_axis?(e) && e.canonical_axis_face?
+          end
+          direction = rotation_direction_to(other)
+          Algorithm.move(Rotation.new(axis_face, direction))
         end
       end
+
+      ELEMENTS = generate_parts
+      FACE_SYMBOLS.map { |s| const_set(s, for_face_symbol(s)) }
 
       def clockwise_corners
         neighbors.zip(neighbors.rotate).map { |a, b| Corner.between_faces([self, a, b]) }
       end
 
-      ELEMENTS = generate_parts
-      FACE_SYMBOLS.map { |s| const_set(s, for_face_symbol(s)) }
+      private
+
+      def sort_partial_neighbors(partial_neighbors)
+        if Corner.valid_between_faces?([self] + partial_neighbors)
+          partial_neighbors
+        elsif Corner.valid_between_faces?([self] + partial_neighbors.reverse)
+          partial_neighbors.reverse
+        else
+          raise "Couldn't find a proper order for the neighbor faces " \
+                "#{partial_neighbors.inspect} of #{inspect}."
+        end
+      end
+
+      def rotation_direction_to(other)
+        if other == opposite
+          CubeDirection::DOUBLE
+        elsif close_to_smaller_indices? ^
+              other.close_to_smaller_indices? ^
+              (axis_priority > other.axis_priority)
+          CubeDirection::FORWARD
+        else
+          CubeDirection::BACKWARD
+        end
+      end
     end
 
-    # Base class of moveable centers. Represents one moveable center or the position of one moveable center on the cube.
+    # Base class of moveable centers. Represents one moveable center or the position of one moveable
+    # center on the cube.
     class MoveableCenter < Part
       FACES = 1
 
@@ -275,7 +297,8 @@ module CubeTrainer
 
       def self.for_face_symbols(face_symbols)
         unless face_symbols.length == self::CORRESPONDING_PART_CLASS::FACES
-          raise ArgumentError, "Need #{self::CORRESPONDING_PART_CLASS::FACES} face_symbols for a #{self.class}, have #{face_symbols.inspect}."
+          raise ArgumentError, "Need #{self::CORRESPONDING_PART_CLASS::FACES} face_symbols for a " \
+                               "#{self.class}, have #{face_symbols.inspect}."
         end
 
         corresponding_part = self::CORRESPONDING_PART_CLASS.for_face_symbols(face_symbols)
@@ -292,7 +315,8 @@ module CubeTrainer
       end
 
       def eql?(other)
-        self.class.equal?(other.class) && face_symbol == other.face_symbol && @corresponding_part == other.corresponding_part
+        self.class.equal?(other.class) && face_symbol == other.face_symbol &&
+          @corresponding_part == other.corresponding_part
       end
 
       alias == eql?
@@ -303,7 +327,7 @@ module CubeTrainer
         self.class.to_s + '(' + face_symbol.to_s + ', ' + @corresponding_part.inspect + ')'
       end
 
-      def rotate_by(_n)
+      def rotate_by(_number)
         self
       end
 
@@ -379,19 +403,31 @@ module CubeTrainer
         raise unless face_symbols.length == FACES || face_symbols.length == FACES + 1
 
         if face_symbols.length == 3
-          valid = Corner.valid?(face_symbols)
-          reordered_face_symbols = face_symbols.dup
-          reordered_face_symbols[0], reordered_face_symbols[1] = reordered_face_symbols[1], reordered_face_symbols[0]
-          reordered_valid = Corner.valid?(reordered_face_symbols)
-          if valid == reordered_valid
-            raise "Couldn't determine chirality for #{face_symbols.inspect} which is needed to parse a wing."
-          end
-
-          valid ? for_face_symbols(face_symbols[0..1]) : for_face_symbols_internal(reordered_face_symbols[0..1])
+          for_corner_face_symbols(face_symbols)
         else
           for_face_symbols_internal(face_symbols)
         end
       end
+
+      def self.for_corner_face_symbols(face_symbols)
+        valid = Corner.valid?(face_symbols)
+        reordered_face_symbols = face_symbols.dup
+        reordered_face_symbols[0], reordered_face_symbols[1] =
+          reordered_face_symbols[1], reordered_face_symbols[0]
+        reordered_valid = Corner.valid?(reordered_face_symbols)
+        if valid == reordered_valid
+          raise "Couldn't determine chirality for #{face_symbols.inspect} which " \
+                'is needed to parse a wing.'
+        end
+
+        if valid
+          for_face_symbols(face_symbols[0..1])
+        else
+          for_face_symbols_internal(reordered_face_symbols[0..1])
+        end
+      end
+
+      private_class_method :for_corner_face_symbols
 
       def corresponding_part
         @corresponding_part ||= begin
@@ -406,7 +442,7 @@ module CubeTrainer
         [self]
       end
 
-      def rotate_by(_n)
+      def rotate_by(_number)
         self
       end
 
@@ -462,9 +498,7 @@ module CubeTrainer
       # position of the letter.
       def rotate_other_face_symbol_up(face_symbol)
         index = @face_symbols.index(face_symbol)
-        unless index
-          raise ArgumentError, "Part #{self} doesn't have face symbol #{face_symbol}."
-        end
+        raise ArgumentError, "Part #{self} doesn't have face symbol #{face_symbol}." unless index
 
         if index.zero?
           raise ArgumentError, "Part #{self} already has face symbol #{face_symbol} up, so " \
@@ -482,7 +516,7 @@ module CubeTrainer
         face_symbols.combination(2).all? { |e| Edge.valid?(e) } && valid_chirality?(face_symbols)
       end
 
-      def has_common_edge_with?(other)
+      def common_edge_with?(other)
         common_faces(other) == 2
       end
 

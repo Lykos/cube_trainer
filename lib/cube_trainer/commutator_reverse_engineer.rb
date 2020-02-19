@@ -19,37 +19,45 @@ module CubeTrainer
       @part_type = part_type
       @buffer = buffer
       @letter_scheme = letter_scheme
+      @solved_positions = {}
+      @state = initial_cube_state(part_type, cube_size)
+      @buffer_coordinate = solved_position(@buffer, cube_size)
+    end
+
+    def initial_cube_state(part_type, cube_size)
       # We don't care much about any other pieces, so we'll just use nil
       # everywhere.
-      stickers = Core::Face::ELEMENTS.map do |_face_symbol|
-        (0...cube_size).map do |_x|
-          (0...cube_size).map do |_y|
+      cube_state = Core::CubeState.from_stickers(cube_size, nil_stickers(cube_size))
+      # We write on every sticker where it was in the initial state.
+      # That way we can easily reverse engineer what a commutator does.
+      part_type::ELEMENTS.each do |part|
+        cube_state[solved_position(part, cube_size)] = part
+      end
+      cube_state
+    end
+
+    def nil_stickers(cube_size)
+      Core::Face::ELEMENTS.map do
+        (0...cube_size).map do
+          (0...cube_size).map do
             nil
           end
         end
       end
-      @state = Core::CubeState.from_stickers(cube_size, stickers)
-      @solved_positions = {}
-      @buffer_coordinate = solved_position(@buffer)
-      # We write on every sticker where it was in the initial state.
-      # That way we can easily reverse engineer what a commutator does.
-      part_type::ELEMENTS.each do |part|
-        @state[solved_position(part)] = part
-      end
     end
 
-    def solved_position(part)
-      @solved_positions[part] ||= Core::Coordinate.solved_position(part, @state.n, 0)
+    def solved_position(part, cube_size)
+      @solved_positions[part] ||= Core::Coordinate.solved_position(part, cube_size, 0)
     end
 
     def find_stuff
       part0 = @state[@buffer_coordinate]
       return nil if part0 == @buffer
 
-      part1 = @state[solved_position(part0)]
+      part1 = @state[solved_position(part0, @state.n)]
       return nil if part1 == @buffer
 
-      part2 = @state[solved_position(part1)]
+      part2 = @state[solved_position(part1, @state.n)]
       LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) }) if part2 == @buffer
     end
 

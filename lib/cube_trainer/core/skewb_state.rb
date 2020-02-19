@@ -104,7 +104,7 @@ module CubeTrainer
           Corner::ELEMENTS.each do |c1|
             Corner::ELEMENTS.each do |c2|
               # Take corner pairs that have a common edge.
-              next unless c1.has_common_edge_with?(c2)
+              next unless c1.common_edge_with?(c2)
 
               check_parts = []
               c1.rotations.each do |c1_rot|

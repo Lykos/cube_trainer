@@ -4,7 +4,6 @@ require 'cube_trainer/wca/file_parser'
 
 module CubeTrainer
   module WCA
-    # rubocop:disable Metrics/ModuleLength
     # Contains all the parsers for the relevant files of a WCA export.
     module FileParsers
       # Parsers that we apply greedily.
@@ -132,6 +131,5 @@ module CubeTrainer
                                                   scramble: Column::ALGORITHM
                                                 ))
     end
-    # rubocop:enable Metrics/ModuleLength
   end
 end

@@ -56,7 +56,8 @@ module CubeTrainer
       attr_reader :first_part, :second_part
 
       def eql?(other)
-        self.class.equal?(other.class) && @first_part == other.first_part && @second_part == other.second_part
+        self.class.equal?(other.class) && @first_part == other.first_part &&
+          @second_part == other.second_part
       end
 
       alias == eql?
@@ -93,7 +94,8 @@ module CubeTrainer
       attr_reader :setup, :inner_commutator
 
       def eql?(other)
-        self.class.equal?(other.class) && @setup == other.setup && @inner_commutator == other.inner_commutator
+        self.class.equal?(other.class) && @setup == other.setup &&
+          @inner_commutator == other.inner_commutator
       end
 
       alias == eql?

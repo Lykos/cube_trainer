@@ -12,8 +12,8 @@ module CubeTrainer
         cube_size - 1
       end
 
-      def self.invert_coordinate(x, cube_size)
-        highest_coordinate(cube_size) - x
+      def self.invert_coordinate(index, cube_size)
+        highest_coordinate(cube_size) - index
       end
 
       def self.coordinate_range(cube_size)
@@ -41,10 +41,10 @@ module CubeTrainer
         cube_size / 2 - 1
       end
 
-      def self.canonicalize(x, cube_size)
-        raise ArgumentError unless x.is_a?(Integer) && -cube_size <= x && x < cube_size
+      def self.canonicalize(index, cube_size)
+        raise ArgumentError unless index.is_a?(Integer) && -cube_size <= index && index < cube_size
 
-        x >= 0 ? x : cube_size + x
+        index >= 0 ? index : cube_size + index
       end
 
       def self.from_face_distances(face, cube_size, face_distances)
@@ -53,7 +53,11 @@ module CubeTrainer
         coordinates = [nil, nil]
         face_distances.each do |neighbor, distance|
           index = face.coordinate_index_close_to(neighbor)
-          coordinate = neighbor.close_to_smaller_indices? ? distance : invert_coordinate(distance, cube_size)
+          coordinate = if neighbor.close_to_smaller_indices?
+                         distance
+                       else
+                         invert_coordinate(distance, cube_size)
+                       end
           raise ArgumentError if coordinates[index]
 
           coordinates[index] = coordinate
@@ -80,28 +84,35 @@ module CubeTrainer
         raise unless part.class::ELEMENTS.length == 24
         raise unless incarnation_index >= 0 && incarnation_index < part.num_incarnations(cube_size)
 
-        # This is a coordinate on the same face and belonging to an equivalent part. But it might not be the right one.
-        base_coordinate = Coordinate.from_indices(part.solved_face, cube_size, *part.base_index_on_face(cube_size, incarnation_index))
-        base_coordinate.coordinates; base_coordinate.cube_size
+        # This is a coordinate on the same face and belonging to an equivalent part.
+        # But it might not be the right one.
+        base_coordinate = Coordinate.from_indices(
+          part.solved_face, cube_size, *part.base_index_on_face(cube_size, incarnation_index)
+        )
         other_face_symbols = part.corresponding_part.face_symbols[1..-1]
         match_coordinate_internal(base_coordinate, other_face_symbols)
       end
 
       # The coordinate of the solved position of all stickers of this part.
+      # rubocop:disable Metrics/AbcSize
       def self.solved_positions(part, cube_size, incarnation_index)
         solved_coordinate = solved_position(part, cube_size, incarnation_index)
         other_coordinates = part.face_symbols[1..-1].map.with_index do |f, i|
           face = Face.for_face_symbol(f)
-          # The reverse is important for edge like parts. We are not in the same position as usual solved pieces would be.
-          # For other types of pieces, it doesn't make a difference as the base index will just be a rotation of the original one, but we will anyway look at all rotations later.
+          # The reverse is important for edge like parts. We are not in the same position as usual
+          # solved pieces would be.
+          # For other types of pieces, it doesn't make a difference as the base index will just be a
+          # rotation of the original one, but we will anyway look at all rotations later.
           base_indices = part.base_index_on_other_face(face, cube_size, incarnation_index).reverse
           base_coordinate = Coordinate.from_indices(face, cube_size, *base_indices)
-          base_coordinate.coordinates; base_coordinate.cube_size
-          other_face_symbols = [part.face_symbols[0]] + part.corresponding_part.face_symbols[1...i + 1] + part.corresponding_part.face_symbols[i + 2..-1]
+          other_face_symbols = [part.face_symbols[0]] +
+                               part.corresponding_part.face_symbols[1...i + 1] +
+                               part.corresponding_part.face_symbols[i + 2..-1]
           match_coordinate_internal(base_coordinate, other_face_symbols)
         end
         [solved_coordinate] + other_coordinates
       end
+      # rubocop:enable Metrics/AbcSize
 
       def self.center(face, cube_size)
         m = middle(cube_size)
@@ -116,13 +127,13 @@ module CubeTrainer
         end
       end
 
-      def self.from_indices(face, cube_size, x, y)
+      def self.from_indices(face, cube_size, x_index, y_index)
         raise TypeError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
         raise TypeError unless cube_size.is_a?(Integer)
         raise ArgumentError unless cube_size.positive?
 
-        x = Coordinate.canonicalize(x, cube_size)
-        y = Coordinate.canonicalize(y, cube_size)
+        x = Coordinate.canonicalize(x_index, cube_size)
+        y = Coordinate.canonicalize(y_index, cube_size)
         native = Native::CubeCoordinate.new(
           cube_size,
           face.face_symbol,
@@ -184,7 +195,8 @@ module CubeTrainer
         jump_coordinate_index = face.coordinate_index_close_to(to_face)
         jump_coordinate = coordinates[jump_coordinate_index]
         (jump_coordinate.zero? && to_face.close_to_smaller_indices?) ||
-          (jump_coordinate == Coordinate.highest_coordinate(cube_size) && !to_face.close_to_smaller_indices?)
+          (jump_coordinate == Coordinate.highest_coordinate(cube_size) &&
+           !to_face.close_to_smaller_indices?)
       end
 
       def jump_to_neighbor(to_face)
@@ -212,27 +224,29 @@ module CubeTrainer
         face.neighbors.select do |neighbor|
           coordinate = coordinates[face.coordinate_index_close_to(neighbor)]
           if neighbor.close_to_smaller_indices?
-            is_before_middle?(coordinate)
+            before_middle?(coordinate)
           else
-            is_after_middle?(coordinate)
+            after_middle?(coordinate)
           end
         end
       end
 
-      def is_after_middle?(x)
-        Coordinate.canonicalize(x, cube_size) > Coordinate.middle_or_before(cube_size)
+      def after_middle?(index)
+        Coordinate.canonicalize(index, cube_size) > Coordinate.middle_or_before(cube_size)
       end
 
-      def is_before_middle?(x)
-        Coordinate.canonicalize(x, cube_size) <= Coordinate.last_before_middle(cube_size)
+      def before_middle?(index)
+        Coordinate.canonicalize(index, cube_size) <= Coordinate.last_before_middle(cube_size)
       end
 
-      # On a nxn grid with integer coordinates between 0 and n - 1, iterates between the 4 points that point (x, y) hits if you rotate by 90 degrees.
+      # On a nxn grid with integer coordinates between 0 and n - 1, iterates between the 4 points
+      # that point (x, y) hits if you rotate by 90 degrees.
       def rotate
         jump_to_coordinates([y, Coordinate.invert_coordinate(x, cube_size)])
       end
 
-      # On a nxn grid with integer coordinates between 0 and n - 1, give the 4 points that point (x, y) hits if you do a full rotation of the face in clockwise order.
+      # On a nxn grid with integer coordinates between 0 and n - 1, give the 4 points that point
+      # (x, y) hits if you do a full rotation of the face in clockwise order.
       def rotations
         rots = []
         current = self

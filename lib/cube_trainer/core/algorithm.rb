@@ -30,8 +30,6 @@ module CubeTrainer
       end
 
       attr_reader :moves
-      attr_writer :inverse
-      protected :inverse=
 
       include ReversibleApplyable
       include Comparable
@@ -85,14 +83,6 @@ module CubeTrainer
         [length, @moves] <=> [other.length, other.moves]
       end
 
-      def has_prefix?(other)
-        length >= other.length && @moves[0...other.length].zip(other.moves).all? { |m, n| m == n }
-      end
-
-      def has_suffix?(other)
-        length >= other.length && @moves[length - other.length..-1].zip(other.moves).all? { |m, n| m == n }
-      end
-
       # Returns the number of moves that cancel if you concat the algorithm to the right of self.
       # Note that the cube size is important to know which fat moves cancel
       def cancelled(cube_size)
@@ -107,10 +97,13 @@ module CubeTrainer
         cancelled = cancelled(cube_size)
         other_cancelled = other.cancelled(cube_size)
         together_cancelled = (self + other).cancelled(cube_size)
-        cancelled.move_count(cube_size, metric) + other_cancelled.move_count(cube_size, metric) - together_cancelled.move_count(cube_size, metric)
+        cancelled.move_count(cube_size, metric) +
+          other_cancelled.move_count(cube_size, metric) -
+          together_cancelled.move_count(cube_size, metric)
       end
 
-      # Rotates the algorithm, e.g. applying "y" to "R U" becomes "F U". Applying rotation r to alg a is equivalent to r' a r.
+      # Rotates the algorithm, e.g. applying "y" to "R U" becomes "F U".
+      # Applying rotation r to alg a is equivalent to r' a r.
       # Note that this is not implemented for all moves.
       def rotate_by(rotation)
         raise TypeError unless rotation.is_a?(Rotation)
@@ -119,14 +112,16 @@ module CubeTrainer
         Algorithm.new(@moves.map { |m| m.rotate_by(rotation) })
       end
 
-      # Mirrors the algorithm and uses the given face as the normal of the mirroring. E.g. mirroring "R U F" with "R" as the normal face, we get "L U' F'".
+      # Mirrors the algorithm and uses the given face as the normal of the mirroring.
+      # E.g. mirroring "R U F" with "R" as the normal face, we get "L U' F'".
       def mirror(normal_face)
         raise TypeError unless normal_face.is_a?(Face)
 
         Algorithm.new(@moves.map { |m| m.mirror(normal_face) })
       end
 
-      # Cube size is needed to decide whether 'u' is a slice move (like on bigger cubes) or a fat move (like on 3x3).
+      # Cube size is needed to decide whether 'u' is a slice move (like on bigger cubes) or a
+      # fat move (like on 3x3).
       def move_count(cube_size, metric = :htm)
         raise TypeError unless cube_size.is_a?(Integer)
 
@@ -136,17 +131,25 @@ module CubeTrainer
         @moves.map { |m| m.move_count(cube_size, metric) }.reduce(:+)
       end
 
-      def *(factor)
-        Algorithm.new(@moves * factor)
+      def *(other)
+        raise TypeError unless other.is_a?(Integer)
+        raise ArgumentError if other.negative?
+
+        Algorithm.new(@moves * other)
       end
 
       def compiled_for_skewb
         @compiled_for_skewb ||= CompiledSkewbAlgorithm.for_moves(@moves)
       end
 
-      def compiled_for_cube(n)
-        (@compiled_for_cube ||= {})[n] ||= CompiledCubeAlgorithm.for_moves(n, @moves)
+      def compiled_for_cube(cube_size)
+        (@compiled_for_cube ||= {})[cube_size] ||=
+          CompiledCubeAlgorithm.for_moves(cube_size, @moves)
       end
+
+      protected
+
+      attr_writer :inverse
     end
   end
 end

@@ -39,37 +39,37 @@ describe Core::Coordinate do
     end
 
     it 'should check whether something is before the middle' do
-      expect(coordinate.is_before_middle?(-7)).to be true
-      expect(coordinate.is_before_middle?(-6)).to be true
-      expect(coordinate.is_before_middle?(-5)).to be true
-      expect(coordinate.is_before_middle?(-4)).to be false
-      expect(coordinate.is_before_middle?(-3)).to be false
-      expect(coordinate.is_before_middle?(-2)).to be false
-      expect(coordinate.is_before_middle?(-1)).to be false
-      expect(coordinate.is_before_middle?(0)).to be true
-      expect(coordinate.is_before_middle?(1)).to be true
-      expect(coordinate.is_before_middle?(2)).to be true
-      expect(coordinate.is_before_middle?(3)).to be false
-      expect(coordinate.is_before_middle?(4)).to be false
-      expect(coordinate.is_before_middle?(5)).to be false
-      expect(coordinate.is_before_middle?(6)).to be false
+      expect(coordinate.before_middle?(-7)).to be true
+      expect(coordinate.before_middle?(-6)).to be true
+      expect(coordinate.before_middle?(-5)).to be true
+      expect(coordinate.before_middle?(-4)).to be false
+      expect(coordinate.before_middle?(-3)).to be false
+      expect(coordinate.before_middle?(-2)).to be false
+      expect(coordinate.before_middle?(-1)).to be false
+      expect(coordinate.before_middle?(0)).to be true
+      expect(coordinate.before_middle?(1)).to be true
+      expect(coordinate.before_middle?(2)).to be true
+      expect(coordinate.before_middle?(3)).to be false
+      expect(coordinate.before_middle?(4)).to be false
+      expect(coordinate.before_middle?(5)).to be false
+      expect(coordinate.before_middle?(6)).to be false
     end
 
     it 'should check whether something is after the middle' do
-      expect(coordinate.is_after_middle?(-7)).to be false
-      expect(coordinate.is_after_middle?(-6)).to be false
-      expect(coordinate.is_after_middle?(-5)).to be false
-      expect(coordinate.is_after_middle?(-4)).to be false
-      expect(coordinate.is_after_middle?(-3)).to be true
-      expect(coordinate.is_after_middle?(-2)).to be true
-      expect(coordinate.is_after_middle?(-1)).to be true
-      expect(coordinate.is_after_middle?(0)).to be false
-      expect(coordinate.is_after_middle?(1)).to be false
-      expect(coordinate.is_after_middle?(2)).to be false
-      expect(coordinate.is_after_middle?(3)).to be false
-      expect(coordinate.is_after_middle?(4)).to be true
-      expect(coordinate.is_after_middle?(5)).to be true
-      expect(coordinate.is_after_middle?(6)).to be true
+      expect(coordinate.after_middle?(-7)).to be false
+      expect(coordinate.after_middle?(-6)).to be false
+      expect(coordinate.after_middle?(-5)).to be false
+      expect(coordinate.after_middle?(-4)).to be false
+      expect(coordinate.after_middle?(-3)).to be true
+      expect(coordinate.after_middle?(-2)).to be true
+      expect(coordinate.after_middle?(-1)).to be true
+      expect(coordinate.after_middle?(0)).to be false
+      expect(coordinate.after_middle?(1)).to be false
+      expect(coordinate.after_middle?(2)).to be false
+      expect(coordinate.after_middle?(3)).to be false
+      expect(coordinate.after_middle?(4)).to be true
+      expect(coordinate.after_middle?(5)).to be true
+      expect(coordinate.after_middle?(6)).to be true
     end
 
     it 'should make coordinates positive correctly' do
@@ -167,33 +167,33 @@ describe Core::Coordinate do
     end
 
     it 'should check whether something is before the middle' do
-      expect(coordinate.is_before_middle?(-6)).to be true
-      expect(coordinate.is_before_middle?(-5)).to be true
-      expect(coordinate.is_before_middle?(-4)).to be true
-      expect(coordinate.is_before_middle?(-3)).to be false
-      expect(coordinate.is_before_middle?(-2)).to be false
-      expect(coordinate.is_before_middle?(-1)).to be false
-      expect(coordinate.is_before_middle?(0)).to be true
-      expect(coordinate.is_before_middle?(1)).to be true
-      expect(coordinate.is_before_middle?(2)).to be true
-      expect(coordinate.is_before_middle?(3)).to be false
-      expect(coordinate.is_before_middle?(4)).to be false
-      expect(coordinate.is_before_middle?(5)).to be false
+      expect(coordinate.before_middle?(-6)).to be true
+      expect(coordinate.before_middle?(-5)).to be true
+      expect(coordinate.before_middle?(-4)).to be true
+      expect(coordinate.before_middle?(-3)).to be false
+      expect(coordinate.before_middle?(-2)).to be false
+      expect(coordinate.before_middle?(-1)).to be false
+      expect(coordinate.before_middle?(0)).to be true
+      expect(coordinate.before_middle?(1)).to be true
+      expect(coordinate.before_middle?(2)).to be true
+      expect(coordinate.before_middle?(3)).to be false
+      expect(coordinate.before_middle?(4)).to be false
+      expect(coordinate.before_middle?(5)).to be false
     end
 
     it 'should check whether something is after the middle' do
-      expect(coordinate.is_after_middle?(-6)).to be false
-      expect(coordinate.is_after_middle?(-5)).to be false
-      expect(coordinate.is_after_middle?(-4)).to be false
-      expect(coordinate.is_after_middle?(-3)).to be true
-      expect(coordinate.is_after_middle?(-2)).to be true
-      expect(coordinate.is_after_middle?(-1)).to be true
-      expect(coordinate.is_after_middle?(0)).to be false
-      expect(coordinate.is_after_middle?(1)).to be false
-      expect(coordinate.is_after_middle?(2)).to be false
-      expect(coordinate.is_after_middle?(3)).to be true
-      expect(coordinate.is_after_middle?(4)).to be true
-      expect(coordinate.is_after_middle?(5)).to be true
+      expect(coordinate.after_middle?(-6)).to be false
+      expect(coordinate.after_middle?(-5)).to be false
+      expect(coordinate.after_middle?(-4)).to be false
+      expect(coordinate.after_middle?(-3)).to be true
+      expect(coordinate.after_middle?(-2)).to be true
+      expect(coordinate.after_middle?(-1)).to be true
+      expect(coordinate.after_middle?(0)).to be false
+      expect(coordinate.after_middle?(1)).to be false
+      expect(coordinate.after_middle?(2)).to be false
+      expect(coordinate.after_middle?(3)).to be true
+      expect(coordinate.after_middle?(4)).to be true
+      expect(coordinate.after_middle?(5)).to be true
     end
 
     it 'should make coordinates positive correctly' do

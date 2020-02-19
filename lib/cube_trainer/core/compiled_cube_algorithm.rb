@@ -6,33 +6,51 @@ module CubeTrainer
   module Core
     # Wrapper of the native C implementation of a compiled algorithm for a particular cube size.
     class CompiledCubeAlgorithm < CompiledAlgorithm
+      def self.transform_rotation(move, cube_size)
+        slice_moves = 0.upto(cube_size - 1).map do |i|
+          [:slice, move.axis_face.face_symbol, move.direction.value, i]
+        end
+        [
+          [:face, move.axis_face.face_symbol, move.direction.value],
+          [:face, move.axis_face.opposite.face_symbol, move.direction.inverse.value]
+        ] + slice_moves
+      end
+
+      def self.transform_fat_mslice_move(move, cube_size)
+        1.upto(cube_size - 2).map do |i|
+          [:slice, move.axis_face.face_symbol, move.direction.value, i]
+        end
+      end
+
+      def self.transform_slice_move(move)
+        [
+          [:slice, move.axis_face.face_symbol, move.direction.value, move.slice_index]
+        ]
+      end
+
+      def self.transform_fat_move(move)
+        slice_moves = 0.upto(move.width - 1).map do |i|
+          [:slice, move.axis_face.face_symbol, move.direction.value, i]
+        end
+        [
+          [:face, move.axis_face.face_symbol, move.direction.value]
+        ] + slice_moves
+      end
+
+      private_class_method :transform_rotation, :transform_fat_mslice_move, :transform_slice_move,
+                           :transform_fat_move
+
       def self.transform_move(move, cube_size)
         decided_move = move.decide_meaning(cube_size)
-        if decided_move.is_a?(Rotation)
-          slice_moves = 0.upto(cube_size - 1).map do |i|
-            [:slice, decided_move.axis_face.face_symbol, decided_move.direction.value, i]
-          end
-          [
-            [:face, decided_move.axis_face.face_symbol, decided_move.direction.value],
-            [:face, decided_move.axis_face.opposite.face_symbol, decided_move.direction.inverse.value]
-          ] + slice_moves
-        elsif decided_move.is_a?(FatMSliceMove)
-          1.upto(cube_size - 2).map do |i|
-            [:slice, decided_move.axis_face.face_symbol, decided_move.direction.value, i]
-          end
-        elsif decided_move.is_a?(SliceMove) # Note that this also covers InnerMSliceMove
-          [
-            [:slice, decided_move.axis_face.face_symbol, decided_move.direction.value, decided_move.slice_index]
-          ]
-        elsif decided_move.is_a?(FatMove)
-          slice_moves = 0.upto(decided_move.width - 1).map do |i|
-            [:slice, decided_move.axis_face.face_symbol, decided_move.direction.value, i]
-          end
-          [
-            [:face, decided_move.axis_face.face_symbol, decided_move.direction.value]
-          ] + slice_moves
+        case decided_move
+        when Rotation then transform_rotation(decided_move, cube_size)
+        when FatMSliceMove then transform_fat_mslice_move(decided_move, cube_size)
+        # Note that this also covers InnerMSliceMove
+        when SliceMove then transform_slice_move(decided_move)
+        when FatMove then transform_fat_move(decided_move)
         else
-          raise TypeError, "Invalid move type #{move.class} that becomes #{decided_move.class} for cube size #{cube_size}."
+          raise TypeError, "Invalid move type #{move.class} that becomes #{decided_move.class} "\
+                           "for cube size #{cube_size}."
         end
       end
 

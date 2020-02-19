@@ -7,9 +7,13 @@ module CubeTrainer
     # Wrapper of the native C implementation of a compiled algorithm for a particular cube size.
     class CompiledSkewbAlgorithm < CompiledAlgorithm
       def self.transform_move(move)
-        if move.is_a?(Rotation) then [:rotation, move.axis_face.face_symbol, move.direction.value]
-        elsif move.is_a?(SkewbMove) then [:move, move.axis_corner.face_symbols, move.direction.value]
-        else raise TypeError
+        case move
+        when Rotation
+          [:rotation, move.axis_face.face_symbol, move.direction.value]
+        when SkewbMove
+          [:move, move.axis_corner.face_symbols, move.direction.value]
+        else
+          raise TypeError
         end
       end
 

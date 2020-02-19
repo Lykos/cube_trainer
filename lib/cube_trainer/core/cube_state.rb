@@ -33,7 +33,12 @@ module CubeTrainer
                 "All sides of a #{cube_size}x#{cube_size} must be #{cube_size}x#{cube_size}."
         end
 
-        stickers_hash = FACE_SYMBOLS.zip(stickers).map do |face_symbol, face_stickers|
+        stickers_hash = create_stickers_hash(stickers)
+        new(Native::CubeState.new(cube_size, stickers_hash))
+      end
+
+      def self.create_stickers_hash(stickers)
+        FACE_SYMBOLS.zip(stickers).map do |face_symbol, face_stickers|
           face = Face.for_face_symbol(face_symbol)
           face_hash = {
             stickers: face_stickers,
@@ -45,7 +50,6 @@ module CubeTrainer
           }
           [face_symbol, face_hash]
         end.to_h
-        new(Native::CubeState.new(cube_size, stickers_hash))
       end
 
       def initialize(native)

@@ -6,11 +6,12 @@ require 'cube_trainer/core/parser'
 RSpec::Matchers.define :cancel_moves do |cube_size, metric, expected|
   match do |actual|
     raise ArgumentError unless actual.length == 2
+
     actual[0].cancellations(actual[1], cube_size, metric) == expected &&
       actual[1].inverse.cancellations(actual[0].inverse, cube_size, metric) == expected
   end
 
-  failure_message_for_should do |actual|
+  failure_message do |actual|
     "expected that #{actual[0]} + #{actual[1]} would cancel #{expected} moves #{metric} on " \
     "#{cube_size}x#{cube_size} cubes. Got #{actual[0].cancellations(actual[1], cube_size, metric)}"
   end
@@ -149,10 +150,10 @@ describe Core::Algorithm do
   end
 
   it 'should compute cancellations of same fat block fat moves correctly' do
-    expect([parse_algorithm('Rw'), parse_algorithm("Rw")]).to cancel_moves(5, :stm, 1)
-    expect([parse_algorithm('3Rw'), parse_algorithm("3Rw")]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('Rw'), parse_algorithm('Rw')]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('3Rw'), parse_algorithm('3Rw')]).to cancel_moves(5, :stm, 1)
     expect([parse_algorithm('3Rw'), parse_algorithm("3Rw'")]).to cancel_moves(5, :stm, 2)
-    expect([parse_algorithm('3Rw'), parse_algorithm("3Rw2")]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('3Rw'), parse_algorithm('3Rw2')]).to cancel_moves(5, :stm, 1)
   end
 
   it 'should compute cancellations of one slice away fat block fat moves correctly' do
@@ -161,8 +162,8 @@ describe Core::Algorithm do
   end
 
   it 'should compute cancellations of non-fitting one slice away fat block fat moves correctly' do
-    expect([parse_algorithm('Rw'), parse_algorithm("R")]).to cancel_moves(5, :stm, 0)
-    expect([parse_algorithm('Rw'), parse_algorithm("3Rw2")]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('Rw'), parse_algorithm('R')]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('Rw'), parse_algorithm('3Rw2')]).to cancel_moves(5, :stm, 0)
   end
 
   it 'should compute cancellations of one fat M-slice away fat block fat moves correctly' do
@@ -170,23 +171,23 @@ describe Core::Algorithm do
   end
 
   it 'should compute cancellations of non-fitting one fat M-slice away fat block fat moves correctly' do
-    expect([parse_algorithm('R'), parse_algorithm("3Rw")]).to cancel_moves(4, :stm, 0)
-    expect([parse_algorithm('R'), parse_algorithm("3Rw2")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm('R'), parse_algorithm('3Rw')]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm('R'), parse_algorithm('3Rw2')]).to cancel_moves(4, :stm, 0)
   end
 
   it 'should compute cancellations of non-fitting same fat block fat moves correctly' do
-    expect([parse_algorithm('Rw'), parse_algorithm("R")]).to cancel_moves(5, :stm, 0)
-    expect([parse_algorithm('3Rw'), parse_algorithm("Rw")]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('Rw'), parse_algorithm('R')]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('3Rw'), parse_algorithm('Rw')]).to cancel_moves(5, :stm, 0)
   end
 
   it 'should compute cancellations of opposite fat block fat moves correctly' do
     expect([parse_algorithm('Rw'), parse_algorithm("3Lw'")]).to cancel_moves(5, :stm, 2)
     expect([parse_algorithm('R'), parse_algorithm("4Lw'")]).to cancel_moves(5, :stm, 2)
     expect([parse_algorithm('R'), parse_algorithm("4Lw'")]).to cancel_moves(5, :stm, 2)
-    expect([parse_algorithm('Rw'), parse_algorithm("3Lw")]).to cancel_moves(5, :stm, 1)
-    expect([parse_algorithm('R'), parse_algorithm("4Lw")]).to cancel_moves(5, :stm, 1)
-    expect([parse_algorithm('Rw'), parse_algorithm("3Lw2")]).to cancel_moves(5, :stm, 1)
-    expect([parse_algorithm('R'), parse_algorithm("4Lw2")]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('Rw'), parse_algorithm('3Lw')]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('R'), parse_algorithm('4Lw')]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('Rw'), parse_algorithm('3Lw2')]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('R'), parse_algorithm('4Lw2')]).to cancel_moves(5, :stm, 1)
   end
 
   it 'should compute cancellations of non-fitting opposite fat block fat moves correctly' do

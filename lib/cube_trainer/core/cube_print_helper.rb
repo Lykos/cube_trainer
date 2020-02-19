@@ -58,6 +58,10 @@ module CubeTrainer
         maybe_reverse(face_symbol_info.reverse_lines_mode, lines)
       end
 
+      def simple_face_lines(cube_state, face_symbol, color_mode)
+        face_lines(cube_state, face_symbol) { |c| color_character(c, color_mode) }
+      end
+
       SKEWB_FACE_SIZE = 5
 
       def skewb_ascii_art_line(first_color, middle_color, last_color, num_first_color)
@@ -109,12 +113,12 @@ module CubeTrainer
       end
 
       def cube_string(cube_state, color_mode)
-        top_face = face_lines(cube_state, :U) { |c| color_character(c, color_mode) }
-        left_face = face_lines(cube_state, :L) { |c| color_character(c, color_mode) }
-        front_face = face_lines(cube_state, :F) { |c| color_character(c, color_mode) }
-        right_face = face_lines(cube_state, :R) { |c| color_character(c, color_mode) }
-        back_face = face_lines(cube_state, :B) { |c| color_character(c, color_mode) }
-        bottom_face = face_lines(cube_state, :D) { |c| color_character(c, color_mode) }
+        top_face = simple_face_lines(cube_state, :U, color_mode)
+        left_face = simple_face_lines(cube_state, :L, color_mode)
+        front_face = simple_face_lines(cube_state, :F, color_mode)
+        right_face = simple_face_lines(cube_state, :R, color_mode)
+        back_face = simple_face_lines(cube_state, :B, color_mode)
+        bottom_face = simple_face_lines(cube_state, :D, color_mode)
         middle_belt = zip_concat_lines(left_face, front_face, right_face, back_face)
         lines = pad_lines(top_face, cube_state.n) + middle_belt +
                 pad_lines(bottom_face, cube_state.n)

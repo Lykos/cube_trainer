@@ -21,7 +21,8 @@ module CubeTrainer
         Algorithm.new(new_moves)
       end
 
-      # Possible variations of the algorithm where the last move has been swapped as much as allowed (e.g. D U can swap).
+      # Possible variations of the algorithm where the last move has been swapped as much as allowed
+      # (e.g. D U can swap).
       def self.cancel_variants(algorithm)
         variants = []
         algorithm.moves.each_index.reverse_each do |i|
@@ -51,11 +52,14 @@ module CubeTrainer
         raise TypeError unless move.is_a?(Move)
         return Algorithm.move(move) if algorithm.empty?
 
-        cancel_variants(algorithm).map do |alg|
+        cancel_variants = cancel_variants(algorithm).map do |alg|
           Algorithm.new(alg.moves[0...-1]) + alg.moves[-1].join_with_cancellation(move, cube_size)
-        end.min_by do |alg|
-          # QTM is the most sensitive metric, so we use that as the highest priority for cancellations.
-          # We use HTM as a second priority to make sure something like RR still gets merged into R2.
+        end
+        cancel_variants.min_by do |alg|
+          # QTM is the most sensitive metric, so we use that as the highest priority for
+          # cancellations.
+          # We use HTM as a second priority to make sure something like RR still gets merged into
+          # R2.
           [alg.move_count(cube_size, :qtm), alg.move_count(cube_size, :htm)]
         end
       end

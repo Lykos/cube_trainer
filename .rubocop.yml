@@ -22,3 +22,5 @@ Metrics/MethodLength:
   - 'spec/**/*_spec.rb'
 Metrics/ClassLength:
   Max: 200
+Metrics/ModuleLength:
+  Max: 200

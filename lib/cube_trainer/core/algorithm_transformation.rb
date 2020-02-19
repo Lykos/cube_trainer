@@ -19,7 +19,9 @@ module CubeTrainer
       def self.around_face(face)
         around_face_rotations = CubeDirection::ALL_DIRECTIONS.map { |d| Rotation.new(face, d) }
         mirror_normal_face = face.neighbors.first
-        around_face_rotations.product([true, false]).map { |r, m| AlgorithmTransformation.new(r, m, mirror_normal_face) }
+        around_face_rotations.product([true, false]).map do |r, m|
+          AlgorithmTransformation.new(r, m, mirror_normal_face)
+        end
       end
 
       def self.around_face_without_identity(face)

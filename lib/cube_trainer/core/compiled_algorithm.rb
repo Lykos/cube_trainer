@@ -15,8 +15,6 @@ module CubeTrainer
       end
 
       attr_reader :native
-      attr_writer :inverse
-      protected :inverse=
 
       def rotate_by(rotation)
         self.class.new(@native.rotate_by(rotation.axis_face.face_symbol, rotation.direction.value))
@@ -41,6 +39,10 @@ module CubeTrainer
       def apply_to(state)
         @native.apply_to(state.native)
       end
+
+      protected
+
+      attr_writer :inverse
     end
   end
 end

@@ -137,13 +137,16 @@ module CubeTrainer
       end
       return NO_SOLUTIONS if limit.zero?
 
-      moves = generate_moves(state).collect do |m|
+      scored_moves = generate_moves(state).collect do |m|
         [m, score_after_move(state, m)]
-      end.select do |_m, score|
+      end
+      scored_moves.select! do |_m, score|
         score + limit >= 4
-      end.sort_by do |_m, score|
+      end
+      moves = scored_moves.sort_by! do |_m, score|
         -score
-      end.collect { |m, _score| m }
+      end.map(&:first)
+
       best_solutions = NO_SOLUTIONS
       inner_limit = limit - 1
       moves.each do |m|

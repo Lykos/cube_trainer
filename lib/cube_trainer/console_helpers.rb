@@ -8,11 +8,6 @@ module CubeTrainer
     # Minimum time until we accept the next input.
     MINIMUM_WAIT_TIME = 0.1
 
-    # TODO use the one from StringHelpers
-    def camel_to_snake(string)
-      string.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').tr('-', '_').downcase
-    end
-
     def espeak_processes
       @espeak_processes ||= {}
     end
@@ -40,6 +35,8 @@ module CubeTrainer
 
     # Exits in the case of character q.
     # Downcases the character before returning it.
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def time_before_any_key_press(hints = [])
       # TODO: Explain to the human what magic letters exist.
       start = Time.now
@@ -66,5 +63,7 @@ module CubeTrainer
       end
       KeyPressWaitData.new(char, time_s)
     end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
   end
 end
