@@ -154,6 +154,11 @@ module CubeTrainer
       CheckAlgResult::UNFIXABLE
     end
 
+    # Result of checking an algorithm.
+    # The algorithm can be
+    # * correct
+    # * incorrect and we have a fix
+    # * incorrect and we have no fix
     class CheckAlgResult
       def initialize(result, fix = nil)
         @result = result
