@@ -15,6 +15,7 @@ require 'set'
 
 module CubeTrainer
   module Anki
+    # Class that generates an Anki deck for an alg set.
     class AlgSetAnkiGenerator
       include ArrayHelper
 
