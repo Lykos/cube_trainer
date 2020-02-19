@@ -28,6 +28,7 @@ module CubeTrainer
       BASE_MASKS = %i[fl f2l ll cll ell oll ocll oell coll ocell wv vh els cls cmll cross f2l_3 f2l_2 f2l_sm f2l_1 f2b line 2x2x2 2x2x3].freeze
       STAGE_MASK_REGEXP = Regexp.new("(#{BASE_MASKS.join('|')})(?:-([xyz]['2]?+))?")
 
+      # Helper class to serialize a URL parameter via invoking `#to_s`.
       class SimpleUrlParameterSerializer
         def serialize(value)
           value.to_s
@@ -36,12 +37,15 @@ module CubeTrainer
 
       SIMPLE_URL_PARAMETER_SERIALIZER = SimpleUrlParameterSerializer.new
 
+      # Helper class to serialize a color scheme as a URL paramer by setting the list of colors.
       class ColorSchemeUrlParameterSerializer
         def serialize(value)
           FACE_SYMBOL_ORDER.map { |s| value.color(s) }.join(',')
         end
       end
 
+      # Stage mask that masks a certain part of the cube after applying moves.
+      # This supports the same format as the cube visualizer website.
       class StageMask
         extend Core
 
@@ -82,6 +86,7 @@ module CubeTrainer
 
       STAGE_MASK_URL_PARAMETER_SERIALIZER = StageMaskUrlParameterSerializer.new
 
+      # Represents one type of URL parameter.
       class UrlParameterType
         def initialize(name,
                        type,
@@ -124,6 +129,7 @@ module CubeTrainer
         end
       end
 
+      # Represents a fake infinite range that includes everything.
       class FakeInfiniteRange
         def include?(_value)
           true
@@ -151,6 +157,7 @@ module CubeTrainer
 
       URL_PARAMETER_TYPE_KEYS = URL_PARAMETER_TYPES.map(&:name)
 
+      # Stub cache that caches nothing.
       class StubCache
         def [](_key)
           nil
