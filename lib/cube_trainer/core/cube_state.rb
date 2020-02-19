@@ -10,38 +10,41 @@ require 'cube_trainer/native'
 
 module CubeTrainer
   module Core
+    # Represents the state (i.e. the sticker positions) of a cube.
     class CubeState
       include Utils::ArrayHelper
       include CubePrintHelper
       include StateHelper
       include CubeConstants
 
-      def self.check_cube_size(n)
-        raise TypeError unless n.is_a?(Integer)
-        raise ArgumentError, 'Cubes of size smaller than 2 are not supported.' if n < 2
+      def self.check_cube_size(cube_size)
+        raise TypeError unless cube_size.is_a?(Integer)
+        raise ArgumentError, 'Cubes of size smaller than 2 are not supported.' if cube_size < 2
       end
 
-      def self.from_stickers(n, stickers)
-        CubeState.check_cube_size(n)
+      def self.from_stickers(cube_size, stickers)
+        CubeState.check_cube_size(cube_size)
         unless stickers.length == FACE_SYMBOLS.length
           raise ArgumentError, "Cubes must have #{FACE_SYMBOLS.length} sides."
         end
-        unless stickers.all? { |p| p.length == n && p.all? { |q| q.length == n } }
-          raise ArgumentError, "All sides of a #{n}x#{n} must be #{n}x#{n}."
+        unless stickers.all? { |p| p.length == cube_size && p.all? { |q| q.length == cube_size } }
+          raise ArgumentError,
+                "All sides of a #{cube_size}x#{cube_size} must be #{cube_size}x#{cube_size}."
         end
 
         stickers_hash = FACE_SYMBOLS.zip(stickers).map do |face_symbol, face_stickers|
           face = Face.for_face_symbol(face_symbol)
           face_hash = {
             stickers: face_stickers,
-            # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
+            # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y],
+            # but the C code does the more logical thing,
             # so we have to swap coordinates here.
             x_base_face_symbol: face.coordinate_index_base_face(1).face_symbol,
             y_base_face_symbol: face.coordinate_index_base_face(0).face_symbol
           }
           [face_symbol, face_hash]
         end.to_h
-        new(Native::CubeState.new(n, stickers_hash))
+        new(Native::CubeState.new(cube_size, stickers_hash))
       end
 
       def initialize(native)
@@ -78,7 +81,8 @@ module CubeTrainer
 
         @native.sticker_array(
           face.face_symbol,
-          # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y], but the C code does the more logical thing,
+          # Note that in the ruby code, x and y are exchanged s.t. one can say bla[x][y],
+          # but the C code does the more logical thing,
           # so we have to swap coordinates here.
           face.coordinate_index_base_face(1).face_symbol,
           face.coordinate_index_base_face(0).face_symbol

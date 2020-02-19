@@ -5,6 +5,7 @@ require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
   module Core
+    # Module to print and display cube and Skewb states.
     module CubePrintHelper
       include Utils::ArrayHelper
 
@@ -62,7 +63,9 @@ module CubeTrainer
       def skewb_ascii_art_line(first_color, middle_color, last_color, num_first_color)
         raise if num_first_color > SKEWB_FACE_SIZE / 2
 
-        first_color * num_first_color + middle_color * (SKEWB_FACE_SIZE - 2 * num_first_color) + last_color * num_first_color
+        first_color * num_first_color +
+          middle_color * (SKEWB_FACE_SIZE - 2 * num_first_color) +
+          last_color * num_first_color
       end
 
       def skewb_ascii_art(center_color, corner_colors)
@@ -90,7 +93,8 @@ module CubeTrainer
         stickers = cube_state.sticker_array(face)
         center_color = color_character(stickers[0], color_mode)
         corner_colors = stickers[1..-1].collect { |c| color_character(c, color_mode) }
-        permuted_corner_colors = apply_permutation(corner_colors, face_symbol_info.skewb_corner_permutation)
+        permuted_corner_colors =
+          apply_permutation(corner_colors, face_symbol_info.skewb_corner_permutation)
         raise unless corner_colors.length == 4
 
         skewb_ascii_art(center_color, permuted_corner_colors)
@@ -112,7 +116,8 @@ module CubeTrainer
         back_face = face_lines(cube_state, :B) { |c| color_character(c, color_mode) }
         bottom_face = face_lines(cube_state, :D) { |c| color_character(c, color_mode) }
         middle_belt = zip_concat_lines(left_face, front_face, right_face, back_face)
-        lines = pad_lines(top_face, cube_state.n) + middle_belt + pad_lines(bottom_face, cube_state.n)
+        lines = pad_lines(top_face, cube_state.n) + middle_belt +
+                pad_lines(bottom_face, cube_state.n)
         lines.join("\n")
       end
 
@@ -124,7 +129,8 @@ module CubeTrainer
         back_face = skewb_face_lines(skewb_state, :B, color_mode)
         bottom_face = skewb_face_lines(skewb_state, :D, color_mode)
         middle_belt = zip_concat_lines(left_face, front_face, right_face, back_face)
-        lines = pad_lines(top_face, SKEWB_FACE_SIZE) + middle_belt + pad_lines(bottom_face, SKEWB_FACE_SIZE)
+        lines = pad_lines(top_face, SKEWB_FACE_SIZE) + middle_belt +
+                pad_lines(bottom_face, SKEWB_FACE_SIZE)
         lines.join("\n")
       end
 
@@ -132,8 +138,8 @@ module CubeTrainer
         ' '
       end
 
-      def pad_lines(lines, n)
-        lines.collect { |line| empty_name * n + line }
+      def pad_lines(lines, padding)
+        lines.collect { |line| empty_name * padding + line }
       end
 
       def zip_concat_lines(*args)

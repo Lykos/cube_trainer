@@ -10,6 +10,7 @@ require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
   module Core
+    # Base class for moves.
     class Move
       AXES = %w[y z x].freeze
       SLICES = %w[E S M].freeze
@@ -77,10 +78,12 @@ module CubeTrainer
       end
 
       def swap_internal(other)
-        raise NotImplementedError, "Not implemented for #{self}:#{self.class} and #{other}:#{other.class}."
+        raise NotImplementedError,
+              "Not implemented for #{self}:#{self.class} and #{other}:#{other.class}."
       end
 
-      # Cube size is needed to decide whether 'u' is a slice move (like on bigger cubes) or a fat move (like on 3x3).
+      # Cube size is needed to decide whether 'u' is a slice move (like on bigger cubes) or a fat
+      # move (like on 3x3).
       def move_count(cube_size, metric = :htm)
         raise TypeError unless cube_size.is_a?(Integer)
 
@@ -121,14 +124,18 @@ module CubeTrainer
         raise NotImplementedError
       end
 
-      # The superclass for all moves that work on the same type puzzle as the given one (modulo cube size, i.e. 3x3 is the same as 4x4, but Skewb is different).
+      # The superclass for all moves that work on the same type puzzle as the given one
+      # (modulo cube size, i.e. 3x3 is the same as 4x4, but Skewb is different).
       def puzzles
         raise NotImplementedError
       end
 
-      # Return an algorithm from cancelling this move with `other` and cancelling as much as possible.
-      # Note that it doesn't cancel rotations even if we theoretically could do this by using uncanonical wide moves.
-      # Expects prepend_xyz methods to be present. That one can return a cancelled implementation and nil if nothing can be cancelled.
+      # Return an algorithm from cancelling this move with `other` and cancelling as much as
+      # possible.
+      # Note that it doesn't cancel rotations even if we theoretically could do this by using
+      # uncanonical wide moves.
+      # Expects prepend_xyz methods to be present. That one can return a cancelled implementation
+      # or nil if nothing can be cancelled.
       def join_with_cancellation(other, cube_size)
         raise ArgumentError if (puzzles & other.puzzles).empty?
 
@@ -147,8 +154,9 @@ module CubeTrainer
         end
       end
 
-      # We handle the annoying inconsistency that u is a slice move for bigger cubes, but a fat move for 3x3.
-      # Furthermore, M slice moves are fat m slice moves for even cubes and normal m slice moves for odd cubes.
+      # We handle the annoying inconsistency that u is a slice move for bigger cubes, but a fat
+      # move for 3x3. Furthermore, M slice moves are fat m slice moves for even cubes and normal
+      # m slice moves for odd cubes.
       def decide_meaning(_cube_size)
         self
       end
@@ -159,6 +167,7 @@ module CubeTrainer
       end
     end
 
+    # Helper class to print various types of M slice moves.
     module MSlicePrintHelper
       def to_s
         slice_name = Move::SLICES[@axis_face.axis_priority]
@@ -167,7 +176,8 @@ module CubeTrainer
       end
     end
 
-    # Intermediate class for all types of moves that have an axis face and a direction, i.e. cube moves and rotations.
+    # Intermediate class for all types of moves that have an axis face and a direction, i.e. cube
+    # moves and rotations.
     class AxisFaceAndDirectionMove < Move
       def initialize(axis_face, direction)
         raise TypeError, "Unsuitable axis face #{axis_face}." unless axis_face.is_a?(Face)
@@ -218,7 +228,8 @@ module CubeTrainer
         else
           rotation_neighbors = rotation.axis_face.neighbors
           face_index = rotation_neighbors.index(@axis_face) || raise
-          new_axis_face = rotation_neighbors[(face_index + rotation.direction.value) % rotation_neighbors.length]
+          new_axis_face =
+            rotation_neighbors[(face_index + rotation.direction.value) % rotation_neighbors.length]
           fields = replace_once(identifying_fields, @axis_face, new_axis_face)
           self.class.new(*fields)
         end
@@ -226,7 +237,8 @@ module CubeTrainer
 
       def mirror(normal_face)
         if normal_face.same_axis?(@axis_face)
-          fields = replace_once(replace_once(identifying_fields, @direction, @direction.inverse), @axis_face, @axis_face.opposite)
+          fields = replace_once(replace_once(identifying_fields, @direction, @direction.inverse),
+                                @axis_face, @axis_face.opposite)
           self.class.new(*fields)
         else
           inverse
@@ -234,6 +246,7 @@ module CubeTrainer
       end
     end
 
+    # A rotation of a Skewb or cube.
     class Rotation < AxisFaceAndDirectionMove
       def to_s
         "#{AXES[@axis_face.axis_priority]}#{canonical_direction.name}"
@@ -253,14 +266,14 @@ module CubeTrainer
       end
 
       def equivalent_internal?(other, _cube_size)
-        self == other || alternative == other
+        [self, alternative].include?(other)
       end
 
       def prepend_rotation(other, _cube_size)
-        if same_axis?(other)
-          other_direction = translated_direction(other.axis_face)
-          Algorithm.move(Rotation.new(@axis_face, @direction + other_direction))
-        end
+        return unless same_axis?(other)
+
+        other_direction = translated_direction(other.axis_face)
+        Algorithm.move(Rotation.new(@axis_face, @direction + other_direction))
       end
 
       def prepend_fat_m_slice_move(_other, _cube_size)
@@ -268,9 +281,13 @@ module CubeTrainer
       end
 
       def prepend_fat_move(other, cube_size)
-        if same_axis?(other) && translated_direction(other.axis_face) == other.direction.inverse
-          Algorithm.move(FatMove.new(other.axis_face.opposite, other.direction, other.inverted_width(cube_size)))
+        unless same_axis?(other) && translated_direction(other.axis_face) == other.direction.inverse
+          return
         end
+
+        Algorithm.move(
+          FatMove.new(other.axis_face.opposite, other.direction, other.inverted_width(cube_size))
+        )
       end
 
       def prepend_slice_move(_other, _cube_size)
@@ -282,12 +299,14 @@ module CubeTrainer
       end
     end
 
+    # Base class for cube moves.
     class CubeMove < AxisFaceAndDirectionMove
       def puzzles
         [Puzzle::NXN_CUBE]
       end
     end
 
+    # A fat M slice move that moves everything but the outer layers.
     class FatMSliceMove < CubeMove
       include MSlicePrintHelper
 
@@ -296,14 +315,15 @@ module CubeTrainer
       end
 
       def prepend_fat_m_slice_move(other, _cube_size)
-        if same_axis?(other)
-          other_direction = other.translated_direction(@axis_face)
-          Algorithm.move(FatMSliceMove.new(@axis_face, @direction + other_direction))
-        end
+        return unless same_axis?(other)
+
+        other_direction = other.translated_direction(@axis_face)
+        Algorithm.move(FatMSliceMove.new(@axis_face, @direction + other_direction))
       end
 
       def prepend_fat_move(other, cube_size)
-        # Note that changing the order is safe because that method returns nil if no cancellation can be performed.
+        # Note that changing the order is safe because that method returns nil if no cancellation
+        # can be performed.
         other.prepend_fat_m_slice_move(self, cube_size)
       end
 
@@ -327,10 +347,12 @@ module CubeTrainer
       end
     end
 
+    # An M slice move for which we don't know yet whether it's an inner or fat M slice move.
     class MaybeFatMSliceMaybeInnerMSliceMove < CubeMove
       include MSlicePrintHelper
 
-      # For even layered cubes, m slice moves are meant as very fat moves where only the outer layers stay.
+      # For even layered cubes, m slice moves are meant as very fat moves where only the outer
+      # layers stay.
       # For odd layered cubes, we only move the very middle.
       def decide_meaning(cube_size)
         if cube_size.even?
@@ -341,6 +363,7 @@ module CubeTrainer
       end
     end
 
+    # A fat move with a width. For width 1, this becomes a normal outer move.
     class FatMove < CubeMove
       def initialize(axis_face, direction, width = 1)
         super(axis_face, direction)
@@ -350,7 +373,9 @@ module CubeTrainer
         @width = width
       end
 
-      OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map { |f, d| FatMove.new(f, d, 1) }
+      OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map do |f, d|
+        FatMove.new(f, d, 1)
+      end.freeze
 
       attr_reader :width
 
@@ -375,14 +400,16 @@ module CubeTrainer
       end
 
       def prepend_rotation(other, cube_size)
-        # Note that changing the order is safe because that method returns nil if no cancellation can be performed.
+        # Note that changing the order is safe because that method returns nil if no cancellation
+        # can be performed.
         other.prepend_fat_move(self, cube_size)
       end
 
       def prepend_fat_m_slice_move(other, cube_size)
         if same_axis?(other) && @width == 1 && @direction == other.translated_direction(@axis_face)
           Algorithm.move(FatMove.new(@axis_face, @direction, cube_size - 1))
-        elsif same_axis?(other) && @width == cube_size - 1 && @direction == other.translated_direction(@axis_face).inverse
+        elsif same_axis?(other) && @width == cube_size - 1 &&
+              @direction == other.translated_direction(@axis_face).inverse
           Algorithm.move(FatMove.new(@axis_face, @direction, 1))
         end
       end
@@ -422,6 +449,7 @@ module CubeTrainer
       end
     end
 
+    # A slice move of any slice, not necessary the middle one.
     class SliceMove < CubeMove
       def initialize(axis_face, direction, slice_index)
         super(axis_face, direction)
@@ -490,7 +518,8 @@ module CubeTrainer
       end
 
       def prepend_fat_move(other, cube_size)
-        # Note that changing the order is safe because that method returns nil if no cancellation can be performed.
+        # Note that changing the order is safe because that method returns nil if no cancellation
+        # can be performed.
         other.prepend_slice_move(self, cube_size)
       end
 
@@ -503,14 +532,15 @@ module CubeTrainer
            mirror(@axis_face).equivalent_internal?(other, cube_size)
           return Algorithm.move(FatMSliceMove.new(other.axis_face, other.direction))
         end
+
         other = other.simplified(cube_size)
-        if this.axis_face == other.axis_face && this.slice_index == other.slice_index
-          Algorithm.move(
-            SliceMove.new(other.axis_face,
-                          other.direction + this.translated_direction(other.axis_face),
-                          other.slice_index)
-          )
-        end
+        return unless this.axis_face == other.axis_face && this.slice_index == other.slice_index
+
+        Algorithm.move(
+          SliceMove.new(other.axis_face,
+                        other.direction + this.translated_direction(other.axis_face),
+                        other.slice_index)
+        )
       end
     end
 
