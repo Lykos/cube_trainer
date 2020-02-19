@@ -3,6 +3,19 @@
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/parser'
 
+RSpec::Matchers.define :cancel_moves do |cube_size, metric, expected|
+  match do |actual|
+    raise ArgumentError unless actual.length == 2
+    actual[0].cancellations(actual[1], cube_size, metric) == expected &&
+      actual[1].inverse.cancellations(actual[0].inverse, cube_size, metric) == expected
+  end
+
+  failure_message_for_should do |actual|
+    "expected that #{actual[0]} + #{actual[1]} would cancel #{expected} moves #{metric} on " \
+    "#{cube_size}x#{cube_size} cubes. Got #{actual[0].cancellations(actual[1], cube_size, metric)}"
+  end
+end
+
 describe Core::Algorithm do
   include Core
 
@@ -23,200 +36,251 @@ describe Core::Algorithm do
   end
 
   it 'should compute cancellations of single moves correctly' do
-    expect(parse_algorithm('R2').cancellations(parse_algorithm('R2'), cube_size)).to be == 2
-    expect(parse_algorithm('R').cancellations(parse_algorithm("R'"), cube_size)).to be == 2
-    expect(parse_algorithm('R').cancellations(parse_algorithm('R'), cube_size)).to be == 1
-    expect(parse_algorithm('R').cancellations(parse_algorithm('R2'), cube_size)).to be == 1
-    expect(parse_algorithm("R'").cancellations(parse_algorithm('R2'), cube_size)).to be == 1
-    expect(parse_algorithm("R'").cancellations(parse_algorithm("R'"), cube_size)).to be == 1
-    expect(parse_algorithm('R2').cancellations(parse_algorithm('R'), cube_size)).to be == 1
-    expect(parse_algorithm('R2').cancellations(parse_algorithm("R'"), cube_size)).to be == 1
-    expect(parse_algorithm('U').cancellations(parse_algorithm('U2'), cube_size)).to be == 1
+    expect([parse_algorithm('R2'), parse_algorithm('R2')]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('R'), parse_algorithm("R'")]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('R'), parse_algorithm('R')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R'), parse_algorithm('R2')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm("R'"), parse_algorithm('R2')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm("R'"), parse_algorithm("R'")]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R2'), parse_algorithm('R')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R2'), parse_algorithm("R'")]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('U'), parse_algorithm('U2')]).to cancel_moves(cube_size, :htm, 1)
   end
 
   it 'should compute cancellations of single wide moves correctly' do
-    expect(parse_algorithm('R').cancellations(parse_algorithm('l'), cube_size)).to be == 1
-    expect(parse_algorithm('R2').cancellations(parse_algorithm('l2'), cube_size)).to be == 2
-    expect(parse_algorithm('R').cancellations(parse_algorithm("l'"), cube_size)).to be == 2
-    expect(parse_algorithm('R').cancellations(parse_algorithm('l2'), cube_size)).to be == 1
-    expect(parse_algorithm("R'").cancellations(parse_algorithm('l2'), cube_size)).to be == 1
-    expect(parse_algorithm("R'").cancellations(parse_algorithm("l'"), cube_size)).to be == 1
-    expect(parse_algorithm('R2').cancellations(parse_algorithm('l'), cube_size)).to be == 1
-    expect(parse_algorithm('R2').cancellations(parse_algorithm("l'"), cube_size)).to be == 1
+    expect([parse_algorithm('R'), parse_algorithm('l')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R2'), parse_algorithm('l2')]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('R'), parse_algorithm("l'")]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('R'), parse_algorithm('l2')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm("R'"), parse_algorithm('l2')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm("R'"), parse_algorithm("l'")]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R2'), parse_algorithm('l')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R2'), parse_algorithm("l'")]).to cancel_moves(cube_size, :htm, 1)
   end
 
   it 'should compute cancellations of single M moves correctly' do
-    expect(parse_algorithm('R2').cancellations(parse_algorithm('M2'), cube_size)).to be == 2
-    expect(parse_algorithm('R').cancellations(parse_algorithm("M'"), cube_size)).to be == 2
-    expect(parse_algorithm('R').cancellations(parse_algorithm('M'), cube_size)).to be == 0
-    expect(parse_algorithm('R').cancellations(parse_algorithm('M2'), cube_size)).to be == 0
-    expect(parse_algorithm("R'").cancellations(parse_algorithm('M2'), cube_size)).to be == 0
-    expect(parse_algorithm("R'").cancellations(parse_algorithm("M'"), cube_size)).to be == 0
-    expect(parse_algorithm('R2').cancellations(parse_algorithm('M'), cube_size)).to be == 0
-    expect(parse_algorithm('R2').cancellations(parse_algorithm("M'"), cube_size)).to be == 0
+    expect([parse_algorithm('R2'), parse_algorithm('M2')]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('R'), parse_algorithm("M'")]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('R'), parse_algorithm('M')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('R'), parse_algorithm('M2')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm("R'"), parse_algorithm('M2')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm("R'"), parse_algorithm("M'")]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('R2'), parse_algorithm('M')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('R2'), parse_algorithm("M'")]).to cancel_moves(cube_size, :htm, 0)
 
-    expect(parse_algorithm('M2').cancellations(parse_algorithm('R2'), cube_size)).to be == 2
-    expect(parse_algorithm("M'").cancellations(parse_algorithm('R'), cube_size)).to be == 2
-    expect(parse_algorithm('M').cancellations(parse_algorithm('R'), cube_size)).to be == 0
-    expect(parse_algorithm('M2').cancellations(parse_algorithm('R'), cube_size)).to be == 0
-    expect(parse_algorithm("M2'").cancellations(parse_algorithm("R'"), cube_size)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm("R'"), cube_size)).to be == 0
-    expect(parse_algorithm('M').cancellations(parse_algorithm('R2'), cube_size)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm('R2'), cube_size)).to be == 0
+    expect([parse_algorithm('M2'), parse_algorithm('R2')]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm("M'"), parse_algorithm('R')]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('M'), parse_algorithm('R')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('M2'), parse_algorithm('R')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm("M2'"), parse_algorithm("R'")]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm("R'")]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('M'), parse_algorithm('R2')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm('R2')]).to cancel_moves(cube_size, :htm, 0)
 
-    expect(parse_algorithm('L2').cancellations(parse_algorithm('M2'), cube_size)).to be == 2
-    expect(parse_algorithm("L'").cancellations(parse_algorithm("M'"), cube_size)).to be == 2
-    expect(parse_algorithm("L'").cancellations(parse_algorithm('M'), cube_size)).to be == 0
-    expect(parse_algorithm("L'").cancellations(parse_algorithm('M2'), cube_size)).to be == 0
-    expect(parse_algorithm('L').cancellations(parse_algorithm('M2'), cube_size)).to be == 0
-    expect(parse_algorithm('L').cancellations(parse_algorithm("M'"), cube_size)).to be == 0
-    expect(parse_algorithm('L2').cancellations(parse_algorithm('M'), cube_size)).to be == 0
-    expect(parse_algorithm('L2').cancellations(parse_algorithm("M'"), cube_size)).to be == 0
+    expect([parse_algorithm('L2'), parse_algorithm('M2')]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm("L'"), parse_algorithm("M'")]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm("L'"), parse_algorithm('M')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm("L'"), parse_algorithm('M2')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('L'), parse_algorithm('M2')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('L'), parse_algorithm("M'")]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('L2'), parse_algorithm('M')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('L2'), parse_algorithm("M'")]).to cancel_moves(cube_size, :htm, 0)
 
-    expect(parse_algorithm('M2').cancellations(parse_algorithm('L2'), cube_size)).to be == 2
-    expect(parse_algorithm("M'").cancellations(parse_algorithm("L'"), cube_size)).to be == 2
-    expect(parse_algorithm('M').cancellations(parse_algorithm("L'"), cube_size)).to be == 0
-    expect(parse_algorithm('M2').cancellations(parse_algorithm("L'"), cube_size)).to be == 0
-    expect(parse_algorithm("M2'").cancellations(parse_algorithm('L'), cube_size)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm('L'), cube_size)).to be == 0
-    expect(parse_algorithm('M').cancellations(parse_algorithm('L2'), cube_size)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm('L2'), cube_size)).to be == 0
+    expect([parse_algorithm('M2'), parse_algorithm('L2')]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm("M'"), parse_algorithm("L'")]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('M'), parse_algorithm("L'")]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('M2'), parse_algorithm("L'")]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm("M2'"), parse_algorithm('L')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm('L')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm('M'), parse_algorithm('L2')]).to cancel_moves(cube_size, :htm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm('L2')]).to cancel_moves(cube_size, :htm, 0)
   end
 
   it 'should compute cancellations of moves across easy rotations correctly' do
-    expect(parse_algorithm('R2').cancellations(parse_algorithm('x R2'), cube_size)).to be == 2
-    expect(parse_algorithm('R').cancellations(parse_algorithm("x' R'"), cube_size)).to be == 2
-    expect(parse_algorithm('R').cancellations(parse_algorithm('x R'), cube_size)).to be == 1
-    expect(parse_algorithm('R').cancellations(parse_algorithm('x R2'), cube_size)).to be == 1
-    expect(parse_algorithm("R'").cancellations(parse_algorithm("x' R2"), cube_size)).to be == 1
-    expect(parse_algorithm("R'").cancellations(parse_algorithm("x R'"), cube_size)).to be == 1
-    expect(parse_algorithm('R2').cancellations(parse_algorithm('x R'), cube_size)).to be == 1
-    expect(parse_algorithm('R2').cancellations(parse_algorithm("x R'"), cube_size)).to be == 1
+    expect([parse_algorithm('R2'), parse_algorithm('x R2')]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('R'), parse_algorithm("x' R'")]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('R'), parse_algorithm('x R')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R'), parse_algorithm('x R2')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm("R'"), parse_algorithm("x' R2")]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm("R'"), parse_algorithm("x R'")]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R2'), parse_algorithm('x R')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R2'), parse_algorithm("x R'")]).to cancel_moves(cube_size, :htm, 1)
   end
 
   it 'should compute cancellations of moves across hard rotations correctly' do
-    expect(parse_algorithm('R2 x').cancellations(parse_algorithm('y F2'), cube_size)).to be == 2
-    expect(parse_algorithm('R').cancellations(parse_algorithm("y F'"), cube_size)).to be == 2
-    expect(parse_algorithm("R x'").cancellations(parse_algorithm('y F'), cube_size)).to be == 1
-    expect(parse_algorithm('R').cancellations(parse_algorithm('y F2'), cube_size)).to be == 1
-    expect(parse_algorithm("R'").cancellations(parse_algorithm("y' B2"), cube_size)).to be == 1
-    expect(parse_algorithm("R'").cancellations(parse_algorithm("y' B'"), cube_size)).to be == 1
-    expect(parse_algorithm('R2').cancellations(parse_algorithm("y' B"), cube_size)).to be == 1
-    expect(parse_algorithm('R2').cancellations(parse_algorithm("y' B'"), cube_size)).to be == 1
+    expect([parse_algorithm('R2 x'), parse_algorithm('y F2')]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('R'), parse_algorithm("y F'")]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm("R x'"), parse_algorithm('y F')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R'), parse_algorithm('y F2')]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm("R'"), parse_algorithm("y' B2")]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm("R'"), parse_algorithm("y' B'")]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R2'), parse_algorithm("y' B")]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R2'), parse_algorithm("y' B'")]).to cancel_moves(cube_size, :htm, 1)
   end
 
   it 'should compute cancellations of algorithms correctly' do
-    expect(parse_algorithm('R U').cancellations(parse_algorithm("U' R'"), cube_size)).to be == 4
-    expect(parse_algorithm('R U').cancellations(parse_algorithm("U' R"), cube_size)).to be == 3
-    expect(parse_algorithm('R U').cancellations(parse_algorithm("U R'"), cube_size)).to be == 1
-    expect(parse_algorithm('R U2').cancellations(parse_algorithm("U2 R'"), cube_size)).to be == 4
+    expect([parse_algorithm('R U'), parse_algorithm("U' R'")]).to cancel_moves(cube_size, :htm, 4)
+    expect([parse_algorithm('R U'), parse_algorithm("U' R")]).to cancel_moves(cube_size, :htm, 3)
+    expect([parse_algorithm('R U'), parse_algorithm("U R'")]).to cancel_moves(cube_size, :htm, 1)
+    expect([parse_algorithm('R U2'), parse_algorithm("U2 R'")]).to cancel_moves(cube_size, :htm, 4)
   end
 
   it 'should compute cancellations of cancelling algorithms correctly' do
-    expect(parse_algorithm('R R U').cancellations(parse_algorithm("U U2 R' R'"), cube_size)).to be == 4
+    expect([parse_algorithm('R R U'), parse_algorithm("U U2 R' R'")]).to cancel_moves(cube_size, :htm, 4)
   end
 
   it 'should compute cancellations of algorithms correctly if stuff has to be swapped around' do
-    expect(parse_algorithm('D U').cancellations(parse_algorithm("D'"), cube_size)).to be == 2
-    expect(parse_algorithm('D U').cancellations(parse_algorithm("D' U'"), cube_size)).to be == 4
-    expect(parse_algorithm("D U R'").cancellations(parse_algorithm("R D' U'"), cube_size)).to be == 6
-    expect(parse_algorithm("D U R' L").cancellations(parse_algorithm("R L' D' U'"), cube_size)).to be == 8
+    expect([parse_algorithm('D U'), parse_algorithm("D'")]).to cancel_moves(cube_size, :htm, 2)
+    expect([parse_algorithm('D U'), parse_algorithm("D' U'")]).to cancel_moves(cube_size, :htm, 4)
+    expect([parse_algorithm("D U R'"), parse_algorithm("R D' U'")]).to cancel_moves(cube_size, :htm, 6)
+    expect([parse_algorithm("D U R' L"), parse_algorithm("R L' D' U'")]).to cancel_moves(cube_size, :htm, 8)
   end
 
   it 'should compute cancellations of algorithms across easy rotations correctly' do
-    expect(parse_algorithm('R x U y L').cancellations(parse_algorithm("z U' R F"), cube_size)).to be == 3
+    expect([parse_algorithm('R x U y L'), parse_algorithm("z U' R F")]).to cancel_moves(cube_size, :htm, 3)
   end
 
   it 'should compute cancellations of slice moves correctly' do
-    expect(parse_algorithm('r2').cancellations(parse_algorithm('r'), 5, :qstm)).to be == 2
-    expect(parse_algorithm('r2').cancellations(parse_algorithm("r'"), 5, :qstm)).to be == 2
-    expect(parse_algorithm('r2').cancellations(parse_algorithm('r2'), 5, :qstm)).to be == 4
-    expect(parse_algorithm('r2').cancellations(parse_algorithm('l2'), 5, :qstm)).to be == 0
+    expect([parse_algorithm('r2'), parse_algorithm('r')]).to cancel_moves(5, :qstm, 2)
+    expect([parse_algorithm('r2'), parse_algorithm("r'")]).to cancel_moves(5, :qstm, 2)
+    expect([parse_algorithm('r2'), parse_algorithm("r'")]).to cancel_moves(4, :qstm, 2)
+    expect([parse_algorithm('r2'), parse_algorithm('r2')]).to cancel_moves(5, :qstm, 4)
+    expect([parse_algorithm('r2'), parse_algorithm('l2')]).to cancel_moves(5, :qstm, 0)
+  end
+
+  it 'should compute cancellations of same fat block fat moves correctly' do
+    expect([parse_algorithm('Rw'), parse_algorithm("Rw")]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('3Rw'), parse_algorithm("3Rw")]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('3Rw'), parse_algorithm("3Rw'")]).to cancel_moves(5, :stm, 2)
+    expect([parse_algorithm('3Rw'), parse_algorithm("3Rw2")]).to cancel_moves(5, :stm, 1)
+  end
+
+  it 'should compute cancellations of one slice away fat block fat moves correctly' do
+    expect([parse_algorithm('Rw'), parse_algorithm("R'")]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('Rw'), parse_algorithm("3Rw'")]).to cancel_moves(5, :stm, 1)
+  end
+
+  it 'should compute cancellations of non-fitting one slice away fat block fat moves correctly' do
+    expect([parse_algorithm('Rw'), parse_algorithm("R")]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('Rw'), parse_algorithm("3Rw2")]).to cancel_moves(5, :stm, 0)
+  end
+
+  it 'should compute cancellations of one fat M-slice away fat block fat moves correctly' do
+    expect([parse_algorithm('R'), parse_algorithm("3Rw'")]).to cancel_moves(4, :stm, 1)
+  end
+
+  it 'should compute cancellations of non-fitting one fat M-slice away fat block fat moves correctly' do
+    expect([parse_algorithm('R'), parse_algorithm("3Rw")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm('R'), parse_algorithm("3Rw2")]).to cancel_moves(4, :stm, 0)
+  end
+
+  it 'should compute cancellations of non-fitting same fat block fat moves correctly' do
+    expect([parse_algorithm('Rw'), parse_algorithm("R")]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('3Rw'), parse_algorithm("Rw")]).to cancel_moves(5, :stm, 0)
+  end
+
+  it 'should compute cancellations of opposite fat block fat moves correctly' do
+    expect([parse_algorithm('Rw'), parse_algorithm("3Lw'")]).to cancel_moves(5, :stm, 2)
+    expect([parse_algorithm('R'), parse_algorithm("4Lw'")]).to cancel_moves(5, :stm, 2)
+    expect([parse_algorithm('R'), parse_algorithm("4Lw'")]).to cancel_moves(5, :stm, 2)
+    expect([parse_algorithm('Rw'), parse_algorithm("3Lw")]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('R'), parse_algorithm("4Lw")]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('Rw'), parse_algorithm("3Lw2")]).to cancel_moves(5, :stm, 1)
+    expect([parse_algorithm('R'), parse_algorithm("4Lw2")]).to cancel_moves(5, :stm, 1)
+  end
+
+  it 'should compute cancellations of non-fitting opposite fat block fat moves correctly' do
+    expect([parse_algorithm('Rw'), parse_algorithm("L'")]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('Rw'), parse_algorithm("Lw'")]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('Rw'), parse_algorithm("4Lw'")]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('R'), parse_algorithm("L'")]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('R'), parse_algorithm("Lw'")]).to cancel_moves(5, :stm, 0)
+    expect([parse_algorithm('R'), parse_algorithm("3Lw'")]).to cancel_moves(5, :stm, 0)
   end
 
   it 'should compute cancellations of fat M-slice moves with fat moves correctly' do
-    expect(parse_algorithm('R').cancellations(parse_algorithm("M'"), 4, :stm)).to be == 1
-    expect(parse_algorithm("R'").cancellations(parse_algorithm("M'"), 4, :stm)).to be == 0
-    expect(parse_algorithm('Rw').cancellations(parse_algorithm("M'"), 4, :stm)).to be == 0
-    expect(parse_algorithm("Rw'").cancellations(parse_algorithm("M'"), 4, :stm)).to be == 0
-    expect(parse_algorithm('3Rw').cancellations(parse_algorithm("M'"), 4, :stm)).to be == 0
-    expect(parse_algorithm("3Rw'").cancellations(parse_algorithm("M'"), 4, :stm)).to be == 1
-    expect(parse_algorithm('L').cancellations(parse_algorithm("M'"), 4, :stm)).to be == 0
-    expect(parse_algorithm("L'").cancellations(parse_algorithm("M'"), 4, :stm)).to be == 1
-    expect(parse_algorithm('Lw').cancellations(parse_algorithm("M'"), 4, :stm)).to be == 0
-    expect(parse_algorithm("Lw'").cancellations(parse_algorithm("M'"), 4, :stm)).to be == 0
-    expect(parse_algorithm('3Lw').cancellations(parse_algorithm("M'"), 4, :stm)).to be == 1
-    expect(parse_algorithm("3Lw'").cancellations(parse_algorithm("M'"), 4, :stm)).to be == 0
+    expect([parse_algorithm('R'), parse_algorithm("M'")]).to cancel_moves(4, :stm, 1)
+    expect([parse_algorithm("R'"), parse_algorithm("M'")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm('Rw'), parse_algorithm("M'")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("Rw'"), parse_algorithm("M'")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm('3Rw'), parse_algorithm("M'")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("3Rw'"), parse_algorithm("M'")]).to cancel_moves(4, :stm, 1)
+    expect([parse_algorithm('L'), parse_algorithm("M'")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("L'"), parse_algorithm("M'")]).to cancel_moves(4, :stm, 1)
+    expect([parse_algorithm('Lw'), parse_algorithm("M'")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("Lw'"), parse_algorithm("M'")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm('3Lw'), parse_algorithm("M'")]).to cancel_moves(4, :stm, 1)
+    expect([parse_algorithm("3Lw'"), parse_algorithm("M'")]).to cancel_moves(4, :stm, 0)
 
-    expect(parse_algorithm("M'").cancellations(parse_algorithm('R'), 4, :stm)).to be == 1
-    expect(parse_algorithm("M'").cancellations(parse_algorithm("R'"), 4, :stm)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm('Rw'), 4, :stm)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm("Rw'"), 4, :stm)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm('3Rw'), 4, :stm)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm("3Rw'"), 4, :stm)).to be == 1
-    expect(parse_algorithm("M'").cancellations(parse_algorithm('L'), 4, :stm)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm("L'"), 4, :stm)).to be == 1
-    expect(parse_algorithm("M'").cancellations(parse_algorithm('Lw'), 4, :stm)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm("Lw'"), 4, :stm)).to be == 0
-    expect(parse_algorithm("M'").cancellations(parse_algorithm('3Lw'), 4, :stm)).to be == 1
-    expect(parse_algorithm("M'").cancellations(parse_algorithm("3Lw'"), 4, :stm)).to be == 0
+    expect([parse_algorithm("M'"), parse_algorithm('R')]).to cancel_moves(4, :stm, 1)
+    expect([parse_algorithm("M'"), parse_algorithm("R'")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm('Rw')]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm("Rw'")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm('3Rw')]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm("3Rw'")]).to cancel_moves(4, :stm, 1)
+    expect([parse_algorithm("M'"), parse_algorithm('L')]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm("L'")]).to cancel_moves(4, :stm, 1)
+    expect([parse_algorithm("M'"), parse_algorithm('Lw')]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm("Lw'")]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm("M'"), parse_algorithm('3Lw')]).to cancel_moves(4, :stm, 1)
+    expect([parse_algorithm("M'"), parse_algorithm("3Lw'")]).to cancel_moves(4, :stm, 0)
   end
 
   it 'should compute cancellations of slice moves with fat moves correctly' do
-    expect(parse_algorithm('r2').cancellations(parse_algorithm('Rw'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('r2').cancellations(parse_algorithm('R'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('r').cancellations(parse_algorithm('R'), 5, :qtm)).to be == 2
-    expect(parse_algorithm('r').cancellations(parse_algorithm("R'"), 5, :qtm)).to be == 0
-    expect(parse_algorithm('r').cancellations(parse_algorithm('Rw'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('r').cancellations(parse_algorithm("Rw'"), 5, :qtm)).to be == 2
-    expect(parse_algorithm('r').cancellations(parse_algorithm('3Rw'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('r').cancellations(parse_algorithm("3Rw'"), 5, :qtm)).to be == 0
-    expect(parse_algorithm('r').cancellations(parse_algorithm('2Lw'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('r').cancellations(parse_algorithm("2Lw'"), 5, :qtm)).to be == 0
-    expect(parse_algorithm('r').cancellations(parse_algorithm('3Lw'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('r').cancellations(parse_algorithm("3Lw'"), 5, :qtm)).to be == 2
-    expect(parse_algorithm('r').cancellations(parse_algorithm('4Lw'), 5, :qtm)).to be == 2
-    expect(parse_algorithm('r').cancellations(parse_algorithm("4Lw'"), 5, :qtm)).to be == 0
+    expect([parse_algorithm('r2'), parse_algorithm('Rw')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('r2'), parse_algorithm('R')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('r'), parse_algorithm('R')]).to cancel_moves(5, :qtm, 2)
+    expect([parse_algorithm('r'), parse_algorithm("R'")]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('r'), parse_algorithm('Rw')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('r'), parse_algorithm("Rw'")]).to cancel_moves(5, :qtm, 2)
+    expect([parse_algorithm('r'), parse_algorithm('3Rw')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('r'), parse_algorithm("3Rw'")]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('r'), parse_algorithm('2Lw')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('r'), parse_algorithm("2Lw'")]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('r'), parse_algorithm('3Lw')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('r'), parse_algorithm("3Lw'")]).to cancel_moves(5, :qtm, 2)
+    expect([parse_algorithm('r'), parse_algorithm('4Lw')]).to cancel_moves(5, :qtm, 2)
+    expect([parse_algorithm('r'), parse_algorithm("4Lw'")]).to cancel_moves(5, :qtm, 0)
 
-    expect(parse_algorithm('Rw').cancellations(parse_algorithm('r2'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('R').cancellations(parse_algorithm('r2'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('R').cancellations(parse_algorithm('r'), 5, :qtm)).to be == 2
-    expect(parse_algorithm("R'").cancellations(parse_algorithm('r'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('Rw').cancellations(parse_algorithm('r'), 5, :qtm)).to be == 0
-    expect(parse_algorithm("Rw'").cancellations(parse_algorithm('r'), 5, :qtm)).to be == 2
-    expect(parse_algorithm('3Rw').cancellations(parse_algorithm('r'), 5, :qtm)).to be == 0
-    expect(parse_algorithm("3Rw'").cancellations(parse_algorithm('r'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('2Lw').cancellations(parse_algorithm('r'), 5, :qtm)).to be == 0
-    expect(parse_algorithm("2Lw'").cancellations(parse_algorithm('r'), 5, :qtm)).to be == 0
-    expect(parse_algorithm('3Lw').cancellations(parse_algorithm('r'), 5, :qtm)).to be == 0
-    expect(parse_algorithm("3Lw'").cancellations(parse_algorithm('r'), 5, :qtm)).to be == 2
-    expect(parse_algorithm('4Lw').cancellations(parse_algorithm('r'), 5, :qtm)).to be == 2
-    expect(parse_algorithm("4Lw'").cancellations(parse_algorithm('r'), 5, :qtm)).to be == 0
+    expect([parse_algorithm('Rw'), parse_algorithm('r2')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('R'), parse_algorithm('r2')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('R'), parse_algorithm('r')]).to cancel_moves(5, :qtm, 2)
+    expect([parse_algorithm("R'"), parse_algorithm('r')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('Rw'), parse_algorithm('r')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm("Rw'"), parse_algorithm('r')]).to cancel_moves(5, :qtm, 2)
+    expect([parse_algorithm('3Rw'), parse_algorithm('r')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm("3Rw'"), parse_algorithm('r')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('2Lw'), parse_algorithm('r')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm("2Lw'"), parse_algorithm('r')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm('3Lw'), parse_algorithm('r')]).to cancel_moves(5, :qtm, 0)
+    expect([parse_algorithm("3Lw'"), parse_algorithm('r')]).to cancel_moves(5, :qtm, 2)
+    expect([parse_algorithm('4Lw'), parse_algorithm('r')]).to cancel_moves(5, :qtm, 2)
+    expect([parse_algorithm("4Lw'"), parse_algorithm('r')]).to cancel_moves(5, :qtm, 0)
   end
 
   it 'should compute cancellations of slice moves to a fat M-slice move correctly' do
-    expect(parse_algorithm('r2').cancellations(parse_algorithm('l2'), 4, :qstm)).to be == 2
-    expect(parse_algorithm('r').cancellations(parse_algorithm("l'"), 4, :qstm)).to be == 1
-    expect(parse_algorithm('r').cancellations(parse_algorithm('l'), 4, :qstm)).to be == 0
-    expect(parse_algorithm('r').cancellations(parse_algorithm('l2'), 4, :qstm)).to be == 0
-    expect(parse_algorithm("r'").cancellations(parse_algorithm('l2'), 4, :qstm)).to be == 0
-    expect(parse_algorithm("r'").cancellations(parse_algorithm("l'"), 4, :qstm)).to be == 0
-    expect(parse_algorithm('r2').cancellations(parse_algorithm('l'), 4, :qstm)).to be == 0
-    expect(parse_algorithm('r2').cancellations(parse_algorithm("l'"), 4, :qstm)).to be == 0
+    expect([parse_algorithm('r2'), parse_algorithm('l2')]).to cancel_moves(4, :qstm, 2)
+    expect([parse_algorithm('r'), parse_algorithm("l'")]).to cancel_moves(4, :qstm, 1)
+    expect([parse_algorithm('r'), parse_algorithm('l')]).to cancel_moves(4, :qstm, 0)
+    expect([parse_algorithm('r'), parse_algorithm('l2')]).to cancel_moves(4, :qstm, 0)
+    expect([parse_algorithm("r'"), parse_algorithm('l2')]).to cancel_moves(4, :qstm, 0)
+    expect([parse_algorithm("r'"), parse_algorithm("l'")]).to cancel_moves(4, :qstm, 0)
+    expect([parse_algorithm('r2'), parse_algorithm('l')]).to cancel_moves(4, :qstm, 0)
+    expect([parse_algorithm('r2'), parse_algorithm("l'")]).to cancel_moves(4, :qstm, 0)
   end
 
   it 'should compute cancellations of fat M-slice moves correctly' do
-    expect(parse_algorithm('M').cancellations(parse_algorithm("M'"), 4, :stm)).to be == 2
-    expect(parse_algorithm('M').cancellations(parse_algorithm('M'), 4, :stm)).to be == 1
-    expect(parse_algorithm('M').cancellations(parse_algorithm('S'), 4, :stm)).to be == 0
-    expect(parse_algorithm('M').cancellations(parse_algorithm("S'"), 4, :stm)).to be == 0
+    expect([parse_algorithm('M'), parse_algorithm("M'")]).to cancel_moves(4, :stm, 2)
+    expect([parse_algorithm('M'), parse_algorithm('M')]).to cancel_moves(4, :stm, 1)
+    expect([parse_algorithm('M'), parse_algorithm('S')]).to cancel_moves(4, :stm, 0)
+    expect([parse_algorithm('M'), parse_algorithm("S'")]).to cancel_moves(4, :stm, 0)
   end
 
   it 'should compute cancellations of rotations correctly' do
-    expect(parse_algorithm('x').cancellations(parse_algorithm('x'), 3, :htm)).to be == 0
-    expect(parse_algorithm('x').cancellations(parse_algorithm("x'"), 3, :htm)).to be == 0
-    expect(parse_algorithm('x').cancellations(parse_algorithm('y'), 3, :htm)).to be == 0
-    expect(parse_algorithm('x').cancellations(parse_algorithm('z'), 3, :htm)).to be == 0
+    expect([parse_algorithm('x'), parse_algorithm('x')]).to cancel_moves(3, :htm, 0)
+    expect([parse_algorithm('x'), parse_algorithm("x'")]).to cancel_moves(3, :htm, 0)
+    expect([parse_algorithm('x'), parse_algorithm('y')]).to cancel_moves(3, :htm, 0)
+    expect([parse_algorithm('x'), parse_algorithm('z')]).to cancel_moves(3, :htm, 0)
   end
 
   it 'should mirror algorithms correctly' do

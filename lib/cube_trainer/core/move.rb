@@ -196,8 +196,7 @@ module CubeTrainer
         case @axis_face
         when other_axis_face then @direction
         when other_axis_face.opposite then @direction.inverse
-        else
-          raise ArgumentError
+        else raise ArgumentError
         end
       end
 
@@ -284,9 +283,7 @@ module CubeTrainer
       end
 
       def prepend_fat_move(other, cube_size)
-        unless same_axis?(other) && translated_direction(other.axis_face) == other.direction.inverse
-          return
-        end
+        return unless compatible_fat_move?(other)
 
         Algorithm.move(
           FatMove.new(other.axis_face.opposite, other.direction, other.inverted_width(cube_size))
@@ -299,6 +296,12 @@ module CubeTrainer
 
       def move_count(_cube_size, _metric = :htm)
         0
+      end
+
+      private
+
+      def compatible_fat_move?(other)
+        same_axis?(other) && translated_direction(other.axis_face) == other.direction.inverse
       end
     end
 
@@ -431,6 +434,14 @@ module CubeTrainer
           rotation = Rotation.new(@axis_face, @direction)
           move = FatMove.new(other.axis_face, other.direction + @direction, other.width)
           Algorithm.new([move, rotation])
+        elsif leaves_inner_slice_move?(other)
+          Algorithm.move(inner_slice_move)
+        elsif other.leaves_inner_slice_move?(self)
+          Algorithm.move(other.inner_slice_move)
+        elsif leaves_inner_fat_mslice_move?(other, cube_size)
+          Algorithm.move(inner_fat_mslice_move(cube_size))
+        elsif other.leaves_inner_fat_mslice_move?(self, cube_size)
+          Algorithm.move(other.inner_fat_mslice_move(cube_size))
         end
       end
 
@@ -456,6 +467,20 @@ module CubeTrainer
 
       protected
 
+      # The outermost slice move inside this fat move.
+      def inner_slice_move
+        raise ArgumentError unless @width >= 2
+
+        SliceMove.new(@axis_face, @direction, @width)
+      end
+
+      # The fat M-slice move inside this fat move.
+      def inner_fat_mslice_move(cube_size)
+        raise ArgumentError unless cube_size.even? && @width == cube_size - 1
+
+        FatMSliceMove.new(@axis_face, @direction)
+      end
+
       def contained_mslice_move?(other, cube_size)
         same_axis?(other) && @width == cube_size - 1 &&
           @direction == other.translated_direction(@axis_face).inverse
@@ -467,6 +492,16 @@ module CubeTrainer
 
       def same_fat_block?(other)
         @axis_face == other.axis_face && @width == other.width
+      end
+
+      def leaves_inner_slice_move?(other)
+        @axis_face == other.axis_face && @width == other.width + 1 &&
+          @direction == other.direction.inverse
+      end
+
+      def leaves_inner_fat_mslice_move?(other, cube_size)
+        cube_size.even? && @axis_face == other.axis_face && @width == cube_size - 1 &&
+          other.width == 1 && @direction == other.direction.inverse
       end
 
       def opposite_fat_block?(other, cube_size)

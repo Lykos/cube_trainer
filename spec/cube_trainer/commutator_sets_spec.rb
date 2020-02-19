@@ -5,7 +5,7 @@ require 'ostruct'
 require 'cube_trainer/commutator_options'
 require 'cube_trainer/stub_results_model'
 
-RSpec.shared_examples 'commutator_set' do |info|
+shared_examples 'commutator_set' do |info|
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:options) do
     options = CommutatorOptions.default_options
