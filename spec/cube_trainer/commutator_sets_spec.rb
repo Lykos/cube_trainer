@@ -16,7 +16,7 @@ shared_examples 'commutator_set' do |info|
   end
   let(:results_model) { StubResultsModel.new }
 
-  it 'should parse all comms correctly and give a hint on the first one' do
+  it 'parses all comms correctly and give a hint on the first one' do
     generator = info.generator_class.new(results_model, options)
     input_item = generator.input_items.sample
     generator.hinter.hints(input_item.representation)

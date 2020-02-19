@@ -11,14 +11,14 @@ end
 
 describe Core::CubePrintHelper do
   include Core
-  include Core::CubePrintHelper
+  include described_class
 
   let(:color_scheme) { ColorScheme::BERNHARD }
 
   context 'when the cube size is 2' do
     let(:cube_size) { 2 }
 
-    it 'should print a solved state correctly' do
+    it 'prints a solved state correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       expected = <<~CUBE.chomp
           YY
@@ -31,7 +31,7 @@ describe Core::CubePrintHelper do
       expect(cube_state.to_s).to be == expected
     end
 
-    it 'should print a state after sexy move correctly' do
+    it 'prints a state after sexy move correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       apply_sexy(cube_state)
       expected = <<~CUBE.chomp
@@ -49,7 +49,7 @@ describe Core::CubePrintHelper do
   context 'when the cube size is 3' do
     let(:cube_size) { 3 }
 
-    it 'should print a solved state correctly' do
+    it 'prints a solved state correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       expected = <<~CUBE.chomp
            YYY
@@ -65,7 +65,7 @@ describe Core::CubePrintHelper do
       expect(cube_state.to_s).to be == expected
     end
 
-    it 'should print a state after sexy move correctly' do
+    it 'prints a state after sexy move correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       apply_sexy(cube_state)
       expected = <<~CUBE.chomp
@@ -86,7 +86,7 @@ describe Core::CubePrintHelper do
   context 'when the cube size is 4' do
     let(:cube_size) { 4 }
 
-    it 'should print a solved state correctly' do
+    it 'prints a solved state correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       expected = <<~CUBE.chomp
             YYYY
@@ -105,7 +105,7 @@ describe Core::CubePrintHelper do
       expect(cube_state.to_s).to be == expected
     end
 
-    it 'should print a state after sexy move correctly' do
+    it 'prints a state after sexy move correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       apply_sexy(cube_state)
       expected = <<~CUBE.chomp

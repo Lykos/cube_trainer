@@ -1,4 +1,6 @@
-require: rubocop-performance
+require:
+- rubocop-performance
+- rubocop-rake
 AllCops:
   Exclude:
   - 'lib/**/*_ui.rb'
@@ -10,6 +12,7 @@ Layout/LineLength:
 Metrics/BlockLength:
   Exclude:
   - 'spec/**/*_spec.rb'
+  - 'Gemfile'
 Style/MultilineBlockChain:
   Exclude:
   - 'spec/**/*_spec.rb'

@@ -11,9 +11,9 @@ describe CrossFinder do
 
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cube_state) { color_scheme.solved_cube_state(3) }
-  let(:cross_finder) { CrossFinder.new }
+  let(:cross_finder) { described_class.new }
 
-  it 'should find an existing cross' do
+  it 'finds an existing cross' do
     expect(cross_finder.find_cross(cube_state, 0).extract_algorithms).to be == {
       yellow: [Core::Algorithm.empty],
       red: [Core::Algorithm.empty],
@@ -24,12 +24,12 @@ describe CrossFinder do
     }
   end
 
-  it 'should not find a cross that takes too many moves' do
+  it 'does not find a cross that takes too many moves' do
     parse_algorithm('U R F').apply_to(cube_state)
     expect(cross_finder.find_cross(cube_state, 1).extract_algorithms).to be == {}
   end
 
-  it 'should find a one move cross' do
+  it 'finds a one move cross' do
     parse_algorithm('U R').apply_to(cube_state)
     expect(cross_finder.find_cross(cube_state, 1).extract_algorithms).to be == {
       blue: [parse_algorithm('U\'')],

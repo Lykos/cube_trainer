@@ -15,13 +15,14 @@ describe WCA::ExportParser do
         zipfile.add(File.basename(input_file), input_file)
       end
     end
-    @parser = WCA::ExportParser.parse(filename)
+    @parser = described_class.parse(filename)
   end
 
-  let(:extractor) { WCA::StatsExtractor.new(@parser) }
+  let(:parser) { @parser }
+  let(:extractor) { WCA::StatsExtractor.new(parser) }
 
-  it 'should read the scrambles of a WCA export' do
-    expect(@parser.scrambles).to be == [{
+  it 'reads the scrambles of a WCA export' do
+    expect(parser.scrambles).to be == [{
       scrambleid: 657_918,
       competitionid: 'BerlinKubusProjekt2017',
       eventid: '222',
@@ -33,13 +34,13 @@ describe WCA::ExportParser do
     }]
   end
 
-  it 'should read the results of a WCA export' do
+  it 'reads the results of a WCA export' do
     # TODO: Improve this
-    expect(@parser.results.first[:personid]).to be == '2016BROD01'
+    expect(parser.results.first[:personid]).to be == '2016BROD01'
   end
 
-  it 'should read the countries of a WCA export' do
-    expect(@parser.countries).to be == { 'Germany' => {
+  it 'reads the countries of a WCA export' do
+    expect(parser.countries).to be == { 'Germany' => {
       id: 'Germany',
       name: 'Germany',
       continentid: '_Europe',
@@ -47,8 +48,8 @@ describe WCA::ExportParser do
     } }
   end
 
-  it 'should read the continents of a WCA export' do
-    expect(@parser.continents).to be == { '_Europe' => {
+  it 'reads the continents of a WCA export' do
+    expect(parser.continents).to be == { '_Europe' => {
       id: '_Europe',
       name: 'Europe',
       recordname: 'ER',
@@ -58,13 +59,19 @@ describe WCA::ExportParser do
     } }
   end
 
-  it 'should figure out whether someone nemesizes someone' do
+  it 'figures out whether someone nemesizes someone' do
     expect(extractor.nemesis?('2016BROD01', '2017BROD01')).to be true
+  end
+
+  it 'figures out whether someone does not nemesize someone' do
     expect(extractor.nemesis?('2017BROD01', '2016BROD01')).to be false
   end
 
-  it 'should find nemeses' do
+  it 'finds nemeses if they are empty' do
     expect(extractor.nemeses('2016BROD01')).to be == []
+  end
+
+  it 'finds nemeses if one exists' do
     expect(extractor.nemeses('2017BROD01')).to be == ['2016BROD01']
   end
 end

@@ -59,7 +59,7 @@ shared_examples 'cube_state' do |cube_size|
 
   let(:cube_state) { create_interesting_cube_state(cube_size) }
 
-  it 'should not be equal to a state with one sticker changed' do
+  it 'is not equal to a state with one sticker changed' do
     property_of do
       Rantly { cube_coordinate(cube_size) }
     end.check do |c|
@@ -69,7 +69,7 @@ shared_examples 'cube_state' do |cube_size|
     end
   end
 
-  it 'should have the right state after applying a nice corner commutator' do
+  it 'has the right state after applying a nice corner commutator' do
     construct_cycle(Core::Corner, %w[c d k]).apply_to(cube_state)
     changed_parts = {
       [:U, cube_size - 1, cube_size - 1] => :green,
@@ -83,7 +83,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a nasty corner commutator' do
+  it 'has the right state after applying a nasty corner commutator' do
     construct_cycle(Core::Corner, %w[c h g]).apply_to(cube_state)
     changed_parts = {
       [:U, cube_size - 1, cube_size - 1] => :red,
@@ -97,7 +97,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a U move' do
+  it 'has the right state after applying a U move' do
     parse_algorithm('U').apply_to(cube_state)
     changed_parts = {
       [:F, 0, 1] => :blue,
@@ -118,7 +118,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it "should have the right state after applying a U' move" do
+  it "has the right state after applying a U' move" do
     parse_algorithm("U'").apply_to(cube_state)
     changed_parts = {
       [:F, 0, cube_size - 2] => :green,
@@ -143,7 +143,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a R move' do
+  it 'has the right state after applying a R move' do
     parse_algorithm('R').apply_to(cube_state)
     changed_parts = {
       [:F, cube_size - 2, 0] => :yellow,
@@ -160,7 +160,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it "should have the right state after applying a R' move" do
+  it "has the right state after applying a R' move" do
     parse_algorithm("R'").apply_to(cube_state)
     changed_parts = {
       [:F, 1, 0] => :white,
@@ -177,7 +177,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a F move' do
+  it 'has the right state after applying a F move' do
     parse_algorithm('F').apply_to(cube_state)
     changed_parts = {
       [:R, cube_size - 2, 0] => :white,
@@ -194,7 +194,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it "should have the right state after applying a F' move" do
+  it "has the right state after applying a F' move" do
     parse_algorithm("F'").apply_to(cube_state)
     changed_parts = {
       [:R, 1, 0] => :yellow,
@@ -211,7 +211,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a B move' do
+  it 'has the right state after applying a B move' do
     parse_algorithm('B').apply_to(cube_state)
     changed_parts = {
       [:R, 1, cube_size - 1] => :yellow,
@@ -228,7 +228,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a B2 move' do
+  it 'has the right state after applying a B2 move' do
     parse_algorithm('B2').apply_to(cube_state)
     changed_parts = {
       [:U, cube_size - 1, cube_size - 2] => :yellow,
@@ -245,7 +245,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it "should have the right state after applying a B' move" do
+  it "has the right state after applying a B' move" do
     parse_algorithm("B'").apply_to(cube_state)
     changed_parts = {
       [:R, cube_size - 2, cube_size - 1] => :white,
@@ -262,7 +262,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a L move' do
+  it 'has the right state after applying a L move' do
     parse_algorithm('L').apply_to(cube_state)
     changed_parts = {
       [:F, 1, cube_size - 1] => :white,
@@ -279,7 +279,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it "should have the right state after applying a L' move" do
+  it "has the right state after applying a L' move" do
     parse_algorithm("L'").apply_to(cube_state)
     changed_parts = {
       [:F, cube_size - 2, cube_size - 1] => :yellow,
@@ -296,7 +296,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a D move' do
+  it 'has the right state after applying a D move' do
     parse_algorithm('D').apply_to(cube_state)
     changed_parts = {
       [:F, cube_size - 1, cube_size - 2] => :green,
@@ -321,7 +321,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it "should have the right state after applying a D' move" do
+  it "has the right state after applying a D' move" do
     parse_algorithm("D'").apply_to(cube_state)
     changed_parts = {
       [:F, cube_size - 1, 1] => :blue,
@@ -342,7 +342,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying an y rotation' do
+  it 'has the right state after applying an y rotation' do
     parse_algorithm('y').apply_to(cube_state)
     changed_parts = {}
     0.upto(cube_size - 1) do |x|
@@ -366,7 +366,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it "should have the right state after applying an y' rotation" do
+  it "has the right state after applying an y' rotation" do
     parse_algorithm("y'").apply_to(cube_state)
     changed_parts = {}
     0.upto(cube_size - 1) do |x|
@@ -396,7 +396,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should have the right state after applying a x rotaton' do
+  it 'has the right state after applying a x rotaton' do
     parse_algorithm('x').apply_to(cube_state)
     changed_parts = {}
     0.upto(cube_size - 1) do |x|
@@ -422,7 +422,7 @@ shared_examples 'cube_state' do |cube_size|
     expect_stickers_changed(cube_state, changed_parts)
   end
 
-  it 'should do fat U moves like D y' do
+  it 'does fat U moves like D y' do
     fat_move = (cube_size - 1).to_s + 'Uw'
     parse_algorithm(fat_move).apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
@@ -430,7 +430,7 @@ shared_examples 'cube_state' do |cube_size|
     expect(cube_state).to be == expected_cube_state
   end
 
-  it 'should do fat R moves like L x' do
+  it 'does fat R moves like L x' do
     fat_move = (cube_size - 1).to_s + 'Rw'
     parse_algorithm(fat_move).apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
@@ -438,7 +438,7 @@ shared_examples 'cube_state' do |cube_size|
     expect(cube_state).to be == expected_cube_state
   end
 
-  it 'should do fat F moves like B z' do
+  it 'does fat F moves like B z' do
     fat_move = (cube_size - 1).to_s + 'Fw'
     parse_algorithm(fat_move).apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
@@ -446,14 +446,14 @@ shared_examples 'cube_state' do |cube_size|
     expect(cube_state).to be == expected_cube_state
   end
 
-  it 'should do a Niklas alg properly' do
+  it 'does a Niklas alg properly' do
     parse_algorithm("U' L' U R U' L U R'").apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
     construct_cycle(Core::Corner, %w[c i j]).apply_to(expected_cube_state)
     expect(cube_state).to be == expected_cube_state
   end
 
-  it 'should do a TK wing alg properly if the cube is big enough' do
+  it 'does a TK wing alg properly if the cube is big enough' do
     if cube_size >= 4
       parse_algorithm("U' R' U r2 U' R U r2").apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
@@ -462,7 +462,7 @@ shared_examples 'cube_state' do |cube_size|
     end
   end
 
-  it 'should do the T perm properly' do
+  it 'does the T perm properly' do
     cube_state = color_scheme.solved_cube_state(cube_size)
     parse_algorithm("R U R' U' R' F R2 U' R' U' R U R' F'").apply_to(cube_state)
     expected_cube_state = color_scheme.solved_cube_state(cube_size)
@@ -480,7 +480,7 @@ shared_examples 'cube_state' do |cube_size|
     expect(cube_state).to be == expected_cube_state
   end
 
-  it 'should do an E move properly if the cube size is odd' do
+  it 'does an E move properly if the cube size is odd' do
     if cube_size.odd?
       parse_algorithm('E').apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
@@ -491,7 +491,7 @@ shared_examples 'cube_state' do |cube_size|
     end
   end
 
-  it 'should do an S move properly if the cube size is odd' do
+  it 'does an S move properly if the cube size is odd' do
     if cube_size.odd?
       parse_algorithm('S').apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
@@ -502,7 +502,7 @@ shared_examples 'cube_state' do |cube_size|
     end
   end
 
-  it 'should do an M move properly if the cube size is odd' do
+  it 'does an M move properly if the cube size is odd' do
     if cube_size.odd?
       parse_algorithm('M').apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
@@ -513,7 +513,7 @@ shared_examples 'cube_state' do |cube_size|
     end
   end
 
-  it "should do an E' move properly if the cube size is odd" do
+  it "does an E' move properly if the cube size is odd" do
     if cube_size.odd?
       parse_algorithm("E'").apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
@@ -524,7 +524,7 @@ shared_examples 'cube_state' do |cube_size|
     end
   end
 
-  it "should do an S' move properly if the cube size is odd" do
+  it "does an S' move properly if the cube size is odd" do
     if cube_size.odd?
       parse_algorithm("S'").apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
@@ -535,7 +535,7 @@ shared_examples 'cube_state' do |cube_size|
     end
   end
 
-  it "should do an M' move properly if the cube size is odd" do
+  it "does an M' move properly if the cube size is odd" do
     if cube_size.odd?
       parse_algorithm("M'").apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)

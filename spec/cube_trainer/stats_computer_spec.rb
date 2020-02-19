@@ -55,25 +55,25 @@ describe StatsComputer do
     results.each { |r| persistence.record_result(r) }
     persistence
   end
-  let(:computer) { StatsComputer.new(now, options, results_persistence) }
+  let(:computer) { described_class.new(now, options, results_persistence) }
 
-  it 'should compute detailed averages for all our results' do
+  it 'computes detailed averages for all our results' do
     fill_letter_averages = fill_letter_pairs.map { |ls| [ls, 1.0] }
     expected = [[letter_pair_b, 10.0], [letter_pair_a, 3.0]] + fill_letter_averages
     expect(computer.averages).to be == expected
   end
 
-  it 'should compute which are our bad results' do
+  it 'computes which are our bad results' do
     expected_bad_results = [[1.0, 2], [1.1, 2], [1.2, 2], [1.3, 2], [1.4, 2], [1.5, 2]]
     expect(computer.bad_results).to be == expected_bad_results
   end
 
-  it 'should compute how many results we had now and 24 hours ago' do
+  it 'computes how many results we had now and 24 hours ago' do
     expect(computer.total_average).to be == (26 * 1.0 + 10.0 + 3.0) / 28
     expect(computer.old_total_average).to be == (26 * 1.0 + 12.0) / 27
   end
 
-  it 'should compute how long each part of the solve takes' do
+  it 'computes how long each part of the solve takes' do
     stats = computer.expected_time_per_type_stats
     names = %w[corner_3twists corners edges floating_2flips floating_2twists]
     expect(stats.map { |s| s[:name] }.sort).to be == names
@@ -90,7 +90,7 @@ describe StatsComputer do
     end
   end
 
-  it 'should compute how many items we have already seen and how many are new' do
+  it 'computes how many items we have already seen and how many are new' do
     inputs = [letter_pair_a, letter_pair_b, letter_pair_c].map { |ls| InputItem.new(ls) }
     stats = computer.input_stats(inputs)
     expect(stats[:found]).to be == 2

@@ -19,7 +19,7 @@ shared_examples 'compiled_cube_algorithm' do |cube_size|
   let(:compile_then_transform_cube_state) { cube_state.dup }
   let(:transform_then_compile_cube_state) { cube_state.dup }
 
-  it 'should go back to the old state if we apply an algorithm and then the inverse' do
+  it 'goes back to the old state if we apply an algorithm and then the inverse' do
     property_of do
       Rantly { cube_algorithm(cube_size) }
     end.check do |a|
@@ -30,7 +30,7 @@ shared_examples 'compiled_cube_algorithm' do |cube_size|
     end
   end
 
-  it 'should behave the same if we mirror then compile or if we compile then mirror' do
+  it 'behaves the same if we mirror then compile or if we compile then mirror' do
     property_of do
       Rantly { [cube_algorithm(cube_size), face] }
     end.check do |a, f|
@@ -40,7 +40,7 @@ shared_examples 'compiled_cube_algorithm' do |cube_size|
     end
   end
 
-  it 'should behave the same if we rotate then compile or if we compile then rotate' do
+  it 'behaves the same if we rotate then compile or if we compile then rotate' do
     property_of do
       Rantly { [cube_algorithm(cube_size), rotation] }
     end.check do |a, r|
@@ -50,7 +50,7 @@ shared_examples 'compiled_cube_algorithm' do |cube_size|
     end
   end
 
-  it 'should behave the same if we invert then compile or if we compile then invert' do
+  it 'behaves the same if we invert then compile or if we compile then invert' do
     property_of do
       Rantly { cube_algorithm(cube_size) }
     end.check do |a|
@@ -60,7 +60,7 @@ shared_examples 'compiled_cube_algorithm' do |cube_size|
     end
   end
 
-  it 'should behave the same if we concatenate then compile or if we compile then concatenate' do
+  it 'behaves the same if we concatenate then compile or if we compile then concatenate' do
     property_of do
       Rantly { [cube_algorithm(cube_size), cube_algorithm(cube_size)] }
     end.check do |a, b|

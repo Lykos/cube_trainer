@@ -17,6 +17,7 @@ source 'https://rubygems.org' do
     gem 'rake-compiler'
     gem 'rubocop'
     gem 'rubocop-performance', require: false
+    gem 'rubocop-rake', require: false
   end
   group :test do
     gem 'rantly'

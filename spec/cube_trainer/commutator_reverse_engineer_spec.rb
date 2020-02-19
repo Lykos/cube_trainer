@@ -11,38 +11,38 @@ describe CommutatorReverseEngineer do
 
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:cube_size) { 3 }
-  let(:engineer) { CommutatorReverseEngineer.new(part_type, buffer, letter_scheme, cube_size) }
+  let(:engineer) { described_class.new(part_type, buffer, letter_scheme, cube_size) }
 
   context 'for corners' do
     let(:part_type) { Core::Corner }
     let(:buffer) { Core::Corner.for_face_symbols(%i[U L B]) }
 
-    it 'should find the letters of ig' do
+    it 'finds the letters of ig' do
       alg = parse_commutator("[L', U R U']").algorithm
       expect(engineer.find_letter_pair(alg)).to be == LetterPair.new(%w[i g])
     end
 
-    it 'should find the letters of gi' do
+    it 'finds the letters of gi' do
       alg = parse_commutator("[U R U', L']").algorithm
       expect(engineer.find_letter_pair(alg)).to be == LetterPair.new(%w[g i])
     end
 
-    it 'should find the letters of tg' do
+    it 'finds the letters of tg' do
       alg = parse_commutator("[L', U R' U']").algorithm
       expect(engineer.find_letter_pair(alg)).to be == LetterPair.new(%w[t g])
     end
 
-    it 'should find the letters of gt' do
+    it 'finds the letters of gt' do
       alg = parse_commutator("[U R' U', L']").algorithm
       expect(engineer.find_letter_pair(alg)).to be == LetterPair.new(%w[g t])
     end
 
-    it 'should find the letters of it' do
+    it 'finds the letters of it' do
       alg = parse_commutator("[D U R U' : [D', R' U R]]").algorithm
       expect(engineer.find_letter_pair(alg)).to be == LetterPair.new(%w[i t])
     end
 
-    it 'should find the letters of ti' do
+    it 'finds the letters of ti' do
       alg = parse_commutator("[D U R U' : [R' U R, D']]").algorithm
       expect(engineer.find_letter_pair(alg)).to be == LetterPair.new(%w[t i])
     end
@@ -52,7 +52,7 @@ describe CommutatorReverseEngineer do
     let(:part_type) { Core::Edge }
     let(:buffer) { Core::Edge.for_face_symbols(%i[U F]) }
 
-    it 'should find the letters of a simple alg' do
+    it 'finds the letters of a simple alg' do
       alg = parse_commutator("[R' F R, S]").algorithm
       expect(engineer.find_letter_pair(alg)).to be == LetterPair.new(%w[i c])
     end

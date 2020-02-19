@@ -3,7 +3,7 @@
 require 'cube_trainer/color_scheme'
 
 describe ColorScheme do
-  it 'should return the right colors for the Bernhard orientation' do
+  it 'returns the right colors for the Bernhard orientation' do
     expect(ColorScheme::BERNHARD.color(:U)).to be == :yellow
     expect(ColorScheme::BERNHARD.color(:F)).to be == :red
     expect(ColorScheme::BERNHARD.color(:R)).to be == :green
@@ -12,7 +12,7 @@ describe ColorScheme do
     expect(ColorScheme::BERNHARD.color(:D)).to be == :white
   end
 
-  it 'should return the right colors for the WCA orientation' do
+  it 'returns the right colors for the WCA orientation' do
     expect(ColorScheme::WCA.color(:U)).to be == :white
     expect(ColorScheme::WCA.color(:F)).to be == :green
     expect(ColorScheme::WCA.color(:R)).to be == :red

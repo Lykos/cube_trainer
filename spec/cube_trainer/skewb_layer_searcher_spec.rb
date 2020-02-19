@@ -27,27 +27,27 @@ describe SkewbLayerSearcher do
       two_move_alg = two_move_algs[0]
       expect(two_move_alg.length).to be == 2
       expect(two_move_alg.moves.last).to be == one_move_alg.moves.first
-      expect(first_moves.add?(two_move_alg.moves.first)).to be_truthy
+      expect(first_moves).to be_add(two_move_alg.moves.first)
     end
   end
 
-  it 'should find all 0 move layers' do
-    algss = SkewbLayerSearcher.calculate(color_scheme, verbose, 0)
+  it 'finds all 0 move layers' do
+    algss = described_class.calculate(color_scheme, verbose, 0)
 
     expect(algss.length).to be == 1
     verify_zero_move_algs(algss[0])
   end
 
-  it 'should find all 0-1 move layers' do
-    algss = SkewbLayerSearcher.calculate(color_scheme, verbose, 1)
+  it 'finds all 0-1 move layers' do
+    algss = described_class.calculate(color_scheme, verbose, 1)
 
     expect(algss.length).to be == 2
     verify_zero_move_algs(algss[0])
     verify_one_move_algs(algss[1])
   end
 
-  it 'should find all 0-2 move layers' do
-    algss = SkewbLayerSearcher.calculate(color_scheme, verbose, 2)
+  it 'finds all 0-2 move layers' do
+    algss = described_class.calculate(color_scheme, verbose, 2)
 
     expect(algss.length).to be == 8
     verify_zero_move_algs(algss[0])

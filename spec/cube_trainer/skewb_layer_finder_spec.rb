@@ -15,88 +15,88 @@ describe SkewbLayerFinder do
   let(:skewb_state) { color_scheme.solved_skewb_state }
 
   context 'when restricted' do
-    let(:layer_finder) { SkewbLayerFinder.new([:white]) }
+    let(:layer_finder) { described_class.new([:white]) }
 
-    it 'should find an existing layer' do
+    it 'finds an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to be == {
         white: [Core::Algorithm.empty]
       }
     end
 
-    it 'should find the perfect score without moves' do
+    it 'finds the perfect score without moves' do
       expect(layer_finder.state_score(skewb_state)).to be == 4
     end
 
-    it 'should find the score after one move' do
+    it 'finds the score after one move' do
       parse_fixed_corner_skewb_algorithm('R').apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 3
     end
 
-    it 'should find the score after two moves that destroy adjacent things' do
+    it 'finds the score after two moves that destroy adjacent things' do
       parse_fixed_corner_skewb_algorithm('R U').apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
-    it 'should find the score after two moves that destroy opposite things' do
+    it 'finds the score after two moves that destroy opposite things' do
       parse_fixed_corner_skewb_algorithm('R L').apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
-    it 'should find the score after three moves' do
+    it 'finds the score after three moves' do
       parse_fixed_corner_skewb_algorithm('R U R').apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
-    it 'should find the score after three moves' do
+    it 'finds the score after three moves' do
       parse_fixed_corner_skewb_algorithm("B' L' U'").apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
-    it 'should find the score after three destructive moves' do
+    it 'finds the score after three destructive moves' do
       parse_fixed_corner_skewb_algorithm('R U B').apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 1
     end
 
-    it 'should find the score after three destructive moves' do
+    it 'finds the score after three destructive moves' do
       parse_fixed_corner_skewb_algorithm('R U L').apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 1
     end
 
-    it 'should find the score after moves that create pseudo adjacent things' do
+    it 'finds the score after moves that create pseudo adjacent things' do
       parse_sarahs_skewb_algorithm("B R B F'").apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 1
     end
 
-    it 'should find the score for the pseudo solved layer' do
+    it 'finds the score for the pseudo solved layer' do
       parse_sarahs_skewb_algorithm("L B' R B' L' B' L'").apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
-    it 'should find the score for a layer with 3 solved pieces with pseudo adjacency' do
+    it 'finds the score for a layer with 3 solved pieces with pseudo adjacency' do
       parse_sarahs_skewb_algorithm("F' R B' R'").apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
-    it 'should find a one move layer' do
+    it 'finds a one move layer' do
       parse_fixed_corner_skewb_algorithm('U').apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to be == {
         white: [parse_fixed_corner_skewb_algorithm("U'")]
       }
     end
 
-    it 'should find a two move layer' do
+    it 'finds a two move layer' do
       parse_fixed_corner_skewb_algorithm('U R').apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to be == {
         white: [parse_fixed_corner_skewb_algorithm("R' U'")]
       }
     end
 
-    it 'should not find a layer that takes too many moves' do
+    it 'does not find a layer that takes too many moves' do
       parse_fixed_corner_skewb_algorithm('U R').apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to be == {}
     end
 
-    it 'should find multiple solutions if applicable' do
+    it 'finds multiple solutions if applicable' do
       parse_fixed_corner_skewb_algorithm("B L'").apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to be == {
         white: [parse_fixed_corner_skewb_algorithm("L B'")]
@@ -105,9 +105,9 @@ describe SkewbLayerFinder do
   end
 
   context 'when unrestricted' do
-    let(:layer_finder) { SkewbLayerFinder.new }
+    let(:layer_finder) { described_class.new }
 
-    it 'should find an existing layer' do
+    it 'finds an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to be == {
         yellow: [Core::Algorithm.empty],
         red: [Core::Algorithm.empty],
@@ -118,7 +118,7 @@ describe SkewbLayerFinder do
       }
     end
 
-    it 'should find a one move layer' do
+    it 'finds a one move layer' do
       parse_fixed_corner_skewb_algorithm('U').apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to be == {
         yellow: [parse_fixed_corner_skewb_algorithm("U'")],
@@ -130,7 +130,7 @@ describe SkewbLayerFinder do
       }
     end
 
-    it 'should find a two move layer' do
+    it 'finds a two move layer' do
       parse_fixed_corner_skewb_algorithm('U R').apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to be == {
         yellow: [parse_fixed_corner_skewb_algorithm("R' U'")],
@@ -142,12 +142,12 @@ describe SkewbLayerFinder do
       }
     end
 
-    it 'should not find a layer that takes too many moves' do
+    it 'does not find a layer that takes too many moves' do
       parse_fixed_corner_skewb_algorithm('U R').apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to be == {}
     end
 
-    it 'should find multiple solutions if applicable' do
+    it 'finds multiple solutions if applicable' do
       parse_fixed_corner_skewb_algorithm("B L'").apply_to(skewb_state)
       expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to be == {
         yellow: [parse_fixed_corner_skewb_algorithm("L B'")],

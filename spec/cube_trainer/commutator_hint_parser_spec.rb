@@ -23,7 +23,7 @@ describe HintParser do
     )
   end
 
-  it 'should parse a valid hint table correctly' do
+  it 'parses a valid hint table correctly' do
     table = [
       ["[L', U R U']", '', "[L', U R' U']"],
       ['', "[U R U', L']", "[D U R U' : [R' U R, D']]"],
@@ -39,7 +39,7 @@ describe HintParser do
     }
   end
 
-  it 'should parse a hint table with single entries per row/column correctly' do
+  it 'parses a hint table with single entries per row/column correctly' do
     table = [
       ["[L', U R U']", ''],
       ['', "[U R U', L']"]

@@ -23,10 +23,10 @@ end
 describe InputSampler do
   ITEMS = ('a'..'c').to_a.permutation(2).collect { |p| InputItem.new(LetterPair.new(p)) }
 
-  it 'should perform better than random sampling' do
+  it 'performs better than random sampling' do
     results_persistence = ResultsPersistence.create_in_memory
     results_model = ResultsModel.new(:items, results_persistence)
-    smart_sampler = InputSampler.new(ITEMS, results_model, 1.0)
+    smart_sampler = described_class.new(ITEMS, results_model, 1.0)
     smart_average = compute_average(results_model, smart_sampler)
 
     results_persistence = ResultsPersistence.create_in_memory
