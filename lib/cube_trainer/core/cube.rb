@@ -6,6 +6,7 @@ require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
   module Core
+    # Base class of cube parts. Represents one part or the position of one part on the cube.
     class Part
       include Utils::ArrayHelper
       extend Utils::ArrayHelper
@@ -259,6 +260,7 @@ module CubeTrainer
       FACE_SYMBOLS.map { |s| const_set(s, for_face_symbol(s)) }
     end
 
+    # Base class of moveable centers. Represents one moveable center or the position of one moveable center on the cube.
     class MoveableCenter < Part
       FACES = 1
 
@@ -322,12 +324,14 @@ module CubeTrainer
       end
     end
 
+    # Module for methods that are common to all edge-like part classes.
     module EdgeLike
       def valid?(face_symbols)
         CubeConstants::OPPOSITE_FACE_SYMBOLS.none? { |ss| ss.sort == face_symbols.sort }
       end
     end
 
+    # Represents one edge or the position of one edge on the cube.
     class Edge < Part
       FACES = 2
 
@@ -346,6 +350,7 @@ module CubeTrainer
       end
     end
 
+    # Represents one midge or the position of one midge on the cube.
     class Midge < Part
       FACES = 2
 
@@ -363,6 +368,7 @@ module CubeTrainer
       end
     end
 
+    # Represents one wing or the position of one wing on the cube.
     class Wing < Part
       FACES = 2
 
@@ -421,11 +427,14 @@ module CubeTrainer
       end
     end
 
+    # Represents one corner or the position of one corner on the cube.
     class Corner < Part
       FACES = 3
 
       def self.create_for_face_symbols(face_symbols)
-        piece_candidates = face_symbols[1..-1].permutation.collect { |cs| new([face_symbols[0]] + cs) }
+        piece_candidates = face_symbols[1..-1].permutation.collect do |cs|
+          new([face_symbols[0]] + cs)
+        end
         find_only(piece_candidates, &:valid?)
       end
 
@@ -434,7 +443,11 @@ module CubeTrainer
           raise "Invalid number of face_symbols to create a corner: #{face_symbols.inspect}"
         end
 
-        valid?(face_symbols) ? for_face_symbols_internal(face_symbols) : for_face_symbols_internal([face_symbols[0], face_symbols[2], face_symbols[1]])
+        if valid?(face_symbols)
+          for_face_symbols_internal(face_symbols)
+        else
+          for_face_symbols_internal([face_symbols[0], face_symbols[2], face_symbols[1]])
+        end
       end
 
       def self.valid_between_faces?(faces)
@@ -445,10 +458,14 @@ module CubeTrainer
         for_face_symbols(faces.collect(&:face_symbol))
       end
 
-      # Rotate such that neither the current face symbol nor the given face symbol are at the position of the letter.
+      # Rotate such that neither the current face symbol nor the given face symbol are at the
+      # position of the letter.
       def rotate_other_face_symbol_up(face_symbol)
         index = @face_symbols.index(face_symbol)
-        raise ArgumentError, "Part #{self} doesn't have face symbol #{face_symbol}." unless index
+        unless index
+          raise ArgumentError, "Part #{self} doesn't have face symbol #{face_symbol}."
+        end
+
         if index.zero?
           raise ArgumentError, "Part #{self} already has face symbol #{face_symbol} up, so " \
                                "`rotate_other_face_symbol_up(#{face_symbol}) is invalid."
@@ -457,8 +474,8 @@ module CubeTrainer
         rotate_by(3 - index)
       end
 
-      def rotate_other_face_up(f)
-        rotate_other_face_symbol_up(f.face_symbol)
+      def rotate_other_face_up(face)
+        rotate_other_face_symbol_up(face.face_symbol)
       end
 
       def self.valid?(face_symbols)
@@ -495,6 +512,7 @@ module CubeTrainer
       end
     end
 
+    # Represents one X center or the position of one X center on the cube.
     class XCenter < MoveableCenter
       CORRESPONDING_PART_CLASS = Corner
       ELEMENTS = generate_parts
@@ -509,6 +527,7 @@ module CubeTrainer
       end
     end
 
+    # Represents one T center or the position of one T center on the cube.
     class TCenter < MoveableCenter
       CORRESPONDING_PART_CLASS = Edge
       ELEMENTS = generate_parts
