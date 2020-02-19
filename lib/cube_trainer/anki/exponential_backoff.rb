@@ -4,6 +4,8 @@ require 'cube_trainer/utils/random_helper'
 
 module CubeTrainer
   module Anki
+    # Helper class that returns a backoff in seconds for each iteration.
+    # Allows to retry things with exponential backoff.
     class ExponentialBackoff
       include Utils::RandomHelper
 
