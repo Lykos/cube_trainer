@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module CubeTrainer
+  # Module that contains methods to extract the mode and buffer from an options struct.
   module BufferHelper
     def self.determine_buffer(part_type, options)
       if options.buffer
