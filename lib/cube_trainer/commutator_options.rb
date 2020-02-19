@@ -12,6 +12,7 @@ require 'cube_trainer/letter_scheme'
 require 'cube_trainer/alg_sets'
 
 module CubeTrainer
+  # Command line options for `commutators` binary.
   class CommutatorOptions
     CommutatorInfo = Struct.new(:result_symbol, :generator_class, :learner_class, :default_cube_size, :has_buffer?)
     COMMUTATOR_TYPES = {
