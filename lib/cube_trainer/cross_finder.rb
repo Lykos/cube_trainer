@@ -19,7 +19,9 @@ module CubeTrainer
     end
 
     def cross_adjustments(face)
-      (@cross_adjustments ||= {})[face] ||= Core::CubeDirection::NON_ZERO_DIRECTIONS.map { |d| Core::Algorithm.move(Core::FatMove.new(face, d, 1)) }
+      (@cross_adjustments ||= {})[face] ||= Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
+        Core::Algorithm.move(Core::FatMove.new(face, d, 1))
+      end
     end
 
     def no_auf_score_on_face(state, face)
