@@ -13,10 +13,6 @@ require 'cube_trainer/skewb_transformation_describer'
 require 'cube_trainer/skewb_layer_searcher_options'
 require 'csv'
 
-include CubeTrainer
-include Core
-include CubePrintHelper
-
 TITLE_ROW = [
   'case description',
   'main alg',
@@ -27,9 +23,12 @@ TITLE_ROW = [
   'tags'
 ].freeze
 
-options = SkewbLayerSearcherOptions.parse(ARGV)
-solutions = SkewbLayerSearcher.calculate(options.color_scheme, options.verbose, options.depth)
-layer_improver = SkewbLayerImprover.new(Face::D, options.color_scheme)
+options = CubeTrainer::SkewbLayerSearcherOptions.parse(ARGV)
+solutions = CubeTrainer::SkewbLayerSearcher.calculate(options.color_scheme,
+                                                      options.verbose,
+                                                      options.depth)
+layer_improver = CubeTrainer::SkewbLayerImprover.new(CubeTrainer::Core::Face::D,
+                                                     options.color_scheme)
 solutions = solutions.map do |algs|
   algs.map { |alg| layer_improver.improve_layer(alg) }
 end
@@ -42,7 +41,7 @@ if options.verbose
   state = options.color_scheme.solved_skewb_state
   solutions.each do |algs|
     algs.first.inverse.apply_temporarily_to(state) do
-      puts skewb_string(state, :color)
+      puts state.colored_to_s
       puts algs
       puts
     end
@@ -60,21 +59,22 @@ if options.output
     puts "Read #{names.length} names."
   end
   state = options.color_scheme.solved_skewb_state
-  top_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == :U }
-  bottom_corners = Corner::ELEMENTS.select { |c| c.face_symbols.first == :D }
-  non_bottom_faces = Face::ELEMENTS.reject { |c| c.face_symbol == :D }
+  top_corners = CubeTrainer::Core::Corner::ELEMENTS.select { |c| c.face_symbols.first == :U }
+  bottom_corners = CubeTrainer::Core::Corner::ELEMENTS.select { |c| c.face_symbols.first == :D }
+  non_bottom_faces = CubeTrainer::Core::Face::ELEMENTS.reject { |c| c.face_symbol == :D }
   layer_corners_letter_scheme = options.layer_corners_as_letters ? options.letter_scheme : nil
-  layer_describer = SkewbTransformationDescriber.new(
+  layer_describer = CubeTrainer::Core::SkewbTransformationDescriber.new(
     [], bottom_corners, :omit_staying, options.color_scheme, layer_corners_letter_scheme
   )
-  center_describer = SkewbTransformationDescriber.new(
+  center_describer = CubeTrainer::Core::SkewbTransformationDescriber.new(
     non_bottom_faces, [], :omit_staying, options.color_scheme
   )
   top_corners_letter_scheme = options.top_corners_as_letters ? options.letter_scheme : nil
-  top_corner_describer = SkewbTransformationDescriber.new(
+  top_corner_describer = CubeTrainer::Core::SkewbTransformationDescriber.new(
     [], top_corners, :show_staying, options.color_scheme, top_corners_letter_scheme
   )
-  layer_classifier = SkewbLayerClassifier.new(Face::D, options.color_scheme)
+  layer_classifier = CubeTrainer::Core::SkewbLayerClassifier.new(CubeTrainer::Core::Face::D,
+                                                                 options.color_scheme)
 
   CSV.open(options.output, 'wb', col_sep: "\t") do |csv|
     csv << TITLE_ROW

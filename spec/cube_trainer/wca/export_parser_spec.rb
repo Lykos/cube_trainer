@@ -2,6 +2,7 @@
 
 require 'cube_trainer/core/parser'
 require 'cube_trainer/wca/export_parser'
+require 'cube_trainer/wca/stats_extractor'
 require 'tempfile'
 
 describe WCA::ExportParser do
@@ -16,6 +17,8 @@ describe WCA::ExportParser do
     end
     @parser = WCA::ExportParser.parse(filename)
   end
+
+  let(:extractor) { WCA::StatsExtractor.new(@parser) }
 
   it 'should read the scrambles of a WCA export' do
     expect(@parser.scrambles).to be == [{
@@ -56,12 +59,12 @@ describe WCA::ExportParser do
   end
 
   it 'should figure out whether someone nemesizes someone' do
-    expect(@parser.nemesis?('2016BROD01', '2017BROD01')).to be true
-    expect(@parser.nemesis?('2017BROD01', '2016BROD01')).to be false
+    expect(extractor.nemesis?('2016BROD01', '2017BROD01')).to be true
+    expect(extractor.nemesis?('2017BROD01', '2016BROD01')).to be false
   end
 
   it 'should find nemeses' do
-    expect(@parser.nemeses('2016BROD01')).to be == []
-    expect(@parser.nemeses('2017BROD01')).to be == ['2016BROD01']
+    expect(extractor.nemeses('2016BROD01')).to be == []
+    expect(extractor.nemeses('2017BROD01')).to be == ['2016BROD01']
   end
 end

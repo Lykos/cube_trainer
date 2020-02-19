@@ -13,12 +13,5 @@ end
 crawler = CubeTrainer::WCA::Crawler.new
 filename = crawler.download_latest_file
 parser = CubeTrainer::WCA::ExportParser.parse(filename)
-puts parser.nemeses('2016BROD01')
-puts "2017: #{count_filtered(parser.results.select { |c| parser.competitions[c[:competitionid]][:startdate].year == 2017 })}"
-puts "2016MORA24: #{count_filtered(parser.results.select { |c| c[:personid] == '2016MORA24' })}"
-puts "2016COSS01: #{count_filtered(parser.results.select { |c| c[:personid] == '2016COSS01' })}"
-puts "2008: #{count_filtered(parser.results.select { |c| parser.competitions[c[:competitionid]][:startdate].year == 2008 })}"
-puts "CH: #{count_filtered(parser.results.select { |c| parser.competitions[c[:competitionid]][:countryid] == 'Switzerland' })}"
-puts "Albert You: #{count_filtered(parser.results.select { |c| c[:personid] == '2011YOUA01' })}"
-puts "3x3: #{count_filtered(parser.results.select { |c| c[:eventid] == '333' })}"
-puts "Danish open: #{count_filtered(parser.results.select { |c| c[:competitionid] == 'DanishOpen2015' })}"
+extractor = CubeTrainer::WCA::StatsExtractor.new(parser)
+puts extractor.nemeses('2016BROD01')

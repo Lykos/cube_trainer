@@ -70,24 +70,6 @@ module CubeTrainer
           self.class.parse_internal(@filename, results: RESULTS_FILE_PARSER)[:results].freeze
       end
 
-      def nemesis?(badguy, victim)
-        badranks = ranks[badguy]
-        victimranks = ranks[victim]
-        victimranks.all? do |k, v|
-          badranks&.key?(k) && badranks[k][:worldrank] < v[:worldrank]
-        end
-      end
-
-      def nemeses(wcaid)
-        badguys = []
-        @persons.each_key do |id|
-          next if id == wcaid
-
-          badguys.push(id) if nemesis?(id, wcaid)
-        end
-        badguys
-      end
-
       private
 
       def parse_ranks_single_and_average

@@ -3,25 +3,26 @@
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_trainer/move'
-require 'cube_trainer/algorithm'
+require 'cube_trainer/core/parser'
+require 'cube_trainer/core/skewb_state'
 require 'cube_trainer/skewb_layer_finder_options'
 require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/color_scheme'
-require 'cube_trainer/skewb_state'
-require 'cube_trainer/parser'
-require 'cube_trainer/cube_print_helper'
 
 SEARCH_DEPTH = 6
 
-options = SkewbLayerFinderOptions.parse(ARGV)
+# rubocop:disable Style/MixinUsage
+include CubeTrainer::Core
+# rubocop:enable Style/MixinUsage
+
+options = CubeTrainer::SkewbLayerFinderOptions.parse(ARGV)
 
 puts 'Enter scramble in fixed corner notation.'
 
 scramble_string = gets.chomp
 scramble = parse_fixed_corner_skewb_algorithm(scramble_string)
 
-layer_finder = SkewbLayerFinder.new(options.restrict_colors)
+layer_finder = CubeTrainer::SkewbLayerFinder.new(options.restrict_colors)
 skewb_state = options.color_scheme.solved_skewb_state
 scramble.apply_to(skewb_state)
 puts skewb_state.colored_to_s

@@ -50,12 +50,12 @@ module CubeTrainer
       on('-m', '--stage_mask [MASK]', String,
          'Stage mask to apply to all images *after* performing an ' \
          'alg, e.g. coll or cross-x2.') do |m|
-        @options.stage_mask = CubeVisualizer::StageMask.parse(m)
+        @options.stage_mask = Anki::CubeVisualizer::StageMask.parse(m)
       end
     end
 
     def on_solved_mask
-      on('-k', '--solved_mask [MASK]', CubeMask::NAMES,
+      on('-k', '--solved_mask [MASK]', Anki::CubeMask::NAMES,
          'Mask to apply to all cube states *before* performing an ' \
          'alg, e.g. `ll_edges_outside`.') do |k|
         @options.solved_mask_name = k

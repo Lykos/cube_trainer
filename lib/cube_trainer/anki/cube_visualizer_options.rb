@@ -10,11 +10,13 @@ module CubeTrainer
   module Anki
     # Command line options for the `cube_visualizer` binary.
     class CubeVisualizerOptions
+      extend Core
+
       def self.default_options
         options = OpenStruct.new
         options.color_scheme = ColorScheme::BERNHARD
         options.cube_size = 3
-        options.algorithm = Algorithm.empty
+        options.algorithm = Core::Algorithm.empty
         options.cache = true
         options
       end

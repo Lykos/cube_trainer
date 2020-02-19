@@ -50,7 +50,7 @@ module CubeTrainer
             @failed_attempts += 1
           end
         end
-        super(e)
+        super(evt)
       end
 
       def input

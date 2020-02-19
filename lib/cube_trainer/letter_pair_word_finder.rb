@@ -10,7 +10,7 @@ module CubeTrainer
 
     attr_reader :term
 
-    def matches_unique_correct_start?(correct_start)
+    def matches_unique_correct_start?(correct_start, rest)
       correct_start.length == 1 && @normalized_parts.any? do |p|
         p != correct_start.first && p.start_with?(rest)
       end

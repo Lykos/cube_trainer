@@ -17,26 +17,36 @@ module CubeTrainer
   module Anki
     # Class that generates an Anki deck for an alg set.
     class AlgSetAnkiGenerator
-      include ArrayHelper
+      include Utils::ArrayHelper
 
       FORMAT = :jpg
-      NON_ZERO_AUFS = CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
-        Algorithm.move(FatMove.new(Face::U, d))
+      NON_ZERO_AUFS = Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
+        Core::Algorithm.move(Core::FatMove.new(Core::Face::U, d))
       end.freeze
-      AUFS = ([Algorithm.empty] + NON_ZERO_AUFS).freeze
+      AUFS = ([Core::Algorithm.empty] + NON_ZERO_AUFS).freeze
 
       def create_cache(options)
         options.cache ? Cache.new('cube_visualizer') : nil
       end
 
       def check_output_dir(output_dir)
+        raise TypeError unless output_dir.is_a?(String)
         raise ArgumentError unless File.exist?(output_dir)
         raise ArgumentError unless File.directory?(output_dir)
         raise ArgumentError unless File.writable?(output_dir)
       end
 
+      def check_output(output)
+        raise TypeError unless output.is_a?(String)
+
+        check_output_dir(File.dirname(output))
+        raise ArgumentError if File.directory?(output)
+        raise ArgumentError if File.exist?(output) && !File.writable?(output)
+      end
+
       def initialize(options)
         check_output_dir(options.output_dir)
+        check_output(options.output)
 
         @options = options
         @visualizer = CubeVisualizer.new(fetcher: Net::HTTP,

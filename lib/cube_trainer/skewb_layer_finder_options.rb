@@ -2,7 +2,6 @@
 
 require 'ostruct'
 require 'cube_trainer/cube_trainer_options_parser'
-require 'common_options'
 require 'cube_trainer/color_scheme'
 
 module CubeTrainer
