@@ -9,6 +9,7 @@ require 'cube_trainer/core/compiled_skewb_algorithm'
 
 module CubeTrainer
   module Core
+    # Represents a sequence of moves that can be applied to puzzle states.
     class Algorithm
       def initialize(moves)
         moves.each do |m|
