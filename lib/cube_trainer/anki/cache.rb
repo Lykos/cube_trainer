@@ -6,6 +6,7 @@ require 'sqlite3'
 
 module CubeTrainer
   module Anki
+    # Cache for stable things that we fetched from the web.
     class Cache
       include XDGHelper
       include Utils::ArrayHelper
