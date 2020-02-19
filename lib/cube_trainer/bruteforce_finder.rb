@@ -126,44 +126,75 @@ module CubeTrainer
       end
     end
 
+    def ordered_moves(state, limit)
+      scored_moves = generate_moves(state).map! do |m|
+        [m, score_after_move(state, m)]
+      end
+      scored_moves.select! do |_m, score|
+        score + limit >= 4
+      end
+      scored_moves.sort_by! do |_m, score|
+        -score
+      end.map(&:first)
+    end
+    
     def find_solutions(state, limit)
-      raise ArgumentError unless limit.is_a?(Integer) && limit >= 0
+      raise TypeError unless limit.is_a?(Integer)
 
+      find_solutions_internal(state, limit)
+    end
+
+    private
+
+    def already_solved_solutions(state)
       sols = solved_colors(state)
       unless sols.empty?
         raise unless state_score(state) == solution_score
 
         return AlreadySolvedSolutionSet.new(sols)
       end
+      return nil
+    end
+
+    def prepend_move(move, solutions)
+      solutions.solved? ? FirstMovePlusSolutions.new(move, solutions) : solutions
+    end
+
+    def solutions_after_move(state, move, inner_limit)
+      solutions = move.apply_temporarily_to(state) do
+        find_solutions_internal(state, inner_limit)
+      end
+      prepend_move(move, solutions)
+    end
+
+    def new_solutions_and_limit(solutions, old_solutions, old_limit)
+      if solutions.strictly_better_than?(old_solutions)
+        new_limit = new_move_limit(solutions.length - 1)
+        [solutions, new_limit]
+      else
+        new_solutions = UnionSolutionSet.new([old_solutions, solutions])
+        [new_solutions, old_limit]
+      end
+    end
+
+    def find_solutions_internal(state, limit)
+      raise ArgumentError if limit.negative?
+
+      sols = already_solved_solutions(state)
+      return sols if sols
       return NO_SOLUTIONS if limit.zero?
 
-      scored_moves = generate_moves(state).collect do |m|
-        [m, score_after_move(state, m)]
-      end
-      scored_moves.select! do |_m, score|
-        score + limit >= 4
-      end
-      moves = scored_moves.sort_by! do |_m, score|
-        -score
-      end.map(&:first)
-
+      moves = ordered_moves(state, limit)
       best_solutions = NO_SOLUTIONS
       inner_limit = limit - 1
       moves.each do |m|
-        solutions = m.apply_temporarily_to(state) do
-          # Note that limit is updated s.t. this solution helps us.
-          find_solutions(state, inner_limit)
-        end
+        # Note that limit is updated s.t. this solution helps us.
+        solutions = solutions_after_move(state, m, inner_limit)
         next unless solutions.solved?
 
-        adjusted_solutions = FirstMovePlusSolutions.new(m, solutions)
-        if adjusted_solutions.strictly_better_than?(best_solutions)
-          best_solutions = adjusted_solutions
-          inner_limit = new_move_limit(solutions.length)
-          break if inner_limit.negative?
-        else
-          best_solutions = UnionSolutionSet.new([best_solutions, adjusted_solutions])
-        end
+        best_solutions, inner_limit =
+          new_solutions_and_limit(solutions, best_solutions, inner_limit)
+        break if inner_limit.negative?
       end
       best_solutions
     end
