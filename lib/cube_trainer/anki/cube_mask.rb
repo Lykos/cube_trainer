@@ -4,7 +4,8 @@ require 'cube_trainer/core/coordinate'
 
 module CubeTrainer
   module Anki
-    # Mask that masks some part of the cube.
+    # Mask that masks some part of the cube before applying any moves.
+    # This can be used e.g. to make edge permutation unimportant.
     # To be used for the cube visualizer.
     class CubeMask
       def self.from_name(example_name, cube_size, color)
