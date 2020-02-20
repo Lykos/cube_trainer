@@ -38,8 +38,8 @@ module CubeTrainer
 
     def nil_stickers(cube_size)
       Core::Face::ELEMENTS.map do
-        (0...cube_size).map do
-          (0...cube_size).map do
+        Array.new(cube_size) do
+          Array.new(cube_size) do
             nil
           end
         end

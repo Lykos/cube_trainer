@@ -57,7 +57,7 @@ module CubeTrainer
     class SkewbDirection < AbstractDirection
       NUM_DIRECTIONS = 3
       NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }.freeze
-      ALL_DIRECTIONS = (0...NUM_DIRECTIONS).map { |d| new(d) }.freeze
+      ALL_DIRECTIONS = Array.new(NUM_DIRECTIONS) { |d| new(d) }.freeze
       FORWARD = new(1)
       BACKWARD = new(2)
 
@@ -74,7 +74,7 @@ module CubeTrainer
     class CubeDirection < AbstractDirection
       NUM_DIRECTIONS = 4
       NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }.freeze
-      ALL_DIRECTIONS = (0...NUM_DIRECTIONS).map { |d| new(d) }.freeze
+      ALL_DIRECTIONS = Array.new(NUM_DIRECTIONS) { |d| new(d) }.freeze
       FORWARD = new(1)
       DOUBLE = new(2)
       BACKWARD = new(3)

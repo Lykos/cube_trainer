@@ -173,12 +173,10 @@ module CubeTrainer
     end
 
     def comm_part_modifications(algorithm)
-      if algorithm.moves.length == 1
-        alg_modifications(algorithm)
-      elsif algorithm.moves.length == 3
-        comm_insert_modifications(algorithm)
-      else
-        [algorithm]
+      case algorithm.moves.length
+      when 1 then alg_modifications(algorithm)
+      when 3 then comm_insert_modifications(algorithm)
+      else [algorithm]
       end
     end
 

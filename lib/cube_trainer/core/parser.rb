@@ -56,12 +56,11 @@ module CubeTrainer
         skip_spaces
         parse_close_paren
         skip_spaces
-        if @scanner.peek(1) == TIMES
-          factor = parse_multiplier
-          moves * factor
-        elsif ('0'..'9').cover?(@scanner.peek(1))
-          factor = parse_factor
-          moves * factor
+        case @scanner.peek(1)
+        when TIMES
+          moves * parse_multiplier
+        when ('0'..'9')
+          moves * parse_factor
         else
           moves
         end
