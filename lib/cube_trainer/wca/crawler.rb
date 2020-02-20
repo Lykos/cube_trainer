@@ -20,10 +20,9 @@ module CubeTrainer
       REDIRECT_LIMIT = 5
 
       def extract_link(links_on_export_page)
-        matching_links = links_on_export_page['links'].select do |l|
+        find_only(links_on_export_page['links']) do |l|
           l =~ /WCA_export\d+_\w+Z\.tsv\.zip/
         end
-        only(matching_links)
       end
 
       def download_latest_file_name
