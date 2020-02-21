@@ -38,7 +38,7 @@ Style/IpAddresses:
   Enabled: true
 Style/MethodCallWithArgsParentheses:
   Enabled: true
-  IgnoredMethods: ['puts', 'warn']
+  IgnoredMethods: ['puts', 'warn', 'raise']
 Style/OptionHash:
   Enabled: true
 Style/ReturnNil:
