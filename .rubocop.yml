@@ -72,8 +72,6 @@ Layout/HeredocArgumentClosingParenthesis:
   Enabled: true
 Lint/NumberConversion:
   Enabled: true
-Layout/ClassStructure:
-  Enabled: true
 Layout/FirstMethodArgumentLineBreak:
   Enabled: true
 Layout/FirstMethodParameterLineBreak:
