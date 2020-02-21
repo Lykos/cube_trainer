@@ -31,7 +31,7 @@ module CubeTrainer
 
   # Represents an empty entry in a commutator table.
   class EmptyEntry
-    def maybe_letter_pair; end
+    def self.maybe_letter_pair; end
   end
 
   # Class that parses a commutator file.
@@ -138,7 +138,7 @@ module CubeTrainer
             verbose: @verbose,
             find_fixes: @verbose
           )
-                          end
+        end
     end
 
     def reverse_engineer

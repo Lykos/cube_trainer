@@ -58,7 +58,7 @@ module CubeTrainer
               distance
             else
               invert_coordinate(distance, cube_size)
-                                  end
+            end
           raise ArgumentError if coordinates[index]
 
           coordinates[index] = coordinate
@@ -104,8 +104,8 @@ module CubeTrainer
             face = Face.for_face_symbol(f)
             # The reverse is important for edge like parts. We are not in the same position as usual
             # solved pieces would be.
-            # For other types of pieces, it doesn't make a difference as the base index will just be a
-            # rotation of the original one, but we will anyway look at all rotations later.
+            # For other types of pieces, it doesn't make a difference as the base index will just be
+            # a rotation of the original one, but we will anyway look at all rotations later.
             base_indices = part.base_index_on_other_face(face, cube_size, incarnation_index).reverse
             base_coordinate = Coordinate.from_indices(face, cube_size, *base_indices)
             other_face_symbols = [part.face_symbols[0]] +

@@ -105,7 +105,7 @@ module CubeTrainer
               " (cancels #{cancellations})"
             else
               ''
-                                          end
+            end
           "#{description}: #{value}#{cancellations_string}"
         end
       end

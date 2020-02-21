@@ -54,7 +54,7 @@ module CubeTrainer
             Core::Algorithm::EMPTY
           else
             Core::Algorithm.move(@move) + @sub_solution.algorithm
-                                end
+          end
       end
 
       def compiled_algorithm
@@ -64,7 +64,7 @@ module CubeTrainer
           else
             Core::Algorithm.move(@move).compiled_for_skewb +
               @sub_solution.compiled_algorithm
-                                         end
+          end
       end
 
       def algorithm_length

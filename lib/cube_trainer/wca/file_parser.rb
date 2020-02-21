@@ -59,7 +59,7 @@ module CubeTrainer
         new do |e, _r|
           raise ArgumentError unless e
 
-          Integer(e)
+          Integer(e, 10)
         end
       STRING =
         new do |e, _r|

@@ -125,7 +125,7 @@ module CubeTrainer
             internal_note_inputs
           else
             external_note_inputs
-                                     end
+          end
         if @options.auf
           input_variations_with_auf(basic_note_inputs)
         else
@@ -158,19 +158,20 @@ module CubeTrainer
         "<img src='#{source}'/>"
       end
 
+      # Note that this will be called in parallel, so it needs to be thread-safe.
+      def process_note_input(note_input)
+        state = @options.color_scheme.solved_cube_state(@options.cube_size)
+        @solved_mask&.apply_to(state)
+        note_input.modified_alg.inverse.apply_to(state)
+        @visualizer.fetch_and_store(state, absolute_output_path(note_input.image_filename))
+      end
+
       def generate_internal(csv)
-        note_inputs =
-          Parallel.map(
-            note_inputs,
-            progress: 'Fetching alg images',
-            in_threads: 50
-          ) do |note_input|
-            state = @options.color_scheme.solved_cube_state(@options.cube_size)
-            @solved_mask&.apply_to(state)
-            note_input.modified_alg.inverse.apply_to(state)
-            @visualizer.fetch_and_store(state, absolute_output_path(note_input.image_filename))
-            note_input
-          end
+        Parallel.each(
+          note_inputs,
+          progress: 'Fetching alg images',
+          in_threads: 50
+        ) { |note_input| process_note_input(note_input) }
         note_inputs.group_by(&:name).each do |_name, values|
           fields = values[0].fields
           csv << fields + values.map(&:img)

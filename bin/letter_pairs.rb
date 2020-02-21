@@ -15,7 +15,7 @@ terms =
     CubeTrainer::Dict.new.words
   else
     File.readlines(ARGV.first)
-         end
+  end
 finder = CubeTrainer::LetterPairWordFinder.new(terms)
 
 open('/dev/tty') do |f|

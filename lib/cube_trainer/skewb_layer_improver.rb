@@ -25,7 +25,7 @@ module CubeTrainer
             end
           else
             3 - c.piece_index % 4
-                                   end
+          end
         face_index * 4 + within_face_index
       end
     CORNER_COORDINATES_ORDERED_BY_PRIORITY =

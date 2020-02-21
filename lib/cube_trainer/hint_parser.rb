@@ -42,7 +42,7 @@ module CubeTrainer
         else
           puts "Failed to find hint CSV file #{hint_parser.csv_file}." if verbose
           {}
-                     end
+        end
       hinter_class.new(hints)
     end
 

@@ -66,7 +66,7 @@ module CubeTrainer
       @delete_after_time_stm ||= @db.prepare(<<~SQL)
         DELETE FROM Results WHERE Mode = ? and Timestamp > ?
       SQL
-      @delete_after_time_stm.execute(mode.to_s, Integer(time, 10))
+      @delete_after_time_stm.execute(mode.to_s, time.to_i) # rubocop:disable Lint/NumberConversion
     end
 
     def record_result(result)

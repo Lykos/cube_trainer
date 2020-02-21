@@ -224,13 +224,13 @@ module CubeTrainer
       def neighbors
         @neighbors ||=
           begin
-                                  partial_neighbors =
-                                    self.class::ELEMENTS.select do |e|
-                                      !same_axis?(e) && e.canonical_axis_face?
-                                    end
-                                  ordered_partial_neighbors = sort_partial_neighbors(partial_neighbors)
-                                  ordered_partial_neighbors + ordered_partial_neighbors.map(&:opposite)
-                                end
+            partial_neighbors =
+              self.class::ELEMENTS.select do |e|
+                !same_axis?(e) && e.canonical_axis_face?
+              end
+            ordered_partial_neighbors = sort_partial_neighbors(partial_neighbors)
+            ordered_partial_neighbors + ordered_partial_neighbors.map(&:opposite)
+          end
       end
 
       def clockwise_neighbor_after(neighbor)
@@ -438,12 +438,12 @@ module CubeTrainer
       def corresponding_part
         @corresponding_part ||=
           begin
-                                           face_symbol =
-                                             find_only(FACE_SYMBOLS) do |c|
-                                               !@face_symbols.include?(c) && Corner.valid?(@face_symbols + [c])
-                                             end
-                                           Corner.for_face_symbols(@face_symbols + [face_symbol])
-                                         end
+            face_symbol =
+              find_only(FACE_SYMBOLS) do |c|
+                !@face_symbols.include?(c) && Corner.valid?(@face_symbols + [c])
+              end
+            Corner.for_face_symbols(@face_symbols + [face_symbol])
+          end
       end
 
       def rotations

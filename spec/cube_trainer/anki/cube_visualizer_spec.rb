@@ -103,7 +103,7 @@ describe Anki::CubeVisualizer do
       fmt: fmt,
       size: 100,
       view: :plain,
-      stage: Anki::CubeVisualizer::StageMask.new(:coll, Core::Algorithm.move(Core::Rotation.new(Core::Face::U, Core::CubeDirection::FORWARD))),
+      stage: Anki::StageMask.new(:coll, Core::Algorithm.move(Core::Rotation.new(Core::Face::U, Core::CubeDirection::FORWARD))),
       sch: color_scheme,
       bg: :black,
       cc: :white,
@@ -131,7 +131,7 @@ describe Anki::CubeVisualizer do
   end
 
   it 'parses a stage mask correctly' do
-    mask = Anki::CubeVisualizer::StageMask.parse('coll-x2')
+    mask = Anki::StageMask.parse('coll-x2')
     expect(mask.base_mask).to(be == :coll)
     expect(mask.rotations).to(be == Core::Algorithm.move(Core::Rotation.new(Core::Face::R, Core::CubeDirection::DOUBLE)))
   end

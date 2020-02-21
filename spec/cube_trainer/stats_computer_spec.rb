@@ -16,7 +16,7 @@ describe StatsComputer do
     options = OpenStruct.new
     options.cube_size = 3
     options.letter_scheme = letter_scheme
-    options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES['corners']
+    options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES[:corners]
     options.new_item_boundary = 5
     options
   end
@@ -26,7 +26,7 @@ describe StatsComputer do
   let(:fill_letter_pairs) { ('a'..'z').map { |l| LetterPair.new(['b', l]) } }
   let(:mode) { BufferHelper.mode_for_options(options) }
   let(:results) do
-    other_commutator_infos = CommutatorOptions::COMMUTATOR_TYPES.reject { |k, _v| k == 'corners' }
+    other_commutator_infos = CommutatorOptions::COMMUTATOR_TYPES.reject { |k, _v| k == :corners }
     other_mode_results =
       other_commutator_infos.map do |_k, v|
         patched_options = options.dup
@@ -76,14 +76,14 @@ describe StatsComputer do
 
   it 'computes how long each part of the solve takes' do
     stats = computer.expected_time_per_type_stats
-    names = %w[corner_3twists corners edges floating_2flips floating_2twists]
+    names = %i[corner_3twists corners edges floating_2flips floating_2twists]
     expect(stats.map { |s| s[:name] }.sort).to(be == names)
     expect(stats.map { |s| s[:weight] }.reduce(:+)).to(be == 1.0)
     stats.each do |s|
       expect(s[:expected_algs]).to(be_a(Float))
       expect(s[:total_time]).to(be_a(Float))
       expect(s[:weight]).to(be_a(Float))
-      if s[:name] == 'corners'
+      if s[:name] == :corners
         expect(s[:average]).to(be == (26 * 1.0 + 10.0 + 3.0) / 28)
       else
         expect(s[:average]).to(be == 1.0)

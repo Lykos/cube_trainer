@@ -200,13 +200,13 @@ module CubeTrainer
     def repetition_index(occ)
       @repetition_indices[occ] ||=
         begin
-                                            rep_index = 2**occ
-                                            # Do a bit of random distortion to avoid completely
-                                            # mechanic repetition.
-                                            distorted_rep_index = distort(rep_index, 0.2)
-                                            # At least 1 other item should always come in between.
-                                            [Integer(distorted_rep_index, 10), 1].max
-                                          end
+          rep_index = 2**occ
+          # Do a bit of random distortion to avoid completely
+          # mechanic repetition.
+          distorted_rep_index = distort(rep_index, 0.2)
+          # At least 1 other item should always come in between.
+          [distorted_rep_index.to_i, 1].max # rubocop:disable Lint/NumberConversion
+        end
     end
 
     def occurrences(item)

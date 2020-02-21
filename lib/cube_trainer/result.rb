@@ -90,7 +90,7 @@ module CubeTrainer
     def to_raw_data
       [
         @mode.to_s,
-        Integer(@timestamp, 10),
+        @timestamp.to_i, # rubocop:disable Lint/NumberConversion
         @time_s,
         @input_representation.to_raw_data,
         @failed_attempts,

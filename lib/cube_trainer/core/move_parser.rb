@@ -9,6 +9,9 @@ module CubeTrainer
     # Class for parsing one move type
     class MoveTypeCreator
       def initialize(capture_keys, move_class)
+        raise TypeError unless move_class.is_a?(Class)
+        raise TypeError unless capture_keys.all? { |k| k.is_a?(Symbol) }
+
         @capture_keys = capture_keys.freeze
         @move_class = move_class
       end
@@ -131,7 +134,7 @@ module CubeTrainer
       end
 
       def parse_width(width_string)
-        width_string.empty? ? 2 : Integer(width_string)
+        width_string.empty? ? 2 : Integer(width_string, 10)
       end
 
       # rubocop:disable Metrics/CyclomaticComplexity
@@ -139,7 +142,7 @@ module CubeTrainer
         case name
         when 'axis_name' then parse_axis_face(value)
         when 'width' then parse_width(value)
-        when 'slice_index' then Integer(value)
+        when 'slice_index' then Integer(value, 10)
         when 'fat_face_name', 'face_name' then Face.by_name(value)
         when 'maybe_fat_face_maybe_slice_name', 'slice_name'
           Face.by_name(value.upcase)
@@ -163,23 +166,23 @@ module CubeTrainer
         @moved_corners = moved_corners
       end
 
-      FIXED_CORNER_INSTANCE = SkewbMoveParser.new(FixedCornerSkewbMove::MOVED_CORNERS).freeze
-      SARAHS_INSTANCE = SkewbMoveParser.new(SarahsSkewbMove::MOVED_CORNERS).freeze
+      FIXED_CORNER_INSTANCE = SkewbMoveParser.new(FixedCornerSkewbMove::MOVED_CORNERS)
+      SARAHS_INSTANCE = SkewbMoveParser.new(SarahsSkewbMove::MOVED_CORNERS)
 
       def regexp
         @regexp ||=
           begin
-                               skewb_direction_names =
-                                 AbstractDirection::POSSIBLE_SKEWB_DIRECTION_NAMES.flatten
-                               move_part = "(?:(?<skewb_move>[#{@moved_corners.keys.join}])" \
-                                           "(?<skewb_direction>[#{skewb_direction_names.join}]?))"
-                               rotation_direction_names =
-                                 AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
-                               rotation_direction_names.sort_by! { |e| -e.length }
-                               rotation_part = "(?:(?<axis_name>[#{Move::AXES.join}])" \
-                                               "(?<cube_direction>#{rotation_direction_names.join('|')}))"
-                               Regexp.new("#{move_part}|#{rotation_part}")
-                             end
+            skewb_direction_names =
+              AbstractDirection::POSSIBLE_SKEWB_DIRECTION_NAMES.flatten
+            move_part = "(?:(?<skewb_move>[#{@moved_corners.keys.join}])" \
+                        "(?<skewb_direction>[#{skewb_direction_names.join}]?))"
+            rotation_direction_names =
+              AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
+            rotation_direction_names.sort_by! { |e| -e.length }
+            rotation_part = "(?:(?<axis_name>[#{Move::AXES.join}])" \
+                            "(?<cube_direction>#{rotation_direction_names.join('|')}))"
+            Regexp.new("#{move_part}|#{rotation_part}")
+          end
       end
 
       def move_type_creators

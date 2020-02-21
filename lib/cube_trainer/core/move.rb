@@ -16,7 +16,9 @@ module CubeTrainer
       include Utils::StringHelper
       include Utils::ArrayHelper
       AXES = %w[y z x].freeze
-      SLICE_FACES = { E: Face::D, S: Face::F, M: Face::L }.freeze
+      # rubocop:disable Style/StringHashKeys
+      SLICE_FACES = { 'E' => Face::D, 'S' => Face::F, 'M' => Face::L }.freeze
+      # rubocop:enable Style/StringHashKeys
       SLICE_NAMES = SLICE_FACES.invert.freeze
       MOVE_METRICS = %i[qtm htm stm sqtm qstm].freeze
 
@@ -468,7 +470,7 @@ module CubeTrainer
             with_width(@width - 1)
           else
             return
-                        end
+          end
         Algorithm.move(move)
       end
 
@@ -722,27 +724,31 @@ module CubeTrainer
 
     # TODO: Get rid of this legacy class
     class FixedCornerSkewbMove
+      # rubocop:disable Style/StringHashKeys
       MOVED_CORNERS = {
-        U: Corner.for_face_symbols(%i[U L B]),
-        R: Corner.for_face_symbols(%i[D R B]),
-        L: Corner.for_face_symbols(%i[D F L]),
-        B: Corner.for_face_symbols(%i[D B L])
+        'U' => Corner.for_face_symbols(%i[U L B]),
+        'R' => Corner.for_face_symbols(%i[D R B]),
+        'L' => Corner.for_face_symbols(%i[D F L]),
+        'B' => Corner.for_face_symbols(%i[D B L])
       }.freeze
+      # rubocop:enable Style/StringHashKeys
       ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map do |m, d|
-        SkewbMove.new(m, d).freeze
+        SkewbMove.new(m, d)
       end.freeze
     end
 
     # TODO: Get rid of this legacy class
     class SarahsSkewbMove
+      # rubocop:disable Style/StringHashKeys
       MOVED_CORNERS = {
-        F: Corner.for_face_symbols(%i[U R F]),
-        R: Corner.for_face_symbols(%i[U B R]),
-        B: Corner.for_face_symbols(%i[U L B]),
-        L: Corner.for_face_symbols(%i[U F L])
+        'F' => Corner.for_face_symbols(%i[U R F]),
+        'R' => Corner.for_face_symbols(%i[U B R]),
+        'B' => Corner.for_face_symbols(%i[U L B]),
+        'L' => Corner.for_face_symbols(%i[U F L])
       }.freeze
+      # rubocop:enable Style/StringHashKeys
       ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map do |m, d|
-        SkewbMove.new(m, d).freeze
+        SkewbMove.new(m, d)
       end.freeze
     end
   end

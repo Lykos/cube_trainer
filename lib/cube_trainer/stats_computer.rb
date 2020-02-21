@@ -53,10 +53,10 @@ module CubeTrainer
     def bad_results
       @bad_results ||=
         begin
-                              cutoffs.map do |cutoff|
-                                [cutoff, @averages.count { |v| v[1] > cutoff }]
-                              end
-                            end
+          cutoffs.map do |cutoff|
+            [cutoff, @averages.count { |v| v[1] > cutoff }]
+          end
+        end
     end
 
     def compute_total_average(averages)
@@ -74,10 +74,10 @@ module CubeTrainer
     def old_total_average
       @old_total_average ||=
         begin
-                                      old_results = results.select { |r| r.timestamp < recently }
-                                      old_averages = compute_averages(group_results(old_results))
-                                      compute_total_average(old_averages)
-                                    end
+          old_results = results.select { |r| r.timestamp < recently }
+          old_averages = compute_averages(group_results(old_results))
+          compute_total_average(old_averages)
+        end
     end
 
     def average_time(results)

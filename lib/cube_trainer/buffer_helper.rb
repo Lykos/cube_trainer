@@ -20,7 +20,7 @@ module CubeTrainer
           (buffer.to_s.downcase + '_' + info.result_symbol.to_s).to_sym
         else
           info.result_symbol
-                             end
+        end
       options.picture ? (buffer_result.to_s + '_pic').to_sym : buffer_result
     end
   end

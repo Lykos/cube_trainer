@@ -23,7 +23,7 @@ module CubeTrainer
     # Helper class to serialize a color scheme as a URL paramer by setting the list of colors.
     class ColorSchemeUrlParameterSerializer
       def self.serialize(value)
-        FACE_SYMBOL_ORDER.map { |s| value.color(s) }.join(',')
+        CubeVisualizer::FACE_SYMBOL_ORDER.map { |s| value.color(s) }.join(',')
       end
     end
 
@@ -46,6 +46,7 @@ module CubeTrainer
         fl f2l ll cll ell oll ocll oell coll ocell wv vh els cls cmll
         cross f2l_3 f2l_2 f2l_sm f2l_1 f2b line 2x2x2 2x2x3
       ].freeze
+      STAGE_MASK_REGEXP = Regexp.new("(#{StageMask::BASE_MASKS.join('|')})(?:-([xyz]['2]?+))?")
 
       def initialize(base_mask, rotations = Core::Algorithm::EMPTY)
         raise ArgumentError unless BASE_MASKS.include?(base_mask)
@@ -120,7 +121,7 @@ module CubeTrainer
             raise ArgumentError, "Missing required parameter #{@name}."
           else
             @serialized_default_value
-                                      end
+          end
         [@name, serialized_value] if serialized_value
       end
     end
@@ -168,12 +169,10 @@ module CubeTrainer
         # TODO ac
       ].map(&:freeze).freeze
       URL_PARAMETER_TYPE_KEYS = URL_PARAMETER_TYPES.map(&:name)
-      STAGE_MASK_REGEXP = Regexp.new("(#{StageMask::BASE_MASKS.join('|')})(?:-([xyz]['2]?+))?")
       # Order of the faces for the color scheme
       FACE_SYMBOL_ORDER = %i[U R F D L B].freeze
       MIN_N = 1
       MAX_N = 10
-      BASE_URI = URI('http://cube.crider.co.uk/visualcube.php')
       BASE_URI = URI('http://cube.crider.co.uk/visualcube.php')
 
       def initialize(fetcher:, cache: nil, retries: 5, checker: nil, **params)

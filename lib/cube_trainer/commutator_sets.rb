@@ -131,7 +131,7 @@ results_model, options, FloatingCorner2Twists.new(results_model, options),
 
     def corner_options(options)
       corner_options = options.dup
-      corner_options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES['corners'] || raise
+      corner_options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES[:corners] || raise
       corner_options.picture = false
       corner_options
     end
@@ -139,7 +139,7 @@ results_model, options, FloatingCorner2Twists.new(results_model, options),
     def parity_options(options)
       parity_options = options.dup
       parity_options.commutator_info =
-        CommutatorOptions::COMMUTATOR_TYPES['corner_parities'] || raise
+        CommutatorOptions::COMMUTATOR_TYPES[:corner_parities] || raise
       parity_options.picture = false
       parity_options
     end
@@ -212,7 +212,7 @@ results_model, options, FloatingCorner2Twists.new(results_model, options),
     def initialize(result_model, options)
       super
       corner_options = options.dup
-      corner_options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES['corners'] || raise
+      corner_options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES[:corners] || raise
       corner_options.picture = false
       corner_results = result_model.result_persistence.load_results(
         BufferHelper.mode_for_options(corner_options)
