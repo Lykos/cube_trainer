@@ -30,3 +30,28 @@ Metrics/ModuleLength:
   Max: 200
 Style/AutoResourceCleanup:
   Enabled: true
+Style/CollectionMethods:
+  Enabled: true
+Style/DateTime:
+  Enabled: true
+Style/IpAddresses:
+  Enabled: true
+Style/MethodCallWithArgsParentheses:
+  Enabled: true
+  IgnoredMethods: ['puts', 'warn']
+Style/OptionHash:
+  Enabled: true
+Style/ReturnNil:
+  Enabled: true
+Style/StringHashKeys:
+  Enabled: true
+Style/StringMethods:
+  Enabled: true
+Lint/HeredocMethodCallPosition:
+  Enabled: true
+Layout/FirstArrayElementLineBreak:
+  Enabled: true
+Layout/FirstHashElementLineBreak:
+  Enabled: true
+Layout/HeredocArgumentClosingParenthesis:
+  Enabled: true
