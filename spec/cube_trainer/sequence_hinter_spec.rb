@@ -43,17 +43,17 @@ describe HeterogenousSequenceHinter do
                                   CombinedAlgName.new([algname_c, algname_d])
                                 ])
     hints = hinter.hints(input)
-    expect(hints.length).to(be == 2)
+    expect(hints.length).to be == 2
     first_lines = hints[0].split("\n")
-    expect(first_lines.length).to(be == 3)
-    expect(first_lines[0]).to(be == 'c, d: unknown (cancels 2)')
-    expect(first_lines[1]).to(be == 'a, d: 2.0')
-    expect(first_lines[2]).to(be == 'b, d: 3.0')
+    expect(first_lines.length).to be == 3
+    expect(first_lines[0]).to be == 'c, d: unknown (cancels 2)'
+    expect(first_lines[1]).to be == 'a, d: 2.0'
+    expect(first_lines[2]).to be == 'b, d: 3.0'
     second_lines = hints[1].split("\n")
-    expect(second_lines.length).to(be == 4)
-    expect(second_lines[0]).to(be == "a: R'")
-    expect(second_lines[1]).to(be == 'b: R')
-    expect(second_lines[2]).to(be == 'c: U')
-    expect(second_lines[3]).to(be == 'd: U2')
+    expect(second_lines.length).to be == 4
+    expect(second_lines[0]).to be == "a: R'"
+    expect(second_lines[1]).to be == 'b: R'
+    expect(second_lines[2]).to be == 'c: U'
+    expect(second_lines[3]).to be == 'd: U2'
   end
 end

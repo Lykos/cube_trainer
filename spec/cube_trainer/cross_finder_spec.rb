@@ -26,7 +26,7 @@ describe CrossFinder do
 
   it 'does not find a cross that takes too many moves' do
     parse_algorithm('U R F').apply_to(cube_state)
-    expect(cross_finder.find_cross(cube_state, 1).extract_algorithms).to(be == {})
+    expect(cross_finder.find_cross(cube_state, 1).extract_algorithms).to be == {}
   end
 
   it 'finds a one move cross' do

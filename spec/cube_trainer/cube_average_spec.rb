@@ -6,11 +6,11 @@ describe Native::CubeAverage do
   let(:average_computer) { described_class.new(5, 6) }
 
   it 'returns the default average initially' do
-    expect(average_computer.average).to(be == 6)
+    expect(average_computer.average).to be == 6
   end
 
   it 'raises an error if a non-numeric type gets pushed' do
-    expect { average_computer.push('0') }.to(raise_error(TypeError))
+    expect { average_computer.push('0') }.to raise_error(TypeError)
   end
 
   context 'when it has one element' do
@@ -19,7 +19,7 @@ describe Native::CubeAverage do
     end
 
     it 'returns the only element as the average' do
-      expect(average_computer.average).to(be == 3)
+      expect(average_computer.average).to be == 3
     end
 
     it 'is not saturated' do
@@ -34,7 +34,7 @@ describe Native::CubeAverage do
     end
 
     it 'returns the mathematical average as the average' do
-      expect(average_computer.average).to(be == 4.5)
+      expect(average_computer.average).to be == 4.5
     end
 
     it 'is not saturated' do
@@ -51,7 +51,7 @@ describe Native::CubeAverage do
     end
 
     it 'returns the mathematical average without the top and bottom element as the average' do
-      expect(average_computer.average).to(be == 4.5)
+      expect(average_computer.average).to be == 4.5
     end
 
     it 'is not saturated' do
@@ -69,11 +69,11 @@ describe Native::CubeAverage do
     end
 
     it 'returns the mathematical average without the top and bottom element as the average' do
-      expect(average_computer.average).to(be == 4)
+      expect(average_computer.average).to be == 4
     end
 
     it 'is saturated' do
-      expect(average_computer).to(be_saturated)
+      expect(average_computer).to be_saturated
     end
   end
 
@@ -88,11 +88,11 @@ describe Native::CubeAverage do
     end
 
     it 'returns the mathematical average without the element that gets thrown out, the top and bottom element as the average' do
-      expect(average_computer.average).to(be == 5)
+      expect(average_computer.average).to be == 5
     end
 
     it 'is not saturated' do
-      expect(average_computer).to(be_saturated)
+      expect(average_computer).to be_saturated
     end
   end
 end

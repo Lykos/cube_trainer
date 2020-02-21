@@ -9,15 +9,15 @@ describe Core::PureCommutator do
   let(:commutator) { parse_commutator('[R, U\' L\' U]') }
 
   it 'is equal to the inverse of its inverse' do
-    expect(commutator.inverse.inverse).to(be == commutator)
+    expect(commutator.inverse.inverse).to be == commutator
   end
 
   it 'is inverted appropriately' do
-    expect(commutator.inverse.to_s).to(be == '[U\' L\' U, R]')
+    expect(commutator.inverse.to_s).to be == '[U\' L\' U, R]'
   end
 
   it 'is printed appropriately' do
-    expect(commutator.to_s).to(be == '[R, U\' L\' U]')
+    expect(commutator.to_s).to be == '[R, U\' L\' U]'
   end
 end
 
@@ -28,18 +28,18 @@ describe Core::SetupCommutator do
   let(:rotation_commutator) { parse_commutator('[x2 : [R, U\' L\' U]]') }
 
   it 'is equal to the inverse of its inverse' do
-    expect(commutator.inverse.inverse).to(be == commutator)
+    expect(commutator.inverse.inverse).to be == commutator
   end
 
   it 'is inverted appropriately' do
-    expect(commutator.inverse.to_s).to(be == '[U\' : [U\' L\' U, R]]')
+    expect(commutator.inverse.to_s).to be == '[U\' : [U\' L\' U, R]]'
   end
 
   it 'is printed appropriately' do
-    expect(commutator.to_s).to(be == '[U\' : [R, U\' L\' U]]')
+    expect(commutator.to_s).to be == '[U\' : [R, U\' L\' U]]'
   end
 
   it 'is printed appropriately even with rotations' do
-    expect(rotation_commutator.to_s).to(be == '[x2 : [R, U\' L\' U]]')
+    expect(rotation_commutator.to_s).to be == '[x2 : [R, U\' L\' U]]'
   end
 end

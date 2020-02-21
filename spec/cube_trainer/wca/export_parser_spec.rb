@@ -36,7 +36,7 @@ describe WCA::ExportParser do
 
   it 'reads the results of a WCA export' do
     # TODO: Improve this
-    expect(parser.results.first[:personid]).to(be == '2016BROD01')
+    expect(parser.results.first[:personid]).to be == '2016BROD01'
   end
 
   it 'reads the countries of a WCA export' do
@@ -60,18 +60,18 @@ describe WCA::ExportParser do
   end
 
   it 'figures out whether someone nemesizes someone' do
-    expect(extractor.nemesis?('2016BROD01', '2017BROD01')).to(be(true))
+    expect(extractor.nemesis?('2016BROD01', '2017BROD01')).to be(true)
   end
 
   it 'figures out whether someone does not nemesize someone' do
-    expect(extractor.nemesis?('2017BROD01', '2016BROD01')).to(be(false))
+    expect(extractor.nemesis?('2017BROD01', '2016BROD01')).to be(false)
   end
 
   it 'finds nemeses if they are empty' do
-    expect(extractor.nemeses('2016BROD01')).to(be == [])
+    expect(extractor.nemeses('2016BROD01')).to be == []
   end
 
   it 'finds nemeses if one exists' do
-    expect(extractor.nemeses('2017BROD01')).to(be == ['2016BROD01'])
+    expect(extractor.nemeses('2017BROD01')).to be == ['2016BROD01']
   end
 end

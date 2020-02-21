@@ -24,57 +24,57 @@ describe SkewbLayerFinder do
     end
 
     it 'finds the perfect score without moves' do
-      expect(layer_finder.state_score(skewb_state)).to(be == 4)
+      expect(layer_finder.state_score(skewb_state)).to be == 4
     end
 
     it 'finds the score after one move' do
       parse_fixed_corner_skewb_algorithm('R').apply_to(skewb_state)
-      expect(layer_finder.state_score(skewb_state)).to(be == 3)
+      expect(layer_finder.state_score(skewb_state)).to be == 3
     end
 
     it 'finds the score after two moves that destroy adjacent things' do
       parse_fixed_corner_skewb_algorithm('R U').apply_to(skewb_state)
-      expect(layer_finder.state_score(skewb_state)).to(be == 2)
+      expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
     it 'finds the score after two moves that destroy opposite things' do
       parse_fixed_corner_skewb_algorithm('R L').apply_to(skewb_state)
-      expect(layer_finder.state_score(skewb_state)).to(be == 2)
+      expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
     it 'finds the score after three moves' do
       parse_fixed_corner_skewb_algorithm('R U R').apply_to(skewb_state)
-      expect(layer_finder.state_score(skewb_state)).to(be == 2)
+      expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
     it 'finds the score after three moves' do
       parse_fixed_corner_skewb_algorithm("B' L' U'").apply_to(skewb_state)
-      expect(layer_finder.state_score(skewb_state)).to(be == 2)
+      expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
     it 'finds the score after three destructive moves' do
       parse_fixed_corner_skewb_algorithm('R U B').apply_to(skewb_state)
-      expect(layer_finder.state_score(skewb_state)).to(be == 1)
+      expect(layer_finder.state_score(skewb_state)).to be == 1
     end
 
     it 'finds the score after three destructive moves' do
       parse_fixed_corner_skewb_algorithm('R U L').apply_to(skewb_state)
-      expect(layer_finder.state_score(skewb_state)).to(be == 1)
+      expect(layer_finder.state_score(skewb_state)).to be == 1
     end
 
     it 'finds the score after moves that create pseudo adjacent things' do
       parse_sarahs_skewb_algorithm("B R B F'").apply_to(skewb_state)
-      expect(layer_finder.state_score(skewb_state)).to(be == 1)
+      expect(layer_finder.state_score(skewb_state)).to be == 1
     end
 
     it 'finds the score for the pseudo solved layer' do
       parse_sarahs_skewb_algorithm("L B' R B' L' B' L'").apply_to(skewb_state)
-      expect(layer_finder.state_score(skewb_state)).to(be == 2)
+      expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
     it 'finds the score for a layer with 3 solved pieces with pseudo adjacency' do
       parse_sarahs_skewb_algorithm("F' R B' R'").apply_to(skewb_state)
-      expect(layer_finder.state_score(skewb_state)).to(be == 2)
+      expect(layer_finder.state_score(skewb_state)).to be == 2
     end
 
     it 'finds a one move layer' do
@@ -93,7 +93,7 @@ describe SkewbLayerFinder do
 
     it 'does not find a layer that takes too many moves' do
       parse_fixed_corner_skewb_algorithm('U R').apply_to(skewb_state)
-      expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to(be == {})
+      expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to be == {}
     end
 
     it 'finds multiple solutions if applicable' do
@@ -144,7 +144,7 @@ describe SkewbLayerFinder do
 
     it 'does not find a layer that takes too many moves' do
       parse_fixed_corner_skewb_algorithm('U R').apply_to(skewb_state)
-      expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to(be == {})
+      expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to be == {}
     end
 
     it 'finds multiple solutions if applicable' do

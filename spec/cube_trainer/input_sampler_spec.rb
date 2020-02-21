@@ -34,6 +34,6 @@ describe InputSampler do
     random_sampler = RandomSampler.new(ITEMS)
     random_average = compute_average(results_model, random_sampler)
 
-    expect(smart_average).to(be < random_average)
+    expect(smart_average).to be < random_average
   end
 end

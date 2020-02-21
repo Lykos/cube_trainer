@@ -13,6 +13,6 @@ describe SkewbLayerImprover do
   let(:improver) { described_class.new(face, color_scheme) }
 
   it 'finds a better layer for an ugly move' do
-    expect(improver.improve_layer(parse_sarahs_skewb_algorithm('B'))).to(be == parse_sarahs_skewb_algorithm("R'"))
+    expect(improver.improve_layer(parse_sarahs_skewb_algorithm('B'))).to be == parse_sarahs_skewb_algorithm("R'")
   end
 end
