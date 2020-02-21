@@ -16,7 +16,12 @@ module CubeTrainer
       end
 
       def next_backoff_s
-        backoff_s = @initial_backoff_s * distort(1 << @attempts, 0.5)
+        backoff_s =
+          if @attempts.zero?
+            0
+          else
+            @initial_backoff_s * distort(1 << @attempts, 0.5)
+          end
         @attempts += 1
         backoff_s
       end

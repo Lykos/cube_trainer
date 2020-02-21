@@ -7,6 +7,8 @@ module CubeTrainer
   module Anki
     # Class that parses an external alg set from a TSV coming from Anki.
     class AlgSetParser
+      extend Core
+
       def self.parse(file, alg_column, name_column)
         CSV.read(file, col_sep: "\t").map do |row|
           name = row[name_column]

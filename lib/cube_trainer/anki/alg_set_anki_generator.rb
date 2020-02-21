@@ -40,14 +40,15 @@ module CubeTrainer
       }.freeze
       # rubocop:enable Style/StringHashKeys
 
-      def initialize(options)
+      def initialize(options, fetcher: Net::HTTP, checker: nil)
         check_output_dir(options.output_dir)
         check_output(options.output)
 
         @options = options
         @visualizer = CubeVisualizer.new(
-          fetcher: Net::HTTP,
+          fetcher: fetcher,
           cache: create_cache(options),
+          checker: checker,
           sch: options.color_scheme,
           fmt: FORMAT,
           stage: options.stage_mask
@@ -130,7 +131,7 @@ module CubeTrainer
 
       # Make an alg name simple enough so we can use it as a file name without problems.
       def new_image_filename(alg_name, variation_index = '')
-        name = alg_name.to_s
+        name = alg_name.to_s.dup
         LETTER_REPLACEMENTS.each { |k, v| name.gsub!(k, v) }
         name = "alg_#{name}#{variation_index}.#{FORMAT}"
         unless name.ascii_only?
@@ -165,7 +166,7 @@ module CubeTrainer
         inputs = note_inputs
         Parallel.each(
           inputs,
-          progress: 'Fetching alg images',
+          progress: @options.verbose ? 'Fetching alg images' : nil,
           in_threads: 50
         ) { |note_input| process_note_input(note_input) }
         inputs.group_by(&:name).each do |_name, values|
