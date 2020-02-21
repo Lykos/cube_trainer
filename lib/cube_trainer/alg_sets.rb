@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/alg_hint_parser'
+require 'cube_trainer/alg_name'
 require 'cube_trainer/input_sampler'
 require 'cube_trainer/restricted_hinter'
 require 'cube_trainer/disjoint_union_hinter'
-require 'cube_trainer/alg_name'
-require 'cube_trainer/alg_hint_parser'
 require 'cube_trainer/input_item'
 require 'cube_trainer/sequence_hinter'
 

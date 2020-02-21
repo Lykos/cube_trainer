@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'csv'
+require 'cube_trainer/alg_hint_parser'
 require 'cube_trainer/anki/alg_set_parser'
 require 'cube_trainer/anki/cache'
 require 'cube_trainer/anki/cube_visualizer'
@@ -18,37 +19,27 @@ module CubeTrainer
     # Class that generates an Anki deck for an alg set.
     class AlgSetAnkiGenerator
       include Utils::ArrayHelper
-      AUFS = ([Core::Algorithm::EMPTY] + NON_ZERO_AUFS).freeze
       FORMAT = :jpg
       NON_ZERO_AUFS = Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
         Core::Algorithm.move(Core::FatMove.new(Core::Face::U, d))
       end.freeze
-      ALG_NAME_REPLACEMENTS = {
-        :ä => 'ae',
-        :ö => 'oe',
-        :ü => 'ue',
-        :Ä => 'Ae',
-        :Ö => 'Oe',
-        :Ü => 'Ue',
-        :è => 'e',
-        :ß => 'ss',
+      AUFS = ([Core::Algorithm::EMPTY] + NON_ZERO_AUFS).freeze
+      # rubocop:disable Style/StringHashKeys
+      LETTER_REPLACEMENTS = {
+        'ä' => 'ae',
+        'ö' => 'oe',
+        'ü' => 'ue',
+        'Ä' => 'Ae',
+        'Ö' => 'Oe',
+        'Ü' => 'Ue',
+        'è' => 'e',
+        'ß' => 'ss',
         /\s/ => '_',
         %r{[/()?"\\]} => '',
-        :"'" => '-'
+        "'" => '-'
       }.freeze
-      ALG_NAME_REPLACEMENTS = {
-        :ä => 'ae',
-        :ö => 'oe',
-        :ü => 'ue',
-        :Ä => 'Ae',
-        :Ö => 'Oe',
-        :Ü => 'Ue',
-        :è => 'e',
-        :ß => 'ss',
-        /\s/ => '_',
-        %r{[/()?"\\]} => '',
-        :"'" => '-'
-      }.freeze
+      # rubocop:enable Style/StringHashKeys
+
       def initialize(options)
         check_output_dir(options.output_dir)
         check_output(options.output)
@@ -138,10 +129,14 @@ module CubeTrainer
       end
 
       # Make an alg name simple enough so we can use it as a file name without problems.
-      # TODO This is broken
       def new_image_filename(alg_name, variation_index = '')
-        LETTER_REPLACEMENTS.each { |k, v| alg_name.gsub!(k, v) }
-        name = "alg_#{alg_name}#{variation_index}.#{FORMAT}"
+        name = alg_name.to_s
+        LETTER_REPLACEMENTS.each { |k, v| name.gsub!(k, v) }
+        name = "alg_#{name}#{variation_index}.#{FORMAT}"
+        unless name.ascii_only?
+          raise ArgumentError, "Even with some replacements, we couldn't transform #{alg_name} " \
+                               'to an ASCII-only string.'
+        end
         if name_to_alg[name]
           raise ArgumentError,
                 "Two algs map to file name #{name}: #{alg_name} and #{name_to_alg[name]}"
@@ -167,12 +162,13 @@ module CubeTrainer
       end
 
       def generate_internal(csv)
+        inputs = note_inputs
         Parallel.each(
-          note_inputs,
+          inputs,
           progress: 'Fetching alg images',
           in_threads: 50
         ) { |note_input| process_note_input(note_input) }
-        note_inputs.group_by(&:name).each do |_name, values|
+        inputs.group_by(&:name).each do |_name, values|
           fields = values[0].fields
           csv << fields + values.map(&:img)
         end
