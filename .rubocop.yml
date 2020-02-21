@@ -38,7 +38,14 @@ Style/IpAddresses:
   Enabled: true
 Style/MethodCallWithArgsParentheses:
   Enabled: true
-  IgnoredMethods: ['print', 'puts', 'warn', 'raise', 'require', 'require_relative']
+  IgnoredMethods:
+  - print
+  - puts
+  - warn
+  - raise
+  - require
+  - require_relative
+  - include
 Style/OptionHash:
   Enabled: true
 Style/ReturnNil:
