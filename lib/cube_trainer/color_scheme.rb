@@ -121,7 +121,7 @@ module CubeTrainer
 
     def solved_cube_state(cube_size)
       stickers = ordered_colors.map do |c|
-        (0...cube_size).collect { [c] * cube_size }
+        Array.new(cube_size) { Array.new(cube_size) { c } }
       end
       Core::CubeState.from_stickers(cube_size, stickers)
     end
