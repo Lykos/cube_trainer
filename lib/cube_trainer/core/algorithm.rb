@@ -13,7 +13,7 @@ module CubeTrainer
     class Algorithm
       include ReversibleApplyable
       include Comparable
-      EMPTY_ALGORITHM = Algorithm.new([])
+
       def initialize(moves)
         moves.each do |m|
           raise TypeError, "#{m.inspect} is not a suitable move." unless m.is_a?(Move)
@@ -21,9 +21,7 @@ module CubeTrainer
         @moves = moves
       end
 
-      def self.empty
-        EMPTY_ALGORITHM
-      end
+      EMPTY = Algorithm.new([])
 
       # Creates a one move algorithm.
       def self.move(move)

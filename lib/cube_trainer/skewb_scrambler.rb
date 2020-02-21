@@ -14,7 +14,7 @@ module CubeTrainer
     def random_moves(length)
       raise TypeError unless length.is_a?(Integer)
       raise ArgumentError if length.negative?
-      return Algorithm.empty if length.zero?
+      return Algorithm::EMPTY if length.zero?
 
       a = [Core::FixedCornerSkewbMove::ALL.sample]
       (length - 1).times do

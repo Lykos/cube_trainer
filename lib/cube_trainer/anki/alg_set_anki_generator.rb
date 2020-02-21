@@ -18,7 +18,7 @@ module CubeTrainer
     # Class that generates an Anki deck for an alg set.
     class AlgSetAnkiGenerator
       include Utils::ArrayHelper
-      AUFS = ([Core::Algorithm.empty] + NON_ZERO_AUFS).freeze
+      AUFS = ([Core::Algorithm::EMPTY] + NON_ZERO_AUFS).freeze
       FORMAT = :jpg
       NON_ZERO_AUFS = Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
         Core::Algorithm.move(Core::FatMove.new(Core::Face::U, d))

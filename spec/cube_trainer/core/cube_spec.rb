@@ -235,12 +235,12 @@ describe Core::Face do
   end
 
   it 'finds out what rotations to do to get to the position of the same face' do
-    expect(Core::Face::U.rotation_to(Core::Face::U)).to(be == Core::Algorithm.empty)
-    expect(Core::Face::D.rotation_to(Core::Face::D)).to(be == Core::Algorithm.empty)
-    expect(Core::Face::F.rotation_to(Core::Face::F)).to(be == Core::Algorithm.empty)
-    expect(Core::Face::B.rotation_to(Core::Face::B)).to(be == Core::Algorithm.empty)
-    expect(Core::Face::R.rotation_to(Core::Face::R)).to(be == Core::Algorithm.empty)
-    expect(Core::Face::L.rotation_to(Core::Face::L)).to(be == Core::Algorithm.empty)
+    expect(Core::Face::U.rotation_to(Core::Face::U)).to(be == Core::Algorithm::EMPTY)
+    expect(Core::Face::D.rotation_to(Core::Face::D)).to(be == Core::Algorithm::EMPTY)
+    expect(Core::Face::F.rotation_to(Core::Face::F)).to(be == Core::Algorithm::EMPTY)
+    expect(Core::Face::B.rotation_to(Core::Face::B)).to(be == Core::Algorithm::EMPTY)
+    expect(Core::Face::R.rotation_to(Core::Face::R)).to(be == Core::Algorithm::EMPTY)
+    expect(Core::Face::L.rotation_to(Core::Face::L)).to(be == Core::Algorithm::EMPTY)
   end
 
   it 'finds out what rotations to do to get to the position of an opposite face' do

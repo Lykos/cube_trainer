@@ -41,7 +41,7 @@ module CubeTrainer
         raise TypeError unless algorithm.is_a?(Algorithm)
 
         CubeState.check_cube_size(cube_size)
-        alg = Algorithm.empty
+        alg = Algorithm::EMPTY
         algorithm.moves.each do |m|
           alg = push_with_cancellation(alg, m, cube_size)
         end

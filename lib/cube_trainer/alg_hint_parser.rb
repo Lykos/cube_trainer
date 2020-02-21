@@ -16,8 +16,8 @@ module CubeTrainer
     ALG_SET_SEPARATOR = '_plus_'
     ADJACENT_PLL_NAME = SimpleAlgName.new('Ja')
     DIAGONAL_PLL_NAME = SimpleAlgName.new('Y')
-    SOLVED_HINTER = AlgHinter.new(SimpleAlgName.new('solved') => Core::Algorithm.empty)
-    AUF_HINTER = AlgHinter.new(([[SimpleAlgName.new('auf skip'), Core::Algorithm.empty]] +
+    SOLVED_HINTER = AlgHinter.new(SimpleAlgName.new('solved') => Core::Algorithm::EMPTY)
+    AUF_HINTER = AlgHinter.new(([[SimpleAlgName.new('auf skip'), Core::Algorithm::EMPTY]] +
                                 Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
                                   alg = Core::Algorithm.move(Core::FatMove.new(Core::Face::U, d))
                                   [SimpleAlgName.new(alg.to_s), alg]

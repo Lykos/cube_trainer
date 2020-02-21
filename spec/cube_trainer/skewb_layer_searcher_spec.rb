@@ -9,7 +9,7 @@ describe SkewbLayerSearcher do
   let(:color_scheme) { ColorScheme::BERNHARD }
 
   def verify_zero_move_algs(zero_move_algs)
-    expect(zero_move_algs).to(be == [Core::Algorithm.empty])
+    expect(zero_move_algs).to(be == [Core::Algorithm::EMPTY])
   end
 
   def verify_one_move_algs(one_move_algs)

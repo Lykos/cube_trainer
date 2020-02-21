@@ -12,8 +12,8 @@ module CubeTrainer
       extend Utils::ArrayHelper
       include CubeConstants
       extend CubeConstants
-
       include Comparable
+
       def initialize(face_symbols, piece_index)
         clazz = self.class
         if face_symbols.any? { |c| c.class != Symbol || !FACE_SYMBOLS.include?(c) }
@@ -153,7 +153,12 @@ module CubeTrainer
         for_face_symbols([face_symbol])
       end
 
+      def self.valid?(_face_symbols)
+        true
+      end
+
       ELEMENTS = generate_parts
+
       # Whether closeness to this face results in smaller indices for the stickers of other faces.
       def close_to_smaller_indices?
         @piece_index < 3
@@ -200,10 +205,6 @@ module CubeTrainer
         close_to_smaller_indices?
       end
 
-      def self.valid?(_face_symbols)
-        true
-      end
-
       def name
         @name ||= FACE_NAMES[ELEMENTS.index(self)]
       end
@@ -242,7 +243,7 @@ module CubeTrainer
       # lie where the given other face currently is.
       def rotation_to(other)
         if other == self
-          Algorithm.empty
+          Algorithm::EMPTY
         else
           # There can be multiple solutions.
           axis_face =
@@ -291,13 +292,8 @@ module CubeTrainer
     class MoveableCenter < Part
       FACES = 1
 
-      def initialize(corresponding_part, piece_index)
-        unless corresponding_part.is_a?(Part)
-          raise "Invalid corresponding part #{corresponding_part}."
-        end
-
-        super([corresponding_part.face_symbols[0]], piece_index)
-        @corresponding_part = corresponding_part
+      def self.valid?(face_symbols)
+        self::CORRESPONDING_PART_CLASS.valid?(face_symbols)
       end
 
       def self.for_face_symbols(face_symbols)
@@ -324,6 +320,15 @@ module CubeTrainer
           @corresponding_part == other.corresponding_part
       end
 
+      def initialize(corresponding_part, piece_index)
+        unless corresponding_part.is_a?(Part)
+          raise "Invalid corresponding part #{corresponding_part}."
+        end
+
+        super([corresponding_part.face_symbols[0]], piece_index)
+        @corresponding_part = corresponding_part
+      end
+
       alias == eql?
 
       attr_reader :corresponding_part
@@ -334,10 +339,6 @@ module CubeTrainer
 
       def rotate_by(_number)
         self
-      end
-
-      def self.valid?(face_symbols)
-        self::CORRESPONDING_PART_CLASS.valid?(face_symbols)
       end
 
       def neighbor?(other)
@@ -498,6 +499,10 @@ module CubeTrainer
         for_face_symbols(faces.map(&:face_symbol))
       end
 
+      def self.valid?(face_symbols)
+        face_symbols.combination(2).all? { |e| Edge.valid?(e) } && valid_chirality?(face_symbols)
+      end
+
       ELEMENTS = generate_parts
       # Rotate such that neither the current face symbol nor the given face symbol are at the
       # position of the letter.
@@ -515,10 +520,6 @@ module CubeTrainer
 
       def rotate_other_face_up(face)
         rotate_other_face_symbol_up(face.face_symbol)
-      end
-
-      def self.valid?(face_symbols)
-        face_symbols.combination(2).all? { |e| Edge.valid?(e) } && valid_chirality?(face_symbols)
       end
 
       def common_edge_with?(other)

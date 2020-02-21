@@ -16,7 +16,7 @@ module CubeTrainer
         options = OpenStruct.new
         options.color_scheme = ColorScheme::BERNHARD
         options.cube_size = 3
-        options.algorithm = Core::Algorithm.empty
+        options.algorithm = Core::Algorithm::EMPTY
         options.cache = true
         options
       end

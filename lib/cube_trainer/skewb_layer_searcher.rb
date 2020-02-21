@@ -51,7 +51,7 @@ module CubeTrainer
       def algorithm
         @algorithm ||=
           if move.nil?
-            Core::Algorithm.empty
+            Core::Algorithm::EMPTY
           else
             Core::Algorithm.move(@move) + @sub_solution.algorithm
                                 end
@@ -88,7 +88,7 @@ module CubeTrainer
             Core::Algorithm.move(@move) + alg
           end
         else
-          [Core::Algorithm.empty]
+          [Core::Algorithm::EMPTY]
         end
       end
 

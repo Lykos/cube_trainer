@@ -4,11 +4,12 @@ module CubeTrainer
   module Core
     # Represents one type of puzzle.
     class Puzzle
-      NXN_CUBE = Puzzle.new('nxn cube')
-      SKEWB = Puzzle.new('skewb')
       def initialize(name)
         @name = name
       end
+
+      NXN_CUBE = Puzzle.new('nxn cube')
+      SKEWB = Puzzle.new('skewb')
 
       attr_reader :name
 

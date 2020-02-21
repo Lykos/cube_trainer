@@ -148,7 +148,7 @@ module CubeTrainer
       class StageMask
         extend Core
 
-        def initialize(base_mask, rotations = Core::Algorithm.empty)
+        def initialize(base_mask, rotations = Core::Algorithm::EMPTY)
           raise ArgumentError unless BASE_MASKS.include?(base_mask)
           raise TypeError unless rotations.is_a?(Core::Algorithm)
           raise TypeError unless rotations.moves.all? { |r| r.is_a?(Core::Rotation) }
@@ -166,7 +166,7 @@ module CubeTrainer
           end
 
           raw_base_mask, raw_rotations = match.captures
-          rotations = raw_rotations ? parse_algorithm(raw_rotations) : Core::Algorithm.empty
+          rotations = raw_rotations ? parse_algorithm(raw_rotations) : Core::Algorithm::EMPTY
           StageMask.new(raw_base_mask.to_sym, rotations)
         end
       end

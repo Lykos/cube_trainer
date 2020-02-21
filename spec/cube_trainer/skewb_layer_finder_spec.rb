@@ -19,7 +19,7 @@ describe SkewbLayerFinder do
 
     it 'finds an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to(be == {
-        white: [Core::Algorithm.empty]
+        white: [Core::Algorithm::EMPTY]
       })
     end
 
@@ -109,12 +109,12 @@ describe SkewbLayerFinder do
 
     it 'finds an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to(be == {
-        yellow: [Core::Algorithm.empty],
-        red: [Core::Algorithm.empty],
-        green: [Core::Algorithm.empty],
-        blue: [Core::Algorithm.empty],
-        orange: [Core::Algorithm.empty],
-        white: [Core::Algorithm.empty]
+        yellow: [Core::Algorithm::EMPTY],
+        red: [Core::Algorithm::EMPTY],
+        green: [Core::Algorithm::EMPTY],
+        blue: [Core::Algorithm::EMPTY],
+        orange: [Core::Algorithm::EMPTY],
+        white: [Core::Algorithm::EMPTY]
       })
     end
 

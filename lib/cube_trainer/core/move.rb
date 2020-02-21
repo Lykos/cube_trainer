@@ -383,9 +383,6 @@ module CubeTrainer
 
     # A fat move with a width. For width 1, this becomes a normal outer move.
     class FatMove < CubeMove
-      OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map do |f, d|
-        FatMove.new(f, d, 1)
-      end.freeze
       def initialize(axis_face, direction, width = 1)
         super(axis_face, direction)
         raise TypeError unless width.is_a?(Integer)
@@ -393,6 +390,10 @@ module CubeTrainer
 
         @width = width
       end
+
+      OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map do |f, d|
+        FatMove.new(f, d, 1)
+      end.freeze
 
       attr_reader :width
 
