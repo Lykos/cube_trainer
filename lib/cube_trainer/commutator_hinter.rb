@@ -8,10 +8,11 @@ module CubeTrainer
     end
 
     def hints(letter_pair)
-      @hints[letter_pair] ||= begin
-                                inverse = @hints[letter_pair.inverse]
-                                inverse ? inverse.map(&:inverse) : []
-                              end
+      @hints[letter_pair] ||=
+        begin
+                                       inverse = @hints[letter_pair.inverse]
+                                       inverse ? inverse.map(&:inverse) : []
+                                     end
     end
   end
 end

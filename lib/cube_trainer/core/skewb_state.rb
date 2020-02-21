@@ -13,6 +13,43 @@ module CubeTrainer
       include CubePrintHelper
       include StateHelper
       include CubeConstants
+      # Pairs of coordinate pairs that should match in case of solved layers.
+      MATCHING_CORNERS =
+        begin
+          matching_corners = []
+          Corner::ELEMENTS.each do |c1|
+            Corner::ELEMENTS.each do |c2|
+              # Take corner pairs that have a common edge.
+              next unless c1.common_edge_with?(c2)
+
+              check_parts = []
+              c1.rotations.each do |c1_rot|
+                next unless c2.face_symbols.include?(c1_rot.face_symbols.first)
+
+                c2_rot = c2.rotate_face_symbol_up(c1_rot.face_symbols.first)
+                check_parts.push([
+                                   SkewbCoordinate.for_corner(c1_rot),
+                                   SkewbCoordinate.for_corner(c2_rot)
+                                 ])
+              end
+              matching_corners.push(check_parts)
+            end
+          end
+          matching_corners.uniq
+        end
+      # Pairs of stickers that can be used to check whether the "outside" of a layer on the given
+      # face is a proper layer.
+      LAYER_CHECK_NEIGHBORS =
+        begin
+          layer_check_neighbors = {}
+          MATCHING_CORNERS.each do |a, b|
+            [[a.first.face, b], [b.first.face, a]].each do |face, coordinates|
+              # We take the first one we encounter, but it doesn't matter, we could take any.
+              layer_check_neighbors[face] ||= coordinates
+            end
+          end
+          layer_check_neighbors
+        end
 
       def initialize(native)
         raise TypeError unless native.is_a?(Native::SkewbState)
@@ -42,9 +79,10 @@ module CubeTrainer
         raise TypeError unless face.is_a?(Face)
 
         center_sticker = self[SkewbCoordinate.for_center(face)]
-        corner_stickers = face.clockwise_corners.sort.map do |c|
-          self[SkewbCoordinate.for_corner(c)]
-        end
+        corner_stickers =
+          face.clockwise_corners.sort.map do |c|
+            self[SkewbCoordinate.for_corner(c)]
+          end
         [center_sticker] + corner_stickers
       end
 
@@ -88,7 +126,7 @@ module CubeTrainer
       # Returns the color of all solved layers. Empty if there is none.
       def solved_layers
         solved_faces = Face::ELEMENTS.select { |f| layer_at_face_solved?(f) }
-        solved_faces.collect { |f| self[SkewbCoordinate.for_center(f)] }
+        solved_faces.map { |f| self[SkewbCoordinate.for_center(f)] }
       end
 
       def layer_solved?(color)
@@ -101,43 +139,6 @@ module CubeTrainer
         Face::ELEMENTS.find { |f| self[SkewbCoordinate.for_center(f)] == color }
       end
 
-      # Pairs of coordinate pairs that should match in case of solved layers.
-      MATCHING_CORNERS =
-        begin
-          matching_corners = []
-          Corner::ELEMENTS.each do |c1|
-            Corner::ELEMENTS.each do |c2|
-              # Take corner pairs that have a common edge.
-              next unless c1.common_edge_with?(c2)
-
-              check_parts = []
-              c1.rotations.each do |c1_rot|
-                next unless c2.face_symbols.include?(c1_rot.face_symbols.first)
-
-                c2_rot = c2.rotate_face_symbol_up(c1_rot.face_symbols.first)
-                check_parts.push([SkewbCoordinate.for_corner(c1_rot),
-                                  SkewbCoordinate.for_corner(c2_rot)])
-              end
-              matching_corners.push(check_parts)
-            end
-          end
-          matching_corners.uniq
-        end
-
-      # Pairs of stickers that can be used to check whether the "outside" of a layer on the given
-      # face is a proper layer.
-      LAYER_CHECK_NEIGHBORS =
-        begin
-          layer_check_neighbors = {}
-          MATCHING_CORNERS.each do |a, b|
-            [[a.first.face, b], [b.first.face, a]].each do |face, coordinates|
-              # We take the first one we encounter, but it doesn't matter, we could take any.
-              layer_check_neighbors[face] ||= coordinates
-            end
-          end
-          layer_check_neighbors
-        end
-
       def layer_check_neighbors(face)
         LAYER_CHECK_NEIGHBORS[face]
       end
@@ -147,7 +148,7 @@ module CubeTrainer
       def layer_at_face_solved?(face)
         return false unless native.face_solved?(face.face_symbol)
 
-        layer_check_neighbors(face).collect { |c| self[c] }.uniq.length == 1
+        layer_check_neighbors(face).map { |c| self[c] }.uniq.length == 1
       end
 
       def rotate_face(face, direction)

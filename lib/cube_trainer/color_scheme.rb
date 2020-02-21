@@ -11,45 +11,24 @@ module CubeTrainer
   class ColorScheme
     include Core::CubeConstants
     include Utils::ArrayHelper
-
     RESERVED_COLORS = %i[transparent unknown oriented].freeze
-
-    # Corner matcher that finds a corner that has one arbitrary
-    # face symbol and two given face symbol.
-    class CornerMatcher
-      def initialize(face_symbol_matchers)
-        unless face_symbol_matchers.count(&:nil?) == 1
-          raise ArgumentError, 'Exactly one nil allowed in face symbol matchers.'
-        end
-
-        @face_symbol_matchers = face_symbol_matchers
-      end
-
-      def matches?(corner)
-        corner.face_symbols.zip(@face_symbol_matchers).all? do |face_symbol, face_symbol_matcher|
-          face_symbol_matcher.nil? || face_symbol == face_symbol_matcher
-        end
-      end
-
-      def wildcard_index
-        @face_symbol_matchers.index(nil)
-      end
-    end
-
-    def check_face_symbols_to_colors(face_symbols_to_colors)
-      raise ArgumentError unless face_symbols_to_colors.keys.sort == FACE_SYMBOLS.sort
-
-      face_symbols_to_colors.values.each do |c|
-        raise TypeError unless c.is_a?(Symbol)
-
-        if RESERVED_COLORS.include?(c)
-          raise ArgumentError,
-                "Color #{c} cannot be part of the color scheme because it is a reserved color."
-        end
-      end
-      raise ArgumentError unless face_symbols_to_colors.values.all? { |c| c.is_a?(Symbol) }
-    end
-
+    BERNHARD = WCA.turned(:yellow, :red)
+    WCA = new(
+      U: :white,
+      F: :green,
+      R: :red,
+      L: :orange,
+      B: :blue,
+      D: :yellow
+    )
+    WCA = new(
+      U: :white,
+      F: :green,
+      R: :red,
+      L: :orange,
+      B: :blue,
+      D: :yellow
+    )
     def initialize(face_symbols_to_colors)
       check_face_symbols_to_colors(face_symbols_to_colors)
 
@@ -110,19 +89,11 @@ module CubeTrainer
       ColorScheme.new(turned_face_symbols_to_colors)
     end
 
-    WCA = new(
-      U: :white,
-      F: :green,
-      R: :red,
-      L: :orange,
-      B: :blue,
-      D: :yellow
-    )
-
     def solved_cube_state(cube_size)
-      stickers = ordered_colors.map do |c|
-        Array.new(cube_size) { Array.new(cube_size) { c } }
-      end
+      stickers =
+        ordered_colors.map do |c|
+          Array.new(cube_size) { Array.new(cube_size) { c } }
+        end
       Core::CubeState.from_stickers(cube_size, stickers)
     end
 
@@ -145,10 +116,47 @@ module CubeTrainer
                           end)
 
       # There should be exactly one corner that gets mapped to the chirality corner.
-      chirality_corner_source = find_only(Core::Corner::ELEMENTS) do |corner|
-        corner_matcher.matches?(corner)
-      end
+      chirality_corner_source =
+        find_only(Core::Corner::ELEMENTS) do |corner|
+          corner_matcher.matches?(corner)
+        end
       [chirality_corner_source, corner_matcher.wildcard_index]
+    end
+
+    # Corner matcher that finds a corner that has one arbitrary
+    # face symbol and two given face symbol.
+    class CornerMatcher
+      def initialize(face_symbol_matchers)
+        unless face_symbol_matchers.count(&:nil?) == 1
+          raise ArgumentError, 'Exactly one nil allowed in face symbol matchers.'
+        end
+
+        @face_symbol_matchers = face_symbol_matchers
+      end
+
+      def matches?(corner)
+        corner.face_symbols.zip(@face_symbol_matchers).all? do |face_symbol, face_symbol_matcher|
+          face_symbol_matcher.nil? || face_symbol == face_symbol_matcher
+        end
+      end
+
+      def wildcard_index
+        @face_symbol_matchers.index(nil)
+      end
+    end
+
+    def check_face_symbols_to_colors(face_symbols_to_colors)
+      raise ArgumentError unless face_symbols_to_colors.keys.sort == FACE_SYMBOLS.sort
+
+      face_symbols_to_colors.each_value do |c|
+        raise TypeError unless c.is_a?(Symbol)
+
+        if RESERVED_COLORS.include?(c)
+          raise ArgumentError,
+                "Color #{c} cannot be part of the color scheme because it is a reserved color."
+        end
+      end
+      raise ArgumentError unless face_symbols_to_colors.values.all? { |c| c.is_a?(Symbol) }
     end
 
     def add_missing_mappings(turned_face_symbols_to_colors, chirality_corner_source, unknown_index)
@@ -167,7 +175,5 @@ module CubeTrainer
       end.to_h
       result.merge!(opposites)
     end
-
-    BERNHARD = WCA.turned(:yellow, :red)
   end
 end

@@ -62,9 +62,11 @@ module CubeTrainer
       end
 
       def record_result
-        @results_model.record_result(@stop_watch_controller.current_time,
-                                     create_partial_result,
-                                     input)
+        @results_model.record_result(
+          @stop_watch_controller.current_time,
+          create_partial_result,
+          input
+        )
       end
 
       def create_partial_result
@@ -79,8 +81,10 @@ module CubeTrainer
       def init
         @letter_scheme = BernhardLetterScheme.new
         @color_scheme = ColorScheme::BERNHARD
-        @results_model = ResultsModel.new(:cubie_to_letter,
-                                          ResultsPersistence.create_for_production)
+        @results_model = ResultsModel.new(
+          :cubie_to_letter,
+          ResultsPersistence.create_for_production
+        )
 
         @stop_watch_controller = create_stop_watch_controller
         @time_history_controller = create_time_history_controller

@@ -11,13 +11,12 @@ module CubeTrainer
     # Helper class to crawl the WCA page and download the latest WCA export.
     class Crawler
       include Utils::ArrayHelper
+      WCA_BASE_URL = 'https://www.worldcubeassociation.org'
+      REDIRECT_LIMIT = 5
 
       def initialize
         @storer = Storer.new
       end
-
-      WCA_BASE_URL = 'https://www.worldcubeassociation.org'
-      REDIRECT_LIMIT = 5
 
       def extract_link(links_on_export_page)
         find_only(links_on_export_page['links']) do |l|
@@ -26,11 +25,12 @@ module CubeTrainer
       end
 
       def download_latest_file_name
-        links_on_export_page = Wombat.crawl do
-          base_url WCA_BASE_URL
-          path '/results/misc/export.html'
-          links({ xpath: '//a' }, :list)
-        end
+        links_on_export_page =
+          Wombat.crawl do
+            base_url WCA_BASE_URL
+            path '/results/misc/export.html'
+            links({ xpath: '//a' }, :list)
+          end
         extract_link(links_on_export_page)
       end
 

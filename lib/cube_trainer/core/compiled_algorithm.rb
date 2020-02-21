@@ -25,11 +25,12 @@ module CubeTrainer
       end
 
       def inverse
-        @inverse ||= begin
-                       alg = self.class.new(@native.inverse)
-                       alg.inverse = self
-                       alg
-                     end
+        @inverse ||=
+          begin
+                                alg = self.class.new(@native.inverse)
+                                alg.inverse = self
+                                alg
+                              end
       end
 
       def +(other)

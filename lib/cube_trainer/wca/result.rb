@@ -4,6 +4,8 @@ module CubeTrainer
   module WCA
     # A result of one attempt of a person in a WCA competition.
     class Result
+      DNF = new(:DNF, nil, nil, nil, nil)
+      DNS = new(:DNS, nil, nil, nil, nil)
       def initialize(type, time_centis, attempted, solved, number)
         @type = type
         @time_centis = time_centis
@@ -13,9 +15,6 @@ module CubeTrainer
       end
 
       private_class_method :new
-
-      DNF = new(:DNF, nil, nil, nil, nil)
-      DNS = new(:DNS, nil, nil, nil, nil)
 
       attr_reader :type, :time_centis, :attempted, :solved, :number
 

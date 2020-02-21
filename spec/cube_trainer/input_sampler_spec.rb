@@ -21,7 +21,7 @@ def compute_average(results_model, generator)
 end
 
 describe InputSampler do
-  ITEMS = ('a'..'c').to_a.permutation(2).collect { |p| InputItem.new(LetterPair.new(p)) }
+  ITEMS = ('a'..'c').to_a.permutation(2).map { |p| InputItem.new(LetterPair.new(p)) }
 
   it 'performs better than random sampling' do
     results_persistence = ResultsPersistence.create_in_memory
@@ -34,6 +34,6 @@ describe InputSampler do
     random_sampler = RandomSampler.new(ITEMS)
     random_average = compute_average(results_model, random_sampler)
 
-    expect(smart_average).to be < random_average
+    expect(smart_average).to(be < random_average)
   end
 end

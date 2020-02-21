@@ -24,7 +24,7 @@ module CubeTrainer
       end
 
       def emit_data_changed
-        emit dataChanged(createIndex(0, 0), createIndex(1, saturated_averages - 1))
+        emit(dataChanged(createIndex(0, 0), createIndex(1, saturated_averages - 1)))
       end
 
       def reset
@@ -47,7 +47,7 @@ module CubeTrainer
       end
 
       def format_stats(stats)
-        stats.collect { |name, stat| [name, format_time(stat)] }
+        stats.map { |name, stat| [name, format_time(stat)] }
       end
 
       # rubocop:disable Naming/MethodName

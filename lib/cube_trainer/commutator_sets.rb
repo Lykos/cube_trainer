@@ -53,38 +53,45 @@ module CubeTrainer
       cube_state = @color_scheme.solved_cube_state(options.cube_size)
       part_cycle_factory = Core::PartCycleFactory.new(options.cube_size, 0)
       non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
-      correctly_oriented_corners = non_buffer_corners.select do |c|
-        ORIENTATION_FACES.include?(c.solved_face)
-      end
-      two_twists = correctly_oriented_corners.permutation(2).map do |c1, c2|
-        twisted_corner_pair = [c1.rotate_by(1), c2.rotate_by(2)]
-        letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
-        twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c1]) +
-                               part_cycle_factory.multi_corner_twist([c2]).inverse
-        twisted_cube_state = twist_sticker_cycles.apply_temporarily_to(cube_state) do
-          cube_state.dup
+      correctly_oriented_corners =
+        non_buffer_corners.select do |c|
+          ORIENTATION_FACES.include?(c.solved_face)
         end
-        InputItem.new(letter_pair, twisted_cube_state)
-      end
+      two_twists =
+        correctly_oriented_corners.permutation(2).map do |c1, c2|
+          twisted_corner_pair = [c1.rotate_by(1), c2.rotate_by(2)]
+          letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
+          twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c1]) +
+                                 part_cycle_factory.multi_corner_twist([c2]).inverse
+          twisted_cube_state =
+            twist_sticker_cycles.apply_temporarily_to(cube_state) do
+              cube_state.dup
+            end
+          InputItem.new(letter_pair, twisted_cube_state)
+        end
       buffer_twist = part_cycle_factory.multi_corner_twist([buffer])
       buffer_twist.apply_to(cube_state)
-      ccw_twists = correctly_oriented_corners.map do |c|
-        letter_pair = LetterPair.new([letter_scheme.letter(c)])
-        twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c]).inverse
-        twisted_cube_state = twist_sticker_cycles.apply_temporarily_to(cube_state) do
-          cube_state.dup
+      ccw_twists =
+        correctly_oriented_corners.map do |c|
+          letter_pair = LetterPair.new([letter_scheme.letter(c)])
+          twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c]).inverse
+          twisted_cube_state =
+            twist_sticker_cycles.apply_temporarily_to(cube_state) do
+              cube_state.dup
+            end
+          InputItem.new(letter_pair, twisted_cube_state)
         end
-        InputItem.new(letter_pair, twisted_cube_state)
-      end
       buffer_twist.apply_to(cube_state)
-      cw_twists = correctly_oriented_corners.map do |c|
-        letter_pair = LetterPair.new([letter_scheme.letter(c)])
-        twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c])
-        twisted_cube_state = twist_sticker_cycles.apply_temporarily_to(cube_state) do
-          cube_state.dup
+      cw_twists =
+        correctly_oriented_corners.map do |c|
+          letter_pair = LetterPair.new([letter_scheme.letter(c)])
+          twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c])
+          twisted_cube_state =
+            twist_sticker_cycles.apply_temporarily_to(cube_state) do
+              cube_state.dup
+            end
+          InputItem.new(letter_pair, twisted_cube_state)
         end
-        InputItem.new(letter_pair, twisted_cube_state)
-      end
       two_twists + cw_twists + ccw_twists
     end
     # rubocop:enable Metrics/MethodLength
@@ -94,7 +101,8 @@ module CubeTrainer
   # Class that generates input items for floating corner 2 twists and 3 twists.
   class FloatingCorner2TwistsAnd3Twists < DisjointUnionLetterPairAlgSet
     def initialize(results_model, options)
-      super(results_model, options, FloatingCorner2Twists.new(results_model, options),
+      super(
+results_model, options, FloatingCorner2Twists.new(results_model, options),
             Corner3Twists.new(results_model, options))
     end
   end
@@ -115,8 +123,10 @@ module CubeTrainer
       parity_results = results_for_options(result_model, corner_options)
       parity_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, parity_options)
 
-      @hinter = CornerTwistPlusParityHinter.new(corner_results, parity_results, corner_hinter,
-                                                parity_hinter, options)
+      @hinter = CornerTwistPlusParityHinter.new(
+        corner_results, parity_results, corner_hinter,
+        parity_hinter, options
+      )
     end
 
     def corner_options(options)
@@ -148,9 +158,10 @@ module CubeTrainer
 
     def generate_letter_pairs
       non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
-      incorrectly_oriented_corners = non_buffer_corners.reject do |c|
-        ORIENTATION_FACES.include?(c.solved_face)
-      end
+      incorrectly_oriented_corners =
+        non_buffer_corners.reject do |c|
+          ORIENTATION_FACES.include?(c.solved_face)
+        end
       parity_twist_combinations =
         non_buffer_corners.product(incorrectly_oriented_corners).reject do |parity, twist|
           parity.turned_equals?(twist)
@@ -222,9 +233,10 @@ module CubeTrainer
       cube_state = @color_scheme.solved_cube_state(options.cube_size)
       part_cycle_factory = Core::PartCycleFactory.new(options.cube_size, 0)
       non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
-      correctly_oriented_corners = non_buffer_corners.select do |c|
-        ORIENTATION_FACES.include?(c.solved_face)
-      end
+      correctly_oriented_corners =
+        non_buffer_corners.select do |c|
+          ORIENTATION_FACES.include?(c.solved_face)
+        end
       buffer_twist = part_cycle_factory.multi_corner_twist([buffer])
       1.upto(2).collect_concat do |twist_number|
         buffer_twist.apply_to(cube_state)
@@ -233,9 +245,10 @@ module CubeTrainer
           letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
           twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c1, c2])
           twist_sticker_cycles = twist_sticker_cycles.inverse if twist_number == 2
-          twisted_cube_state = twist_sticker_cycles.apply_temporarily_to(cube_state) do
-            cube_state.dup
-          end
+          twisted_cube_state =
+            twist_sticker_cycles.apply_temporarily_to(cube_state) do
+              cube_state.dup
+            end
           InputItem.new(letter_pair, twisted_cube_state)
         end
       end
@@ -286,23 +299,27 @@ module CubeTrainer
         ]
 
         # Now we generate additional solutions by rotating both colors in one direction.
-        extended_solutions = Array.new(Core::Corner::FACES) do |rot|
-          solution_corners.map do |comm|
-            comm.map { |p| p.rotate_by(rot) }
+        extended_solutions =
+          Array.new(Core::Corner::FACES) do |rot|
+            solution_corners.map do |comm|
+              comm.map { |p| p.rotate_by(rot) }
+            end
           end
-        end
 
         # Now we generate even more additional solutions by rotating the second corner of the first
         # comm and the first corner of the second comm in opposite directions.
-        extended_solutions = Core::Corner::FACES.times.collect_concat do |rot|
-          extended_solutions.map do |solution|
-            raise unless solution.length == 2
+        extended_solutions =
+          Core::Corner::FACES.times.collect_concat do |rot|
+            extended_solutions.map do |solution|
+              raise unless solution.length == 2
 
-            first_comm, second_comm = solution
-            [rotate_comm_target(first_comm, 1, rot),
-             rotate_comm_target(second_comm, 0, rot)]
+              first_comm, second_comm = solution
+              [
+                rotate_comm_target(first_comm, 1, rot),
+                rotate_comm_target(second_comm, 0, rot)
+              ]
+            end
           end
-        end
 
         # Now we generate letter pairs
         extended_solutions.map do |s|

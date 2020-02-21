@@ -83,7 +83,7 @@ module CubeTrainer
     def extract_algorithms
       algs = @internal_solution_set.extract_algorithms
       algs.each do |_k, v|
-        v.collect! { |s| @extra_move + s }
+        v.map! { |s| @extra_move + s }
       end
       algs
     end
@@ -127,9 +127,10 @@ module CubeTrainer
     end
 
     def ordered_moves(state, limit)
-      scored_moves = generate_moves(state).map! do |m|
-        [m, score_after_move(state, m)]
-      end
+      scored_moves =
+        generate_moves(state).map! do |m|
+          [m, score_after_move(state, m)]
+        end
       scored_moves.select! do |_m, score|
         score + limit >= 4
       end
@@ -161,9 +162,10 @@ module CubeTrainer
     end
 
     def solutions_after_move(state, move, inner_limit)
-      solutions = move.apply_temporarily_to(state) do
-        find_solutions_internal(state, inner_limit)
-      end
+      solutions =
+        move.apply_temporarily_to(state) do
+          find_solutions_internal(state, inner_limit)
+        end
       prepend_move(move, solutions)
     end
 

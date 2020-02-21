@@ -28,7 +28,7 @@ describe Core::CubePrintHelper do
           WW
           WW
       CUBE
-      expect(cube_state.to_s).to be == expected
+      expect(cube_state.to_s).to(be == expected)
     end
 
     it 'prints a state after sexy move correctly' do
@@ -42,7 +42,7 @@ describe Core::CubePrintHelper do
           WG
           WW
       CUBE
-      expect(cube_state.to_s).to be == expected
+      expect(cube_state.to_s).to(be == expected)
     end
   end
 
@@ -62,7 +62,7 @@ describe Core::CubePrintHelper do
            WWW
            WWW
       CUBE
-      expect(cube_state.to_s).to be == expected
+      expect(cube_state.to_s).to(be == expected)
     end
 
     it 'prints a state after sexy move correctly' do
@@ -79,7 +79,7 @@ describe Core::CubePrintHelper do
            WWW
            WWW
       CUBE
-      expect(cube_state.to_s).to be == expected
+      expect(cube_state.to_s).to(be == expected)
     end
   end
 
@@ -102,7 +102,7 @@ describe Core::CubePrintHelper do
             WWWW
             WWWW
       CUBE
-      expect(cube_state.to_s).to be == expected
+      expect(cube_state.to_s).to(be == expected)
     end
 
     it 'prints a state after sexy move correctly' do
@@ -122,7 +122,7 @@ describe Core::CubePrintHelper do
             WWWW
             WWWW
       CUBE
-      expect(cube_state.to_s).to be == expected
+      expect(cube_state.to_s).to(be == expected)
     end
   end
 end

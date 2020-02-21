@@ -14,15 +14,16 @@ module CubeTrainer
 
     # Parser for commutators and algorithms.
     class Parser
+      OPENING_BRACKET = '['
+      OPENING_PAREN = '('
+      CLOSING_BRACKET = ']'
+      CLOSING_PAREN = ')'
+      TIMES = '*'
       def initialize(alg_string, move_parser)
         @alg_string = alg_string
         @scanner = StringScanner.new(alg_string)
         @move_parser = move_parser
       end
-
-      OPENING_PAREN = '('
-      CLOSING_PAREN = ')'
-      TIMES = '*'
 
       def parse_open_paren
         complain('beginning of trigger') unless @scanner.getch == OPENING_PAREN
@@ -39,7 +40,7 @@ module CubeTrainer
       def parse_factor
         number = @scanner.scan(/\d+/)
         complain('factor of multiplier') unless number
-        number.to_i
+        Integer(number, 10)
       end
 
       def parse_multiplier
@@ -99,9 +100,6 @@ module CubeTrainer
             #{' ' * @scanner.pos}^"
         ERROR
       end
-
-      OPENING_BRACKET = '['
-      CLOSING_BRACKET = ']'
 
       def parse_open_bracket
         complain('beginning of commutator') unless @scanner.getch == OPENING_BRACKET
@@ -174,7 +172,7 @@ module CubeTrainer
 
       def parse_move_internal
         move = @scanner.scan(@move_parser.regexp)
-        return nil unless move
+        return unless move
 
         @move_parser.parse_move(move)
       end

@@ -44,7 +44,7 @@ module CubeTrainer
     end
 
     def to_s
-      @to_s ||= letters.collect(&:capitalize).join(SEPARATOR)
+      @to_s ||= letters.map(&:capitalize).join(SEPARATOR)
     end
 
     def regexp

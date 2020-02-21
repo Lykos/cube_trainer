@@ -39,7 +39,7 @@ module CubeTrainer
     end
 
     def inputs_for_word(word)
-      results.select { |r| r.word == word }.collect(&:input).uniq
+      results.select { |r| r.word == word }.map(&:input).uniq
     end
   end
 end

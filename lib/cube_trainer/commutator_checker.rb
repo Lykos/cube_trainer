@@ -14,15 +14,17 @@ module CubeTrainer
     include Core::CubePrintHelper
 
     # rubocop:disable Metrics/ParameterLists
-    def initialize(part_type:,
-                   buffer:,
-                   piece_name:,
-                   color_scheme:,
-                   letter_scheme:,
-                   cube_size:,
-                   verbose: false,
-                   find_fixes: false,
-                   incarnation_index: 0)
+    def initialize(
+      part_type:,
+      buffer:,
+      piece_name:,
+      color_scheme:,
+      letter_scheme:,
+      cube_size:,
+      verbose: false,
+      find_fixes: false,
+      incarnation_index: 0
+    )
       Core::CubeState.check_cube_size(cube_size)
       raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(Core::Part)
       raise TypeError unless buffer.class == part_type
@@ -109,15 +111,14 @@ module CubeTrainer
     # * incorrect and we have a fix
     # * incorrect and we have no fix
     class CheckAlgResult
+      CORRECT = CheckAlgResult.new(:correct)
+      UNFIXABLE = CheckAlgResult.new(:unfixable)
       def initialize(result, fix = nil)
         @result = result
         @fix = fix
       end
 
       attr_reader :result, :fix
-
-      CORRECT = CheckAlgResult.new(:correct)
-      UNFIXABLE = CheckAlgResult.new(:unfixable)
     end
 
     def check_alg(row_description, letter_pair, commutator)
@@ -147,7 +148,7 @@ module CubeTrainer
 
     def permutation_modifications(alg)
       if alg.length <= 3
-        alg.moves.permutation.collect { |p| Core::Algorithm.new(p) }
+        alg.moves.permutation.map { |p| Core::Algorithm.new(p) }
       else
         [alg]
       end
@@ -165,10 +166,12 @@ module CubeTrainer
       a = algorithm.moves[0]
       b = algorithm.moves[2]
       move_modifications(algorithm.moves[1]).flat_map do |m|
-        [Core::Algorithm.new([a, m, a.inverse]),
-         Core::Algorithm.new([a.inverse, m, a]),
-         Core::Algorithm.new([b, m, b.inverse]),
-         Core::Algorithm.new([b.inverse, m, b])].uniq
+        [
+          Core::Algorithm.new([a, m, a.inverse]),
+          Core::Algorithm.new([a.inverse, m, a]),
+          Core::Algorithm.new([b, m, b.inverse]),
+          Core::Algorithm.new([b.inverse, m, b])
+        ].uniq
       end
     end
 

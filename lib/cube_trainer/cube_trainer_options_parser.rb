@@ -12,8 +12,8 @@ module CubeTrainer
       super do |opts|
         opts.banner = "Usage: '#{$PROGRAM_NAME} [options]'"
 
-        opts.separator ''
-        opts.separator 'Specific options:'
+        opts.separator('')
+        opts.separator('Specific options:')
 
         yield opts
 
@@ -47,17 +47,21 @@ module CubeTrainer
     end
 
     def on_stage_mask
-      on('-m', '--stage_mask [MASK]', String,
-         'Stage mask to apply to all images *after* performing an ' \
-         'alg, e.g. coll or cross-x2.') do |m|
+      on(
+        '-m', '--stage_mask [MASK]', String,
+        'Stage mask to apply to all images *after* performing an ' \
+        'alg, e.g. coll or cross-x2.'
+      ) do |m|
         @options.stage_mask = Anki::CubeVisualizer::StageMask.parse(m)
       end
     end
 
     def on_solved_mask
-      on('-k', '--solved_mask [MASK]', Anki::CubeMask::NAMES,
-         'Mask to apply to all cube states *before* performing an ' \
-         'alg, e.g. `ll_edges_outside`.') do |k|
+      on(
+        '-k', '--solved_mask [MASK]', Anki::CubeMask::NAMES,
+        'Mask to apply to all cube states *before* performing an ' \
+        'alg, e.g. `ll_edges_outside`.'
+      ) do |k|
         @options.solved_mask_name = k
       end
     end

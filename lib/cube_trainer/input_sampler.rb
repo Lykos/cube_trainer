@@ -56,11 +56,13 @@ module CubeTrainer
     # `results_model` is a helper object that retrieves results to get historic scores.
     # `repeat_item_bounary` is the number of repetitions at which we stop considering an item a
     #                       "new item" that needs to be repeated occasionally.
-    def initialize(items,
-                   results_model,
-                   goal_badness = 1.0,
-                   verbose = false,
-                   repeat_item_boundary = 11)
+    def initialize(
+      items,
+      results_model,
+      goal_badness = 1.0,
+      verbose = false,
+      repeat_item_boundary = 11
+    )
       raise ArgumentError unless items.is_a?(Array)
       unless items.all? { |e| e.is_a?(InputItem) }
         raise ArgumentError, "Invalid items #{items.inspect}."
@@ -80,9 +82,11 @@ module CubeTrainer
 
     def create_sampler
       repeat_sampler = create_adaptive_sampler(:repeat)
-      combined_sampler = CombinedSampler.new([create_adaptive_subsampler(:new),
-                                              create_adaptive_subsampler(:badness),
-                                              create_adaptive_subsampler(:coverage)])
+      combined_sampler = CombinedSampler.new([
+                                               create_adaptive_subsampler(:new),
+                                               create_adaptive_subsampler(:badness),
+                                               create_adaptive_subsampler(:coverage)
+                                             ])
       PrioritizedSampler.new([repeat_sampler, combined_sampler])
     end
 
@@ -143,7 +147,7 @@ module CubeTrainer
     # (0 if it was the last picked item).
     def items_since_last_occurrence(item)
       occ = @occurrence_indices[item.representation]
-      return nil if occ.nil?
+      return if occ.nil?
 
       @current_occurrence_index - occ
     end
@@ -194,14 +198,15 @@ module CubeTrainer
 
     # After how many other items should this item be repeated.
     def repetition_index(occ)
-      @repetition_indices[occ] ||= begin
-                                     rep_index = 2**occ
-                                     # Do a bit of random distortion to avoid completely
-                                     # mechanic repetition.
-                                     distorted_rep_index = distort(rep_index, 0.2)
-                                     # At least 1 other item should always come in between.
-                                     [distorted_rep_index.to_i, 1].max
-                                   end
+      @repetition_indices[occ] ||=
+        begin
+                                            rep_index = 2**occ
+                                            # Do a bit of random distortion to avoid completely
+                                            # mechanic repetition.
+                                            distorted_rep_index = distort(rep_index, 0.2)
+                                            # At least 1 other item should always come in between.
+                                            [Integer(distorted_rep_index, 10), 1].max
+                                          end
     end
 
     def occurrences(item)

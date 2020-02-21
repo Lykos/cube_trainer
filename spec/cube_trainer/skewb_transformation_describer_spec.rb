@@ -19,7 +19,7 @@ def canonicalize_transformation_descriptions(transformation_descriptions)
   end.sort
 end
 
-RSpec::Matchers.define :be_the_same_descriptions_as do |expected|
+RSpec::Matchers.define(:be_the_same_descriptions_as) do |expected|
   match do |actual|
     canonicalize_transformation_descriptions(expected) ==
       canonicalize_transformation_descriptions(actual)
@@ -46,36 +46,36 @@ describe SkewbTransformationDescriber do
   it 'describes center transformations of sledges accurately' do
     alg = parse_sarahs_skewb_algorithm("F' L F L'")
     center_descriptions = centers_describer.transformation_descriptions(alg)
-    expect(center_descriptions).to be_the_same_descriptions_as ['F <-> U', 'R <-> L']
+    expect(center_descriptions).to(be_the_same_descriptions_as(['F <-> U', 'R <-> L']))
   end
 
   it 'describes center transformations of F moves accurately' do
     alg = parse_sarahs_skewb_algorithm('F')
     center_descriptions = centers_describer.transformation_descriptions(alg)
-    expect(center_descriptions).to be_the_same_descriptions_as ['U -> R -> F -> U']
+    expect(center_descriptions).to(be_the_same_descriptions_as(['U -> R -> F -> U']))
   end
 
   it 'describes corner transformations of sledges accurately' do
     alg = parse_sarahs_skewb_algorithm("F' L F L'")
     top_corners_descriptions = top_corners_describer.source_descriptions(alg)
     expected_descriptions = ['FLU -> UFL', 'RFU -> URF', 'BUL -> ULB', 'RUB -> UBR']
-    expect(top_corners_descriptions).to be_the_same_descriptions_as expected_descriptions
+    expect(top_corners_descriptions).to(be_the_same_descriptions_as(expected_descriptions))
   end
 
   it 'describes corner transformations of F moves accurately' do
     alg = parse_sarahs_skewb_algorithm('F')
     top_corners_descriptions = top_corners_describer.source_descriptions(alg)
     expected_descriptions = ['FUR -> URF', 'FLU -> UBR', 'FRD -> UFL', 'ULB stays']
-    expect(top_corners_descriptions).to be_the_same_descriptions_as expected_descriptions
+    expect(top_corners_descriptions).to(be_the_same_descriptions_as(expected_descriptions))
   end
 
   it 'describes sources of layer corners after sledges accurately' do
     alg = parse_sarahs_skewb_algorithm("F' L F L'")
-    expect(bottom_describer.source_descriptions(alg)).to be_the_same_descriptions_as []
+    expect(bottom_describer.source_descriptions(alg)).to(be_the_same_descriptions_as([]))
   end
 
   it 'describes sources of layer corners after F moves accurately' do
     alg = parse_sarahs_skewb_algorithm('F')
-    expect(bottom_describer.source_descriptions(alg)).to be_the_same_descriptions_as ['BRU -> DFR']
+    expect(bottom_describer.source_descriptions(alg)).to(be_the_same_descriptions_as(['BRU -> DFR']))
   end
 end

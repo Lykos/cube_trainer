@@ -18,42 +18,49 @@ module CubeTrainer
     # Class that generates an Anki deck for an alg set.
     class AlgSetAnkiGenerator
       include Utils::ArrayHelper
-
+      AUFS = ([Core::Algorithm.empty] + NON_ZERO_AUFS).freeze
       FORMAT = :jpg
       NON_ZERO_AUFS = Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
         Core::Algorithm.move(Core::FatMove.new(Core::Face::U, d))
       end.freeze
-      AUFS = ([Core::Algorithm.empty] + NON_ZERO_AUFS).freeze
-
-      def create_cache(options)
-        options.cache ? Cache.new('cube_visualizer') : nil
-      end
-
-      def check_output_dir(output_dir)
-        raise TypeError unless output_dir.is_a?(String)
-        raise ArgumentError unless File.exist?(output_dir)
-        raise ArgumentError unless File.directory?(output_dir)
-        raise ArgumentError unless File.writable?(output_dir)
-      end
-
-      def check_output(output)
-        raise TypeError unless output.is_a?(String)
-
-        check_output_dir(File.dirname(output))
-        raise ArgumentError if File.directory?(output)
-        raise ArgumentError if File.exist?(output) && !File.writable?(output)
-      end
-
+      ALG_NAME_REPLACEMENTS = {
+        :ä => 'ae',
+        :ö => 'oe',
+        :ü => 'ue',
+        :Ä => 'Ae',
+        :Ö => 'Oe',
+        :Ü => 'Ue',
+        :è => 'e',
+        :ß => 'ss',
+        /\s/ => '_',
+        %r{[/()?"\\]} => '',
+        :"'" => '-'
+      }.freeze
+      ALG_NAME_REPLACEMENTS = {
+        :ä => 'ae',
+        :ö => 'oe',
+        :ü => 'ue',
+        :Ä => 'Ae',
+        :Ö => 'Oe',
+        :Ü => 'Ue',
+        :è => 'e',
+        :ß => 'ss',
+        /\s/ => '_',
+        %r{[/()?"\\]} => '',
+        :"'" => '-'
+      }.freeze
       def initialize(options)
         check_output_dir(options.output_dir)
         check_output(options.output)
 
         @options = options
-        @visualizer = CubeVisualizer.new(fetcher: Net::HTTP,
-                                         cache: create_cache(options),
-                                         sch: options.color_scheme,
-                                         fmt: FORMAT,
-                                         stage: options.stage_mask)
+        @visualizer = CubeVisualizer.new(
+          fetcher: Net::HTTP,
+          cache: create_cache(options),
+          sch: options.color_scheme,
+          fmt: FORMAT,
+          stage: options.stage_mask
+        )
         return unless @options.solved_mask_name
 
         @solved_mask = CubeMask.from_name(options.solved_mask_name, options.cube_size, :unknown)
@@ -97,8 +104,10 @@ module CubeTrainer
         basic_note_inputs.collect_concat do |input|
           AUFS.map.with_index do |auf, index|
             filename = new_image_filename(input.name, index)
-            NoteInputVariation.new(input.fields, input.name, auf + input.alg,
-                                   filename, img(filename))
+            NoteInputVariation.new(
+              input.fields, input.name, auf + input.alg,
+              filename, img(filename)
+            )
           end
         end
       end
@@ -111,11 +120,12 @@ module CubeTrainer
       end
 
       def note_inputs
-        basic_note_inputs = if use_internal_algs?
-                              internal_note_inputs
-                            else
-                              external_note_inputs
-                            end
+        basic_note_inputs =
+          if use_internal_algs?
+            internal_note_inputs
+          else
+            external_note_inputs
+                                     end
         if @options.auf
           input_variations_with_auf(basic_note_inputs)
         else
@@ -126,20 +136,6 @@ module CubeTrainer
       def name_to_alg
         @name_to_alg ||= {}
       end
-
-      ALG_NAME_REPLACEMENTS = {
-        'ä' => 'ae',
-        'ö' => 'oe',
-        'ü' => 'ue',
-        'Ä' => 'Ae',
-        'Ö' => 'Oe',
-        'Ü' => 'Ue',
-        'è' => 'e',
-        'ß' => 'ss',
-        /\s/ => '_',
-        %r{[/()?"\\]} => '',
-        "'" => '-'
-      }.freeze
 
       # Make an alg name simple enough so we can use it as a file name without problems.
       # TODO This is broken
@@ -163,19 +159,41 @@ module CubeTrainer
       end
 
       def generate_internal(csv)
-        note_inputs = Parallel.map(note_inputs,
-                                   progress: 'Fetching alg images',
-                                   in_threads: 50) do |note_input|
-          state = @options.color_scheme.solved_cube_state(@options.cube_size)
-          @solved_mask&.apply_to(state)
-          note_input.modified_alg.inverse.apply_to(state)
-          @visualizer.fetch_and_store(state, absolute_output_path(note_input.image_filename))
-          note_input
-        end
+        note_inputs =
+          Parallel.map(
+            note_inputs,
+            progress: 'Fetching alg images',
+            in_threads: 50
+          ) do |note_input|
+            state = @options.color_scheme.solved_cube_state(@options.cube_size)
+            @solved_mask&.apply_to(state)
+            note_input.modified_alg.inverse.apply_to(state)
+            @visualizer.fetch_and_store(state, absolute_output_path(note_input.image_filename))
+            note_input
+          end
         note_inputs.group_by(&:name).each do |_name, values|
           fields = values[0].fields
           csv << fields + values.map(&:img)
         end
+      end
+
+      def create_cache(options)
+        options.cache ? Cache.new('cube_visualizer') : nil
+      end
+
+      def check_output_dir(output_dir)
+        raise TypeError unless output_dir.is_a?(String)
+        raise ArgumentError unless File.exist?(output_dir)
+        raise ArgumentError unless File.directory?(output_dir)
+        raise ArgumentError unless File.writable?(output_dir)
+      end
+
+      def check_output(output)
+        raise TypeError unless output.is_a?(String)
+
+        check_output_dir(File.dirname(output))
+        raise ArgumentError if File.directory?(output)
+        raise ArgumentError if File.exist?(output) && !File.writable?(output)
       end
     end
   end

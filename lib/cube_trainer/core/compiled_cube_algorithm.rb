@@ -7,9 +7,10 @@ module CubeTrainer
     # Wrapper of the native C implementation of a compiled algorithm for a particular cube size.
     class CompiledCubeAlgorithm < CompiledAlgorithm
       def self.transform_rotation(move, cube_size)
-        slice_moves = 0.upto(cube_size - 1).map do |i|
-          [:slice, move.axis_face.face_symbol, move.direction.value, i]
-        end
+        slice_moves =
+          0.upto(cube_size - 1).map do |i|
+            [:slice, move.axis_face.face_symbol, move.direction.value, i]
+          end
         [
           [:face, move.axis_face.face_symbol, move.direction.value],
           [:face, move.axis_face.opposite.face_symbol, move.direction.inverse.value]
@@ -29,9 +30,10 @@ module CubeTrainer
       end
 
       def self.transform_fat_move(move)
-        slice_moves = 0.upto(move.width - 1).map do |i|
-          [:slice, move.axis_face.face_symbol, move.direction.value, i]
-        end
+        slice_moves =
+          0.upto(move.width - 1).map do |i|
+            [:slice, move.axis_face.face_symbol, move.direction.value, i]
+          end
         [
           [:face, move.axis_face.face_symbol, move.direction.value]
         ] + slice_moves

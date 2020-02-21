@@ -55,7 +55,7 @@ module CubeTrainer
       def parse_move(move_string)
         match = move_string.match(regexp)
         if !match || !match.pre_match.empty? || !match.post_match.empty?
-          raise ArgumentError "Invalid move #{move_string}."
+          raise ArgumentError("Invalid move #{move_string}.")
         end
 
         parsed_parts = parse_named_captures(match)
@@ -68,29 +68,30 @@ module CubeTrainer
 
     # Parser for cube moves.
     class CubeMoveParser < AbstractMoveParser
-      REGEXP = begin
-                 axes_part = "(?<axis_name>[#{Move::AXES.join}])"
-                 face_names = CubeConstants::FACE_NAMES.join
-                 fat_move_part =
-                   "(?<width>\\d*)(?<fat_face_name>[#{face_names}])w"
-                 normal_move_part = "(?<face_name>[#{face_names}])"
-                 downcased_face_names = face_names.downcase
-                 maybe_fat_maybe_slice_move_part =
-                   "(?<maybe_fat_face_maybe_slice_name>[#{downcased_face_names}])"
-                 slice_move_part =
-                   "(?<slice_index>\\d+)(?<slice_name>[#{downcased_face_names}])"
-                 mslice_move_part = "(?<mslice_name>[#{Move::SLICE_FACES.keys.join}])"
-                 move_part = "(?:#{axes_part}|" \
-                             "#{fat_move_part}|" \
-                             "#{normal_move_part}|" \
-                             "#{maybe_fat_maybe_slice_move_part}|" \
-                             "#{slice_move_part}|#{mslice_move_part})"
-                 direction_names =
-                   AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
-                 direction_names.sort_by! { |e| -e.length }
-                 direction_part = "(?<direction>#{direction_names.join('|')})"
-                 Regexp.new("#{move_part}#{direction_part}")
-               end
+      REGEXP =
+        begin
+                        axes_part = "(?<axis_name>[#{Move::AXES.join}])"
+                        face_names = CubeConstants::FACE_NAMES.join
+                        fat_move_part =
+                          "(?<width>\\d*)(?<fat_face_name>[#{face_names}])w"
+                        normal_move_part = "(?<face_name>[#{face_names}])"
+                        downcased_face_names = face_names.downcase
+                        maybe_fat_maybe_slice_move_part =
+                          "(?<maybe_fat_face_maybe_slice_name>[#{downcased_face_names}])"
+                        slice_move_part =
+                          "(?<slice_index>\\d+)(?<slice_name>[#{downcased_face_names}])"
+                        mslice_move_part = "(?<mslice_name>[#{Move::SLICE_FACES.keys.join}])"
+                        move_part = "(?:#{axes_part}|" \
+                                    "#{fat_move_part}|" \
+                                    "#{normal_move_part}|" \
+                                    "#{maybe_fat_maybe_slice_move_part}|" \
+                                    "#{slice_move_part}|#{mslice_move_part})"
+                        direction_names =
+                          AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
+                        direction_names.sort_by! { |e| -e.length }
+                        direction_part = "(?<direction>#{direction_names.join('|')})"
+                        Regexp.new("#{move_part}#{direction_part}")
+                      end
 
       MOVE_TYPE_CREATORS = [
         MoveTypeCreator.new(%i[axis_face direction], Rotation),
@@ -101,6 +102,7 @@ module CubeTrainer
         MoveTypeCreator.new(%i[mslice_face direction], MaybeFatMSliceMaybeInnerMSliceMove)
       ].freeze
 
+      INSTANCE = CubeMoveParser.new
       def regexp
         REGEXP
       end
@@ -148,8 +150,6 @@ module CubeTrainer
         end
       end
       # rubocop:enable Metrics/CyclomaticComplexity
-
-      INSTANCE = CubeMoveParser.new
     end
 
     # Parser for Skewb moves.
@@ -159,23 +159,26 @@ module CubeTrainer
         MoveTypeCreator.new(%i[axis_corner skewb_direction], SkewbMove)
       ].freeze
 
+      FIXED_CORNER_INSTANCE = SkewbMoveParser.new(FixedCornerSkewbMove::MOVED_CORNERS)
+      SARAHS_INSTANCE = SkewbMoveParser.new(SarahsSkewbMove::MOVED_CORNERS)
       def initialize(moved_corners)
         @moved_corners = moved_corners
       end
 
       def regexp
-        @regexp ||= begin
-                      skewb_direction_names =
-                        AbstractDirection::POSSIBLE_SKEWB_DIRECTION_NAMES.flatten
-                      move_part = "(?:(?<skewb_move>[#{@moved_corners.keys.join}])" \
-                                  "(?<skewb_direction>[#{skewb_direction_names.join}]?))"
-                      rotation_direction_names =
-                        AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
-                      rotation_direction_names.sort_by! { |e| -e.length }
-                      rotation_part = "(?:(?<axis_name>[#{Move::AXES.join}])" \
-                                      "(?<cube_direction>#{rotation_direction_names.join('|')}))"
-                      Regexp.new("#{move_part}|#{rotation_part}")
-                    end
+        @regexp ||=
+          begin
+                               skewb_direction_names =
+                                 AbstractDirection::POSSIBLE_SKEWB_DIRECTION_NAMES.flatten
+                               move_part = "(?:(?<skewb_move>[#{@moved_corners.keys.join}])" \
+                                           "(?<skewb_direction>[#{skewb_direction_names.join}]?))"
+                               rotation_direction_names =
+                                 AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
+                               rotation_direction_names.sort_by! { |e| -e.length }
+                               rotation_part = "(?:(?<axis_name>[#{Move::AXES.join}])" \
+                                               "(?<cube_direction>#{rotation_direction_names.join('|')}))"
+                               Regexp.new("#{move_part}|#{rotation_part}")
+                             end
       end
 
       def move_type_creators
@@ -205,9 +208,6 @@ module CubeTrainer
         else raise
         end
       end
-
-      FIXED_CORNER_INSTANCE = SkewbMoveParser.new(FixedCornerSkewbMove::MOVED_CORNERS)
-      SARAHS_INSTANCE = SkewbMoveParser.new(SarahsSkewbMove::MOVED_CORNERS)
     end
   end
 end

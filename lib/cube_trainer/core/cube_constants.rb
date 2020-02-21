@@ -38,7 +38,7 @@ module CubeTrainer
       def valid_chirality?(face_symbols)
         # To make it comparable to our CHIRALITY_FACE_SYMBOLS, we switch each face used in c
         # different from the ones used in the CHIRALITY_FACE_SYMBOLS for the opposite face.
-        canonical_face_symbols = face_symbols.collect { |f| chirality_canonical_face_symbol(f) }
+        canonical_face_symbols = face_symbols.map { |f| chirality_canonical_face_symbol(f) }
 
         # Each time we swap a face for the opposite, the chirality direction should be inverted.
         no_swapped_face_symbols = canonical_face_symbols.zip(face_symbols).count { |a, b| a != b }

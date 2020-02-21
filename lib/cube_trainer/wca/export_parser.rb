@@ -13,14 +13,16 @@ module CubeTrainer
       include FileParsers
 
       # rubocop:disable Metrics/ParameterLists
-      def initialize(filename:,
-                     competitions:,
-                     continents:,
-                     countries:,
-                     events:,
-                     formats:,
-                     persons:,
-                     round_types:)
+      def initialize(
+        filename:,
+        competitions:,
+        continents:,
+        countries:,
+        events:,
+        formats:,
+        persons:,
+        round_types:
+      )
         @filename = filename
         @competitions = key_by(competitions, :competitionid)
         @countries = key_by(countries, :id)
@@ -67,8 +69,10 @@ module CubeTrainer
 
       def results
         @results ||=
-          self.class.parse_internal(@filename,
-                                    results: results_file_parser(@events))[:results].freeze
+          self.class.parse_internal(
+            @filename,
+            results: results_file_parser(@events)
+          )[:results].freeze
       end
 
       private

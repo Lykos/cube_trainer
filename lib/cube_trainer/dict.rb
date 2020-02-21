@@ -32,7 +32,7 @@ module CubeTrainer
       lines = DICT_PATHS.collect_concat { |p| File.readlines(p) }
       words = Set[]
       lines.sort.each do |l|
-        prefix_exists = 3.upto(l.length).any? { |i| words.include? l[0...i] }
+        prefix_exists = 3.upto(l.length).any? { |i| words.include?(l[0...i]) }
         words.add(l.chomp) unless prefix_exists
       end
       words.to_a.sort

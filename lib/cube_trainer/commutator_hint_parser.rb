@@ -31,20 +31,24 @@ module CubeTrainer
 
   # Class that parses a commutator file.
   class CommutatorHintParser < HintParser
-    TEST_COMMS_MODES = %i[ignore warn fail].freeze
-
     include Utils::StringHelper
     include Core
+    TEST_COMMS_MODES = %i[ignore warn fail].freeze
+
+    EMPTY_ENTRY = EmptyEntry.new
+    BLACKLIST = ['flip'].freeze
 
     # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/ParameterLists
-    def initialize(part_type:,
-                   buffer:,
-                   letter_scheme:,
-                   color_scheme:,
-                   verbose:,
-                   cube_size:,
-                   test_comms_mode:)
+    def initialize(
+      part_type:,
+      buffer:,
+      letter_scheme:,
+      color_scheme:,
+      verbose:,
+      cube_size:,
+      test_comms_mode:
+    )
       CubeState.check_cube_size(cube_size)
       unless TEST_COMMS_MODES.include?(test_comms_mode)
         raise ArgumentError, "Invalid test comms mode #{test_comms_mode}. " \
@@ -80,8 +84,6 @@ module CubeTrainer
       @test_comms_mode == :fail
     end
 
-    BLACKLIST = ['flip'].freeze
-
     # Recognizes special cell values that are blacklisted because they are not commutators
     def blacklisted?(value)
       BLACKLIST.include?(value.downcase)
@@ -107,8 +109,6 @@ module CubeTrainer
       attr_accessor :maybe_letter_pair
     end
 
-    EMPTY_ENTRY = EmptyEntry.new
-
     # Represents an erroneous entry in a commutator table.
     class ErrorEntry
       def initialize(error_message)
@@ -130,20 +130,21 @@ module CubeTrainer
     end
 
     def checker
-      @checker ||= if @test_comms_mode == :ignore
-                     CommutatorCheckerStub.new
-                   else
-                     CommutatorChecker.new(
-                       part_type: @part_type,
-                       buffer: @buffer,
-                       piece_name: name,
-                       color_scheme: @color_scheme,
-                       letter_scheme: @letter_scheme,
-                       cube_size: @cube_size,
-                       verbose: @verbose,
-                       find_fixes: @verbose
-                     )
-                   end
+      @checker ||=
+        if @test_comms_mode == :ignore
+          CommutatorCheckerStub.new
+        else
+          CommutatorChecker.new(
+            part_type: @part_type,
+            buffer: @buffer,
+            piece_name: name,
+            color_scheme: @color_scheme,
+            letter_scheme: @letter_scheme,
+            cube_size: @cube_size,
+            verbose: @verbose,
+            find_fixes: @verbose
+          )
+                          end
     end
 
     def reverse_engineer

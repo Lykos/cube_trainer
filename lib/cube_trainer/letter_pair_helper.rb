@@ -7,35 +7,39 @@ module CubeTrainer
   # Module to generate letter pairs that have certain meanings on the cube.
   module LetterPairHelper
     def self.letter_pairs(letterss)
-      letterss.collect { |ls| LetterPair.new(ls) }
+      letterss.map { |ls| LetterPair.new(ls) }
     end
 
     def rotations
-      @rotations ||= begin
-                       self.class::PART_TYPE::ELEMENTS.flat_map do |c|
-                         letters = c.rotations.collect { |r| letter_scheme.letter(r) }
-                         LetterPairHelper.letter_pairs(letters.permutation(2))
-                       end
-                     end
+      @rotations ||=
+        begin
+                              self.class::PART_TYPE::ELEMENTS.flat_map do |c|
+                                letters = c.rotations.map { |r| letter_scheme.letter(r) }
+                                LetterPairHelper.letter_pairs(letters.permutation(2))
+                              end
+                            end
     end
 
     def neighbors
-      @neighbors ||= begin
-                       self.class::PART_TYPE::ELEMENTS.flat_map do |c|
-                         letters = c.neighbors.collect { |r| letter_scheme.letter(r) }
-                         LetterPairHelper.letter_pairs(letters.permutation(2))
-                       end
-                     end
+      @neighbors ||=
+        begin
+                              self.class::PART_TYPE::ELEMENTS.flat_map do |c|
+                                letters = c.neighbors.map { |r| letter_scheme.letter(r) }
+                                LetterPairHelper.letter_pairs(letters.permutation(2))
+                              end
+                            end
     end
 
     def letter_pairs_for_piece
-      @letter_pairs_for_piece ||= begin
-                                    buffer_letters = buffer.rotations.collect do |c|
-                                      letter_scheme.letter(c)
-                                    end
-                                    valid_letters = letter_scheme.alphabet - buffer_letters
-                                    LetterPairHelper.letter_pairs(valid_letters.permutation(2))
-                                  end
+      @letter_pairs_for_piece ||=
+        begin
+                                           buffer_letters =
+                                             buffer.rotations.map do |c|
+                                               letter_scheme.letter(c)
+                                             end
+                                           valid_letters = letter_scheme.alphabet - buffer_letters
+                                           LetterPairHelper.letter_pairs(valid_letters.permutation(2))
+                                         end
     end
   end
 end

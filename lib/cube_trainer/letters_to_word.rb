@@ -22,10 +22,10 @@ module CubeTrainer
     def generate_letter_pairs
       alphabet = letter_scheme.alphabet
       pairs = LetterPairHelper.letter_pairs(alphabet.permutation(2))
-      duplicates = LetterPairHelper.letter_pairs(alphabet.collect { |c| [c, c] })
+      duplicates = LetterPairHelper.letter_pairs(alphabet.map { |c| [c, c] })
       singles = LetterPairHelper.letter_pairs(alphabet.permutation(1))
       valid_pairs = pairs - duplicates + singles
-      PaoLetterPair::PAO_TYPES.product(valid_pairs).collect { |c| PaoLetterPair.new(*c) }
+      PaoLetterPair::PAO_TYPES.product(valid_pairs).map { |c| PaoLetterPair.new(*c) }
     end
 
     attr_reader :input_sampler

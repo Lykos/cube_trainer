@@ -9,6 +9,7 @@ module CubeTrainer
   class HumanWordLearner
     include ConsoleHelpers
     include Utils::StringHelper
+    COMMANDS = %w[hint replace delete quit].freeze
 
     def initialize(hinter, results_model, options)
       @hinter = hinter
@@ -27,8 +28,6 @@ module CubeTrainer
         end
       end
     end
-
-    COMMANDS = %w[hint replace delete quit].freeze
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength

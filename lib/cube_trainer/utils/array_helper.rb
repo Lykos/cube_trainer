@@ -8,7 +8,7 @@ module CubeTrainer
         raise ArgumentError unless array.length == permutation.length
         raise ArgumentError unless permutation.uniq.length == permutation.length
 
-        permutation.collect do |i|
+        permutation.map do |i|
           raise ArgumentError unless i.is_a?(Integer) && i >= 0 && i < array.length
 
           array[i]

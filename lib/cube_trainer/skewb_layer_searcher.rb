@@ -49,20 +49,22 @@ module CubeTrainer
       attr_reader :move, :sub_solution
 
       def algorithm
-        @algorithm ||= if move.nil?
-                         Core::Algorithm.empty
-                       else
-                         Core::Algorithm.move(@move) + @sub_solution.algorithm
-                       end
+        @algorithm ||=
+          if move.nil?
+            Core::Algorithm.empty
+          else
+            Core::Algorithm.move(@move) + @sub_solution.algorithm
+                                end
       end
 
       def compiled_algorithm
-        @compiled_algorithm ||= if move.nil?
-                                  Core::CompiledSkewbAlgorithm::EMPTY
-                                else
-                                  Core::Algorithm.move(@move).compiled_for_skewb +
-                                    @sub_solution.compiled_algorithm
-                                end
+        @compiled_algorithm ||=
+          if move.nil?
+            Core::CompiledSkewbAlgorithm::EMPTY
+          else
+            Core::Algorithm.move(@move).compiled_for_skewb +
+              @sub_solution.compiled_algorithm
+                                         end
       end
 
       def algorithm_length
@@ -141,7 +143,7 @@ module CubeTrainer
       # We go back to the original state and then apply
       # a transformed version of the inverse of the algorithm.
       candidate.compiled_algorithm.apply_temporarily_to(@state) do
-        ALGORITHM_TRANSFORMATIONS.collect do |t|
+        ALGORITHM_TRANSFORMATIONS.map do |t|
           transformed = t.transformed(candidate.compiled_algorithm).inverse
           transformed.apply_temporarily_to(@state) { @state.dup }
         end

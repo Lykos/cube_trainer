@@ -52,9 +52,10 @@ module CubeTrainer
         raise TypeError unless move.is_a?(Move)
         return Algorithm.move(move) if algorithm.empty?
 
-        cancel_variants = cancel_variants(algorithm).map do |alg|
-          Algorithm.new(alg.moves[0...-1]) + alg.moves[-1].join_with_cancellation(move, cube_size)
-        end
+        cancel_variants =
+          cancel_variants(algorithm).map do |alg|
+            Algorithm.new(alg.moves[0...-1]) + alg.moves[-1].join_with_cancellation(move, cube_size)
+          end
         cancel_variants.min_by do |alg|
           # QTM is the most sensitive metric, so we use that as the highest priority for
           # cancellations.

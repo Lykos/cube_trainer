@@ -45,6 +45,13 @@ module CubeTrainer
 
   # Letter scheme used by Bernhard Brodowsky.
   class BernhardLetterScheme < LetterScheme
+    PART_TYPE_BUFFERS = {
+      Core::Corner => Core::Corner.for_face_symbols(%i[U L B]),
+      Core::Edge => Core::Edge.for_face_symbols(%i[U F]),
+      Core::Wing => Core::Wing.for_face_symbols(%i[F U]),
+      Core::XCenter => Core::XCenter.for_face_symbols(%i[U R F]),
+      Core::TCenter => Core::TCenter.for_face_symbols(%i[U F])
+    }.freeze
     def alphabet
       @alphabet ||= 'a'.upto('x').to_a
     end
@@ -57,14 +64,6 @@ module CubeTrainer
     def shoot_letters(_part_type)
       %w[a b d l h t p]
     end
-
-    PART_TYPE_BUFFERS = {
-      Core::Corner => Core::Corner.for_face_symbols(%i[U L B]),
-      Core::Edge => Core::Edge.for_face_symbols(%i[U F]),
-      Core::Wing => Core::Wing.for_face_symbols(%i[F U]),
-      Core::XCenter => Core::XCenter.for_face_symbols(%i[U R F]),
-      Core::TCenter => Core::TCenter.for_face_symbols(%i[U F])
-    }.freeze
 
     def default_buffer(part_type)
       PART_TYPE_BUFFERS[part_type]

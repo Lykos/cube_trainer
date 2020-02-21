@@ -53,11 +53,12 @@ module CubeTrainer
         coordinates = [nil, nil]
         face_distances.each do |neighbor, distance|
           index = face.coordinate_index_close_to(neighbor)
-          coordinate = if neighbor.close_to_smaller_indices?
-                         distance
-                       else
-                         invert_coordinate(distance, cube_size)
-                       end
+          coordinate =
+            if neighbor.close_to_smaller_indices?
+              distance
+            else
+              invert_coordinate(distance, cube_size)
+                                  end
           raise ArgumentError if coordinates[index]
 
           coordinates[index] = coordinate
@@ -69,10 +70,11 @@ module CubeTrainer
 
       def self.match_coordinate_internal(base_coordinate, other_face_symbols)
         other_face_symbols.sort!
-        coordinate = base_coordinate.rotations.find do |coord|
-          face_symbols_closeby = coord.close_neighbor_faces.map(&:face_symbol)
-          face_symbols_closeby.sort == other_face_symbols
-        end
+        coordinate =
+          base_coordinate.rotations.find do |coord|
+            face_symbols_closeby = coord.close_neighbor_faces.map(&:face_symbol)
+            face_symbols_closeby.sort == other_face_symbols
+          end
         raise "Couldn't find a fitting coordinate on the solved face." if coordinate.nil?
 
         coordinate
@@ -97,19 +99,20 @@ module CubeTrainer
       # rubocop:disable Metrics/AbcSize
       def self.solved_positions(part, cube_size, incarnation_index)
         solved_coordinate = solved_position(part, cube_size, incarnation_index)
-        other_coordinates = part.face_symbols[1..-1].map.with_index do |f, i|
-          face = Face.for_face_symbol(f)
-          # The reverse is important for edge like parts. We are not in the same position as usual
-          # solved pieces would be.
-          # For other types of pieces, it doesn't make a difference as the base index will just be a
-          # rotation of the original one, but we will anyway look at all rotations later.
-          base_indices = part.base_index_on_other_face(face, cube_size, incarnation_index).reverse
-          base_coordinate = Coordinate.from_indices(face, cube_size, *base_indices)
-          other_face_symbols = [part.face_symbols[0]] +
-                               part.corresponding_part.face_symbols[1...i + 1] +
-                               part.corresponding_part.face_symbols[i + 2..-1]
-          match_coordinate_internal(base_coordinate, other_face_symbols)
-        end
+        other_coordinates =
+          part.face_symbols[1..-1].map.with_index do |f, i|
+            face = Face.for_face_symbol(f)
+            # The reverse is important for edge like parts. We are not in the same position as usual
+            # solved pieces would be.
+            # For other types of pieces, it doesn't make a difference as the base index will just be a
+            # rotation of the original one, but we will anyway look at all rotations later.
+            base_indices = part.base_index_on_other_face(face, cube_size, incarnation_index).reverse
+            base_coordinate = Coordinate.from_indices(face, cube_size, *base_indices)
+            other_face_symbols = [part.face_symbols[0]] +
+                                 part.corresponding_part.face_symbols[1...i + 1] +
+                                 part.corresponding_part.face_symbols[i + 2..-1]
+            match_coordinate_internal(base_coordinate, other_face_symbols)
+          end
         [solved_coordinate] + other_coordinates
       end
       # rubocop:enable Metrics/AbcSize
@@ -262,6 +265,8 @@ module CubeTrainer
 
     # Coordinate of a sticker on the Skewb.
     class SkewbCoordinate
+      include Comparable
+      include CubeConstants
       def initialize(face, coordinate, native)
         raise ArgumentError, "Unsuitable face #{face.inspect}." unless face.is_a?(Face)
         unless coordinate.is_a?(Integer) && coordinate >= 0 && coordinate < SKEWB_STICKERS
@@ -282,7 +287,7 @@ module CubeTrainer
       end
 
       def self.corners_on_face(face)
-        face.clockwise_corners.collect { |c| for_corner(c) }
+        face.clockwise_corners.map { |c| for_corner(c) }
       end
 
       def self.for_corner(corner)
@@ -307,9 +312,6 @@ module CubeTrainer
       def face
         @face ||= Face.for_face_symbol(@native.face)
       end
-
-      include Comparable
-      include CubeConstants
 
       attr_reader :coordinate
     end

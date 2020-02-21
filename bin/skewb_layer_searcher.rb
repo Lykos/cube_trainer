@@ -24,14 +24,19 @@ TITLE_ROW = [
 ].freeze
 
 options = CubeTrainer::SkewbLayerSearcherOptions.parse(ARGV)
-solutions = CubeTrainer::SkewbLayerSearcher.calculate(options.color_scheme,
-                                                      options.verbose,
-                                                      options.depth)
-layer_improver = CubeTrainer::SkewbLayerImprover.new(CubeTrainer::Core::Face::D,
-                                                     options.color_scheme)
-solutions = solutions.map do |algs|
-  algs.map { |alg| layer_improver.improve_layer(alg) }
-end
+solutions = CubeTrainer::SkewbLayerSearcher.calculate(
+  options.color_scheme,
+  options.verbose,
+  options.depth
+)
+layer_improver = CubeTrainer::SkewbLayerImprover.new(
+  CubeTrainer::Core::Face::D,
+  options.color_scheme
+)
+solutions =
+  solutions.map do |algs|
+    algs.map { |alg| layer_improver.improve_layer(alg) }
+  end
 
 if options.verbose
   puts
@@ -73,8 +78,10 @@ if options.output
   top_corner_describer = CubeTrainer::Core::SkewbTransformationDescriber.new(
     [], top_corners, :show_staying, options.color_scheme, top_corners_letter_scheme
   )
-  layer_classifier = CubeTrainer::Core::SkewbLayerClassifier.new(CubeTrainer::Core::Face::D,
-                                                                 options.color_scheme)
+  layer_classifier = CubeTrainer::Core::SkewbLayerClassifier.new(
+    CubeTrainer::Core::Face::D,
+    options.color_scheme
+  )
 
   CSV.open(options.output, 'wb', col_sep: "\t") do |csv|
     csv << TITLE_ROW
@@ -83,9 +90,10 @@ if options.output
       alternative_algs = algs[1..-1]
       classification = layer_classifier.classify_layer(algs[0])
       source_descriptions = layer_describer.source_descriptions(main_alg)
-      name_letters = source_descriptions.map(&:source).map do |p|
-        options.letter_scheme.letter(p).capitalize
-      end
+      name_letters =
+        source_descriptions.map(&:source).map do |p|
+          options.letter_scheme.letter(p).capitalize
+        end
       letter_pairs = name_letters.each_slice(2).map(&:join)
       name = letter_pairs.map do |letter_pair|
         key = letter_pair.length == 2 ? letter_pair : letter_pair * 2

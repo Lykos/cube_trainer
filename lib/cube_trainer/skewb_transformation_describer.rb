@@ -116,11 +116,13 @@ module CubeTrainer
       end
     end
 
-    def initialize(interesting_faces,
-                   interesting_corners,
-                   staying_mode,
-                   color_scheme,
-                   letter_scheme = nil)
+    def initialize(
+      interesting_faces,
+      interesting_corners,
+      staying_mode,
+      color_scheme,
+      letter_scheme = nil
+    )
       raise ArgumentError unless %i[show_staying omit_staying].include?(staying_mode)
       raise TypeError unless color_scheme.is_a?(ColorScheme)
       raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
@@ -142,7 +144,7 @@ module CubeTrainer
         complete_cycle.push(current_part)
         break if complete_cycle.length > 1 && current_part == part
 
-        next_part_colors = current_part.rotations.map { |r| @skewb_state[yield r] }
+        next_part_colors = current_part.rotations.map { |r| @skewb_state[yield(r)] }
         current_part = @color_scheme.part_for_colors(part.class, next_part_colors)
       end
       PartCycle.new(@letter_scheme, complete_cycle)
@@ -151,7 +153,7 @@ module CubeTrainer
     # Finds permutation cycles of parts.
     def find_part_target_cycles(interesting_parts, &make_coordinate)
       used_parts = []
-      interesting_parts.collect do |part|
+      interesting_parts.map do |part|
         next unless (used_parts & part.rotations).empty?
 
         cycle = find_complete_source_cycle(part, &make_coordinate)

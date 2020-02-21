@@ -12,19 +12,17 @@ module CubeTrainer
   module Core
     # Base class for moves.
     class Move
-      AXES = %w[y z x].freeze
-      SLICE_FACES = { 'E' => Face::D, 'S' => Face::F, 'M' => Face::L }.freeze
-      SLICE_NAMES = SLICE_FACES.invert.freeze
-      MOVE_METRICS = %i[qtm htm stm sqtm qstm].freeze
-
+      include Comparable
       include Utils::StringHelper
       include Utils::ArrayHelper
+      AXES = %w[y z x].freeze
+      SLICE_FACES = { E: Face::D, S: Face::F, M: Face::L }.freeze
+      SLICE_NAMES = SLICE_FACES.invert.freeze
+      MOVE_METRICS = %i[qtm htm stm sqtm qstm].freeze
 
       def <=>(other)
         [self.class.name] + identifying_fields <=> [other.class.name] + other.identifying_fields
       end
-
-      include Comparable
 
       def hash
         @hash ||= ([self.class] + identifying_fields).hash
@@ -243,8 +241,10 @@ module CubeTrainer
 
       def mirror(normal_face)
         if normal_face.same_axis?(@axis_face)
-          fields = replace_once(replace_once(identifying_fields, @direction, @direction.inverse),
-                                @axis_face, @axis_face.opposite)
+          fields = replace_once(
+            replace_once(identifying_fields, @direction, @direction.inverse),
+            @axis_face, @axis_face.opposite
+          )
           self.class.new(*fields)
         else
           inverse
@@ -383,6 +383,9 @@ module CubeTrainer
 
     # A fat move with a width. For width 1, this becomes a normal outer move.
     class FatMove < CubeMove
+      OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map do |f, d|
+        FatMove.new(f, d, 1)
+      end.freeze
       def initialize(axis_face, direction, width = 1)
         super(axis_face, direction)
         raise TypeError unless width.is_a?(Integer)
@@ -390,10 +393,6 @@ module CubeTrainer
 
         @width = width
       end
-
-      OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map do |f, d|
-        FatMove.new(f, d, 1)
-      end.freeze
 
       attr_reader :width
 
@@ -452,22 +451,23 @@ module CubeTrainer
       # rubocop:enable Metrics/PerceivedComplexity
 
       def prepend_slice_move(other, cube_size)
-        return nil unless same_axis?(other)
+        return unless same_axis?(other)
 
         translated_direction = other.translated_direction(@axis_face)
         translated_slice_index = other.translated_slice_index(@axis_face, cube_size)
-        move = case translated_slice_index
-               when @width
-                 return nil unless translated_direction == @direction
+        move =
+          case translated_slice_index
+          when @width
+            return unless translated_direction == @direction
 
-                 with_width(@width + 1)
-               when @width - 1
-                 return nil unless translated_direction == @direction.inverse
+            with_width(@width + 1)
+          when @width - 1
+            return unless translated_direction == @direction.inverse
 
-                 with_width(@width - 1)
-               else
-                 return nil
-               end
+            with_width(@width - 1)
+          else
+            return
+                        end
         Algorithm.move(move)
       end
 
@@ -588,7 +588,7 @@ module CubeTrainer
       end
 
       def prepend_slice_move(other, cube_size)
-        return nil unless same_axis?(other)
+        return unless same_axis?(other)
 
         # Only for 4x4, we can join two adjacent slice moves into a fat m slice move.
         this = simplified(cube_size)
@@ -600,9 +600,11 @@ module CubeTrainer
         return unless this.same_slice?(other)
 
         Algorithm.move(
-          SliceMove.new(other.axis_face,
-                        other.direction + this.translated_direction(other.axis_face),
-                        other.slice_index)
+          SliceMove.new(
+            other.axis_face,
+            other.direction + this.translated_direction(other.axis_face),
+            other.slice_index
+          )
         )
       end
 
@@ -696,9 +698,10 @@ module CubeTrainer
       end
 
       def rotate_by(rotation)
-        nice_face = find_only(@axis_corner.adjacent_faces) do |f|
-          f.same_axis?(rotation.axis_face)
-        end
+        nice_face =
+          find_only(@axis_corner.adjacent_faces) do |f|
+            f.same_axis?(rotation.axis_face)
+          end
         nice_direction = rotation.translated_direction(nice_face)
         nice_face_corners = nice_face.clockwise_corners
         on_nice_face_index = nice_face_corners.index { |c| c.turned_equals?(@axis_corner) }
@@ -719,10 +722,10 @@ module CubeTrainer
     # TODO: Get rid of this legacy class
     class FixedCornerSkewbMove
       MOVED_CORNERS = {
-        'U' => Corner.for_face_symbols(%i[U L B]),
-        'R' => Corner.for_face_symbols(%i[D R B]),
-        'L' => Corner.for_face_symbols(%i[D F L]),
-        'B' => Corner.for_face_symbols(%i[D B L])
+        U: Corner.for_face_symbols(%i[U L B]),
+        R: Corner.for_face_symbols(%i[D R B]),
+        L: Corner.for_face_symbols(%i[D F L]),
+        B: Corner.for_face_symbols(%i[D B L])
       }.freeze
       ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map do |m, d|
         SkewbMove.new(m, d)
@@ -732,10 +735,10 @@ module CubeTrainer
     # TODO: Get rid of this legacy class
     class SarahsSkewbMove
       MOVED_CORNERS = {
-        'F' => Corner.for_face_symbols(%i[U R F]),
-        'R' => Corner.for_face_symbols(%i[U B R]),
-        'B' => Corner.for_face_symbols(%i[U L B]),
-        'L' => Corner.for_face_symbols(%i[U F L])
+        F: Corner.for_face_symbols(%i[U R F]),
+        R: Corner.for_face_symbols(%i[U B R]),
+        B: Corner.for_face_symbols(%i[U L B]),
+        L: Corner.for_face_symbols(%i[U F L])
       }.freeze
       ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map do |m, d|
         SkewbMove.new(m, d)

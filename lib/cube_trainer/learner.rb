@@ -56,7 +56,7 @@ module CubeTrainer
     end
 
     def average_time
-      current_times = @input_stats.values.collect(&:current_time)
+      current_times = @input_stats.values.map(&:current_time)
       current_times.reduce(:+) / current_times.length
     end
 

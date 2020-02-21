@@ -15,6 +15,8 @@ module CubeTrainer
   # Result of giving one task to the learner and judging their performance.
   class Result
     include Utils::StringHelper
+    # Number of columns in the UI.
+    COLUMNS = 3
 
     INPUT_REPRESENTATION_CLASSES = [LetterPair, PaoLetterPair, AlgName, LetterPairSequence].freeze
 
@@ -47,24 +49,28 @@ module CubeTrainer
     end
 
     def self.from_partial(mode, timestamp, partial_result, input_representation)
-      new(mode,
-          timestamp,
-          partial_result.time_s,
-          input_representation,
-          partial_result.failed_attempts,
-          partial_result.word)
+      new(
+        mode,
+        timestamp,
+        partial_result.time_s,
+        input_representation,
+        partial_result.failed_attempts,
+        partial_result.word
+      )
     end
 
     # Construct from data stored in the db.
     def self.from_raw_data(data)
       raw_mode, timestamp, time_s, raw_input, failed_attempts, word = data
       mode = raw_mode.to_sym
-      Result.new(mode,
-                 Time.at(timestamp),
-                 time_s,
-                 parse_input_representation(mode, raw_input),
-                 failed_attempts,
-                 word)
+      Result.new(
+        mode,
+        Time.at(timestamp),
+        time_s,
+        parse_input_representation(mode, raw_input),
+        failed_attempts,
+        word
+      )
     end
 
     def self.parse_input_representation(mode, raw_input)
@@ -84,16 +90,13 @@ module CubeTrainer
     def to_raw_data
       [
         @mode.to_s,
-        @timestamp.to_i,
+        Integer(@timestamp, 10),
         @time_s,
         @input_representation.to_raw_data,
         @failed_attempts,
         @word
       ]
     end
-
-    # Number of columns in the UI.
-    COLUMNS = 3
 
     attr_reader :mode, :timestamp, :time_s, :input_representation, :failed_attempts, :word
 

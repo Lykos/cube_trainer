@@ -21,12 +21,12 @@ module CubeTrainer
     end
 
     def results_for_inputs(inputs)
-      hashes = inputs.collect { |e| e.representation.hash }
+      hashes = inputs.map { |e| e.representation.hash }
       grouped_results.select { |input, _rs| hashes.include?(input.hash) }
     end
 
     def newish_elements(filtered_results)
-      lengths = filtered_results.collect { |_input, rs| rs.length }
+      lengths = filtered_results.map { |_input, rs| rs.length }
       lengths.count { |l| l >= 1 && l < @options.new_item_boundary }
     end
 
@@ -51,18 +51,19 @@ module CubeTrainer
     end
 
     def bad_results
-      @bad_results ||= begin
-                       cutoffs.collect do |cutoff|
-                         [cutoff, @averages.count { |v| v[1] > cutoff }]
-                       end
-                     end
+      @bad_results ||=
+        begin
+                              cutoffs.map do |cutoff|
+                                [cutoff, @averages.count { |v| v[1] > cutoff }]
+                              end
+                            end
     end
 
     def compute_total_average(averages)
       if averages.empty?
         Float::INFINITY
       else
-        averages.collect { |_c, t| t }.reduce(:+) / averages.length
+        averages.map { |_c, t| t }.reduce(:+) / averages.length
       end
     end
 
@@ -71,11 +72,12 @@ module CubeTrainer
     end
 
     def old_total_average
-      @old_total_average ||= begin
-                               old_results = results.select { |r| r.timestamp < recently }
-                               old_averages = compute_averages(group_results(old_results))
-                               compute_total_average(old_averages)
-                             end
+      @old_total_average ||=
+        begin
+                                      old_results = results.select { |r| r.timestamp < recently }
+                                      old_averages = compute_averages(group_results(old_results))
+                                      compute_total_average(old_averages)
+                                    end
     end
 
     def average_time(results)
@@ -103,7 +105,7 @@ module CubeTrainer
     private
 
     def compute_averages(grouped_results)
-      grouped_averages = grouped_results.collect { |c, rs| [c, average_time(rs)] }
+      grouped_averages = grouped_results.map { |c, rs| [c, average_time(rs)] }
       grouped_averages.sort_by { |t| -t[1] }.freeze
     end
 

@@ -6,8 +6,10 @@ module CubeTrainer
   class CommonalityFinder
     # Represents the chosen way to interpret a table of commutators.
     class TableInterpretation
-      def initialize(row_axis_interpretation, column_axis_interpretation,
-                     row_interpretations, column_interpretations)
+      def initialize(
+        row_axis_interpretation, column_axis_interpretation,
+        row_interpretations, column_interpretations
+      )
         unless [row_axis_interpretation, column_axis_interpretation].sort == [0, 1]
           raise ArgumentError
         end
@@ -33,14 +35,17 @@ module CubeTrainer
     # Table should be a 2D array where the entries have a method called maybe_letter_pair that
     # returns a letter pair of length 2 or nil.
     def self.interpret_table(table)
-      table_interpretations = AXIS_INTERPRETATIONS.map do |row_axis_interpretation,
-                                                           column_axis_interpretation|
-        row_interpretations = find_row_interpretations(table, row_axis_interpretation)
-        column_interpretations =
-          find_row_interpretations(table.transpose, column_axis_interpretation)
-        TableInterpretation.new(row_axis_interpretation, column_axis_interpretation,
-                                row_interpretations, column_interpretations)
-      end
+      table_interpretations =
+        AXIS_INTERPRETATIONS.map do |row_axis_interpretation,
+                                                                  column_axis_interpretation|
+          row_interpretations = find_row_interpretations(table, row_axis_interpretation)
+          column_interpretations =
+            find_row_interpretations(table.transpose, column_axis_interpretation)
+          TableInterpretation.new(
+            row_axis_interpretation, column_axis_interpretation,
+            row_interpretations, column_interpretations
+          )
+        end
       best_interpretation(table_interpretations, table)
     end
 

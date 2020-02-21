@@ -14,11 +14,13 @@ module CubeTrainer
       @letter_scheme = options.letter_scheme
       @color_scheme = options.color_scheme
       @options = options
-      @input_sampler = InputSampler.new(input_items,
-                                        results_model,
-                                        goal_badness,
-                                        options.verbose,
-                                        options.new_item_boundary)
+      @input_sampler = InputSampler.new(
+        input_items,
+        results_model,
+        goal_badness,
+        options.verbose,
+        options.new_item_boundary
+      )
     end
 
     attr_reader :input_sampler, :letter_scheme, :options
@@ -46,9 +48,10 @@ module CubeTrainer
     end
 
     def input_items
-      @input_items ||= restricted_input_items.reject do |p|
-        p.representation.contains_any_letter?(options.exclude_letters)
-      end
+      @input_items ||=
+        restricted_input_items.reject do |p|
+          p.representation.contains_any_letter?(options.exclude_letters)
+        end
     end
 
     def generate_letter_pairs

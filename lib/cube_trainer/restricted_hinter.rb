@@ -12,7 +12,7 @@ module CubeTrainer
       return unless hinter.respond_to?(:entries)
 
       @entries = @hinter.entries.select { |a, _b| in_domain?(a) }
-      self.class.attr_reader :entries
+      self.class.attr_reader(:entries)
     end
 
     def self.trivially_restricted(hinter)

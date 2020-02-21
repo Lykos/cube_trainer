@@ -178,9 +178,10 @@ module CubeTrainer
     end
 
     def compute_expected_time_per_type_stats
-      relevant_commutator_types = CommutatorOptions::COMMUTATOR_TYPES.select do |_k, c|
-        EXPECTED_ALGS_COMPUTER_CLASSES.key?(c.result_symbol)
-      end
+      relevant_commutator_types =
+        CommutatorOptions::COMMUTATOR_TYPES.select do |_k, c|
+          EXPECTED_ALGS_COMPUTER_CLASSES.key?(c.result_symbol)
+        end
       per_type_stats = relevant_commutator_types.map { |k, c| per_type_stats(k, c) }
       total_time = per_type_stats.map { |stats| stats[:total_time] }.reduce(:+)
       per_type_stats.each { |stats| stats[:weight] = stats[:total_time] / total_time }

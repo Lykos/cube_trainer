@@ -11,14 +11,15 @@ module CubeTrainer
   module Core
     # Represents a sequence of moves that can be applied to puzzle states.
     class Algorithm
+      include ReversibleApplyable
+      include Comparable
+      EMPTY_ALGORITHM = Algorithm.new([])
       def initialize(moves)
         moves.each do |m|
           raise TypeError, "#{m.inspect} is not a suitable move." unless m.is_a?(Move)
         end
         @moves = moves
       end
-
-      EMPTY_ALGORITHM = Algorithm.new([])
 
       def self.empty
         EMPTY_ALGORITHM
@@ -30,9 +31,6 @@ module CubeTrainer
       end
 
       attr_reader :moves
-
-      include ReversibleApplyable
-      include Comparable
 
       def eql?(other)
         self.class.equal?(other.class) && @moves == other.moves
@@ -68,11 +66,12 @@ module CubeTrainer
       end
 
       def inverse
-        @inverse ||= begin
-                       alg = Algorithm.new(@moves.reverse.collect(&:inverse))
-                       alg.inverse = self
-                       alg
-                     end
+        @inverse ||=
+          begin
+                                alg = Algorithm.new(@moves.reverse.map(&:inverse))
+                                alg.inverse = self
+                                alg
+                              end
       end
 
       def +(other)

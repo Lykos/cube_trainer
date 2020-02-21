@@ -52,10 +52,10 @@ module CubeTrainer
 
     def find_stuff
       part0 = @state[@buffer_coordinate]
-      return nil if part0 == @buffer
+      return if part0 == @buffer
 
       part1 = @state[solved_position(part0, @state.n)]
-      return nil if part1 == @buffer
+      return if part1 == @buffer
 
       part2 = @state[solved_position(part1, @state.n)]
       LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) }) if part2 == @buffer

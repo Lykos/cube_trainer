@@ -4,6 +4,7 @@ module CubeTrainer
   module Core
     # Base class for directions.
     class AbstractDirection
+      include Comparable
       POSSIBLE_DIRECTION_NAMES = [[''], ['2', '2\''], ['\'', '3']].freeze
       SIMPLE_DIRECTION_NAMES = (['0'] + POSSIBLE_DIRECTION_NAMES.map(&:first)).freeze
       POSSIBLE_SKEWB_DIRECTION_NAMES = [['', '2\''], ['\'', '2']].freeze
@@ -23,8 +24,6 @@ module CubeTrainer
       def <=>(other)
         @value <=> other.value
       end
-
-      include Comparable
 
       def zero?
         @value.zero?

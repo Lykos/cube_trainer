@@ -13,6 +13,7 @@ module CubeTrainer
       include CubeConstants
       extend CubeConstants
 
+      include Comparable
       def initialize(face_symbols, piece_index)
         clazz = self.class
         if face_symbols.any? { |c| c.class != Symbol || !FACE_SYMBOLS.include?(c) }
@@ -35,9 +36,10 @@ module CubeTrainer
       attr_reader :piece_index, :face_symbols
 
       def self.generate_parts
-        valid_face_symbol_combinations = FACE_SYMBOLS.permutation(self::FACES).select do |p|
-          valid?(p)
-        end
+        valid_face_symbol_combinations =
+          FACE_SYMBOLS.permutation(self::FACES).select do |p|
+            valid?(p)
+          end
         parts = valid_face_symbol_combinations.map.with_index { |p, i| new(p, i) }
         unless parts.length <= ALPHABET_SIZE
           raise "Generated #{parts.length} parts for #{self}, but the alphabet size is only " \
@@ -69,8 +71,6 @@ module CubeTrainer
         @piece_index <=> other.piece_index
       end
 
-      include Comparable
-
       def eql?(other)
         self.class.equal?(other.class) && @piece_index == other.piece_index
       end
@@ -82,7 +82,7 @@ module CubeTrainer
       end
 
       def inspect
-        self.class.to_s + '(' + @face_symbols.collect(&:to_s).join(', ') + ')'
+        self.class.to_s + '(' + @face_symbols.map(&:to_s).join(', ') + ')'
       end
 
       def to_s
@@ -115,7 +115,7 @@ module CubeTrainer
       end
 
       def rotations
-        (0...@face_symbols.length).collect { |i| rotate_by(i) }
+        (0...@face_symbols.length).map { |i| rotate_by(i) }
       end
 
       def self.create_for_face_symbols(face_symbols)
@@ -123,9 +123,10 @@ module CubeTrainer
       end
 
       def self.parse(piece_description)
-        face_symbols = piece_description.upcase.strip.split('').collect do |e|
-          FACE_SYMBOLS[FACE_NAMES.index(e)]
-        end
+        face_symbols =
+          piece_description.upcase.strip.split('').map do |e|
+            FACE_SYMBOLS[FACE_NAMES.index(e)]
+          end
         for_face_symbols(face_symbols)
       end
 
@@ -152,15 +153,17 @@ module CubeTrainer
         for_face_symbols([face_symbol])
       end
 
+      ELEMENTS = generate_parts
       # Whether closeness to this face results in smaller indices for the stickers of other faces.
       def close_to_smaller_indices?
         @piece_index < 3
       end
 
       def coordinate_index_base_face(coordinate_index)
-        (@coordinate_index_base_face ||= {})[coordinate_index] ||= find_only(neighbors) do |n|
-          n.close_to_smaller_indices? && coordinate_index_close_to(n) == coordinate_index
-        end
+        (@coordinate_index_base_face ||= {})[coordinate_index] ||=
+          find_only(neighbors) do |n|
+            n.close_to_smaller_indices? && coordinate_index_close_to(n) == coordinate_index
+          end
       end
 
       def opposite
@@ -218,13 +221,15 @@ module CubeTrainer
 
       # Neighbor faces in clockwise order.
       def neighbors
-        @neighbors ||= begin
-                         partial_neighbors = self.class::ELEMENTS.select do |e|
-                           !same_axis?(e) && e.canonical_axis_face?
-                         end
-                         ordered_partial_neighbors = sort_partial_neighbors(partial_neighbors)
-                         ordered_partial_neighbors + ordered_partial_neighbors.collect(&:opposite)
-                       end
+        @neighbors ||=
+          begin
+                                  partial_neighbors =
+                                    self.class::ELEMENTS.select do |e|
+                                      !same_axis?(e) && e.canonical_axis_face?
+                                    end
+                                  ordered_partial_neighbors = sort_partial_neighbors(partial_neighbors)
+                                  ordered_partial_neighbors + ordered_partial_neighbors.map(&:opposite)
+                                end
       end
 
       def clockwise_neighbor_after(neighbor)
@@ -240,15 +245,15 @@ module CubeTrainer
           Algorithm.empty
         else
           # There can be multiple solutions.
-          axis_face = self.class::ELEMENTS.find do |e|
-            !same_axis?(e) && !other.same_axis?(e) && e.canonical_axis_face?
-          end
+          axis_face =
+            self.class::ELEMENTS.find do |e|
+              !same_axis?(e) && !other.same_axis?(e) && e.canonical_axis_face?
+            end
           direction = rotation_direction_to(other)
           Algorithm.move(Rotation.new(axis_face, direction))
         end
       end
 
-      ELEMENTS = generate_parts
       FACE_SYMBOLS.map { |s| const_set(s, for_face_symbol(s)) }
 
       def clockwise_corners
@@ -344,7 +349,7 @@ module CubeTrainer
       end
 
       def self.generate_parts
-        self::CORRESPONDING_PART_CLASS::ELEMENTS.collect { |p| new(p, p.piece_index) }
+        self::CORRESPONDING_PART_CLASS::ELEMENTS.map { |p| new(p, p.piece_index) }
       end
     end
 
@@ -357,9 +362,8 @@ module CubeTrainer
 
     # Represents one edge or the position of one edge on the cube.
     class Edge < Part
-      FACES = 2
-
       extend EdgeLike
+      FACES = 2
 
       ELEMENTS = generate_parts
 
@@ -376,9 +380,8 @@ module CubeTrainer
 
     # Represents one midge or the position of one midge on the cube.
     class Midge < Part
-      FACES = 2
-
       extend EdgeLike
+      FACES = 2
 
       ELEMENTS = generate_parts
 
@@ -394,9 +397,11 @@ module CubeTrainer
 
     # Represents one wing or the position of one wing on the cube.
     class Wing < Part
+      extend EdgeLike
+      WING_BASE_INDEX_INVERTED_FACE_SYMBOLS = %i[U R B].freeze
       FACES = 2
 
-      extend EdgeLike
+      ELEMENTS = generate_parts
 
       def self.for_face_symbols(face_symbols)
         # One additional face symbol is usually mentioned for wings.
@@ -430,12 +435,14 @@ module CubeTrainer
       private_class_method :for_corner_face_symbols
 
       def corresponding_part
-        @corresponding_part ||= begin
-                                  face_symbol = find_only(FACE_SYMBOLS) do |c|
-                                    !@face_symbols.include?(c) && Corner.valid?(@face_symbols + [c])
-                                  end
-                                  Corner.for_face_symbols(@face_symbols + [face_symbol])
-                                end
+        @corresponding_part ||=
+          begin
+                                           face_symbol =
+                                             find_only(FACE_SYMBOLS) do |c|
+                                               !@face_symbols.include?(c) && Corner.valid?(@face_symbols + [c])
+                                             end
+                                           Corner.for_face_symbols(@face_symbols + [face_symbol])
+                                         end
       end
 
       def rotations
@@ -449,10 +456,6 @@ module CubeTrainer
       def num_incarnations(cube_size)
         [cube_size / 2 - 1, 0].max
       end
-
-      ELEMENTS = generate_parts
-
-      WING_BASE_INDEX_INVERTED_FACE_SYMBOLS = %i[U R B].freeze
 
       # One index of such a piece on a on a NxN face.
       def base_index_on_other_face(face, _cube_size, incarnation_index)
@@ -468,9 +471,10 @@ module CubeTrainer
       FACES = 3
 
       def self.create_for_face_symbols(face_symbols)
-        piece_candidates = face_symbols[1..-1].permutation.collect do |cs|
-          new([face_symbols[0]] + cs)
-        end
+        piece_candidates =
+          face_symbols[1..-1].permutation.map do |cs|
+            new([face_symbols[0]] + cs)
+          end
         find_only(piece_candidates, &:valid?)
       end
 
@@ -487,13 +491,14 @@ module CubeTrainer
       end
 
       def self.valid_between_faces?(faces)
-        valid?(faces.collect(&:face_symbol))
+        valid?(faces.map(&:face_symbol))
       end
 
       def self.between_faces(faces)
-        for_face_symbols(faces.collect(&:face_symbol))
+        for_face_symbols(faces.map(&:face_symbol))
       end
 
+      ELEMENTS = generate_parts
       # Rotate such that neither the current face symbol nor the given face symbol are at the
       # position of the letter.
       def rotate_other_face_symbol_up(face_symbol)
@@ -527,14 +532,12 @@ module CubeTrainer
       end
 
       def adjacent_edges
-        @adjacent_edges ||= @face_symbols.combination(2).collect { |e| Edge.for_face_symbols(e) }
+        @adjacent_edges ||= @face_symbols.combination(2).map { |e| Edge.for_face_symbols(e) }
       end
 
       def adjacent_faces
-        @adjacent_faces ||= @face_symbols.collect { |f| Face.for_face_symbol(f) }
+        @adjacent_faces ||= @face_symbols.map { |f| Face.for_face_symbol(f) }
       end
-
-      ELEMENTS = generate_parts
 
       def num_incarnations(cube_size)
         cube_size >= 2 ? 1 : 0

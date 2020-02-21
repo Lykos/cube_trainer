@@ -10,11 +10,12 @@ if ARGV.length > 1
   raise 'At most one argument (namely the file to read words from) should be given.'
 end
 
-terms = if ARGV.empty?
-          CubeTrainer::Dict.new.words
-        else
-          File.readlines(ARGV.first)
-        end
+terms =
+  if ARGV.empty?
+    CubeTrainer::Dict.new.words
+  else
+    File.readlines(ARGV.first)
+         end
 finder = CubeTrainer::LetterPairWordFinder.new(terms)
 
 open('/dev/tty') do |f|

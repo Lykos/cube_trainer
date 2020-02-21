@@ -27,12 +27,13 @@ describe StatsComputer do
   let(:mode) { BufferHelper.mode_for_options(options) }
   let(:results) do
     other_commutator_infos = CommutatorOptions::COMMUTATOR_TYPES.reject { |k, _v| k == 'corners' }
-    other_mode_results = other_commutator_infos.map do |_k, v|
-      patched_options = options.dup
-      patched_options.commutator_info = v
-      mode = BufferHelper.mode_for_options(patched_options)
-      Result.new(mode, t_2_days_ago, 1.0, letter_pair_b, 0, nil)
-    end
+    other_mode_results =
+      other_commutator_infos.map do |_k, v|
+        patched_options = options.dup
+        patched_options.commutator_info = v
+        mode = BufferHelper.mode_for_options(patched_options)
+        Result.new(mode, t_2_days_ago, 1.0, letter_pair_b, 0, nil)
+      end
     fill_results = fill_letter_pairs.map { |ls| Result.new(mode, t_2_days_ago, 1.0, ls, 0, nil) }
     [
       Result.new(mode, t_10_minutes_ago, 1.0, letter_pair_a, 0, nil),
@@ -60,32 +61,32 @@ describe StatsComputer do
   it 'computes detailed averages for all our results' do
     fill_letter_averages = fill_letter_pairs.map { |ls| [ls, 1.0] }
     expected = [[letter_pair_b, 10.0], [letter_pair_a, 3.0]] + fill_letter_averages
-    expect(computer.averages).to be == expected
+    expect(computer.averages).to(be == expected)
   end
 
   it 'computes which are our bad results' do
     expected_bad_results = [[1.0, 2], [1.1, 2], [1.2, 2], [1.3, 2], [1.4, 2], [1.5, 2]]
-    expect(computer.bad_results).to be == expected_bad_results
+    expect(computer.bad_results).to(be == expected_bad_results)
   end
 
   it 'computes how many results we had now and 24 hours ago' do
-    expect(computer.total_average).to be == (26 * 1.0 + 10.0 + 3.0) / 28
-    expect(computer.old_total_average).to be == (26 * 1.0 + 12.0) / 27
+    expect(computer.total_average).to(be == (26 * 1.0 + 10.0 + 3.0) / 28)
+    expect(computer.old_total_average).to(be == (26 * 1.0 + 12.0) / 27)
   end
 
   it 'computes how long each part of the solve takes' do
     stats = computer.expected_time_per_type_stats
     names = %w[corner_3twists corners edges floating_2flips floating_2twists]
-    expect(stats.map { |s| s[:name] }.sort).to be == names
-    expect(stats.map { |s| s[:weight] }.reduce(:+)).to be == 1.0
+    expect(stats.map { |s| s[:name] }.sort).to(be == names)
+    expect(stats.map { |s| s[:weight] }.reduce(:+)).to(be == 1.0)
     stats.each do |s|
-      expect(s[:expected_algs]).to be_a(Float)
-      expect(s[:total_time]).to be_a(Float)
-      expect(s[:weight]).to be_a(Float)
+      expect(s[:expected_algs]).to(be_a(Float))
+      expect(s[:total_time]).to(be_a(Float))
+      expect(s[:weight]).to(be_a(Float))
       if s[:name] == 'corners'
-        expect(s[:average]).to be == (26 * 1.0 + 10.0 + 3.0) / 28
+        expect(s[:average]).to(be == (26 * 1.0 + 10.0 + 3.0) / 28)
       else
-        expect(s[:average]).to be == 1.0
+        expect(s[:average]).to(be == 1.0)
       end
     end
   end
@@ -93,11 +94,11 @@ describe StatsComputer do
   it 'computes how many items we have already seen and how many are new' do
     inputs = [letter_pair_a, letter_pair_b, letter_pair_c].map { |ls| InputItem.new(ls) }
     stats = computer.input_stats(inputs)
-    expect(stats[:found]).to be == 2
-    expect(stats[:total]).to be == 3
-    expect(stats[:newish_elements]).to be == 1
-    expect(stats[:missing]).to be == 1
-    expect(computer.num_results).to be == 13 + 26
-    expect(computer.num_recent_results).to be == 8
+    expect(stats[:found]).to(be == 2)
+    expect(stats[:total]).to(be == 3)
+    expect(stats[:newish_elements]).to(be == 1)
+    expect(stats[:missing]).to(be == 1)
+    expect(computer.num_results).to(be == 13 + 26)
+    expect(computer.num_recent_results).to(be == 8)
   end
 end

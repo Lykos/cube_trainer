@@ -13,6 +13,15 @@ module CubeTrainer
   class AlgHintParser < HintParser
     include Utils::StringHelper
     include Core
+    ALG_SET_SEPARATOR = '_plus_'
+    ADJACENT_PLL_NAME = SimpleAlgName.new('Ja')
+    DIAGONAL_PLL_NAME = SimpleAlgName.new('Y')
+    SOLVED_HINTER = AlgHinter.new(SimpleAlgName.new('solved') => Core::Algorithm.empty)
+    AUF_HINTER = AlgHinter.new(([[SimpleAlgName.new('auf skip'), Core::Algorithm.empty]] +
+                                Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
+                                  alg = Core::Algorithm.move(Core::FatMove.new(Core::Face::U, d))
+                                  [SimpleAlgName.new(alg.to_s), alg]
+                                end).to_h)
 
     def initialize(name, verbose)
       @name = name
@@ -28,12 +37,13 @@ module CubeTrainer
           next
         end
         raw_alg_name, raw_alg = row
-        alg = begin
-                parse_algorithm(raw_alg)
-              rescue Core::CommutatorParseError => e
-                warn "Couldn't parse alg '#{alg}': #{e}"
-                next
-              end
+        alg =
+          begin
+                         parse_algorithm(raw_alg)
+          rescue Core::CommutatorParseError => e
+            warn "Couldn't parse alg '#{alg}': #{e}"
+            next
+                       end
         [SimpleAlgName.new(raw_alg_name), alg]
       end.compact.to_h
     end
@@ -41,16 +51,6 @@ module CubeTrainer
     def hinter_class
       AlgHinter
     end
-
-    SOLVED_HINTER = AlgHinter.new(SimpleAlgName.new('solved') => Core::Algorithm.empty)
-    AUF_HINTER = AlgHinter.new(([[SimpleAlgName.new('auf skip'), Core::Algorithm.empty]] +
-                                Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
-                                  alg = Core::Algorithm.move(Core::FatMove.new(Core::Face::U, d))
-                                  [SimpleAlgName.new(alg.to_s), alg]
-                                end).to_h)
-    ADJACENT_PLL_NAME = SimpleAlgName.new('Ja')
-    DIAGONAL_PLL_NAME = SimpleAlgName.new('Y')
-    ALG_SET_SEPARATOR = '_plus_'
 
     def self.construct_cp_hinter(verbose)
       pll_hinter = parse_hints('plls', verbose)

@@ -18,7 +18,7 @@ def score_after_move(layer_finder, skewb_state, move)
 end
 
 def max_score_after_one_move(layer_finder, skewb_state)
-  CubeTrainer::Core::FixedCornerSkewbMove::ALL.collect do |m|
+  CubeTrainer::Core::FixedCornerSkewbMove::ALL.map do |m|
     score_after_move(layer_finder, skewb_state, m)
   end.max
 end

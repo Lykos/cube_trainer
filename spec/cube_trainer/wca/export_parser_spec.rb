@@ -22,7 +22,7 @@ describe WCA::ExportParser do
   let(:extractor) { WCA::StatsExtractor.new(parser) }
 
   it 'reads the scrambles of a WCA export' do
-    expect(parser.scrambles).to be == [{
+    expect(parser.scrambles).to(be == [{
       scrambleid: 657_918,
       competitionid: 'BerlinKubusProjekt2017',
       eventid: '222',
@@ -31,47 +31,47 @@ describe WCA::ExportParser do
       isextra: false,
       scramblenum: 1,
       scramble: parse_algorithm("U2 R' U2 R U' R U F' U' R U")
-    }]
+    }])
   end
 
   it 'reads the results of a WCA export' do
     # TODO: Improve this
-    expect(parser.results.first[:personid]).to be == '2016BROD01'
+    expect(parser.results.first[:personid]).to(be == '2016BROD01')
   end
 
   it 'reads the countries of a WCA export' do
-    expect(parser.countries).to be == { 'Germany' => {
+    expect(parser.countries).to(be == { Germany: {
       id: 'Germany',
       name: 'Germany',
       continentid: '_Europe',
       iso2: 'DE'
-    } }
+    } })
   end
 
   it 'reads the continents of a WCA export' do
-    expect(parser.continents).to be == { '_Europe' => {
+    expect(parser.continents).to(be == { _Europe: {
       id: '_Europe',
       name: 'Europe',
       recordname: 'ER',
       latitude: 58_299_984,
       longitude: 23_049_300,
       zoom: 3
-    } }
+    } })
   end
 
   it 'figures out whether someone nemesizes someone' do
-    expect(extractor.nemesis?('2016BROD01', '2017BROD01')).to be true
+    expect(extractor.nemesis?('2016BROD01', '2017BROD01')).to(be(true))
   end
 
   it 'figures out whether someone does not nemesize someone' do
-    expect(extractor.nemesis?('2017BROD01', '2016BROD01')).to be false
+    expect(extractor.nemesis?('2017BROD01', '2016BROD01')).to(be(false))
   end
 
   it 'finds nemeses if they are empty' do
-    expect(extractor.nemeses('2016BROD01')).to be == []
+    expect(extractor.nemeses('2016BROD01')).to(be == [])
   end
 
   it 'finds nemeses if one exists' do
-    expect(extractor.nemeses('2017BROD01')).to be == ['2016BROD01']
+    expect(extractor.nemeses('2017BROD01')).to(be == ['2016BROD01'])
   end
 end

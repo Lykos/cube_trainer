@@ -33,7 +33,7 @@ shared_examples 'cube_state' do |cube_size|
         cube_state.n.times do |y|
           coordinate = Core::Coordinate.from_indices(Core::Face.for_face_symbol(s), cube_state.n, x, y)
           expected_color = changed_parts[[s, x, y]] || original_state[coordinate]
-          expect(cube_state[coordinate]).to be == expected_color
+          expect(cube_state[coordinate]).to(be == expected_color)
         end
       end
     end
@@ -65,7 +65,7 @@ shared_examples 'cube_state' do |cube_size|
     end.check do |c|
       other_cube_state = cube_state.dup
       other_cube_state[c] = :other_color
-      expect(other_cube_state == cube_state).to be_falsey
+      expect(other_cube_state == cube_state).to(be_falsey)
     end
   end
 
@@ -427,7 +427,7 @@ shared_examples 'cube_state' do |cube_size|
     parse_algorithm(fat_move).apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
     parse_algorithm('D y').apply_to(expected_cube_state)
-    expect(cube_state).to be == expected_cube_state
+    expect(cube_state).to(be == expected_cube_state)
   end
 
   it 'does fat R moves like L x' do
@@ -435,7 +435,7 @@ shared_examples 'cube_state' do |cube_size|
     parse_algorithm(fat_move).apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
     parse_algorithm('L x').apply_to(expected_cube_state)
-    expect(cube_state).to be == expected_cube_state
+    expect(cube_state).to(be == expected_cube_state)
   end
 
   it 'does fat F moves like B z' do
@@ -443,14 +443,14 @@ shared_examples 'cube_state' do |cube_size|
     parse_algorithm(fat_move).apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
     parse_algorithm('B z').apply_to(expected_cube_state)
-    expect(cube_state).to be == expected_cube_state
+    expect(cube_state).to(be == expected_cube_state)
   end
 
   it 'does a Niklas alg properly' do
     parse_algorithm("U' L' U R U' L U R'").apply_to(cube_state)
     expected_cube_state = create_interesting_cube_state(cube_size)
     construct_cycle(Core::Corner, %w[c i j]).apply_to(expected_cube_state)
-    expect(cube_state).to be == expected_cube_state
+    expect(cube_state).to(be == expected_cube_state)
   end
 
   it 'does a TK wing alg properly if the cube is big enough' do
@@ -458,7 +458,7 @@ shared_examples 'cube_state' do |cube_size|
       parse_algorithm("U' R' U r2 U' R U r2").apply_to(cube_state)
       expected_cube_state = create_interesting_cube_state(cube_size)
       construct_cycle(Core::Wing, %w[e t k]).apply_to(expected_cube_state)
-      expect(cube_state).to be == expected_cube_state
+      expect(cube_state).to(be == expected_cube_state)
     end
   end
 
@@ -477,7 +477,7 @@ shared_examples 'cube_state' do |cube_size|
       factory.construct([letter_scheme.for_letter(Core::Wing, 'b'), letter_scheme.for_letter(Core::Wing, 'c')]).apply_to(expected_cube_state)
       factory.construct([letter_scheme.for_letter(Core::Wing, 'm'), letter_scheme.for_letter(Core::Wing, 'i')]).apply_to(expected_cube_state)
     end
-    expect(cube_state).to be == expected_cube_state
+    expect(cube_state).to(be == expected_cube_state)
   end
 
   it 'does an E move properly if the cube size is odd' do
@@ -487,7 +487,7 @@ shared_examples 'cube_state' do |cube_size|
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Dw' #{half_size}Uw y'")
       equivalent_alg.apply_to(expected_cube_state)
-      expect(cube_state).to be == expected_cube_state
+      expect(cube_state).to(be == expected_cube_state)
     end
   end
 
@@ -498,7 +498,7 @@ shared_examples 'cube_state' do |cube_size|
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Fw' #{half_size}Bw z")
       equivalent_alg.apply_to(expected_cube_state)
-      expect(cube_state).to be == expected_cube_state
+      expect(cube_state).to(be == expected_cube_state)
     end
   end
 
@@ -509,7 +509,7 @@ shared_examples 'cube_state' do |cube_size|
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Lw' #{half_size}Rw x'")
       equivalent_alg.apply_to(expected_cube_state)
-      expect(cube_state).to be == expected_cube_state
+      expect(cube_state).to(be == expected_cube_state)
     end
   end
 
@@ -520,7 +520,7 @@ shared_examples 'cube_state' do |cube_size|
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Dw #{half_size}Uw' y")
       equivalent_alg.apply_to(expected_cube_state)
-      expect(cube_state).to be == expected_cube_state
+      expect(cube_state).to(be == expected_cube_state)
     end
   end
 
@@ -531,7 +531,7 @@ shared_examples 'cube_state' do |cube_size|
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Fw #{half_size}Bw' z'")
       equivalent_alg.apply_to(expected_cube_state)
-      expect(cube_state).to be == expected_cube_state
+      expect(cube_state).to(be == expected_cube_state)
     end
   end
 
@@ -542,7 +542,7 @@ shared_examples 'cube_state' do |cube_size|
       half_size = cube_size / 2
       equivalent_alg = parse_algorithm("#{half_size}Lw #{half_size}Rw' x")
       equivalent_alg.apply_to(expected_cube_state)
-      expect(cube_state).to be == expected_cube_state
+      expect(cube_state).to(be == expected_cube_state)
     end
   end
 end

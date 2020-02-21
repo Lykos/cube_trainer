@@ -51,10 +51,11 @@ module CubeTrainer
         face = Face.for_face_symbol(face_symbol)
         face_symbol_info = FACE_SYMBOL_INFOS[face_symbol]
         stickers = cube_state.sticker_array(face)
-        lines = stickers.collect_concat do |sticker_line|
-          line = sticker_line.collect { |c| (yield c) * column_multiplicity }
-          [maybe_reverse(face_symbol_info.reverse_columns_mode, line).join] * row_multiplicity
-        end
+        lines =
+          stickers.collect_concat do |sticker_line|
+            line = sticker_line.map { |c| yield(c) * column_multiplicity }
+            [maybe_reverse(face_symbol_info.reverse_columns_mode, line).join] * row_multiplicity
+          end
         maybe_reverse(face_symbol_info.reverse_lines_mode, lines)
       end
 
@@ -75,13 +76,15 @@ module CubeTrainer
       def skewb_ascii_art(center_color, corner_colors)
         raise unless corner_colors.length == 4
 
-        first_part = (1..SKEWB_FACE_SIZE / 2).to_a.reverse.collect do |i|
-          skewb_ascii_art_line(corner_colors[0], center_color, corner_colors[1], i)
-        end
+        first_part =
+          (1..SKEWB_FACE_SIZE / 2).to_a.reverse.map do |i|
+            skewb_ascii_art_line(corner_colors[0], center_color, corner_colors[1], i)
+          end
         middle_part = SKEWB_FACE_SIZE.odd? ? [center_color * SKEWB_FACE_SIZE] : []
-        last_part = (1..SKEWB_FACE_SIZE / 2).collect do |i|
-          skewb_ascii_art_line(corner_colors[2], center_color, corner_colors[3], i)
-        end
+        last_part =
+          (1..SKEWB_FACE_SIZE / 2).map do |i|
+            skewb_ascii_art_line(corner_colors[2], center_color, corner_colors[3], i)
+          end
         first_part + middle_part + last_part
       end
 
@@ -96,7 +99,7 @@ module CubeTrainer
         face_symbol_info = FACE_SYMBOL_INFOS[face_symbol]
         stickers = cube_state.sticker_array(face)
         center_color = color_character(stickers[0], color_mode)
-        corner_colors = stickers[1..-1].collect { |c| color_character(c, color_mode) }
+        corner_colors = stickers[1..-1].map { |c| color_character(c, color_mode) }
         permuted_corner_colors =
           apply_permutation(corner_colors, face_symbol_info.skewb_corner_permutation)
         raise unless corner_colors.length == 4
@@ -143,11 +146,11 @@ module CubeTrainer
       end
 
       def pad_lines(lines, padding)
-        lines.collect { |line| empty_name * padding + line }
+        lines.map { |line| empty_name * padding + line }
       end
 
       def zip_concat_lines(*args)
-        args.transpose.collect(&:join)
+        args.transpose.map(&:join)
       end
     end
   end

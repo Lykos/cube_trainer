@@ -12,6 +12,24 @@ module CubeTrainer
   # e.g. solving a corner twist and a parity by a comm and a parity.
   class HeterogenousSequenceHinter
     include Utils::ArrayHelper
+    DescriptionAndValue =
+      Struct.new(:description, :value, :cancellations) do
+        def <=>(other)
+          [-cancellations, value, description] <=>
+            [-other.cancellations, other.value, other.description]
+        end
+
+        def to_s
+          cancellations_string =
+            if cancellations > ActualScore.new(0)
+              " (cancels #{cancellations})"
+            else
+              ''
+                                          end
+          "#{description}: #{value}#{cancellations_string}"
+        end
+      end
+    UNKNOWN_SCORE = UnknownScore.new
 
     def initialize(cube_size, resultss, hinters)
       Core::CubeState.check_cube_size(cube_size)
@@ -45,11 +63,10 @@ module CubeTrainer
 
     # Represents a score that is not present and unknown.
     class UnknownScore
+      include Comparable
       def <=>(other)
         -other.unknown_compare
       end
-
-      include Comparable
 
       def +(_other)
         self
@@ -80,10 +97,9 @@ module CubeTrainer
       end
     end
 
-    UNKNOWN_SCORE = UnknownScore.new
-
     # Represents a score that is actually present and known.
     class ActualScore
+      include Comparable
       def initialize(value)
         @value = value
       end
@@ -91,8 +107,6 @@ module CubeTrainer
       def <=>(other)
         -other.actual_compare(@value)
       end
-
-      include Comparable
 
       def +(other)
         other.plus_actual(@value)
@@ -129,22 +143,6 @@ module CubeTrainer
 
     def value(index, input)
       @valuess[index][input] ||= UNKNOWN_SCORE
-    end
-
-    DescriptionAndValue = Struct.new(:description, :value, :cancellations) do
-      def <=>(other)
-        [-cancellations, value, description] <=>
-          [-other.cancellations, other.value, other.description]
-      end
-
-      def to_s
-        cancellations_string = if cancellations > ActualScore.new(0)
-                                 " (cancels #{cancellations})"
-                               else
-                                 ''
-                               end
-        "#{description}: #{value}#{cancellations_string}"
-      end
     end
 
     def base_hint(index, input)
@@ -190,14 +188,15 @@ module CubeTrainer
     end
 
     def hints(input)
-      @hints[input] ||= begin
-                          combinations = generate_combinations(input)
-                          stuff = combinations_with_base_hints(combinations)
-                          [
-                            descriptions_and_values(stuff).sort.join("\n"),
-                            base_hints_descriptions(stuff).sort.join("\n")
-                          ]
-                        end
+      @hints[input] ||=
+        begin
+                                 combinations = generate_combinations(input)
+                                 stuff = combinations_with_base_hints(combinations)
+                                 [
+                                   descriptions_and_values(stuff).sort.join("\n"),
+                                   base_hints_descriptions(stuff).sort.join("\n")
+                                 ]
+                               end
     end
 
     def generate_combinations(_input)

@@ -15,12 +15,11 @@ module CubeTrainer
         end
       end
 
+      NAMES = [:ll_edges_outside].freeze
       def initialize(coordinates, color)
         @coordinates = coordinates
         @color = color
       end
-
-      NAMES = [:ll_edges_outside].freeze
 
       def apply_to(cube_state)
         @coordinates.each { |c| cube_state[c] = @color }

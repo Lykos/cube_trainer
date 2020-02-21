@@ -20,9 +20,10 @@ module CubeTrainer
     end
 
     def cross_adjustments(face)
-      (@cross_adjustments ||= {})[face] ||= Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
-        Core::Algorithm.move(Core::FatMove.new(face, d, 1))
-      end
+      (@cross_adjustments ||= {})[face] ||=
+        Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
+          Core::Algorithm.move(Core::FatMove.new(face, d, 1))
+        end
     end
 
     def no_auf_score_on_face(state, face)
@@ -60,10 +61,11 @@ module CubeTrainer
     end
 
     def solved_colors(state)
-      solved_faces = Core::Face::ELEMENTS.select do |f|
-        no_auf_score_on_face(state, f) + 1 == solution_score
-      end
-      solved_faces.collect { |f| state[Core::Coordinate.center(f, 3)] }
+      solved_faces =
+        Core::Face::ELEMENTS.select do |f|
+          no_auf_score_on_face(state, f) + 1 == solution_score
+        end
+      solved_faces.map { |f| state[Core::Coordinate.center(f, 3)] }
     end
 
     def generate_moves(_state)

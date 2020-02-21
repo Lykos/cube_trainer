@@ -18,7 +18,7 @@ module CubeTrainer
       private
 
       def extract_weights(array, &block)
-        weights = array.collect(&block)
+        weights = array.map(&block)
         unless weights.all? { |w| w.is_a?(Numeric) }
           raise TypeError, 'Negative weights are not allowed for sampling.'
         end
