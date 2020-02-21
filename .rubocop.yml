@@ -54,6 +54,7 @@ Style/MethodCallWithArgsParentheses:
   - include
   Exclude:
   - Rakefile
+  - 'spec/**/*_spec.rb'
 Style/OptionHash:
   Enabled: true
 Style/ReturnNil:
