@@ -15,7 +15,7 @@ source 'https://rubygems.org' do
   end
   group :development do
     gem 'rake-compiler'
-    gem 'rubocop'
+    gem 'rubocop', '>=0.80'
     gem 'rubocop-performance', require: false
     gem 'rubocop-rake', require: false
   end
