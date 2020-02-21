@@ -8,6 +8,11 @@ module CubeTrainer
     # Represents one column in a CSV file from the WCA export and contains parsing utilities.
     class Column
       extend Core
+
+      def initialize(&block)
+        @transformation = block
+      end
+
       END_DATE =
         new do |_e, r|
           end_month = Integer(r[:endmonth], 10)
@@ -63,10 +68,6 @@ module CubeTrainer
           e
         end
       OPTIONAL_STRING = new { |e, _r| e unless e.nil? }
-
-      def initialize(&block)
-        @transformation = block
-      end
 
       def extract(raw_value, row)
         @transformation.call(raw_value, row)

@@ -16,7 +16,7 @@ module CubeTrainer
 
       def floor_to_nice(number)
         divisor = 10.0**Math.log(number, 10).floor
-        first_digit = Integer((number / divisor), 10)
+        first_digit = (number / divisor).to_i
         raise unless first_digit >= 1 && first_digit < 10
 
         next_lower_nice_digit(first_digit) * divisor

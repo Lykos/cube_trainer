@@ -8,6 +8,86 @@ require 'cube_trainer/utils/array_helper'
 require 'ostruct'
 
 module CubeTrainer
+  # Represents a score that is not present and unknown.
+  class UnknownScore
+    include Comparable
+    def <=>(other)
+      -other.unknown_compare
+    end
+
+    def +(_other)
+      self
+    end
+
+    def unknown_compare
+      0
+    end
+
+    def actual_compare(_value)
+      1
+    end
+
+    def plus_actual(_value)
+      self
+    end
+
+    def -@
+      self
+    end
+
+    def to_s
+      'unknown'
+    end
+
+    def known?
+      false
+    end
+  end
+
+  # Represents a score that is actually present and known.
+  class ActualScore
+    include Comparable
+    def initialize(value)
+      @value = value
+    end
+
+    def <=>(other)
+      -other.actual_compare(@value)
+    end
+
+    def +(other)
+      other.plus_actual(@value)
+    end
+
+    def actual_compare(value)
+      @value <=> value
+    end
+
+    def unknown_compare
+      -1
+    end
+
+    def plus_actual(value)
+      ActualScore.new(@value + value)
+    end
+
+    def -@
+      ActualScore.new(-@value)
+    end
+
+    def to_s
+      if @value.is_a?(Float)
+        @value.round(2).to_s
+      else
+        @value.to_s
+      end
+    end
+
+    def known?
+      true
+    end
+  end
+
   # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
   # e.g. solving a corner twist and a parity by a comm and a parity.
   class HeterogenousSequenceHinter
@@ -59,86 +139,6 @@ module CubeTrainer
 
     def length
       @hinters.length
-    end
-
-    # Represents a score that is not present and unknown.
-    class UnknownScore
-      include Comparable
-      def <=>(other)
-        -other.unknown_compare
-      end
-
-      def +(_other)
-        self
-      end
-
-      def unknown_compare
-        0
-      end
-
-      def actual_compare(_value)
-        1
-      end
-
-      def plus_actual(_value)
-        self
-      end
-
-      def -@
-        self
-      end
-
-      def to_s
-        'unknown'
-      end
-
-      def known?
-        false
-      end
-    end
-
-    # Represents a score that is actually present and known.
-    class ActualScore
-      include Comparable
-      def initialize(value)
-        @value = value
-      end
-
-      def <=>(other)
-        -other.actual_compare(@value)
-      end
-
-      def +(other)
-        other.plus_actual(@value)
-      end
-
-      def actual_compare(value)
-        @value <=> value
-      end
-
-      def unknown_compare
-        -1
-      end
-
-      def plus_actual(value)
-        ActualScore.new(@value + value)
-      end
-
-      def -@
-        ActualScore.new(-@value)
-      end
-
-      def to_s
-        if @value.is_a?(Float)
-          @value.round(2).to_s
-        else
-          @value.to_s
-        end
-      end
-
-      def known?
-        true
-      end
     end
 
     def value(index, input)

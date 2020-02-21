@@ -29,13 +29,16 @@ module CubeTrainer
     def output_final_report; end
   end
 
+  # Represents an empty entry in a commutator table.
+  class EmptyEntry
+    def maybe_letter_pair; end
+  end
+
   # Class that parses a commutator file.
   class CommutatorHintParser < HintParser
     include Utils::StringHelper
     include Core
     TEST_COMMS_MODES = %i[ignore warn fail].freeze
-
-    EMPTY_ENTRY = EmptyEntry.new
     BLACKLIST = ['flip'].freeze
 
     # rubocop:disable Metrics/MethodLength
@@ -100,15 +103,6 @@ module CubeTrainer
       attr_accessor :maybe_letter_pair
     end
 
-    # Represents an empty entry in a commutator table.
-    class EmptyEntry
-      def initialize
-        @maybe_letter_pair = nil
-      end
-
-      attr_accessor :maybe_letter_pair
-    end
-
     # Represents an erroneous entry in a commutator table.
     class ErrorEntry
       def initialize(error_message)
@@ -153,12 +147,12 @@ module CubeTrainer
     end
 
     def parse_hint_table_cell(cell)
-      return EMPTY_ENTRY if cell.nil? || cell.empty? || blacklisted?(cell)
+      return EmptyEntry if cell.nil? || cell.empty? || blacklisted?(cell)
 
       alg = parse_commutator(cell)
       # Ignore very short algorithms. They are never valid and they can be things like piece
       # types.
-      return EMPTY_ENTRY if alg.algorithm.length <= 3
+      return EmptyEntry if alg.algorithm.length <= 3
 
       maybe_letter_pair = reverse_engineer.find_letter_pair(alg.algorithm)
       AlgEntry.new(maybe_letter_pair, alg)

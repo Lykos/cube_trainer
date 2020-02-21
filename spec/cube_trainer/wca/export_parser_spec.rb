@@ -40,7 +40,7 @@ describe WCA::ExportParser do
   end
 
   it 'reads the countries of a WCA export' do
-    expect(parser.countries).to(be == { Germany: {
+    expect(parser.countries).to(be == { 'Germany' => {
       id: 'Germany',
       name: 'Germany',
       continentid: '_Europe',
@@ -49,7 +49,7 @@ describe WCA::ExportParser do
   end
 
   it 'reads the continents of a WCA export' do
-    expect(parser.continents).to(be == { _Europe: {
+    expect(parser.continents).to(be == { '_Europe' => {
       id: '_Europe',
       name: 'Europe',
       recordname: 'ER',

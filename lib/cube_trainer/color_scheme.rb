@@ -11,24 +11,9 @@ module CubeTrainer
   class ColorScheme
     include Core::CubeConstants
     include Utils::ArrayHelper
+
     RESERVED_COLORS = %i[transparent unknown oriented].freeze
-    BERNHARD = WCA.turned(:yellow, :red)
-    WCA = new(
-      U: :white,
-      F: :green,
-      R: :red,
-      L: :orange,
-      B: :blue,
-      D: :yellow
-    )
-    WCA = new(
-      U: :white,
-      F: :green,
-      R: :red,
-      L: :orange,
-      B: :blue,
-      D: :yellow
-    )
+
     def initialize(face_symbols_to_colors)
       check_face_symbols_to_colors(face_symbols_to_colors)
 
@@ -175,5 +160,15 @@ module CubeTrainer
       end.to_h
       result.merge!(opposites)
     end
+
+    WCA = new(
+      U: :white,
+      F: :green,
+      R: :red,
+      L: :orange,
+      B: :blue,
+      D: :yellow
+    ).freeze
+    BERNHARD = WCA.turned(:yellow, :red).freeze
   end
 end

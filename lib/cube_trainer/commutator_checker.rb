@@ -111,12 +111,13 @@ module CubeTrainer
     # * incorrect and we have a fix
     # * incorrect and we have no fix
     class CheckAlgResult
-      CORRECT = CheckAlgResult.new(:correct)
-      UNFIXABLE = CheckAlgResult.new(:unfixable)
       def initialize(result, fix = nil)
         @result = result
         @fix = fix
       end
+
+      CORRECT = CheckAlgResult.new(:correct)
+      UNFIXABLE = CheckAlgResult.new(:unfixable)
 
       attr_reader :result, :fix
     end

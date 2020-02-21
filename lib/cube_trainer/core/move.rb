@@ -392,7 +392,7 @@ module CubeTrainer
       end
 
       OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map do |f, d|
-        FatMove.new(f, d, 1)
+        FatMove.new(f, d, 1).freeze
       end.freeze
 
       attr_reader :width
@@ -729,7 +729,7 @@ module CubeTrainer
         B: Corner.for_face_symbols(%i[D B L])
       }.freeze
       ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map do |m, d|
-        SkewbMove.new(m, d)
+        SkewbMove.new(m, d).freeze
       end.freeze
     end
 
@@ -742,7 +742,7 @@ module CubeTrainer
         L: Corner.for_face_symbols(%i[U F L])
       }.freeze
       ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map do |m, d|
-        SkewbMove.new(m, d)
+        SkewbMove.new(m, d).freeze
       end.freeze
     end
   end

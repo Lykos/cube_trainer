@@ -13,22 +13,151 @@ require 'uri'
 
 module CubeTrainer
   module Anki
+    # Helper class to serialize a URL parameter via invoking `#to_s`.
+    class SimpleUrlParameterSerializer
+      def self.serialize(value)
+        value.to_s
+      end
+    end
+
+    # Helper class to serialize a color scheme as a URL paramer by setting the list of colors.
+    class ColorSchemeUrlParameterSerializer
+      def self.serialize(value)
+        FACE_SYMBOL_ORDER.map { |s| value.color(s) }.join(',')
+      end
+    end
+
+    # Helper class to serialize a stage mask as a URL paramer by setting the list of colors.
+    class StageMaskUrlParameterSerializer
+      def self.serialize(value)
+        if value.rotations.empty?
+          value.base_mask.to_s
+        else
+          "#{value.base_mask}-#{value.rotations.moves.join}"
+        end
+      end
+    end
+
+    # Stage mask that masks a certain part of the cube after applying moves.
+    # This supports the same format as the cube visualizer website.
+    class StageMask
+      extend Core
+      BASE_MASKS = %i[
+        fl f2l ll cll ell oll ocll oell coll ocell wv vh els cls cmll
+        cross f2l_3 f2l_2 f2l_sm f2l_1 f2b line 2x2x2 2x2x3
+      ].freeze
+
+      def initialize(base_mask, rotations = Core::Algorithm::EMPTY)
+        raise ArgumentError unless BASE_MASKS.include?(base_mask)
+        raise TypeError unless rotations.is_a?(Core::Algorithm)
+        raise TypeError unless rotations.moves.all? { |r| r.is_a?(Core::Rotation) }
+
+        @base_mask = base_mask
+        @rotations = rotations
+      end
+
+      attr_reader :base_mask, :rotations
+
+      def self.parse(stage_mask_string)
+        match = stage_mask_string.match(STAGE_MASK_REGEXP)
+        if !match || !match.pre_match.empty? || !match.post_match.empty?
+          raise ArgumentError, "Invalid stage mask #{stage_mask_string}."
+        end
+
+        raw_base_mask, raw_rotations = match.captures
+        rotations = raw_rotations ? parse_algorithm(raw_rotations) : Core::Algorithm::EMPTY
+        StageMask.new(raw_base_mask.to_sym, rotations)
+      end
+    end
+
+    # Represents one type of URL parameter.
+    class UrlParameterType
+      # rubocop:disable Metrics/ParameterLists
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
+      def initialize(
+        name,
+        type,
+        value_range,
+        parameter_value_serializer: SimpleUrlParameterSerializer,
+        default_value: nil,
+        required: false
+      )
+        raise TypeError unless name.is_a?(Symbol)
+        raise TypeError unless type.is_a?(Class)
+        raise TypeError unless value_range.respond_to?(:include?)
+        raise TypeError unless default_value.nil? || default_value.is_a?(type)
+        raise ArgumentError unless default_value.nil? || value_range.include?(default_value)
+        raise TypeError unless parameter_value_serializer.respond_to?(:serialize)
+        raise ArgumentError if default_value && required
+
+        @name = name
+        @type = type
+        @serialized_default_value =
+          default_value.nil? ? nil : parameter_value_serializer.serialize(default_value)
+        @parameter_value_serializer = parameter_value_serializer
+        @value_range = value_range
+        @required = required
+      end
+      # rubocop:enable Metrics/PerceivedComplexity
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/ParameterLists
+
+      attr_reader :name
+
+      def extract(map)
+        serialized_value =
+          if (v = map[@name])
+            raise TypeError unless v.is_a?(@type)
+            unless @value_range.include?(v)
+              raise ArgumentError, "Invalid value #{v} for parameter #{@name}."
+            end
+
+            @parameter_value_serializer.serialize(v)
+          elsif @required
+            raise ArgumentError, "Missing required parameter #{@name}."
+          else
+            @serialized_default_value
+                                      end
+        [@name, serialized_value] if serialized_value
+      end
+    end
+
+    # Represents a fake infinite range that includes everything.
+    class FakeInfiniteRange
+      def self.include?(_value)
+        true
+      end
+    end
+
+    # Stub cache that caches nothing.
+    class StubCache
+      def self.[](_key)
+        nil
+      end
+
+      def self.[]=(key, value); end
+    end
+
     # Class that fetches images from
     # http://cube.crider.co.uk/visualcube.php
     class CubeVisualizer
       include Core::CubePrintHelper
+      COLORS = %i[black dgrey grey silver white yellow red orange blue green purple pink].freeze
       URL_PARAMETER_TYPES = [
         UrlParameterType.new(:fmt, Symbol, %i[png gif jpg svg tiff ico], required: true),
         UrlParameterType.new(:size, Integer, (0..1024)),
         UrlParameterType.new(:view, Symbol, %i[plain trans]),
         UrlParameterType.new(
-          :stage, StageMask, FAKE_INFINITE_RANGE,
-          parameter_value_serializer: STAGE_MASK_URL_PARAMETER_SERIALIZER
+          :stage, StageMask, FakeInfiniteRange,
+          parameter_value_serializer: StageMaskUrlParameterSerializer
         ),
         UrlParameterType.new(
-          :sch, ColorScheme, FAKE_INFINITE_RANGE,
+          :sch, ColorScheme, FakeInfiniteRange,
           required: true,
-          parameter_value_serializer: COLOR_SCHEME_URL_PARAMETER_SERIALIZER
+          parameter_value_serializer: ColorSchemeUrlParameterSerializer
         ),
         UrlParameterType.new(:bg, Symbol, COLORS),
         UrlParameterType.new(:cc, Symbol, COLORS),
@@ -37,24 +166,16 @@ module CubeTrainer
         UrlParameterType.new(:dist, Integer, (1..100))
         # TODO: arw
         # TODO ac
-      ].freeze
+      ].map(&:freeze).freeze
       URL_PARAMETER_TYPE_KEYS = URL_PARAMETER_TYPES.map(&:name)
-      FAKE_INFINITE_RANGE = FakeInfiniteRange.new
-      COLORS = %i[black dgrey grey silver white yellow red orange blue green purple pink].freeze
-      COLOR_SCHEME_URL_PARAMETER_SERIALIZER = ColorSchemeUrlParameterSerializer.new
-      STAGE_MASK_URL_PARAMETER_SERIALIZER = StageMaskUrlParameterSerializer.new
-      STAGE_MASK_REGEXP = Regexp.new("(#{BASE_MASKS.join('|')})(?:-([xyz]['2]?+))?")
-      SIMPLE_URL_PARAMETER_SERIALIZER = SimpleUrlParameterSerializer.new
+      STAGE_MASK_REGEXP = Regexp.new("(#{StageMask::BASE_MASKS.join('|')})(?:-([xyz]['2]?+))?")
       # Order of the faces for the color scheme
       FACE_SYMBOL_ORDER = %i[U R F D L B].freeze
-      BASE_MASKS = %i[
-        fl f2l ll cll ell oll ocll oell coll ocell wv vh els cls cmll
-        cross f2l_3 f2l_2 f2l_sm f2l_1 f2b line 2x2x2 2x2x3
-      ].freeze
       MIN_N = 1
       MAX_N = 10
       BASE_URI = URI('http://cube.crider.co.uk/visualcube.php')
       BASE_URI = URI('http://cube.crider.co.uk/visualcube.php')
+
       def initialize(fetcher:, cache: nil, retries: 5, checker: nil, **params)
         check_param_keys(params.keys)
         check_cache(cache)
@@ -64,7 +185,7 @@ module CubeTrainer
         raise ArgumentError if retries.negative?
 
         @fetcher = fetcher
-        @cache = cache || StubCache.new
+        @cache = cache || StubCache
         @retries = retries
         @url_params = extract_url_params(params)
         @color_scheme = extract_color_scheme(params)
@@ -128,130 +249,6 @@ module CubeTrainer
       end
 
       raise unless FACE_SYMBOL_ORDER.sort == Core::CubeConstants::FACE_SYMBOLS.sort
-
-      # Helper class to serialize a URL parameter via invoking `#to_s`.
-      class SimpleUrlParameterSerializer
-        def serialize(value)
-          value.to_s
-        end
-      end
-
-      # Helper class to serialize a color scheme as a URL paramer by setting the list of colors.
-      class ColorSchemeUrlParameterSerializer
-        def serialize(value)
-          FACE_SYMBOL_ORDER.map { |s| value.color(s) }.join(',')
-        end
-      end
-
-      # Stage mask that masks a certain part of the cube after applying moves.
-      # This supports the same format as the cube visualizer website.
-      class StageMask
-        extend Core
-
-        def initialize(base_mask, rotations = Core::Algorithm::EMPTY)
-          raise ArgumentError unless BASE_MASKS.include?(base_mask)
-          raise TypeError unless rotations.is_a?(Core::Algorithm)
-          raise TypeError unless rotations.moves.all? { |r| r.is_a?(Core::Rotation) }
-
-          @base_mask = base_mask
-          @rotations = rotations
-        end
-
-        attr_reader :base_mask, :rotations
-
-        def self.parse(stage_mask_string)
-          match = stage_mask_string.match(STAGE_MASK_REGEXP)
-          if !match || !match.pre_match.empty? || !match.post_match.empty?
-            raise ArgumentError, "Invalid stage mask #{stage_mask_string}."
-          end
-
-          raw_base_mask, raw_rotations = match.captures
-          rotations = raw_rotations ? parse_algorithm(raw_rotations) : Core::Algorithm::EMPTY
-          StageMask.new(raw_base_mask.to_sym, rotations)
-        end
-      end
-
-      # Helper class to serialize a stage mask as a URL paramer by setting the list of colors.
-      class StageMaskUrlParameterSerializer
-        def serialize(value)
-          if value.rotations.empty?
-            value.base_mask.to_s
-          else
-            "#{value.base_mask}-#{value.rotations.moves.join}"
-          end
-        end
-      end
-
-      # Represents one type of URL parameter.
-      class UrlParameterType
-        # rubocop:disable Metrics/ParameterLists
-        # rubocop:disable Metrics/AbcSize
-        # rubocop:disable Metrics/CyclomaticComplexity
-        # rubocop:disable Metrics/PerceivedComplexity
-        def initialize(
-          name,
-          type,
-          value_range,
-          parameter_value_serializer: SIMPLE_URL_PARAMETER_SERIALIZER,
-          default_value: nil,
-          required: false
-        )
-          raise TypeError unless name.is_a?(Symbol)
-          raise TypeError unless type.is_a?(Class)
-          raise TypeError unless value_range.respond_to?(:include?)
-          raise TypeError unless default_value.nil? || default_value.is_a?(type)
-          raise ArgumentError unless default_value.nil? || value_range.include?(default_value)
-          raise TypeError unless parameter_value_serializer.respond_to?(:serialize)
-          raise ArgumentError if default_value && required
-
-          @name = name
-          @type = type
-          @serialized_default_value =
-            default_value.nil? ? nil : parameter_value_serializer.serialize(default_value)
-          @parameter_value_serializer = parameter_value_serializer
-          @value_range = value_range
-          @required = required
-        end
-        # rubocop:enable Metrics/PerceivedComplexity
-        # rubocop:enable Metrics/CyclomaticComplexity
-        # rubocop:enable Metrics/AbcSize
-        # rubocop:enable Metrics/ParameterLists
-
-        attr_reader :name
-
-        def extract(map)
-          serialized_value =
-            if (v = map[@name])
-              raise TypeError unless v.is_a?(@type)
-              unless @value_range.include?(v)
-                raise ArgumentError, "Invalid value #{v} for parameter #{@name}."
-              end
-
-              @parameter_value_serializer.serialize(v)
-            elsif @required
-              raise ArgumentError, "Missing required parameter #{@name}."
-            else
-              @serialized_default_value
-                                        end
-          [@name, serialized_value] if serialized_value
-        end
-      end
-
-      # Represents a fake infinite range that includes everything.
-      class FakeInfiniteRange
-        def include?(_value)
-          true
-        end
-      end
-
-      # Stub cache that caches nothing.
-      class StubCache
-        def [](_key)
-          nil
-        end
-
-        def []=(key, value); end
-      end
 
       def check_param_keys(keys)
         invalid_keys = keys - URL_PARAMETER_TYPE_KEYS

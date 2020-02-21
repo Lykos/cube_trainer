@@ -159,11 +159,12 @@ module CubeTrainer
         MoveTypeCreator.new(%i[axis_corner skewb_direction], SkewbMove)
       ].freeze
 
-      FIXED_CORNER_INSTANCE = SkewbMoveParser.new(FixedCornerSkewbMove::MOVED_CORNERS)
-      SARAHS_INSTANCE = SkewbMoveParser.new(SarahsSkewbMove::MOVED_CORNERS)
       def initialize(moved_corners)
         @moved_corners = moved_corners
       end
+
+      FIXED_CORNER_INSTANCE = SkewbMoveParser.new(FixedCornerSkewbMove::MOVED_CORNERS).freeze
+      SARAHS_INSTANCE = SkewbMoveParser.new(SarahsSkewbMove::MOVED_CORNERS).freeze
 
       def regexp
         @regexp ||=

@@ -10,6 +10,7 @@ module CubeTrainer
   # modulo rotations and mirrors, but better according to some canonical metric.
   class SkewbLayerImprover
     include Core::CubePrintHelper
+    FACE_SYMBOLS_ORDERED_BY_PRIORITY = %i[D U F R L B].freeze
     CORNERS_ORDERED_BY_PRIORITY =
       Core::Corner::ELEMENTS.sort_by do |c|
         face_index = FACE_SYMBOLS_ORDERED_BY_PRIORITY.index(c.face_symbols.first)
@@ -29,7 +30,6 @@ module CubeTrainer
       end
     CORNER_COORDINATES_ORDERED_BY_PRIORITY =
       CORNERS_ORDERED_BY_PRIORITY.map { |c| Core::SkewbCoordinate.for_corner(c) }
-    FACE_SYMBOLS_ORDERED_BY_PRIORITY = %i[D U F R L B].freeze
 
     def initialize(face, color_scheme)
       raise ArgumentError unless face.is_a?(Core::Face)

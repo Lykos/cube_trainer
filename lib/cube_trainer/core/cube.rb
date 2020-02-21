@@ -46,7 +46,7 @@ module CubeTrainer
                 "#{ALPHABET_SIZE}."
         end
 
-        parts
+        parts.freeze
       end
 
       def base_index_on_face(cube_size, incarnation_index)
