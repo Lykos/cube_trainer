@@ -9,6 +9,12 @@ Layout/LineLength:
   # TODO: This is temporary
   Exclude:
   - 'spec/**/*_spec.rb'
+Style/Documentation:
+  Exclude:
+  - 'spec/**/*.rb'
+Style/NumericPredicate:
+  Exclude:
+  - 'spec/**/*_spec.rb'
 Metrics/BlockLength:
   Exclude:
   - 'spec/**/*_spec.rb'
