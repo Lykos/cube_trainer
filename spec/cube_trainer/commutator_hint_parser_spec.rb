@@ -29,7 +29,7 @@ describe HintParser do
       ['', "[U R U', L']", "[D U R U' : [R' U R, D']]"],
       ["[D U R U' : [D', R' U R]]", "[U R' U', L']", '']
     ]
-    expect(hint_parser.parse_hint_table(table)).to(be == {
+    expect(hint_parser.parse_hint_table(table)).to eq({
       LetterPair.new(%w[i g]) => parse_commutator("[L', U R U']"),
       LetterPair.new(%w[g i]) => parse_commutator("[U R U', L']"),
       LetterPair.new(%w[t g]) => parse_commutator("[L', U R' U']"),
@@ -44,7 +44,7 @@ describe HintParser do
       ["[L', U R U']", ''],
       ['', "[U R U', L']"]
     ]
-    expect(hint_parser.parse_hint_table(table)).to(be == {
+    expect(hint_parser.parse_hint_table(table)).to eq({
       LetterPair.new(%w[i g]) => parse_commutator("[L', U R U']"),
       LetterPair.new(%w[g i]) => parse_commutator("[U R U', L']")
     })

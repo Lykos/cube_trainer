@@ -55,14 +55,14 @@ describe CubeTrainer::Anki::AlgSetAnkiGenerator do
       it 'puts the fetched content into the image files' do
         generator.generate
 
-        expect(File.read(File.join(output_dir, image_file))).to be == CONSTANT_IMAGE
+        expect(File.read(File.join(output_dir, image_file))).to eq(CONSTANT_IMAGE)
       end
     end
 
     it 'generates a directory with image files' do
       generator.generate
 
-      expect(Dir.entries(output_dir).sort).to be == (['.', '..'] + image_files).sort
+      expect(Dir.entries(output_dir).sort).to eq((['.', '..'] + image_files).sort)
     end
 
     image_files.each do |image_file|
@@ -76,10 +76,10 @@ describe CubeTrainer::Anki::AlgSetAnkiGenerator do
     it 'generates an alg set anki deck' do
       generator.generate
 
-      expect(deck).to be == [
+      expect(deck).to contain_exactly(
         ['asdf', 'U', "<img src='alg_asdf.jpg'/>"],
         ['uio', 'F', "<img src='alg_uio.jpg'/>"]
-      ]
+      )
     end
 
     it_behaves_like 'an image storer', ['alg_asdf.jpg', 'alg_uio.jpg']
@@ -91,14 +91,14 @@ describe CubeTrainer::Anki::AlgSetAnkiGenerator do
     it 'generates an alg set anki deck' do
       generator.generate
 
-      expect(deck).to be == [
+      expect(deck).to contain_exactly(
         ['Y', "F R U' R' U' R U R' F' R U R' U' R' F R F'", "<img src='alg_Y.jpg'/>"],
         ['auf skip + Ja', "R' U L' U2 R U' R' U2 R L", "<img src='alg_auf_skip_+_Ja.jpg'/>"],
         ['U + Ja', "U R' U L' U2 R U' R' U2 R L", "<img src='alg_U_+_Ja.jpg'/>"],
         ['U2 + Ja', "U2 R' U L' U2 R U' R' U2 R L", "<img src='alg_U2_+_Ja.jpg'/>"],
         ["U' + Ja", "U' R' U L' U2 R U' R' U2 R L", "<img src='alg_U-_+_Ja.jpg'/>"],
         ['solved', '', "<img src='alg_solved.jpg'/>"]
-      ]
+      )
     end
 
     it_behaves_like 'an image storer', [

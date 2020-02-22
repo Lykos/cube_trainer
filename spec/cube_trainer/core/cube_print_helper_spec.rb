@@ -9,6 +9,15 @@ def apply_sexy(cube_state)
   parse_algorithm("R U R' U'").apply_to(cube_state)
 end
 
+RSpec::Matchers.define(:eq_cube_string) do |expected|
+  match do |actual|
+    actual.to_s == expected.chomp
+  end
+  failure_message do |actual|
+    "expected that:\n#{actual.colored_to_s}\nwould equal:\n#{expected}"
+  end
+end
+
 describe Core::CubePrintHelper do
   include Core
   include described_class
@@ -20,7 +29,7 @@ describe Core::CubePrintHelper do
 
     it 'prints a solved state correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
-      expected = <<~CUBE.chomp
+      expect(cube_state).to eq_cube_string(<<~CUBE)
           YY
           YY
         BBRRGGOO
@@ -28,13 +37,12 @@ describe Core::CubePrintHelper do
           WW
           WW
       CUBE
-      expect(cube_state.to_s).to be == expected
     end
 
     it 'prints a state after sexy move correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       apply_sexy(cube_state)
-      expected = <<~CUBE.chomp
+      expect(cube_state).to eq_cube_string(<<~CUBE)
           YB
           YR
         OBRWGYOG
@@ -42,7 +50,6 @@ describe Core::CubePrintHelper do
           WG
           WW
       CUBE
-      expect(cube_state.to_s).to be == expected
     end
   end
 
@@ -51,7 +58,7 @@ describe Core::CubePrintHelper do
 
     it 'prints a solved state correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
-      expected = <<~CUBE.chomp
+      expect(cube_state).to eq_cube_string(<<~CUBE)
            YYY
            YYY
            YYY
@@ -62,13 +69,12 @@ describe Core::CubePrintHelper do
            WWW
            WWW
       CUBE
-      expect(cube_state.to_s).to be == expected
     end
 
     it 'prints a state after sexy move correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       apply_sexy(cube_state)
-      expected = <<~CUBE.chomp
+      expect(cube_state).to eq_cube_string(<<~CUBE)
            YYB
            YYR
            YYR
@@ -79,7 +85,6 @@ describe Core::CubePrintHelper do
            WWW
            WWW
       CUBE
-      expect(cube_state.to_s).to be == expected
     end
   end
 
@@ -88,7 +93,7 @@ describe Core::CubePrintHelper do
 
     it 'prints a solved state correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
-      expected = <<~CUBE.chomp
+      expect(cube_state).to eq_cube_string(<<~CUBE)
             YYYY
             YYYY
             YYYY
@@ -102,13 +107,12 @@ describe Core::CubePrintHelper do
             WWWW
             WWWW
       CUBE
-      expect(cube_state.to_s).to be == expected
     end
 
     it 'prints a state after sexy move correctly' do
       cube_state = color_scheme.solved_cube_state(cube_size)
       apply_sexy(cube_state)
-      expected = <<~CUBE.chomp
+      expect(cube_state).to eq_cube_string(<<~CUBE)
             YYYB
             YYYR
             YYYR
@@ -122,7 +126,6 @@ describe Core::CubePrintHelper do
             WWWW
             WWWW
       CUBE
-      expect(cube_state.to_s).to be == expected
     end
   end
 end

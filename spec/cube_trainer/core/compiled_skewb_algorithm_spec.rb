@@ -26,7 +26,7 @@ describe Core::CompiledCubeAlgorithm do
       modified_skewb_state = skewb_state.dup
       a.compiled_for_skewb.apply_to(modified_skewb_state)
       a.inverse.compiled_for_skewb.apply_to(modified_skewb_state)
-      expect(modified_skewb_state).to be == skewb_state
+      expect(modified_skewb_state).to eq_puzzle_state(skewb_state)
     end
   end
 
@@ -36,7 +36,7 @@ describe Core::CompiledCubeAlgorithm do
     end.check do |a, f|
       a.compiled_for_skewb.mirror(f).apply_to(compile_then_transform_skewb_state)
       a.mirror(f).compiled_for_skewb.apply_to(transform_then_compile_skewb_state)
-      expect(compile_then_transform_skewb_state).to be == transform_then_compile_skewb_state
+      expect(compile_then_transform_skewb_state).to eq_puzzle_state(transform_then_compile_skewb_state)
     end
   end
 
@@ -46,7 +46,7 @@ describe Core::CompiledCubeAlgorithm do
     end.check do |a, r|
       a.compiled_for_skewb.rotate_by(r).apply_to(compile_then_transform_skewb_state)
       a.rotate_by(r).compiled_for_skewb.apply_to(transform_then_compile_skewb_state)
-      expect(compile_then_transform_skewb_state).to be == transform_then_compile_skewb_state
+      expect(compile_then_transform_skewb_state).to eq_puzzle_state(transform_then_compile_skewb_state)
     end
   end
 
@@ -56,7 +56,7 @@ describe Core::CompiledCubeAlgorithm do
     end.check do |a|
       a.compiled_for_skewb.inverse.apply_to(compile_then_transform_skewb_state)
       a.inverse.compiled_for_skewb.apply_to(transform_then_compile_skewb_state)
-      expect(compile_then_transform_skewb_state).to be == transform_then_compile_skewb_state
+      expect(compile_then_transform_skewb_state).to eq_puzzle_state(transform_then_compile_skewb_state)
     end
   end
 
@@ -66,7 +66,7 @@ describe Core::CompiledCubeAlgorithm do
     end.check do |a, b|
       (a.compiled_for_skewb + b.compiled_for_skewb).apply_to(compile_then_transform_skewb_state)
       (a + b).compiled_for_skewb.apply_to(transform_then_compile_skewb_state)
-      expect(compile_then_transform_skewb_state).to be == transform_then_compile_skewb_state
+      expect(compile_then_transform_skewb_state).to eq_puzzle_state(transform_then_compile_skewb_state)
     end
   end
 end

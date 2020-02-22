@@ -9,6 +9,15 @@ require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
+RSpec::Matchers.define(:eq_skewb_string) do |expected|
+  match do |actual|
+    actual.to_s == expected.chomp
+  end
+  failure_message do |actual|
+    "expected that:\n#{actual.colored_to_s}\nwould equal:\n#{expected}"
+  end
+end
+
 describe Core::SkewbState do
   include Core
   include Core::CubePrintHelper
@@ -28,14 +37,14 @@ describe Core::SkewbState do
 
   it 'has the right solved state' do
     expect(skewb_state.any_layer_solved?).to be(true)
-    expect(skewb_state.solved_layers).to be == %i[yellow red green blue orange white]
+    expect(skewb_state.solved_layers).to eq(%i[yellow red green blue orange white])
     expect(skewb_state.layer_solved?(:yellow)).to be(true)
     expect(skewb_state.layer_solved?(:red)).to be(true)
     expect(skewb_state.layer_solved?(:green)).to be(true)
     expect(skewb_state.layer_solved?(:blue)).to be(true)
     expect(skewb_state.layer_solved?(:orange)).to be(true)
     expect(skewb_state.layer_solved?(:white)).to be(true)
-    expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+    expect(skewb_state).to eq_skewb_string(<<~SKEWB)
            YYYYY
            YYYYY
            YYYYY
@@ -57,7 +66,7 @@ describe Core::SkewbState do
   context 'when using fixed corner notation' do
     it 'has the right state after an U move' do
       parse_fixed_corner_skewb_algorithm('U').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              OOOOO
              OOOOO
              OOOOO
@@ -92,7 +101,7 @@ describe Core::SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be(false)
       expect(skewb_state.layer_solved?(:orange)).to be(false)
       expect(skewb_state.layer_solved?(:white)).to be(false)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              BBBBB
              BBBBB
              BBBBB
@@ -120,7 +129,7 @@ describe Core::SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be(false)
       expect(skewb_state.layer_solved?(:orange)).to be(false)
       expect(skewb_state.layer_solved?(:white)).to be(false)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              YYYRR
              YYYYR
              YYYYY
@@ -148,7 +157,7 @@ describe Core::SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be(false)
       expect(skewb_state.layer_solved?(:orange)).to be(false)
       expect(skewb_state.layer_solved?(:white)).to be(false)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              YYYBB
              YYYYB
              YYYYY
@@ -176,7 +185,7 @@ describe Core::SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be(false)
       expect(skewb_state.layer_solved?(:orange)).to be(false)
       expect(skewb_state.layer_solved?(:white)).to be(false)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              YYYYY
              YYYYY
              YYYYY
@@ -204,7 +213,7 @@ describe Core::SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be(false)
       expect(skewb_state.layer_solved?(:orange)).to be(false)
       expect(skewb_state.layer_solved?(:white)).to be(false)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              YYYYY
              YYYYY
              YYYYY
@@ -232,7 +241,7 @@ describe Core::SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be(false)
       expect(skewb_state.layer_solved?(:orange)).to be(false)
       expect(skewb_state.layer_solved?(:white)).to be(false)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              GGYYY
              GYYYY
              YYYYY
@@ -260,7 +269,7 @@ describe Core::SkewbState do
       expect(skewb_state.layer_solved?(:blue)).to be(false)
       expect(skewb_state.layer_solved?(:orange)).to be(false)
       expect(skewb_state.layer_solved?(:white)).to be(false)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              RRYYY
              RYYYY
              YYYYY
@@ -281,7 +290,7 @@ describe Core::SkewbState do
 
     it 'has the right state after an x rotation' do
       parse_fixed_corner_skewb_algorithm('x').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              RRRRR
              RRRRR
              RRRRR
@@ -302,7 +311,7 @@ describe Core::SkewbState do
 
     it 'has the right state after an y rotation' do
       parse_fixed_corner_skewb_algorithm('y').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              YYYYY
              YYYYY
              YYYYY
@@ -323,7 +332,7 @@ describe Core::SkewbState do
 
     it 'has the right state after an z rotation' do
       parse_fixed_corner_skewb_algorithm('z').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              BBBBB
              BBBBB
              BBBBB
@@ -348,7 +357,7 @@ describe Core::SkewbState do
       it "has the red layer solved after a B L' B' L sledge" do
         parse_fixed_corner_skewb_algorithm("B L' B' L").apply_to(skewb_state)
         expect(skewb_state.any_layer_solved?).to be(true)
-        expect(skewb_state.solved_layers).to be == [:red]
+        expect(skewb_state.solved_layers).to contain_exactly(:red)
         expect(skewb_state.layer_solved?(:yellow)).to be(false)
         expect(skewb_state.layer_solved?(:red)).to be(true)
         expect(skewb_state.layer_solved?(:green)).to be(false)
@@ -360,7 +369,7 @@ describe Core::SkewbState do
       it "has the green layer solved after a U' B U B' sledge" do
         parse_fixed_corner_skewb_algorithm("U' B U B'").apply_to(skewb_state)
         expect(skewb_state.any_layer_solved?).to be(true)
-        expect(skewb_state.solved_layers).to be == [:green]
+        expect(skewb_state.solved_layers).to contain_exactly(:green)
         expect(skewb_state.layer_solved?(:yellow)).to be(false)
         expect(skewb_state.layer_solved?(:red)).to be(false)
         expect(skewb_state.layer_solved?(:green)).to be(true)
@@ -372,7 +381,7 @@ describe Core::SkewbState do
       it "has the white layer solved after a R' B R B' sledge" do
         parse_fixed_corner_skewb_algorithm("R' B R B'").apply_to(skewb_state)
         expect(skewb_state.any_layer_solved?).to be(true)
-        expect(skewb_state.solved_layers).to be == [:white]
+        expect(skewb_state.solved_layers).to contain_exactly(:white)
         expect(skewb_state.layer_solved?(:yellow)).to be(false)
         expect(skewb_state.layer_solved?(:red)).to be(false)
         expect(skewb_state.layer_solved?(:green)).to be(false)
@@ -383,7 +392,7 @@ describe Core::SkewbState do
 
       it "has the blue layer solved after a L' R B U' sledge" do
         parse_fixed_corner_skewb_algorithm("L' R B U'").apply_to(skewb_state)
-        expect(skewb_state.solved_layers).to be == [:blue]
+        expect(skewb_state.solved_layers).to contain_exactly(:blue)
         expect(skewb_state.layer_solved?(:yellow)).to be(false)
         expect(skewb_state.layer_solved?(:red)).to be(false)
         expect(skewb_state.layer_solved?(:green)).to be(false)
@@ -395,7 +404,7 @@ describe Core::SkewbState do
 
       it "has the orange layer solved after a R L' B' U sledge" do
         parse_fixed_corner_skewb_algorithm("R L' B' U").apply_to(skewb_state)
-        expect(skewb_state.solved_layers).to be == [:orange]
+        expect(skewb_state.solved_layers).to contain_exactly(:orange)
         expect(skewb_state.layer_solved?(:yellow)).to be(false)
         expect(skewb_state.layer_solved?(:red)).to be(false)
         expect(skewb_state.layer_solved?(:green)).to be(false)
@@ -407,7 +416,7 @@ describe Core::SkewbState do
 
       it "has the yellow layer solved after a U R' B' L sledge" do
         parse_fixed_corner_skewb_algorithm("U R' B' L").apply_to(skewb_state)
-        expect(skewb_state.solved_layers).to be == [:yellow]
+        expect(skewb_state.solved_layers).to contain_exactly(:yellow)
         expect(skewb_state.layer_solved?(:yellow)).to be(true)
         expect(skewb_state.layer_solved?(:red)).to be(false)
         expect(skewb_state.layer_solved?(:green)).to be(false)
@@ -420,7 +429,7 @@ describe Core::SkewbState do
       it "has the orange layer solved after a R' U B L' sledge" do
         parse_fixed_corner_skewb_algorithm("R' U B L'").apply_to(skewb_state)
         expect(skewb_state.any_layer_solved?).to be(true)
-        expect(skewb_state.solved_layers).to be == [:orange]
+        expect(skewb_state.solved_layers).to contain_exactly(:orange)
         expect(skewb_state.layer_solved?(:yellow)).to be(false)
         expect(skewb_state.layer_solved?(:red)).to be(false)
         expect(skewb_state.layer_solved?(:green)).to be(false)
@@ -432,7 +441,7 @@ describe Core::SkewbState do
       it "has the blue layer solved after a L U' B' R sledge" do
         parse_fixed_corner_skewb_algorithm("L U' B' R").apply_to(skewb_state)
         expect(skewb_state.any_layer_solved?).to be(true)
-        expect(skewb_state.solved_layers).to be == [:blue]
+        expect(skewb_state.solved_layers).to contain_exactly(:blue)
         expect(skewb_state.layer_solved?(:yellow)).to be(false)
         expect(skewb_state.layer_solved?(:red)).to be(false)
         expect(skewb_state.layer_solved?(:green)).to be(false)
@@ -457,7 +466,7 @@ describe Core::SkewbState do
   context "when using Sarah's notation" do
     it 'has the right state after an F move' do
       parse_sarahs_skewb_algorithm('F').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              YYRRR
              YRRRR
              RRRRR
@@ -478,7 +487,7 @@ describe Core::SkewbState do
 
     it "has the right state after an F' move" do
       parse_sarahs_skewb_algorithm("F'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              YYGGG
              YGGGG
              GGGGG
@@ -499,7 +508,7 @@ describe Core::SkewbState do
 
     it 'has the right state after an R move' do
       parse_sarahs_skewb_algorithm('R').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              GGGGG
              GGGGG
              GGGGG
@@ -520,7 +529,7 @@ describe Core::SkewbState do
 
     it "has the right state after an R' move" do
       parse_sarahs_skewb_algorithm("R'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              OOOOO
              OOOOO
              OOOOO
@@ -541,7 +550,7 @@ describe Core::SkewbState do
 
     it 'has the right state after an L move' do
       parse_sarahs_skewb_algorithm('L').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              BBBYY
              BBBBY
              BBBBB
@@ -562,7 +571,7 @@ describe Core::SkewbState do
 
     it "has the right state after an L' move" do
       parse_sarahs_skewb_algorithm("L'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              RRRYY
              RRRRY
              RRRRR
@@ -583,7 +592,7 @@ describe Core::SkewbState do
 
     it 'has the right state after an B move' do
       parse_sarahs_skewb_algorithm('B').apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              OOOOO
              OOOOO
              OOOOO
@@ -604,7 +613,7 @@ describe Core::SkewbState do
 
     it "has the right state after an B' move" do
       parse_sarahs_skewb_algorithm("B'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              BBBBB
              BBBBB
              BBBBB
@@ -625,7 +634,7 @@ describe Core::SkewbState do
 
     it "has the right state after an F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' B").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              OOOOO
              OOOOO
              OOOOO
@@ -646,7 +655,7 @@ describe Core::SkewbState do
 
     it "has the right state after an R' F' algorithm" do
       parse_sarahs_skewb_algorithm("R' F'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              OOYGG
              OYYYG
              YYYYY
@@ -667,7 +676,7 @@ describe Core::SkewbState do
 
     it "has the right state after an R' F' x algorithm" do
       parse_sarahs_skewb_algorithm("R' F' x").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              OOOOO
              OOOOO
              OOOOO
@@ -688,7 +697,7 @@ describe Core::SkewbState do
 
     it "has the right state after an R' F' y2 algorithm" do
       parse_sarahs_skewb_algorithm("R' F' y2").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              YYYYY
              YYYYY
              YYYYY
@@ -709,7 +718,7 @@ describe Core::SkewbState do
 
     it "has the right state after an R' F' z' algorithm" do
       parse_sarahs_skewb_algorithm("R' F' z'").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              RRRYY
              RRRRY
              RRRRR
@@ -730,7 +739,7 @@ describe Core::SkewbState do
 
     it "has the right state after an F' R' F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' R' F' B").apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              GGROO
              GRRRO
              RRRRR
@@ -754,7 +763,7 @@ describe Core::SkewbState do
       second_algorithm = parse_sarahs_skewb_algorithm("F' B")
       algorithm = first_algorithm.compiled_for_skewb + second_algorithm.compiled_for_skewb
       algorithm.apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              GGROO
              GRRRO
              RRRRR
@@ -775,7 +784,7 @@ describe Core::SkewbState do
 
     it "has the right state after a F' R' F' B algorithm mirrored along the F normal" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.mirror(Core::Face::F).apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              BBOYY
              BOOOY
              OOOOO
@@ -796,7 +805,7 @@ describe Core::SkewbState do
 
     it "has the right state after an inverted F' R' F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.inverse.apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              YYGGG
              YGGGG
              GGGGG
@@ -817,7 +826,7 @@ describe Core::SkewbState do
 
     it "has the right state after a x rotated F' R' F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.rotate_by(parse_move('x')).apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              OOWWW
              OWWWW
              WWWWW
@@ -838,7 +847,7 @@ describe Core::SkewbState do
 
     it "has the right state after a y2 rotated F' R' F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.rotate_by(parse_move('y2')).apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              YYOGG
              YOOOG
              OOOOO
@@ -859,7 +868,7 @@ describe Core::SkewbState do
 
     it "has the right state after a z' rotated F' R' F' B algorithm" do
       parse_sarahs_skewb_algorithm("F' R' F' B").compiled_for_skewb.rotate_by(parse_move("z'")).apply_to(skewb_state)
-      expect(skewb_state.to_s).to be == <<~SKEWB.chomp
+      expect(skewb_state).to eq_skewb_string(<<~SKEWB)
              GGBYY
              GBBBY
              BBBBB

@@ -52,6 +52,10 @@ module CubeTrainer
         @moves.join(' ')
       end
 
+      def inspect
+        "Algorithm(#{self})"
+      end
+
       def apply_to(cube_state)
         case cube_state
         when SkewbState
@@ -66,10 +70,10 @@ module CubeTrainer
       def inverse
         @inverse ||=
           begin
-                                alg = Algorithm.new(@moves.reverse.map(&:inverse))
-                                alg.inverse = self
-                                alg
-                              end
+            alg = Algorithm.new(@moves.reverse.map(&:inverse))
+            alg.inverse = self
+            alg
+          end
       end
 
       def +(other)

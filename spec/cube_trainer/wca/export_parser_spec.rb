@@ -22,7 +22,7 @@ describe WCA::ExportParser do
   let(:extractor) { WCA::StatsExtractor.new(parser) }
 
   it 'reads the scrambles of a WCA export' do
-    expect(parser.scrambles).to(be == [{
+    expect(parser.scrambles).to eq([{
       scrambleid: 657_918,
       competitionid: 'BerlinKubusProjekt2017',
       eventid: '222',
@@ -36,11 +36,11 @@ describe WCA::ExportParser do
 
   it 'reads the results of a WCA export' do
     # TODO: Improve this
-    expect(parser.results.first[:personid]).to be == '2016BROD01'
+    expect(parser.results.first[:personid]).to eq('2016BROD01')
   end
 
   it 'reads the countries of a WCA export' do
-    expect(parser.countries).to(be == { 'Germany' => { # rubocop:disable Style/StringHashKeys
+    expect(parser.countries).to eq({ 'Germany' => { # rubocop:disable Style/StringHashKeys
       id: 'Germany',
       name: 'Germany',
       continentid: '_Europe',
@@ -49,7 +49,7 @@ describe WCA::ExportParser do
   end
 
   it 'reads the continents of a WCA export' do
-    expect(parser.continents).to(be == { '_Europe' => { # rubocop:disable Style/StringHashKeys
+    expect(parser.continents).to eq({ '_Europe' => { # rubocop:disable Style/StringHashKeys
       id: '_Europe',
       name: 'Europe',
       recordname: 'ER',
@@ -68,10 +68,10 @@ describe WCA::ExportParser do
   end
 
   it 'finds nemeses if they are empty' do
-    expect(extractor.nemeses('2016BROD01')).to be == []
+    expect(extractor.nemeses('2016BROD01')).to be_empty
   end
 
   it 'finds nemeses if one exists' do
-    expect(extractor.nemeses('2017BROD01')).to be == ['2016BROD01']
+    expect(extractor.nemeses('2017BROD01')).to contain_exactly('2016BROD01')
   end
 end

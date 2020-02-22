@@ -39,25 +39,25 @@ describe CommutatorChecker do
   it 'fixes an algorithm that has to be inverted' do
     result = checker.check_alg(row_description, LetterPair.new(%w[i g]), parse_commutator("[U R U', L']"))
     expect(result.result).to be == :fix_found
-    expect(result.fix).to be == parse_commutator("[L', U R U']")
+    expect(result.fix).to eq_commutator("[L', U R U']")
   end
 
   it 'fixes an algorithm where one move in the insert has to be inverted' do
     result = checker.check_alg(row_description, LetterPair.new(%w[i g]), parse_commutator("[L', U' R U']"))
     expect(result.result).to be == :fix_found
-    expect(result.fix).to be == parse_commutator("[L', U R U']")
+    expect(result.fix).to eq_commutator("[L', U R U']")
   end
 
   it 'fixes an algorithm where the interchange has to be inverted' do
     result = checker.check_alg(row_description, LetterPair.new(%w[i g]), parse_commutator("[L, U R U']"))
     expect(result.result).to be == :fix_found
-    expect(result.fix).to be == parse_commutator("[L', U R U']")
+    expect(result.fix).to eq_commutator("[L', U R U']")
   end
 
   it 'fixes an algorithm where the setup has to be inverted' do
     result = checker.check_alg(row_description, LetterPair.new(%w[i e]), parse_commutator("[F : [L', U R U']]"))
     expect(result.result).to be == :fix_found
-    expect(result.fix).to be == parse_commutator("[F' : [L', U R U']]")
+    expect(result.fix).to eq_commutator("[F' : [L', U R U']]")
   end
 
   it 'says unfixable if no fix is in sight' do

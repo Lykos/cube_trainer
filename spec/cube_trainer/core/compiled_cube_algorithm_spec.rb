@@ -26,7 +26,7 @@ shared_examples 'compiled_cube_algorithm' do |cube_size|
       modified_cube_state = cube_state.dup
       a.compiled_for_cube(cube_size).apply_to(modified_cube_state)
       a.inverse.compiled_for_cube(cube_size).apply_to(modified_cube_state)
-      expect(modified_cube_state).to be == cube_state
+      expect(modified_cube_state).to eq_puzzle_state(cube_state)
     end
   end
 
@@ -36,7 +36,7 @@ shared_examples 'compiled_cube_algorithm' do |cube_size|
     end.check do |a, f|
       a.compiled_for_cube(cube_size).mirror(f).apply_to(compile_then_transform_cube_state)
       a.mirror(f).compiled_for_cube(cube_size).apply_to(transform_then_compile_cube_state)
-      expect(compile_then_transform_cube_state).to be == transform_then_compile_cube_state
+      expect(compile_then_transform_cube_state).to eq_puzzle_state(transform_then_compile_cube_state)
     end
   end
 
@@ -46,7 +46,7 @@ shared_examples 'compiled_cube_algorithm' do |cube_size|
     end.check do |a, r|
       a.compiled_for_cube(cube_size).rotate_by(r).apply_to(compile_then_transform_cube_state)
       a.rotate_by(r).compiled_for_cube(cube_size).apply_to(transform_then_compile_cube_state)
-      expect(compile_then_transform_cube_state).to be == transform_then_compile_cube_state
+      expect(compile_then_transform_cube_state).to eq_puzzle_state(transform_then_compile_cube_state)
     end
   end
 
@@ -56,7 +56,7 @@ shared_examples 'compiled_cube_algorithm' do |cube_size|
     end.check do |a|
       a.compiled_for_cube(cube_size).inverse.apply_to(compile_then_transform_cube_state)
       a.inverse.compiled_for_cube(cube_size).apply_to(transform_then_compile_cube_state)
-      expect(compile_then_transform_cube_state).to be == transform_then_compile_cube_state
+      expect(compile_then_transform_cube_state).to eq_puzzle_state(transform_then_compile_cube_state)
     end
   end
 
@@ -66,7 +66,7 @@ shared_examples 'compiled_cube_algorithm' do |cube_size|
     end.check do |a, b|
       (a.compiled_for_cube(cube_size) + b.compiled_for_cube(cube_size)).apply_to(compile_then_transform_cube_state)
       (a + b).compiled_for_cube(cube_size).apply_to(transform_then_compile_cube_state)
-      expect(compile_then_transform_cube_state).to be == transform_then_compile_cube_state
+      expect(compile_then_transform_cube_state).to eq_puzzle_state(transform_then_compile_cube_state)
     end
   end
 end

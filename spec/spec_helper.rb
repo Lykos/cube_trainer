@@ -5,6 +5,9 @@ require 'simplecov'
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = 'spec/examples.txt'
+  config.expect_with :rspec do |expectations|
+    expectations.syntax = :expect
+  end
 end
 
 # This must be before we require cube_trainer.
@@ -13,12 +16,8 @@ SimpleCov.start do
 end
 
 require 'cube_trainer'
-require 'cube_trainer/anki'
-require 'cube_trainer/core'
-require 'cube_trainer/utils'
 require 'generator_helpers'
+require 'matchers'
 require 'shrink_helpers'
 
-# rubocop:disable Style/MixinUsage
-include CubeTrainer
-# rubocop:enable Style/MixinUsage
+include CubeTrainer # rubocop:disable Style/MixinUsage
