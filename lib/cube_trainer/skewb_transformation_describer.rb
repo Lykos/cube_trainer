@@ -125,7 +125,7 @@ module CubeTrainer
     )
       raise ArgumentError unless %i[show_staying omit_staying].include?(staying_mode)
       raise TypeError unless color_scheme.is_a?(ColorScheme)
-      raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(ColorScheme)
+      raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
 
       check_types(interesting_faces, Core::Face)
       check_types(interesting_corners, Core::Corner)

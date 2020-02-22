@@ -2,7 +2,6 @@
 
 require 'csv'
 require 'cube_trainer/anki/alg_set_anki_generator'
-require 'cube_trainer/anki/alg_set_anki_generator_options'
 require 'cube_trainer/color_scheme'
 require 'tempfile'
 require 'ostruct'
@@ -21,7 +20,7 @@ class TrueChecker
   end
 end
 
-describe CubeTrainer::Anki::AlgSetAnkiGenerator do
+describe Anki::AlgSetAnkiGenerator do
   after(:each) { FileUtils.remove_entry(output_dir) }
   let(:output_dir) { Dir.mktmpdir('images') }
   let(:output) { Tempfile.new(['deck', '.tsv']) }
@@ -46,9 +45,7 @@ describe CubeTrainer::Anki::AlgSetAnkiGenerator do
     options
   end
   let(:generator) { described_class.new(options, fetcher: ConstantFetcher.new, checker: TrueChecker.new) }
-  let(:deck) do
-    CSV.read(output, col_sep: "\t")
-  end
+  let(:deck) { CSV.read(output, col_sep: "\t") }
 
   shared_examples 'an image storer' do |image_files|
     shared_examples 'a single image storer' do |image_file|
