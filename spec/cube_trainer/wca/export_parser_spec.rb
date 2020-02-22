@@ -42,23 +42,31 @@ describe WCA::ExportParser do
   end
 
   it 'reads the countries of a WCA export' do
-    expect(parser.countries).to eq({ 'Germany' => { # rubocop:disable Style/StringHashKeys
-      id: 'Germany',
-      name: 'Germany',
-      continentid: '_Europe',
-      iso2: 'DE'
-    } })
+    expect(parser.countries).to eq(
+      {
+        'Germany' => { # rubocop:disable Style/StringHashKeys
+          id: 'Germany',
+          name: 'Germany',
+          continentid: '_Europe',
+          iso2: 'DE'
+        }
+      }
+    )
   end
 
   it 'reads the continents of a WCA export' do
-    expect(parser.continents).to eq({ '_Europe' => { # rubocop:disable Style/StringHashKeys
-      id: '_Europe',
-      name: 'Europe',
-      recordname: 'ER',
-      latitude: 58_299_984,
-      longitude: 23_049_300,
-      zoom: 3
-    } })
+    expect(parser.continents).to eq(
+      {
+        '_Europe' => { # rubocop:disable Style/StringHashKeys
+          id: '_Europe',
+          name: 'Europe',
+          recordname: 'ER',
+          latitude: 58_299_984,
+          longitude: 23_049_300,
+          zoom: 3
+        }
+      }
+    )
   end
 
   it 'figures out whether someone nemesizes someone' do
