@@ -32,7 +32,8 @@ describe WCA::ExportParser do
         isextra: false,
         scramblenum: 1,
         scramble: parse_algorithm("U2 R' U2 R U' R U F' U' R U")
-      }])
+      }]
+    )
   end
 
   it 'reads the results of a WCA export' do
