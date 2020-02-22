@@ -5,7 +5,7 @@ require 'simplecov'
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = 'spec/examples.txt'
-  config.expect_with :rspec do |expectations|
+  config.expect_with(:rspec) do |expectations|
     expectations.syntax = :expect
   end
 end

@@ -18,9 +18,11 @@ describe SkewbLayerFinder do
     let(:layer_finder) { described_class.new([:white]) }
 
     it 'finds an existing layer' do
-      expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to eq({
-        white: [Core::Algorithm::EMPTY]
-      })
+      expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to eq(
+        {
+          white: [Core::Algorithm::EMPTY]
+        }
+      )
     end
 
     it 'finds the perfect score without moves' do
@@ -79,16 +81,20 @@ describe SkewbLayerFinder do
 
     it 'finds a one move layer' do
       parse_fixed_corner_skewb_algorithm('U').apply_to(skewb_state)
-      expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to eq({
-        white: [parse_fixed_corner_skewb_algorithm("U'")]
-      })
+      expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to eq(
+        {
+          white: [parse_fixed_corner_skewb_algorithm("U'")]
+        }
+      )
     end
 
     it 'finds a two move layer' do
       parse_fixed_corner_skewb_algorithm('U R').apply_to(skewb_state)
-      expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to eq({
-        white: [parse_fixed_corner_skewb_algorithm("R' U'")]
-      })
+      expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to eq(
+        {
+          white: [parse_fixed_corner_skewb_algorithm("R' U'")]
+        }
+      )
     end
 
     it 'does not find a layer that takes too many moves' do
@@ -98,9 +104,11 @@ describe SkewbLayerFinder do
 
     it 'finds multiple solutions if applicable' do
       parse_fixed_corner_skewb_algorithm("B L'").apply_to(skewb_state)
-      expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to eq({
-        white: [parse_fixed_corner_skewb_algorithm("L B'")]
-      })
+      expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to eq(
+        {
+          white: [parse_fixed_corner_skewb_algorithm("L B'")]
+        }
+      )
     end
   end
 
@@ -108,38 +116,44 @@ describe SkewbLayerFinder do
     let(:layer_finder) { described_class.new }
 
     it 'finds an existing layer' do
-      expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to eq({
-        yellow: [Core::Algorithm::EMPTY],
-        red: [Core::Algorithm::EMPTY],
-        green: [Core::Algorithm::EMPTY],
-        blue: [Core::Algorithm::EMPTY],
-        orange: [Core::Algorithm::EMPTY],
-        white: [Core::Algorithm::EMPTY]
-      })
+      expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to eq(
+        {
+          yellow: [Core::Algorithm::EMPTY],
+          red: [Core::Algorithm::EMPTY],
+          green: [Core::Algorithm::EMPTY],
+          blue: [Core::Algorithm::EMPTY],
+          orange: [Core::Algorithm::EMPTY],
+          white: [Core::Algorithm::EMPTY]
+        }
+      )
     end
 
     it 'finds a one move layer' do
       parse_fixed_corner_skewb_algorithm('U').apply_to(skewb_state)
-      expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to eq({
-        yellow: [parse_fixed_corner_skewb_algorithm("U'")],
-        red: [parse_fixed_corner_skewb_algorithm("U'")],
-        green: [parse_fixed_corner_skewb_algorithm("U'")],
-        blue: [parse_fixed_corner_skewb_algorithm("U'")],
-        orange: [parse_fixed_corner_skewb_algorithm("U'")],
-        white: [parse_fixed_corner_skewb_algorithm("U'")]
-      })
+      expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to eq(
+        {
+          yellow: [parse_fixed_corner_skewb_algorithm("U'")],
+          red: [parse_fixed_corner_skewb_algorithm("U'")],
+          green: [parse_fixed_corner_skewb_algorithm("U'")],
+          blue: [parse_fixed_corner_skewb_algorithm("U'")],
+          orange: [parse_fixed_corner_skewb_algorithm("U'")],
+          white: [parse_fixed_corner_skewb_algorithm("U'")]
+        }
+      )
     end
 
     it 'finds a two move layer' do
       parse_fixed_corner_skewb_algorithm('U R').apply_to(skewb_state)
-      expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to eq({
-        yellow: [parse_fixed_corner_skewb_algorithm("R' U'")],
-        red: [parse_fixed_corner_skewb_algorithm("R' U'")],
-        green: [parse_fixed_corner_skewb_algorithm("R' U'")],
-        blue: [parse_fixed_corner_skewb_algorithm("R' U'")],
-        orange: [parse_fixed_corner_skewb_algorithm("R' U'")],
-        white: [parse_fixed_corner_skewb_algorithm("R' U'")]
-      })
+      expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to eq(
+        {
+          yellow: [parse_fixed_corner_skewb_algorithm("R' U'")],
+          red: [parse_fixed_corner_skewb_algorithm("R' U'")],
+          green: [parse_fixed_corner_skewb_algorithm("R' U'")],
+          blue: [parse_fixed_corner_skewb_algorithm("R' U'")],
+          orange: [parse_fixed_corner_skewb_algorithm("R' U'")],
+          white: [parse_fixed_corner_skewb_algorithm("R' U'")]
+        }
+      )
     end
 
     it 'does not find a layer that takes too many moves' do
@@ -149,14 +163,16 @@ describe SkewbLayerFinder do
 
     it 'finds multiple solutions if applicable' do
       parse_fixed_corner_skewb_algorithm("B L'").apply_to(skewb_state)
-      expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to eq({
-        yellow: [parse_fixed_corner_skewb_algorithm("L B'")],
-        red: [parse_fixed_corner_skewb_algorithm("L B'")],
-        green: [parse_fixed_corner_skewb_algorithm("B' L"), parse_fixed_corner_skewb_algorithm("L B'")],
-        blue: [parse_fixed_corner_skewb_algorithm("L B'"), parse_fixed_corner_skewb_algorithm("U' L")],
-        orange: [parse_fixed_corner_skewb_algorithm("L B'")],
-        white: [parse_fixed_corner_skewb_algorithm("L B'")]
-      })
+      expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to eq(
+        {
+          yellow: [parse_fixed_corner_skewb_algorithm("L B'")],
+          red: [parse_fixed_corner_skewb_algorithm("L B'")],
+          green: [parse_fixed_corner_skewb_algorithm("B' L"), parse_fixed_corner_skewb_algorithm("L B'")],
+          blue: [parse_fixed_corner_skewb_algorithm("L B'"), parse_fixed_corner_skewb_algorithm("U' L")],
+          orange: [parse_fixed_corner_skewb_algorithm("L B'")],
+          white: [parse_fixed_corner_skewb_algorithm("L B'")]
+        }
+      )
     end
   end
 end

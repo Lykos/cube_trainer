@@ -14,14 +14,16 @@ describe CrossFinder do
   let(:cross_finder) { described_class.new }
 
   it 'finds an existing cross' do
-    expect(cross_finder.find_cross(cube_state, 0).extract_algorithms).to eq({
-      yellow: [Core::Algorithm::EMPTY],
-      red: [Core::Algorithm::EMPTY],
-      green: [Core::Algorithm::EMPTY],
-      blue: [Core::Algorithm::EMPTY],
-      orange: [Core::Algorithm::EMPTY],
-      white: [Core::Algorithm::EMPTY]
-    })
+    expect(cross_finder.find_cross(cube_state, 0).extract_algorithms).to eq(
+      {
+        yellow: [Core::Algorithm::EMPTY],
+        red: [Core::Algorithm::EMPTY],
+        green: [Core::Algorithm::EMPTY],
+        blue: [Core::Algorithm::EMPTY],
+        orange: [Core::Algorithm::EMPTY],
+        white: [Core::Algorithm::EMPTY]
+      }
+    )
   end
 
   it 'does not find a cross that takes too many moves' do
@@ -31,9 +33,11 @@ describe CrossFinder do
 
   it 'finds a one move cross' do
     parse_algorithm('U R').apply_to(cube_state)
-    expect(cross_finder.find_cross(cube_state, 1).extract_algorithms).to eq({
-      blue: [parse_algorithm("U'")],
-      white: [parse_algorithm("R'")]
-    })
+    expect(cross_finder.find_cross(cube_state, 1).extract_algorithms).to eq(
+      {
+        blue: [parse_algorithm("U'")],
+        white: [parse_algorithm("R'")]
+      }
+    )
   end
 end
