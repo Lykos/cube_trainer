@@ -21,11 +21,11 @@ BASE_DECK = [
 
 def delete_columns(deck, columns)
   deck.map! do |row|
-    row.reject.with_index { |e, i| columns.include?(i) }
+    row.reject.with_index { |_e, i| columns.include?(i) }
   end
 end
 
-RSpec::Matchers.define(:be_modified_deck) do |column, expected_elements, wildcard_columns=[]|
+RSpec::Matchers.define(:be_modified_deck) do |column, expected_elements, wildcard_columns = []|
   raise ArgumentError unless BASE_DECK.length == expected_elements.length
   raise ArgumentError if wildcard_columns.include?(column)
 
@@ -109,10 +109,9 @@ describe Anki::SkewbLayerAnkiGenerator do
         options
       end
 
-
       it 'uses letters for layer corners' do
         generator.run
-    
+
         expect(deck).to be_modified_deck(
           0, [
             'case description',
