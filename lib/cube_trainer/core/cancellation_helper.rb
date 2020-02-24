@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/move'
+require 'cube_trainer/core/abstract_move'
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/cube_state'
 
@@ -49,7 +49,7 @@ module CubeTrainer
       end
 
       def self.push_with_cancellation(algorithm, move, cube_size)
-        raise TypeError unless move.is_a?(Move)
+        raise TypeError unless move.is_a?(AbstractMove)
         return Algorithm.move(move) if algorithm.empty?
 
         cancel_variants =

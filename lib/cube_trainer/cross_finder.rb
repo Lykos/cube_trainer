@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/coordinate'
-require 'cube_trainer/core/move'
+require 'cube_trainer/core/cube_move'
 require 'cube_trainer/layer_subset_finder'
 
 module CubeTrainer
@@ -22,7 +23,7 @@ module CubeTrainer
     def cross_adjustments(face)
       (@cross_adjustments ||= {})[face] ||=
         Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
-          Core::Algorithm.move(Core::FatMove.new(face, d, 1))
+          Core::Algorithm.move(Core::FatMove.new(face, d))
         end
     end
 

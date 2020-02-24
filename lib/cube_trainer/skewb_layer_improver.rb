@@ -2,7 +2,6 @@
 
 require 'cube_trainer/core/coordinate'
 require 'cube_trainer/core/cube_print_helper'
-require 'cube_trainer/core/move'
 require 'cube_trainer/core/skewb_state'
 
 module CubeTrainer

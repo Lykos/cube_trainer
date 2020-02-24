@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/move'
+require 'cube_trainer/core/abstract_move'
 require 'cube_trainer/core/reversible_applyable'
 require 'cube_trainer/core/cancellation_helper'
 require 'cube_trainer/core/cube_state'
@@ -16,7 +16,7 @@ module CubeTrainer
 
       def initialize(moves)
         moves.each do |m|
-          raise TypeError, "#{m.inspect} is not a suitable move." unless m.is_a?(Move)
+          raise TypeError, "#{m.inspect} is not a suitable move." unless m.is_a?(AbstractMove)
         end
         @moves = moves
       end
@@ -94,7 +94,7 @@ module CubeTrainer
       # Note that the cube size is important to know which fat moves cancel
       def cancellations(other, cube_size, metric = :htm)
         CubeState.check_cube_size(cube_size)
-        Move.check_move_metric(metric)
+        AbstractMove.check_move_metric(metric)
         cancelled = cancelled(cube_size)
         other_cancelled = other.cancelled(cube_size)
         together_cancelled = (self + other).cancelled(cube_size)
@@ -126,7 +126,7 @@ module CubeTrainer
       def move_count(cube_size, metric = :htm)
         raise TypeError unless cube_size.is_a?(Integer)
 
-        Move.check_move_metric(metric)
+        AbstractMove.check_move_metric(metric)
         return 0 if empty?
 
         @moves.map { |m| m.move_count(cube_size, metric) }.reduce(:+)

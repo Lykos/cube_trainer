@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/direction'
+require 'cube_trainer/core/abstract_direction'
 
 module CubeTrainer
   module Core

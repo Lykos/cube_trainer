@@ -2,7 +2,6 @@
 
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/core/algorithm'
-require 'cube_trainer/core/move'
 require 'cube_trainer/core/compiled_skewb_algorithm'
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/cube_print_helper'

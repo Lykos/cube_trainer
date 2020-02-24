@@ -2,10 +2,9 @@
 
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/core/algorithm_transformation'
-require 'cube_trainer/core/move'
-require 'cube_trainer/core/parser'
 require 'cube_trainer/core/cube'
-require 'cube_trainer/core/cube_print_helper'
+require 'cube_trainer/core/parser'
+require 'cube_trainer/core/skewb_move'
 require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/skewb_layer_fingerprinter'
 require 'set'
@@ -13,8 +12,6 @@ require 'set'
 module CubeTrainer
   # Searches all possible Skewb layers.
   class SkewbLayerSearcher
-    include Core::CubePrintHelper
-
     EXAMPLE_LAYER_FACE_SYMBOL = :D
     EXAMPLE_LAYER_FACE = Core::Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
     ALGORITHM_TRANSFORMATIONS =
@@ -23,7 +20,7 @@ module CubeTrainer
     # Represents a possible Skewb layer with a solution.
     class SkewbLayerSolution
       def initialize(move, sub_solution)
-        raise ArgumentError unless move.nil? || move.is_a?(Core::Move)
+        raise ArgumentError unless move.nil? || move.is_a?(Core::SkewbMove)
         raise ArgumentError unless sub_solution.nil? || sub_solution.is_a?(SkewbLayerSolution)
         raise ArgumentError unless move.nil? == sub_solution.nil?
 

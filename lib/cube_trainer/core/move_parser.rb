@@ -2,7 +2,9 @@
 
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/cube_constants'
-require 'cube_trainer/core/move'
+require 'cube_trainer/core/cube_move'
+require 'cube_trainer/core/rotation'
+require 'cube_trainer/core/skewb_move'
 
 module CubeTrainer
   module Core
@@ -73,7 +75,7 @@ module CubeTrainer
     class CubeMoveParser < AbstractMoveParser
       REGEXP =
         begin
-                        axes_part = "(?<axis_name>[#{Move::AXES.join}])"
+                        axes_part = "(?<axis_name>[#{AbstractMove::AXES.join}])"
                         face_names = CubeConstants::FACE_NAMES.join
                         fat_move_part =
                           "(?<width>\\d*)(?<fat_face_name>[#{face_names}])w"
@@ -83,7 +85,8 @@ module CubeTrainer
                           "(?<maybe_fat_face_maybe_slice_name>[#{downcased_face_names}])"
                         slice_move_part =
                           "(?<slice_index>\\d+)(?<slice_name>[#{downcased_face_names}])"
-                        mslice_move_part = "(?<mslice_name>[#{Move::SLICE_FACES.keys.join}])"
+                        mslice_move_part =
+                          "(?<mslice_name>[#{AbstractMove::SLICE_FACES.keys.join}])"
                         move_part = "(?:#{axes_part}|" \
                                     "#{fat_move_part}|" \
                                     "#{normal_move_part}|" \
@@ -126,11 +129,11 @@ module CubeTrainer
       end
 
       def parse_axis_face(axis_face_string)
-        Face::ELEMENTS[Move::AXES.index(axis_face_string)]
+        Face::ELEMENTS[AbstractMove::AXES.index(axis_face_string)]
       end
 
       def parse_mslice_face(mslice_name)
-        Move::SLICE_FACES[mslice_name]
+        AbstractMove::SLICE_FACES[mslice_name]
       end
 
       def parse_width(width_string)
@@ -179,7 +182,7 @@ module CubeTrainer
             rotation_direction_names =
               AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
             rotation_direction_names.sort_by! { |e| -e.length }
-            rotation_part = "(?:(?<axis_name>[#{Move::AXES.join}])" \
+            rotation_part = "(?:(?<axis_name>[#{AbstractMove::AXES.join}])" \
                             "(?<cube_direction>#{rotation_direction_names.join('|')}))"
             Regexp.new("#{move_part}|#{rotation_part}")
           end

@@ -2,7 +2,6 @@
 
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/core/skewb_state'
-require 'cube_trainer/core/move'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/core/cube_print_helper'
 require 'rantly'

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/direction'
-require 'cube_trainer/core/move'
+require 'cube_trainer/core/cube_direction'
+require 'cube_trainer/core/rotation'
 
 module CubeTrainer
   module Core

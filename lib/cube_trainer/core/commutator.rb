@@ -3,7 +3,6 @@
 require 'strscan'
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/cube'
-require 'cube_trainer/core/move'
 
 module CubeTrainer
   module Core

@@ -31,8 +31,7 @@ module CubeTrainer
         case results.length
         when 0 then nil
         when 1 then only(only(results))
-        else
-          raise 'Got unexpected results from database.'
+        else raise 'Got unexpected results from database.'
         end
       end
 

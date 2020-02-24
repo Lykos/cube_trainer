@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/coordinate'
 require 'cube_trainer/core/skewb_state'
-require 'cube_trainer/core/move'
+require 'cube_trainer/core/skewb_move'
 require 'cube_trainer/layer_subset_finder'
 require 'cube_trainer/skewb_layer_helper'
 

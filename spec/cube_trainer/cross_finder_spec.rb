@@ -2,7 +2,6 @@
 
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/core/algorithm'
-require 'cube_trainer/core/move'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/cross_finder'
 
