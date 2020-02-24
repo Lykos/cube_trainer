@@ -49,7 +49,7 @@ module CubeTrainer
           SkewbDirection::BACKWARD
         else
           raise ArgumentError
-p        end
+        end
       end
 
       def parse_part_key(name)
