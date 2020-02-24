@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/core/parser'
-require 'cube_trainer/core/move_parser'
+require 'cube_trainer/core/cube_move_parser'
+require 'cube_trainer/core/skewb_move_parser'
 
 RSpec::Matchers.define(:eq_cube_coordinate) do |expected_face,
                                                 expected_cube_size,

@@ -2,7 +2,8 @@
 
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/commutator'
-require 'cube_trainer/core/move_parser'
+require 'cube_trainer/core/cube_move_parser'
+require 'cube_trainer/core/skewb_move_parser'
 require 'cube_trainer/cube_trainer_error'
 
 module CubeTrainer
