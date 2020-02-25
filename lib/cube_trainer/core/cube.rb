@@ -143,6 +143,10 @@ module CubeTrainer
       def solved_coordinate(cube_size, incarnation_index = 0)
         Coordinate.solved_position(self, cube_size, incarnation_index)
       end
+
+      def faces
+        @faces ||= @face_symbols.map { |f| Face.for_face_symbol(f) }
+      end
     end
 
     # This is an unmoveable center piece, it's mostly used as a helper class for other pieces.
@@ -504,6 +508,7 @@ module CubeTrainer
       end
 
       ELEMENTS = generate_parts
+
       # Rotate such that neither the current face symbol nor the given face symbol are at the
       # position of the letter.
       def rotate_other_face_symbol_up(face_symbol)
@@ -516,6 +521,10 @@ module CubeTrainer
         end
 
         rotate_by(3 - index)
+      end
+
+      def diagonal_opposite
+        @diagonal_opposite ||= Corner.for_face_symbols(face_symbols.map { |f| opposite_face_symbol(f) })
       end
 
       def rotate_other_face_up(face)

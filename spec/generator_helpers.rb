@@ -24,7 +24,7 @@ def rotation
 end
 
 def simple_move
-  Core::FatMove.new(face, non_zero_cube_direction, 1)
+  Core::FatMove.new(face, non_zero_cube_direction)
 end
 
 def maybe_fat_mslice_maybe_inner_mslice_move

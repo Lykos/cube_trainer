@@ -61,7 +61,9 @@ module CubeTrainer
           # cancellations.
           # We use HTM as a second priority to make sure something like RR still gets merged into
           # R2.
-          [alg.move_count(cube_size, :qtm), alg.move_count(cube_size, :htm)]
+          # We use the length as tertiary priority to make sure rotations get cancelled even if they
+          # don't change the move count.
+          [alg.move_count(cube_size, :qtm), alg.move_count(cube_size, :htm), alg.length]
         end
       end
     end

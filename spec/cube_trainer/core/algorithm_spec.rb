@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/color_scheme'
+require 'cube_trainer/core/abstract_move'
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/parser'
+require 'rantly'
+require 'rantly/rspec_extensions'
+require 'rantly/shrinks'
 
 RSpec::Matchers.define(:cancel_moves) do |cube_size, metric, expected|
   match do |actual|
@@ -21,6 +26,7 @@ describe Core::Algorithm do
   include Core
 
   let(:cube_size) { 3 }
+  let(:color_scheme) { ColorScheme::WCA }
 
   it 'inverts algorithms correctly' do
     expect(parse_algorithm('R U').inverse).to eq_cube_algorithm("U' R'")
@@ -283,6 +289,50 @@ describe Core::Algorithm do
     expect([parse_algorithm('x'), parse_algorithm('y')]).to cancel_moves(3, :htm, 0)
     expect([parse_algorithm('x'), parse_algorithm('z')]).to cancel_moves(3, :htm, 0)
   end
+
+  it 'cancels rotations correctly' do
+    expect(parse_algorithm('x x').cancelled(3)).to eq_cube_algorithm('x2')
+    expect(parse_algorithm('x2 y2').cancelled(3)).to eq_cube_algorithm('z2')
+    expect(parse_algorithm('x y x').cancelled(3)).to eq_cube_algorithm('x2 y')
+    expect(parse_algorithm("x x'").cancelled(3)).to eq_cube_algorithm('')
+    expect(parse_algorithm('x y').cancelled(3)).to eq_cube_algorithm('x y')
+    expect(parse_algorithm('x z').cancelled(3)).to eq_cube_algorithm('x z')
+  end
+
+  shared_examples 'correct cancellation algorithm' do |cube_size|
+    it "doesn't change meaning after cancellation" do
+      property_of do
+        Rantly { cube_algorithm(cube_size) }
+      end.check do |alg|
+        expect(alg.cancelled(cube_size)).to equivalent_cube_algorithm(alg, cube_size, color_scheme)
+      end
+    end
+
+    it "doesn't increase in length after cancellation" do
+      property_of do
+        Rantly { cube_algorithm(cube_size) }
+      end.check do |alg|
+        Core::AbstractMove::MOVE_METRICS.each do |m|
+          expect(alg.cancelled(cube_size).move_count(cube_size, m)).to be <= alg.move_count(cube_size, m)
+        end
+      end
+    end
+
+    it "cancellations don't exceed the sum of move counts" do
+      property_of do
+        Rantly { [cube_algorithm(cube_size), cube_algorithm(cube_size)] }
+      end.check do |left, right|
+        Core::AbstractMove::MOVE_METRICS.each do |m|
+          move_count_sum = left.move_count(cube_size, m) + right.move_count(cube_size, m)
+          expect(left.cancellations(right, cube_size, m)).to be <= move_count_sum
+        end
+      end
+    end
+  end
+
+  it_behaves_like 'correct cancellation algorithm', 2
+  it_behaves_like 'correct cancellation algorithm', 3
+  it_behaves_like 'correct cancellation algorithm', 4
 
   it 'mirrors algorithms correctly' do
     expect(parse_algorithm("M' D D2 F2 D2 F2").mirror(Core::Face::D)).to eq_cube_algorithm("M U' U2 F2 U2 F2")

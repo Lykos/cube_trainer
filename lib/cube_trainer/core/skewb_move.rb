@@ -13,7 +13,7 @@ module CubeTrainer
         raise TypeError unless axis_corner.is_a?(Corner)
         raise TypeError unless direction.is_a?(SkewbDirection)
 
-        @axis_corner = axis_corner
+        @axis_corner = axis_corner.rotate_face_up(axis_corner.faces.min_by { |f| f.piece_index })
         @direction = direction
       end
 
@@ -55,36 +55,6 @@ module CubeTrainer
           Corner.between_faces(replace_once(faces, replaced_face, replaced_face.opposite))
         self.class.new(new_corner, @direction.inverse)
       end
-    end
-
-    # TODO: Get rid of this legacy class
-    class FixedCornerSkewbMove
-      # rubocop:disable Style/StringHashKeys
-      MOVED_CORNERS = {
-        'U' => Corner.for_face_symbols(%i[U L B]),
-        'R' => Corner.for_face_symbols(%i[D R B]),
-        'L' => Corner.for_face_symbols(%i[D F L]),
-        'B' => Corner.for_face_symbols(%i[D B L])
-      }.freeze
-      # rubocop:enable Style/StringHashKeys
-      ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map do |m, d|
-        SkewbMove.new(m, d)
-      end.freeze
-    end
-
-    # TODO: Get rid of this legacy class
-    class SarahsSkewbMove
-      # rubocop:disable Style/StringHashKeys
-      MOVED_CORNERS = {
-        'F' => Corner.for_face_symbols(%i[U R F]),
-        'R' => Corner.for_face_symbols(%i[U B R]),
-        'B' => Corner.for_face_symbols(%i[U L B]),
-        'L' => Corner.for_face_symbols(%i[U F L])
-      }.freeze
-      # rubocop:enable Style/StringHashKeys
-      ALL = MOVED_CORNERS.values.product(SkewbDirection::NON_ZERO_DIRECTIONS).map do |m, d|
-        SkewbMove.new(m, d)
-      end.freeze
     end
   end
 end

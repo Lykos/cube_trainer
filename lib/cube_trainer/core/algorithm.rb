@@ -84,7 +84,7 @@ module CubeTrainer
         [length, @moves] <=> [other.length, other.moves]
       end
 
-      # Returns the number of moves that cancel if you concat the algorithm to the right of self.
+      # Returns the cancelled version of the given algorithm.
       # Note that the cube size is important to know which fat moves cancel
       def cancelled(cube_size)
         CancellationHelper.cancel(self, cube_size)

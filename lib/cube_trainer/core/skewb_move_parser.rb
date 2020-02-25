@@ -5,6 +5,7 @@ require 'cube_trainer/core/abstract_move_parser'
 require 'cube_trainer/core/move_type_creator'
 require 'cube_trainer/core/rotation'
 require 'cube_trainer/core/skewb_move'
+require 'cube_trainer/core/skewb_notation'
 
 module CubeTrainer
   module Core
@@ -15,19 +16,20 @@ module CubeTrainer
         MoveTypeCreator.new(%i[axis_corner skewb_direction], SkewbMove)
       ].freeze
 
-      def initialize(moved_corners)
-        @moved_corners = moved_corners
+      def initialize(notation)
+        raise TypeError unless notation.is_a?(SkewbNotation)
+        @notation = notation
       end
 
-      FIXED_CORNER_INSTANCE = SkewbMoveParser.new(FixedCornerSkewbMove::MOVED_CORNERS)
-      SARAHS_INSTANCE = SkewbMoveParser.new(SarahsSkewbMove::MOVED_CORNERS)
+      FIXED_CORNER_INSTANCE = SkewbMoveParser.new(SkewbNotation::FIXED_CORNER)
+      SARAHS_INSTANCE = SkewbMoveParser.new(SkewbNotation::SARAH)
 
       def regexp
         @regexp ||=
           begin
             skewb_direction_names =
               AbstractDirection::POSSIBLE_SKEWB_DIRECTION_NAMES.flatten
-            move_part = "(?:(?<skewb_move>[#{@moved_corners.keys.join}])" \
+            move_part = "(?:(?<skewb_move>[#{@notation.move_strings.join}])" \
                         "(?<skewb_direction>[#{skewb_direction_names.join}]?))"
             rotation_direction_names =
               AbstractDirection::POSSIBLE_DIRECTION_NAMES.flatten
@@ -60,7 +62,7 @@ module CubeTrainer
         case name
         when 'axis_name' then CubeMoveParser::INSTANCE.parse_axis_face(value)
         when 'cube_direction' then CubeMoveParser::INSTANCE.parse_direction(value)
-        when 'skewb_move' then @moved_corners[value]
+        when 'skewb_move' then @notation.corner(value)
         when 'skewb_direction' then parse_skewb_direction(value)
         else raise
         end

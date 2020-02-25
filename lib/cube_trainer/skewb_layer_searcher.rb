@@ -5,6 +5,7 @@ require 'cube_trainer/core/algorithm_transformation'
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/core/skewb_move'
+require 'cube_trainer/core/skewb_notation'
 require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/skewb_layer_fingerprinter'
 require 'set'
@@ -20,7 +21,7 @@ module CubeTrainer
     # Represents a possible Skewb layer with a solution.
     class SkewbLayerSolution
       def initialize(move, sub_solution)
-        raise ArgumentError unless move.nil? || move.is_a?(Core::SkewbMove)
+        raise TypeError unless move.nil? || move.is_a?(Core::SkewbMove)
         raise ArgumentError unless sub_solution.nil? || sub_solution.is_a?(SkewbLayerSolution)
         raise ArgumentError unless move.nil? == sub_solution.nil?
 
@@ -115,7 +116,7 @@ module CubeTrainer
     attr_reader :good_layer_solutions
 
     def derived_layer_solutions(layer_solution)
-      Core::SarahsSkewbMove::ALL.reverse.collect_concat do |m|
+      Core::SkewbNotation::SARAH.all_moves.reverse.collect_concat do |m|
         # Ignore possible moves along the same axis as the last move.
         if layer_solution.move && layer_solution.move.axis_corner == m.axis_corner
           []

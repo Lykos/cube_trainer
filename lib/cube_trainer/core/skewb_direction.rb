@@ -9,6 +9,7 @@ module CubeTrainer
       NUM_DIRECTIONS = 3
       NON_ZERO_DIRECTIONS = (1...NUM_DIRECTIONS).map { |d| new(d) }.freeze
       ALL_DIRECTIONS = Array.new(NUM_DIRECTIONS) { |d| new(d) }.freeze
+      ZERO = new(0)
       FORWARD = new(1)
       BACKWARD = new(2)
 

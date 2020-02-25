@@ -31,6 +31,28 @@ RSpec::Matchers.define(:eq_move) do |expected|
   end
 end
 
+RSpec::Matchers.define(:equivalent_cube_algorithm) do |expected, cube_size, color_scheme|
+  include Core
+
+  match do |actual|
+    expected_cube_state = color_scheme.solved_cube_state(cube_size)
+    expected.apply_to(expected_cube_state)
+    actual_cube_state = color_scheme.solved_cube_state(cube_size)
+    actual.apply_to(actual_cube_state)
+    
+    actual_cube_state == expected_cube_state
+  end
+  failure_message do |actual|
+    expected_cube_state = color_scheme.solved_cube_state(cube_size)
+    expected.apply_to(expected_cube_state)
+    actual_cube_state = color_scheme.solved_cube_state(cube_size)
+    actual.apply_to(actual_cube_state)
+
+    "expected that #{actual} would have the same effect on the cube as #{expected}.\n" \
+    "Got:\n#{actual_cube_state.colored_to_s}\ninstead of:\n#{expected_cube_state.colored_to_s}"
+  end
+end
+
 RSpec::Matchers.define(:eq_cube_algorithm) do |expected|
   include Core
 

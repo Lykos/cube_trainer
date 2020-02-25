@@ -3,7 +3,7 @@
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/coordinate'
 require 'cube_trainer/core/skewb_state'
-require 'cube_trainer/core/skewb_move'
+require 'cube_trainer/core/skewb_notation'
 require 'cube_trainer/layer_subset_finder'
 require 'cube_trainer/skewb_layer_helper'
 
@@ -31,7 +31,7 @@ module CubeTrainer
     end
 
     def generate_moves(_skewb_state)
-      Core::FixedCornerSkewbMove::ALL.map { |m| Core::Algorithm.move(m) }
+      Core::SkewbNotation::FIXED_CORNER.all_moves.map { |m| Core::Algorithm.move(m) }
     end
   end
 end

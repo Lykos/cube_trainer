@@ -3,6 +3,7 @@
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/axis_face_and_direction_move'
 require 'cube_trainer/core/cube'
+require 'cube_trainer/core/cube_direction'
 require 'cube_trainer/core/cube_move'
 require 'cube_trainer/core/puzzle'
 
@@ -32,10 +33,15 @@ module CubeTrainer
       end
 
       def prepend_rotation(other, _cube_size)
-        return unless same_axis?(other)
-
-        other_direction = translated_direction(other.axis_face)
-        Algorithm.move(Rotation.new(@axis_face, @direction + other_direction))
+        if same_axis?(other)
+          other_direction = translated_direction(other.axis_face)
+          Algorithm.move(Rotation.new(@axis_face, @direction + other_direction))
+        elsif @direction.double_move? && other.direction.double_move?
+          # Note that there are two solutions, but any works.
+          used_faces = [@axis_face, other.axis_face]
+          remaining_face = Face::ELEMENTS.find { |f| !used_faces.include?(f) }
+          Algorithm.move(Rotation.new(remaining_face, CubeDirection::DOUBLE))
+        end
       end
 
       def prepend_fat_m_slice_move(_other, _cube_size)
