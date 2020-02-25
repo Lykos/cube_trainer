@@ -68,18 +68,14 @@ module CubeTrainer
       def algorithm_to_string(algorithm)
         rotations = []
         algorithm.moves.map do |m|
-          puts rotations.join(' ')
-          puts m
           if m.is_a?(SkewbMove)
-            a = skewb_move_to_string(m, rotations)
-            puts a
-            a
+            skewb_move_to_string(m, rotations)
           elsif m.is_a?(Rotation)
-            rotation.to_s
+            m.to_s
           else
             raise ArgumentError, "Couldn't transform #{m} to #{@name} Skewb notation."
           end
-        end.join(' ')
+        end.join(' ') + rotations.map { |r| " #{r}" }.join
       end
 
       private
@@ -98,8 +94,8 @@ module CubeTrainer
         move_string, rotate = move_to_string_internal(move)
         if rotate && rotations
           direction = translated_direction(move.direction)
-          rotations.push(Rotation.new(move.axis_corner.faces[0], direction))
-          rotations.push(Rotation.new(move.axis_corner.faces[move.direction.inverse.value], direction))
+          rotations.push(Rotation.new(move.axis_corner.faces[move.direction.value], direction.inverse))
+          rotations.push(Rotation.new(move.axis_corner.faces[0], direction.inverse))
         end
         "#{move_string}#{move.direction.name}"
       end
