@@ -26,7 +26,7 @@ describe Core::Algorithm do
   include Core
 
   let(:cube_size) { 3 }
-  let(:color_scheme) { ColorScheme::WCA }
+  let(:color_scheme) { ColorScheme::BERNHARD }
 
   it 'inverts algorithms correctly' do
     expect(parse_algorithm('R U').inverse).to eq_cube_algorithm("U' R'")
