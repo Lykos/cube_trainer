@@ -95,7 +95,7 @@ module CubeTrainer
       def initialize(axis_face, direction, width = 1)
         super(axis_face, direction)
         raise TypeError unless width.is_a?(Integer)
-        raise ArgumentError, "Invalid width #{width} for fat move." unless width >= 1
+        raise ArgumentError, "Invalid width #{width} for fat move. #{caller}" unless width >= 1
 
         @width = width
       end
@@ -174,6 +174,10 @@ module CubeTrainer
           when @width - 1
             return unless translated_direction == @direction.inverse
 
+            if @width == 1
+              puts self, other, translated_slice_index, cube_size
+              raise
+            end
             with_width(@width - 1)
           else
             return

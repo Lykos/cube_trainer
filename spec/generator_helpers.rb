@@ -39,20 +39,29 @@ def fat_move(cube_size)
   Core::FatMove.new(face, non_zero_cube_direction, width(cube_size))
 end
 
+def slice_index(cube_size)
+  range(1, cube_size - 2)
+end
+
+def slice_move(cube_size)
+  Core::SliceMove.new(face, non_zero_cube_direction, slice_index(cube_size))
+end
+
 def maybe_fat_maybe_slice_move
   Core::MaybeFatMaybeSliceMove.new(face, non_zero_cube_direction)
 end
 
 def cube_move(cube_size)
-  return freq([10, :simple_move], [1, :rotation]) if cube_size <= 2
-
-  freq(
-    [10, :simple_move],
-    [1, :rotation],
+  args = [[10, :simple_move], [1, :rotation]]
+  return freq(*args) if cube_size <= 2
+  args += [
     [1, :maybe_fat_mslice_maybe_inner_mslice_move],
     [1, :fat_move, cube_size],
     [1, :maybe_fat_maybe_slice_move]
-  )
+  ]
+  return freq(*args) if cube_size <= 3
+  args.push([1, :slice_move, cube_size])
+  freq(*args)
 end
 
 def cube_algorithm(cube_size)
