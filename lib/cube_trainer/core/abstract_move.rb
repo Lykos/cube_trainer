@@ -69,7 +69,7 @@ module CubeTrainer
         if is_a?(Rotation)
           [other.rotate_by(self.inverse), self]
         elsif other.is_a?(Rotation)
-          [other, rotate_by(other.inverse)]
+          [other, rotate_by(other)]
         else
           swap_internal(other)
         end

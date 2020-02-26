@@ -34,11 +34,11 @@ module CubeTrainer
 
       def prepend_rotation(other, _cube_size)
         if same_axis?(other)
-          other_direction = translated_direction(other.axis_face)
-          Algorithm.move(Rotation.new(@axis_face, @direction + other_direction))
+          direction = translated_direction(other.axis_face)
+          Algorithm.move(Rotation.new(other.axis_face, direction + other.direction))
         elsif @direction.double_move? && other.direction.double_move?
-          # Note that there are two solutions, but any works.
           used_faces = [@axis_face, other.axis_face]
+          # Note that there are two solutions, but any works.
           remaining_face = Face::ELEMENTS.find { |f| !used_faces.include?(f) }
           Algorithm.move(Rotation.new(remaining_face, CubeDirection::DOUBLE))
         end

@@ -43,10 +43,10 @@ module CubeTrainer
         CubeState.check_cube_size(cube_size)
         alg = Algorithm::EMPTY
         algorithm.moves.each do |m|
-          puts "Pushing #{m}"
+          #puts "Pushing #{m}"
           alg = push_with_cancellation(alg, m, cube_size) 
-          puts "Chosen #{alg}"
-          puts
+          #puts "Chosen #{alg}"
+          #puts
         end
         alg
       end
@@ -55,12 +55,12 @@ module CubeTrainer
         raise TypeError unless move.is_a?(AbstractMove)
         return Algorithm.move(move) if algorithm.empty?
 
-        puts "push_with_cancellations"
+        #puts "push_with_cancellations"
         cancel_variants =
           cancel_variants(algorithm).map do |alg|
             Algorithm.new(alg.moves[0...-1]) + alg.moves[-1].join_with_cancellation(move, cube_size)
           end
-                                                                                                                  puts cancel_variants
+                                                                                                                  #puts cancel_variants
         cancel_variants.min_by do |alg|
           # QTM is the most sensitive metric, so we use that as the highest priority for
           # cancellations.

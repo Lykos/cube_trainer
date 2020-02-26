@@ -22,6 +22,16 @@ RSpec::Matchers.define(:cancel_moves) do |cube_size, metric, expected|
   end
 end
 
+RSpec::Matchers.define(:have_length_at_most) do |expected|
+  match do |actual|
+    actual.length <= expected
+  end
+
+  failure_message do |actual|
+    "expected that #{actual} would have length at most #{expected}"
+  end
+end
+
 describe Core::Algorithm do
   include Core
 
@@ -293,7 +303,7 @@ describe Core::Algorithm do
   it 'cancels rotations correctly' do
     expect(parse_algorithm('x x').cancelled(3)).to eq_cube_algorithm('x2')
     expect(parse_algorithm('x2 y2').cancelled(3)).to eq_cube_algorithm('z2')
-    expect(parse_algorithm('x y x').cancelled(3)).to eq_cube_algorithm('x2 y')
+    expect(parse_algorithm('x y x').cancelled(3)).to eq_cube_algorithm('z x2')
     expect(parse_algorithm("x x'").cancelled(3)).to eq_cube_algorithm('')
     expect(parse_algorithm('x y').cancelled(3)).to eq_cube_algorithm('x y')
     expect(parse_algorithm('x z').cancelled(3)).to eq_cube_algorithm('x z')
@@ -344,7 +354,7 @@ describe Core::Algorithm do
       end
     end
 
-   it "cancellations don't exceed the sum of move counts" do
+    it "cancellations don't exceed the sum of move counts" do
       property_of do
         Rantly { Tuple.new([cube_algorithm(cube_size), cube_algorithm(cube_size), move_metric]) }
       end.check do |tuple|
@@ -353,11 +363,21 @@ describe Core::Algorithm do
         expect(left.cancellations(right, cube_size, move_metric)).to be <= move_count_sum
       end
     end
+
+    it 'can always reduce rotations to three rotations' do
+      property_of do
+        Core::Algorithm.new(Array.new(size) { rotation })
+      end.check do |alg|
+        # Technically 3 is possible, but our implementation achieves 2.
+        # TODO Improve it to 2.
+        expect(alg.cancelled(cube_size)).to have_length_at_most(3)
+      end
+    end
   end
 
-#  it_behaves_like 'correct cancellation algorithm', 2
+  it_behaves_like 'correct cancellation algorithm', 2
   it_behaves_like 'correct cancellation algorithm', 3
-#  it_behaves_like 'correct cancellation algorithm', 4
+  it_behaves_like 'correct cancellation algorithm', 4
 
   it 'mirrors algorithms correctly' do
     expect(parse_algorithm("M' D D2 F2 D2 F2").mirror(Core::Face::D)).to eq_cube_algorithm("M U' U2 F2 U2 F2")
