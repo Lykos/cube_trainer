@@ -299,7 +299,34 @@ describe Core::Algorithm do
     expect(parse_algorithm('x z').cancelled(3)).to eq_cube_algorithm('x z')
   end
 
+  it "doesn't change meaning after cancellation" do
+    alg = parse_algorithm("F b D2 F")
+    expect(alg.cancelled(cube_size)).to equivalent_cube_algorithm(alg, cube_size, color_scheme)
+  end
+
+  it "doesn't change meaning after cancellation" do
+    alg = parse_algorithm("L2 U' R2 l D' x2")
+    expect(alg.cancelled(cube_size)).to equivalent_cube_algorithm(alg, cube_size, color_scheme)
+  end
+
+  it "cancellations don't exceed the sum of move counts" do
+    left = parse_algorithm("M' L2 y R' L R2")
+    right = parse_algorithm("U2 B x2 F' Dw2 Dw2")
+    move_count_sum = left.move_count(cube_size, :qstm) + right.move_count(cube_size, :qstm)
+    expect(left.cancellations(right, cube_size, :qstm)).to be <= move_count_sum
+  end
+
   shared_examples 'correct cancellation algorithm' do |cube_size|
+    it 'applies a rotation correctly to an algorithm' do
+      property_of do
+        Rantly { Tuple.new([cube_algorithm(cube_size), rotation]) }
+      end.check do |tuple|
+        alg, rotation = tuple.array
+        modified_alg = Core::Algorithm.move(rotation.inverse) + alg + Core::Algorithm.move(rotation)
+        expect(alg.rotate_by(rotation)).to equivalent_cube_algorithm(modified_alg, cube_size, color_scheme)
+      end
+    end
+
     it "doesn't change meaning after cancellation" do
       property_of do
         Rantly { cube_algorithm(cube_size) }
@@ -307,39 +334,47 @@ describe Core::Algorithm do
         expect(alg.cancelled(cube_size)).to equivalent_cube_algorithm(alg, cube_size, color_scheme)
       end
     end
-
+ 
     it "doesn't increase in length after cancellation" do
       property_of do
-        Rantly { cube_algorithm(cube_size) }
-      end.check do |alg|
-        Core::AbstractMove::MOVE_METRICS.each do |m|
-          expect(alg.cancelled(cube_size).move_count(cube_size, m)).to be <= alg.move_count(cube_size, m)
-        end
+        Rantly { Tuple.new([cube_algorithm(cube_size), move_metric]) }
+      end.check do |tuple|
+        alg, move_metric = tuple.array
+        expect(alg.cancelled(cube_size).move_count(cube_size, move_metric)).to be <= alg.move_count(cube_size, move_metric)
       end
     end
 
-    it "cancellations don't exceed the sum of move counts" do
+   it "cancellations don't exceed the sum of move counts" do
       property_of do
-        Rantly { [cube_algorithm(cube_size), cube_algorithm(cube_size)] }
-      end.check do |left, right|
-        Core::AbstractMove::MOVE_METRICS.each do |m|
-          move_count_sum = left.move_count(cube_size, m) + right.move_count(cube_size, m)
-          expect(left.cancellations(right, cube_size, m)).to be <= move_count_sum
-        end
+        Rantly { Tuple.new([cube_algorithm(cube_size), cube_algorithm(cube_size), move_metric]) }
+      end.check do |tuple|
+        left, right, move_metric = tuple.array
+        move_count_sum = left.move_count(cube_size, move_metric) + right.move_count(cube_size, move_metric)
+        expect(left.cancellations(right, cube_size, move_metric)).to be <= move_count_sum
       end
     end
   end
 
-  it_behaves_like 'correct cancellation algorithm', 2
+#  it_behaves_like 'correct cancellation algorithm', 2
   it_behaves_like 'correct cancellation algorithm', 3
-  it_behaves_like 'correct cancellation algorithm', 4
+#  it_behaves_like 'correct cancellation algorithm', 4
 
   it 'mirrors algorithms correctly' do
     expect(parse_algorithm("M' D D2 F2 D2 F2").mirror(Core::Face::D)).to eq_cube_algorithm("M U' U2 F2 U2 F2")
     expect(parse_algorithm('2u 2f').mirror(Core::Face::D)).to eq_cube_algorithm("2d' 2f'")
   end
 
-  it 'applies a rotation correctly to Sarahs skewb algorithm' do
+  it 'applies a rotation correctly to a skewb algorithm' do
+    property_of do
+      Rantly { Tuple.new([skewb_algorithm, rotation]) }
+    end.check do |tuple|
+      alg, rotation = tuple.array
+      modified_alg = Core::Algorithm.move(rotation.inverse) + alg + Core::Algorithm.move(rotation)
+      expect(alg.rotate_by(rotation)).to equivalent_skewb_algorithm(modified_alg, color_scheme)
+    end
+  end
+  
+  it 'applies a rotation correctly to a simple Sarahs skewb algorithm' do
     expect(parse_sarahs_skewb_algorithm("F R'").rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("L F'")
     expect(parse_sarahs_skewb_algorithm("L F'").rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("B L'")
     expect(parse_sarahs_skewb_algorithm("B L'").rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("R B'")

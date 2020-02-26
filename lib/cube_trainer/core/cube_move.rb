@@ -95,7 +95,7 @@ module CubeTrainer
       def initialize(axis_face, direction, width = 1)
         super(axis_face, direction)
         raise TypeError unless width.is_a?(Integer)
-        raise ArgumentError, "Invalid width #{width} for fat move. #{caller}" unless width >= 1
+        raise ArgumentError, "Invalid width #{width} for fat move." unless width >= 1
 
         @width = width
       end
@@ -174,10 +174,6 @@ module CubeTrainer
           when @width - 1
             return unless translated_direction == @direction.inverse
 
-            if @width == 1
-              puts self, other, translated_slice_index, cube_size
-              raise
-            end
             with_width(@width - 1)
           else
             return
@@ -201,7 +197,7 @@ module CubeTrainer
       def inner_slice_move
         raise ArgumentError unless @width >= 2
 
-        SliceMove.new(@axis_face, @direction, @width)
+        SliceMove.new(@axis_face, @direction, @width - 1)
       end
 
       # The fat M-slice move inside this fat move.
@@ -244,8 +240,8 @@ module CubeTrainer
       def initialize(axis_face, direction, slice_index)
         super(axis_face, direction)
         raise TypeError unless slice_index.is_a?(Integer)
-        raise ArgumentError unless slice_index >= 1
-
+        raise ArgumentError, "Invalid slice index #{slice_index} for slice move." unless slice_index >= 1
+        
         @slice_index = slice_index
       end
 
@@ -279,11 +275,11 @@ module CubeTrainer
       end
 
       def translated_slice_index(other_axis_face, cube_size)
+        raise ArgumentError, "Slice index #{@slice_index} of #{self} is invalid for cube size #{cube_size}." if @slice_index >= cube_size - 1
         case @axis_face
         when other_axis_face then @slice_index
         when other_axis_face.opposite then invert_slice_index(cube_size)
-        else
-          raise ArgumentError
+        else raise ArgumentError
         end
       end
 
@@ -325,6 +321,7 @@ module CubeTrainer
       protected
 
       def simplified(cube_size)
+        raise ArgumentError, "Slice index #{@slice_index} of #{self} is invalid for cube size #{cube_size}." if @slice_index >= cube_size - 1
         if @slice_index >= (cube_size + 1) / 2
           SliceMove.new(@axis_face.opposite, @direction.inverse, invert_slice_index(cube_size))
         else

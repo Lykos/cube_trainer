@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/core/abstract_move'
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/coordinate'
 
@@ -17,6 +18,10 @@ end
 
 def non_zero_skewb_direction
   choose(*Core::SkewbDirection::NON_ZERO_DIRECTIONS)
+end
+
+def move_metric
+  choose(*Core::AbstractMove::MOVE_METRICS)
 end
 
 def rotation
@@ -44,6 +49,7 @@ def slice_index(cube_size)
 end
 
 def slice_move(cube_size)
+  raise ArgumentError if cube_size <= 3
   Core::SliceMove.new(face, non_zero_cube_direction, slice_index(cube_size))
 end
 

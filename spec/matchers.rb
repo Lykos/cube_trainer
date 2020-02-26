@@ -64,6 +64,28 @@ RSpec::Matchers.define(:eq_cube_algorithm) do |expected|
   end
 end
 
+RSpec::Matchers.define(:equivalent_skewb_algorithm) do |expected, color_scheme|
+  include Core
+
+  match do |actual|
+    expected_skewb_state = color_scheme.solved_skewb_state
+    expected.apply_to(expected_skewb_state)
+    actual_skewb_state = color_scheme.solved_skewb_state
+    actual.apply_to(actual_skewb_state)
+    
+    actual_skewb_state == expected_skewb_state
+  end
+  failure_message do |actual|
+    expected_skewb_state = color_scheme.solved_skewb_state
+    expected.apply_to(expected_skewb_state)
+    actual_skewb_state = color_scheme.solved_skewb_state
+    actual.apply_to(actual_skewb_state)
+
+    "expected that #{actual} would have the same effect on the skewb as #{expected}.\n" \
+    "Got:\n#{actual_skewb_state.colored_to_s}\ninstead of:\n#{expected_skewb_state.colored_to_s}"
+  end
+end
+
 RSpec::Matchers.define(:eq_sarahs_skewb_algorithm) do |expected|
   include Core
 
