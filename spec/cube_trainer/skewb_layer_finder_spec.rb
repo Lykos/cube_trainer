@@ -162,12 +162,12 @@ describe SkewbLayerFinder do
 
     it 'finds multiple solutions if applicable' do
       parse_fixed_corner_skewb_algorithm("B L'").apply_to(skewb_state)
-      expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms).to eq(
+      expect(layer_finder.find_layer(skewb_state, 2).extract_algorithms.transform_values(&:sort)).to eq(
         {
           yellow: [parse_fixed_corner_skewb_algorithm("L B'")],
           red: [parse_fixed_corner_skewb_algorithm("L B'")],
-          green: [parse_fixed_corner_skewb_algorithm("B' L"), parse_fixed_corner_skewb_algorithm("L B'")],
-          blue: [parse_fixed_corner_skewb_algorithm("L B'"), parse_fixed_corner_skewb_algorithm("U' L")],
+          green: [parse_fixed_corner_skewb_algorithm("B' L"), parse_fixed_corner_skewb_algorithm("L B'")].sort,
+          blue: [parse_fixed_corner_skewb_algorithm("L B'"), parse_fixed_corner_skewb_algorithm("U' L")].sort,
           orange: [parse_fixed_corner_skewb_algorithm("L B'")],
           white: [parse_fixed_corner_skewb_algorithm("L B'")]
         }
