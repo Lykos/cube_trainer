@@ -74,6 +74,10 @@ def cube_algorithm(cube_size)
   Core::Algorithm.new(Array.new(size) { cube_move(cube_size) })
 end
 
+def rotations
+  Core::Algorithm.new(Array.new(size) { rotation })
+end
+
 def skewb_corner_move
   Core::SkewbMove.new(corner, non_zero_skewb_direction)
 end
