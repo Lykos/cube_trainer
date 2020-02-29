@@ -24,7 +24,8 @@ RSpec::Matchers.define(:eq_move) do |expected|
   include Core
 
   match do |actual|
-    actual == parse_move(expected)
+    expected = parse_move(expected) if expected.is_a?(String)
+    actual == expected
   end
   failure_message do |actual|
     "expected that #{actual} would equal move #{expected}"
@@ -35,6 +36,7 @@ RSpec::Matchers.define(:equivalent_cube_algorithm) do |expected, cube_size, colo
   include Core
 
   match do |actual|
+    expected = parse_algorithm(expected) if expected.is_a?(String)
     expected_cube_state = color_scheme.solved_cube_state(cube_size)
     expected.apply_to(expected_cube_state)
     actual_cube_state = color_scheme.solved_cube_state(cube_size)
@@ -43,6 +45,7 @@ RSpec::Matchers.define(:equivalent_cube_algorithm) do |expected, cube_size, colo
     actual_cube_state == expected_cube_state
   end
   failure_message do |actual|
+    expected = parse_algorithm(expected) if expected.is_a?(String)
     expected_cube_state = color_scheme.solved_cube_state(cube_size)
     expected.apply_to(expected_cube_state)
     actual_cube_state = color_scheme.solved_cube_state(cube_size)
@@ -57,7 +60,8 @@ RSpec::Matchers.define(:eq_cube_algorithm) do |expected|
   include Core
 
   match do |actual|
-    actual == parse_algorithm(expected)
+    expected = parse_algorithm(expected) if expected.is_a?(String)
+    actual == expected
   end
   failure_message do |actual|
     "expected that #{actual} would equal algorithm #{expected}"
@@ -90,7 +94,8 @@ RSpec::Matchers.define(:eq_sarahs_skewb_algorithm) do |expected|
   include Core
 
   match do |actual|
-    actual == parse_sarahs_skewb_algorithm(expected)
+    expected = parse_sarahs_skewb_algorithm(expected) if expected.is_a?(String)
+    actual == expected
   end
   failure_message do |actual|
     "expected that #{actual} would equal algorithm #{expected} (using sarah's notation)"
@@ -101,7 +106,8 @@ RSpec::Matchers.define(:eq_fixed_corner_skewb_algorithm) do |expected|
   include Core
 
   match do |actual|
-    actual == parse_fixed_corner_skewb_algorithm(expected)
+    expected = parse_fixed_corner_skewb_algorithm(expected) if expected.is_a?(String)
+    actual == expected
   end
   failure_message do |actual|
     "expected that #{actual} would equal algorithm #{expected} (using fixed corner notation)"
@@ -112,7 +118,8 @@ RSpec::Matchers.define(:eq_commutator) do |expected|
   include Core
 
   match do |actual|
-    actual == parse_commutator(expected)
+    expected = parse_commutator(expected) if expected.is_a?(String)
+    actual == expected
   end
   failure_message do |actual|
     "expected that #{actual} would equal commutator #{expected}"
