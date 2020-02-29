@@ -2,12 +2,15 @@
 
 require 'cube_trainer/core/abstract_move'
 require 'cube_trainer/core/algorithm'
+require 'cube_trainer/core/cube_constants'
 require 'cube_trainer/core/cube_state'
 
 module CubeTrainer
   module Core
     # Helper class to figure out information about the cancellation between two algs.
     module CancellationHelper
+      include CubeConstants
+
       def self.swap_to_end(algorithm, index)
         new_moves = algorithm.moves.dup
         index.upto(algorithm.length - 2) do |current_index|
@@ -43,24 +46,103 @@ module CubeTrainer
         CubeState.check_cube_size(cube_size)
         alg = Algorithm::EMPTY
         algorithm.moves.each do |m|
-          #puts "Pushing #{m}"
           alg = push_with_cancellation(alg, m, cube_size) 
-          #puts "Chosen #{alg}"
-          #puts
         end
         alg
+      end
+
+      def self.combine_transformations(left, right)
+        left.dup.transform_values { |e| right[e] }.freeze
+      end
+
+      def self.apply_transformation_to!(transformation, face_state)
+        face_state.map! { |f| transformation[f] }
+      end
+
+      TRIVIAL_CENTER_TRANSFORMATION = {U: :U, F: :F, R: :R, L: :L, B: :B, D: :D}.freeze
+
+      def self.create_directed_transformations(basic_transformation, invert)
+        twice = combine_transformations(basic_transformation, basic_transformation)
+        thrice = combine_transformations(twice, basic_transformation)
+        non_zero_transformations = [basic_transformation, twice, thrice]
+        [TRIVIAL_CENTER_TRANSFORMATION] + (invert ? non_zero_transformations.reverse : non_zero_transformations)
+      end
+
+      CENTER_TRANSFORMATIONS =
+        begin
+          x_transformation = {U: :B, F: :U, R: :R, L: :L, B: :D, D: :F}.freeze
+          y_transformation = {U: :U, F: :L, R: :F, L: :B, B: :R, D: :D}.freeze
+          z_transformation = {U: :R, F: :F, R: :D, L: :U, B: :B, D: :L}.freeze
+          {
+            U: create_directed_transformations(y_transformation, false),
+            F: create_directed_transformations(z_transformation, false),
+            R: create_directed_transformations(x_transformation, false),
+            L: create_directed_transformations(x_transformation, true),
+            B: create_directed_transformations(z_transformation, true),
+            D: create_directed_transformations(y_transformation, true),                              
+          }
+        end
+
+      def self.center_transformation(rotation)
+        CENTER_TRANSFORMATIONS[rotation.axis_face.face_symbol][rotation.direction.value]
+      end
+
+      def self.rotated_center_state(rotations, verbose = false)
+        rotations.reduce(FACE_SYMBOLS.dup) do |center_state, rotation|
+          apply_transformation_to!(center_transformation(rotation), center_state)
+        end
+      end
+
+      def self.rotation_sequences
+        @rotation_sequences ||=
+          begin
+            trivial_rotation_algs = [Algorithm::EMPTY]
+            single_rotation_algs = Rotation::NON_ZERO_ROTATIONS.map { |e| Algorithm.move(e) }
+            combined_rotation_algs =
+              Rotation::NON_ZERO_ROTATIONS.collect_concat do |left|
+                second_rotations = Rotation::NON_ZERO_ROTATIONS.reject do |e|
+                  e.direction.double_move? || e.same_axis?(left)
+                end
+                second_rotations.map { |right| Algorithm.new([left, right]) }
+              end
+            rotation_algs = trivial_rotation_algs + single_rotation_algs + combined_rotation_algs
+            rotation_algs.map do |alg|
+              [rotated_center_state(alg.moves), alg]
+            end.to_h.freeze
+            
+          end
+      end
+
+      def self.cancelled_rotations(rotations)
+        center_state = rotated_center_state(rotations, true)
+        rotation_sequences[center_state]
+      end
+
+      def self.num_tail_rotations(algorithm)
+        num = 0
+        algorithm.moves.reverse_each do |e|
+          break unless e.is_a?(Rotation)
+          num += 1
+        end
+        num
+      end
+
+      def self.alg_plus_cancelled_move(algorithm, move, cube_size)
+        if move.is_a?(Rotation) && (tail_rotations = num_tail_rotations(algorithm)) >= 2
+          Algorithm.new(algorithm.moves[0...-tail_rotations]) + cancelled_rotations(algorithm.moves[-tail_rotations..-1] + [move])
+        else
+          Algorithm.new(algorithm.moves[0...-1]) + algorithm.moves[-1].join_with_cancellation(move, cube_size)
+        end
       end
 
       def self.push_with_cancellation(algorithm, move, cube_size)
         raise TypeError unless move.is_a?(AbstractMove)
         return Algorithm.move(move) if algorithm.empty?
 
-        #puts "push_with_cancellations"
         cancel_variants =
           cancel_variants(algorithm).map do |alg|
-            Algorithm.new(alg.moves[0...-1]) + alg.moves[-1].join_with_cancellation(move, cube_size)
+            self.alg_plus_cancelled_move(alg, move, cube_size)
           end
-                                                                                                                  #puts cancel_variants
         cancel_variants.min_by do |alg|
           # QTM is the most sensitive metric, so we use that as the highest priority for
           # cancellations.

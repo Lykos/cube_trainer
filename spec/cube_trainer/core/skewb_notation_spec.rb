@@ -5,7 +5,6 @@ require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/core/skewb_move'
 require 'cube_trainer/core/skewb_notation'
-require 'cube_trainer/core/skewb_state'
 require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
@@ -14,8 +13,6 @@ describe Core::SkewbNotation do
   include Core
 
   let(:color_scheme) { ColorScheme::WCA }
-  let(:expected_skewb_state) { color_scheme.solved_skewb_state }
-  let(:actual_skewb_state) { color_scheme.solved_skewb_state }
 
   it 'keep a Sarahs Skewb algorithm as a Sarahs Skewb algorithm' do
     parsed_algorithm = parse_skewb_algorithm("L F B' y R L F B' x R B'", described_class::SARAH)
@@ -28,15 +25,19 @@ describe Core::SkewbNotation do
   end
 
   shared_examples 'notation' do |notation|
+    it 'stays empty if we serialize and then parse an empty algorithm' do
+      alg_string = described_class::FIXED_CORNER.algorithm_to_string(Core::Algorithm::EMPTY)
+      parsed_alg = parse_skewb_algorithm(alg_string, notation)
+      expect(parsed_alg).to equivalent_skewb_algorithm(Core::Algortihm::EMPTY, color_scheme)
+    end
+
     it 'stays the same if we serialize and then parse an algorithm' do
       property_of do
         Rantly { skewb_algorithm }
       end.check do |alg|
         alg_string = notation.algorithm_to_string(alg)
         parsed_alg = parse_skewb_algorithm(alg_string, notation)
-        alg.apply_to(expected_skewb_state)
-        parsed_alg.apply_to(actual_skewb_state)
-        expect(actual_skewb_state).to eq_puzzle_state(expected_skewb_state)
+        expect(parsed_alg).to equivalent_skewb_algorithm(alg, color_scheme)
       end
     end
 
@@ -46,15 +47,18 @@ describe Core::SkewbNotation do
       end.check do |move|
         move_string = notation.move_to_string(move)
         parsed_move = parse_skewb_move(move_string, notation)
-        Core::Algorithm.move(move).apply_to(expected_skewb_state)
-        Core::Algorithm.move(parsed_move).apply_to(actual_skewb_state)
-        expect(actual_skewb_state).to eq_puzzle_state(expected_skewb_state)
+        expect(Core::Algorithm.move(parsed_move)).to equivalent_skewb_algorithm(Core::Algorithm.move(move), color_scheme)
       end
     end
   end
 
-  it_behaves_like 'notation', described_class::FIXED_CORNER
-  it_behaves_like 'notation', described_class::SARAH
+  context 'when using fixed corner notation' do
+    it_behaves_like 'notation', described_class::FIXED_CORNER
+  end
+
+  context 'when using Sarahs notation' do
+    it_behaves_like 'notation', described_class::SARAH
+  end
 
   it 'transforms a Sarahs Skewb algorithm into a fixed corner Skewb algorithm' do
     parsed_algorithm = parse_skewb_algorithm("L F y B' R L F B' x R B'", described_class::SARAH)

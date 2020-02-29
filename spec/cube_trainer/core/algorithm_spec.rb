@@ -300,13 +300,26 @@ describe Core::Algorithm do
     expect([parse_algorithm('x'), parse_algorithm('z')]).to cancel_moves(3, :htm, 0)
   end
 
-  it 'cancels rotations correctly' do
+  it 'cancels simple rotations correctly' do
     expect(parse_algorithm('x x').cancelled(3)).to eq_cube_algorithm('x2')
+    expect(parse_algorithm("x' x'").cancelled(3)).to eq_cube_algorithm('x2')
     expect(parse_algorithm('x2 y2').cancelled(3)).to eq_cube_algorithm('z2')
-    expect(parse_algorithm('x y x').cancelled(3)).to eq_cube_algorithm('z x2')
     expect(parse_algorithm("x x'").cancelled(3)).to eq_cube_algorithm('')
     expect(parse_algorithm('x y').cancelled(3)).to eq_cube_algorithm('x y')
     expect(parse_algorithm('x z').cancelled(3)).to eq_cube_algorithm('x z')
+    expect(parse_algorithm('x y2').cancelled(3)).to eq_cube_algorithm('x y2')
+    expect(parse_algorithm('x2 y').cancelled(3)).to eq_cube_algorithm('x2 y')
+  end
+
+  it 'cancels ambiguous rotations correctly' do
+    cancelled = parse_algorithm('x y x').cancelled(3)
+    expect(cancelled.length).to eq(2)
+    expect(cancelled).to equivalent_cube_algorithm('z x2', cube_size, color_scheme)
+  end
+
+  it "doesn't change meaning after cancellation" do
+    alg = parse_algorithm("y' z' y' x' y2 y")
+    expect(alg.cancelled(cube_size)).to equivalent_cube_algorithm(alg, cube_size, color_scheme)
   end
 
   it "doesn't change meaning after cancellation" do
