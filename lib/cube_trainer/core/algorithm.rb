@@ -70,14 +70,14 @@ module CubeTrainer
       def inverse
         @inverse ||=
           begin
-            alg = Algorithm.new(@moves.reverse.map(&:inverse))
+            alg = self.class.new(@moves.reverse.map(&:inverse))
             alg.inverse = self
             alg
           end
       end
 
       def +(other)
-        Algorithm.new(@moves + other.moves)
+        self.class.new(@moves + other.moves)
       end
 
       def <=>(other)
@@ -110,7 +110,7 @@ module CubeTrainer
         raise TypeError unless rotation.is_a?(Rotation)
         return self if rotation.direction.zero?
 
-        Algorithm.new(@moves.map { |m| m.rotate_by(rotation) })
+        self.class.new(@moves.map { |m| m.rotate_by(rotation) })
       end
 
       # Mirrors the algorithm and uses the given face as the normal of the mirroring.
@@ -118,7 +118,7 @@ module CubeTrainer
       def mirror(normal_face)
         raise TypeError unless normal_face.is_a?(Face)
 
-        Algorithm.new(@moves.map { |m| m.mirror(normal_face) })
+        self.class.new(@moves.map { |m| m.mirror(normal_face) })
       end
 
       # Cube size is needed to decide whether 'u' is a slice move (like on bigger cubes) or a
@@ -136,7 +136,7 @@ module CubeTrainer
         raise TypeError unless other.is_a?(Integer)
         raise ArgumentError if other.negative?
 
-        Algorithm.new(@moves * other)
+        self.class.new(@moves * other)
       end
 
       def compiled_for_skewb
