@@ -31,7 +31,7 @@ module CubeTrainer
     end
 
     def generate_moves(_skewb_state)
-      Core::SkewbNotation::FIXED_CORNER.all_moves.map { |m| Core::Algorithm.move(m) }
+      Core::SkewbNotation.fixed_corner.non_zero_moves.map { |m| Core::Algorithm.move(m) }
     end
   end
 end

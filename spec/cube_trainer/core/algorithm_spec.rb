@@ -323,7 +323,7 @@ describe Core::Algorithm do
   end
 
   it "doesn't change meaning after cancellation" do
-    alg = parse_algorithm("F b D2 F")
+    alg = parse_algorithm('F b D2 F')
     expect(alg.cancelled(cube_size)).to equivalent_cube_algorithm(alg, cube_size, color_scheme)
   end
 
@@ -357,7 +357,7 @@ describe Core::Algorithm do
         expect(alg.cancelled(cube_size)).to equivalent_cube_algorithm(alg, cube_size, color_scheme)
       end
     end
- 
+
     it "doesn't change meaning after cancellation of rotations" do
       property_of do
         Rantly { rotations }
@@ -365,7 +365,7 @@ describe Core::Algorithm do
         expect(alg.cancelled(cube_size)).to equivalent_cube_algorithm(alg, cube_size, color_scheme)
       end
     end
- 
+
     it "doesn't increase in length after cancellation" do
       property_of do
         Rantly { Tuple.new([cube_algorithm(cube_size), move_metric]) }
@@ -414,7 +414,7 @@ describe Core::Algorithm do
       expect(alg.rotate_by(rotation)).to equivalent_skewb_algorithm(modified_alg, color_scheme)
     end
   end
-  
+
   it "doesn't change meaning after cancellation of rotations" do
     property_of do
       Rantly { rotations }
@@ -422,7 +422,7 @@ describe Core::Algorithm do
       expect(alg.cancelled(cube_size)).to equivalent_skewb_algorithm(alg, color_scheme)
     end
   end
- 
+
   it 'applies a rotation correctly to a simple Sarahs skewb algorithm' do
     expect(parse_sarahs_skewb_algorithm("F R'").rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("L F'")
     expect(parse_sarahs_skewb_algorithm("L F'").rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("B L'")

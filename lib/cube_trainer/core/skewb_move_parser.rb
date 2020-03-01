@@ -18,11 +18,13 @@ module CubeTrainer
 
       def initialize(notation)
         raise TypeError unless notation.is_a?(SkewbNotation)
+
         @notation = notation
       end
 
-      FIXED_CORNER_INSTANCE = SkewbMoveParser.new(SkewbNotation::FIXED_CORNER)
-      SARAHS_INSTANCE = SkewbMoveParser.new(SkewbNotation::SARAH)
+      FIXED_CORNER_INSTANCE = SkewbMoveParser.new(SkewbNotation.fixed_corner)
+      SARAH_INSTANCE = SkewbMoveParser.new(SkewbNotation.sarah)
+      RUBIKS_INSTANCE = SkewbMoveParser.new(SkewbNotation.rubiks)
 
       def regexp
         @regexp ||=

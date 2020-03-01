@@ -212,11 +212,11 @@ module CubeTrainer
     end
 
     def parse_sarahs_skewb_algorithm(alg_string)
-      Parser.new(alg_string, SkewbMoveParser::SARAHS_INSTANCE).parse_algorithm
+      Parser.new(alg_string, SkewbMoveParser::SARAH_INSTANCE).parse_algorithm
     end
 
     def parse_sarahs_skewb_move(move_string)
-      SkewbMoveParser::SARAHS_INSTANCE.parse_move(move_string)
+      SkewbMoveParser::SARAH_INSTANCE.parse_move(move_string)
     end
   end
 end

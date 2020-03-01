@@ -28,14 +28,14 @@ describe Core::Rotation do
     end
   end
 
-  it_behaves_like 'corner rotations', [:U, :F, :R], "x y"
-  it_behaves_like 'corner rotations', [:U, :R, :B], "z' y"
-  it_behaves_like 'corner rotations', [:U, :B, :L], "y z'"
-  it_behaves_like 'corner rotations', [:U, :L, :F], "y x'"
-  it_behaves_like 'corner rotations', [:D, :R, :F], "y' x"
-  it_behaves_like 'corner rotations', [:D, :B, :R], "y' z'"
-  it_behaves_like 'corner rotations', [:D, :L, :B], "z' y'"
-  it_behaves_like 'corner rotations', [:D, :F, :L], "y' z"
+  it_behaves_like 'corner rotations', %i[U F R], 'x y'
+  it_behaves_like 'corner rotations', %i[U R B], "z' y"
+  it_behaves_like 'corner rotations', %i[U B L], "y z'"
+  it_behaves_like 'corner rotations', %i[U L F], "y x'"
+  it_behaves_like 'corner rotations', %i[D R F], "y' x"
+  it_behaves_like 'corner rotations', %i[D B R], "y' z'"
+  it_behaves_like 'corner rotations', %i[D L B], "z' y'"
+  it_behaves_like 'corner rotations', %i[D F L], "y' z"
 
   it 'rotates correctly back and forth around skewb corners' do
     property_of do

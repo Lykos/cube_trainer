@@ -116,7 +116,7 @@ module CubeTrainer
     attr_reader :good_layer_solutions
 
     def derived_layer_solutions(layer_solution)
-      Core::SkewbNotation::SARAH.all_moves.reverse.collect_concat do |m|
+      Core::SkewbNotation.sarah.non_zero_moves.reverse.collect_concat do |m|
         # Ignore possible moves along the same axis as the last move.
         if layer_solution.move && layer_solution.move.axis_corner == m.axis_corner
           []

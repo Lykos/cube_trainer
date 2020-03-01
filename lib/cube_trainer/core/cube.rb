@@ -524,7 +524,8 @@ module CubeTrainer
       end
 
       def diagonal_opposite
-        @diagonal_opposite ||= Corner.for_face_symbols(face_symbols.map { |f| opposite_face_symbol(f) })
+        @diagonal_opposite ||=
+          Corner.for_face_symbols(face_symbols.map { |f| opposite_face_symbol(f) })
       end
 
       def rotate_other_face_up(face)

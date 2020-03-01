@@ -13,7 +13,7 @@ module CubeTrainer
         raise TypeError unless axis_corner.is_a?(Corner)
         raise TypeError unless direction.is_a?(SkewbDirection)
 
-        @axis_corner = axis_corner.rotate_face_up(axis_corner.faces.min_by { |f| f.piece_index })
+        @axis_corner = axis_corner.rotate_face_up(axis_corner.faces.min_by(&:piece_index))
         @direction = direction
       end
 

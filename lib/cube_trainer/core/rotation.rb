@@ -12,7 +12,8 @@ module CubeTrainer
     # A rotation of a Skewb or cube.
     class Rotation < AxisFaceAndDirectionMove
       ALL_ROTATIONS = Face::ELEMENTS.product(CubeDirection::ALL_DIRECTIONS).map { |f, d| new(f, d) }
-      NON_ZERO_ROTATIONS = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map { |f, d| new(f, d) }
+      NON_ZERO_ROTATIONS =
+        Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map { |f, d| new(f, d) }
 
       # Translates a Skewb direction into a cube direction.
       def self.translated_direction(direction)
@@ -67,7 +68,8 @@ module CubeTrainer
         elsif @direction.double_move? && other.direction.double_move?
           used_axis_priorities = [@axis_face, other.axis_face].map(&:axis_priority)
           # Note that there are two solutions, but any works.
-          remaining_face = Face::ELEMENTS.find { |f| !used_axis_priorities.include?(f.axis_priority) }
+          remaining_face =
+            Face::ELEMENTS.find { |f| !used_axis_priorities.include?(f.axis_priority) }
           Algorithm.move(Rotation.new(remaining_face, CubeDirection::DOUBLE))
         end
       end

@@ -67,7 +67,7 @@ module CubeTrainer
         raise ArgumentError unless can_swap?(other)
 
         if is_a?(Rotation)
-          [other.rotate_by(self.inverse), self]
+          [other.rotate_by(inverse), self]
         elsif other.is_a?(Rotation)
           [other, rotate_by(other)]
         else

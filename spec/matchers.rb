@@ -41,7 +41,7 @@ RSpec::Matchers.define(:equivalent_cube_algorithm) do |expected, cube_size, colo
     expected.apply_to(expected_cube_state)
     actual_cube_state = color_scheme.solved_cube_state(cube_size)
     actual.apply_to(actual_cube_state)
-    
+
     actual_cube_state == expected_cube_state
   end
   failure_message do |actual|
@@ -76,7 +76,7 @@ RSpec::Matchers.define(:equivalent_skewb_algorithm) do |expected, color_scheme|
     expected.apply_to(expected_skewb_state)
     actual_skewb_state = color_scheme.solved_skewb_state
     actual.apply_to(actual_skewb_state)
-    
+
     actual_skewb_state == expected_skewb_state
   end
   failure_message do |actual|
@@ -99,7 +99,7 @@ RSpec::Matchers.define(:equivalent_sarahs_skewb_algorithm) do |expected, color_s
     expected.apply_to(expected_skewb_state)
     actual_skewb_state = color_scheme.solved_skewb_state
     actual.apply_to(actual_skewb_state)
-    
+
     actual_skewb_state == expected_skewb_state
   end
   failure_message do |actual|

@@ -50,6 +50,7 @@ end
 
 def slice_move(cube_size)
   raise ArgumentError if cube_size <= 3
+
   Core::SliceMove.new(face, non_zero_cube_direction, slice_index(cube_size))
 end
 
@@ -60,12 +61,14 @@ end
 def cube_move(cube_size)
   args = [[10, :simple_move], [1, :rotation]]
   return freq(*args) if cube_size <= 2
+
   args += [
     [1, :maybe_fat_mslice_maybe_inner_mslice_move],
     [1, :fat_move, cube_size],
     [1, :maybe_fat_maybe_slice_move]
   ]
   return freq(*args) if cube_size <= 3
+
   args.push([1, :slice_move, cube_size])
   freq(*args)
 end
