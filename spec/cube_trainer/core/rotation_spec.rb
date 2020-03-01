@@ -5,11 +5,59 @@ require 'cube_trainer/core/cube_state'
 require 'cube_trainer/core/rotation'
 require 'cube_trainer/core/skewb_state'
 require 'cube_trainer/core/parser'
+require 'rantly'
+require 'rantly/rspec_extensions'
+require 'rantly/shrinks'
 
 describe Core::Rotation do
   include Core
 
   let(:color_scheme) { ColorScheme::BERNHARD }
+
+  shared_examples 'corner rotations' do |face_symbols, expected_rotation_algorithm|
+    let(:actual_rotation_algorithm) do
+      Core::Rotation.around_corner(Core::Corner.for_face_symbols(face_symbols), Core::SkewbDirection::FORWARD)
+    end
+
+    it 'rotates correctly around cube corners' do
+      expect(actual_rotation_algorithm).to equivalent_cube_algorithm(expected_rotation_algorithm, 3, color_scheme)
+    end
+
+    it 'rotates correctly around skewb corners' do
+      expect(actual_rotation_algorithm).to equivalent_sarahs_skewb_algorithm(expected_rotation_algorithm, color_scheme)
+    end
+  end
+
+  it_behaves_like 'corner rotations', [:U, :F, :R], "x y"
+  it_behaves_like 'corner rotations', [:U, :R, :B], "z' y"
+  it_behaves_like 'corner rotations', [:U, :B, :L], "y z'"
+  it_behaves_like 'corner rotations', [:U, :L, :F], "y x'"
+  it_behaves_like 'corner rotations', [:D, :R, :F], "y' x"
+  it_behaves_like 'corner rotations', [:D, :B, :R], "y' z'"
+  it_behaves_like 'corner rotations', [:D, :L, :B], "z' y'"
+  it_behaves_like 'corner rotations', [:D, :F, :L], "y' z"
+
+  it 'rotates correctly back and forth around skewb corners' do
+    property_of do
+      Rantly { Tuple.new([corner, non_zero_skewb_direction]) }
+    end.check do |t|
+      c, d = t.array
+      rotation_then_inverse = Core::Rotation.around_corner(c, d).inverse
+      inverse_then_rotation = Core::Rotation.around_corner(c, d.inverse)
+      expect(rotation_then_inverse).to equivalent_skewb_algorithm(inverse_then_rotation, color_scheme)
+    end
+  end
+
+  it 'rotates correctly back and forth around cube corners' do
+    property_of do
+      Rantly { Tuple.new([corner, non_zero_skewb_direction]) }
+    end.check do |t|
+      c, d = t.array
+      rotation_then_inverse = Core::Rotation.around_corner(c, d).inverse
+      inverse_then_rotation = Core::Rotation.around_corner(c, d.inverse)
+      expect(rotation_then_inverse).to equivalent_cube_algorithm(inverse_then_rotation, 3, color_scheme)
+    end
+  end
 
   it 'rotates cubes correctly' do
     state = color_scheme.solved_cube_state(3)

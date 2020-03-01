@@ -1,3 +1,4 @@
+require 'cube_trainer/core/cancellation_helper'
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/cube_direction'
 require 'cube_trainer/core/skewb_direction'
@@ -36,7 +37,7 @@ module CubeTrainer
         freeze
       end
 
-      attr_reader :move_strings, :all_moves
+      attr_reader :name, :move_strings, :all_moves
       private_class_method :new
 
       FIXED_CORNER = new('fixed corner', [
@@ -60,45 +61,33 @@ module CubeTrainer
         @move_to_corner[move] || (raise ArgumentError)
       end
 
-      def move_to_string(move)
-        raise unless move.is_a?(SkewbMove)
-        skewb_move_to_string(move)
-      end
-
       def algorithm_to_string(algorithm)
-        rotations = []
-        alg_string = algorithm.moves.map do |m|
-          if m.is_a?(SkewbMove)
-            skewb_move_to_string(m, rotations)
-          elsif m.is_a?(Rotation)
+        reversed_rotations = []
+        num_tail_rotations = CancellationHelper.num_tail_rotations(algorithm)
+        alg_string = algorithm.moves[0...algorithm.length - num_tail_rotations].map do |m|
+          reversed_rotations.each { |r| m = m.rotate_by(r.inverse) }
+          case m
+          when SkewbMove
+            skewb_move_to_string(m, reversed_rotations)
+          when Rotation
             m.to_s
           else
             raise ArgumentError, "Couldn't transform #{m} to #{@name} Skewb notation."
           end
         end.join(' ')
-        return alg_string if rotations.empty?
-
-        "#{alg_string} #{Algorithm.new(rotations).cancelled(3)}"
+        new_tail_rotations = reversed_rotations.reverse! + algorithm.moves[algorithm.length - num_tail_rotations..-1]
+        cancelled_rotations = Algorithm.new(new_tail_rotations).cancelled(3)
+        cancelled_rotations.empty? ? alg_string : "#{alg_string} #{cancelled_rotations}"
       end
 
       private
 
-      # Translates a Skewb direction into a cube direction.
-      def translated_direction(direction)
-        case direction
-        when SkewbDirection::ZERO then CubeDirection::ZERO
-        when SkewbDirection::FORWARD then CubeDirection::FORWARD
-        when SkewbDirection::BACKWARD then CubeDirection::BACKWARD
-        end
-      end
-
-      def skewb_move_to_string(move, rotations = nil)
-        rotations.reverse_each { |r| move = move.rotate_by(r) } if rotations
+      def skewb_move_to_string(move, reversed_rotations)
         move_string, rotate = move_to_string_internal(move)
-        if rotate && rotations
-          direction = translated_direction(move.direction)
-          rotations.push(Rotation.new(move.axis_corner.faces[move.direction.value], direction.inverse))
-          rotations.push(Rotation.new(move.axis_corner.faces[0], direction.inverse))
+        if rotate
+          reversed_additional_rotations =
+            Rotation.around_corner(move.axis_corner, move.direction).moves.reverse
+          reversed_rotations.concat(reversed_additional_rotations)
         end
         "#{move_string}#{move.direction.name}"
       end

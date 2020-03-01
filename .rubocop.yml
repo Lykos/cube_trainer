@@ -58,6 +58,8 @@ Style/MethodCallWithArgsParentheses:
   - require
   - require_relative
   - include
+  - it_behaves_like
+  - include_examples
   Exclude:
   - Rakefile
   - 'spec/**/*_spec.rb'

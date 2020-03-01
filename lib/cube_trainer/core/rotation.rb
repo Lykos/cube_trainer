@@ -14,6 +14,31 @@ module CubeTrainer
       ALL_ROTATIONS = Face::ELEMENTS.product(CubeDirection::ALL_DIRECTIONS).map { |f, d| new(f, d) }
       NON_ZERO_ROTATIONS = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map { |f, d| new(f, d) }
 
+      # Translates a Skewb direction into a cube direction.
+      def self.translated_direction(direction)
+        case direction
+        when SkewbDirection::ZERO then CubeDirection::ZERO
+        when SkewbDirection::FORWARD then CubeDirection::FORWARD
+        when SkewbDirection::BACKWARD then CubeDirection::BACKWARD
+        end
+      end
+
+      # Returns an algorithm consisting of two rotations that are equivalent to rotating
+      # the puzzle around a corner.
+      # Takes a Skewb direction as an argument (even for cubes) because rotating around
+      # is like a Skewb move given that it's modulo 3.
+      def self.around_corner(corner, skewb_direction)
+        raise TypeError unless corner.is_a?(Corner)
+        raise TypeError unless skewb_direction.is_a?(SkewbDirection)
+
+        direction = translated_direction(skewb_direction)
+
+        Algorithm.new([
+                        Rotation.new(corner.faces[skewb_direction.value], direction),
+                        Rotation.new(corner.faces[0], direction)
+                      ])
+      end
+
       def to_s
         "#{AXES[@axis_face.axis_priority]}#{canonical_direction.name}"
       end

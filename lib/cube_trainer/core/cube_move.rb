@@ -101,7 +101,7 @@ module CubeTrainer
       end
 
       OUTER_MOVES = Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map do |f, d|
-        FatMove.new(f, d, 1).freeze
+        FatMove.new(f, d)
       end.freeze
 
       attr_reader :width

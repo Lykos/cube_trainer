@@ -87,7 +87,7 @@ module CubeTrainer
         CENTER_TRANSFORMATIONS[rotation.axis_face.face_symbol][rotation.direction.value]
       end
 
-      def self.rotated_center_state(rotations, verbose = false)
+      def self.rotated_center_state(rotations)
         rotations.reduce(FACE_SYMBOLS.dup) do |center_state, rotation|
           apply_transformation_to!(center_transformation(rotation), center_state)
         end
@@ -114,7 +114,7 @@ module CubeTrainer
       end
 
       def self.cancelled_rotations(rotations)
-        center_state = rotated_center_state(rotations, true)
+        center_state = rotated_center_state(rotations)
         rotation_sequences[center_state]
       end
 
