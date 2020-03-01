@@ -52,6 +52,16 @@ module CubeTrainer
                     ['B', Corner.for_face_symbols(%i[U L B])],
                     ['L', Corner.for_face_symbols(%i[U F L])]
                   ])
+      RUBIKS = new('rubiks', [
+                     ['F', Corner.for_face_symbols(%i[U R F])],
+                     ['R', Corner.for_face_symbols(%i[U B R])],
+                     ['B', Corner.for_face_symbols(%i[U L B])],
+                     ['L', Corner.for_face_symbols(%i[U F L])]
+                     ['f', Corner.for_face_symbols(%i[D F R])],
+                     ['r', Corner.for_face_symbols(%i[D R B])],
+                     ['b', Corner.for_face_symbols(%i[D B L])],
+                     ['l', Corner.for_face_symbols(%i[D L F])]
+                   ])
 
       def to_s
         @name

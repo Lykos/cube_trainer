@@ -25,30 +25,28 @@ describe Core::SkewbNotation do
   end
 
   shared_examples 'notation' do |notation|
-    it 'stays empty if we serialize and then parse an empty algorithm' do
-      alg_string = described_class::FIXED_CORNER.algorithm_to_string(Core::Algorithm::EMPTY)
-      parsed_alg = parse_skewb_algorithm(alg_string, notation)
-      expect(parsed_alg).to equivalent_skewb_algorithm(Core::Algorithm::EMPTY, color_scheme)
-    end
-
-    it 'stays the same if we serialize and then parse an algorithm' do
-      property_of do
-        Rantly { skewb_algorithm }
-      end.check do |alg|
-        alg_string = notation.algorithm_to_string(alg)
+    context "when using #{notation.name} notation" do
+      it 'stays empty if we serialize and then parse an empty algorithm' do
+        alg_string = described_class::FIXED_CORNER.algorithm_to_string(Core::Algorithm::EMPTY)
         parsed_alg = parse_skewb_algorithm(alg_string, notation)
-        expect(parsed_alg).to equivalent_skewb_algorithm(alg, color_scheme)
+        expect(parsed_alg).to equivalent_skewb_algorithm(Core::Algorithm::EMPTY, color_scheme)
+      end
+
+      it 'stays the same if we serialize and then parse an algorithm' do
+        property_of do
+          Rantly { skewb_algorithm }
+        end.check do |alg|
+          alg_string = notation.algorithm_to_string(alg)
+          parsed_alg = parse_skewb_algorithm(alg_string, notation)
+          expect(parsed_alg).to equivalent_skewb_algorithm(alg, color_scheme)
+        end
       end
     end
   end
 
-  context 'when using fixed corner notation' do
-    include_examples 'notation', described_class::FIXED_CORNER
-  end
-
-  context 'when using Sarahs notation' do
-    include_examples 'notation', described_class::SARAH
-  end
+  include_examples 'notation', described_class::FIXED_CORNER
+  include_examples 'notation', described_class::SARAH
+  include_examples 'notation', described_class::RUBIKS
 
   it 'transforms a Sarahs sledge into a fixed corner sledge' do
     parsed_algorithm = parse_skewb_algorithm("F' L F L'", described_class::SARAH)
