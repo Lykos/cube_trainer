@@ -61,62 +61,43 @@ describe Core::Rotation do
 
   it 'rotates cubes correctly' do
     state = color_scheme.solved_cube_state(3)
-    parse_fixed_corner_skewb_algorithm("x y z' y'").apply_temporarily_to(state) do
-      expect(state).to eq_puzzle_state(color_scheme.solved_cube_state(3))
+    parse_fixed_corner_skewb_algorithm("x y z' y'").apply_to(state)
+    expect(state).to eq_puzzle_state(color_scheme.solved_cube_state(3))
+  end
+
+  shared_examples 'skewb rotation' do |alg_string, skewb_state|
+    it "rotates skewbs correctly in algorithm #{alg_string}" do
+      state = color_scheme.solved_skewb_state
+      parse_fixed_corner_skewb_algorithm(alg_string).apply_to(state)
+      expect(state).to eq_puzzle_state(skewb_state)
     end
   end
 
-  it 'rotates skewbs correctly' do
-    skewb_state = color_scheme.solved_skewb_state
-    parse_fixed_corner_skewb_algorithm('x').apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(Core::SkewbState.for_solved_colors(U: :red, F: :white, R: :green, L: :blue, B: :yellow, D: :orange))
-    end
-    parse_fixed_corner_skewb_algorithm('y').apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(Core::SkewbState.for_solved_colors(U: :yellow, F: :green, R: :orange, L: :red, B: :blue, D: :white))
-    end
-    parse_fixed_corner_skewb_algorithm('z').apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(Core::SkewbState.for_solved_colors(U: :blue, F: :red, R: :yellow, L: :white, B: :orange, D: :green))
-    end
-    parse_fixed_corner_skewb_algorithm("x y z' y'").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("R y U' x'").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("U y L' x' y2").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("L y B' y'").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("B y R' y'").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("R z B' y2 z y2").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("U z L' y'").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("L z R' z2 y").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("B z U' z'").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("R x U' z y2").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("U x B' x'").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("L x R' z'").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
-    end
-    parse_fixed_corner_skewb_algorithm("B x L' x'").apply_temporarily_to(skewb_state) do
-      expect(skewb_state).to eq_puzzle_state(color_scheme.solved_skewb_state)
+  include_examples 'skewb rotation', 'x', Core::SkewbState.for_solved_colors(U: :red, F: :white, R: :green, L: :blue, B: :yellow, D: :orange)
+  include_examples 'skewb rotation', 'y', Core::SkewbState.for_solved_colors(U: :yellow, F: :green, R: :orange, L: :red, B: :blue, D: :white)
+  include_examples 'skewb rotation', 'z', Core::SkewbState.for_solved_colors(U: :blue, F: :red, R: :yellow, L: :white, B: :orange, D: :green)
+
+  shared_examples 'trivial skewb algorithm' do |alg_string|
+    it "reaches the original state again in trivial algorithm #{alg_string}" do
+      state = color_scheme.solved_skewb_state
+      parse_fixed_corner_skewb_algorithm(alg_string).apply_to(state)
+      expect(state).to eq_puzzle_state(color_scheme.solved_skewb_state)
     end
   end
+
+  include_examples 'trivial skewb algorithm', "x y z' y'"
+  include_examples 'trivial skewb algorithm', "R y U' x'"
+  include_examples 'trivial skewb algorithm', "U y L' x' y2"
+  include_examples 'trivial skewb algorithm', "L y B' y'"
+  include_examples 'trivial skewb algorithm', "B y R' y'"
+  include_examples 'trivial skewb algorithm', "R z B' y2 z y2"
+  include_examples 'trivial skewb algorithm', "U z L' y'"
+  include_examples 'trivial skewb algorithm', "L z R' z2 y"
+  include_examples 'trivial skewb algorithm', "B z U' z'"
+  include_examples 'trivial skewb algorithm', "R x U' z y2"
+  include_examples 'trivial skewb algorithm', "U x B' x'"
+  include_examples 'trivial skewb algorithm', "L x R' z'"
+  include_examples 'trivial skewb algorithm', "B x L' x'"
 
   it 'recognizes equivalent rotations' do
     expect(Core::Rotation.new(Core::Face::U, Core::CubeDirection::FORWARD)).to be_equivalent(Core::Rotation.new(Core::Face::D, Core::CubeDirection::BACKWARD), 3)
