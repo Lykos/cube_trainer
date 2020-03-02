@@ -11,12 +11,7 @@ module CubeTrainer
       end
 
       def apply_temporarily_to(cube_state)
-        apply_to(cube_state)
-        begin
-          yield cube_state
-        ensure
-          inverse.apply_to(cube_state)
-        end
+        yield apply_to_dupped(cube_state)
       end
     end
   end
