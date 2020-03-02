@@ -18,13 +18,11 @@ module CubeTrainer
       # Whether the yielded puzzle state is actually the same as the passed one or a copy is an
       # implementation detail.
       def apply_temporarily_to(puzzle_state)
-        if with_dup_is_faster?(puzzle_state)
-          return yield apply_to_dupped(puzzle_state)
-        end
+        return yield(apply_to_dupped(puzzle_state)) if with_dup_is_faster?(puzzle_state)
 
         apply_to(puzzle_state)
         begin
-          yield puzzle_state
+          yield(puzzle_state)
         ensure
           inverse.apply_to(puzzle_state)
         end

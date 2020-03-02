@@ -222,9 +222,7 @@ module CubeTrainer
     def find_fix(commutator, desired_state)
       commutator_modifications(commutator).each do |fix|
         fix_alg = fix.algorithm
-        if alg_reaches_state(fix_alg, desired_state)
-          return fix
-        end
+        return fix if alg_reaches_state(fix_alg, desired_state)
       end
       nil
     end

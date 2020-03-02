@@ -13,7 +13,7 @@ module CubeTrainer
     def score_on_face(state, face)
       base = no_auf_score_on_face(state, face)
       adjusted = cross_adjustments(face).map do |move|
-        move.apply_temporarily_to(state) { |s| no_auf_score_on_face(state, face) }
+        move.apply_temporarily_to(state) { |s| no_auf_score_on_face(s, face) }
       end.max
       [base + 1, adjusted].max
     end
