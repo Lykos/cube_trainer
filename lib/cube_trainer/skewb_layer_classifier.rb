@@ -19,16 +19,16 @@ module CubeTrainer
     def classify_layer(algorithm)
       algorithm.apply_temporarily_to(@state) do |s|
         score = score_on_face(s, @face)
-        score == 2 ? classify_score2_layer : "#{score}_solved"
+        score == 2 ? classify_score2_layer(s) : "#{score}_solved"
       end
     end
 
     private
 
-    def classify_score2_layer
-      matching_coordinates = matching_corner_coordinates(@state, @face)
+    def classify_score2_layer(state)
+      matching_coordinates = matching_corner_coordinates(state, @face)
       if matching_coordinates.length > 2 ||
-         contains_not_adjacent_on_outside?(@state, matching_coordinates)
+         contains_not_adjacent_on_outside?(state, matching_coordinates)
         '2_opposite_solved'
       else
         '2_adjacent_solved'
