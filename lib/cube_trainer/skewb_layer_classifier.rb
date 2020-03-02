@@ -17,8 +17,8 @@ module CubeTrainer
     end
 
     def classify_layer(algorithm)
-      algorithm.apply_temporarily_to(@state) do
-        score = score_on_face(@state, @face)
+      algorithm.apply_temporarily_to(@state) do |s|
+        score = score_on_face(s, @face)
         score == 2 ? classify_score2_layer : "#{score}_solved"
       end
     end

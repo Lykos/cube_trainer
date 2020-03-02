@@ -137,26 +137,26 @@ module CubeTrainer
       @letter_scheme = letter_scheme
     end
 
-    def find_complete_source_cycle(part)
+    def find_complete_source_cycle(state, part)
       complete_cycle = []
       current_part = part
       loop do
         complete_cycle.push(current_part)
         break if complete_cycle.length > 1 && current_part == part
 
-        next_part_colors = current_part.rotations.map { |r| @skewb_state[yield(r)] }
+        next_part_colors = current_part.rotations.map { |r| state[yield(r)] }
         current_part = @color_scheme.part_for_colors(part.class, next_part_colors)
       end
       PartCycle.new(@letter_scheme, complete_cycle)
     end
 
     # Finds permutation cycles of parts.
-    def find_part_target_cycles(interesting_parts, &make_coordinate)
+    def find_part_target_cycles(interesting_parts, state, &make_coordinate)
       used_parts = []
       interesting_parts.map do |part|
         next unless (used_parts & part.rotations).empty?
 
-        cycle = find_complete_source_cycle(part, &make_coordinate)
+        cycle = find_complete_source_cycle(state, part, &make_coordinate)
                 .simplify(interesting_parts).reverse
         used_parts += cycle.parts
         @show_staying || !cycle.trivial? ? cycle : nil
@@ -164,9 +164,9 @@ module CubeTrainer
     end
 
     # Finds where each part comes from.
-    def find_part_sources(interesting_parts, &make_coordinate)
+    def find_part_sources(interesting_parts, state, &make_coordinate)
       interesting_parts.collect_concat do |part|
-        source_cycle = find_complete_source_cycle(part, &make_coordinate)
+        source_cycle = find_complete_source_cycle(state, part, &make_coordinate)
         if @show_staying || !source_cycle.trivial?
           [source_cycle.first_move.reverse]
         else
@@ -177,17 +177,17 @@ module CubeTrainer
 
     # Describes where each interesting piece comes from.
     def source_descriptions(algorithm)
-      algorithm.apply_temporarily_to(@skewb_state) do
-        find_part_sources(@interesting_faces, &Core::SkewbCoordinate.method(:for_center)) +
-          find_part_sources(@interesting_corners, &Core::SkewbCoordinate.method(:for_corner))
+      algorithm.apply_temporarily_to(@skewb_state) do |s|
+        find_part_sources(@interesting_faces, s, &Core::SkewbCoordinate.method(:for_center)) +
+          find_part_sources(@interesting_corners, s, &Core::SkewbCoordinate.method(:for_corner))
       end.sort
     end
 
     # Describes what kind of tranformation the alg does in terms of piece cycles.
     def transformation_descriptions(algorithm)
-      algorithm.apply_temporarily_to(@skewb_state) do
-        find_part_target_cycles(@interesting_faces, &Core::SkewbCoordinate.method(:for_center)) +
-          find_part_target_cycles(@interesting_corners, &Core::SkewbCoordinate.method(:for_corner))
+      algorithm.apply_temporarily_to(@skewb_state) do |s|
+        find_part_target_cycles(@interesting_faces, s, &Core::SkewbCoordinate.method(:for_center)) +
+          find_part_target_cycles(@interesting_corners, s, &Core::SkewbCoordinate.method(:for_corner))
       end.sort
     end
   end

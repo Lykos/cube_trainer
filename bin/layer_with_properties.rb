@@ -14,7 +14,7 @@ SEARCH_DEPTH = 7
 
 def score_after_move(layer_finder, skewb_state, move)
   alg = CubeTrainer::Core::Algorithm.move(move)
-  alg.apply_temporarily_to(skewb_state) { layer_finder.state_score(skewb_state) }
+  alg.apply_temporarily_to(skewb_state) { |s| layer_finder.state_score(s) }
 end
 
 def max_score_after_one_move(layer_finder, skewb_state)
@@ -47,12 +47,12 @@ skewb_state = CubeTrainer::ColorScheme::BERNHARD.solved_skewb_state
 
 loop do
   scramble = scrambler.random_moves(SCRAMBLE_LENGTH)
-  scramble.apply_temporarily_to(skewb_state) do
-    layer_solutions = layer_finder.find_layer(skewb_state, SEARCH_DEPTH)
-    if desired_property?(layer_finder, skewb_state, layer_solutions)
+  scramble.apply_temporarily_to(skewb_state) do |state|
+    layer_solutions = layer_finder.find_layer(state, SEARCH_DEPTH)
+    if desired_property?(layer_finder, state, layer_solutions)
       puts scramble
       puts
-      puts skewb_state.colored_to_s
+      puts state.colored_to_s
       puts
       layer_solutions.extract_algorithms.each do |color, algs|
         puts color

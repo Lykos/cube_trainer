@@ -22,8 +22,8 @@ Thread.new do
     scramble = scrambler.random_moves(SCRAMBLE_LENGTH)
     queue.push([:scramble, scramble])
     layer_solutions =
-      scramble.apply_temporarily_to(skewb_state) do
-        layer_finder.find_layer(skewb_state, SEARCH_DEPTH)
+      scramble.apply_temporarily_to(skewb_state) do |state|
+        layer_finder.find_layer(state, SEARCH_DEPTH)
       end
     queue.push([:solutions, layer_solutions])
     sleep(1) while queue.length > MAX_QUEUE_LENGTH

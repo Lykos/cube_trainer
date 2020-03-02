@@ -104,7 +104,7 @@ module CubeTrainer
     end
 
     def score_after_move(state, move)
-      move.apply_temporarily_to(state) { state_score(state) }
+      move.apply_temporarily_to(state) { |s| state_score(s) }
     end
 
     def done?(_state)
@@ -162,10 +162,7 @@ module CubeTrainer
     end
 
     def solutions_after_move(state, move, inner_limit)
-      solutions =
-        move.apply_temporarily_to(state) do
-          find_solutions_internal(state, inner_limit)
-        end
+      solutions = move.apply_temporarily_to(state) { |s| find_solutions_internal(s, inner_limit) }
       prepend_move(move, solutions)
     end
 

@@ -63,10 +63,7 @@ module CubeTrainer
           letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
           twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c1]) +
                                  part_cycle_factory.multi_corner_twist([c2]).inverse
-          twisted_cube_state =
-            twist_sticker_cycles.apply_temporarily_to(cube_state) do
-              cube_state.dup
-            end
+          twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
           InputItem.new(letter_pair, twisted_cube_state)
         end
       buffer_twist = part_cycle_factory.multi_corner_twist([buffer])
@@ -75,10 +72,7 @@ module CubeTrainer
         correctly_oriented_corners.map do |c|
           letter_pair = LetterPair.new([letter_scheme.letter(c)])
           twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c]).inverse
-          twisted_cube_state =
-            twist_sticker_cycles.apply_temporarily_to(cube_state) do
-              cube_state.dup
-            end
+          twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
           InputItem.new(letter_pair, twisted_cube_state)
         end
       buffer_twist.apply_to(cube_state)
@@ -86,10 +80,7 @@ module CubeTrainer
         correctly_oriented_corners.map do |c|
           letter_pair = LetterPair.new([letter_scheme.letter(c)])
           twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c])
-          twisted_cube_state =
-            twist_sticker_cycles.apply_temporarily_to(cube_state) do
-              cube_state.dup
-            end
+          twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
           InputItem.new(letter_pair, twisted_cube_state)
         end
       two_twists + cw_twists + ccw_twists
@@ -245,10 +236,7 @@ results_model, options, FloatingCorner2Twists.new(results_model, options),
           letter_pair = LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
           twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c1, c2])
           twist_sticker_cycles = twist_sticker_cycles.inverse if twist_number == 2
-          twisted_cube_state =
-            twist_sticker_cycles.apply_temporarily_to(cube_state) do
-              cube_state.dup
-            end
+          twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
           InputItem.new(letter_pair, twisted_cube_state)
         end
       end

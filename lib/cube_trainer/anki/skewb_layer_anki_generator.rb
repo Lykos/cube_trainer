@@ -56,8 +56,8 @@ module CubeTrainer
 
         state = @options.color_scheme.solved_skewb_state
         solutions.each do |algs|
-          algs.first.inverse.apply_temporarily_to(state) do
-            puts state.colored_to_s
+          algs.first.inverse.apply_temporarily_to(state) do |s|
+            puts s.colored_to_s
             puts algs
             puts
           end

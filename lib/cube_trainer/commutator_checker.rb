@@ -86,7 +86,7 @@ module CubeTrainer
       end
     end
 
-    def handle_incorrect(row_description, letter_pair, commutator, alg)
+    def handle_incorrect(row_description, letter_pair, commutator, alg, desired_state)
       if @verbose
         puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} " \
              "doesn't do what it's expected to do."
@@ -95,7 +95,7 @@ module CubeTrainer
 
       # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
       if @find_fixes
-        if (fix = find_fix(commutator))
+        if (fix = find_fix(commutator, desired_state))
           puts "Found fix #{fix}." if @verbose
           return CheckAlgResult.new(:fix_found, fix)
         else
@@ -122,21 +122,23 @@ module CubeTrainer
       attr_reader :result, :fix
     end
 
+    def alg_reaches_state(alg, desired_state)
+      alg.apply_temporarily_to(@alg_cube_state) { |s| s == desired_state }
+    end
+
     def check_alg(row_description, letter_pair, commutator)
       parts = letter_pair.letters.map { |l| @letter_scheme.for_letter(@part_type, l) }
       # Apply alg and cycle
       cycle = construct_cycle(parts)
-      cycle.apply_temporarily_to(@cycle_cube_state) do
+      cycle.apply_temporarily_to(@cycle_cube_state) do |cycle_state|
         alg = commutator.algorithm
         @total_algs += 1
 
         # compare
-        correct = alg.apply_temporarily_to(@alg_cube_state) { @cycle_cube_state == @alg_cube_state }
-
-        if correct
+        if alg_reaches_state(alg, cycle_state)
           CheckAlgResult::CORRECT
         else
-          handle_incorrect(row_description, letter_pair, commutator, alg)
+          handle_incorrect(row_description, letter_pair, commutator, alg, cycle_state)
         end
       end
     end
@@ -217,10 +219,10 @@ module CubeTrainer
       end
     end
 
-    def find_fix(commutator)
+    def find_fix(commutator, desired_state)
       commutator_modifications(commutator).each do |fix|
         fix_alg = fix.algorithm
-        if fix_alg.apply_temporarily_to(@alg_cube_state) { @cycle_cube_state == @alg_cube_state }
+        if alg_reaches_state(fix_alg, desired_state)
           return fix
         end
       end
@@ -233,7 +235,7 @@ module CubeTrainer
 
       puts "Couldn't find a fix for this alg."
       puts 'actual'
-      puts alg.apply_temporarily_to(@alg_cube_state) { cube_string(@alg_cube_state, :color) }
+      puts alg.apply_temporarily_to(@alg_cube_state) { |s| cube_string(s, :color) }
       puts 'expected'
       puts cube_string(@cycle_cube_state, :color)
     end

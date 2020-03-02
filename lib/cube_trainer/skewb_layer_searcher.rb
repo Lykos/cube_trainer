@@ -128,8 +128,8 @@ module CubeTrainer
 
     # Find out whether there are any layers that are equivalent without rotations.
     # In those cases, we add this as an alternative solution.
-    def check_equivalent_solution(candidate)
-      layer_solution = relevant_layer_solutions.find { |l| solves?(l, @state) }
+    def check_equivalent_solution(candidate, state)
+      layer_solution = relevant_layer_solutions(state).find { |l| solves?(l, state) }
       if layer_solution
         layer_solution.maybe_add_alternative_solution(candidate)
         puts "equivalent to #{layer_solution}" if @verbose
@@ -137,30 +137,30 @@ module CubeTrainer
       layer_solution
     end
 
-    def create_transformed_states(candidate)
+    def create_transformed_states(candidate, state)
       # We go back to the original state and then apply
       # a transformed version of the inverse of the algorithm.
-      candidate.compiled_algorithm.apply_temporarily_to(@state) do
+      candidate.compiled_algorithm.apply_temporarily_to(state) do |s|
         ALGORITHM_TRANSFORMATIONS.map do |t|
           transformed = t.transformed(candidate.compiled_algorithm).inverse
-          transformed.apply_temporarily_to(@state) { @state.dup }
+          transformed.apply_to_dupped(s)
         end
       end
     end
 
     def solves?(layer_solution, state)
-      layer_solution.compiled_algorithm.apply_temporarily_to(state) do
-        state.layer_at_face_solved?(EXAMPLE_LAYER_FACE)
+      layer_solution.compiled_algorithm.apply_temporarily_to(state) do |s|
+        s.layer_at_face_solved?(EXAMPLE_LAYER_FACE)
       end
     end
 
     # Find out whether there are any layers that are equivalent with rotations.
     # In those cases, we don't add this as an alternative solution because there will be
     # another one that's equivalent modulo rotations.
-    def check_equivalent_modified_solution(candidate)
+    def check_equivalent_modified_solution(candidate, state)
       equivalent_index = nil
-      transformed_states = create_transformed_states(candidate)
-      relevant_layer_solutions.each do |l|
+      transformed_states = create_transformed_states(candidate, state)
+      relevant_layer_solutions(state).each do |l|
         equivalent_index = transformed_states.find_index { |s| solves?(l, s) }
         if equivalent_index
           puts "transformed #{equivalent_index} equivalent to #{l}" if @verbose
@@ -188,28 +188,28 @@ module CubeTrainer
       @candidates.empty?
     end
 
-    def state_is_good?(candidate)
-      @finder.state_score(@state) >= 2 || candidate.algorithm_length <= 3
+    def state_is_good?(candidate, state)
+      @finder.state_score(state) >= 2 || candidate.algorithm_length <= 3
     end
 
-    def relevant_layer_solutions
-      @layer_solutions[@fingerprinter.fingerprint(@state)] ||= []
+    def relevant_layer_solutions(state)
+      @layer_solutions[@fingerprinter.fingerprint(state)] ||= []
     end
 
-    def add_layer_solution(candidate)
+    def add_layer_solution(candidate, state)
       @num_layer_solutions += 1
-      relevant_layer_solutions.push(candidate)
+      relevant_layer_solutions(state).push(candidate)
     end
 
-    def promote_candidate(candidate)
-      add_layer_solution(candidate)
-      @good_layer_solutions.push(candidate) if state_is_good?(candidate)
+    def promote_candidate(candidate, state)
+      add_layer_solution(candidate, state)
+      @good_layer_solutions.push(candidate) if state_is_good?(candidate, state)
       return unless @max_length.nil? || candidate.algorithm_length < @max_length
 
       add_new_candidates(derived_layer_solutions(candidate))
     end
 
-    def puts_state
+    def puts_report
       puts "Candidates: #{@candidates.length} Layers: #{@num_layer_solutions} " \
            "Good layers: #{@good_layer_solutions.length}"
     end
@@ -217,14 +217,14 @@ module CubeTrainer
     def calculate
       until candidates_empty?
         candidate = pop_candidate
-        puts_state if @verbose
+        puts_report if @verbose
         puts "Candidate: #{candidate}" if @verbose
-        candidate.compiled_algorithm.inverse.apply_temporarily_to(@state) do
+        candidate.compiled_algorithm.inverse.apply_temporarily_to(@state) do |s|
           # Is there an existing equivalent layer that we already looked at?
-          has_equivalent_layer = check_equivalent_solution(candidate) ||
-                                 check_equivalent_modified_solution(candidate)
+          has_equivalent_layer = check_equivalent_solution(candidate, s) ||
+                                 check_equivalent_modified_solution(candidate, s)
 
-          promote_candidate(candidate) unless has_equivalent_layer
+          promote_candidate(candidate, s) unless has_equivalent_layer
         end
       end
     end

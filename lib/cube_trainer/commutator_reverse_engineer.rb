@@ -50,21 +50,21 @@ module CubeTrainer
       @solved_positions[part] ||= Core::Coordinate.solved_position(part, cube_size, 0)
     end
 
-    def find_stuff
-      part0 = @state[@buffer_coordinate]
+    def find_stuff(state)
+      part0 = state[@buffer_coordinate]
       return if part0 == @buffer
 
-      part1 = @state[solved_position(part0, @state.n)]
+      part1 = state[solved_position(part0, @state.n)]
       return if part1 == @buffer
 
-      part2 = @state[solved_position(part1, @state.n)]
+      part2 = state[solved_position(part1, @state.n)]
       LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) }) if part2 == @buffer
     end
 
     def find_letter_pair(alg)
       raise TypeError unless alg.is_a?(Core::Algorithm)
 
-      alg.inverse.apply_temporarily_to(@state) { find_stuff }
+      alg.inverse.apply_temporarily_to(@state) { |s| find_stuff(s) }
     end
   end
 end
