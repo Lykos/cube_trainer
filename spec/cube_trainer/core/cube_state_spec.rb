@@ -68,6 +68,16 @@ shared_examples 'cube_state' do |cube_size|
     end
   end
 
+  it 'is equal to the original state when doing reversible appliable' do
+    property_of do
+      Rantly { cube_algorithm(cube_size) }
+    end.check do |alg|
+      modified_cube_state = cube_state.dup
+      alg.apply_temporarily_to(modified_cube_state) {}
+      expect(modified_cube_state).to eq_puzzle_state(cube_state)
+    end
+  end
+
   it 'has the right state after applying a nice corner commutator' do
     construct_cycle(Core::Corner, %w[c d k]).apply_to(cube_state)
     changed_parts = {
