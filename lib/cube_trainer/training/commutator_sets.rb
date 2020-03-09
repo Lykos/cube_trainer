@@ -30,6 +30,22 @@ module CubeTrainer
       def rotate_orientation_face_up(part)
         part.rotate_face_up(orientation_face(part))
       end
+
+      def non_buffer_corners
+        self.class::PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
+      end
+
+      def correctly_oriented_corners
+        non_buffer_corners.select do |c|
+          ORIENTATION_FACES.include?(c.solved_face)
+        end
+      end
+
+      def incorrectly_oriented_corners
+        non_buffer_corners.reject do |c|
+          ORIENTATION_FACES.include?(c.solved_face)
+        end
+      end
     end
 
     # Class that generates input items for floating corner 2 twists.
@@ -46,49 +62,50 @@ module CubeTrainer
         1.5
       end
 
-      # rubocop:disable Metrics/AbcSize
-      # rubocop:disable Metrics/MethodLength
-      def generate_input_items
-        cube_state = @color_scheme.solved_cube_state(options.cube_size)
-        part_cycle_factory = Core::PartCycleFactory.new(options.cube_size, 0)
-        non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
-        correctly_oriented_corners =
-          non_buffer_corners.select do |c|
-            ORIENTATION_FACES.include?(c.solved_face)
-          end
-        two_twists =
-          correctly_oriented_corners.permutation(2).map do |c1, c2|
-            twisted_corner_pair = [c1.rotate_by(1), c2.rotate_by(2)]
-            letter_pair =
-              LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
-            twist_sticker_cycles = part_cycle_factory.multi_twist([c1]) +
-                                   part_cycle_factory.multi_twist([c2]).inverse
-            twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
-            InputItem.new(letter_pair, twisted_cube_state)
-          end
-        buffer_twist = part_cycle_factory.multi_twist([buffer])
-        buffer_twist.apply_to(cube_state)
-        ccw_twists =
-          correctly_oriented_corners.map do |c|
-            twisted_corner = c.rotate_by(1)
-            letter_pair = LetterPair.new([letter_scheme.letter(twisted_corner)])
-            twist_sticker_cycles = part_cycle_factory.multi_twist([c]).inverse
-            twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
-            InputItem.new(letter_pair, twisted_cube_state)
-          end
-        buffer_twist.apply_to(cube_state)
-        cw_twists =
-          correctly_oriented_corners.map do |c|
-            twisted_corner = c.rotate_by(2)
-            letter_pair = LetterPair.new([letter_scheme.letter(twisted_corner)])
-            twist_sticker_cycles = part_cycle_factory.multi_twist([c])
-            twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
-            InputItem.new(letter_pair, twisted_cube_state)
-          end
-        two_twists + cw_twists + ccw_twists
+      def part_cycle_factory
+        @part_cycle_factory ||= Core::PartCycleFactory.new(@options.cube_size, 0)
       end
-      # rubocop:enable Metrics/MethodLength
-      # rubocop:enable Metrics/AbcSize
+
+      def cube_state
+        @cube_state = @color_scheme.solved_cube_state(options.cube_size)
+      end
+
+      def generate_input_items
+        buffer_twist.apply_to(cube_state)
+        ccw_twists = one_twists(cube_state, true)
+        buffer_twist.apply_to(cube_state)
+        cw_twists = one_twists(cube_state, false)
+        two_twists + ccw_twists + cw_twists
+      end
+
+      def two_twists
+        correctly_oriented_corners.permutation(2).map do |c1, c2|
+          twisted_corner_pair = [c1.rotate_by(1), c2.rotate_by(2)]
+          letter_pair =
+            LetterPair.new(twisted_corner_pair.map { |c| letter_scheme.letter(c) }.sort)
+          twist_sticker_cycles = part_cycle_factory.multi_twist([c1]) +
+                                 part_cycle_factory.multi_twist([c2]).inverse
+          twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
+          InputItem.new(letter_pair, twisted_cube_state)
+        end
+      end
+
+      def buffer_twist
+        @buffer_twist ||= part_cycle_factory.multi_twist([buffer])
+      end
+
+      # The buffer of cube_state is expected to already be twisted accordingly.
+      def one_twists(cube_state, invert_twist)
+        twist_number = invert_twist ? 1 : 2
+        correctly_oriented_corners.map do |c|
+          twisted_corner = c.rotate_by(twist_number)
+          letter_pair = LetterPair.new([letter_scheme.letter(twisted_corner)])
+          twist_sticker_cycles = part_cycle_factory.multi_twist([c])
+          twist_sticker_cycles = twist_sticker_cycles.inverse if invert_twist
+          twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
+          InputItem.new(letter_pair, twisted_cube_state)
+        end
+      end
     end
 
     # Class that generates input items for floating corner 2 twists and 3 twists.
@@ -149,11 +166,6 @@ module CubeTrainer
       end
 
       def generate_letter_pairs
-        non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
-        incorrectly_oriented_corners =
-          non_buffer_corners.reject do |c|
-            ORIENTATION_FACES.include?(c.solved_face)
-          end
         parity_twist_combinations =
           non_buffer_corners.product(incorrectly_oriented_corners).reject do |parity, twist|
             parity.turned_equals?(twist)
@@ -217,15 +229,9 @@ module CubeTrainer
       end
 
       # rubocop:disable Metrics/AbcSize
-      # rubocop:disable Metrics/MethodLength
       def generate_input_items
         cube_state = @color_scheme.solved_cube_state(options.cube_size)
         part_cycle_factory = Core::PartCycleFactory.new(options.cube_size, 0)
-        non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
-        correctly_oriented_corners =
-          non_buffer_corners.select do |c|
-            ORIENTATION_FACES.include?(c.solved_face)
-          end
         buffer_twist = part_cycle_factory.multi_twist([buffer])
         1.upto(2).collect_concat do |twist_number|
           buffer_twist.apply_to(cube_state)
@@ -239,7 +245,6 @@ module CubeTrainer
             InputItem.new(letter_pair, twisted_cube_state)
           end
         end
-        # rubocop:enable Metrics/MethodLength
         # rubocop:enable Metrics/AbcSize
       end
 
@@ -335,13 +340,16 @@ module CubeTrainer
         2.0
       end
 
+      def edge_combinations
+        PART_TYPE::ELEMENTS.map do |c|
+          c.rotations.min_by { |e| letter_scheme.letter(e) }
+        end.uniq.sort.combination(2)
+      end
+
       def generate_input_items
         cube_state = @color_scheme.solved_cube_state(options.cube_size)
         part_cycle_factory = Core::PartCycleFactory.new(options.cube_size, 0)
-        edges = PART_TYPE::ELEMENTS.map do |c|
-          c.rotations.min_by { |e| letter_scheme.letter(e) }
-        end.uniq.sort
-        edges.combination(2).map do |edge_pair|
+        edge_combinations.map do |edge_pair|
           letter_pair = LetterPair.new(edge_pair.map { |e| letter_scheme.letter(e) })
           flip_sticker_cycles = part_cycle_factory.multi_twist(edge_pair)
           flipped_cube_state = flip_sticker_cycles.apply_to_dupped(cube_state)
@@ -424,6 +432,8 @@ module CubeTrainer
 
     # Class that generates input items for corner parities.
     class CornerParities < LetterPairAlgSet
+      include CornerTwistSetsHelper
+
       PART_TYPE = Core::Corner
 
       def hinter(*)
@@ -435,7 +445,6 @@ module CubeTrainer
       end
 
       def generate_letter_pairs
-        non_buffer_corners = PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(buffer) }
         non_buffer_corners.map { |c| LetterPair.new([letter_scheme.letter(c)]) }
       end
     end

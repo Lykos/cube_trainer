@@ -1,0 +1,12 @@
+,UB,UR,UL,FR,DF,FL,DR,DB,DL,BR,BL
+UB,,U R' E2 R2 E' R' U' R E R2' E2 R,L E2' L2' E L U' L' E' L2 E2' L' U,L E' L' U' L E L2' E2' L U L' E2' L,M' U2 M U' S R' F' R S' R' F R U',R' E R U R' E' R2 E2 R' U' R E2 R',U' R E R' U2 R E' R' S R2' S' R2 U',M U' S R' F' R S' R' F R U' M' U2,U L' E' L U2 L' E L S' L2 S L2' U,L' E L U' L' E' L2 E2' L' U L E2' L',R E' R' U R E R2' E2 R U' R' E2 R
+UR,,,S R' F' R S' R' F R U' M' U2 M U',U L E' L' U L E L2' E2' L U' L' E2' L U',U' M' U2 M U' S R' F' R S' R' F R,S R' E R2 E' R2' F2 R S' R' F2 R,R' F' R S' R' F R U' M' U2 M U' S,U M U2 M' U S R B R' S' R B' R',R2' S' R2 U2 R E R' U2 R E' R' S,U L' E L U L' E' L2 E2' L' U' L E2' L' U',S R E' R2' E R2 B2 R' S' R B2 R'
+UL,,,,S' L E' L2' E L2 F2' L' S L F2' L',U M' U2 M U S' L F L' S L F' L',U' R' E R U' R' E' R2 E2 R' U R E2 R' U,S R2' S' R2 U2 R E R' U2 R E' R',U M U' S R' F' R S' R' F R U' M' U,L F L' S L F' L' U M' U2 M U S',S' L' E L2 E' L2' B2' L S L' B2' L,U' R E' R' U' R E R2' E2 R U R' E2 R U
+FR,,,,,M'L E' L' U L E L2' E2' L U' L' E2' l,R S R' E R2 E' R2' F2 R S' R' F2,S' U L E' L' U L E L2' E2' L U' L' E2' L U' S,D L E' L2 E L2 F2' L' S L F2' L' S' D',L E' L2' E L2 F2' L' S L F2' L' S',F' R S' R' F R U' M' U2 M U' S R',R2 E' R2' F2 R S' R' F2 R S R' E
+DF,,,,,,M'R' E R U' R' E' R2 E2 R' U R E2 r',rL E' L' U L E L2' E2' L U' L' E2',M U M' U M' U2 M U M U M U2 M2',l'R' E R U' R' E' R2 E2 R' U R E2,R' U' M' U2 M U' S R' F' R S' R' F R2,L U M' U2 M U S' L F L' S L F' L2'
+FL,,,,,,,R' E R2 E' R2' F2 R S' R' F2 R S,D' R' E R2 E' R2' F2 R S' R' F2 R S D,S U' R' E R U' R' E' R2 E2 R' U R E2 R' U S',E R2 E' R2' F2 R S' R' F2 R S R',F L' S L F' L' U M' U2 M U S' L
+DR,,,,,,,,r'L' E L U' L' E' L2 E2' L' U L E2',D' M D2 M' D' R F R' S' R F' R' S,S' U L' E L U L' E' L2 E2' L' U' L E2' L' U' S,R E' R2' E R2 B2 R' S' R B2 R' S
+DB,,,,,,,,,lR E' R' U R E R2' E2 R U' R' E2,ML' E L U' L' E' L2 E2' L' U L E2' l',MR E' R' U R E R2' E2 R U' R' E2 r
+DL,,,,,,,,,,L' E L2 E' L2' B2' L S L' B2' L S',S U' R E' R' U' R E R2' E2 R U R' E2 R U S'
+BR,,,,,,,,,,,R' S R E' R2' E R2 B2 R' S' R B2
+BL,,,,,,,,,,,
