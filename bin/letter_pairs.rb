@@ -12,11 +12,11 @@ end
 
 terms =
   if ARGV.empty?
-    CubeTrainer::Dict.new.words
+    CubeTrainer::Training::Dict.new.words
   else
     File.readlines(ARGV.first)
   end
-finder = CubeTrainer::LetterPairWordFinder.new(terms)
+finder = CubeTrainer::Training::LetterPairWordFinder.new(terms)
 
 open('/dev/tty') do |f|
   while (letter_sequence = f.gets)

@@ -81,7 +81,8 @@ module CubeTrainer
       def internal_note_inputs
         raise ArgumentError unless @options.alg_set
 
-        Training::AlgHintParser.parse_hints(@options.alg_set, @options.verbose).entries.map do |name, alg|
+        hints = Training::AlgHintParser.parse_hints(@options.alg_set, @options.verbose)
+        hints.entries.map do |name, alg|
           NoteInput.new([name, alg], name, alg)
         end
       end

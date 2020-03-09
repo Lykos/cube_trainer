@@ -15,8 +15,9 @@ results_persistence = CubeTrainer::Training::ResultsPersistence.create_for_produ
 results_model = CubeTrainer::Training::ResultsModel.new(
   CubeTrainer::BufferHelper.mode_for_options(options), results_persistence
 )
-generator = options.commutator_info.generator_class.new(results_model, options)
-learner = options.commutator_info.learner_class.new(generator.hinter, results_model, options)
+generator = options.commutator_info.generator_class.new(options)
+hinter = generator.hinter(results_model)
+learner = options.commutator_info.learner_class.new(hinter, results_model, options)
 stats_computer = CubeTrainer::Training::StatsComputer.new(Time.now, options, results_persistence)
 
 stats = stats_computer.input_stats(generator.input_items)
@@ -25,4 +26,5 @@ puts "#{stats[:found]} of #{stats[:total]} items found, #{stats[:newish_elements
 puts "#{stats_computer.num_results} results, #{stats_computer.num_recent_results} of them in the " \
      'last 24 hours.'
 
-CubeTrainer::Trainer.new(learner, results_model, generator.input_sampler).run
+input_sampler = generator.input_sampler(results_model)
+CubeTrainer::Training::Trainer.new(learner, results_model, input_sampler).run

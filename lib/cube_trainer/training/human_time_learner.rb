@@ -5,42 +5,44 @@ require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/training/result'
 require 'cube_trainer/utils/string_helper'
 
-module CubeTrainer; module Training
-  # Learner class that prints letter pairs to the console and has the human stop the time for
-  # something.
-  class HumanTimeLearner
-    include ConsoleHelpers
-    include Utils::StringHelper
-    include Core::CubePrintHelper
+module CubeTrainer
+  module Training
+    # Learner class that prints letter pairs to the console and has the human stop the time for
+    # something.
+    class HumanTimeLearner
+      include ConsoleHelpers
+      include Utils::StringHelper
+      include Core::CubePrintHelper
 
-    def initialize(hinter, results_model, options)
-      @hinter = hinter
-      @results_model = results_model
-      @picture = options.picture
-      @muted = options.muted
-    end
-
-    attr_reader :muted
-
-    def handle_user_input_data(data)
-      if data.char == 'd'
-        puts 'Pressed d. Deleting results for the last 10 seconds and exiting.'
-        @results_model.delete_after_time(Time.now - 10)
-        exit
-      else
-        puts "Time: #{format_time(data.time_s)}"
+      def initialize(hinter, results_model, options)
+        @hinter = hinter
+        @results_model = results_model
+        @picture = options.picture
+        @muted = options.muted
       end
-    end
 
-    def execute(input)
-      if @picture
-        puts cube_string(input.cube_state, :color)
-      else
-        puts_and_say(input.representation)
+      attr_reader :muted
+
+      def handle_user_input_data(data)
+        if data.char == 'd'
+          puts 'Pressed d. Deleting results for the last 10 seconds and exiting.'
+          @results_model.delete_after_time(Time.now - 10)
+          exit
+        else
+          puts "Time: #{format_time(data.time_s)}"
+        end
       end
-      data = time_before_any_key_press(@hinter.hints(input.representation))
-      handle_user_input_data(data)
-      PartialResult.new(data.time_s, 0, nil)
+
+      def execute(input)
+        if @picture
+          puts cube_string(input.cube_state, :color)
+        else
+          puts_and_say(input.representation)
+        end
+        data = time_before_any_key_press(@hinter.hints(input.representation))
+        handle_user_input_data(data)
+        PartialResult.new(data.time_s, 0, nil)
+      end
     end
   end
-end; end
+end

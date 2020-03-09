@@ -7,246 +7,248 @@ require 'cube_trainer/native'
 require 'cube_trainer/utils/array_helper'
 require 'ostruct'
 
-module CubeTrainer; module Training
-  # Represents a score that is not present and unknown.
-  class UnknownScore
-    include Comparable
-    def <=>(other)
-      -other.unknown_compare
-    end
+module CubeTrainer
+  module Training
+    # Represents a score that is not present and unknown.
+    class UnknownScore
+      include Comparable
+      def <=>(other)
+        -other.unknown_compare
+      end
 
-    def +(_other)
-      self
-    end
+      def +(_other)
+        self
+      end
 
-    def unknown_compare
-      0
-    end
+      def unknown_compare
+        0
+      end
 
-    def actual_compare(_value)
-      1
-    end
+      def actual_compare(_value)
+        1
+      end
 
-    def plus_actual(_value)
-      self
-    end
+      def plus_actual(_value)
+        self
+      end
 
-    def -@
-      self
-    end
+      def -@
+        self
+      end
 
-    def to_s
-      'unknown'
-    end
+      def to_s
+        'unknown'
+      end
 
-    def known?
-      false
-    end
-  end
-
-  # Represents a score that is actually present and known.
-  class ActualScore
-    include Comparable
-    def initialize(value)
-      @value = value
-    end
-
-    def <=>(other)
-      -other.actual_compare(@value)
-    end
-
-    def +(other)
-      other.plus_actual(@value)
-    end
-
-    def actual_compare(value)
-      @value <=> value
-    end
-
-    def unknown_compare
-      -1
-    end
-
-    def plus_actual(value)
-      ActualScore.new(@value + value)
-    end
-
-    def -@
-      ActualScore.new(-@value)
-    end
-
-    def to_s
-      if @value.is_a?(Float)
-        @value.round(2).to_s
-      else
-        @value.to_s
+      def known?
+        false
       end
     end
 
-    def known?
-      true
-    end
-  end
+    # Represents a score that is actually present and known.
+    class ActualScore
+      include Comparable
+      def initialize(value)
+        @value = value
+      end
 
-  # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
-  # e.g. solving a corner twist and a parity by a comm and a parity.
-  class HeterogenousSequenceHinter
-    include Utils::ArrayHelper
-    DescriptionAndValue =
-      Struct.new(:description, :value, :cancellations) do
-        def <=>(other)
-          [-cancellations, value, description] <=>
-            [-other.cancellations, other.value, other.description]
-        end
+      def <=>(other)
+        -other.actual_compare(@value)
+      end
 
-        def to_s
-          cancellations_string =
-            if cancellations > ActualScore.new(0)
-              " (cancels #{cancellations})"
-            else
-              ''
-            end
-          "#{description}: #{value}#{cancellations_string}"
+      def +(other)
+        other.plus_actual(@value)
+      end
+
+      def actual_compare(value)
+        @value <=> value
+      end
+
+      def unknown_compare
+        -1
+      end
+
+      def plus_actual(value)
+        ActualScore.new(@value + value)
+      end
+
+      def -@
+        ActualScore.new(-@value)
+      end
+
+      def to_s
+        if @value.is_a?(Float)
+          @value.round(2).to_s
+        else
+          @value.to_s
         end
       end
-    UNKNOWN_SCORE = UnknownScore.new
 
-    def initialize(cube_size, resultss, hinters)
-      Core::CubeState.check_cube_size(cube_size)
-      raise ArgumentError if resultss.length != hinters.length || resultss.empty?
-
-      hinters.each do |h|
-        raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints)
+      def known?
+        true
       end
-      @cube_size = cube_size
-      @valuess = compute_valuess(resultss)
-      @hinters = hinters
-      @hints = {}
-      @metric = :sqtm
     end
 
-    def compute_valuess(resultss)
-      resultss.map do |results|
-        values = {}
-        results.group_by(&:input_representation).each do |l, rs|
-          avg = Native::CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
-          rs.sort_by(&:timestamp).each { |r| avg.push(r.time_s) }
-          values[l] = ActualScore.new(avg.average)
+    # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
+    # e.g. solving a corner twist and a parity by a comm and a parity.
+    class HeterogenousSequenceHinter
+      include Utils::ArrayHelper
+      DescriptionAndValue =
+        Struct.new(:description, :value, :cancellations) do
+          def <=>(other)
+            [-cancellations, value, description] <=>
+              [-other.cancellations, other.value, other.description]
+          end
+
+          def to_s
+            cancellations_string =
+              if cancellations > ActualScore.new(0)
+                " (cancels #{cancellations})"
+              else
+                ''
+              end
+            "#{description}: #{value}#{cancellations_string}"
+          end
         end
-        values
+      UNKNOWN_SCORE = UnknownScore.new
+
+      def initialize(cube_size, resultss, hinters)
+        Core::CubeState.check_cube_size(cube_size)
+        raise ArgumentError if resultss.length != hinters.length || resultss.empty?
+
+        hinters.each do |h|
+          raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints)
+        end
+        @cube_size = cube_size
+        @valuess = compute_valuess(resultss)
+        @hinters = hinters
+        @hints = {}
+        @metric = :sqtm
       end
-    end
 
-    def length
-      @hinters.length
-    end
-
-    def value(index, input)
-      @valuess[index][input] ||= UNKNOWN_SCORE
-    end
-
-    def base_hint(index, input)
-      raise IndexError unless index >= 0 && index < length
-
-      hints = @hinters[index].hints(input)
-      hints.empty? ? nil : only(hints)
-    end
-
-    def combinations_with_base_hints(combinations)
-      combinations.map do |ls|
-        [ls, ls.map.with_index { |l, i| base_hint(i, l) }]
-      end
-    end
-
-    def binary_cancellation_score(left, right)
-      if left && right
-        ActualScore.new(left.cancellations(right, @cube_size, @metric))
-      else
-        UNKNOWN_SCORE
-      end
-    end
-
-    def sequence_cancellation_score(sequence)
-      sequence[0..-2].zip(sequence[1..-1]).map do |left, right|
-        binary_cancellation_score(left, right)
-      end.reduce(:+)
-    end
-
-    def descriptions_and_values(combinations_with_base_hints)
-      combinations_with_base_hints.map do |ls, hs|
-        description = ls.join(', ')
-        value = ls.map.with_index { |l, i| value(i, l) }.reduce(:+)
-        cancellations = sequence_cancellation_score(hs)
-        DescriptionAndValue.new(description, value, cancellations)
-      end
-    end
-
-    def base_hints_descriptions(combinations_with_base_hints)
-      combinations_with_base_hints.map do |ls, hs|
-        ls.zip(hs).select { |_l, h| h }.map { |l, h| "#{l}: #{h}" }
-      end.flatten.uniq
-    end
-
-    def hints(input)
-      @hints[input] ||=
-        begin
-                                 combinations = generate_combinations(input)
-                                 stuff = combinations_with_base_hints(combinations)
-                                 [
-                                   descriptions_and_values(stuff).sort.join("\n"),
-                                   base_hints_descriptions(stuff).sort.join("\n")
-                                 ]
-                               end
-    end
-
-    def generate_combinations(_input)
-      raise NotImplementedError
-    end
-  end
-
-  # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
-  # where the primitive cases are all of the same type, e.g. solving 3 twists by 2 comms.
-  class HomogenousSequenceHinter < HeterogenousSequenceHinter
-    def initialize(cube_size, results, hinter, multiplicity = 2)
-      super(cube_size, [results] * multiplicity, [hinter] * multiplicity)
-    end
-  end
-
-  # Hinter that gives hints on how to solve a sequence of algs.
-  class AlgSequenceHinter
-    include Utils::ArrayHelper
-
-    def initialize(hinters)
-      hinters.each do |h|
-        unless h.respond_to?(:hints) && h.respond_to?(:entries)
-          raise TypeError, "Got invalid hinter type #{h.class}."
+      def compute_valuess(resultss)
+        resultss.map do |results|
+          values = {}
+          results.group_by(&:input_representation).each do |l, rs|
+            avg = Native::CubeAverage.new(InputSampler::BADNESS_MEMORY, 0)
+            rs.sort_by(&:timestamp).each { |r| avg.push(r.time_s) }
+            values[l] = ActualScore.new(avg.average)
+          end
+          values
         end
       end
-      raise ArgumentError if hinters.empty?
 
-      @hinters = hinters
-    end
+      def length
+        @hinters.length
+      end
 
-    def hints(input)
-      parts = input_parts(input)
-      hint_components = @hinters.zip(parts).map { |h, i| only(h.hints(i)) }
-      [hint_components.reduce(:+)]
-    end
+      def value(index, input)
+        @valuess[index][input] ||= UNKNOWN_SCORE
+      end
 
-    def entries
-      entries_components = @hinters.map(&:entries)
-      entries_components[0].product(*entries_components[1..-1]).map do |entry_combination|
-        name = entry_combination.map { |e| e[0] }.reduce(:+)
-        alg = entry_combination.map { |e| e[1] }.reduce(:+)
-        [name, alg]
+      def base_hint(index, input)
+        raise IndexError unless index >= 0 && index < length
+
+        hints = @hinters[index].hints(input)
+        hints.empty? ? nil : only(hints)
+      end
+
+      def combinations_with_base_hints(combinations)
+        combinations.map do |ls|
+          [ls, ls.map.with_index { |l, i| base_hint(i, l) }]
+        end
+      end
+
+      def binary_cancellation_score(left, right)
+        if left && right
+          ActualScore.new(left.cancellations(right, @cube_size, @metric))
+        else
+          UNKNOWN_SCORE
+        end
+      end
+
+      def sequence_cancellation_score(sequence)
+        sequence[0..-2].zip(sequence[1..-1]).map do |left, right|
+          binary_cancellation_score(left, right)
+        end.reduce(:+)
+      end
+
+      def descriptions_and_values(combinations_with_base_hints)
+        combinations_with_base_hints.map do |ls, hs|
+          description = ls.join(', ')
+          value = ls.map.with_index { |l, i| value(i, l) }.reduce(:+)
+          cancellations = sequence_cancellation_score(hs)
+          DescriptionAndValue.new(description, value, cancellations)
+        end
+      end
+
+      def base_hints_descriptions(combinations_with_base_hints)
+        combinations_with_base_hints.map do |ls, hs|
+          ls.zip(hs).select { |_l, h| h }.map { |l, h| "#{l}: #{h}" }
+        end.flatten.uniq
+      end
+
+      def hints(input)
+        @hints[input] ||=
+          begin
+                                   combinations = generate_combinations(input)
+                                   stuff = combinations_with_base_hints(combinations)
+                                   [
+                                     descriptions_and_values(stuff).sort.join("\n"),
+                                     base_hints_descriptions(stuff).sort.join("\n")
+                                   ]
+                                 end
+      end
+
+      def generate_combinations(_input)
+        raise NotImplementedError
       end
     end
 
-    def input_parts(input)
-      parts = input.sub_names
-      raise ArgumentError unless @hinters.length == parts.length
+    # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
+    # where the primitive cases are all of the same type, e.g. solving 3 twists by 2 comms.
+    class HomogenousSequenceHinter < HeterogenousSequenceHinter
+      def initialize(cube_size, results, hinter, multiplicity = 2)
+        super(cube_size, [results] * multiplicity, [hinter] * multiplicity)
+      end
+    end
 
-      parts
+    # Hinter that gives hints on how to solve a sequence of algs.
+    class AlgSequenceHinter
+      include Utils::ArrayHelper
+
+      def initialize(hinters)
+        hinters.each do |h|
+          unless h.respond_to?(:hints) && h.respond_to?(:entries)
+            raise TypeError, "Got invalid hinter type #{h.class}."
+          end
+        end
+        raise ArgumentError if hinters.empty?
+
+        @hinters = hinters
+      end
+
+      def hints(input)
+        parts = input_parts(input)
+        hint_components = @hinters.zip(parts).map { |h, i| only(h.hints(i)) }
+        [hint_components.reduce(:+)]
+      end
+
+      def entries
+        entries_components = @hinters.map(&:entries)
+        entries_components[0].product(*entries_components[1..-1]).map do |entry_combination|
+          name = entry_combination.map { |e| e[0] }.reduce(:+)
+          alg = entry_combination.map { |e| e[1] }.reduce(:+)
+          [name, alg]
+        end
+      end
+
+      def input_parts(input)
+        parts = input.sub_names
+        raise ArgumentError unless @hinters.length == parts.length
+
+        parts
+      end
     end
   end
-end; end
+end
