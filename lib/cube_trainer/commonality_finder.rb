@@ -36,8 +36,7 @@ module CubeTrainer
     # returns a letter pair of length 2 or nil.
     def self.interpret_table(table)
       table_interpretations =
-        AXIS_INTERPRETATIONS.map do |row_axis_interpretation,
-                                                                  column_axis_interpretation|
+        AXIS_INTERPRETATIONS.map do |row_axis_interpretation, column_axis_interpretation|
           row_interpretations = find_row_interpretations(table, row_axis_interpretation)
           column_interpretations =
             find_row_interpretations(table.transpose, column_axis_interpretation)
