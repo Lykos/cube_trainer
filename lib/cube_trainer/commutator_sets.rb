@@ -70,7 +70,8 @@ module CubeTrainer
       buffer_twist.apply_to(cube_state)
       ccw_twists =
         correctly_oriented_corners.map do |c|
-          letter_pair = LetterPair.new([letter_scheme.letter(c)])
+          twisted_corner = c.rotate_by(1)
+          letter_pair = LetterPair.new([letter_scheme.letter(twisted_corner)])
           twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c]).inverse
           twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
           InputItem.new(letter_pair, twisted_cube_state)
@@ -78,11 +79,12 @@ module CubeTrainer
       buffer_twist.apply_to(cube_state)
       cw_twists =
         correctly_oriented_corners.map do |c|
-          letter_pair = LetterPair.new([letter_scheme.letter(c)])
+          twisted_corner = c.rotate_by(2)
+          letter_pair = LetterPair.new([letter_scheme.letter(twisted_corner)])
           twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c])
           twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
           InputItem.new(letter_pair, twisted_cube_state)
-        end
+      end
       two_twists + cw_twists + ccw_twists
     end
     # rubocop:enable Metrics/MethodLength
