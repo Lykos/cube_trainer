@@ -7,7 +7,7 @@ require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/pao_letter_pair'
 require 'cube_trainer/utils/string_helper'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # The part of the result that basically comes from the input of whoever is
   # learning.
   PartialResult = Struct.new(:time_s, :failed_attempts, :word)
@@ -117,4 +117,4 @@ module CubeTrainer
       [formatted_timestamp, formatted_time, failed_attempts.to_s]
     end
   end
-end
+end; end

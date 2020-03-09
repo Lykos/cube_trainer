@@ -3,7 +3,7 @@
 require 'cube_trainer/utils/string_helper'
 require 'csv'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Class that parses hints from an algorithm or commutator file.
   class HintParser
     include Utils::StringHelper
@@ -60,4 +60,4 @@ module CubeTrainer
       raise NotImplementedError
     end
   end
-end
+end; end

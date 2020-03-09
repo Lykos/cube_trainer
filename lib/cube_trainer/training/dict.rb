@@ -2,7 +2,7 @@
 
 require 'set'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Class that reads dictionaries and tries to extract useful
   # words for letter pairs from it.
   class Dict
@@ -38,4 +38,4 @@ module CubeTrainer
       words.to_a.sort
     end
   end
-end
+end; end

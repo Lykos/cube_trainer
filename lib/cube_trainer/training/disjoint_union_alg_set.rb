@@ -3,7 +3,7 @@
 require 'cube_trainer/training/disjoint_union_hinter'
 require 'cube_trainer/training/letter_pair_alg_set'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Class that generates input items for alg sets that are the disjoint union of two alg sets.
   class DisjointUnionLetterPairAlgSet < LetterPairAlgSet
     def initialize(results_model, options, *alg_sets)
@@ -27,4 +27,4 @@ module CubeTrainer
       @goal_badness ||= @alg_sets.map(&:goal_badness).max
     end
   end
-end
+end; end

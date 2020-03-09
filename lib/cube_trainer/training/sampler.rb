@@ -3,7 +3,7 @@
 require 'cube_trainer/cube_trainer_error'
 require 'cube_trainer/utils/sampling_helper'
 
-module CubeTrainer
+module CubeTrainer; module Training
   class SamplingError < CubeTrainerError
   end
 
@@ -96,4 +96,4 @@ module CubeTrainer
       !items.empty?
     end
   end
-end
+end; end

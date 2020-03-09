@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Hinter that maps letter pairs to commutators for those letter pairs.
   class CommutatorHinter
     def initialize(hints)
@@ -15,4 +15,4 @@ module CubeTrainer
         end
     end
   end
-end
+end; end

@@ -2,9 +2,9 @@
 
 require 'cube_trainer/training/commutator_options'
 require 'cube_trainer/buffer_helper'
-require 'cube_trainer/stats_computer'
+require 'cube_trainer/training/stats_computer'
 
-module CubeTrainer
+module CubeTrainer; module Training
   TWIST_LAST_CORNER_WITH_PARITY = true
   FLIP_LAST_EDGE_WITH_COMM = false
 
@@ -188,4 +188,4 @@ module CubeTrainer
       per_type_stats
     end
   end
-end
+end; end

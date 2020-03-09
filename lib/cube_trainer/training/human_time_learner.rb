@@ -5,7 +5,7 @@ require 'cube_trainer/core/cube_print_helper'
 require 'cube_trainer/training/result'
 require 'cube_trainer/utils/string_helper'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Learner class that prints letter pairs to the console and has the human stop the time for
   # something.
   class HumanTimeLearner
@@ -43,4 +43,4 @@ module CubeTrainer
       PartialResult.new(data.time_s, 0, nil)
     end
   end
-end
+end; end

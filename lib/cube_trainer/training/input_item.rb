@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module CubeTrainer
+module CubeTrainer; module Training
   # An input item that has a representation that will be stored and used as a key and
   # potentially an associated cube state.
   class InputItem
@@ -16,4 +16,4 @@ module CubeTrainer
     # An (optional) cube state that represents this input item.
     attr_reader :cube_state
   end
-end
+end; end

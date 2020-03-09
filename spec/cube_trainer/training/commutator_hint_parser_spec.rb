@@ -5,14 +5,14 @@ require 'cube_trainer/core/parser'
 require 'cube_trainer/training/commutator_hint_parser'
 require 'cube_trainer/letter_scheme'
 
-describe HintParser do
+describe Training::HintParser do
   include Core
 
   let(:part_type) { Core::Corner }
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:buffer) { letter_scheme.default_buffer(part_type) }
   let(:hint_parser) do
-    CommutatorHintParser.new(
+    Training::CommutatorHintParser.new(
       part_type: part_type,
       buffer: buffer,
       letter_scheme: letter_scheme,

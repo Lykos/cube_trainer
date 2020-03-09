@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Hinter for an alg set (e.g. PLLs). Gives an alg for an alg name.
   class AlgHinter
     def initialize(hints)
@@ -16,4 +16,4 @@ module CubeTrainer
       @hints[name]
     end
   end
-end
+end; end

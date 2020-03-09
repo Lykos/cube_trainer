@@ -5,7 +5,7 @@ require 'cube_trainer/buffer_helper'
 require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/training/input_item'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Class that generates input items for items that can be represented by letter pairs.
   class LetterPairAlgSet
     include LetterPairHelper
@@ -62,4 +62,4 @@ module CubeTrainer
       raise NotImplementedError
     end
   end
-end
+end; end

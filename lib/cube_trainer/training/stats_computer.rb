@@ -2,11 +2,11 @@
 
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/native'
-require 'cube_trainer/probabilities'
+require 'cube_trainer/training/probabilities'
 require 'cube_trainer/training/results_persistence'
 require 'cube_trainer/utils/math_helper'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Helper class to compute all kinds of cubing stats
   class StatsComputer
     include Utils::MathHelper
@@ -138,4 +138,4 @@ module CubeTrainer
       start.step(finish, step).to_a
     end
   end
-end
+end; end

@@ -2,7 +2,7 @@
 
 require 'cube_trainer/training/result'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Class that handles storing and querying results.
   class ResultsModel
     def initialize(mode, results_persistence)
@@ -42,4 +42,4 @@ module CubeTrainer
       results.select { |r| r.word == word }.map(&:input).uniq
     end
   end
-end
+end; end

@@ -8,7 +8,7 @@ require 'cube_trainer/training/disjoint_union_hinter'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/sequence_hinter'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Base class for alg sets (e.g. PLLs).
   class AlgSet
     include Utils::StringHelper
@@ -83,4 +83,4 @@ module CubeTrainer
       1.0
     end
   end
-end
+end; end

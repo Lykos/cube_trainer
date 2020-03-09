@@ -70,7 +70,7 @@ module CubeTrainer
       end
 
       def create_partial_result
-        PartialResult.new(@stop_watch_controller.time_s, @failed_attempts, nil)
+        Training::PartialResult.new(@stop_watch_controller.time_s, @failed_attempts, nil)
       end
 
       def cubie
@@ -81,9 +81,9 @@ module CubeTrainer
       def init
         @letter_scheme = BernhardLetterScheme.new
         @color_scheme = ColorScheme::BERNHARD
-        @results_model = ResultsModel.new(
+        @results_model = Training::ResultsModel.new(
           :cubie_to_letter,
-          ResultsPersistence.create_for_production
+          Training::ResultsPersistence.create_for_production
         )
 
         @stop_watch_controller = create_stop_watch_controller

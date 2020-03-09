@@ -3,13 +3,13 @@
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_trainer/training/commutator_options'
 require 'cube_trainer/core/cube'
-require 'cube_trainer/stats_computer'
+require 'cube_trainer/training/commutator_options'
+require 'cube_trainer/training/stats_computer'
 require 'yaml'
 
-options = CubeTrainer::CommutatorOptions.parse(ARGV)
-computer = CubeTrainer::StatsComputer.new(Time.now, options)
+options = CubeTrainer::Training::CommutatorOptions.parse(ARGV)
+computer = CubeTrainer::Training::StatsComputer.new(Time.now, options)
 
 # Detailed stats
 computer.averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }

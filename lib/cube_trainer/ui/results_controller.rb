@@ -2,8 +2,6 @@
 
 require 'Qt4'
 require 'cube_trainer/training/result'
-require 'cube_trainer/training/results_model'
-require 'cube_trainer/training/results_persistence'
 
 module CubeTrainer
   module Ui
@@ -18,7 +16,7 @@ module CubeTrainer
 
       def reset
         @table.setRowCount(results.length)
-        @table.setColumnCount(Result::COLUMNS)
+        @table.setColumnCount(Training::Result::COLUMNS)
         results.each_with_index { |r, i| set_result(i, r) }
       end
 

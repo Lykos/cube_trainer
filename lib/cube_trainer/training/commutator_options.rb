@@ -11,7 +11,7 @@ require 'cube_trainer/training/human_time_learner'
 require 'cube_trainer/training/letters_to_word'
 require 'cube_trainer/training/alg_sets'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Command line options for `commutators` binary.
   class CommutatorOptions
     CommutatorInfo =
@@ -149,4 +149,4 @@ module CubeTrainer
     # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/AbcSize
   end
-end
+end; end

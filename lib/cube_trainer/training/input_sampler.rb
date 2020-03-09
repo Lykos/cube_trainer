@@ -5,7 +5,7 @@ require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/sampler'
 require 'cube_trainer/utils/random_helper'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # An input sampler that tries to adaptively sample items that are useful inputs for the learner.
   class InputSampler
     include Utils::RandomHelper
@@ -277,4 +277,4 @@ module CubeTrainer
       @items.sample
     end
   end
-end
+end; end

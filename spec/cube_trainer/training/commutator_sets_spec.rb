@@ -8,7 +8,7 @@ require 'cube_trainer/training/stub_results_model'
 shared_examples 'commutator_set' do |info|
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:options) do
-    options = CommutatorOptions.default_options
+    options = Training::CommutatorOptions.default_options
     options.commutator_info = info
     options.cube_size = info.default_cube_size
     options.test_comms_mode = :fail
@@ -23,7 +23,7 @@ shared_examples 'commutator_set' do |info|
   end
 end
 
-CommutatorOptions::COMMUTATOR_TYPES.each do |_key, info|
+Training::CommutatorOptions::COMMUTATOR_TYPES.each do |_key, info|
   next unless info.default_cube_size
 
   describe info.generator_class do

@@ -6,7 +6,7 @@ require 'cube_trainer/letter_pair'
 require 'cube_trainer/xdg_helper'
 require 'sqlite3'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Class that talks to the results database.
   class ResultsPersistence
     def initialize(db)
@@ -76,4 +76,4 @@ module CubeTrainer
       @record_result_stm.execute(result.to_raw_data)
     end
   end
-end
+end; end

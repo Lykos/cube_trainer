@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module CubeTrainer
+module CubeTrainer; module Training
   # A term that has been processed s.t. we can easily check whether it matches a letter sequence.
   class ProcessedTerm
     def initialize(term)
@@ -44,4 +44,4 @@ module CubeTrainer
       @processed_terms.select { |t| t.matches?(start, rest) }.map(&:term)
     end
   end
-end
+end; end

@@ -11,7 +11,7 @@ require 'cube_trainer/commutator_checker'
 require 'cube_trainer/training/hint_parser'
 require 'cube_trainer/utils/string_helper'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Stub commutator checker that just says everything is always okay.
   class CommutatorCheckerStub
     def initialize
@@ -249,4 +249,4 @@ module CubeTrainer
       hint_parser.maybe_parse_hints
     end
   end
-end
+end; end

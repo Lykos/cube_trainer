@@ -2,7 +2,7 @@
 
 require 'cube_trainer/training/restricted_hinter'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Hinter that gives hint for the disjoint union of subhinters.
   class DisjointUnionHinter
     def initialize(restricted_hinters)
@@ -29,4 +29,4 @@ module CubeTrainer
       @restricted_hinters.collect_concat(&:entries)
     end
   end
-end
+end; end

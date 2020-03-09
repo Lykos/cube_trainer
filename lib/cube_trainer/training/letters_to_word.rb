@@ -6,7 +6,7 @@ require 'cube_trainer/training/letter_pair_alg_set'
 require 'cube_trainer/pao_letter_pair'
 require 'cube_trainer/training/dict'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Class that generates input items for mapping letter pairs to words.
   class LettersToWord < LetterPairAlgSet
     def initialize(results_model, options)
@@ -67,4 +67,4 @@ module CubeTrainer
       last_word.nil? || last_word == word
     end
   end
-end
+end; end

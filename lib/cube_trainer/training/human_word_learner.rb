@@ -4,7 +4,7 @@ require 'cube_trainer/console_helpers'
 require 'cube_trainer/training/result'
 require 'cube_trainer/utils/string_helper'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Learner class that prints letter pairs to the console and has the human input fitting words.
   class HumanWordLearner
     include ConsoleHelpers
@@ -87,4 +87,4 @@ module CubeTrainer
     # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/AbcSize
   end
-end
+end; end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Class that gives random inputs to a learner class and measures and records how well the learner
   # performs.
   class Trainer
@@ -23,4 +23,4 @@ module CubeTrainer
       end
     end
   end
-end
+end; end

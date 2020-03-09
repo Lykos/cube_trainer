@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module CubeTrainer
+module CubeTrainer; module Training
   # A restricted hinter that works like a given hinter, but only works on a certain set of inputs.
   class RestrictedHinter
     def initialize(inputs, hinter)
@@ -31,4 +31,4 @@ module CubeTrainer
       @inputs.include?(input)
     end
   end
-end
+end; end

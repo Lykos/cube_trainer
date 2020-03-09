@@ -8,7 +8,7 @@ require 'cube_trainer/training/alg_hinter'
 require 'cube_trainer/training/restricted_hinter'
 require 'cube_trainer/training/sequence_hinter'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Parses hints for an alg set (e.g. for PLLs).
   class AlgHintParser < HintParser
     include Utils::StringHelper
@@ -79,4 +79,4 @@ module CubeTrainer
       maybe_parse_special_hints(name, verbose) || AlgHintParser.new(name, verbose).parse_hints
     end
   end
-end
+end; end

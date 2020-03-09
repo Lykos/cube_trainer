@@ -7,7 +7,7 @@ require 'cube_trainer/native'
 require 'cube_trainer/utils/array_helper'
 require 'ostruct'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Represents a score that is not present and unknown.
   class UnknownScore
     include Comparable
@@ -249,4 +249,4 @@ module CubeTrainer
       parts
     end
   end
-end
+end; end

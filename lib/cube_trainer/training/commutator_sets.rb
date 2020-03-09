@@ -11,7 +11,7 @@ require 'cube_trainer/training/sequence_hinter'
 require 'cube_trainer/training/letter_pair_alg_set'
 require 'cube_trainer/utils/array_helper'
 
-module CubeTrainer
+module CubeTrainer; module Training
   # Module containing useful methods for various sets of corner twists.
   module CornerTwistSetsHelper
     ORIENTATION_FACES = [Core::Face::U, Core::Face::D].freeze
@@ -445,4 +445,4 @@ results_model, options, FloatingCorner2Twists.new(results_model, options),
       non_buffer_corners.map { |c| LetterPair.new([letter_scheme.letter(c)]) }
     end
   end
-end
+end; end

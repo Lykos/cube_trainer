@@ -7,13 +7,13 @@ require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/result'
 require 'cube_trainer/training/sequence_hinter'
 
-class FakeHeterogenousSequenceHinter < HeterogenousSequenceHinter
+class FakeHeterogenousSequenceHinter < Training::HeterogenousSequenceHinter
   def generate_combinations(input)
     input.sub_names.map(&:sub_names)
   end
 end
 
-describe HeterogenousSequenceHinter do
+describe Training::HeterogenousSequenceHinter do
   include Core
 
   let(:cube_size) { 3 }
@@ -25,14 +25,14 @@ describe HeterogenousSequenceHinter do
   let(:algorithm_b) { parse_algorithm('R') }
   let(:algorithm_c) { parse_algorithm('U') }
   let(:algorithm_d) { parse_algorithm('U2') }
-  let(:result_a) { Result.new(:mode, Time.at(0), 1.0, algname_a, 0, nil) }
-  let(:result_b) { Result.new(:mode, Time.at(0), 2.0, algname_b, 0, nil) }
-  let(:result_d) { Result.new(:mode, Time.at(0), 1.0, algname_d, 0, nil) }
+  let(:result_a) { Training::Result.new(:mode, Time.at(0), 1.0, algname_a, 0, nil) }
+  let(:result_b) { Training::Result.new(:mode, Time.at(0), 2.0, algname_b, 0, nil) }
+  let(:result_d) { Training::Result.new(:mode, Time.at(0), 1.0, algname_d, 0, nil) }
   let(:results_left) { [result_a, result_b] * 5 }
   let(:results_right) { [result_d] * 5 }
   let(:resultss) { [results_left, results_right] }
-  let(:hinter_left) { AlgHinter.new(algname_a => algorithm_a, algname_b => algorithm_b, algname_c => algorithm_c) }
-  let(:hinter_right) { AlgHinter.new(algname_d => algorithm_d) }
+  let(:hinter_left) { Training::AlgHinter.new(algname_a => algorithm_a, algname_b => algorithm_b, algname_c => algorithm_c) }
+  let(:hinter_right) { Training::AlgHinter.new(algname_d => algorithm_d) }
   let(:hinters) { [hinter_left, hinter_right] }
   let(:hinter) { FakeHeterogenousSequenceHinter.new(cube_size, resultss, hinters) }
 

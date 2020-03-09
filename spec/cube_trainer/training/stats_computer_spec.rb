@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/stats_computer'
+require 'cube_trainer/training/stats_computer'
 require 'cube_trainer/training/result'
 require 'cube_trainer/training/commutator_options'
 require 'cube_trainer/training/input_item'
 require 'ostruct'
 
-describe StatsComputer do
+describe Training::StatsComputer do
   let(:now) { Time.at(0) }
   let(:t_10_minutes_ago) { now - 600 }
   let(:t_2_hours_ago) { now - 2 * 3600 }
@@ -16,7 +16,7 @@ describe StatsComputer do
     options = OpenStruct.new
     options.cube_size = 3
     options.letter_scheme = letter_scheme
-    options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES[:corners]
+    options.commutator_info = Training::CommutatorOptions::COMMUTATOR_TYPES[:corners]
     options.new_item_boundary = 5
     options
   end
@@ -26,33 +26,33 @@ describe StatsComputer do
   let(:fill_letter_pairs) { ('a'..'z').map { |l| LetterPair.new(['b', l]) } }
   let(:mode) { BufferHelper.mode_for_options(options) }
   let(:results) do
-    other_commutator_infos = CommutatorOptions::COMMUTATOR_TYPES.reject { |k, _v| k == :corners }
+    other_commutator_infos = Training::CommutatorOptions::COMMUTATOR_TYPES.reject { |k, _v| k == :corners }
     other_mode_results =
       other_commutator_infos.map do |_k, v|
         patched_options = options.dup
         patched_options.commutator_info = v
         mode = BufferHelper.mode_for_options(patched_options)
-        Result.new(mode, t_2_days_ago, 1.0, letter_pair_b, 0, nil)
+        Training::Result.new(mode, t_2_days_ago, 1.0, letter_pair_b, 0, nil)
       end
-    fill_results = fill_letter_pairs.map { |ls| Result.new(mode, t_2_days_ago, 1.0, ls, 0, nil) }
+    fill_results = fill_letter_pairs.map { |ls| Training::Result.new(mode, t_2_days_ago, 1.0, ls, 0, nil) }
     [
-      Result.new(mode, t_10_minutes_ago, 1.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_10_minutes_ago, 2.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_10_minutes_ago, 3.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_10_minutes_ago, 4.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_10_minutes_ago, 5.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_10_minutes_ago - 1, 6.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_2_hours_ago, 7.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_2_days_ago, 10.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_2_days_ago, 11.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_2_days_ago, 12.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_2_days_ago, 13.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_2_days_ago, 14.0, letter_pair_a, 0, nil),
-      Result.new(mode, t_2_hours_ago, 10.0, letter_pair_b, 0, nil)
+      Training::Result.new(mode, t_10_minutes_ago, 1.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_10_minutes_ago, 2.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_10_minutes_ago, 3.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_10_minutes_ago, 4.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_10_minutes_ago, 5.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_10_minutes_ago - 1, 6.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_2_hours_ago, 7.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_2_days_ago, 10.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_2_days_ago, 11.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_2_days_ago, 12.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_2_days_ago, 13.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_2_days_ago, 14.0, letter_pair_a, 0, nil),
+      Training::Result.new(mode, t_2_hours_ago, 10.0, letter_pair_b, 0, nil)
     ] + fill_results + other_mode_results
   end
   let(:results_persistence) do
-    persistence = ResultsPersistence.create_in_memory
+    persistence = Training::ResultsPersistence.create_in_memory
     results.each { |r| persistence.record_result(r) }
     persistence
   end
@@ -92,7 +92,7 @@ describe StatsComputer do
   end
 
   it 'computes how many items we have already seen and how many are new' do
-    inputs = [letter_pair_a, letter_pair_b, letter_pair_c].map { |ls| InputItem.new(ls) }
+    inputs = [letter_pair_a, letter_pair_b, letter_pair_c].map { |ls| Training::InputItem.new(ls) }
     stats = computer.input_stats(inputs)
     expect(stats[:found]).to be == 2
     expect(stats[:total]).to be == 3

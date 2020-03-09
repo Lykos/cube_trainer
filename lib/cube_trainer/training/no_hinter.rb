@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module CubeTrainer
+module CubeTrainer; module Training
   # An empty hinter that always returns no hints.
   class NoHinter
     def initialize(keys)
@@ -13,4 +13,4 @@ module CubeTrainer
       []
     end
   end
-end
+end; end
