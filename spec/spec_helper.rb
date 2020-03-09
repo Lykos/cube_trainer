@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'rspec-prof'
 require 'simplecov'
 
 RSpec.configure do |config|
