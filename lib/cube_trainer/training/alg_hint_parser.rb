@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/alg_hinter'
 require 'cube_trainer/alg_name'
 require 'cube_trainer/core/parser'
-require 'cube_trainer/disjoint_union_hinter'
-require 'cube_trainer/hint_parser'
-require 'cube_trainer/restricted_hinter'
-require 'cube_trainer/sequence_hinter'
+require 'cube_trainer/training/disjoint_union_hinter'
+require 'cube_trainer/training/hint_parser'
+require 'cube_trainer/training/alg_hinter'
+require 'cube_trainer/training/restricted_hinter'
+require 'cube_trainer/training/sequence_hinter'
 
 module CubeTrainer
   # Parses hints for an alg set (e.g. for PLLs).

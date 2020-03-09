@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/restricted_hinter'
+require 'cube_trainer/training/restricted_hinter'
 
 module CubeTrainer
   # Hinter that gives hint for the disjoint union of subhinters.

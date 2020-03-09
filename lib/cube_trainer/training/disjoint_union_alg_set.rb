@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/letter_pair_alg_set'
-require 'cube_trainer/disjoint_union_hinter'
+require 'cube_trainer/training/disjoint_union_hinter'
+require 'cube_trainer/training/letter_pair_alg_set'
 
 module CubeTrainer
   # Class that generates input items for alg sets that are the disjoint union of two alg sets.

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/commutator_options'
+require 'cube_trainer/training/commutator_options'
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/stats_computer'
 

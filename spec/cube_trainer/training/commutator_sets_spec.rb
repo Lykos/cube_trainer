@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/commutator_sets'
+require 'cube_trainer/training/commutator_sets'
 require 'ostruct'
-require 'cube_trainer/commutator_options'
-require 'cube_trainer/stub_results_model'
+require 'cube_trainer/training/commutator_options'
+require 'cube_trainer/training/stub_results_model'
 
 shared_examples 'commutator_set' do |info|
   let(:letter_scheme) { BernhardLetterScheme.new }

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'Qt4'
-require 'cube_trainer/result'
-require 'cube_trainer/results_model'
-require 'cube_trainer/results_persistence'
+require 'cube_trainer/training/result'
+require 'cube_trainer/training/results_model'
+require 'cube_trainer/training/results_persistence'
 
 module CubeTrainer
   module Ui

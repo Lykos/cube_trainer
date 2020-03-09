@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/input_item'
 require 'cube_trainer/native'
-require 'cube_trainer/sampler'
+require 'cube_trainer/training/input_item'
+require 'cube_trainer/training/sampler'
 require 'cube_trainer/utils/random_helper'
 
 module CubeTrainer

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/alg_name'
-require 'cube_trainer/input_item'
+require 'cube_trainer/training/input_item'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/pao_letter_pair'

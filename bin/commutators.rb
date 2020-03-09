@@ -3,10 +3,10 @@
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_trainer/commutator_sets'
-require 'cube_trainer/commutator_options'
-require 'cube_trainer/results_model'
-require 'cube_trainer/trainer'
+require 'cube_trainer/training/commutator_sets'
+require 'cube_trainer/training/commutator_options'
+require 'cube_trainer/training/results_model'
+require 'cube_trainer/training/trainer'
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/stats_computer'
 

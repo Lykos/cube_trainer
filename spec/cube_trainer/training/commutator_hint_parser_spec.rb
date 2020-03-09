@@ -2,7 +2,7 @@
 
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/parser'
-require 'cube_trainer/commutator_hint_parser'
+require 'cube_trainer/training/commutator_hint_parser'
 require 'cube_trainer/letter_scheme'
 
 describe HintParser do

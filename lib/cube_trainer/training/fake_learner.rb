@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/result'
+require 'cube_trainer/training/result'
 
 module CubeTrainer
   # A fake learner that learns stuff and forgets it after a while.
-  class Learner
+  class FakeLearner
     FORGET_RATE = 0.01
 
     # Learn stats of the fake learner.

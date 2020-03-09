@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'yaml'
-require 'cube_trainer/result'
+require 'cube_trainer/training/result'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/xdg_helper'
 require 'sqlite3'

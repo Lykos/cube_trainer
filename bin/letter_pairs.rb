@@ -3,8 +3,8 @@
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_trainer/letter_pair_word_finder'
-require 'cube_trainer/dict'
+require 'cube_trainer/training/letter_pair_word_finder'
+require 'cube_trainer/training/dict'
 
 if ARGV.length > 1
   raise 'At most one argument (namely the file to read words from) should be given.'

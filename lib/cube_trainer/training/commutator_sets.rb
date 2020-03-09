@@ -2,13 +2,13 @@
 
 require 'cube_trainer/core/part_cycle_factory'
 require 'cube_trainer/letter_pair_helper'
-require 'cube_trainer/input_sampler'
-require 'cube_trainer/disjoint_union_alg_set'
-require 'cube_trainer/commutator_hint_parser'
+require 'cube_trainer/training/input_sampler'
+require 'cube_trainer/training/disjoint_union_alg_set'
+require 'cube_trainer/training/commutator_hint_parser'
 require 'cube_trainer/letter_pair_sequence'
-require 'cube_trainer/no_hinter'
-require 'cube_trainer/sequence_hinter'
-require 'cube_trainer/letter_pair_alg_set'
+require 'cube_trainer/training/no_hinter'
+require 'cube_trainer/training/sequence_hinter'
+require 'cube_trainer/training/letter_pair_alg_set'
 require 'cube_trainer/utils/array_helper'
 
 module CubeTrainer
@@ -84,7 +84,7 @@ module CubeTrainer
           twist_sticker_cycles = part_cycle_factory.multi_corner_twist([c])
           twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
           InputItem.new(letter_pair, twisted_cube_state)
-      end
+        end
       two_twists + cw_twists + ccw_twists
     end
     # rubocop:enable Metrics/MethodLength

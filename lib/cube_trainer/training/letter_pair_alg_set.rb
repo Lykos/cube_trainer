@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/letter_pair_helper'
-require 'cube_trainer/input_sampler'
 require 'cube_trainer/buffer_helper'
-require 'cube_trainer/input_item'
+require 'cube_trainer/training/input_sampler'
+require 'cube_trainer/training/input_item'
 
 module CubeTrainer
   # Class that generates input items for items that can be represented by letter pairs.

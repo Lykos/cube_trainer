@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/letter_pair_helper'
-require 'cube_trainer/input_sampler'
-require 'cube_trainer/letter_pair_alg_set'
+require 'cube_trainer/training/input_sampler'
+require 'cube_trainer/training/letter_pair_alg_set'
 require 'cube_trainer/pao_letter_pair'
-require 'cube_trainer/dict'
+require 'cube_trainer/training/dict'
 
 module CubeTrainer
   # Class that generates input items for mapping letter pairs to words.

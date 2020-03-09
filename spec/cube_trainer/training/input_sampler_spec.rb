@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/trainer'
-require 'cube_trainer/results_persistence'
-require 'cube_trainer/input_item'
-require 'cube_trainer/results_model'
-require 'cube_trainer/learner'
-require 'cube_trainer/commutator_sets'
+require 'cube_trainer/training/fake_learner'
+require 'cube_trainer/training/trainer'
+require 'cube_trainer/training/results_persistence'
+require 'cube_trainer/training/input_item'
+require 'cube_trainer/training/results_model'
+require 'cube_trainer/training/commutator_sets'
 require 'cube_trainer/stats_computer'
 require 'cube_trainer/letter_pair'
 
 ITERATIONS = 300
 
 def compute_average(results_model, generator)
-  learner = Learner.new
+  learner = FakeLearner.new
   trainer = Trainer.new(learner, results_model, generator)
   ITERATIONS.times { trainer.one_iteration }
   raise 'Not all inputs covered.' unless learner.items_learned == generator.items.length

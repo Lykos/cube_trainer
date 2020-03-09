@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/result'
+require 'cube_trainer/training/result'
 
 module CubeTrainer
   # Class that handles storing and querying results.

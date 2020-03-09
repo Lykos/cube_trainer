@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 require 'ostruct'
-require 'cube_trainer/cube_trainer_options_parser'
-require 'cube_trainer/commutator_hint_parser'
-require 'cube_trainer/commutator_sets'
 require 'cube_trainer/color_scheme'
-require 'cube_trainer/human_word_learner'
-require 'cube_trainer/human_time_learner'
-require 'cube_trainer/letters_to_word'
+require 'cube_trainer/cube_trainer_options_parser'
 require 'cube_trainer/letter_scheme'
-require 'cube_trainer/alg_sets'
+require 'cube_trainer/training/commutator_hint_parser'
+require 'cube_trainer/training/commutator_sets'
+require 'cube_trainer/training/human_word_learner'
+require 'cube_trainer/training/human_time_learner'
+require 'cube_trainer/training/letters_to_word'
+require 'cube_trainer/training/alg_sets'
 
 module CubeTrainer
   # Command line options for `commutators` binary.

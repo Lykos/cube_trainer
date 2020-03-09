@@ -2,7 +2,7 @@
 
 require 'cube_trainer/alg_name'
 require 'cube_trainer/core/cube_state'
-require 'cube_trainer/input_sampler'
+require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/native'
 require 'cube_trainer/utils/array_helper'
 require 'ostruct'

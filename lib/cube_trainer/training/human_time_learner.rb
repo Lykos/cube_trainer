@@ -2,7 +2,7 @@
 
 require 'cube_trainer/console_helpers'
 require 'cube_trainer/core/cube_print_helper'
-require 'cube_trainer/result'
+require 'cube_trainer/training/result'
 require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
