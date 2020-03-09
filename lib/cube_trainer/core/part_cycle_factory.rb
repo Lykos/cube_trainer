@@ -24,12 +24,12 @@ module CubeTrainer
         @cache[part] ||= Coordinate.solved_positions(part, @cube_size, @incarnation_index)
       end
 
-      def multi_corner_twist(corners)
-        unless corners.all? { |p| p.is_a?(Corner) }
-          raise TypeError, 'Cycles of weird piece types are not supported.'
+      def multi_twist(parts)
+        unless parts.all? { |p| p.is_a?(Corner) || p.is_a?(Edge) }
+          raise TypeError, 'Twists are only supported for edges and corners.'
         end
 
-        cycles = corners.map { |c| StickerCycle.new(@cube_size, coordinates(c)) }
+        cycles = parts.map { |p| StickerCycle.new(@cube_size, coordinates(p)) }
         StickerCycles.new(@cube_size, cycles)
       end
 

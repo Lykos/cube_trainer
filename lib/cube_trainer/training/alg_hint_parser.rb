@@ -40,11 +40,11 @@ module CubeTrainer
           raw_alg_name, raw_alg = row
           alg =
             begin
-                           parse_algorithm(raw_alg)
+              parse_algorithm(raw_alg)
             rescue Core::CommutatorParseError => e
               warn "Couldn't parse alg '#{alg}': #{e}"
               next
-                         end
+            end
           [SimpleAlgName.new(raw_alg_name), alg]
         end.compact.to_h
       end

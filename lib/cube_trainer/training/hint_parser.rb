@@ -57,7 +57,7 @@ module CubeTrainer
         raise NotImplementedError
       end
 
-      def parse_hints_internal
+      def parse_hints_internal(*)
         raise NotImplementedError
       end
     end
