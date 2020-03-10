@@ -260,7 +260,7 @@ module CubeTrainer
         if @verbose
           tag = tagged_sample.tag
           score = sampling_tag_score_method(tag).call(tagged_sample)
-          puts "sampling tag: #{tag}; score: #{score}; " \
+          puts "sampling tag: #{tag}; score: #{score.round(2)}; " \
                "items since last occurrence #{items_since_last_occurrence(item)}; " \
                "occurrences: #{occurrences(item)}"
         end
