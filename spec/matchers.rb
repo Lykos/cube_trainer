@@ -3,6 +3,7 @@
 require 'cube_trainer/core/parser'
 require 'cube_trainer/core/cube_move_parser'
 require 'cube_trainer/core/skewb_move_parser'
+require 'cube_trainer/core/skewb_notation'
 
 RSpec::Matchers.define(:eq_cube_coordinate) do |expected_face,
                                                 expected_cube_size,
@@ -94,7 +95,7 @@ RSpec::Matchers.define(:equivalent_sarahs_skewb_algorithm) do |expected, color_s
   include Core
 
   match do |actual|
-    expected = parse_sarahs_skewb_algorithm(expected) if expected.is_a?(String)
+    expected = parse_skewb_algorithm(expected, Core::SkewbNotation.sarah) if expected.is_a?(String)
     expected_skewb_state = color_scheme.solved_skewb_state
     expected.apply_to(expected_skewb_state)
     actual_skewb_state = color_scheme.solved_skewb_state
@@ -103,7 +104,7 @@ RSpec::Matchers.define(:equivalent_sarahs_skewb_algorithm) do |expected, color_s
     actual_skewb_state == expected_skewb_state
   end
   failure_message do |actual|
-    expected = parse_sarahs_skewb_algorithm(expected) if expected.is_a?(String)
+    expected = parse_skewb_algorithm(expected, Core::SkewbNotation.sarah) if expected.is_a?(String)
     expected_skewb_state = color_scheme.solved_skewb_state
     expected.apply_to(expected_skewb_state)
     actual_skewb_state = color_scheme.solved_skewb_state
@@ -118,7 +119,7 @@ RSpec::Matchers.define(:eq_sarahs_skewb_algorithm) do |expected|
   include Core
 
   match do |actual|
-    expected = parse_sarahs_skewb_algorithm(expected) if expected.is_a?(String)
+    expected = parse_skewb_algorithm(expected, Core::SkewbNotation.sarah) if expected.is_a?(String)
     actual == expected
   end
   failure_message do |actual|
@@ -130,7 +131,9 @@ RSpec::Matchers.define(:eq_fixed_corner_skewb_algorithm) do |expected|
   include Core
 
   match do |actual|
-    expected = parse_fixed_corner_skewb_algorithm(expected) if expected.is_a?(String)
+    if expected.is_a?(String)
+      expected = parse_skewb_algorithm(expected, Core::SkewbNotation.fixed_corner)
+    end
     actual == expected
   end
   failure_message do |actual|

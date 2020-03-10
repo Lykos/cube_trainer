@@ -2,6 +2,7 @@
 
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/parser'
+require 'cube_trainer/core/skewb_notation'
 require 'cube_trainer/skewb_transformation_describer'
 
 CYCLE_REGEXP = Regexp.new("#{SkewbTransformationDescriber::DOUBLE_ARROW}|" \
@@ -42,40 +43,41 @@ describe SkewbTransformationDescriber do
   let(:bottom_describer) do
     described_class.new([], bottom_corners, :omit_staying, color_scheme)
   end
+  let(:sarah) { Core::SkewbNotation.sarah }
 
   it 'describes center transformations of sledges accurately' do
-    alg = parse_sarahs_skewb_algorithm("F' L F L'")
+    alg = parse_skewb_algorithm("F' L F L'", sarah)
     center_descriptions = centers_describer.transformation_descriptions(alg)
     expect(center_descriptions).to be_the_same_descriptions_as(['F <-> U', 'R <-> L'])
   end
 
   it 'describes center transformations of F moves accurately' do
-    alg = parse_sarahs_skewb_algorithm('F')
+    alg = parse_skewb_algorithm('F', sarah)
     center_descriptions = centers_describer.transformation_descriptions(alg)
     expect(center_descriptions).to be_the_same_descriptions_as(['U -> R -> F -> U'])
   end
 
   it 'describes corner transformations of sledges accurately' do
-    alg = parse_sarahs_skewb_algorithm("F' L F L'")
+    alg = parse_skewb_algorithm("F' L F L'", sarah)
     top_corners_descriptions = top_corners_describer.source_descriptions(alg)
     expected_descriptions = ['FLU -> UFL', 'RFU -> URF', 'BUL -> ULB', 'RUB -> UBR']
     expect(top_corners_descriptions).to be_the_same_descriptions_as(expected_descriptions)
   end
 
   it 'describes corner transformations of F moves accurately' do
-    alg = parse_sarahs_skewb_algorithm('F')
+    alg = parse_skewb_algorithm('F', sarah)
     top_corners_descriptions = top_corners_describer.source_descriptions(alg)
     expected_descriptions = ['FUR -> URF', 'FLU -> UBR', 'FRD -> UFL', 'ULB stays']
     expect(top_corners_descriptions).to be_the_same_descriptions_as(expected_descriptions)
   end
 
   it 'describes sources of layer corners after sledges accurately' do
-    alg = parse_sarahs_skewb_algorithm("F' L F L'")
+    alg = parse_skewb_algorithm("F' L F L'", sarah)
     expect(bottom_describer.source_descriptions(alg)).to be_the_same_descriptions_as([])
   end
 
   it 'describes sources of layer corners after F moves accurately' do
-    alg = parse_sarahs_skewb_algorithm('F')
+    alg = parse_skewb_algorithm('F', sarah)
     expect(bottom_describer.source_descriptions(alg)).to be_the_same_descriptions_as(['BRU -> DFR'])
   end
 end

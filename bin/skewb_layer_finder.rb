@@ -20,7 +20,7 @@ options = CubeTrainer::SkewbLayerFinderOptions.parse(ARGV)
 puts 'Enter scramble in fixed corner notation.'
 
 scramble_string = gets.chomp
-scramble = parse_fixed_corner_skewb_algorithm(scramble_string)
+scramble = parse_skewb_algorithm(scramble_string, SkewbNotation.fixed_corner)
 
 layer_finder = CubeTrainer::SkewbLayerFinder.new(options.restrict_colors)
 skewb_state = options.color_scheme.solved_skewb_state

@@ -4,6 +4,7 @@ require 'cube_trainer/color_scheme'
 require 'cube_trainer/core/abstract_move'
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/parser'
+require 'cube_trainer/core/skewb_notation'
 require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
@@ -37,6 +38,7 @@ describe Core::Algorithm do
 
   let(:cube_size) { 3 }
   let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:sarah) { Core::SkewbNotation.sarah }
 
   it 'inverts algorithms correctly' do
     expect(parse_algorithm('R U').inverse).to eq_cube_algorithm("U' R'")
@@ -424,31 +426,31 @@ describe Core::Algorithm do
   end
 
   it 'applies a rotation correctly to a simple Sarahs skewb algorithm' do
-    expect(parse_sarahs_skewb_algorithm("F R'").rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("L F'")
-    expect(parse_sarahs_skewb_algorithm("L F'").rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("B L'")
-    expect(parse_sarahs_skewb_algorithm("B L'").rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("R B'")
-    expect(parse_sarahs_skewb_algorithm("R B'").rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("F R'")
+    expect(parse_skewb_algorithm("F R'", sarah).rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("L F'")
+    expect(parse_skewb_algorithm("L F'", sarah).rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("B L'")
+    expect(parse_skewb_algorithm("B L'", sarah).rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("R B'")
+    expect(parse_skewb_algorithm("R B'", sarah).rotate_by(parse_move('y'))).to eq_sarahs_skewb_algorithm("F R'")
 
-    expect(parse_sarahs_skewb_algorithm("F R'").rotate_by(parse_move('y2'))).to eq_sarahs_skewb_algorithm("B L'")
-    expect(parse_sarahs_skewb_algorithm("L F'").rotate_by(parse_move('y2'))).to eq_sarahs_skewb_algorithm("R B'")
-    expect(parse_sarahs_skewb_algorithm("B L'").rotate_by(parse_move('y2'))).to eq_sarahs_skewb_algorithm("F R'")
-    expect(parse_sarahs_skewb_algorithm("R B'").rotate_by(parse_move('y2'))).to eq_sarahs_skewb_algorithm("L F'")
+    expect(parse_skewb_algorithm("F R'", sarah).rotate_by(parse_move('y2'))).to eq_sarahs_skewb_algorithm("B L'")
+    expect(parse_skewb_algorithm("L F'", sarah).rotate_by(parse_move('y2'))).to eq_sarahs_skewb_algorithm("R B'")
+    expect(parse_skewb_algorithm("B L'", sarah).rotate_by(parse_move('y2'))).to eq_sarahs_skewb_algorithm("F R'")
+    expect(parse_skewb_algorithm("R B'", sarah).rotate_by(parse_move('y2'))).to eq_sarahs_skewb_algorithm("L F'")
 
-    expect(parse_sarahs_skewb_algorithm("F R'").rotate_by(parse_move("y'"))).to eq_sarahs_skewb_algorithm("R B'")
-    expect(parse_sarahs_skewb_algorithm("L F'").rotate_by(parse_move("y'"))).to eq_sarahs_skewb_algorithm("F R'")
-    expect(parse_sarahs_skewb_algorithm("B L'").rotate_by(parse_move("y'"))).to eq_sarahs_skewb_algorithm("L F'")
-    expect(parse_sarahs_skewb_algorithm("R B'").rotate_by(parse_move("y'"))).to eq_sarahs_skewb_algorithm("B L'")
+    expect(parse_skewb_algorithm("F R'", sarah).rotate_by(parse_move("y'"))).to eq_sarahs_skewb_algorithm("R B'")
+    expect(parse_skewb_algorithm("L F'", sarah).rotate_by(parse_move("y'"))).to eq_sarahs_skewb_algorithm("F R'")
+    expect(parse_skewb_algorithm("B L'", sarah).rotate_by(parse_move("y'"))).to eq_sarahs_skewb_algorithm("L F'")
+    expect(parse_skewb_algorithm("R B'", sarah).rotate_by(parse_move("y'"))).to eq_sarahs_skewb_algorithm("B L'")
   end
 
   it 'mirrors Sarahs skewb algorithms correctly' do
-    expect(parse_sarahs_skewb_algorithm("F R'").mirror(Core::Face::R)).to eq_sarahs_skewb_algorithm("L' B")
-    expect(parse_sarahs_skewb_algorithm("L F'").mirror(Core::Face::R)).to eq_sarahs_skewb_algorithm("F' L")
-    expect(parse_sarahs_skewb_algorithm("B L'").mirror(Core::Face::R)).to eq_sarahs_skewb_algorithm("R' F")
-    expect(parse_sarahs_skewb_algorithm("R B'").mirror(Core::Face::R)).to eq_sarahs_skewb_algorithm("B' R")
+    expect(parse_skewb_algorithm("F R'", sarah).mirror(Core::Face::R)).to eq_sarahs_skewb_algorithm("L' B")
+    expect(parse_skewb_algorithm("L F'", sarah).mirror(Core::Face::R)).to eq_sarahs_skewb_algorithm("F' L")
+    expect(parse_skewb_algorithm("B L'", sarah).mirror(Core::Face::R)).to eq_sarahs_skewb_algorithm("R' F")
+    expect(parse_skewb_algorithm("R B'", sarah).mirror(Core::Face::R)).to eq_sarahs_skewb_algorithm("B' R")
 
-    expect(parse_sarahs_skewb_algorithm("F R'").mirror(Core::Face::F)).to eq_sarahs_skewb_algorithm("R' F")
-    expect(parse_sarahs_skewb_algorithm("L F'").mirror(Core::Face::F)).to eq_sarahs_skewb_algorithm("B' R")
-    expect(parse_sarahs_skewb_algorithm("B L'").mirror(Core::Face::F)).to eq_sarahs_skewb_algorithm("L' B")
-    expect(parse_sarahs_skewb_algorithm("R B'").mirror(Core::Face::F)).to eq_sarahs_skewb_algorithm("F' L")
+    expect(parse_skewb_algorithm("F R'", sarah).mirror(Core::Face::F)).to eq_sarahs_skewb_algorithm("R' F")
+    expect(parse_skewb_algorithm("L F'", sarah).mirror(Core::Face::F)).to eq_sarahs_skewb_algorithm("B' R")
+    expect(parse_skewb_algorithm("B L'", sarah).mirror(Core::Face::F)).to eq_sarahs_skewb_algorithm("L' B")
+    expect(parse_skewb_algorithm("R B'", sarah).mirror(Core::Face::F)).to eq_sarahs_skewb_algorithm("F' L")
   end
 end

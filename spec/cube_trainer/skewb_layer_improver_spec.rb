@@ -3,6 +3,7 @@
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/core/cube'
 require 'cube_trainer/core/parser'
+require 'cube_trainer/core/skewb_notation'
 require 'cube_trainer/skewb_layer_improver'
 
 describe SkewbLayerImprover do
@@ -11,10 +12,11 @@ describe SkewbLayerImprover do
   let(:face) { Core::Face::U }
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:improver) { described_class.new(face, color_scheme) }
+  let(:sarah) { Core::SkewbNotation.sarah }
 
   it 'finds a better layer for an ugly move' do
     expect(
-      improver.improve_layer(parse_sarahs_skewb_algorithm('B'))
+      improver.improve_layer(parse_skewb_algorithm('B', sarah))
     ).to eq_sarahs_skewb_algorithm("R'")
   end
 end

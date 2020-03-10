@@ -3,8 +3,9 @@
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/core/cube_state'
 require 'cube_trainer/core/rotation'
-require 'cube_trainer/core/skewb_state'
 require 'cube_trainer/core/parser'
+require 'cube_trainer/core/skewb_notation'
+require 'cube_trainer/core/skewb_state'
 require 'rantly'
 require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
@@ -13,6 +14,7 @@ describe Core::Rotation do
   include Core
 
   let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:fixed_corner) { Core::SkewbNotation.fixed_corner }
 
   shared_examples 'corner rotations' do |face_symbols, expected_rotation_algorithm|
     let(:actual_rotation_algorithm) do
@@ -61,14 +63,14 @@ describe Core::Rotation do
 
   it 'rotates cubes correctly' do
     state = color_scheme.solved_cube_state(3)
-    parse_fixed_corner_skewb_algorithm("x y z' y'").apply_to(state)
+    parse_skewb_algorithm("x y z' y'", fixed_corner).apply_to(state)
     expect(state).to eq_puzzle_state(color_scheme.solved_cube_state(3))
   end
 
   shared_examples 'skewb rotation' do |alg_string, skewb_state|
     it "rotates skewbs correctly in algorithm #{alg_string}" do
       state = color_scheme.solved_skewb_state
-      parse_fixed_corner_skewb_algorithm(alg_string).apply_to(state)
+      parse_skewb_algorithm(alg_string, fixed_corner).apply_to(state)
       expect(state).to eq_puzzle_state(skewb_state)
     end
   end
@@ -80,7 +82,7 @@ describe Core::Rotation do
   shared_examples 'trivial skewb algorithm' do |alg_string|
     it "reaches the original state again in trivial algorithm #{alg_string}" do
       state = color_scheme.solved_skewb_state
-      parse_fixed_corner_skewb_algorithm(alg_string).apply_to(state)
+      parse_skewb_algorithm(alg_string, fixed_corner).apply_to(state)
       expect(state).to eq_puzzle_state(color_scheme.solved_skewb_state)
     end
   end
