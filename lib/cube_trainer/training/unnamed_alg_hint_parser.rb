@@ -42,8 +42,10 @@ module CubeTrainer
           row.each do |cell|
             next if cell.nil? || cell.empty?
 
-            comm = parse_commutator(cell)
-            comms.push(comm) unless comm.algorithm.empty?
+            comm = parse_commutator(cell, false)
+            # Ignore very short algorithms. They are never valid and they can be things like piece
+            # types.
+            comms.push(comm) unless comm.algorithm.length <= 3
           end
         end
         comms

@@ -20,6 +20,7 @@ module CubeTrainer
       CLOSING_BRACKET = ']'
       CLOSING_PAREN = ')'
       TIMES = '*'
+
       def initialize(alg_string, move_parser)
         @alg_string = alg_string
         @scanner = StringScanner.new(alg_string)
@@ -100,6 +101,10 @@ module CubeTrainer
             #{@alg_string}
             #{' ' * @scanner.pos}^"
         ERROR
+      end
+
+      def check_eos(parsed_object)
+        complain("end of #{parsed_object}") unless @scanner.eos?
       end
 
       def parse_open_bracket
@@ -183,20 +188,29 @@ module CubeTrainer
       end
     end
 
-    def parse_commutator(alg_string)
-      Parser.new(alg_string, CubeMoveParser::INSTANCE).parse_commutator
+    def parse_commutator(alg_string, complete_parse = true)
+      parser = Parser.new(alg_string, CubeMoveParser::INSTANCE)
+      commutator = parser.parse_commutator
+      parser.check_eos('commutator') if complete_parse
+      commutator
     end
 
-    def parse_algorithm(alg_string)
-      Parser.new(alg_string, CubeMoveParser::INSTANCE).parse_algorithm
+    def parse_algorithm(alg_string, complete_parse = true)
+      parser = Parser.new(alg_string, CubeMoveParser::INSTANCE)
+      algorithm = parser.parse_algorithm
+      parser.check_eos('algorithm') if complete_parse
+      algorithm
     end
 
     def parse_move(move_string)
       CubeMoveParser::INSTANCE.parse_move(move_string)
     end
 
-    def parse_skewb_algorithm(alg_string, notation)
-      Parser.new(alg_string, SkewbMoveParser.new(notation)).parse_algorithm
+    def parse_skewb_algorithm(alg_string, notation, complete_parse = true)
+      parser = Parser.new(alg_string, SkewbMoveParser.new(notation))
+      algorithm = parser.parse_algorithm
+      parser.check_eos('algorithm') if complete_parse
+      algorithm
     end
 
     def parse_skewb_move(move_string, notation)
