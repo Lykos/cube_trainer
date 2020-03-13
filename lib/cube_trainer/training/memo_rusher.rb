@@ -64,6 +64,7 @@ module CubeTrainer
           begin
             Timeout.timeout(0.5) { wait_for_any_char }
           rescue Timeout::Error
+          end
         end
       end
 
