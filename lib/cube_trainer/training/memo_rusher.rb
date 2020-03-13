@@ -24,10 +24,20 @@ module CubeTrainer
 
       attr_reader :muted
 
+      def timed_getch(timeout_s)
+        return STDIN.getch unless timeout_s
+
+        begin
+          Timeout.timeout(timeout_s) { STDIN.getch }
+        rescue Timeout::Error
+          nil
+        end
+      end
+
       # TODO: Explain special characters
-      def wait_for_any_char(action_name = nil)
+      def wait_for_any_char(action_name: nil, timeout_s: nil)
         puts "Press any character to #{action_name}." if action_name
-        char = STDIN.getch
+        char = timed_getch(timeout_s)
         case char
         when 'q'
           puts 'Quitting'
@@ -53,19 +63,15 @@ module CubeTrainer
       def wait_for_memo_start
         start = Time.now
         puts "Max #{@memo_time_s} seconds to memo."
-        begin
-          Timeout.timeout(@memo_time_s) { wait_for_any_char('start execution') }
+        if wait_for_any_char(action_name: 'start execution', timeout_s: @memo_time_s)
           time_s = Time.now - start
           puts "Memo time: #{format_time(time_s)}"
-        rescue Timeout::Error
+        else
           puts_and_say('Go!', 'en')
           # If the human presses pretty much in the same moment we tell them to go,
           # assume it was a mistake and ignore the key press.
           # Nobody is ever going to have sub 1 execution anyway.
-          begin
-            Timeout.timeout(0.5) { wait_for_any_char }
-          rescue Timeout::Error
-          end
+          wait_for_any_char(timeout_s: 0.5)
         end
       end
 
@@ -74,10 +80,10 @@ module CubeTrainer
         raise TypeError unless scramble.is_a?(Core::Algorithm)
 
         puts scramble
-        wait_for_any_char('start')
+        wait_for_any_char(action_name: 'start')
         start = Time.now
         wait_for_memo_start
-        wait_for_any_char('stop')
+        wait_for_any_char(action_name: 'stop')
         time_s = Time.now - start
         puts "Time: #{format_time(time_s)}"
         failed_attempts = ask_success ? 1 : 0
