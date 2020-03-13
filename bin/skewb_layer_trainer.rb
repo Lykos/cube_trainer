@@ -19,7 +19,7 @@ Thread.new do
   skewb_state = CubeTrainer::ColorScheme::BERNHARD.solved_skewb_state
 
   loop do
-    scramble = scrambler.random_moves(SCRAMBLE_LENGTH)
+    scramble = scrambler.random_algorithm(SCRAMBLE_LENGTH)
     queue.push([:scramble, scramble])
     layer_solutions =
       scramble.apply_temporarily_to(skewb_state) do |state|

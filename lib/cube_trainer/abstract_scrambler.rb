@@ -18,7 +18,7 @@ module CubeTrainer
     end
 
     # TODO: Make it random state!
-    def random_moves(length)
+    def random_algorithm(length)
       raise TypeError unless length.is_a?(Integer)
       raise ArgumentError if length.negative?
       return Core::Algorithm::EMPTY if length.zero?
