@@ -9,12 +9,12 @@ module CubeTrainer
       raise NotImplementedError
     end
 
-    def excluded_next_moves(last_move)
+    def possible_next_moves(last_move)
       raise NotImplementedError
     end
 
     def random_move(last_move)
-      (moves - excluded_next_moves(last_move)).sample
+      possible_next_moves(last_move).sample
     end
 
     # TODO: Make it random state!

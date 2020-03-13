@@ -10,8 +10,8 @@ module CubeTrainer
       Core::SkewbNotation.fixed_corner.non_zero_moves
     end
 
-    def excluded_next_moves(last_move)
-      [last_move, last_move.inverse]
+    def possible_next_moves(last_move)
+      moves.reject { |m| m.axis_corner == last_move.axis_corner }
     end
   end
 end

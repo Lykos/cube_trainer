@@ -1,3 +1,4 @@
+require 'cube_trainer/core/skewb_move'
 require 'cube_trainer/skewb_scrambler'
 require 'rantly'
 require 'rantly/rspec_extensions'
@@ -11,6 +12,16 @@ describe SkewbScrambler do
       Rantly { range(0, 5) }
     end.check do |length|
       expect(scrambler.random_moves(length).length).to eq(length)
+    end
+  end
+
+  it 'generates skewb scrambles' do
+    property_of do
+      Rantly { range(0, 5) }
+    end.check do |length|
+      scrambler.random_moves(length).moves.each do |move|
+        expect(move).to be_a(Core::SkewbMove)
+      end
     end
   end
 
