@@ -28,7 +28,7 @@ module CubeTrainer
       end
 
       def delete_after_time(timestamp)
-        results.delete_if { |r| r.timestamp > timestamp }
+        results.delete_if { |r| r.timestamp + r.time_s > timestamp }
         @result_listeners.each { |l| l.delete_after_time(@mode, timestamp) }
       end
 
