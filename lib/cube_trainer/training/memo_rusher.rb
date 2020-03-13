@@ -57,12 +57,13 @@ module CubeTrainer
           Timeout.timeout(@memo_time_s) { wait_for_any_char('start execution') }
           time_s = Time.now - start
           puts "Memo time: #{format_time(time_s)}"
-        rescue Timeout::Error
           puts_and_say('Go!', 'en')
           # If the human presses pretty much in the same moment we tell them to go,
           # assume it was a mistake and ignore the key press.
           # Nobody is ever going to have sub 1 execution anyway.
-          Timeout.timeout(0.5) { wait_for_any_char }
+          begin
+            Timeout.timeout(0.5) { wait_for_any_char }
+          rescue Timeout::Error
         end
       end
 
