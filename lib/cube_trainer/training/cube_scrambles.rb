@@ -1,9 +1,14 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/cube_scrambler'
 require 'cube_trainer/training/no_hinter'
 
 module CubeTrainer
   module Training
+    # Class that can be used as a generator for a trainer where the generated
+    # input items are cube scrambles.
     class CubeScrambles
+      # Input sampler where the input items are cube scrambles.
       class InputSampler
         SCRAMBLE_LENGTH = 25
 

@@ -22,7 +22,13 @@ module CubeTrainer
       # Number of columns in the UI.
       COLUMNS = 3
 
-      INPUT_REPRESENTATION_CLASSES = [LetterPair, PaoLetterPair, AlgName, LetterPairSequence, Core::Algorithm].freeze
+      INPUT_REPRESENTATION_CLASSES = [
+        LetterPair,
+        PaoLetterPair,
+        AlgName,
+        LetterPairSequence,
+        Core::Algorithm
+      ].freeze
 
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/ParameterLists
