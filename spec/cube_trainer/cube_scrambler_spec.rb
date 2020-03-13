@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/core/cube_move'
 require 'cube_trainer/cube_scrambler'
 require 'rantly'
@@ -5,7 +7,7 @@ require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
 describe CubeScrambler do
-  let (:scrambler) { CubeScrambler.new }
+  let(:scrambler) { CubeScrambler.new }
 
   it 'generates scrambles of the right size' do
     property_of do

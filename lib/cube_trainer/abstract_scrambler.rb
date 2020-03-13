@@ -9,7 +9,7 @@ module CubeTrainer
       raise NotImplementedError
     end
 
-    def possible_next_moves(last_move)
+    def possible_next_moves(_last_move)
       raise NotImplementedError
     end
 
