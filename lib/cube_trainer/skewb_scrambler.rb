@@ -1,26 +1,17 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/algorithm'
-require 'cube_trainer/core/move'
+require 'cube_trainer/abstract_scrambler'
+require 'cube_trainer/core/skewb_move'
 
 module CubeTrainer
-  # Helper class to generate Skewb scrambles.
-  class SkewbScrambler
-    def random_move(last_move)
-      (Core::FixedCornerSkewbMove::ALL - [last_move, last_move.inverse]).sample
+  # Class to generate Skewb scrambles.
+  class SkewbScrambler < AbstractScrambler
+    def moves
+      Core::SkewbNotation.fixed_corner.non_zero_moves
     end
 
-    # TODO: Make it random state!
-    def random_moves(length)
-      raise TypeError unless length.is_a?(Integer)
-      raise ArgumentError if length.negative?
-      return Algorithm::EMPTY if length.zero?
-
-      a = [Core::FixedCornerSkewbMove::ALL.sample]
-      (length - 1).times do
-        a.push(random_move(a[-1]))
-      end
-      Core::Algorithm.new(a)
+    def excluded_next_moves(last_move)
+      [last_move, last_move.inverse]
     end
   end
 end
