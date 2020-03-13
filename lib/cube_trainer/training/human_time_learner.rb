@@ -12,7 +12,6 @@ module CubeTrainer
     class HumanTimeLearner
       include ConsoleHelpers
       include Utils::StringHelper
-      include Core::CubePrintHelper
 
       def initialize(hinter, results_model, options)
         @hinter = hinter
@@ -35,7 +34,7 @@ module CubeTrainer
 
       def execute(input)
         if @picture
-          puts cube_string(input.cube_state, :color)
+          puts input.cube_state.colored_to_s
         else
           puts_and_say(input.representation)
         end

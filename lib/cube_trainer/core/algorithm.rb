@@ -52,6 +52,10 @@ module CubeTrainer
         @moves.join(' ')
       end
 
+      def to_raw_data
+        to_s
+      end
+
       def inspect
         "Algorithm(#{self})"
       end

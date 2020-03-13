@@ -19,9 +19,11 @@ shared_examples 'commutator_set' do |info|
   let(:input_items) { generator.input_items }
   let(:hinter) { generator.hinter(results_model) }
 
-  it 'parses all comms correctly and give a hint on the first one' do
-    input_item = input_items.sample
-    hinter.hints(input_item.representation)
+  it 'parses all comms correctly and give a hint on a random one' do
+    if input_items
+      input_item = input_items.sample
+      hinter.hints(input_item.representation)
+    end
   end
 end
 

@@ -6,9 +6,11 @@ require 'cube_trainer/cube_trainer_options_parser'
 require 'cube_trainer/letter_scheme'
 require 'cube_trainer/training/commutator_hint_parser'
 require 'cube_trainer/training/commutator_sets'
+require 'cube_trainer/training/cube_scrambles'
 require 'cube_trainer/training/human_word_learner'
 require 'cube_trainer/training/human_time_learner'
 require 'cube_trainer/training/letters_to_word'
+require 'cube_trainer/training/memo_rusher'
 require 'cube_trainer/training/alg_sets'
 
 module CubeTrainer
@@ -24,6 +26,8 @@ module CubeTrainer
           :has_buffer?
         )
       COMMUTATOR_TYPES = {
+        memo_rush:
+          CommutatorInfo.new(:memo_rush, CubeScrambles, MemoRusher, 3, false),
         corners:
           CommutatorInfo.new(:corner_commutators, CornerCommutators, HumanTimeLearner, 3, true),
         corner_parities:
@@ -98,6 +102,15 @@ module CubeTrainer
             options.test_comms_mode = t
           end
 
+          opts.on('-i', '--memo_time_s TIME', Float, 'The desired memo time.') do |i|
+            unless i.positive?
+              warn 'Memo time has to be positive.'
+              exit(1)
+            end
+
+            options.memo_time_s = i
+          end
+
           opts.on(
             '-b', '--buffer BUFFER', /\w+/,
             'Buffer to use instead of the default one.'
@@ -152,7 +165,10 @@ module CubeTrainer
           end
         end.parse!(args)
         # rubocop:enable Metrics/BlockLength
-        raise ArgumentError, 'Option --commutator_type is required.' unless options.commutator_info
+        unless options.commutator_info
+          warn 'Option --commutator_type is required.'
+          exit(1)
+        end
 
         options
       end

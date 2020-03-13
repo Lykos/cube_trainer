@@ -195,16 +195,19 @@ module CubeTrainer
       commutator
     end
 
-    def parse_algorithm(alg_string, complete_parse = true)
+    def parse_cube_algorithm(alg_string, complete_parse = true)
       parser = Parser.new(alg_string, CubeMoveParser::INSTANCE)
       algorithm = parser.parse_algorithm
       parser.check_eos('algorithm') if complete_parse
       algorithm
     end
 
-    def parse_move(move_string)
+    def parse_cube_move(move_string)
       CubeMoveParser::INSTANCE.parse_move(move_string)
     end
+
+    alias parse_algorithm parse_cube_algorithm
+    alias parse_move parse_cube_move
 
     def parse_skewb_algorithm(alg_string, notation, complete_parse = true)
       parser = Parser.new(alg_string, SkewbMoveParser.new(notation))

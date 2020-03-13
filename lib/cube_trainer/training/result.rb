@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/alg_name'
+require 'cube_trainer/core/algorithm'
+require 'cube_trainer/core/parser'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_pair_sequence'
@@ -15,11 +17,12 @@ module CubeTrainer
 
     # Result of giving one task to the learner and judging their performance.
     class Result
+      extend Core
       include Utils::StringHelper
       # Number of columns in the UI.
       COLUMNS = 3
 
-      INPUT_REPRESENTATION_CLASSES = [LetterPair, PaoLetterPair, AlgName, LetterPairSequence].freeze
+      INPUT_REPRESENTATION_CLASSES = [LetterPair, PaoLetterPair, AlgName, LetterPairSequence, Core::Algorithm].freeze
 
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/ParameterLists
@@ -82,6 +85,8 @@ module CubeTrainer
           AlgName.from_raw_data(raw_input)
         when :corner_twists_plus_parities_ul_ub
           LetterPairSequence.from_raw_data(raw_input)
+        when :memo_rush
+          parse_cube_algorithm(raw_input)
         else
           LetterPair.from_raw_data(raw_input)
         end
