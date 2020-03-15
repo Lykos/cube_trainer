@@ -3,6 +3,7 @@
 require 'colorize'
 require 'cube_trainer/native'
 require 'cube_trainer/training/input_item'
+require 'cube_trainer/training/result_history'
 require 'cube_trainer/training/sampler'
 require 'cube_trainer/utils/random_helper'
 require 'cube_trainer/utils/string_helper'
@@ -13,27 +14,38 @@ module CubeTrainer
     class InputSampler
       include Utils::RandomHelper
 
-      # Minimum score that we always give to each element in order not to screw up our sampling if
-      # all weights become 0 or so.
-      EPSILON_SCORE = 0.000000001
+      DEFAULT_CONFIG = {
+        # Minimum score that we always give to each element in order not to screw up our sampling if
+        # all weights become 0 or so.
+        epsilon_score: 0.000000001,
 
-      # Boundary at which we don't punish repeating the same item again. But note that this will be
-      # adjusted in case of a small total number of items.
-      REPETITION_BOUNDARY = 4
+        # Boundary at which we don't punish repeating the same item again. But note that this will
+        # be adjusted in case of a small total number of items.
+        repetition_boundary: 4,
 
-      # Exponent that is applied to the time since the last occurrence to punish items that haven't
-      # been seen in a long time for coverage samples.
-      INDEX_EXPONENT = 2
+        # Exponent that is applied to the time since the last occurrence to punish items that
+        # haven't been seen in a long time for coverage samples.
+        index_exponent: 2,
 
-      # Base that is taken to the power of the badness to punish bad samples.
-      BADNESS_BASE = 10
+        # Base that is taken to the power of the badness to punish bad samples.
+        badness_base: 10,
 
-      # Number of occurrences that we go back to the past to compute the badness of a given item.
-      # Occurrences longer ago have no effect on the sampling any more.
-      BADNESS_MEMORY = 5
+        # Number of occurrences that we go back to the past to compute the badness of a given item.
+        # Occurrences longer ago have no effect on the sampling any more.
+        badness_memory: 5,
 
-      # Number of seconds that are equivalent to one failed attempt. (Used for calculating badness)
-      FAILED_SECONDS = 60
+        # Number of seconds that are equivalent to one failed attempt. (Used for calculating badness)
+        failed_seconds: 60,
+
+        # The badness that we want to reach. If something is below this, we won't practice it much
+        # any more.
+        goal_badness: 1.0,
+
+        # The number of repetitions at which we stop considering an item a "new item" that needs to
+        # be repeated occasionally.
+        repeat_item_boundary: 11
+      }.freeze
+
 
       # Fractions that will be used for each type of sampling. Note that the actual sampling also
       # depends on whether or not there are actually new items available or whether items have to
@@ -52,13 +64,6 @@ module CubeTrainer
         badness: 0.75
       }.freeze
 
-      COLOR_SYMBOLS = {
-        new: :green,
-        repeat: :light_green,
-        coverage: :yellow,
-        badness: :red,
-      }.freeze
-
       ManagedInputItem = Struct.new(:manager, :input_item) do
         def sampling_info
           manager.sampling_info(input_item)
@@ -69,41 +74,46 @@ module CubeTrainer
       # `items` are the items from which we get samples. They have to be an array of InputItem.
       #         But the representation inside InputItem can be anything.
       # `results_model` is a helper object that retrieves results to get historic scores.
-      # `repeat_item_bounary` is the number of repetitions at which we stop considering an item a
+      # `repeat_item_boundary` is the number of repetitions at which we stop considering an item a
       #                       "new item" that needs to be repeated occasionally.
       def initialize(
         items,
         results_model,
-        goal_badness = 1.0,
+        goal_badness = nil,
         verbose = false,
-        repeat_item_boundary = 11
+        repeat_item_boundary = nil
       )
         raise ArgumentError unless items.is_a?(Array)
         unless items.all? { |e| e.is_a?(InputItem) }
           raise ArgumentError, "Invalid items #{items.inspect}."
         end
-        raise unless results_model.respond_to?(:results)
         raise unless goal_badness.is_a?(Float)
 
         @items = items
-        @results_model = results_model
-        @goal_badness = goal_badness
-        @results_model.add_result_listener(self)
+        @config = DEFAULT_CONFIG.dup
+        @config[:num_items] = items.length
+        @config[:goal_badness] ||= goal_badness
+        @config[:repeat_item_boundary] ||= repeat_item_boundary
         @verbose = verbose
-        @repeat_item_boundary = repeat_item_boundary
-        @sampler = create_sampler
-        reset
+        @result_history = ResultHistory.new(
+          results_model,
+          epsilon_score: @config[:epsilon_score],
+          badness_memory: @config[:badness_memory],
+          failed_seconds: @config[:failed_seconds]
+        )
+        @sampler = create_sampler(results_model)
       end
 
-      class SamplingComponent
+      class AbstractScorer
         include Utils::StringHelper
 
-        def initialize(input_sampler)
-          @input_sampler = input_sampler
+        def initialize(config, result_history)
+          @config = config
+          @result_history = result_history
         end
 
-        def create_adaptive_sampler
-          managed_items = @input_sampler.items.map { |i| ManagedInputItem.new(self, i) }
+        def create_adaptive_sampler(items)
+          managed_items = items.map { |i| ManagedInputItem.new(self, i) }
           AdaptiveSampler.new(managed_items) { |i| score(i.input_item) }
         end
 
@@ -112,7 +122,7 @@ module CubeTrainer
         end
 
         def tag
-          snake_case_class_name(self.class).colorize(color_symbol)
+          @tag ||= snake_case_class_name(self.class).colorize(color_symbol)
         end
 
         def extra_info(input_item)
@@ -128,13 +138,41 @@ module CubeTrainer
         end
       end
 
-      class Repeat < SamplingComponent
+      class Repeat < AbstractScorer
         def extra_info(input_item)
-          "occurrences #{@input_sampler.occurrences(input_item)}"
+          "occurrences #{@result_history.occurrences(input_item)}"
         end
 
+        def rep_index_score(index, rep_index)
+          if index >= rep_index
+            if index < [rep_index * 1.5, rep_index + 10].max
+              # The sweet spot to repeat items is kind of close to the desired repetition index.
+              3
+            else
+              # If we reach this branch, something went wrong and we didn't manage to repeat
+              # this item in time. Probably we have too many items that we are trying to repeat,
+              # so we better give up on this one s.t. we can handle the others better.
+              2 + 1.0 / index
+            end
+          else
+            0
+          end
+        end
+
+        # Score for items that have occurred at least once and have occurred less
+        # than `@repeat_item_boundary` times.
         def score(input_item)
-          @input_sampler.repeat_score(input_item)
+          occ = @result_history.occurrences(input_item)
+          # No repetitions necessary (any more).
+          return 0 if occ.zero? || occ >= @config[:repeat_item_boundary]
+
+          # When the item is completely new, repeat often, then less and less often, but also
+          # adjust to the total number of items.
+          rep_index = repetition_index(occ)
+          index = @result_history.items_since_last_occurrence(input_item)
+          raise 'Not completely new item has no index.' if index.nil?
+
+          rep_index_score(index, rep_index)
         end
 
         def color_symbol
@@ -142,13 +180,15 @@ module CubeTrainer
         end
       end
 
-      class New < SamplingComponent
+      class New < AbstractScorer
         def extra_info(input_item)
-          "occurrences #{@input_sampler.occurrences(input_item)}"
+          "occurrences #{@result_history.occurrences(input_item)}"
         end
 
+        # Score for items that are completely new.
+        # For all other items, it's 0.
         def score(input_item)
-          @input_sampler.new_score(input_item)
+          @result_history.occurrences(input_item).zero? ? 1 : 0
         end
 
         def color_symbol
@@ -156,13 +196,31 @@ module CubeTrainer
         end
       end
 
-      class Badness < SamplingComponent
+      class Badness < AbstractScorer
         def extra_info(input_item)
-          "badness average #{@input_sampler.badness_average(input_item).round(2)}"
+          "badness average #{@result_history.badness_average(input_item).round(2)}"
         end
 
+        # Actual repetition boundary that is adjusted if the number of items is small.
+        def repetition_boundary
+          [@config[:repetition_boundary], @config[:num_items] / 2].min
+        end
+
+        # Adjusts a badness score in order to punish overly fast repetition, even for high badness.
+        def repetition_adjusted_score(index, badness_score)
+          if !index.nil? && index < repetition_boundary
+            @config[:epsilon_score]
+          else
+            badness_score
+          end
+        end
+
+        # Computes an exponentially growing score based on the given badness that
+        # allows us to strongly prefer bad items.
         def score(input_item)
-          @input_sampler.badness_score(input_item)
+          score = @config[:badness_base]**(@result_history.badness_average(input_item) - @config[:goal_badness])
+          index = @result_history.items_since_last_occurrence(input_item)
+          [repetition_adjusted_score(index, score), @config[:epsilon_score]].max
         end
 
         def color_symbol
@@ -170,13 +228,18 @@ module CubeTrainer
         end
       end
 
-      class Coverage < SamplingComponent
+      class Coverage < AbstractScorer
         def extra_info(input_item)
-          "items since last occurrence #{@input_sampler.items_since_last_occurrence(input_item)}"
+          "items since last occurrence #{@result_history.items_since_last_occurrence(input_item)}"
         end
 
+        # A score that prefers items that haven't been shown in a while.
+        # We use this score only occasionally (see COVERAGE_FRACTION).
         def score(input_item)
-          @input_sampler.coverage_score(input_item)
+          index = @result_history.items_since_last_occurrence(input_item)
+          return @config[:epsilon_score] if index.nil?
+
+          [index**@config[:index_exponent], @config[:epsilon_score]].max
         end
 
         def color_symbol
@@ -184,8 +247,8 @@ module CubeTrainer
         end
       end
 
-      def create_sampler
-        repeat_sampler = Repeat.new(self).create_adaptive_sampler
+      def create_sampler(results_model)
+        repeat_sampler = create_adaptive_sampler(Repeat)
         combined_sampler = CombinedSampler.new(
           [
             create_adaptive_subsampler(New, SAMPLING_FRACTIONS[:new]),
@@ -196,159 +259,18 @@ module CubeTrainer
         PrioritizedSampler.new([repeat_sampler, combined_sampler])
       end
 
-      def create_adaptive_subsampler(sampling_component_class, sampling_fraction)
+      def create_adaptive_sampler(scorer_class)
+        scorer_class.new(@config, @result_history).create_adaptive_sampler(@items)
+      end
+
+      def create_adaptive_subsampler(scorer_class, sampling_fraction)
         raise ArgumentError unless sampling_fraction
 
-        sampler = sampling_component_class.new(self).create_adaptive_sampler
+        sampler = create_adaptive_sampler(scorer_class)
         CombinedSampler::SubSampler.new(sampler, sampling_fraction)
       end
 
-      attr_reader :items
-
-      def new_cube_average
-        Native::CubeAverage.new(BADNESS_MEMORY, EPSILON_SCORE)
-      end
-
-      # Reset caches and incremental state, recompute everything from scratch.
-      def reset
-        @current_occurrence_index = 0
-        @occurrence_indices = {}
-        @repetition_indices = {}
-        @badness_histories = {}
-        @badness_histories.default_proc = ->(h, k) { h[k] = new_cube_average }
-        @occurrences = {}
-        @occurrences.default = 0
-        @results_model.results.sort_by(&:timestamp).each do |r|
-          record_result(r)
-        end
-      end
-
-      # Called by the results model to notify us about changes on the results.
-      # It's not worth it to reimplement fancy logic here, we just recompute everything from
-      # scratch.
-      def delete_after_time(*_args)
-        reset
-      end
-
-      # Called by the results model to notify us about changes on the results.
-      # It's not worth it to reimplement fancy logic here, we just recompute everything from
-      # scratch.
-      def replace_word(*_args)
-        reset
-      end
-
-      # Badness for the given result.
-      def result_badness(result)
-        result.time_s + FAILED_SECONDS * result.failed_attempts
-      end
-
-      # Returns how many items have occurred since the last occurrence of this item
-      # (0 if it was the last picked item).
-      def items_since_last_occurrence(item)
-        occ = @occurrence_indices[item.representation]
-        return if occ.nil?
-
-        @current_occurrence_index - occ
-      end
-
-      # Insert a new result.
-      def record_result(result)
-        repr = result.input_representation
-        @badness_histories[repr].push(result_badness(result))
-        @current_occurrence_index += 1
-        @occurrence_indices[repr] = @current_occurrence_index
-        @occurrences[repr] += 1
-      end
-
-      # Actual repetition boundary that is adjusted if the number of items is small.
-      def repetition_boundary
-        [REPETITION_BOUNDARY, @items.length / 2].min
-      end
-
-      # Adjusts a badness score in order to punish overly fast repetition, even for high badness.
-      def repetition_adjusted_score(index, badness_score)
-        if !index.nil? && index < repetition_boundary
-          EPSILON_SCORE
-        else
-          badness_score
-        end
-      end
-
-      # A score that prefers items that haven't been shown in a while.
-      # We use this score only occasionally (see COVERAGE_FRACTION).
-      def coverage_score(item)
-        index = items_since_last_occurrence(item)
-        return EPSILON_SCORE if index.nil?
-
-        [index**INDEX_EXPONENT, EPSILON_SCORE].max
-      end
-
-      def badness_average(item)
-        @badness_histories[item.representation].average
-      end
-
-      # Computes an exponentially growing score based on the given badness that
-      # allows us to strongly prefer bad items.
-      def badness_score(item)
-        score = BADNESS_BASE**(badness_average(item) - @goal_badness)
-        index = items_since_last_occurrence(item)
-        [repetition_adjusted_score(index, score), EPSILON_SCORE].max
-      end
-
-      # After how many other items should this item be repeated.
-      def repetition_index(occ)
-        @repetition_indices[occ] ||=
-          begin
-            rep_index = 2**occ
-            # Do a bit of random distortion to avoid completely
-            # mechanic repetition.
-            distorted_rep_index = distort(rep_index, 0.2)
-            # At least 1 other item should always come in between.
-            [distorted_rep_index.to_i, 1].max # rubocop:disable Lint/NumberConversion
-          end
-      end
-
-      def occurrences(item)
-        @occurrences[item.representation]
-      end
-
-      # Score for items that are either completely new
-      # For all other items, it's 0.
-      def new_score(item)
-        occurrences(item).zero? ? 1 : 0
-      end
-
-      def rep_index_score(index, rep_index)
-        if index >= rep_index
-          if index < [rep_index * 1.5, rep_index + 10].max
-            # The sweet spot to repeat items is kind of close to the desired repetition index.
-            3
-          else
-            # If we reach this branch, something went wrong and we didn't manage to repeat
-            # this item in time. Probably we have too many items that we are trying to repeat,
-            # so we better give up on this one s.t. we can handle the others better.
-            2 + 1.0 / index
-          end
-        else
-          0
-        end
-      end
-
-      # Score for items that have occored at least once and have occurred less
-      # than `@repeat_item_boundary` times.
-      def repeat_score(item)
-        occ = occurrences(item)
-        # No repetitions necessary (any more).
-        return 0 if occ.zero? || occ >= @repeat_item_boundary
-
-        # When the item is completely new, repeat often, then less and less often, but also
-        # adjust to the total number of items.
-        rep_index = repetition_index(occ)
-        index = items_since_last_occurrence(item)
-        raise 'Not completely new item has no index.' if index.nil?
-
-        rep_index_score(index, rep_index)
-      end
+      attr_reader :items, :goal_badness
 
       def random_item
         managed_sample = @sampler.random_item
