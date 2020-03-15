@@ -38,7 +38,7 @@ module CubeTrainer
         @badness_histories.default_proc = ->(h, k) { h[k] = new_cube_average }
         @occurrences = {}
         @occurrences.default = 0
-        @hinted_last_day = {}
+        @hinted_last_training_day = {}
         @occurred_today = Set[]
         @last_occurrence_days_ago = {}
         @results_model.results.sort_by(&:timestamp).each do |r|
@@ -80,7 +80,7 @@ module CubeTrainer
         repr = result.input_representation
         @badness_histories[repr].push(result_badness(result))
         update_occurrences(repr)
-        update_hinted_last_day(result)
+        update_hinted_last_training_day(result)
         update_occurred_today(result)
       end
 
@@ -96,7 +96,7 @@ module CubeTrainer
         @occurred_today.add(result.input_representation)
       end
 
-      def update_hinted_last_day(result)
+      def update_hinted_last_training_day(result)
         repr = result.input_representation
         now = Time.now
         days_ago = days_between(result.timestamp, now)
@@ -109,9 +109,9 @@ module CubeTrainer
         # For strict inequality, we need to reset.
         if @last_occurrence_days_ago[repr].nil? || @last_occurrence_days_ago[repr] > days_ago
           @last_occurrence_days_ago[repr] = days_ago
-          @hinted_last_day[repr] = hinted
+          @hinted_last_training_day[repr] = hinted
         else
-          @hinted_last_day[repr] ||= hinted
+          @hinted_last_training_day[repr] ||= hinted
         end
       end
 
@@ -129,7 +129,7 @@ module CubeTrainer
 
       # Returns true if the human hinted this one on the last training day.
       def hinted_last_training_day?(item)
-        @hinted_last_day[item.representation]
+        @hinted_last_training_day[item.representation]
       end
 
       # TODO: Move this to RepeatScorer
