@@ -254,15 +254,27 @@ module CubeTrainer
         rep_index_score(index, rep_index)
       end
 
+      def extra_info(tagged_sample)
+        item = tagged_sample.input_item
+        case tagged_sample.tag
+        when :new
+          "occurrences #{occurrences(item)}"
+        when :badness
+          "badness average #{badness_average(item).round(2)}"
+        when :coverage
+          "items since last occurrence #{items_since_last_occurrence(item)}"
+        else raise ArgumentError
+        end
+      end
+
       def random_item
         tagged_sample = @sampler.random_item
         item = tagged_sample.input_item
         if @verbose
           tag = tagged_sample.tag
           score = sampling_tag_score_method(tag).call(tagged_sample)
-          puts "sampling tag: #{tag}; score: #{score.round(2)}; " \
-               "items since last occurrence #{items_since_last_occurrence(item)}; " \
-               "occurrences: #{occurrences(item)}"
+          extra_info = extra_info(tagged_sample)
+          puts "sampling tag: #{tag}; score: #{score.round(2)}; #{extra_info}"
         end
         item
       end
