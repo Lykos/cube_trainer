@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/training/managed_input_item'
 require 'cube_trainer/training/sampler'
 
@@ -18,23 +20,25 @@ module CubeTrainer
       end
 
       def sampling_info(input_item)
-        "sampling component: #{tag}; score: #{score(input_item).round(2)}; #{extra_info(input_item)}"
+        "sampling component: #{tag}; score: #{score(input_item).round(2)}; " \
+        "#{extra_info(input_item)}"
       end
 
       def tag
-        @tag ||= begin
-                   class_name = snake_case_class_name(self.class)
-                   raise unless class_name.end_with?('_scorer')
+        @tag ||=
+          begin
+                            class_name = snake_case_class_name(self.class)
+                            raise unless class_name.end_with?('_scorer')
 
-                   class_name.gsub(/_scorer$/, '').colorize(color_symbol)
-                 end
+                            class_name.gsub(/_scorer$/, '').colorize(color_symbol)
+                          end
       end
 
-      def extra_info(input_item)
-        raise NotImplementedError          
+      def extra_info(_input_item)
+        raise NotImplementedError
       end
 
-      def score(input_item)
+      def score(_input_item)
         raise NotImplementedError
       end
 

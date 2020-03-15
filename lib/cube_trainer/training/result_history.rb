@@ -1,14 +1,19 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/utils/random_helper'
 
 module CubeTrainer
   module Training
+    # Keeps track of some per-item stats based on results.
     class ResultHistory
       include Utils::RandomHelper
 
-      def initialize(results_model,
-                     epsilon_score:,
-                     badness_memory:,
-                     failed_seconds:)
+      def initialize(
+        results_model,
+        epsilon_score:,
+        badness_memory:,
+        failed_seconds:
+      )
         raise unless results_model.respond_to?(:results)
 
         @results_model = results_model

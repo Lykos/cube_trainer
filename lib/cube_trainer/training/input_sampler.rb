@@ -34,7 +34,8 @@ module CubeTrainer
         # Occurrences longer ago have no effect on the sampling any more.
         badness_memory: 5,
 
-        # Number of seconds that are equivalent to one failed attempt. (Used for calculating badness)
+        # Number of seconds that are equivalent to one failed attempt.
+        # (Used for calculating badness)
         failed_seconds: 60,
 
         # The badness that we want to reach. If something is below this, we won't practice it much
@@ -45,7 +46,6 @@ module CubeTrainer
         # be repeated occasionally.
         repeat_item_boundary: 11
       }.freeze
-
 
       # Fractions that will be used for each type of sampling. Note that the actual sampling also
       # depends on whether or not there are actually new items available or whether items have to
@@ -83,10 +83,7 @@ module CubeTrainer
         raise unless goal_badness.is_a?(Float)
 
         @items = items
-        @config = DEFAULT_CONFIG.dup
-        @config[:num_items] = items.length
-        @config[:goal_badness] ||= goal_badness
-        @config[:repeat_item_boundary] ||= repeat_item_boundary
+        @config = create_config(goal_badness, repeat_item_boundary)
         @verbose = verbose
         @result_history = ResultHistory.new(
           results_model,
@@ -99,13 +96,21 @@ module CubeTrainer
 
       attr_reader :items
 
-      def create_sampler(results_model)
+      def create_config(goal_badness, repeat_item_boundary)
+        config = DEFAULT_CONFIG.dup
+        config[:num_items] = items.length
+        config[:goal_badness] ||= goal_badness
+        config[:repeat_item_boundary] ||= repeat_item_boundary
+        config
+      end
+
+      def create_sampler(_results_model)
         repeat_sampler = create_adaptive_sampler(RepeatScorer)
         combined_sampler = CombinedSampler.new(
           [
             create_adaptive_subsampler(NewScorer, SAMPLING_FRACTIONS[:new]),
             create_adaptive_subsampler(BadnessScorer, SAMPLING_FRACTIONS[:badness]),
-            create_adaptive_subsampler(CoverageScorer, SAMPLING_FRACTIONS[:coverage]),
+            create_adaptive_subsampler(CoverageScorer, SAMPLING_FRACTIONS[:coverage])
           ]
         )
         PrioritizedSampler.new([repeat_sampler, combined_sampler])

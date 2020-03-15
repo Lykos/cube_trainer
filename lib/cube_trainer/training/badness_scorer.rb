@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/training/abstract_scorer'
 
 module CubeTrainer
@@ -26,7 +28,8 @@ module CubeTrainer
       # Computes an exponentially growing score based on the given badness that
       # allows us to strongly prefer bad items.
       def score(input_item)
-        score = @config[:badness_base]**(@result_history.badness_average(input_item) - @config[:goal_badness])
+        bad_badness = @result_history.badness_average(input_item) - @config[:goal_badness]
+        score = @config[:badness_base]**bad_badness
         index = @result_history.items_since_last_occurrence(input_item)
         [repetition_adjusted_score(index, score), @config[:epsilon_score]].max
       end

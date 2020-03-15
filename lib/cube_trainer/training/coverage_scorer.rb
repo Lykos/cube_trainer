@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/training/abstract_scorer'
 
 module CubeTrainer
