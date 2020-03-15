@@ -25,9 +25,9 @@ describe Training::HeterogenousSequenceHinter do
   let(:algorithm_b) { parse_algorithm('R') }
   let(:algorithm_c) { parse_algorithm('U') }
   let(:algorithm_d) { parse_algorithm('U2') }
-  let(:result_a) { Training::Result.new(:mode, Time.at(0), 1.0, algname_a, 0, nil) }
-  let(:result_b) { Training::Result.new(:mode, Time.at(0), 2.0, algname_b, 0, nil) }
-  let(:result_d) { Training::Result.new(:mode, Time.at(0), 1.0, algname_d, 0, nil) }
+  let(:result_a) { Training::Result.new(:mode, Time.at(0), 1.0, algname_a, 0, nil, true, false) }
+  let(:result_b) { Training::Result.new(:mode, Time.at(0), 2.0, algname_b, 0, nil, true, false) }
+  let(:result_d) { Training::Result.new(:mode, Time.at(0), 1.0, algname_d, 0, nil, true, false) }
   let(:results_left) { [result_a, result_b] * 5 }
   let(:results_right) { [result_d] * 5 }
   let(:resultss) { [results_left, results_right] }

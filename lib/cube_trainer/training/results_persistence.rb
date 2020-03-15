@@ -19,7 +19,9 @@ module CubeTrainer
                                              TimeS REAL,
                                              Input TEXT,
                                              FailedAttempts INTEGER,
-                                             Word TEXT)
+                                             Word TEXT,
+                                             Success INTEGER DEFAULT 1,
+                                             NeededHint INTEGER DEFAULT 0)
         SQL
       end
 
@@ -49,7 +51,7 @@ module CubeTrainer
 
       def load_results(mode)
         @load_results_stm ||= @db.prepare(<<~SQL)
-          SELECT Mode, Timestamp, TimeS, Input, FailedAttempts, Word FROM Results WHERE Mode = ?
+          SELECT Mode, Timestamp, TimeS, Input, FailedAttempts, Word, Success, NeededHint FROM Results WHERE Mode = ?
         SQL
         @load_results_stm.execute(mode.to_s).map { |r| Result.from_raw_data(r) }
       end
@@ -72,7 +74,7 @@ module CubeTrainer
 
       def record_result(result)
         @record_result_stm ||= @db.prepare(<<~SQL)
-          INSERT INTO Results(Mode, Timestamp, TimeS, Input, FailedAttempts, Word) Values(?, ?, ?, ?, ?, ?)
+          INSERT INTO Results(Mode, Timestamp, TimeS, Input, FailedAttempts, Word, Success, NeededHint) Values(?, ?, ?, ?, ?, ?, ?, ?)
         SQL
         @record_result_stm.execute(result.to_raw_data)
       end
