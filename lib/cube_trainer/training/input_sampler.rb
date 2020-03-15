@@ -90,13 +90,7 @@ module CubeTrainer
         @items = items
         @config = create_config(goal_badness, repeat_item_boundary)
         @verbose = verbose
-        @result_history = ResultHistory.new(
-          results_model,
-          epsilon_score: @config[:epsilon_score],
-          badness_memory: @config[:badness_memory],
-          failed_seconds: @config[:failed_seconds],
-          hint_seconds: @config[:hint_seconds]
-        )
+        @result_history = create_result_history(results_model)
         @sampler = create_sampler(results_model)
       end
 
@@ -108,6 +102,16 @@ module CubeTrainer
         config[:goal_badness] ||= goal_badness
         config[:repeat_item_boundary] ||= repeat_item_boundary
         config
+      end
+
+      def create_result_history(results_model)
+        ResultHistory.new(
+          results_model,
+          epsilon_score: @config[:epsilon_score],
+          badness_memory: @config[:badness_memory],
+          failed_seconds: @config[:failed_seconds],
+          hint_seconds: @config[:hint_seconds]
+        )
       end
 
       def create_sampler(_results_model)

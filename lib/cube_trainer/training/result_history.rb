@@ -91,7 +91,7 @@ module CubeTrainer
           return
         end
 
-        hinted = result.num_hints > 0
+        hinted = result.num_hints.positive?
         # For strict inequality, we need to reset.
         if @last_occurrence_days_ago[repr].nil? || @last_occurrence_days_ago[repr] > days_ago
           @last_occurrence_days_ago[repr] = days_ago

@@ -37,15 +37,18 @@ module CubeTrainer
 
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/ParameterLists
+      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/PerceivedComplexity
       def initialize(
-            mode,
-            timestamp,
-            time_s,
-            input_representation,
-            failed_attempts,
-            word,
-            success,
-            num_hints)
+        mode,
+        timestamp,
+        time_s,
+        input_representation,
+        failed_attempts,
+        word,
+        success,
+        num_hints
+      )
         raise TypeError, "Invalid mode #{mode}." unless mode.is_a?(Symbol)
         raise TypeError, "Invalid timestamp #{timestamp}." unless timestamp.is_a?(Time)
         raise TypeError, "Invalid time_s #{time_s}." unless time_s.is_a?(Float)
@@ -65,6 +68,8 @@ module CubeTrainer
         @success = success
         @num_hints = num_hints
       end
+      # rubocop:enable Metrics/PerceivedComplexity
+      # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/ParameterLists
       # rubocop:enable Metrics/CyclomaticComplexity
 
@@ -89,7 +94,8 @@ module CubeTrainer
 
       # Construct from data stored in the db.
       def self.from_raw_data(data)
-        raw_mode, timestamp, time_s, raw_input, failed_attempts, word, raw_success, raw_num_hints = data
+        raw_mode, timestamp, time_s, raw_input, failed_attempts, word, raw_success,
+        raw_num_hints = data
         mode = raw_mode.to_sym
         Result.new(
           mode,
@@ -98,8 +104,8 @@ module CubeTrainer
           parse_input_representation(mode, raw_input),
           failed_attempts,
           word,
-          raw_success.to_i == 1,
-          raw_num_hints.to_i
+          raw_success == 1,
+          raw_num_hints
         )
       end
 
@@ -132,7 +138,8 @@ module CubeTrainer
         ]
       end
 
-      attr_reader :mode, :timestamp, :time_s, :input_representation, :failed_attempts, :word, :success, :num_hints
+      attr_reader :mode, :timestamp, :time_s, :input_representation, :failed_attempts, :word,
+                  :success, :num_hints
 
       def formatted_time
         format_time(@time_s)
