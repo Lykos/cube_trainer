@@ -7,7 +7,7 @@ module CubeTrainer
       SECONDS_PER_DAY = 24 * 60 * 60
 
       def days_between(left, right)
-        Integer(((right - left) / SECONDS_PER_DAY), 10)
+        ((right - left) / SECONDS_PER_DAY).to_i # rubocop:disable Lint/NumberConversion
       end
     end
   end
