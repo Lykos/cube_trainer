@@ -87,6 +87,7 @@ module CubeTrainer
         repr = result.input_representation
         now = Time.now
         days_ago = days_between(result.timestamp, now)
+        return unless days_ago.positive?
         unless @last_occurrence_days_ago[repr].nil? || @last_occurrence_days_ago[repr] >= days_ago
           return
         end

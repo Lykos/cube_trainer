@@ -35,7 +35,7 @@ module CubeTrainer
       end
 
       def color_symbol
-        :light_green
+        :red
       end
     end
   end
