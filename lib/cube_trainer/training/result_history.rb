@@ -92,6 +92,7 @@ module CubeTrainer
 
       def update_occurred_today(result)
         return unless days_between(result.timestamp, Time.now).zero?
+
         @occurred_today.add(result.input_representation)
       end
 
