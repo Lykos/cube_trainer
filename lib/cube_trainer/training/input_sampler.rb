@@ -122,7 +122,12 @@ module CubeTrainer
         end
 
         def tag
-          @tag ||= snake_case_class_name(self.class).colorize(color_symbol)
+          @tag ||= begin
+                     class_name = snake_case_class_name(self.class)
+                     raise unless class_name.end_with?('_scorer')
+
+                     class_name.gsub(/_scorer$/, '').colorize(color_symbol)
+                   end
         end
 
         def extra_info(input_item)
@@ -138,7 +143,7 @@ module CubeTrainer
         end
       end
 
-      class Repeat < AbstractScorer
+      class RepeatScorer < AbstractScorer
         def extra_info(input_item)
           "occurrences #{@result_history.occurrences(input_item)}"
         end
@@ -180,7 +185,7 @@ module CubeTrainer
         end
       end
 
-      class New < AbstractScorer
+      class NewScorer < AbstractScorer
         def extra_info(input_item)
           "occurrences #{@result_history.occurrences(input_item)}"
         end
@@ -196,7 +201,7 @@ module CubeTrainer
         end
       end
 
-      class Badness < AbstractScorer
+      class BadnessScorer < AbstractScorer
         def extra_info(input_item)
           "badness average #{@result_history.badness_average(input_item).round(2)}"
         end
@@ -228,7 +233,7 @@ module CubeTrainer
         end
       end
 
-      class Coverage < AbstractScorer
+      class CoverageScorer < AbstractScorer
         def extra_info(input_item)
           "items since last occurrence #{@result_history.items_since_last_occurrence(input_item)}"
         end
