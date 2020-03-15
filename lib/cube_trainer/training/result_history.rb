@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/utils/random_helper'
+require 'cube_trainer/utils/time_helper'
 
 module CubeTrainer
   module Training
     # Keeps track of some per-item stats based on results.
     class ResultHistory
       include Utils::RandomHelper
+      include Utils::TimeHelper
 
       def initialize(
         results_model,
@@ -33,6 +35,8 @@ module CubeTrainer
         @badness_histories.default_proc = ->(h, k) { h[k] = new_cube_average }
         @occurrences = {}
         @occurrences.default = 0
+        @failed_last_day = {}
+        @last_occurrence_days_ago = {}
         @results_model.results.sort_by(&:timestamp).each do |r|
           record_result(r)
         end
@@ -50,11 +54,8 @@ module CubeTrainer
       end
 
       # Called by the results model to notify us about changes on the results.
-      # It's not worth it to reimplement fancy logic here, we just recompute everything from
-      # scratch.
-      def replace_word(*_args)
-        reset
-      end
+      # We don't need to do anything here.
+      def replace_word(*_args); end
 
       # Badness for the given result.
       def result_badness(result)
@@ -77,6 +78,25 @@ module CubeTrainer
         @current_occurrence_index += 1
         @occurrence_indices[repr] = @current_occurrence_index
         @occurrences[repr] += 1
+        update_failed_last_day(result)
+      end
+
+      def update_failed_last_day(result)
+        repr = result.input_representation
+        now = Time.now
+        days_ago = days_between(result.timestamp, now)
+        unless @last_occurrence_days_ago[repr].nil? || @last_occurrence_days_ago[repr] >= days_ago
+          return
+        end
+
+        failed = result.failed_attempts.positive?
+        # For strict inequality, we need to reset.
+        if @last_occurrence_days_ago[repr].nil? || @last_occurrence_days_ago[repr] > days_ago
+          @last_occurrence_days_ago[repr] = days_ago
+          @failed_last_day[repr] = failed
+        else
+          @failed_last_day[repr] ||= failed
+        end
       end
 
       def badness_average(item)
@@ -85,6 +105,11 @@ module CubeTrainer
 
       def occurrences(item)
         @occurrences[item.representation]
+      end
+
+      # Returns true if the human failed this one on the last training day.
+      def failed_last_training_day?(item)
+        @failed_last_day[item.representation]
       end
 
       # TODO: Move this to RepeatScorer

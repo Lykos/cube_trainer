@@ -4,6 +4,7 @@ require 'colorize'
 require 'cube_trainer/native'
 require 'cube_trainer/training/badness_scorer'
 require 'cube_trainer/training/coverage_scorer'
+require 'cube_trainer/training/forgotten_scorer'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/new_scorer'
 require 'cube_trainer/training/repeat_scorer'
@@ -106,6 +107,7 @@ module CubeTrainer
 
       def create_sampler(_results_model)
         repeat_sampler = create_adaptive_sampler(RepeatScorer)
+        forgotten_sampler = create_adaptive_sampler(ForgottenScorer)
         combined_sampler = CombinedSampler.new(
           [
             create_adaptive_subsampler(NewScorer, SAMPLING_FRACTIONS[:new]),
@@ -113,7 +115,7 @@ module CubeTrainer
             create_adaptive_subsampler(CoverageScorer, SAMPLING_FRACTIONS[:coverage])
           ]
         )
-        PrioritizedSampler.new([repeat_sampler, combined_sampler])
+        PrioritizedSampler.new([repeat_sampler, forgotten_sampler, combined_sampler])
       end
 
       def create_adaptive_sampler(scorer_class)
