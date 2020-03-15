@@ -14,7 +14,7 @@ module CubeTrainer
       end
 
       def color_symbol
-        :yellow
+        :light_red
       end
     end
   end
