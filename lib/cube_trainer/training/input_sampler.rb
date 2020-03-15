@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+require 'colorize'
 require 'cube_trainer/native'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/sampler'
 require 'cube_trainer/utils/random_helper'
+require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
   module Training
@@ -50,7 +52,19 @@ module CubeTrainer
         badness: 0.75
       }.freeze
 
-      TaggedInputItem = Struct.new(:tag, :input_item)
+      COLOR_SYMBOLS = {
+        new: :green,
+        repeat: :light_green,
+        coverage: :yellow,
+        badness: :red,
+      }.freeze
+
+      ManagedInputItem = Struct.new(:manager, :input_item) do
+        def sampling_info
+          manager.sampling_info(input_item)
+        end
+      end
+
 
       # `items` are the items from which we get samples. They have to be an array of InputItem.
       #         But the representation inside InputItem can be anything.
@@ -81,30 +95,112 @@ module CubeTrainer
         reset
       end
 
+      class SamplingComponent
+        include Utils::StringHelper
+
+        def initialize(input_sampler)
+          @input_sampler = input_sampler
+        end
+
+        def create_adaptive_sampler
+          managed_items = @input_sampler.items.map { |i| ManagedInputItem.new(self, i) }
+          AdaptiveSampler.new(managed_items) { |i| score(i.input_item) }
+        end
+
+        def sampling_info(input_item)
+          "sampling component: #{tag}; score: #{score(input_item).round(2)}; #{extra_info(input_item)}"
+        end
+
+        def tag
+          snake_case_class_name(self.class).colorize(color_symbol)
+        end
+
+        def extra_info(input_item)
+          raise NotImplementedError          
+        end
+
+        def score(input_item)
+          raise NotImplementedError
+        end
+
+        def color_symbol
+          raise NotImplementedError
+        end
+      end
+
+      class Repeat < SamplingComponent
+        def extra_info(input_item)
+          "occurrences #{@input_sampler.occurrences(input_item)}"
+        end
+
+        def score(input_item)
+          @input_sampler.repeat_score(input_item)
+        end
+
+        def color_symbol
+          :light_green
+        end
+      end
+
+      class New < SamplingComponent
+        def extra_info(input_item)
+          "occurrences #{@input_sampler.occurrences(input_item)}"
+        end
+
+        def score(input_item)
+          @input_sampler.new_score(input_item)
+        end
+
+        def color_symbol
+          :green
+        end
+      end
+
+      class Badness < SamplingComponent
+        def extra_info(input_item)
+          "badness average #{@input_sampler.badness_average(input_item).round(2)}"
+        end
+
+        def score(input_item)
+          @input_sampler.badness_score(input_item)
+        end
+
+        def color_symbol
+          :light_green
+        end
+      end
+
+      class Coverage < SamplingComponent
+        def extra_info(input_item)
+          "items since last occurrence #{@input_sampler.items_since_last_occurrence(input_item)}"
+        end
+
+        def score(input_item)
+          @input_sampler.coverage_score(input_item)
+        end
+
+        def color_symbol
+          :yellow
+        end
+      end
+
       def create_sampler
-        repeat_sampler = create_adaptive_sampler(:repeat)
-        combined_sampler = CombinedSampler.new([
-                                                 create_adaptive_subsampler(:new),
-                                                 create_adaptive_subsampler(:badness),
-                                                 create_adaptive_subsampler(:coverage)
-                                               ])
+        repeat_sampler = Repeat.new(self).create_adaptive_sampler
+        combined_sampler = CombinedSampler.new(
+          [
+            create_adaptive_subsampler(New, SAMPLING_FRACTIONS[:new]),
+            create_adaptive_subsampler(Badness, SAMPLING_FRACTIONS[:badness]),
+            create_adaptive_subsampler(Coverage, SAMPLING_FRACTIONS[:coverage]),
+          ]
+        )
         PrioritizedSampler.new([repeat_sampler, combined_sampler])
       end
 
-      def sampling_tag_score_method(tag)
-        m = method((tag.to_s + '_score').to_sym)
-        ->(tagged_item) { m.call(tagged_item.input_item) }
-      end
+      def create_adaptive_subsampler(sampling_component_class, sampling_fraction)
+        raise ArgumentError unless sampling_fraction
 
-      def create_adaptive_sampler(tag)
-        tagged_items = @items.map { |i| TaggedInputItem.new(tag, i) }
-        AdaptiveSampler.new(tagged_items, sampling_tag_score_method(tag))
-      end
-
-      def create_adaptive_subsampler(tag)
-        sampler = create_adaptive_sampler(tag)
-        fraction = SAMPLING_FRACTIONS[tag] || (raise ArgumentError)
-        CombinedSampler::SubSampler.new(sampler, fraction)
+        sampler = sampling_component_class.new(self).create_adaptive_sampler
+        CombinedSampler::SubSampler.new(sampler, sampling_fraction)
       end
 
       attr_reader :items
@@ -254,28 +350,10 @@ module CubeTrainer
         rep_index_score(index, rep_index)
       end
 
-      def extra_info(tagged_sample)
-        item = tagged_sample.input_item
-        case tagged_sample.tag
-        when :new
-          "occurrences #{occurrences(item)}"
-        when :badness
-          "badness average #{badness_average(item).round(2)}"
-        when :coverage
-          "items since last occurrence #{items_since_last_occurrence(item)}"
-        else raise ArgumentError
-        end
-      end
-
       def random_item
-        tagged_sample = @sampler.random_item
-        item = tagged_sample.input_item
-        if @verbose
-          tag = tagged_sample.tag
-          score = sampling_tag_score_method(tag).call(tagged_sample)
-          extra_info = extra_info(tagged_sample)
-          puts "sampling tag: #{tag}; score: #{score.round(2)}; #{extra_info}"
-        end
+        managed_sample = @sampler.random_item
+        item = managed_sample.input_item
+        puts managed_sample.sampling_info if @verbose
         item
       end
     end

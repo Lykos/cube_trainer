@@ -75,11 +75,9 @@ module CubeTrainer
     class AdaptiveSampler < Sampler
       include Utils::SamplingHelper
 
-      def initialize(items, get_weight_proc)
-        raise TypeError unless get_weight_proc.respond_to?(:call)
-
+      def initialize(items, &get_weight)
         @items = items
-        @get_weight_proc = get_weight_proc
+        @get_weight_proc = get_weight
       end
 
       def random_item
