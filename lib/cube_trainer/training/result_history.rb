@@ -1,6 +1,9 @@
+require 'cube_trainer/utils/random_helper'
+
 module CubeTrainer
   module Training
     class ResultHistory
+      include Utils::RandomHelper
 
       def initialize(results_model,
                      epsilon_score:,

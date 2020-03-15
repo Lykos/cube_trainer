@@ -8,15 +8,12 @@ require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/new_scorer'
 require 'cube_trainer/training/repeat_scorer'
 require 'cube_trainer/training/result_history'
-require 'cube_trainer/utils/random_helper'
 require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
   module Training
     # An input sampler that tries to adaptively sample items that are useful inputs for the learner.
     class InputSampler
-      include Utils::RandomHelper
-
       DEFAULT_CONFIG = {
         # Minimum score that we always give to each element in order not to screw up our sampling if
         # all weights become 0 or so.

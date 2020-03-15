@@ -35,7 +35,7 @@ module CubeTrainer
 
         # When the item is completely new, repeat often, then less and less often, but also
         # adjust to the total number of items.
-        rep_index = repetition_index(occ)
+        rep_index = @result_history.repetition_index(occ)
         index = @result_history.items_since_last_occurrence(input_item)
         raise 'Not completely new item has no index.' if index.nil?
 
