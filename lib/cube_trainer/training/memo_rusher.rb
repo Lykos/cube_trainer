@@ -87,7 +87,7 @@ module CubeTrainer
         time_s = Time.now - start
         puts "Time: #{format_time(time_s)}"
         failed_attempts = ask_success ? 1 : 0
-        PartialResult.new(time_s, failed_attempts, nil)
+        PartialResult.new(time_s, failed_attempts: failed_attempts)
       end
     end
   end

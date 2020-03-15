@@ -70,6 +70,6 @@ class FakeLearner
     end
     @indices[input] = @current_index
     @current_index += 1
-    CubeTrainer::Training::PartialResult.new(stats.execute, 0, nil)
+    CubeTrainer::Training::PartialResult.new(stats.execute, failed_attempts: 0, word: nil)
   end
 end

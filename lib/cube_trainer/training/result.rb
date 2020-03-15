@@ -13,7 +13,11 @@ module CubeTrainer
   module Training
     # The part of the result that basically comes from the input of whoever is
     # learning.
-    PartialResult = Struct.new(:time_s, :failed_attempts, :word)
+    PartialResult = Struct.new(:time_s, :failed_attempts, :word) do
+      def initialize(time_s, failed_attempts: 0, word: nil)
+        super(time_s, failed_attempts, word)
+      end
+    end
 
     # Result of giving one task to the learner and judging their performance.
     class Result

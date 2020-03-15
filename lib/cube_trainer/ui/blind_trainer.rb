@@ -70,7 +70,7 @@ module CubeTrainer
       end
 
       def create_partial_result
-        Training::PartialResult.new(@stop_watch_controller.time_s, @failed_attempts, nil)
+        Training::PartialResult.new(@stop_watch_controller.time_s, failed_attempts: @failed_attempts)
       end
 
       def cubie

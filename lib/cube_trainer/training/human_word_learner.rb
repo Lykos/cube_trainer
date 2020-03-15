@@ -81,7 +81,7 @@ module CubeTrainer
           end
         end
         puts "Time: #{format_time(time_s)}; Failed attempts: #{failed_attempts}; Word: #{word}"
-        PartialResult.new(time_s, failed_attempts, word)
+        PartialResult.new(time_s, failed_attempts: failed_attempts, word: word)
       end
       # rubocop:enable Metrics/PerceivedComplexity
       # rubocop:enable Metrics/CyclomaticComplexity

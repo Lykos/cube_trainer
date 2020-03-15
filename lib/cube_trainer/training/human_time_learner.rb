@@ -40,7 +40,7 @@ module CubeTrainer
         end
         data = time_before_any_key_press(@hinter.hints(input.representation))
         handle_user_input_data(data)
-        PartialResult.new(data.time_s, 0, nil)
+        PartialResult.new(data.time_s)
       end
     end
   end
