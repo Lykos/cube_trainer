@@ -39,6 +39,10 @@ module CubeTrainer
         # (Used for calculating badness)
         failed_seconds: 60,
 
+        # Number of seconds that are equivalent to getting one hint.
+        # (Used for calculating badness)
+        hint_seconds: 60,
+
         # The badness that we want to reach. If something is below this, we won't practice it much
         # any more.
         goal_badness: 1.0,
@@ -90,7 +94,8 @@ module CubeTrainer
           results_model,
           epsilon_score: @config[:epsilon_score],
           badness_memory: @config[:badness_memory],
-          failed_seconds: @config[:failed_seconds]
+          failed_seconds: @config[:failed_seconds],
+          hint_seconds: @config[:hint_seconds]
         )
         @sampler = create_sampler(results_model)
       end

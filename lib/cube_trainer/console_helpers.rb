@@ -26,9 +26,7 @@ module CubeTrainer
       say(stuff, language)
     end
 
-    KeyPressWaitData = Struct.new(:char, :time_s)
-
-    HINT_SECONDS = 10
+    KeyPressWaitData = Struct.new(:char, :time_s, :num_hints)
 
     #  Minimum time s.t. it is not considered an accidental double click.
     MIN_SECONDS = 0.05
@@ -46,7 +44,6 @@ module CubeTrainer
         char = STDIN.getch.downcase
         if char == 'h'
           if hints.length > num_hints
-            puts "#{HINT_SECONDS} time punishment added."
             puts hints[num_hints]
             num_hints += 1
           else
@@ -56,12 +53,12 @@ module CubeTrainer
           break
         end
       end
-      time_s = Time.now - start + num_hints * HINT_SECONDS
+      time_s = Time.now - start
       if char == 'q'
         puts 'Pressed q. Exiting.'
         exit
       end
-      KeyPressWaitData.new(char, time_s)
+      KeyPressWaitData.new(char, time_s, num_hints)
     end
     # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/AbcSize

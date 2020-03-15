@@ -14,6 +14,7 @@ module CubeTrainer
         results_model,
         epsilon_score:,
         badness_memory:,
+        hint_seconds:,
         failed_seconds:
       )
         raise unless results_model.respond_to?(:results)
@@ -22,6 +23,7 @@ module CubeTrainer
         @results_model.add_result_listener(self)
         @epsilon_score = epsilon_score
         @badness_memory = badness_memory
+        @hint_seconds = hint_seconds
         @failed_seconds = failed_seconds
         reset
       end
@@ -35,7 +37,7 @@ module CubeTrainer
         @badness_histories.default_proc = ->(h, k) { h[k] = new_cube_average }
         @occurrences = {}
         @occurrences.default = 0
-        @failed_last_day = {}
+        @hinted_last_day = {}
         @last_occurrence_days_ago = {}
         @results_model.results.sort_by(&:timestamp).each do |r|
           record_result(r)
@@ -59,7 +61,7 @@ module CubeTrainer
 
       # Badness for the given result.
       def result_badness(result)
-        result.time_s + @failed_seconds * result.failed_attempts
+        result.time_s + @failed_seconds * result.failed_attempts + @hint_seconds * result.num_hints
       end
 
       # Returns how many items have occurred since the last occurrence of this item
@@ -78,10 +80,10 @@ module CubeTrainer
         @current_occurrence_index += 1
         @occurrence_indices[repr] = @current_occurrence_index
         @occurrences[repr] += 1
-        update_failed_last_day(result)
+        update_hinted_last_day(result)
       end
 
-      def update_failed_last_day(result)
+      def update_hinted_last_day(result)
         repr = result.input_representation
         now = Time.now
         days_ago = days_between(result.timestamp, now)
@@ -89,13 +91,13 @@ module CubeTrainer
           return
         end
 
-        failed = result.failed_attempts.positive?
+        hinted = result.num_hints > 0
         # For strict inequality, we need to reset.
         if @last_occurrence_days_ago[repr].nil? || @last_occurrence_days_ago[repr] > days_ago
           @last_occurrence_days_ago[repr] = days_ago
-          @failed_last_day[repr] = failed
+          @hinted_last_day[repr] = hinted
         else
-          @failed_last_day[repr] ||= failed
+          @hinted_last_day[repr] ||= hinted
         end
       end
 
@@ -107,9 +109,9 @@ module CubeTrainer
         @occurrences[item.representation]
       end
 
-      # Returns true if the human failed this one on the last training day.
-      def failed_last_training_day?(item)
-        @failed_last_day[item.representation]
+      # Returns true if the human hinted this one on the last training day.
+      def hinted_last_training_day?(item)
+        @hinted_last_day[item.representation]
       end
 
       # TODO: Move this to RepeatScorer

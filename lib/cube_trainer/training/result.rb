@@ -14,9 +14,9 @@ module CubeTrainer
     # The part of the result that basically comes from the input of whoever is
     # learning.
     PartialResult =
-      Struct.new(:time_s, :failed_attempts, :word, :success, :needed_hint) do
-        def initialize(time_s, failed_attempts: 0, word: nil, success: true, needed_hint: false)
-          super(time_s, failed_attempts, word, needed_hint)
+      Struct.new(:time_s, :failed_attempts, :word, :success, :num_hints) do
+        def initialize(time_s, failed_attempts: 0, word: nil, success: true, num_hints: 0)
+          super(time_s, failed_attempts, word, success, num_hints)
         end
       end
 
@@ -45,7 +45,7 @@ module CubeTrainer
             failed_attempts,
             word,
             success,
-            needed_hint)
+            num_hints)
         raise TypeError, "Invalid mode #{mode}." unless mode.is_a?(Symbol)
         raise TypeError, "Invalid timestamp #{timestamp}." unless timestamp.is_a?(Time)
         raise TypeError, "Invalid time_s #{time_s}." unless time_s.is_a?(Float)
@@ -53,6 +53,7 @@ module CubeTrainer
           raise TypeError, "Invalid failed attempts #{failed_attempts}."
         end
         raise TypeError, "Invalid word #{word}." unless word.nil? || word.is_a?(String)
+        raise TypeError, "Invalid num_hints #{num_hints}." unless num_hints.is_a?(Integer)
 
         check_input_representation(input_representation)
         @mode = mode
@@ -62,7 +63,7 @@ module CubeTrainer
         @failed_attempts = failed_attempts
         @word = word
         @success = success
-        @needed_hint = needed_hint
+        @num_hints = num_hints
       end
       # rubocop:enable Metrics/ParameterLists
       # rubocop:enable Metrics/CyclomaticComplexity
@@ -82,13 +83,13 @@ module CubeTrainer
           partial_result.failed_attempts,
           partial_result.word,
           partial_result.success,
-          partial_result.needed_hint
+          partial_result.num_hints
         )
       end
 
       # Construct from data stored in the db.
       def self.from_raw_data(data)
-        raw_mode, timestamp, time_s, raw_input, failed_attempts, word, raw_success, raw_needed_hint = data
+        raw_mode, timestamp, time_s, raw_input, failed_attempts, word, raw_success, raw_num_hints = data
         mode = raw_mode.to_sym
         Result.new(
           mode,
@@ -98,7 +99,7 @@ module CubeTrainer
           failed_attempts,
           word,
           raw_success.to_i == 1,
-          raw_needed_hint.to_i == 1
+          raw_num_hints.to_i
         )
       end
 
@@ -127,11 +128,11 @@ module CubeTrainer
           @failed_attempts,
           @word,
           @success ? 1 : 0,
-          @needed_hint ? 1 : 0
+          @num_hints
         ]
       end
 
-      attr_reader :mode, :timestamp, :time_s, :input_representation, :failed_attempts, :word, :success, :needed_hint
+      attr_reader :mode, :timestamp, :time_s, :input_representation, :failed_attempts, :word, :success, :num_hints
 
       def formatted_time
         format_time(@time_s)

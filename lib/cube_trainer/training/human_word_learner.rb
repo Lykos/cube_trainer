@@ -57,6 +57,7 @@ module CubeTrainer
           case word
           when 'hint'
             # Brutal punishment for failed attempts
+            # TODO: Use num_hints
             failed_attempts += 100
             hints = @hinter.hints(input.representation)
             display_hints(hints)

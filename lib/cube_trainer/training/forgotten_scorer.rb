@@ -10,7 +10,7 @@ module CubeTrainer
 
       # A score that prefers items that haven't been shown in a while.
       def score(input_item)
-        @result_history.failed_last_training_day?(input_item) ? 1 : 0
+        @result_history.hinted_last_training_day?(input_item) ? 1 : 0
       end
 
       def color_symbol
