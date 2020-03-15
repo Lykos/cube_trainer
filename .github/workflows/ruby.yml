@@ -11,6 +11,8 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
+    - name: Update packages
+      run: sudo apt update
     - name: Install Package Dependencies
       uses: mstksg/get-package@v1
       with:
