@@ -2,6 +2,7 @@
 
 require 'cube_trainer/utils/random_helper'
 require 'cube_trainer/utils/time_helper'
+require 'set'
 
 module CubeTrainer
   module Training
@@ -38,6 +39,7 @@ module CubeTrainer
         @occurrences = {}
         @occurrences.default = 0
         @hinted_last_day = {}
+        @occurred_today = Set[]
         @last_occurrence_days_ago = {}
         @results_model.results.sort_by(&:timestamp).each do |r|
           record_result(r)
@@ -77,10 +79,20 @@ module CubeTrainer
       def record_result(result)
         repr = result.input_representation
         @badness_histories[repr].push(result_badness(result))
-        @current_occurrence_index += 1
-        @occurrence_indices[repr] = @current_occurrence_index
-        @occurrences[repr] += 1
+        update_occurrences(repr)
         update_hinted_last_day(result)
+        update_occurred_today(result)
+      end
+
+      def update_occurrences(representation)
+        @current_occurrence_index += 1
+        @occurrence_indices[representation] = @current_occurrence_index
+        @occurrences[representation] += 1
+      end
+
+      def update_occurred_today(result)
+        return unless days_between(result.timestamp, Time.now).zero?
+        @occurred_today.add(result.input_representation)
       end
 
       def update_hinted_last_day(result)
@@ -108,6 +120,10 @@ module CubeTrainer
 
       def occurrences(item)
         @occurrences[item.representation]
+      end
+
+      def occurred_today?(item)
+        @occurred_today.include?(item.representation)
       end
 
       # Returns true if the human hinted this one on the last training day.
