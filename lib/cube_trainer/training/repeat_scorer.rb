@@ -6,8 +6,8 @@ require 'cube_trainer/utils/random_helper'
 module CubeTrainer
   module Training
     # A scorer that assigns scores for items that should be repeated according to exponential
-    # backoff. I.e. items that are relatively new, but not completely new and the right amount
-    # of time has passed since the last occurrence.
+    # backoff. I.e. items that are relatively new by number of occurrences, but not completely new
+    # and the right amount of items have occurred since the last occurrence.
     class RepeatScorer < AbstractScorer
       include Utils::RandomHelper
 
@@ -38,11 +38,11 @@ module CubeTrainer
       end
 
       # Score for items that have occurred at least once and have occurred less
-      # than `@config[:repeat_new_item_boundary]` times.
+      # than `@config[:repeat_new_item_times_boundary]` times.
       def score(input_item)
         occ = @result_history.occurrences(input_item)
         # No repetitions necessary (any more).
-        return 0 if occ.zero? || occ >= @config[:repeat_new_item_boundary]
+        return 0 if occ.zero? || occ >= @config[:repeat_new_item_times_boundary]
 
         # When the item is completely new, repeat often, then less and less often, but also
         # adjust to the total number of items.

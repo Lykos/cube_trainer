@@ -9,6 +9,7 @@ require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/new_scorer'
 require 'cube_trainer/training/repeat_scorer'
 require 'cube_trainer/training/result_history'
+require 'cube_trainer/training/revisit_scorer'
 require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
@@ -49,11 +50,15 @@ module CubeTrainer
 
         # The number of repetitions at which we stop considering an item a "new item" that needs to
         # be repeated occasionally.
-        repeat_new_item_boundary: 11,
+        repeat_new_item_times_boundary: 11,
+
+        # The number of days where it occurred at which we stop considering an item a "new item"
+        # that needs to be repeated occasionally.
+        repeat_new_item_days_boundary: 5,
 
         # The number of training days where it occurred at which we stop considering an item a
         # "forgotten item" that needs to be repeated at least once per day.
-        repeat_forgotten_item_boundary: 5
+        repeat_forgotten_item_days_boundary: 5
       }.freeze
 
       # Fractions that will be used for each type of sampling. Note that the actual sampling also
@@ -119,6 +124,7 @@ module CubeTrainer
       end
 
       def create_sampler(_results_model)
+        revisit_sampler = create_adaptive_sampler(RevisitScorer)
         repeat_sampler = create_adaptive_sampler(RepeatScorer)
         forgotten_sampler = create_adaptive_sampler(ForgottenScorer)
         combined_sampler = CombinedSampler.new(
@@ -128,7 +134,9 @@ module CubeTrainer
             create_adaptive_subsampler(CoverageScorer, SAMPLING_FRACTIONS[:coverage])
           ]
         )
-        PrioritizedSampler.new([repeat_sampler, forgotten_sampler, combined_sampler])
+        PrioritizedSampler.new(
+          [revisit_sampler, repeat_sampler, forgotten_sampler, combined_sampler]
+        )
       end
 
       def create_adaptive_sampler(scorer_class)

@@ -42,7 +42,7 @@ module CubeTrainer
         @results_model.results.sort_by(&:timestamp).each do |r|
           record_result(r)
         end
-        @reset_listeners.each { |l| l.reset }
+        @reset_listeners.each(&:reset)
       end
 
       def add_reset_listener(listener)
@@ -105,9 +105,9 @@ module CubeTrainer
 
       def update_last_occurrence_days_ago(input_representation, days_ago)
         last_occurrence_days_ago = last_occurrence_days_ago(input_representation)
-        if last_occurrence_days_ago.nil? || last_occurrence_days_ago > days_ago
-          @occurrence_days_ago[input_representation].push(days_ago)
-        end
+        return unless last_occurrence_days_ago.nil? || last_occurrence_days_ago > days_ago
+
+        @occurrence_days_ago[input_representation].push(days_ago)
       end
 
       def update_last_hinted_days_ago(result, days_ago)
