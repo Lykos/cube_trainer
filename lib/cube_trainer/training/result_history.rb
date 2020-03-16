@@ -99,15 +99,15 @@ module CubeTrainer
         @occurrences[input_representation] += 1
       end
 
-      def last_occurrence_days_ago(input_representation)
-        @occurrence_days_ago[input_representation].last
+      def last_occurrence_days_ago(item)
+        @occurrence_days_ago[item.representation].last
       end
 
       def update_last_occurrence_days_ago(input_representation, days_ago)
-        last_occurrence_days_ago = last_occurrence_days_ago(input_representation)
-        return unless last_occurrence_days_ago.nil? || last_occurrence_days_ago > days_ago
+        occurrence_days_ago = @occurrence_days_ago[input_representation]
+        return unless occurrence_days_ago.empty? || occurrence_days_ago.last > days_ago
 
-        @occurrence_days_ago[input_representation].push(days_ago)
+        occurrence_days_ago.push(days_ago)
       end
 
       def update_last_hinted_days_ago(result, days_ago)
@@ -126,7 +126,7 @@ module CubeTrainer
       end
 
       def occurred_today?(item)
-        last_occurrence_days_ago(item.representation)&.zero?
+        last_occurrence_days_ago(item)&.zero?
       end
 
       # On how many different days the item appeared.

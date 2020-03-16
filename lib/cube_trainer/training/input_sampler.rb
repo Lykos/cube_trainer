@@ -54,7 +54,7 @@ module CubeTrainer
 
         # The number of days where it occurred at which we stop considering an item a "new item"
         # that needs to be repeated occasionally.
-        repeat_new_item_days_boundary: 5,
+        revisit_new_item_days_boundary: 5,
 
         # The number of training days where it occurred at which we stop considering an item a
         # "forgotten item" that needs to be repeated at least once per day.
