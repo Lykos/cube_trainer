@@ -4,6 +4,7 @@ require 'colorize'
 require 'cube_trainer/native'
 require 'cube_trainer/training/badness_scorer'
 require 'cube_trainer/training/coverage_scorer'
+require 'cube_trainer/training/day_coverage_scorer'
 require 'cube_trainer/training/forgotten_scorer'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/new_scorer'
@@ -28,6 +29,10 @@ module CubeTrainer
         # Exponent that is applied to the time since the last occurrence to punish items that
         # haven't been seen in a long time for coverage samples.
         index_exponent: 2,
+
+        # Exponent that is applied to the time since the last occurrence to punish items that
+        # haven't been seen in a lot of training days for day coverage samples.
+        days_ago_exponent: 2,
 
         # Base that is taken to the power of the badness to punish bad samples.
         badness_base: 10,
@@ -72,7 +77,10 @@ module CubeTrainer
         new: 0.1,
 
         # Fraction of the samples that use uniform samples to even occasionally cover easy cases.
-        coverage: 0.15,
+        coverage: 0.10,
+
+        # Fraction of the samples that use uniform samples to even occasionally cover easy cases.
+        days_coverage: 0.05,
 
         # Fraction of samples that are just simply bad samples.
         badness: 0.75
@@ -131,7 +139,8 @@ module CubeTrainer
           [
             create_adaptive_subsampler(NewScorer, SAMPLING_FRACTIONS[:new]),
             create_adaptive_subsampler(BadnessScorer, SAMPLING_FRACTIONS[:badness]),
-            create_adaptive_subsampler(CoverageScorer, SAMPLING_FRACTIONS[:coverage])
+            create_adaptive_subsampler(CoverageScorer, SAMPLING_FRACTIONS[:coverage]),
+            create_adaptive_subsampler(DaysCoverageScorer, SAMPLING_FRACTIONS[:days_coverage])
           ]
         )
         PrioritizedSampler.new(

@@ -10,7 +10,7 @@ module CubeTrainer
     # occurrence.
     class RevisitScorer < AbstractRevisitScorer
       def extra_info(input_item)
-        "occurrence_days: #{relevant_occurrence_days(input_item)}"
+        "occurrence days: #{relevant_occurrence_days(input_item)}"
       end
 
       def relevant_occurrence_days(input_item)
