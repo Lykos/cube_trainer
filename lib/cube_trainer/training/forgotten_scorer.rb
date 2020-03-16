@@ -11,9 +11,17 @@ module CubeTrainer
       # A score that prefers items that the user hasn't seen today but forgot
       # on the last time he trained.
       def score(input_item)
-        need_repeat = @result_history.hinted_last_training_day?(input_item) &&
-                      !@result_history.occurred_today?(input_item)
-        need_repeat ? 1 : 0
+        return 0 unless forgotten(input_item)
+        repeat_after_days = 2**@result_history.occurrence_days_since_last_hint(item)
+        repeat_days_ago = @result_history.last_hinted_days_ago(input_item) - repeat_after_days
+        [repeat_days_ago + 1, 0].max
+      end
+
+      def forgotten(input_item)
+        !@result_history.occurred_today?(input_item) &&
+          @result_history.last_hinted_days_ago(input_item) &&
+          @result_history.occurrence_days_since_last_hint(item) <
+          @config[:repeat_forgotten_item_boundary]
       end
 
       def color_symbol

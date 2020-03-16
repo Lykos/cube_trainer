@@ -49,7 +49,11 @@ module CubeTrainer
 
         # The number of repetitions at which we stop considering an item a "new item" that needs to
         # be repeated occasionally.
-        repeat_item_boundary: 11
+        repeat_new_item_boundary: 11,
+
+        # The number of training days where it occurred at which we stop considering an item a
+        # "forgotten item" that needs to be repeated at least once per day.
+        repeat_forgotten_item_boundary: 5
       }.freeze
 
       # Fractions that will be used for each type of sampling. Note that the actual sampling also

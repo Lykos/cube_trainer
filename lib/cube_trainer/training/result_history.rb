@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/utils/random_helper'
 require 'cube_trainer/utils/time_helper'
 require 'set'
 
@@ -8,7 +7,6 @@ module CubeTrainer
   module Training
     # Keeps track of some per-item stats based on results.
     class ResultHistory
-      include Utils::RandomHelper
       include Utils::TimeHelper
 
       def initialize(
@@ -26,6 +24,7 @@ module CubeTrainer
         @badness_memory = badness_memory
         @hint_seconds = hint_seconds
         @failed_seconds = failed_seconds
+        @reset_listeners = []
         reset
       end
 
@@ -33,17 +32,21 @@ module CubeTrainer
       def reset
         @current_occurrence_index = 0
         @occurrence_indices = {}
-        @repetition_indices = {}
         @badness_histories = {}
         @badness_histories.default_proc = ->(h, k) { h[k] = new_cube_average }
         @occurrences = {}
         @occurrences.default = 0
-        @hinted_last_training_day = {}
-        @occurred_today = Set[]
-        @last_occurrence_days_ago = {}
+        @last_hinted_days_ago = {}
+        @occurrence_days_ago = {}
+        @occurrence_days_ago.default_proc = ->(h, k) { h[k] = [] }
         @results_model.results.sort_by(&:timestamp).each do |r|
           record_result(r)
         end
+        @reset_listeners.each { |l| l.reset }
+      end
+
+      def add_reset_listener(listener)
+        @reset_listeners.push(listener)
       end
 
       def new_cube_average
@@ -78,41 +81,40 @@ module CubeTrainer
       # Insert a new result.
       def record_result(result)
         repr = result.input_representation
-        @badness_histories[repr].push(result_badness(result))
+        update_badness_histories(result)
         update_occurrences(repr)
-        update_hinted_last_training_day(result)
-        update_occurred_today(result)
+        days_ago = days_between(result.timestamp, Time.now)
+        update_last_occurrence_days_ago(repr, days_ago)
+        update_last_hinted_days_ago(result, days_ago)
       end
 
-      def update_occurrences(representation)
-        @current_occurrence_index += 1
-        @occurrence_indices[representation] = @current_occurrence_index
-        @occurrences[representation] += 1
-      end
-
-      def update_occurred_today(result)
-        return unless days_between(result.timestamp, Time.now).zero?
-
-        @occurred_today.add(result.input_representation)
-      end
-
-      def update_hinted_last_training_day(result)
+      def update_badness_histories(result)
         repr = result.input_representation
-        now = Time.now
-        days_ago = days_between(result.timestamp, now)
-        return unless days_ago.positive?
-        unless @last_occurrence_days_ago[repr].nil? || @last_occurrence_days_ago[repr] >= days_ago
-          return
-        end
+        @badness_histories[repr].push(result_badness(result))
+      end
 
-        hinted = result.num_hints.positive?
-        # For strict inequality, we need to reset.
-        if @last_occurrence_days_ago[repr].nil? || @last_occurrence_days_ago[repr] > days_ago
-          @last_occurrence_days_ago[repr] = days_ago
-          @hinted_last_training_day[repr] = hinted
-        else
-          @hinted_last_training_day[repr] ||= hinted
+      def update_occurrences(input_representation)
+        @current_occurrence_index += 1
+        @occurrence_indices[input_representation] = @current_occurrence_index
+        @occurrences[input_representation] += 1
+      end
+
+      def last_occurrence_days_ago(input_representation)
+        @occurrence_days_ago[input_representation].last
+      end
+
+      def update_last_occurrence_days_ago(input_representation, days_ago)
+        last_occurrence_days_ago = last_occurrence_days_ago(input_representation)
+        if last_occurrence_days_ago.nil? || last_occurrence_days_ago > days_ago
+          @occurrence_days_ago[input_representation].push(days_ago)
         end
+      end
+
+      def update_last_hinted_days_ago(result, days_ago)
+        return unless result.num_hints.positive?
+
+        repr = result.input_representation
+        @last_hinted_days_ago[repr] = days_ago
       end
 
       def badness_average(item)
@@ -124,26 +126,26 @@ module CubeTrainer
       end
 
       def occurred_today?(item)
-        @occurred_today.include?(item.representation)
+        last_occurrence_days_ago(item.representation)&.zero?
       end
 
-      # Returns true if the human hinted this one on the last training day.
-      def hinted_last_training_day?(item)
-        @hinted_last_training_day[item.representation]
+      # On how many different days the item appeared.
+      def occurrence_days(item)
+        @occurrence_days_ago[item.representation].length
       end
 
-      # TODO: Move this to RepeatScorer
-      # After how many other items should this item be repeated.
-      def repetition_index(occ)
-        @repetition_indices[occ] ||=
-          begin
-            rep_index = 2**occ
-            # Do a bit of random distortion to avoid completely
-            # mechanic repetition.
-            distorted_rep_index = distort(rep_index, 0.2)
-            # At least 1 other item should always come in between.
-            [distorted_rep_index.to_i, 1].max # rubocop:disable Lint/NumberConversion
-          end
+      # On how many different days the item appeared since the user last used a hint for it.
+      def occurrence_days_since_last_hint(item)
+        last_hinted_days_ago = last_hinted_days_ago(item)
+        return occurrence_days(item) if last_hinted_days_ago.nil?
+
+        @occurrence_days_ago[item.representation].count do |days_ago|
+          days_ago < last_hinted_days_ago
+        end
+      end
+
+      def last_hinted_days_ago(item)
+        @last_hinted_days_ago[item.representation]
       end
     end
   end

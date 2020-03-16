@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/abstract_scorer'
+require 'cube_trainer/utils/random_helper'
 
 module CubeTrainer
   module Training
@@ -8,6 +9,14 @@ module CubeTrainer
     # backoff. I.e. items that are relatively new, but not completely new and the right amount
     # of time has passed since the last occurrence.
     class RepeatScorer < AbstractScorer
+      include Utils::RandomHelper
+
+      def initialize(config, result_model)
+        super
+        reset
+        result_model.add_reset_listener(self)
+      end
+
       def extra_info(input_item)
         "occurrences #{@result_history.occurrences(input_item)}"
       end
@@ -29,19 +38,36 @@ module CubeTrainer
       end
 
       # Score for items that have occurred at least once and have occurred less
-      # than `@config[:repeat_item_boundary]` times.
+      # than `@config[:repeat_new_item_boundary]` times.
       def score(input_item)
         occ = @result_history.occurrences(input_item)
         # No repetitions necessary (any more).
-        return 0 if occ.zero? || occ >= @config[:repeat_item_boundary]
+        return 0 if occ.zero? || occ >= @config[:repeat_new_item_boundary]
 
         # When the item is completely new, repeat often, then less and less often, but also
         # adjust to the total number of items.
-        rep_index = @result_history.repetition_index(occ)
+        rep_index = repetition_index(input_item.representation, occ)
         index = @result_history.items_since_last_occurrence(input_item)
         raise 'Not completely new item has no index.' if index.nil?
 
         rep_index_score(index, rep_index)
+      end
+
+      def reset
+        @repetition_indices = {}
+      end
+
+      # After how many other items should this item be repeated.
+      def repetition_index(input_representation, occ)
+        @repetition_indices[[input_representation, occ]] ||=
+          begin
+            rep_index = 2**occ
+            # Do a bit of random distortion to avoid completely
+            # mechanic repetition.
+            distorted_rep_index = distort(rep_index, 0.2)
+            # At least 1 other item should always come in between.
+            [distorted_rep_index.floor, 1].max
+          end
       end
 
       def color_symbol
