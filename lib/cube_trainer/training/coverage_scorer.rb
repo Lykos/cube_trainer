@@ -13,9 +13,9 @@ module CubeTrainer
       # A score that prefers items that haven't been shown in a while.
       def score(input_item)
         index = @result_history.items_since_last_occurrence(input_item)
-        return @config[:epsilon_score] if index.nil?
+        return 0 if index.nil?
 
-        [index**@config[:index_exponent], @config[:epsilon_score]].max
+        index**@config[:index_exponent]
       end
 
       def color_symbol
