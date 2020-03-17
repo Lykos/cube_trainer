@@ -67,18 +67,19 @@ module CubeTrainer
       end
 
       def cube_state
-        @cube_state = @color_scheme.solved_cube_state(options.cube_size)
+        @cube_state ||= @color_scheme.solved_cube_state(options.cube_size)
       end
 
       def generate_input_items
+        two_twists = generate_two_twists
         buffer_twist.apply_to(cube_state)
-        ccw_twists = one_twists(cube_state, true)
+        ccw_twists = generate_one_twists(cube_state, true)
         buffer_twist.apply_to(cube_state)
-        cw_twists = one_twists(cube_state, false)
+        cw_twists = generate_one_twists(cube_state, false)
         two_twists + ccw_twists + cw_twists
       end
 
-      def two_twists
+      def generate_two_twists
         correctly_oriented_corners.permutation(2).map do |c1, c2|
           twisted_corner_pair = [c1.rotate_by(1), c2.rotate_by(2)]
           letter_pair =
@@ -95,7 +96,7 @@ module CubeTrainer
       end
 
       # The buffer of cube_state is expected to already be twisted accordingly.
-      def one_twists(cube_state, invert_twist)
+      def generate_one_twists(cube_state, invert_twist)
         twist_number = invert_twist ? 1 : 2
         correctly_oriented_corners.map do |c|
           twisted_corner = c.rotate_by(twist_number)
