@@ -71,11 +71,9 @@ module CubeTrainer
         # repeated.
         new: 0.1,
 
-        # Fraction of the samples that use uniform samples to even occasionally cover easy cases.
-        coverage: 0.10,
-
-        # Fraction of the samples that use uniform samples to even occasionally cover easy cases.
-        days_coverage: 0.05,
+        # Fraction of the samples that prefers things we haven't seen in a while to also occasionally
+        # cover easy cases.
+        coverage: 0.15,
 
         # Fraction of samples that are just simply bad samples.
         badness: 0.75
@@ -129,12 +127,14 @@ module CubeTrainer
         revisit_sampler = create_adaptive_sampler(RevisitScorer)
         repeat_sampler = create_adaptive_sampler(RepeatScorer)
         forgotten_sampler = create_adaptive_sampler(ForgottenScorer)
-        combined_sampler = CombinedSampler.new(
+        coverage_sampler = PrioritizedSampler.new(
+          [create_adaptive_sampler(DaysCoverageScorer), create_adaptive_sampler(CoverageScorer)]
+        )
+        combined_sampler = CombinedSampler.new(          
           [
             create_adaptive_subsampler(NewScorer, SAMPLING_FRACTIONS[:new]),
             create_adaptive_subsampler(BadnessScorer, SAMPLING_FRACTIONS[:badness]),
-            create_adaptive_subsampler(CoverageScorer, SAMPLING_FRACTIONS[:coverage]),
-            create_adaptive_subsampler(DaysCoverageScorer, SAMPLING_FRACTIONS[:days_coverage])
+            CombinedSampler::SubSampler.new(coverage_sampler, SAMPLING_FRACTIONS[:coverage])
           ]
         )
         fallback_sampler = UniformSampler.new(@items)
