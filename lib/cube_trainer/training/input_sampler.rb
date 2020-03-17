@@ -18,10 +18,6 @@ module CubeTrainer
     # An input sampler that tries to adaptively sample items that are useful inputs for the learner.
     class InputSampler
       DEFAULT_CONFIG = {
-        # Minimum score that we always give to each element in order not to screw up our sampling if
-        # all weights become 0 or so.
-        epsilon_score: 0.000000001,
-
         # Boundary at which we don't punish repeating the same item again. But note that this will
         # be adjusted in case of a small total number of items.
         repetition_boundary: 4,
@@ -124,7 +120,6 @@ module CubeTrainer
       def create_result_history(results_model)
         ResultHistory.new(
           results_model,
-          epsilon_score: @config[:epsilon_score],
           badness_memory: @config[:badness_memory],
           failed_seconds: @config[:failed_seconds],
           hint_seconds: @config[:hint_seconds]

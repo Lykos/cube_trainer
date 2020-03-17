@@ -11,7 +11,6 @@ module CubeTrainer
 
       def initialize(
         results_model,
-        epsilon_score:,
         badness_memory:,
         hint_seconds:,
         failed_seconds:
@@ -20,7 +19,6 @@ module CubeTrainer
 
         @results_model = results_model
         @results_model.add_result_listener(self)
-        @epsilon_score = epsilon_score
         @badness_memory = badness_memory
         @hint_seconds = hint_seconds
         @failed_seconds = failed_seconds
@@ -50,7 +48,7 @@ module CubeTrainer
       end
 
       def new_cube_average
-        Native::CubeAverage.new(@badness_memory, @epsilon_score)
+        Native::CubeAverage.new(@badness_memory, 0)
       end
 
       # Called by the results model to notify us about changes on the results.
