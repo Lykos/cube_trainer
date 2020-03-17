@@ -26,7 +26,11 @@ module CubeTrainer
         CommutatorChecker::CheckAlgResult::CORRECT
       end
 
-      def output_final_report; end
+      def found_problems?
+        false
+      end
+
+      def parse_report; end        
     end
 
     # Represents an empty entry in a commutator table.
