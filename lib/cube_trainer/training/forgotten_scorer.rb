@@ -19,7 +19,7 @@ module CubeTrainer
 
       def revisit_necessary?(input_item)
         @result_history.last_hinted_days_ago(input_item) &&
-          @result_history.occurrence_days_since_last_hint(item) <
+          @result_history.occurrence_days_since_last_hint(input_item) <
             @config[:repeat_forgotten_item_days_boundary]
       end
 
