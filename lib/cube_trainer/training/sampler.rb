@@ -95,5 +95,20 @@ module CubeTrainer
         !items.empty?
       end
     end
+
+    # A sampler that samples all items uniformly.
+    class UniformSampler < Sampler
+      def initialize(items)
+        @items = items
+      end
+
+      def random_item
+        @items.sample
+      end
+
+      def ready?
+        !@items.empty?
+      end
+    end
   end
 end

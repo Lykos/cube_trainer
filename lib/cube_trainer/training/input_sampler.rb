@@ -143,8 +143,9 @@ module CubeTrainer
             create_adaptive_subsampler(DaysCoverageScorer, SAMPLING_FRACTIONS[:days_coverage])
           ]
         )
+        fallback_sampler = UniformSampler.new(@items)
         PrioritizedSampler.new(
-          [revisit_sampler, repeat_sampler, forgotten_sampler, combined_sampler]
+          [revisit_sampler, repeat_sampler, forgotten_sampler, combined_sampler, fallback_sampler]
         )
       end
 
