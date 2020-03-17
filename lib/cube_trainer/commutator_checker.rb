@@ -73,17 +73,15 @@ module CubeTrainer
       @error_algs += 1
     end
 
-    def output_final_report
-      if found_problems?
-        msg = "#{@error_algs} error algs and #{@broken_algs} " \
-              "broken algs of #{@total_algs}."
-        msg << " #{@unfixable_algs} were unfixable." if @unfixable_algs
-        raise msg if fail_comms?
+    def failure_report
+      msg = "#{@error_algs} error algs and #{@broken_algs} " \
+            "broken algs of #{@total_algs}."
+      msg << " #{@unfixable_algs} were unfixable." if @unfixable_algs
+      msg
+    end
 
-        puts msg if warn_comms?
-      elsif @verbose
-        puts "Parsed #{@total_algs} algs."
-      end
+    def parse_report
+      "Parsed #{@total_algs} algs."
     end
 
     def handle_incorrect(row_description, letter_pair, commutator, alg, desired_state)

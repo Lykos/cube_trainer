@@ -226,11 +226,20 @@ module CubeTrainer
 
         # Now check everything and construct the hint table.
         hints = process_alg_table(alg_table, interpretation)
-
-        checker.output_final_report
+        output_final_report
 
         hints
       end
+
+    def output_final_report
+      if checker.found_problems?
+        raise checker.failure_report if fail_comms?
+
+        puts checker.failure_report if warn_comms?
+      elsif @verbose
+        puts checker.parse_report
+      end
+    end
 
       def hinter_class
         CommutatorHinter
