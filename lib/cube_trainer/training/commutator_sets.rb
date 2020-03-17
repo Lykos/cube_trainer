@@ -59,7 +59,7 @@ module CubeTrainer
       end
 
       def goal_badness
-        1.5
+        2.0
       end
 
       def part_cycle_factory
@@ -162,7 +162,7 @@ module CubeTrainer
       end
 
       def goal_badness
-        2.0
+        3.0
       end
 
       def generate_letter_pairs
@@ -225,7 +225,7 @@ module CubeTrainer
       end
 
       def goal_badness
-        2.0
+        2.5
       end
 
       # rubocop:disable Metrics/AbcSize
@@ -337,7 +337,7 @@ module CubeTrainer
       end
 
       def goal_badness
-        2.0
+        2.5
       end
 
       def edge_combinations
@@ -374,7 +374,7 @@ module CubeTrainer
       end
 
       def goal_badness
-        1.0
+        1.5
       end
     end
 
@@ -387,7 +387,7 @@ module CubeTrainer
       end
 
       def goal_badness
-        1.0
+        1.5
       end
     end
 
