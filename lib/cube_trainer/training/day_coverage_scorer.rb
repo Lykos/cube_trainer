@@ -13,9 +13,9 @@ module CubeTrainer
       # A score that prefers items that haven't been shown in a lot of training days.
       def score(input_item)
         days_ago = @result_history.last_occurrence_days_ago(input_item)
-        return @config[:epsilon_score] if days_ago.nil?
+        return 0 if days_ago.nil? || days_ago.zero?
 
-        [days_ago**@config[:days_ago_exponent], @config[:epsilon_score]].max
+        days_ago**@config[:days_ago_exponent]
       end
 
       def color_symbol
