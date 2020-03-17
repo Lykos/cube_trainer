@@ -20,8 +20,10 @@ module CubeTrainer
       end
 
       def sampling_info(input_item)
-        "sampling component: #{tag}; score: #{score(input_item).round(2)}; " \
-        "#{extra_info(input_item)}"
+        extra = extra_info(input_item)
+        extra_separator = extra.nil? || extra.empty? ? '' : '; '
+        "sampling component: #{tag}; score: #{score(input_item).round(2)}" \
+        "#{extra_separator}#{extra}"
       end
 
       def tag
