@@ -30,7 +30,7 @@ module CubeTrainer
         false
       end
 
-      def parse_report; end        
+      def parse_report; end
     end
 
     # Represents an empty entry in a commutator table.
@@ -235,15 +235,15 @@ module CubeTrainer
         hints
       end
 
-    def output_final_report
-      if checker.found_problems?
-        raise checker.failure_report if fail_comms?
+      def output_final_report
+        if checker.found_problems?
+          raise checker.failure_report if fail_comms?
 
-        puts checker.failure_report if warn_comms?
-      elsif @verbose
-        puts checker.parse_report
+          puts checker.failure_report if warn_comms?
+        elsif @verbose
+          puts checker.parse_report
+        end
       end
-    end
 
       def hinter_class
         CommutatorHinter
