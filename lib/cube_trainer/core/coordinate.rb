@@ -171,7 +171,7 @@ module CubeTrainer
       end
 
       def coordinates
-        @coordinates ||= [x, y]
+        @coordinates ||= [x, y].freeze
       end
 
       def x
