@@ -71,8 +71,8 @@ module CubeTrainer
         # repeated.
         new: 0.1,
 
-        # Fraction of the samples that prefers things we haven't seen in a while to also occasionally
-        # cover easy cases.
+        # Fraction of the samples that prefers things we haven't seen in a while to also
+        # occasionally cover easy cases.
         coverage: 0.15,
 
         # Fraction of samples that are just simply bad samples.
@@ -101,7 +101,7 @@ module CubeTrainer
         @config = create_config(goal_badness, repeat_item_boundary)
         @verbose = verbose
         @result_history = create_result_history(results_model)
-        @sampler = create_sampler(results_model)
+        @sampler = create_sampler
       end
 
       attr_reader :items
@@ -123,14 +123,12 @@ module CubeTrainer
         )
       end
 
-      def create_sampler(_results_model)
+      def create_sampler
         revisit_sampler = create_adaptive_sampler(RevisitScorer)
         repeat_sampler = create_adaptive_sampler(RepeatScorer)
         forgotten_sampler = create_adaptive_sampler(ForgottenScorer)
-        coverage_sampler = PrioritizedSampler.new(
-          [create_adaptive_sampler(DaysCoverageScorer), create_adaptive_sampler(CoverageScorer)]
-        )
-        combined_sampler = CombinedSampler.new(          
+        coverage_sampler = create_coverage_sampler
+        combined_sampler = CombinedSampler.new(
           [
             create_adaptive_subsampler(NewScorer, SAMPLING_FRACTIONS[:new]),
             create_adaptive_subsampler(BadnessScorer, SAMPLING_FRACTIONS[:badness]),
@@ -140,6 +138,12 @@ module CubeTrainer
         fallback_sampler = UniformSampler.new(@items)
         PrioritizedSampler.new(
           [revisit_sampler, repeat_sampler, forgotten_sampler, combined_sampler, fallback_sampler]
+        )
+      end
+
+      def create_coverage_sampler
+        PrioritizedSampler.new(
+          [create_adaptive_sampler(DaysCoverageScorer), create_adaptive_sampler(CoverageScorer)]
         )
       end
 
