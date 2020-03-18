@@ -14,7 +14,8 @@ module CubeTrainer
       end
 
       def relevant_occurrence_days(input_item)
-        @result_history.occurrence_days(input_item)
+        # Subtract one because the first occurrence doesn't matter.
+        @result_history.occurrence_days(input_item) - 1
       end
 
       # Revisit is necessary for items that have occurred at least once and have occurred less

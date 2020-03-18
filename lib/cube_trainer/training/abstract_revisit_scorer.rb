@@ -13,7 +13,7 @@ module CubeTrainer
         return 0 unless revisit_necessary?(input_item)
 
         # When the item is completely new, repeat often, then less and less often.
-        repeat_after_days = 2**(relevant_occurrence_days(input_item) - 1)
+        repeat_after_days = 2**relevant_occurrence_days(input_item)
         repeat_days_ago = @result_history.last_occurrence_days_ago(input_item) - repeat_after_days
         [repeat_days_ago + 1, 0].max
       end
