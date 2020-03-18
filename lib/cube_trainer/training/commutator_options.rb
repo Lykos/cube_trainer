@@ -37,12 +37,12 @@ module CubeTrainer
           HumanTimeLearner, 3, true
         ),
         floating_2twists:
-          CommutatorInfo.new(:floating_2twists, FloatingCorner2Twists, HumanTimeLearner, 3, false),
+          CommutatorInfo.new(:floating_2twists, FloatingCorner2Twists, HumanTimeLearner, 3, true),
         corner_3twists:
-          CommutatorInfo.new(:corner_3twists, Corner3Twists, HumanTimeLearner, 3, false),
+          CommutatorInfo.new(:corner_3twists, Corner3Twists, HumanTimeLearner, 3, true),
         floating_2twists_and_corner_3twists: CommutatorInfo.new(
           :floating_2twists_and_corner_3twists, FloatingCorner2TwistsAnd3Twists,
-          HumanTimeLearner, 3, false
+          HumanTimeLearner, 3, true
         ),
         floating_2flips:
           CommutatorInfo.new(:floating_2flips, FloatingEdgeFlips, HumanTimeLearner, 3, false),
