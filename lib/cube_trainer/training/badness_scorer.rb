@@ -26,6 +26,8 @@ module CubeTrainer
       def score(input_item)
         bad_badness = (@result_history.badness_average(input_item) - @config[:goal_badness]) /
                       @config[:goal_badness]
+        return 0 if bad_badness.zero?
+
         score = @config[:badness_base]**bad_badness
         index = @result_history.items_since_last_occurrence(input_item)
         repetition_adjusted_score(index, score)
