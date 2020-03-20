@@ -1,6 +1,11 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    activemodel (6.0.2.1)
+      activesupport (= 6.0.2.1)
+    activerecord (6.0.2.1)
+      activemodel (= 6.0.2.1)
+      activesupport (= 6.0.2.1)
     activesupport (6.0.2.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
@@ -115,6 +120,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord!
   colorize!
   parallel!
   qtbindings!
@@ -135,4 +141,4 @@ DEPENDENCIES
   xdg!
 
 BUNDLED WITH
-   2.0.2
+   2.1.4
