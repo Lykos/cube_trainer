@@ -97,7 +97,7 @@ module CubeTrainer
 
       # The buffer of cube_state is expected to already be twisted accordingly.
       def generate_one_twists(cube_state, invert_twist)
-        twist_number = invert_twist ? 1 : 2
+        twist_number = invert_twist ? 2 : 1
         correctly_oriented_corners.map do |c|
           twisted_corner = c.rotate_by(twist_number)
           letter_pair = LetterPair.new([letter_scheme.letter(twisted_corner)])
