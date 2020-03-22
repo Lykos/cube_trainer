@@ -85,9 +85,8 @@ module CubeTrainer
       def initialize(
         items,
         results_model,
-        goal_badness = nil,
-        verbose = false,
-        known = false
+        options,
+        goal_badness = nil
       )
         raise ArgumentError unless items.is_a?(Array)
         unless items.all? { |e| e.is_a?(InputItem) }
@@ -96,19 +95,19 @@ module CubeTrainer
         raise unless goal_badness.is_a?(Float)
 
         @items = items
-        @config = create_config(goal_badness, known)
-        @verbose = verbose
+        @config = create_config(goal_badness, options)
+        @verbose = options.verbose
         @result_history = create_result_history(results_model)
         @sampler = create_sampler
       end
 
       attr_reader :items
 
-      def create_config(goal_badness, known)
+      def create_config(goal_badness, options)
         config = DEFAULT_CONFIG.dup
         config[:num_items] = items.length
         config[:goal_badness] = goal_badness if goal_badness
-        config[:known] = known
+        config[:known] = options.known
         config
       end
 

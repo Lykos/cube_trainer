@@ -22,9 +22,8 @@ module CubeTrainer
         InputSampler.new(
           input_items,
           results_model,
-          goal_badness,
-          @options.verbose,
-          @options.new_item_boundary
+          @options,
+          goal_badness
         )
       end
 
