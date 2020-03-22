@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org' do
+  gem 'activerecord'
   gem 'colorize'
   gem 'parallel'
   gem 'ruby-filemagic'
@@ -9,7 +10,6 @@ source 'https://rubygems.org' do
   gem 'sqlite3'
   gem 'wombat'
   gem 'xdg'
-  gem 'activerecord'
 
   group :development, :test do
     gem 'rake'
