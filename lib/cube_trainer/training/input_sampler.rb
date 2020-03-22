@@ -107,7 +107,7 @@ module CubeTrainer
       def create_config(goal_badness, known)
         config = DEFAULT_CONFIG.dup
         config[:num_items] = items.length
-        config[:goal_badness] ||= goal_badness
+        config[:goal_badness] = goal_badness if goal_badness
         config[:known] = known
         config
       end
