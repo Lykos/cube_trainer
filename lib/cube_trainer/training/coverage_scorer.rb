@@ -13,7 +13,8 @@ module CubeTrainer
 
       def score(input_item)
         long_ago_metric = long_ago_metric(input_item)
-        return 0 if long_ago_metric.nil? || long_ago_metric.zero?
+        return 0 if (long_ago_metric.nil? && !@config[:known]) || long_ago_metric.zero?
+        return Infinity if long_ago_metric.nil? && @config[:known]
 
         long_ago_metric**@config[exponent_config_key]
       end

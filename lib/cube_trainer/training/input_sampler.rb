@@ -82,14 +82,12 @@ module CubeTrainer
       # `items` are the items from which we get samples. They have to be an array of InputItem.
       #         But the representation inside InputItem can be anything.
       # `results_model` is a helper object that retrieves results to get historic scores.
-      # `repeat_item_boundary` is the number of repetitions at which we stop considering an item a
-      #                       "new item" that needs to be repeated occasionally.
       def initialize(
         items,
         results_model,
         goal_badness = nil,
         verbose = false,
-        repeat_item_boundary = nil
+        known = false
       )
         raise ArgumentError unless items.is_a?(Array)
         unless items.all? { |e| e.is_a?(InputItem) }
@@ -98,7 +96,7 @@ module CubeTrainer
         raise unless goal_badness.is_a?(Float)
 
         @items = items
-        @config = create_config(goal_badness, repeat_item_boundary)
+        @config = create_config(goal_badness, known)
         @verbose = verbose
         @result_history = create_result_history(results_model)
         @sampler = create_sampler
@@ -106,11 +104,11 @@ module CubeTrainer
 
       attr_reader :items
 
-      def create_config(goal_badness, repeat_item_boundary)
+      def create_config(goal_badness, known)
         config = DEFAULT_CONFIG.dup
         config[:num_items] = items.length
         config[:goal_badness] ||= goal_badness
-        config[:repeat_item_boundary] ||= repeat_item_boundary
+        config[:known] = known
         config
       end
 
@@ -124,21 +122,28 @@ module CubeTrainer
       end
 
       def create_sampler
-        revisit_sampler = create_adaptive_sampler(RevisitScorer)
-        repeat_sampler = create_adaptive_sampler(RepeatScorer)
-        forgotten_sampler = create_adaptive_sampler(ForgottenScorer)
-        coverage_sampler = create_coverage_sampler
-        combined_sampler = CombinedSampler.new(
+        PrioritizedSampler.new(
           [
-            create_adaptive_subsampler(NewScorer, SAMPLING_FRACTIONS[:new]),
-            create_adaptive_subsampler(BadnessScorer, SAMPLING_FRACTIONS[:badness]),
-            CombinedSampler::SubSampler.new(coverage_sampler, SAMPLING_FRACTIONS[:coverage])
+            create_adaptive_sampler(RevisitScorer),
+            create_adaptive_sampler(RepeatScorer),
+            create_adaptive_sampler(ForgottenScorer),
+            create_normal_sampler,
+            UniformSampler.new(@items)
           ]
         )
-        fallback_sampler = UniformSampler.new(@items)
-        PrioritizedSampler.new(
-          [revisit_sampler, repeat_sampler, forgotten_sampler, combined_sampler, fallback_sampler]
-        )
+      end
+
+      # The sampler that is used in "normal" cases, i.e. if no special sampling is needed.
+      def create_normal_sampler
+        samplers =
+          [
+            create_adaptive_subsampler(BadnessScorer, SAMPLING_FRACTIONS[:badness]),
+            CombinedSampler::SubSampler.new(create_coverage_sampler, SAMPLING_FRACTIONS[:coverage])
+          ]
+        unless @config[:known]
+          samplers.push(create_adaptive_subsampler(NewScorer, SAMPLING_FRACTIONS[:new]))
+        end
+        CombinedSampler.new(samplers)
       end
 
       def create_coverage_sampler
