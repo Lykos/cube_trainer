@@ -28,7 +28,8 @@ module CubeTrainer
 
       def newish_elements(filtered_results)
         lengths = filtered_results.map { |_input, rs| rs.length }
-        lengths.count { |l| l >= 1 && l < @options.new_item_boundary }
+        new_item_boundary = InputSampler::DEFAULT_CONFIG[:repeat_new_item_times_boundary]
+        lengths.count { |l| l >= 1 && l < new_item_boundary }
       end
 
       def input_stats(inputs)

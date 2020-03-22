@@ -62,7 +62,7 @@ module CubeTrainer
 
       def self.default_options
         options = OpenStruct.new
-        options.new_item_boundary = 11
+        options.known = false
         options.commutator_info = COMMUTATOR_TYPES['corners']
         options.restrict_letters = nil
         options.exclude_letters = []
