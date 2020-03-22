@@ -128,6 +128,7 @@ module CubeTrainer
       def generate_input_items
         super.each do |input_item|
           next unless input_item.cube_state
+
           # Mask the buffer s.t. it's not too obvious whether it's a 2 twist or 3 twist.
           buffer_coordinates.each do |c|
             input_item.cube_state[c] = :unknown
