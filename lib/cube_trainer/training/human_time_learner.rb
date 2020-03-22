@@ -28,6 +28,7 @@ module CubeTrainer
           @results_model.delete_after_time(Time.now - 10)
           exit
         else
+          puts input.representation if @picture
           puts "Time: #{format_time(data.time_s)}"
         end
       end
