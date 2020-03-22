@@ -7,8 +7,9 @@ module CubeTrainer
     # Abstract class for a scorer that prefers items that haven't been shown in a while.
     class AbstractCoverageScorer < AbstractScorer
       def extra_info(input_item)
-        "items since last occurrence #{@result_history.items_since_last_occurrence(input_item)}; " \
-        "days since last occurrence #{@result_history.last_occurrence_days_ago(input_item)}"
+        'items since last occurrence: ' \
+        "#{@result_history.items_since_last_occurrence(input_item)}; " \
+        "days since last occurrence: #{@result_history.last_occurrence_days_ago(input_item)}"
       end
 
       def score(input_item)
