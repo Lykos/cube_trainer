@@ -122,15 +122,20 @@ module CubeTrainer
       end
 
       def create_sampler
-        PrioritizedSampler.new(
+        samplers =
           [
-            create_adaptive_sampler(RevisitScorer),
-            create_adaptive_sampler(RepeatScorer),
             create_adaptive_sampler(ForgottenScorer),
             create_normal_sampler,
             UniformSampler.new(@items)
           ]
-        )
+        unless @config[:known]
+          samplers =
+            [
+              create_adaptive_sampler(RevisitScorer),
+              create_adaptive_sampler(RepeatScorer)
+            ] + samplers
+        end
+        PrioritizedSampler.new(samplers)
       end
 
       # The sampler that is used in "normal" cases, i.e. if no special sampling is needed.
