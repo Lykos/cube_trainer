@@ -10,7 +10,11 @@ module CubeTrainer
       include Utils::ArrayHelper
 
       def color_symbol(color)
-        color == :orange ? :light_red : color
+        case color
+        when :orange then :light_red
+        when :unknown then :light_black
+        else color
+        end
       end
 
       COLOR_MODES = %i[color nocolor].freeze
