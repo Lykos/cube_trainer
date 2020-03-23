@@ -76,7 +76,7 @@ module CubeTrainer
         # This is used in case the algorithm set is marked as "known". The user knows the alg
         # set already, but we can't make good decisions until we have results for all of them,
         # so we want to get through all of them quickly and use a high fraction here.
-        new_known: 1.0,
+        new_known: 2.0,
 
         # Fraction of the samples that prefers things we haven't seen in a while to also
         # occasionally cover easy cases.
