@@ -18,7 +18,7 @@ require 'models/cube_trainer/training/result'
 
 ActiveRecord::Base.establish_connection(
   adapter: 'sqlite3',
-  database: 'db/development.sqlite3'
+  database: 'db/production.sqlite3'
 )
 
 total_migrated = 0
