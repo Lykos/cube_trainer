@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 begin
   require 'rake/extensiontask'
   Rake::ExtensionTask.new('cube_trainer/native')

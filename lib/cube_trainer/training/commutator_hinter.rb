@@ -5,7 +5,7 @@ module CubeTrainer
     # Hinter that maps letter pairs to commutators for those letter pairs.
     class CommutatorHinter
       def initialize(hints)
-        @hints = hints.map { |k, v| [k, [v]] }.to_h
+        @hints = hints.transform_values { |v| [v] }
       end
 
       def hints(letter_pair)

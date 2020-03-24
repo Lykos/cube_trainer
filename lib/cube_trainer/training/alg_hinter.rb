@@ -6,7 +6,7 @@ module CubeTrainer
     class AlgHinter
       def initialize(hints)
         @entries = hints.to_a.freeze
-        @hints = hints.map { |k, v| [k, [v]] }.to_h
+        @hints = hints.transform_values { |v| [v] }
         @hints.default = []
         @hints.freeze
       end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def ui_to_rb(filename)
   filename.sub(%r{^ui/}, 'lib/').sub(/.ui$/, '_ui.rb')
 end
@@ -22,8 +24,8 @@ COMPILED_UIFILES_DIRECTORIES = COMPILED_UIFILES.map { |f| File.dirname(f) }.uniq
 
 COMPILED_UIFILES_DIRECTORIES.each { |d| directory d }
 
-desc 'Generate all Qt UI files using rbuic4'
-task uic: COMPILED_UIFILES
+desc('Generate all Qt UI files using rbuic4')
+task(uic: COMPILED_UIFILES)
 
 begin
   require 'rake/clean'

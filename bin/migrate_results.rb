@@ -1,18 +1,15 @@
 #!/usr/bin/ruby
 # frozen_string_literal: true
 
-require File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../config/application', __dir__)
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'app'))
+$LOAD_PATH.unshift(File.join(__dir__, '..', 'lib'))
+$LOAD_PATH.unshift(File.join(__dir__, '..', 'app'))
 
 require 'active_record'
 
-class ApplicationRecord < ActiveRecord::Base
-  self.abstract_class = true
-end
-
 require 'cube_trainer/training/results_persistence'
+require 'models/application_record'
 require 'models/cube_trainer/training'
 require 'models/cube_trainer/training/result'
 
@@ -32,7 +29,7 @@ persistence.load_modes.each do |mode|
   results.each do |r|
     if CubeTrainer::Training::Result.exists?(created_at: r.timestamp)
       existing += 1
-    else 
+    else
       r.to_result.save!
     end
   end
