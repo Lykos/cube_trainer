@@ -75,9 +75,14 @@ Style/MethodCallWithArgsParentheses:
   - include
   - it_behaves_like
   - include_examples
+  - exit
+  - run
+  - abort
   Exclude:
+  - Gemfile
   - Rakefile
-  - 'spec/**/*_spec.rb'
+  - lib/tasks/*.rake
+  - 'spec/**/*.rb'
 Style/OptionHash:
   Enabled: true
 Style/ReturnNil:
