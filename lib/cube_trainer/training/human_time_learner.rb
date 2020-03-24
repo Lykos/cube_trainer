@@ -22,12 +22,13 @@ module CubeTrainer
 
       attr_reader :muted
 
-      def handle_user_input_data(data)
+      def handle_user_input_data(input, data)
         if data.char == 'd'
           puts 'Pressed d. Deleting results for the last 10 seconds and exiting.'
           @results_model.delete_after_time(Time.now - 10)
           exit
         else
+          puts input.representation if @picture
           puts "Time: #{format_time(data.time_s)}"
         end
       end
@@ -39,7 +40,7 @@ module CubeTrainer
           puts_and_say(input.representation)
         end
         data = time_before_any_key_press(@hinter.hints(input.representation))
-        handle_user_input_data(data)
+        handle_user_input_data(input, data)
         PartialResult.new(data.time_s, num_hints: data.num_hints)
       end
     end

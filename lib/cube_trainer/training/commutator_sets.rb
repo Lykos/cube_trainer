@@ -97,7 +97,7 @@ module CubeTrainer
 
       # The buffer of cube_state is expected to already be twisted accordingly.
       def generate_one_twists(cube_state, invert_twist)
-        twist_number = invert_twist ? 1 : 2
+        twist_number = invert_twist ? 2 : 1
         correctly_oriented_corners.map do |c|
           twisted_corner = c.rotate_by(twist_number)
           letter_pair = LetterPair.new([letter_scheme.letter(twisted_corner)])
@@ -111,12 +111,29 @@ module CubeTrainer
 
     # Class that generates input items for floating corner 2 twists and 3 twists.
     class FloatingCorner2TwistsAnd3Twists < DisjointUnionLetterPairAlgSet
+      PART_TYPE = Core::Corner
+
       def initialize(options)
         super(
           options,
           FloatingCorner2Twists.new(options),
           Corner3Twists.new(options)
         )
+      end
+
+      def buffer_coordinates
+        @buffer_coordinates ||= Core::Coordinate.solved_positions(buffer, @options.cube_size, 0)
+      end
+
+      def generate_input_items
+        super.each do |input_item|
+          next unless input_item.cube_state
+
+          # Mask the buffer s.t. it's not too obvious whether it's a 2 twist or 3 twist.
+          buffer_coordinates.each do |c|
+            input_item.cube_state[c] = :unknown
+          end
+        end
       end
     end
 

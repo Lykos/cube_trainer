@@ -62,7 +62,7 @@ module CubeTrainer
 
       def self.default_options
         options = OpenStruct.new
-        options.new_item_boundary = 11
+        options.known = false
         options.commutator_info = COMMUTATOR_TYPES['corners']
         options.restrict_letters = nil
         options.exclude_letters = []
@@ -136,11 +136,11 @@ module CubeTrainer
           end
 
           opts.on(
-            '-n', '--new_item_boundary INTEGER', Integer,
-            'Number of repetitions at which we stop considering an item a "new item" that ' \
-            'needs to be repeated occasionally.'
-          ) do |int|
-            options.new_item_boundary = int
+            '-k', '--[no-]known',
+            'This alg set is known to the user. Turns off introducing items slowly and repeating ' \
+            'new ones.'
+          ) do |k|
+            options.known = k
           end
 
           opts.on('-m', '--[no-]mute', 'Mute (i.e. no audio).') do |m|

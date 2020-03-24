@@ -8,6 +8,7 @@ require 'cube_trainer/training/results_model'
 require 'cube_trainer/training/commutator_sets'
 require 'cube_trainer/training/stats_computer'
 require 'cube_trainer/letter_pair'
+require 'ostruct'
 
 ITERATIONS = 300
 
@@ -23,10 +24,13 @@ end
 describe Training::InputSampler do
   ITEMS = ('a'..'c').to_a.permutation(2).map { |p| Training::InputItem.new(LetterPair.new(p)) }
 
+  let(:options) { OpenStruct.new }
+
   it 'performs better than random sampling' do
     results_persistence = Training::ResultsPersistence.create_in_memory
     results_model = Training::ResultsModel.new(:items, results_persistence)
-    smart_sampler = described_class.new(ITEMS, results_model, 1.0)
+
+    smart_sampler = described_class.new(ITEMS, results_model, options, 1.0)
     smart_average = compute_average(results_model, smart_sampler)
 
     results_persistence = Training::ResultsPersistence.create_in_memory

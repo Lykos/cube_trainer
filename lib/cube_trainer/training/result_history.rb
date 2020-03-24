@@ -71,7 +71,7 @@ module CubeTrainer
       # (0 if it was the last picked item).
       def items_since_last_occurrence(item)
         occ = @occurrence_indices[item.representation]
-        return if occ.nil?
+        return Float::INFINITY if occ.nil?
 
         @current_occurrence_index - occ
       end
@@ -98,7 +98,7 @@ module CubeTrainer
       end
 
       def last_occurrence_days_ago(item)
-        @occurrence_days_ago[item.representation].last
+        @occurrence_days_ago[item.representation].last || Float::INFINITY
       end
 
       def update_last_occurrence_days_ago(input_representation, days_ago)
@@ -124,7 +124,7 @@ module CubeTrainer
       end
 
       def occurred_today?(item)
-        last_occurrence_days_ago(item)&.zero?
+        last_occurrence_days_ago(item).zero?
       end
 
       # On how many different days the item appeared.

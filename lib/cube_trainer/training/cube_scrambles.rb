@@ -28,11 +28,11 @@ module CubeTrainer
       end
 
       def hinter(*)
-        NoHinter.new({})
+        @hinter ||= NoHinter.new({})
       end
 
-      def input_sampler(*)
-        @input_sampler ||= InputSampler.new(@options.color_scheme)
+      def input_sampler(results_model)
+        InputSampler.new(@options.color_scheme, results_model, options)
       end
 
       def input_items
