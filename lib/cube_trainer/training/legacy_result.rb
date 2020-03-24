@@ -9,6 +9,7 @@ require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/pao_letter_pair'
 require 'cube_trainer/utils/string_helper'
+require 'models/cube_trainer/training/result'
 
 module CubeTrainer
   module Training
@@ -133,6 +134,20 @@ module CubeTrainer
 
       attr_reader :mode, :timestamp, :time_s, :input_representation, :failed_attempts, :word,
                   :success, :num_hints
+
+      # Transforms this to a result from app/models to facilitate the migration.
+      def to_result
+        Result.new(
+          mode: @mode,
+          created_at: @timestamp,
+          time_s: @time_s,
+          raw_input_representation: @input_representation.to_raw_data,
+          failed_attempts: failed_attempts,
+          word: @word,
+          success: @success,
+          num_hints: @num_hints
+        )
+      end
 
       def formatted_time
         format_time(@time_s)
