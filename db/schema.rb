@@ -13,13 +13,13 @@
 ActiveRecord::Schema.define(version: 2020_03_24_193052) do
 
   create_table "cube_trainer_training_results", force: :cascade do |t|
-    t.text "mode"
-    t.float "time_s"
-    t.text "raw_input_representation"
-    t.integer "failed_attempts"
+    t.text "mode", null: false
+    t.float "time_s", null: false
+    t.text "raw_input_representation", null: false
+    t.integer "failed_attempts", default: 0, null: false
     t.text "word"
-    t.boolean "success"
-    t.integer "num_hints"
+    t.boolean "success", default: true, null: false
+    t.integer "num_hints", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["mode"], name: "index_cube_trainer_training_results_on_mode"
