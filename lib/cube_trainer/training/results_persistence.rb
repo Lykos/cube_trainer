@@ -3,6 +3,7 @@
 require 'yaml'
 require 'cube_trainer/training/legacy_result'
 require 'cube_trainer/letter_pair'
+require 'cube_trainer/utils/array_helper'
 require 'cube_trainer/xdg_helper'
 require 'sqlite3'
 
@@ -10,6 +11,8 @@ module CubeTrainer
   module Training
     # Class that talks to the results database.
     class ResultsPersistence
+      include Utils::ArrayHelper
+
       def initialize(db)
         @db = db
         db.execute(<<~SQL)
@@ -53,6 +56,7 @@ module CubeTrainer
         @load_modes_stm ||= @db.prepare(<<~SQL)
           SELECT Mode FROM Results GROUP BY 1
         SQL
+        @load_modes_stm.execute.map { |r| only(r).to_sym }
       end
 
       def load_results(mode)
