@@ -1,22 +1,8 @@
 #!/usr/bin/ruby
 # frozen_string_literal: true
 
-require File.expand_path('../config/application', __dir__)
-
-$LOAD_PATH.unshift(File.join(__dir__, '..', 'lib'))
-$LOAD_PATH.unshift(File.join(__dir__, '..', 'app'))
-
-require 'active_record'
-
 require 'cube_trainer/training/results_persistence'
-require 'models/application_record'
-require 'models/cube_trainer/training'
-require 'models/cube_trainer/training/result'
-
-ActiveRecord::Base.establish_connection(
-  adapter: 'sqlite3',
-  database: 'db/production.sqlite3'
-)
+require 'cube_trainer/training/result'
 
 total_migrated = 0
 total_existing = 0

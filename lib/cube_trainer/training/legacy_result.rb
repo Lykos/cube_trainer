@@ -136,11 +136,12 @@ module CubeTrainer
 
       # Transforms this to a result from app/models to facilitate the migration.
       def to_result
+        raise unless @mode
         Result.new(
           mode: @mode,
           created_at: @timestamp,
           time_s: @time_s,
-          raw_input_representation: @input_representation.to_raw_data,
+          input_representation: @input_representation,
           failed_attempts: failed_attempts,
           word: @word,
           success: @success,

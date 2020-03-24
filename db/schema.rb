@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(version: 2020_03_24_193052) do
   create_table "cube_trainer_training_results", force: :cascade do |t|
     t.text "mode", null: false
     t.float "time_s", null: false
-    t.text "raw_input_representation", null: false
+    t.text "input_representation", null: false
     t.integer "failed_attempts", default: 0, null: false
     t.text "word"
     t.boolean "success", default: true, null: false

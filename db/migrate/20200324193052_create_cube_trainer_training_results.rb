@@ -3,7 +3,7 @@ class CreateCubeTrainerTrainingResults < ActiveRecord::Migration[6.0]
     create_table :cube_trainer_training_results do |t|
       t.text :mode, null: false
       t.float :time_s, null: false
-      t.text :raw_input_representation, null: false
+      t.text :input_representation, null: false
       t.integer :failed_attempts, null: false, default: 0
       t.text :word
       t.boolean :success, null: false, default: true
