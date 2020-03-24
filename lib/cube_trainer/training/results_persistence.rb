@@ -49,6 +49,12 @@ module CubeTrainer
         ResultsPersistence.new(db)
       end
 
+      def load_modes
+        @load_modes_stm ||= @db.prepare(<<~SQL)
+          SELECT Mode FROM Results GROUP BY 1
+        SQL
+      end
+
       def load_results(mode)
         @load_results_stm ||= @db.prepare(<<~SQL)
           SELECT Mode, Timestamp, TimeS, Input, FailedAttempts, Word, Success, NumHints FROM Results WHERE Mode = ?
