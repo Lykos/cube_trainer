@@ -1,6 +1,7 @@
 require:
 - rubocop-performance
 - rubocop-rake
+- rubocop-rails
 AllCops:
   Exclude:
   - 'lib/**/*_ui.rb'

@@ -9,7 +9,6 @@ require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/pao_letter_pair'
 require 'cube_trainer/utils/string_helper'
-require 'models/cube_trainer/training/result'
 
 module CubeTrainer
   module Training
