@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'yaml'
-require 'cube_trainer/training/result'
+require 'cube_trainer/training/legacy_result'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/xdg_helper'
 require 'sqlite3'
@@ -53,7 +53,7 @@ module CubeTrainer
         @load_results_stm ||= @db.prepare(<<~SQL)
           SELECT Mode, Timestamp, TimeS, Input, FailedAttempts, Word, Success, NumHints FROM Results WHERE Mode = ?
         SQL
-        @load_results_stm.execute(mode.to_s).map { |r| Result.from_raw_data(r) }
+        @load_results_stm.execute(mode.to_s).map { |r| LegacyResult.from_raw_data(r) }
       end
 
       def replace_word(mode, input, word)

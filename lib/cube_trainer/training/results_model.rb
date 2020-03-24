@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/training/result'
+require 'cube_trainer/training/legacy_result'
 
 module CubeTrainer
   module Training
@@ -22,7 +22,7 @@ module CubeTrainer
       def record_result(timestamp, partial_result, input)
         raise ArgumentError unless partial_result.is_a?(PartialResult)
 
-        result = Result.from_partial(@mode, timestamp, partial_result, input)
+        result = LegacyResult.from_partial(@mode, timestamp, partial_result, input)
         results.unshift(result)
         @result_listeners.each { |l| l.record_result(result) }
       end

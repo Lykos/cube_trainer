@@ -4,7 +4,7 @@ require 'cube_trainer/training/alg_hinter'
 require 'cube_trainer/alg_name'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/training/input_item'
-require 'cube_trainer/training/result'
+require 'cube_trainer/training/legacy_result'
 require 'cube_trainer/training/sequence_hinter'
 
 class FakeHeterogenousSequenceHinter < Training::HeterogenousSequenceHinter
@@ -25,9 +25,9 @@ describe Training::HeterogenousSequenceHinter do
   let(:algorithm_b) { parse_algorithm('R') }
   let(:algorithm_c) { parse_algorithm('U') }
   let(:algorithm_d) { parse_algorithm('U2') }
-  let(:result_a) { Training::Result.new(:mode, Time.at(0), 1.0, algname_a, 0, nil, true, 0) }
-  let(:result_b) { Training::Result.new(:mode, Time.at(0), 2.0, algname_b, 0, nil, true, 0) }
-  let(:result_d) { Training::Result.new(:mode, Time.at(0), 1.0, algname_d, 0, nil, true, 0) }
+  let(:result_a) { Training::LegacyResult.new(:mode, Time.at(0), 1.0, algname_a, 0, nil, true, 0) }
+  let(:result_b) { Training::LegacyResult.new(:mode, Time.at(0), 2.0, algname_b, 0, nil, true, 0) }
+  let(:result_d) { Training::LegacyResult.new(:mode, Time.at(0), 1.0, algname_d, 0, nil, true, 0) }
   let(:results_left) { [result_a, result_b] * 5 }
   let(:results_right) { [result_d] * 5 }
   let(:resultss) { [results_left, results_right] }

@@ -13,7 +13,8 @@ require 'cube_trainer/utils/string_helper'
 module CubeTrainer
   module Training
     # Result of giving one task to the learner and judging their performance.
-    class Result
+    # TODO Migrate from this to Result in app/models
+    class LegacyResult
       extend Core
       include Utils::StringHelper
       # Number of columns in the UI.
@@ -89,7 +90,7 @@ module CubeTrainer
         raw_mode, timestamp, time_s, raw_input, failed_attempts, word, raw_success,
         raw_num_hints = data
         mode = raw_mode.to_sym
-        Result.new(
+        new(
           mode,
           Time.at(timestamp),
           time_s,
@@ -138,7 +139,7 @@ module CubeTrainer
       end
 
       def with_word(new_word)
-        Result.new(@timestamp, @time_s, @input_representation, @failed_attempts, new_word)
+        LegacyResult.new(@timestamp, @time_s, @input_representation, @failed_attempts, new_word)
       end
 
       def formatted_timestamp
