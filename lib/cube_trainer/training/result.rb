@@ -4,6 +4,7 @@ require 'cube_trainer/alg_name'
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/training/input_item'
+require 'cube_trainer/training/partial_result'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/pao_letter_pair'
@@ -11,15 +12,6 @@ require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
   module Training
-    # The part of the result that basically comes from the input of whoever is
-    # learning.
-    PartialResult =
-      Struct.new(:time_s, :failed_attempts, :word, :success, :num_hints) do
-        def initialize(time_s, failed_attempts: 0, word: nil, success: true, num_hints: 0)
-          super(time_s, failed_attempts, word, success, num_hints)
-        end
-      end
-
     # Result of giving one task to the learner and judging their performance.
     class Result
       extend Core
