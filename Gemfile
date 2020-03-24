@@ -42,6 +42,7 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 
   gem 'rake'
+  gem 'rspec-rails'
 end
 
 group :development do
@@ -56,6 +57,7 @@ group :development do
   gem 'rubocop', '>=0.80'
   gem 'rubocop-performance', require: false
   gem 'rubocop-rake', require: false
+  gem 'rubocop-rails', require: false
 end
 
 group :test do
