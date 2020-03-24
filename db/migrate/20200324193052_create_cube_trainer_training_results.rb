@@ -12,5 +12,6 @@ class CreateCubeTrainerTrainingResults < ActiveRecord::Migration[6.0]
       t.timestamps
     end
     add_index :cube_trainer_training_results, :mode
+    add_index :cube_trainer_training_results, :created_at
   end
 end

@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 2020_03_24_193052) do
     t.integer "num_hints", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["created_at"], name: "index_cube_trainer_training_results_on_created_at"
     t.index ["mode"], name: "index_cube_trainer_training_results_on_mode"
   end
 
