@@ -2,6 +2,7 @@
 
 require 'cube_trainer/cube_scrambler'
 require 'cube_trainer/training/no_hinter'
+require 'cube_trainer/training/scrambler'
 
 module CubeTrainer
   module Training
@@ -19,7 +20,7 @@ module CubeTrainer
 
         def random_item
           scramble = @scrambler.random_algorithm(SCRAMBLE_LENGTH)
-          InputItem.new(scramble, scramble.apply_to_dupped(@cube_state))
+          InputItem.new(Scramble.new(scramble), scramble.apply_to_dupped(@cube_state))
         end
       end
 
