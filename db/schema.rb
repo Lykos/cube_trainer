@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_25_074017) do
+ActiveRecord::Schema.define(version: 2020_03_25_081243) do
+
+  create_table "cube_trainer_training_download_states", force: :cascade do |t|
+    t.text "model"
+    t.datetime "downloaded_at"
+    t.string "timestamps"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "cube_trainer_training_results", force: :cascade do |t|
     t.text "mode", null: false

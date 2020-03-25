@@ -7,5 +7,6 @@ class CreateCubeTrainerTrainingDownloadStates < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
+    add_index :cube_trainer_training_download_states, :model, unique: true
   end
 end
