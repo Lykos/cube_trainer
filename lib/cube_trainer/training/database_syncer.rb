@@ -4,6 +4,7 @@ require 'cube_trainer/training/download_state'
 
 module CubeTrainer
   module Training
+    # Class that syncs a model with the global database.
     class DatabaseSyncer
       def initialize(model)
         @model = model
@@ -18,10 +19,7 @@ module CubeTrainer
       end
 
       def upload!
-        uploaded =
-          ActiveRecord::Base.connected_to(database: :primary) do
-            @model.where('hostname = ? AND (uploaded_at IS NULL OR updated_at > uploaded_at)', hostname).to_a
-          end
+        uploaded = fetch_uploaded
         puts "Uploading #{uploaded.length} records of type #{@model.name}."
         ActiveRecord::Base.connected_to(database: :global) do
           uploaded.each do |item|
@@ -35,15 +33,9 @@ module CubeTrainer
       end
 
       def download!
-        download_state =
-          ActiveRecord::Base.connected_to(database: :primary) do
-            DownloadState.create_or_find_by!(model: @model.name)
-          end
+        download_state = fetch_download_state
         now = Time.now
-        downloaded =
-          ActiveRecord::Base.connected_to(database: :global) do
-            @model.where('hostname != ? AND uploaded_at > ? AND uploaded_at <= ?', hostname, download_state.downloaded_at, now).to_a
-          end
+        downloaded = fetch_downloaded
         puts "Inserting #{downloaded.length} downloaded records of type #{@model.name}."
         download_state.downloaded_at = now
         ActiveRecord::Base.connected_to(database: :primary) do
@@ -55,6 +47,32 @@ module CubeTrainer
       def sync!
         upload!
         download!
+      end
+
+      private
+
+      def fetch_uploaded
+        ActiveRecord::Base.connected_to(database: :primary) do
+          @model.where(
+            'hostname = ? AND (uploaded_at IS NULL OR updated_at > uploaded_at)',
+            hostname
+          ).to_a
+        end
+      end
+
+      def fetch_downloaded
+        ActiveRecord::Base.connected_to(database: :global) do
+          @model.where(
+            'hostname != ? AND uploaded_at > ? AND uploaded_at <= ?',
+            hostname, download_state.downloaded_at, now
+          ).to_a
+        end
+      end
+
+      def fetch_download_state
+        ActiveRecord::Base.connected_to(database: :primary) do
+          DownloadState.create_or_find_by!(model: @model.name)
+        end
       end
     end
   end
