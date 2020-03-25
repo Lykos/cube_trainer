@@ -10,10 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_25_081243) do
-
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+ActiveRecord::Schema.define(version: 2020_03_25_114335) do
 
   create_table "cube_trainer_training_download_states", force: :cascade do |t|
     t.text "model"
@@ -37,6 +34,7 @@ ActiveRecord::Schema.define(version: 2020_03_25_081243) do
     t.text "hostname", null: false
     t.datetime "uploaded_at", precision: 6
     t.index ["created_at"], name: "index_cube_trainer_training_results_on_created_at"
+    t.index ["hostname", "created_at"], name: "index_cube_trainer_training_results_on_hostname_and_created_at", unique: true
     t.index ["mode"], name: "index_cube_trainer_training_results_on_mode"
     t.index ["uploaded_at"], name: "index_cube_trainer_training_results_on_uploaded_at"
   end
