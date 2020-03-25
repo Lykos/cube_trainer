@@ -8,6 +8,7 @@ AllCops:
   - 'lib/**/*_ui.rb'
   - 'node_modules/**/*'
   - 'db/schema.rb'
+  - 'db/global_schema.rb'
   # TODO: Clean up and remove some of the folowing
   - 'config/**/*'
   - 'db/migrate/*'
