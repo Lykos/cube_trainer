@@ -20,15 +20,13 @@ module CubeTrainer
 
       def upload!
         uploaded = fetch_uploaded
+        now = Time.now
         puts "Uploading #{uploaded.length} records of type #{@model.name}."
-        ActiveRecord::Base.connected_to(database: :global) do
-          uploaded.each do |item|
-            item.uploaded_at = Time.now
-            item.dup.save!
-          end
-        end
+        uploaded.each { |item| item.uploaded_at = now }
+        upload(uploaded)
+        puts "Saving updated uploaded_at timestamps."
         ActiveRecord::Base.connected_to(database: :primary) do
-          uploaded.each { |item| item.save!(touch: false) }
+          @model.import(uploaded, touch: false)
         end
       end
 
@@ -39,7 +37,7 @@ module CubeTrainer
         puts "Inserting #{downloaded.length} downloaded records of type #{@model.name}."
         download_state.downloaded_at = now
         ActiveRecord::Base.connected_to(database: :primary) do
-          downloaded.each(&:save!)
+          @model.import(downloaded)
           download_state.save!
         end
       end
@@ -57,6 +55,12 @@ module CubeTrainer
             'hostname = ? AND (uploaded_at IS NULL OR updated_at > uploaded_at)',
             hostname
           ).to_a
+        end
+      end
+
+      def upload(uploaded)
+        ActiveRecord::Base.connected_to(database: :global) do
+          @model.import(uploaded)
         end
       end
 
