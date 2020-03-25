@@ -11,6 +11,20 @@ test:
   <<: *default
   database: db/test.sqlite3
 
-production:
+common_production: &common_production
   <<: *default
-  database: db/production.sqlite3
+  adapter: postgresql
+  encoding: unicode
+
+production:
+  primary:
+    <<: *common_production
+    username: cube_trainer
+    password: PjQaAYuGZ1ksUhTFvE4=
+    database: cube_trainer
+  global:
+    <<: *common_production
+    host: jaguar
+    username: cube_trainer_global
+    password: MxbgvXhHYKKMXfnCn30=
+    database: cube_trainer_global
