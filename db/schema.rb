@@ -12,12 +12,16 @@
 
 ActiveRecord::Schema.define(version: 2020_03_25_081243) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "cube_trainer_training_download_states", force: :cascade do |t|
     t.text "model"
     t.datetime "downloaded_at"
     t.string "timestamps"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["model"], name: "index_cube_trainer_training_download_states_on_model", unique: true
   end
 
   create_table "cube_trainer_training_results", force: :cascade do |t|
@@ -30,11 +34,9 @@ ActiveRecord::Schema.define(version: 2020_03_25_081243) do
     t.integer "num_hints", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "host", null: false
+    t.text "hostname", null: false
     t.datetime "uploaded_at", precision: 6
-    t.datetime "downloaded_at", precision: 6
     t.index ["created_at"], name: "index_cube_trainer_training_results_on_created_at"
-    t.index ["downloaded_at"], name: "index_cube_trainer_training_results_on_downloaded_at"
     t.index ["mode"], name: "index_cube_trainer_training_results_on_mode"
     t.index ["uploaded_at"], name: "index_cube_trainer_training_results_on_uploaded_at"
   end
