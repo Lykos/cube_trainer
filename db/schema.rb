@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_24_193052) do
+ActiveRecord::Schema.define(version: 2020_03_25_074017) do
 
   create_table "cube_trainer_training_results", force: :cascade do |t|
     t.text "mode", null: false
@@ -22,8 +22,13 @@ ActiveRecord::Schema.define(version: 2020_03_24_193052) do
     t.integer "num_hints", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "host", null: false
+    t.datetime "uploaded_at", precision: 6
+    t.datetime "downloaded_at", precision: 6
     t.index ["created_at"], name: "index_cube_trainer_training_results_on_created_at"
+    t.index ["downloaded_at"], name: "index_cube_trainer_training_results_on_downloaded_at"
     t.index ["mode"], name: "index_cube_trainer_training_results_on_mode"
+    t.index ["uploaded_at"], name: "index_cube_trainer_training_results_on_uploaded_at"
   end
 
 end
