@@ -8,19 +8,31 @@ module CubeTrainer
     # Result of giving one task to the learner and judging their performance.
     # TODO Migrate from LegacyResult in lib/ to this.
     class Result < ApplicationRecord
+      POSITIVE_INTEGER = {
+        only_integer: true,
+        greater_than_or_equal_to: 0
+      }.freeze
+
       attribute :mode, :symbol
       attribute :input_representation, :input_representation
 
-      def self.from_partial(mode, timestamp, partial_result, input_representation)
+      validates :mode, presence: true
+      validates :time_s, numericality: { greater_than: 0 }
+      validates :input_representation, presence: true
+      validates :failed_attempts, numericality: POSITIVE_INTEGER
+      validates :success, presence: true
+      validates :num_hints, numericality: POSITIVE_INTEGER
+
+      def self.from_partial(mode, created_at, partial_result, input_representation)
         new(
-          mode,
-          timestamp,
-          partial_result.time_s,
-          input_representation,
-          partial_result.failed_attempts,
-          partial_result.word,
-          partial_result.success,
-          partial_result.num_hints
+          mode: mode,
+          time_s: partial_result.time_s,
+          input_representation: input_representation,
+          failed_attempts: partial_result.failed_attempts,
+          word: partial_result.word,
+          success: partial_result.success,
+          num_hints: partial_result.num_hints,
+          created_at: timestamp
         )
       end
     end
