@@ -33,6 +33,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 gem 'activerecord'
 gem 'colorize'
 gem 'parallel'
+gem 'pg'
 gem 'ruby-filemagic'
 gem 'ruby-progressbar'
 gem 'rubyzip'
