@@ -1,0 +1,22 @@
+<table>
+  <tr>
+    <th>Timestamp</th>
+    <th>Mode</th>
+    <th>Time</th>
+    <th>Input</th>
+    <th></th>
+  </tr>
+ 
+  <% @results.each do |result| %>
+    <tr>
+      <td><%= result.created_at %></td>
+      <td><%= result.mode %></td>
+      <td><%= result.time %></td>
+      <td><%= result.input_representation %></td>
+      <td><%= button_to 'Delete',
+	      action: :delete,
+	      params: { id: result.id },
+	      data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+</table>

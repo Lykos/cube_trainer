@@ -1,0 +1,5 @@
+<h1>Timer</h1>
+<p><%= @input_item.representation %></p>
+<p><%= button_to 'Stop timer', action: :stop, params: { id: @input.id, time_s: 10 } %></p>
+<%= render 'results_table' %>
+

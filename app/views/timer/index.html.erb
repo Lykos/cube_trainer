@@ -1,6 +1,3 @@
 <h1>Timer</h1>
-<p><%= @input_item.representation %></p>
-<%= button_to 'Stop timer', action: :post, params: { id: @input.id } %>
-<table>
-  
-</table>
+<p><%= button_to 'Start timer', action: :start %></p>
+<%= render 'results_table' %>
