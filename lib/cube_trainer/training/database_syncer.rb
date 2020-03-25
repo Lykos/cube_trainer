@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/download_state'
+require 'ruby-progressbar'
 
 module CubeTrainer
   module Training
@@ -19,22 +20,30 @@ module CubeTrainer
       end
 
       def upload!
+        puts "Fetching uploads."
         uploaded = fetch_uploaded
         now = Time.now
         puts "Uploading #{uploaded.length} records of type #{@model.name}."
         uploaded.each { |item| item.uploaded_at = now }
         upload(uploaded)
         puts "Saving updated uploaded_at timestamps."
+        progress_bar = ProgressBar.create(title: 'Saved', total: uploaded.length)
         ActiveRecord::Base.connected_to(database: :primary) do
-          @model.import(uploaded, touch: false)
+          uploaded.each do |u|
+            u.save(touch: false)
+            progress_bar.increment
+          end
         end
+        puts "Saved updated uploaded_at timestamps."
       end
 
       def download!
+        puts "Fetching downloads."
         download_state = fetch_download_state
         now = Time.now
-        downloaded = fetch_downloaded
+        downloaded = fetch_downloaded(download_state, now)
         puts "Inserting #{downloaded.length} downloaded records of type #{@model.name}."
+        downloaded.each { |d| d.id = nil }
         download_state.downloaded_at = now
         ActiveRecord::Base.connected_to(database: :primary) do
           @model.import(downloaded)
@@ -59,12 +68,17 @@ module CubeTrainer
       end
 
       def upload(uploaded)
+        stuff = uploaded.map do |u|
+          u = u.dup
+          u.id = nil
+          u
+        end
         ActiveRecord::Base.connected_to(database: :global) do
-          @model.import(uploaded)
+          @model.import(stuff)
         end
       end
 
-      def fetch_downloaded
+      def fetch_downloaded(download_state, now)
         ActiveRecord::Base.connected_to(database: :global) do
           @model.where(
             'hostname != ? AND uploaded_at > ? AND uploaded_at <= ?',
