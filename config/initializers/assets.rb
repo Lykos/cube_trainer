@@ -11,4 +11,28 @@ Rails.application.config.assets.paths << Rails.root.join('node_modules')
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in the app/assets
 # folder are already added.
-# Rails.application.config.assets.precompile += %w( admin.js admin.css )
+# Rails.application.config.assets.precompile += %w( admin.js admin.css)
+
+Rails.application.config.app_generators.javascript_engine :typescript
+
+# Enable the asset pipeline
+Rails.application.config.assets.enabled = true
+
+Typescript::Rails::Compiler.default_options = [
+  '--module', 'commonjs',
+  '--target', 'ES5',
+  '--moduleResolution', 'node',
+  #'--sourceMap', 'true',
+  #'--emitDecoratorMetadata', 'true',
+  #'--experimentalDecorators', 'true',
+  #'--removeComments', 'false'
+  # '--strict', 'true',
+  # '--strictNullChecks', 'true',
+  # '--strictPropertyInitialization', 'true',
+  # '--forceConsistentCasingInFileNames', 'true',
+  # '--noFallthroughCasesInSwitch', 'true',
+  # '--noImplicitAny', 'true',
+  # '--noUnusedLocals', 'true',
+  # '--noImplicitThis', 'true',
+  # '--noImplicitReturns', 'true'
+]
