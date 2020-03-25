@@ -5,7 +5,7 @@ const updateInterval = millis(10);
 
 export class Timer {
   private startDate: Instant;
-  private timerToken: number;
+  private timerToken: any;
 
   constructor(private timerElement: HTMLElement) {
     this.timerElement = timerElement;
