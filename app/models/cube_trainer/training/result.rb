@@ -16,12 +16,19 @@ module CubeTrainer
       attribute :mode, :symbol
       attribute :input_representation, :input_representation
 
+      validates :hostname, presence: true
       validates :mode, presence: true
       validates :time_s, numericality: { greater_than: 0 }
       validates :input_representation, presence: true
       validates :failed_attempts, numericality: POSITIVE_INTEGER
       validates :success, presence: true
       validates :num_hints, numericality: POSITIVE_INTEGER
+
+      def self.hostname
+        @hostname ||= `hostname`.chomp
+      end
+
+      before_validation { self.hostname ||= self.class.current_hostname }
 
       def self.from_partial(mode, created_at, partial_result, input_representation)
         new(
