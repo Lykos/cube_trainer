@@ -79,11 +79,20 @@ module CubeTrainer
       end
 
       def fetch_downloaded(download_state, now)
-        ActiveRecord::Base.connected_to(database: :global) do
-          @model.where(
-            'hostname != ? AND uploaded_at > ? AND uploaded_at <= ?',
-            hostname, download_state.downloaded_at, now
-          ).to_a
+        if download_state.downloaded_at
+          ActiveRecord::Base.connected_to(database: :global) do
+            @model.where(
+              'hostname != ? AND uploaded_at > ? AND uploaded_at <= ?',
+              hostname, download_state.downloaded_at, now
+            ).to_a
+          end
+        else
+          ActiveRecord::Base.connected_to(database: :global) do
+            @model.where(
+              'hostname != ? AND uploaded_at <= ?',
+              hostname, now
+            ).to_a
+          end
         end
       end
 
