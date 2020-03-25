@@ -7,36 +7,47 @@ module CubeTrainer
     class DatabaseSyncer
       def initialize(model)
         @model = model
-        @logger = Rails.logger
+      end
+
+      def logger
+        @logger ||= Rails.logger
       end
 
       def hostname
-        @hostname ||= `hostname`.chomp
+        @hostname ||= @model.current_hostname
       end
 
       def upload!
-        uploaded = @model.where("hostname = ? AND (uploaded_at IS NULL OR updated_at > uploaded_at)", hostname).to_a
-        logger.info("Uploading #{uploaded.length} records of type #{model.name}.")
-        ActiveRecord::Base.connected_to(:global) do
+        uploaded = ActiveRecord::Base.connected_to(database: :primary) do
+          @model.where("hostname = ? AND (uploaded_at IS NULL OR updated_at > uploaded_at)", hostname).to_a
+        end
+        puts "Uploading #{uploaded.length} records of type #{@model.name}."
+        ActiveRecord::Base.connected_to(database: :global) do
           uploaded.each do |item|
             item.uploaded_at = Time.now
-            item.save!
+            item.dup.save!
           end
         end
-        uploaded.each(&:save!)
+        ActiveRecord::Base.connected_to(database: :primary) do
+          uploaded.each { |item| item.save!(touch: false) }
+        end
       end
 
       def download!
-        download_state = download_state.downloaded_at
+        download_state = ActiveRecord::Base.connected_to(database: :primary) do
+          DownloadState.create_or_find_by!(model: @model.name)
+        end
         now = Time.now
         downloaded =
-          ActiveRecord::Base.connected_to(:global) do
-            @model.where("hostname != ? AND uploaded_at > ?", hostname, download_state.downloaded_at).to_a
+          ActiveRecord::Base.connected_to(database: :global) do
+            @model.where("hostname != ? AND uploaded_at > ? AND uploaded_at <= ?", hostname, download_state.downloaded_at, now).to_a
           end
-        logger.info("Inserting #{uploaded.length} downloaded records of type #{model.name}.")
-        downloaded.each(&save!)
+        puts "Inserting #{downloaded.length} downloaded records of type #{@model.name}."
         download_state.downloaded_at = now
-        download_state.save!
+        ActiveRecord::Base.connected_to(database: :primary) do
+          downloaded.each(&:save!)
+          download_state.save!
+        end
       end
 
       def sync!
