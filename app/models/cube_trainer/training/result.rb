@@ -38,7 +38,7 @@ module CubeTrainer
         )
       end
 
-      def from_input_and_partial(input, partial_result)
+      def self.from_input_and_partial(input, partial_result)
         new(
           mode: input.mode,
           input_representation: input.input_representation,
@@ -53,6 +53,10 @@ module CubeTrainer
 
       def self.modes
         select(:mode).distinct.map(&:mode)
+      end
+
+      def time
+        time_s&.seconds
       end
     end
   end
