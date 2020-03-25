@@ -82,7 +82,7 @@ module CubeTrainer
       end
 
       def create_or_update_by_key(equivalent_item)
-        new_item = @model.create_or_find_by!(
+        new_item = @model.find_or_initialize_by(
           hostname: equivalent_item.hostname,
           created_at: equivalent_item.created_at
         )
@@ -94,7 +94,7 @@ module CubeTrainer
         from.attributes.each do |k, v|
           next if %w[hostname created_at id].include?(k)
 
-          to.send('${k}=', v)
+          to.send("#{k}=", v)
         end
       end
 
