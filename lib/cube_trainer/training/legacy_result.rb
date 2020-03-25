@@ -4,6 +4,7 @@ require 'cube_trainer/alg_name'
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/training/input_item'
+require 'cube_trainer/training/partial_result'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/pao_letter_pair'
@@ -11,29 +12,13 @@ require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
   module Training
-    # The part of the result that basically comes from the input of whoever is
-    # learning.
-    PartialResult =
-      Struct.new(:time_s, :failed_attempts, :word, :success, :num_hints) do
-        def initialize(time_s, failed_attempts: 0, word: nil, success: true, num_hints: 0)
-          super(time_s, failed_attempts, word, success, num_hints)
-        end
-      end
-
     # Result of giving one task to the learner and judging their performance.
-    class Result
+    # TODO Migrate from this to Result in app/models
+    class LegacyResult
       extend Core
       include Utils::StringHelper
       # Number of columns in the UI.
       COLUMNS = 3
-
-      INPUT_REPRESENTATION_CLASSES = [
-        LetterPair,
-        PaoLetterPair,
-        AlgName,
-        LetterPairSequence,
-        Core::Algorithm
-      ].freeze
 
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/ParameterLists
@@ -74,22 +59,10 @@ module CubeTrainer
       # rubocop:enable Metrics/CyclomaticComplexity
 
       def check_input_representation(input_representation)
-        return if INPUT_REPRESENTATION_CLASSES.any? { |c| input_representation.is_a?(c) }
+        classes = InputRepresentationType::INPUT_REPRESENTATION_CLASSES
+        return if classes.any? { |c| input_representation.is_a?(c) }
 
         raise ArgumentError, "Invalid input representation #{input_representation}."
-      end
-
-      def self.from_partial(mode, timestamp, partial_result, input_representation)
-        new(
-          mode,
-          timestamp,
-          partial_result.time_s,
-          input_representation,
-          partial_result.failed_attempts,
-          partial_result.word,
-          partial_result.success,
-          partial_result.num_hints
-        )
       end
 
       # Construct from data stored in the db.
@@ -97,7 +70,7 @@ module CubeTrainer
         raw_mode, timestamp, time_s, raw_input, failed_attempts, word, raw_success,
         raw_num_hints = data
         mode = raw_mode.to_sym
-        Result.new(
+        new(
           mode,
           Time.at(timestamp),
           time_s,
@@ -124,29 +97,29 @@ module CubeTrainer
         end
       end
 
-      # Serialize to data stored in the db.
-      def to_raw_data
-        [
-          @mode.to_s,
-          @timestamp.to_i, # rubocop:disable Lint/NumberConversion
-          @time_s,
-          @input_representation.to_raw_data,
-          @failed_attempts,
-          @word,
-          @success ? 1 : 0,
-          @num_hints
-        ]
-      end
-
       attr_reader :mode, :timestamp, :time_s, :input_representation, :failed_attempts, :word,
                   :success, :num_hints
+
+      # Transforms this to a result from app/models to facilitate the migration.
+      def to_result
+        Result.new(
+          mode: @mode,
+          created_at: @timestamp,
+          time_s: @time_s,
+          input_representation: @input_representation,
+          failed_attempts: failed_attempts,
+          word: @word,
+          success: @success,
+          num_hints: @num_hints
+        )
+      end
 
       def formatted_time
         format_time(@time_s)
       end
 
       def with_word(new_word)
-        Result.new(@timestamp, @time_s, @input_representation, @failed_attempts, new_word)
+        LegacyResult.new(@timestamp, @time_s, @input_representation, @failed_attempts, new_word)
       end
 
       def formatted_timestamp

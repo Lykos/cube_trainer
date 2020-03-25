@@ -63,7 +63,7 @@ module CubeTrainer
         raise NotImplementedError
       end
 
-      def hinter(*)
+      def hinter
         raise NotImplementedError
       end
     end

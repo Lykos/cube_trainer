@@ -14,7 +14,7 @@ module CubeTrainer
       CACHE_DB_FILE = 'cache.sqlite3'
 
       def initialize(namespace)
-        raise ArgumentError unless namespace =~ /^\w+$/
+        raise ArgumentError unless /^\w+$/.match?(namespace)
 
         @namespace = namespace
         ensure_cache_directory_exists

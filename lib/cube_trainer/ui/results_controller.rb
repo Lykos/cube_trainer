@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'Qt4'
-require 'cube_trainer/training/result'
+require 'cube_trainer/training/legacy_result'
 
 module CubeTrainer
   module Ui
@@ -16,7 +16,7 @@ module CubeTrainer
 
       def reset
         @table.setRowCount(results.length)
-        @table.setColumnCount(Training::Result::COLUMNS)
+        @table.setColumnCount(Training::LegacyResult::COLUMNS)
         results.each_with_index { |r, i| set_result(i, r) }
       end
 

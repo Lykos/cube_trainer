@@ -3,7 +3,6 @@
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/native'
 require 'cube_trainer/training/probabilities'
-require 'cube_trainer/training/results_persistence'
 require 'cube_trainer/utils/math_helper'
 
 module CubeTrainer
@@ -12,13 +11,11 @@ module CubeTrainer
     class StatsComputer
       include Utils::MathHelper
 
-      def initialize(now, options, results_persistence = ResultsPersistence.create_for_production)
+      def initialize(now, options)
         raise TypeError unless now.is_a?(Time)
-        raise TypeError unless results_persistence.respond_to?(:load_results)
 
         @now = now
         @options = options
-        @results_persistence = results_persistence
       end
 
       def results_for_inputs(inputs)
@@ -47,7 +44,7 @@ module CubeTrainer
       def expected_time_per_type_stats
         @expected_time_per_type_stats ||=
           begin
-            computer = ExpectedTimeComputer.new(@now, @options, @results_persistence)
+            computer = ExpectedTimeComputer.new(@now, @options)
             computer.compute_expected_time_per_type_stats
           end
       end
@@ -76,7 +73,7 @@ module CubeTrainer
       def old_total_average
         @old_total_average ||=
           begin
-            old_results = results.select { |r| r.timestamp < recently }
+            old_results = results.select { |r| r.created_at < recently }
             old_averages = compute_averages(group_results(old_results))
             compute_total_average(old_averages)
           end
@@ -84,7 +81,7 @@ module CubeTrainer
 
       def average_time(results)
         avg = Native::CubeAverage.new(5, 0)
-        results.sort_by(&:timestamp).each { |r| avg.push(r.time_s) }
+        results.sort_by(&:created_at).each { |r| avg.push(r.time_s) }
         avg.average
       end
 
@@ -97,7 +94,7 @@ module CubeTrainer
       end
 
       def num_recent_results
-        @num_recent_results ||= results.count { |r| r.timestamp >= recently }
+        @num_recent_results ||= results.count { |r| r.created_at >= recently }
       end
 
       def averages
@@ -116,7 +113,7 @@ module CubeTrainer
       end
 
       def results
-        @results ||= @results_persistence.load_results(mode).freeze
+        @results ||= Result.where(mode: mode).to_a.freeze
       end
 
       def grouped_results

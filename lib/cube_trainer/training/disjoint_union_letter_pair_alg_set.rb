@@ -12,15 +12,15 @@ module CubeTrainer
         @alg_sets = alg_sets
       end
 
-      def restricted_hinter(alg_set, results_model)
+      def restricted_hinter(alg_set)
         RestrictedHinter.new(
           alg_set.input_items.map(&:representation),
-          alg_set.hinter(results_model)
+          alg_set.hinter
         )
       end
 
-      def hinter(results_model)
-        DisjointUnionHinter.new(@alg_sets.map { |a| restricted_hinter(a, results_model) })
+      def hinter
+        @hinter ||= DisjointUnionHinter.new(@alg_sets.map { |a| restricted_hinter(a) })
       end
 
       def generate_input_items

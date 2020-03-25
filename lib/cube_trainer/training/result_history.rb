@@ -37,7 +37,7 @@ module CubeTrainer
         @last_hinted_days_ago = {}
         @occurrence_days_ago = {}
         @occurrence_days_ago.default_proc = ->(h, k) { h[k] = [] }
-        @results_model.results.sort_by(&:timestamp).each do |r|
+        @results_model.results.sort_by(&:created_at).each do |r|
           record_result(r)
         end
         @reset_listeners.each(&:reset)
@@ -81,7 +81,7 @@ module CubeTrainer
         repr = result.input_representation
         update_badness_histories(result)
         update_occurrences(repr)
-        days_ago = days_between(result.timestamp, Time.now)
+        days_ago = days_between(result.created_at, Time.now)
         update_last_occurrence_days_ago(repr, days_ago)
         update_last_hinted_days_ago(result, days_ago)
       end

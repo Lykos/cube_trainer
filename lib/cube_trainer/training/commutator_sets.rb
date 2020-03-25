@@ -46,6 +46,10 @@ module CubeTrainer
           ORIENTATION_FACES.include?(c.solved_face)
         end
       end
+
+      def results_for_options(options)
+        Result.where(mode: BufferHelper.mode_for_options(options))
+      end
     end
 
     # Class that generates input items for floating corner 2 twists.
@@ -54,7 +58,7 @@ module CubeTrainer
 
       PART_TYPE = Core::Corner
 
-      def hinter(*)
+      def hinter
         @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('corner_twists', input_items, @options)
       end
 
@@ -143,13 +147,13 @@ module CubeTrainer
 
       PART_TYPE = Core::Corner
 
-      def hinter(result_model)
+      def hinter
         corner_options = corner_options(options)
-        corner_results = results_for_options(result_model, corner_options)
+        corner_results = results_for_options(corner_options)
         corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_options)
 
         parity_options = parity_options(options)
-        parity_results = results_for_options(result_model, parity_options)
+        parity_results = results_for_options(parity_options)
         parity_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, parity_options)
 
         CornerTwistPlusParityHinter.new(
@@ -171,12 +175,6 @@ module CubeTrainer
           CommutatorOptions::COMMUTATOR_TYPES[:corner_parities] || raise
         parity_options.picture = false
         parity_options
-      end
-
-      def results_for_options(result_model, options)
-        result_model.result_persistence.load_results(
-          BufferHelper.mode_for_options(options)
-        )
       end
 
       def goal_badness
@@ -231,13 +229,11 @@ module CubeTrainer
 
       PART_TYPE = Core::Corner
 
-      def hinter(result_model)
+      def hinter
         corner_options = options.dup
         corner_options.commutator_info = CommutatorOptions::COMMUTATOR_TYPES[:corners] || raise
         corner_options.picture = false
-        corner_results = result_model.result_persistence.load_results(
-          BufferHelper.mode_for_options(corner_options)
-        )
+        corner_results = results_for_options(corner_options)
         corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_options)
         Corner3TwistHinter.new(corner_results, corner_hinter, options)
       end
@@ -350,7 +346,7 @@ module CubeTrainer
     class FloatingEdgeFlips < LetterPairAlgSet
       PART_TYPE = Core::Edge
 
-      def hinter(*)
+      def hinter
         @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('edge_flips', input_items, @options)
       end
 
@@ -378,7 +374,7 @@ module CubeTrainer
 
     # Class that generates input items for commutators.
     class CommutatorSet < LetterPairAlgSet
-      def hinter(*)
+      def hinter
         @hinter ||= CommutatorHintParser.maybe_parse_hints(self.class::PART_TYPE, @options)
       end
     end
@@ -454,7 +450,7 @@ module CubeTrainer
 
       PART_TYPE = Core::Corner
 
-      def hinter(*)
+      def hinter
         @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('parities', input_items, @options)
       end
 

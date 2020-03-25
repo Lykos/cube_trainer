@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/training/result'
+require 'cube_trainer/training/partial_result'
 
 # A fake learner that learns stuff and forgets it after a while.
 class FakeLearner
