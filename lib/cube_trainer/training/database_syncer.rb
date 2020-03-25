@@ -36,11 +36,9 @@ module CubeTrainer
         download_state = fetch_download_state
         now = Time.now
         downloaded = fetch_downloaded(download_state, now)
-        puts "Inserting #{downloaded.length} downloaded records of type #{@model.name}."
-        downloaded.each { |d| d.id = nil }
+        save_downloaded(downloaded)
         download_state.downloaded_at = now
         ActiveRecord::Base.connected_to(database: :primary) do
-          @model.import(downloaded)
           download_state.save!
         end
       end
@@ -51,6 +49,17 @@ module CubeTrainer
       end
 
       private
+
+      def save_downloaded(downloaded)
+        puts "Inserting #{downloaded.length} downloaded records of type #{@model.name}."
+        progress_bar = ProgressBar.create(title: 'Inserted', total: downloaded.length)
+        ActiveRecord::Base.connected_to(database: :primary) do
+          downloaded.each do |u|
+            create_or_update_by_key(u)
+            progress_bar.increment
+          end
+        end
+      end
 
       def fetch_to_upload
         ActiveRecord::Base.connected_to(database: :primary) do
@@ -72,11 +81,20 @@ module CubeTrainer
         end
       end
 
-      def copy_attributes
-        u.attributes.each do |k, v|
+      def create_or_update_by_key(equivalent_item)
+        new_item = @model.create_or_find_by!(
+          hostname: equivalent_item.hostname,
+          created_at: equivalent_item.created_at
+        )
+        copy_non_key_attributes(from: equivalent_item, to: new_item)
+        new_item.save!
+      end
+
+      def copy_non_key_attributes(from:, to:)
+        from.attributes.each do |k, v|
           next if %w[hostname created_at id].include?(k)
 
-          uploaded_u.send('${k}=', v)
+          to.send('${k}=', v)
         end
       end
 
@@ -86,13 +104,7 @@ module CubeTrainer
         ActiveRecord::Base.connected_to(database: :global) do
           to_upload.each do |u|
             u.uploaded_at = Time.now
-            uploaded_u = @model.create_or_find_by!(
-              hostname: u.hostname,
-              mode: u.mode,
-              created_at: u.created_at
-            )
-            copy_attributes(from: u, to: uploaded_u)
-            u.save!
+            create_or_update_by_key(u)
             progress_bar.increment
           end
         end
