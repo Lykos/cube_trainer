@@ -3,6 +3,13 @@
 require 'cube_trainer/training/results_persistence'
 require 'cube_trainer/training/result'
 
+def result_exists(result)
+  CubeTrainer::Training::Result.exists?(
+    hostname: CubeTrainer::Training::Result.current_hostname,
+    created_at: result.timestamp
+  )
+end
+
 total_migrated = 0
 total_existing = 0
 persistence = CubeTrainer::Training::ResultsPersistence.create_for_production
@@ -12,7 +19,7 @@ persistence.load_modes.each do |mode|
   puts "Trying to migrating #{results.length} results for mode #{mode}."
   existing = 0
   results.each do |r|
-    if CubeTrainer::Training::Result.exists?(created_at: r.timestamp)
+    if result_exists(r)
       existing += 1
     else
       r.to_result.save!
