@@ -35,7 +35,8 @@ module CubeTrainer
         raise TypeError unless value.is_a?(String)
 
         type, raw_data = value.split(SEPARATOR, 2)
-        clazz = INPUT_REPRESENTATION_NAME_TO_CLASS[type] || (raise ArgumentError)
+        clazz = INPUT_REPRESENTATION_NAME_TO_CLASS[type]
+        raise ArgumentError, "Unknown input representation class #{type}." unless clazz
         clazz.from_raw_data(raw_data)
       end
 
@@ -43,7 +44,7 @@ module CubeTrainer
         return if value.nil?
         raise TypeError unless INPUT_REPRESENTATION_CLASSES.any? { |c| value.is_a?(c) }
 
-        value.to_raw_data
+        "#{simple_class_name(value.class)}#{SEPARATOR}#{value.to_raw_data}"
       end
     end
   end

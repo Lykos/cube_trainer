@@ -5,7 +5,6 @@ require 'cube_trainer/color_scheme'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_scheme'
 require 'cube_trainer/training/results_model'
-require 'cube_trainer/training/results_persistence'
 require 'cube_trainer/ui/cubie_controller'
 require 'cube_trainer/ui/stop_watch_controller'
 require 'cube_trainer/ui/time_history_controller'
@@ -84,10 +83,7 @@ module CubeTrainer
       def init
         @letter_scheme = BernhardLetterScheme.new
         @color_scheme = ColorScheme::BERNHARD
-        @results_model = Training::ResultsModel.new(
-          :cubie_to_letter,
-          Training::ResultsPersistence.create_for_production
-        )
+        @results_model = Training::ResultsModel.new(:cubie_to_letter)
 
         @stop_watch_controller = create_stop_watch_controller
         @time_history_controller = create_time_history_controller

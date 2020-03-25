@@ -32,8 +32,12 @@ module CubeTrainer
           word: partial_result.word,
           success: partial_result.success,
           num_hints: partial_result.num_hints,
-          created_at: timestamp
+          created_at: created_at
         )
+      end
+
+      def self.modes
+        select(:mode).distinct.map(&:mode)
       end
     end
   end

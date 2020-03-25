@@ -35,7 +35,7 @@ module CubeTrainer
         snake_case_class_name(self.class)
       end
 
-      def hinter(*)
+      def hinter
         @hinter ||= AlgHintParser.parse_hints(name, @options.verbose)
       end
 
