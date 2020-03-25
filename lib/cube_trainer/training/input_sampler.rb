@@ -71,6 +71,13 @@ module CubeTrainer
         # repeated.
         new: 0.1,
 
+        # In case there are still completely new items available, this is the fraction of times
+        # that such an item will be chosen.
+        # This is used in case the algorithm set is marked as "known". The user knows the alg
+        # set already, but we can't make good decisions until we have results for all of them,
+        # so we want to get through all of them quickly and use a high fraction here.
+        new_known: 2.0,
+
         # Fraction of the samples that prefers things we haven't seen in a while to also
         # occasionally cover easy cases.
         coverage: 0.15,
@@ -139,15 +146,14 @@ module CubeTrainer
 
       # The sampler that is used in "normal" cases, i.e. if no special sampling is needed.
       def create_normal_sampler
-        samplers =
+        new_fraction = @config[:known] ? SAMPLING_FRACTIONS[:new_known] : SAMPLING_FRACTIONS[:new]
+        CombinedSampler.new(
           [
             create_adaptive_subsampler(BadnessScorer, SAMPLING_FRACTIONS[:badness]),
-            CombinedSampler::SubSampler.new(create_coverage_sampler, SAMPLING_FRACTIONS[:coverage])
+            CombinedSampler::SubSampler.new(create_coverage_sampler, SAMPLING_FRACTIONS[:coverage]),
+            create_adaptive_subsampler(NewScorer, new_fraction)
           ]
-        unless @config[:known]
-          samplers.push(create_adaptive_subsampler(NewScorer, SAMPLING_FRACTIONS[:new]))
-        end
-        CombinedSampler.new(samplers)
+        )
       end
 
       def create_coverage_sampler

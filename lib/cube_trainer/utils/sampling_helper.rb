@@ -5,14 +5,14 @@ module CubeTrainer
     # A few sampling related helper methods.
     module SamplingHelper
       # Draw a random sample from `array` and use `block` to calculate the weight of each item.
-      def sample_by(array, &block)
+      def sample_by(array, random = Random, &block)
         raise ArgumentError, 'Cannot sample empty array.' if array.empty?
 
         weights = extract_weights(array, &block)
         weight_sum = weights.reduce(:+)
         raise ArgumentError, "Can't sample for total weight 0.0." if weight_sum == 0.0
 
-        index_by_weight(array, weights, rand * weight_sum)
+        index_by_weight(array, weights, random.rand * weight_sum)
       end
 
       private
@@ -26,7 +26,11 @@ module CubeTrainer
           raise ArgumentError, 'Negative weights are not allowed for sampling.'
         end
 
-        weights
+        if weights.any?(&:infinite?)
+          weights.map { |a| a.infinite? ? 1 : 0 }
+        else
+          weights
+        end
       end
 
       def index_by_weight(array, weights, weight)
