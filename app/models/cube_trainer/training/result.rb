@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../training'
-require_relative '../../application_record'
 
 module CubeTrainer
   module Training
@@ -24,10 +23,6 @@ module CubeTrainer
       validates :success, presence: true
       validates :num_hints, numericality: POSITIVE_INTEGER
 
-      def self.hostname
-        @hostname ||= `hostname`.chomp
-      end
-
       before_validation { self.hostname ||= self.class.current_hostname }
 
       def self.from_partial(mode, created_at, partial_result, input_representation)
@@ -40,6 +35,19 @@ module CubeTrainer
           success: partial_result.success,
           num_hints: partial_result.num_hints,
           created_at: created_at
+        )
+      end
+
+      def from_input_and_partial(input, partial_result)
+        new(
+          mode: input.mode,
+          input_representation: input.input_representation,
+          created_at: input.created_at,
+          time_s: partial_result.time_s,
+          failed_attempts: partial_result.failed_attempts,
+          word: partial_result.word,
+          success: partial_result.success,
+          num_hints: partial_result.num_hints
         )
       end
 
