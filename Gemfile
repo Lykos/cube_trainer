@@ -29,7 +29,6 @@ gem 'jbuilder', '~> 2.7'
 gem 'bootsnap', '>= 1.4.2', require: false
 
 gem 'activerecord'
-gem 'activerecord-import'
 gem 'colorize'
 gem 'parallel'
 gem 'pg'
