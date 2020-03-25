@@ -24,5 +24,5 @@ jobs:
         bundle install --jobs 4 --retry 3
     - name: Build and test with Rake
       run: |
-        # bundle exec rake uic
-        bundle exec rake
+        rails compile
+	rails spec
