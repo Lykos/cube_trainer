@@ -1,6 +1,5 @@
-#!/usr/bin/ruby
 # frozen_string_literal: true
 
-require 'cube_trainer/training/sync_databases'
+require 'cube_trainer/training/database_syncer'
 
-CubeTrainer::Result::DatabaseSyncer.new(CubeTrainer::Training::Result).sync!
+CubeTrainer::Training::DatabaseSyncer.new(CubeTrainer::Training::Result).sync!
