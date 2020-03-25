@@ -35,7 +35,7 @@ module CubeTrainer
       def download!
         download_state = fetch_download_state
         now = Time.now
-        downloaded = fetch_downloaded
+        downloaded = fetch_downloaded(download_state, now)
         puts "Inserting #{downloaded.length} downloaded records of type #{@model.name}."
         download_state.downloaded_at = now
         ActiveRecord::Base.connected_to(database: :primary) do
@@ -60,12 +60,19 @@ module CubeTrainer
         end
       end
 
-      def fetch_downloaded
+      def fetch_downloaded(download_state, now)
         ActiveRecord::Base.connected_to(database: :global) do
-          @model.where(
-            'hostname != ? AND uploaded_at > ? AND uploaded_at <= ?',
-            hostname, download_state.downloaded_at, now
-          ).to_a
+          if download_state.downloaded_at
+            @model.where(
+              'hostname != ? AND uploaded_at > ? AND uploaded_at <= ?',
+              hostname, download_state.downloaded_at, now
+            ).to_a
+          else
+            @model.where(
+              'hostname != ? AND uploaded_at <= ?',
+              hostname, now
+            ).to_a
+          end
         end
       end
 
