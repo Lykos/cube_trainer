@@ -65,18 +65,6 @@ module CubeTrainer
             puts 'Deleting results for the last 30 seconds and exiting.'
             @results_model.delete_after_time(Time.now - 30)
             exit
-          when 'replace'
-            if last_word.nil? || COMMANDS.include?(last_word)
-              puts_and_say('Can only replace with a valid word that is not a special command.')
-            elsif input.matches_word?(last_word)
-              failed_attempts = last_failed_attempts
-              word = last_word
-              time_s = last_time_s
-              puts_and_say('Replaced word.', 'en')
-              break
-            else
-              puts_and_say('Cannot replace word with an invalid word.', 'en')
-            end
           when 'quit'
             exit
           end

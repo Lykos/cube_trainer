@@ -66,13 +66,6 @@ module CubeTrainer
         @load_results_stm.execute(mode.to_s).map { |r| LegacyResult.from_raw_data(r) }
       end
 
-      def replace_word(mode, input, word)
-        @replace_results_stm ||= @db.prepare(<<~SQL)
-          UPDATE Results SET Word = ? WHERE Mode = ? and Input = ?
-        SQL
-        @replace_results_stm.execute(word, mode.to_s, input.to_s)
-      end
-
       # Delete all results that happened after the given time.
       # Useful if you screwed up and want to delete results of the last 10 seconds.
       def delete_after_time(mode, time)
