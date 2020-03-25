@@ -25,6 +25,6 @@ class TimerController < ApplicationController
     partial_result = CubeTrainer::Training::PartialResult.new(params[:time_s])
     CubeTrainer::Training::Result.from_input_and_partial(@input, partial_result)
     @input.destroy!
-    redirect_to '/timer/index'
+    redirect_back fallback_location: '/timer/index'
   end
 end
