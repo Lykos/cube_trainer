@@ -36,6 +36,11 @@ module CubeTrainer
         download_state = fetch_download_state
         now = Time.now
         downloaded = fetch_downloaded(download_state, now)
+        if downloaded.empty?
+          puts 'Nothing downloaded.'
+          return
+        end
+
         save_downloaded(downloaded)
         download_state.downloaded_at = now
         ActiveRecord::Base.connected_to(database: :primary) do
