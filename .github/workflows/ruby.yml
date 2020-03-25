@@ -25,4 +25,4 @@ jobs:
     - name: Build and test with Rake
       run: |
         rails compile
-	rails spec
+        rails spec
