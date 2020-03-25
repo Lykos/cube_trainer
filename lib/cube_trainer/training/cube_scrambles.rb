@@ -2,7 +2,7 @@
 
 require 'cube_trainer/cube_scrambler'
 require 'cube_trainer/training/no_hinter'
-require 'cube_trainer/training/scrambler'
+require 'cube_trainer/training/scramble'
 
 module CubeTrainer
   module Training
