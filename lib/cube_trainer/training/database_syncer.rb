@@ -18,9 +18,10 @@ module CubeTrainer
       end
 
       def upload!
-        uploaded = ActiveRecord::Base.connected_to(database: :primary) do
-          @model.where("hostname = ? AND (uploaded_at IS NULL OR updated_at > uploaded_at)", hostname).to_a
-        end
+        uploaded =
+          ActiveRecord::Base.connected_to(database: :primary) do
+            @model.where('hostname = ? AND (uploaded_at IS NULL OR updated_at > uploaded_at)', hostname).to_a
+          end
         puts "Uploading #{uploaded.length} records of type #{@model.name}."
         ActiveRecord::Base.connected_to(database: :global) do
           uploaded.each do |item|
@@ -34,13 +35,14 @@ module CubeTrainer
       end
 
       def download!
-        download_state = ActiveRecord::Base.connected_to(database: :primary) do
-          DownloadState.create_or_find_by!(model: @model.name)
-        end
+        download_state =
+          ActiveRecord::Base.connected_to(database: :primary) do
+            DownloadState.create_or_find_by!(model: @model.name)
+          end
         now = Time.now
         downloaded =
           ActiveRecord::Base.connected_to(database: :global) do
-            @model.where("hostname != ? AND uploaded_at > ? AND uploaded_at <= ?", hostname, download_state.downloaded_at, now).to_a
+            @model.where('hostname != ? AND uploaded_at > ? AND uploaded_at <= ?', hostname, download_state.downloaded_at, now).to_a
           end
         puts "Inserting #{downloaded.length} downloaded records of type #{@model.name}."
         download_state.downloaded_at = now
