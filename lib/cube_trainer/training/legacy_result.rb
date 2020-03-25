@@ -20,14 +20,6 @@ module CubeTrainer
       # Number of columns in the UI.
       COLUMNS = 3
 
-      INPUT_REPRESENTATION_CLASSES = [
-        LetterPair,
-        PaoLetterPair,
-        AlgName,
-        LetterPairSequence,
-        Core::Algorithm
-      ].freeze
-
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/ParameterLists
       # rubocop:disable Metrics/MethodLength
@@ -67,22 +59,10 @@ module CubeTrainer
       # rubocop:enable Metrics/CyclomaticComplexity
 
       def check_input_representation(input_representation)
-        return if INPUT_REPRESENTATION_CLASSES.any? { |c| input_representation.is_a?(c) }
+        classes = InputRepresentationType::INPUT_REPRESENTATION_CLASSES
+        return if classes.any? { |c| input_representation.is_a?(c) }
 
         raise ArgumentError, "Invalid input representation #{input_representation}."
-      end
-
-      def self.from_partial(mode, timestamp, partial_result, input_representation)
-        new(
-          mode,
-          timestamp,
-          partial_result.time_s,
-          input_representation,
-          partial_result.failed_attempts,
-          partial_result.word,
-          partial_result.success,
-          partial_result.num_hints
-        )
       end
 
       # Construct from data stored in the db.
@@ -117,26 +97,11 @@ module CubeTrainer
         end
       end
 
-      # Serialize to data stored in the db.
-      def to_raw_data
-        [
-          @mode.to_s,
-          @timestamp.to_i, # rubocop:disable Lint/NumberConversion
-          @time_s,
-          @input_representation.to_raw_data,
-          @failed_attempts,
-          @word,
-          @success ? 1 : 0,
-          @num_hints
-        ]
-      end
-
       attr_reader :mode, :timestamp, :time_s, :input_representation, :failed_attempts, :word,
                   :success, :num_hints
 
       # Transforms this to a result from app/models to facilitate the migration.
       def to_result
-        raise unless @mode
         Result.new(
           mode: @mode,
           created_at: @timestamp,

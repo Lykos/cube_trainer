@@ -49,9 +49,6 @@ module CubeTrainer
               puts_and_say('Incorrect!', 'en')
             end
           end
-          last_word = word
-          last_time_s = time_s
-          last_failed_attempts = failed_attempts
           word = gets.chomp.downcase
           time_s = Time.now - start
           case word
