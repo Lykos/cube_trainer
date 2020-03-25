@@ -1,4 +1,3 @@
-#!/usr/bin/ruby
 # frozen_string_literal: true
 
 require 'cube_trainer/training/results_persistence'

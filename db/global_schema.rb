@@ -21,7 +21,6 @@ ActiveRecord::Schema.define(version: 2020_03_25_081243) do
     t.string "timestamps"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["model"], name: "index_cube_trainer_training_download_states_on_model", unique: true
   end
 
   create_table "cube_trainer_training_results", force: :cascade do |t|
