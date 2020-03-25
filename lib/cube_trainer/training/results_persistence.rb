@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require 'yaml'
-require 'cube_trainer/training/result'
+require 'cube_trainer/training/legacy_result'
 require 'cube_trainer/letter_pair'
+require 'cube_trainer/utils/array_helper'
 require 'cube_trainer/xdg_helper'
 require 'sqlite3'
 
@@ -10,6 +11,8 @@ module CubeTrainer
   module Training
     # Class that talks to the results database.
     class ResultsPersistence
+      include Utils::ArrayHelper
+
       def initialize(db)
         @db = db
         db.execute(<<~SQL)
@@ -49,18 +52,18 @@ module CubeTrainer
         ResultsPersistence.new(db)
       end
 
+      def load_modes
+        @load_modes_stm ||= @db.prepare(<<~SQL)
+          SELECT Mode FROM Results GROUP BY 1
+        SQL
+        @load_modes_stm.execute.map { |r| only(r).to_sym }
+      end
+
       def load_results(mode)
         @load_results_stm ||= @db.prepare(<<~SQL)
           SELECT Mode, Timestamp, TimeS, Input, FailedAttempts, Word, Success, NumHints FROM Results WHERE Mode = ?
         SQL
-        @load_results_stm.execute(mode.to_s).map { |r| Result.from_raw_data(r) }
-      end
-
-      def replace_word(mode, input, word)
-        @replace_results_stm ||= @db.prepare(<<~SQL)
-          UPDATE Results SET Word = ? WHERE Mode = ? and Input = ?
-        SQL
-        @replace_results_stm.execute(word, mode.to_s, input.to_s)
+        @load_results_stm.execute(mode.to_s).map { |r| LegacyResult.from_raw_data(r) }
       end
 
       # Delete all results that happened after the given time.

@@ -149,7 +149,7 @@ module CubeTrainer
       end
 
       def img(source)
-        raise ArgumentError, "Got bad filename #{source}" unless source =~ /^[\w.+-]+$/
+        raise ArgumentError, "Got bad filename #{source}" unless /^[\w.+-]+$/.match?(source)
 
         # TODO: This is bad, but works with our restriction.
         "<img src='#{source}'/>"

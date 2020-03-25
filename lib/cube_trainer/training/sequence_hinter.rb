@@ -131,7 +131,7 @@ module CubeTrainer
           values = {}
           results.group_by(&:input_representation).each do |l, rs|
             avg = Native::CubeAverage.new(InputSampler::DEFAULT_CONFIG[:badness_memory], 0)
-            rs.sort_by(&:timestamp).each { |r| avg.push(r.time_s) }
+            rs.sort_by(&:created_at).each { |r| avg.push(r.time_s) }
             values[l] = ActualScore.new(avg.average)
           end
           values

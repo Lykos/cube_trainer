@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/console_helpers'
-require 'cube_trainer/training/result'
+require 'cube_trainer/training/partial_result'
 require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
@@ -49,9 +49,6 @@ module CubeTrainer
               puts_and_say('Incorrect!', 'en')
             end
           end
-          last_word = word
-          last_time_s = time_s
-          last_failed_attempts = failed_attempts
           word = gets.chomp.downcase
           time_s = Time.now - start
           case word
@@ -65,18 +62,6 @@ module CubeTrainer
             puts 'Deleting results for the last 30 seconds and exiting.'
             @results_model.delete_after_time(Time.now - 30)
             exit
-          when 'replace'
-            if last_word.nil? || COMMANDS.include?(last_word)
-              puts_and_say('Can only replace with a valid word that is not a special command.')
-            elsif input.matches_word?(last_word)
-              failed_attempts = last_failed_attempts
-              word = last_word
-              time_s = last_time_s
-              puts_and_say('Replaced word.', 'en')
-              break
-            else
-              puts_and_say('Cannot replace word with an invalid word.', 'en')
-            end
           when 'quit'
             exit
           end

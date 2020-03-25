@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/commutator_sets'
-require 'ostruct'
 require 'cube_trainer/training/commutator_options'
-require 'cube_trainer/training/stub_results_model'
+require 'ostruct'
 
 shared_examples 'commutator_set' do |info|
   let(:letter_scheme) { BernhardLetterScheme.new }
@@ -14,10 +13,9 @@ shared_examples 'commutator_set' do |info|
     options.test_comms_mode = :fail
     options
   end
-  let(:results_model) { StubResultsModel.new }
   let(:generator) { info.generator_class.new(options) }
   let(:input_items) { generator.input_items }
-  let(:hinter) { generator.hinter(results_model) }
+  let(:hinter) { generator.hinter }
 
   it 'parses all comms correctly and give a hint on a random one' do
     if input_items

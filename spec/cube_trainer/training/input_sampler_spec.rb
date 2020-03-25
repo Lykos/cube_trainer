@@ -2,7 +2,6 @@
 
 require 'cube_trainer/training/fake_learner'
 require 'cube_trainer/training/trainer'
-require 'cube_trainer/training/results_persistence'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/results_model'
 require 'cube_trainer/training/commutator_sets'
@@ -13,6 +12,7 @@ require 'ostruct'
 ITERATIONS = 300
 
 def compute_average(results_model, generator)
+  Training::Result.delete_all
   learner = FakeLearner.new
   trainer = Training::Trainer.new(learner, results_model, generator)
   ITERATIONS.times { trainer.one_iteration }
@@ -27,14 +27,12 @@ describe Training::InputSampler do
   let(:options) { OpenStruct.new }
 
   it 'performs better than random sampling' do
-    results_persistence = Training::ResultsPersistence.create_in_memory
-    results_model = Training::ResultsModel.new(:items, results_persistence)
+    results_model = Training::ResultsModel.new(:items)
 
     smart_sampler = described_class.new(ITEMS, results_model, options, 1.0)
     smart_average = compute_average(results_model, smart_sampler)
 
-    results_persistence = Training::ResultsPersistence.create_in_memory
-    results_model = Training::ResultsModel.new(:items, results_persistence)
+    results_model = Training::ResultsModel.new(:items)
     random_sampler = Training::RandomSampler.new(ITEMS)
     random_average = compute_average(results_model, random_sampler)
 

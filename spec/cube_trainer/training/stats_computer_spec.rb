@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/stats_computer'
-require 'cube_trainer/training/result'
 require 'cube_trainer/training/commutator_options'
 require 'cube_trainer/training/input_item'
 require 'ostruct'
@@ -32,31 +31,30 @@ describe Training::StatsComputer do
         patched_options = options.dup
         patched_options.commutator_info = v
         mode = BufferHelper.mode_for_options(patched_options)
-        Training::Result.new(mode, t_2_days_ago, 1.0, letter_pair_b, 0, nil, true, 0)
+        Training::Result.new(mode: mode, created_at: t_2_days_ago, time_s: 1.0, input_representation: letter_pair_b, failed_attempts: 0, word: nil, success: true, num_hints: 0)
       end
-    fill_results = fill_letter_pairs.map { |ls| Training::Result.new(mode, t_2_days_ago, 1.0, ls, 0, nil, true, 0) }
+    fill_results = fill_letter_pairs.map { |ls| Training::Result.new(mode: mode, created_at: t_2_days_ago, time_s: 1.0, input_representation: ls, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
     [
-      Training::Result.new(mode, t_10_minutes_ago, 1.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_10_minutes_ago, 2.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_10_minutes_ago, 3.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_10_minutes_ago, 4.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_10_minutes_ago, 5.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_10_minutes_ago - 1, 6.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_2_hours_ago, 7.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_2_days_ago, 10.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_2_days_ago, 11.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_2_days_ago, 12.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_2_days_ago, 13.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_2_days_ago, 14.0, letter_pair_a, 0, nil, true, 0),
-      Training::Result.new(mode, t_2_hours_ago, 10.0, letter_pair_b, 0, nil, true, 0)
+      Training::Result.new(mode: mode, created_at: t_10_minutes_ago, time_s: 1.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_10_minutes_ago, time_s: 2.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_10_minutes_ago, time_s: 3.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_10_minutes_ago, time_s: 4.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_10_minutes_ago, time_s: 5.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_10_minutes_ago - 1, time_s: 6.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_2_hours_ago, time_s: 7.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_2_days_ago, time_s: 10.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_2_days_ago, time_s: 11.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_2_days_ago, time_s: 12.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_2_days_ago, time_s: 13.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_2_days_ago, time_s: 14.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      Training::Result.new(mode: mode, created_at: t_2_hours_ago, time_s: 10.0, input_representation: letter_pair_b, failed_attempts: 0, word: nil, success: true, num_hints: 0)
     ] + fill_results + other_mode_results
   end
-  let(:results_persistence) do
-    persistence = Training::ResultsPersistence.create_in_memory
-    results.each { |r| persistence.record_result(r) }
-    persistence
+  let(:computer) do
+    Training::Result.delete_all
+    results.each(&:save!)
+    described_class.new(now, options)
   end
-  let(:computer) { described_class.new(now, options, results_persistence) }
 
   it 'computes detailed averages for all our results' do
     fill_letter_averages = fill_letter_pairs.map { |ls| [ls, 1.0] }

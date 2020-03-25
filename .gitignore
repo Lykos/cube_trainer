@@ -38,3 +38,10 @@ profiles
 
 # Ignore compiled native code.
 lib/cube_trainer/native.so
+
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity
