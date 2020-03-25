@@ -35,6 +35,7 @@ gem 'pg'
 gem 'ruby-filemagic'
 gem 'ruby-progressbar'
 gem 'rubyzip'
+gem 'typescript-rails'
 gem 'wombat'
 gem 'xdg'
 

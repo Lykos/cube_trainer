@@ -45,8 +45,6 @@ GEM
     activerecord (6.0.2.2)
       activemodel (= 6.0.2.2)
       activesupport (= 6.0.2.2)
-    activerecord-import (1.0.4)
-      activerecord (>= 3.2)
     activestorage (6.0.2.2)
       actionpack (= 6.0.2.2)
       activejob (= 6.0.2.2)
@@ -268,6 +266,13 @@ GEM
     turbolinks (5.2.1)
       turbolinks-source (~> 5.2)
     turbolinks-source (5.2.0)
+    typescript-node (1.6.2)
+      typescript-src (~> 1.6.2)
+    typescript-rails (0.6.2.4)
+      railties
+      tilt
+      typescript-node (>= 1.6.2)
+    typescript-src (1.6.2.0)
     tzinfo (1.2.6)
       thread_safe (~> 0.1)
     unf (0.1.4)
@@ -305,7 +310,6 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord
-  activerecord-import
   bootsnap (>= 1.4.2)
   byebug
   capybara (>= 2.15)
@@ -337,6 +341,7 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.0.0)
   sqlite3 (~> 1.4)
   turbolinks (~> 5)
+  typescript-rails
   tzinfo-data
   web-console (>= 3.3.0)
   webdrivers
