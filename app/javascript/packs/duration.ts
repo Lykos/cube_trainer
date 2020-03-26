@@ -9,7 +9,7 @@ function toDD(n: number) {
   if (n >= 100 || n < 0) {
     throw `n = ${n} is not valid for toDD`;
   } else {
-    return (n >= 10 ? '' : '0') + Math.floor(n);
+    return (n >= 10 ? '' : '0') + n;
   }
 }
 

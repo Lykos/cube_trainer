@@ -7,7 +7,7 @@ export class Timer {
   private startDate: Instant;
   private timerToken: any;
 
-  constructor(private timerElement: HTMLElement) {
+  constructor(private readonly timerElement: HTMLElement) {
     this.timerElement = timerElement;
     this.startDate = infinitePast;
   }
@@ -25,3 +25,5 @@ export class Timer {
     clearInterval(this.timerToken);
   }
 }
+
+window.Timer = Timer;
