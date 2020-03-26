@@ -4,13 +4,15 @@ require 'cube_trainer/training/commutator_options'
 require 'cube_trainer/training/results_model'
 require 'ostruct'
 
+# Controller for showing inputs to the human and getting results.
 class TimerController < ApplicationController
   OPTIONS =
     begin
-                 options = CubeTrainer::Training::CommutatorOptions.default_options
-                 options.commutator_info = CubeTrainer::Training::CommutatorOptions::COMMUTATOR_TYPES[:corners] || raise
-                 options
-               end
+      options = CubeTrainer::Training::CommutatorOptions.default_options
+      options.commutator_info =
+        CubeTrainer::Training::CommutatorOptions::COMMUTATOR_TYPES[:corners] || raise
+      options
+    end
   MODE = :ulb_corner_commutators
 
   def index
@@ -24,7 +26,10 @@ class TimerController < ApplicationController
     @results = CubeTrainer::Training::Result.where(mode: MODE)
     logger.info(@results.length)
     @input_item = input_sampler.random_item
-    @input = CubeTrainer::Training::Input.new(mode: MODE, input_representation: @input_item.representation)
+    @input =
+      CubeTrainer::Training::Input.new(
+        mode: MODE, input_representation: @input_item.representation
+      )
     @input.save!
   end
 

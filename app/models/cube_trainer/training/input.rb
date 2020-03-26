@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
-class CubeTrainer::Training::Input < ApplicationRecord
-  attribute :mode, :symbol
-  attribute :input_representation, :input_representation
+module CubeTrainer
+  module Training
+    # Input that is used as for training for the user.
+    # The part of the result that is already fixed after sampling.
+    class Input < ApplicationRecord
+      attribute :mode, :symbol
+      attribute :input_representation, :input_representation
+    end
+  end
 end
