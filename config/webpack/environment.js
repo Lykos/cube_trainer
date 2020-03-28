@@ -7,11 +7,12 @@ environment.loaders.append('html', {
   use: [{
     loader: 'html-loader',
     options: {
-      minimize: true,
-      removeAttributeQuotes: false,
-      caseSensitive: true,
-      customAttrSurround: [ [/#/, /(?:)/], [/\*/, /(?:)/], [/\[?\(?/, /(?:)/] ],
-      customAttrAssign: [ /\)?\]?=/ ]
+      minimize: {
+        removeAttributeQuotes: false,
+        caseSensitive: true,
+        customAttrSurround: [ [/#/, /(?:)/], [/\*/, /(?:)/], [/\[?\(?/, /(?:)/] ],
+        customAttrAssign: [ /\)?\]?=/ ]
+      }
     }
   }]
 })
