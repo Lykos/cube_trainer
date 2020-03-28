@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { TimerComponent } from './app.component';
+import { TimerComponent } from './timer.component';
 
 @NgModule({
   declarations: [
@@ -13,4 +13,4 @@ import { TimerComponent } from './app.component';
   providers: [],
   bootstrap: [TimerComponent]
 })
-export class AppModule { }
+export class TimerModule { }
