@@ -1,3 +1,5 @@
 <h1>Timer</h1>
+<timer>Loading timer...</timer>
+<%= javascript_pack_tag 'timer', 'data-turbolinks-track': 'reload' %>
 <p><%= button_to 'Start timer', action: :start %></p>
 <%= render 'results_table' %>
