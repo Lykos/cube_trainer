@@ -2,14 +2,23 @@
   "name": "cube_trainer",
   "private": true,
   "dependencies": {
+    "@angular/common": "^9.1.0",
+    "@angular/compiler": "^9.1.0",
+    "@angular/core": "^9.1.0",
+    "@angular/platform-browser": "^9.1.0",
+    "@angular/platform-browser-dynamic": "^9.1.0",
     "@rails/actioncable": "^6.0.0",
     "@rails/activestorage": "^6.0.0",
     "@rails/ujs": "^6.0.0",
     "@rails/webpacker": "5.0.1",
+    "core-js": "^3.6.4",
+    "html-loader": "^1.0.0",
     "jquery": "^3.4.1",
+    "rxjs": "^6.5.4",
     "ts-loader": "^6.2.2",
     "turbolinks": "^5.2.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "zone.js": "^0.10.3"
   },
   "version": "0.1.0",
   "devDependencies": {
