@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/results_persistence'
-require 'cube_trainer/training/result'
+require 'result'
 
 def result_exists(result)
-  CubeTrainer::Training::Result.exists?(
-    hostname: CubeTrainer::Training::Result.current_hostname,
+  Result.exists?(
+    hostname: Result.current_hostname,
     created_at: result.timestamp
   )
 end
 
 total_migrated = 0
 total_existing = 0
-persistence = CubeTrainer::Training::ResultsPersistence.create_for_production
+persistence = ResultsPersistence.create_for_production
 persistence.load_modes.each do |mode|
   puts "Loading results for #{mode}."
   results = persistence.load_results(mode)

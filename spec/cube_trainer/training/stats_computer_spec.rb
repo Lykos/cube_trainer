@@ -6,6 +6,7 @@ require 'cube_trainer/training/input_item'
 require 'ostruct'
 
 describe Training::StatsComputer do
+  let(:user) { User.create!(name: 'abc', password: 'password', password_confirmation: 'password') }
   let(:now) { Time.at(0) }
   let(:t_10_minutes_ago) { now - 600 }
   let(:t_2_hours_ago) { now - 2 * 3600 }
@@ -31,27 +32,27 @@ describe Training::StatsComputer do
         patched_options = options.dup
         patched_options.commutator_info = v
         mode = BufferHelper.mode_for_options(patched_options)
-        Training::Result.new(mode: mode, created_at: t_2_days_ago + 100 + i, time_s: 1.0, input_representation: letter_pair_b, failed_attempts: 0, word: nil, success: true, num_hints: 0)
+        user.results.new(mode: mode, created_at: t_2_days_ago + 100 + i, time_s: 1.0, input_representation: letter_pair_b, failed_attempts: 0, word: nil, success: true, num_hints: 0)
       end
-    fill_results = fill_letter_pairs.map.with_index { |ls, i| Training::Result.new(mode: mode, created_at: t_2_days_ago + 200 + i, time_s: 1.0, input_representation: ls, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
+    fill_results = fill_letter_pairs.map.with_index { |ls, i| user.results.new(mode: mode, created_at: t_2_days_ago + 200 + i, time_s: 1.0, input_representation: ls, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
     [
-      Training::Result.new(mode: mode, created_at: t_10_minutes_ago, time_s: 1.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_10_minutes_ago + 1, time_s: 2.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_10_minutes_ago + 2, time_s: 3.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_10_minutes_ago + 3, time_s: 4.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_10_minutes_ago + 4, time_s: 5.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_10_minutes_ago - 1, time_s: 6.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_2_hours_ago, time_s: 7.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_2_days_ago, time_s: 10.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_2_days_ago + 1, time_s: 11.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_2_days_ago + 2, time_s: 12.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_2_days_ago + 3, time_s: 13.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_2_days_ago + 4, time_s: 14.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
-      Training::Result.new(mode: mode, created_at: t_2_hours_ago + 1, time_s: 10.0, input_representation: letter_pair_b, failed_attempts: 0, word: nil, success: true, num_hints: 0)
+      user.results.new(mode: mode, created_at: t_10_minutes_ago, time_s: 1.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_10_minutes_ago + 1, time_s: 2.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_10_minutes_ago + 2, time_s: 3.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_10_minutes_ago + 3, time_s: 4.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_10_minutes_ago + 4, time_s: 5.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_10_minutes_ago - 1, time_s: 6.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_2_hours_ago, time_s: 7.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_2_days_ago, time_s: 10.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_2_days_ago + 1, time_s: 11.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_2_days_ago + 2, time_s: 12.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_2_days_ago + 3, time_s: 13.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_2_days_ago + 4, time_s: 14.0, input_representation: letter_pair_a, failed_attempts: 0, word: nil, success: true, num_hints: 0),
+      user.results.new(mode: mode, created_at: t_2_hours_ago + 1, time_s: 10.0, input_representation: letter_pair_b, failed_attempts: 0, word: nil, success: true, num_hints: 0)
     ] + fill_results + other_mode_results
   end
   let(:computer) do
-    Training::Result.delete_all
+    Result.delete_all
     results.each(&:save!)
     described_class.new(now, options)
   end

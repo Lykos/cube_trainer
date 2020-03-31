@@ -7,14 +7,16 @@ require 'cube_trainer/training/database_syncer'
 require 'cube_trainer/training/results_model'
 require 'cube_trainer/training/stats_computer'
 require 'cube_trainer/training/trainer'
+require 'etc'
 
 options = CubeTrainer::Training::CommutatorOptions.parse(ARGV)
 syncer = CubeTrainer::Training::DatabaseSyncer.new(CubeTrainer::Training::Result)
 syncer.download!
 at_exit { syncer.upload! }
 ActiveRecord::Base.connected_to(database: :primary) do
+  user = User.where(name: Etc.getlogin).first_or_create(password: 'abc123', password_confirmation: 'abc123')
   results_model = CubeTrainer::Training::ResultsModel.new(
-    CubeTrainer::BufferHelper.mode_for_options(options)
+    CubeTrainer::BufferHelper.mode_for_options(options), user
   )
   generator = options.commutator_info.generator_class.new(options)
   hinter = generator.hinter

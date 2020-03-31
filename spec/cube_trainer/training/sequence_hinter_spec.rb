@@ -15,6 +15,7 @@ end
 describe Training::HeterogenousSequenceHinter do
   include Core
 
+  let(:user) { User.new(name: 'abc', password: 'password') }
   let(:cube_size) { 3 }
   let(:algname_a) { SimpleAlgName.new('a') }
   let(:algname_b) { SimpleAlgName.new('b') }
@@ -24,9 +25,9 @@ describe Training::HeterogenousSequenceHinter do
   let(:algorithm_b) { parse_algorithm('R') }
   let(:algorithm_c) { parse_algorithm('U') }
   let(:algorithm_d) { parse_algorithm('U2') }
-  let(:result_a) { Training::Result.new(mode: :mode, created_at: Time.at(0), time_s: 1.0, input_representation: algname_a, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
-  let(:result_b) { Training::Result.new(mode: :mode, created_at: Time.at(0), time_s: 2.0, input_representation: algname_b, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
-  let(:result_d) { Training::Result.new(mode: :mode, created_at: Time.at(0), time_s: 1.0, input_representation: algname_d, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
+  let(:result_a) { user.results.new(mode: :mode, created_at: Time.at(0), time_s: 1.0, input_representation: algname_a, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
+  let(:result_b) { user.results.new(mode: :mode, created_at: Time.at(0), time_s: 2.0, input_representation: algname_b, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
+  let(:result_d) { user.results.new(mode: :mode, created_at: Time.at(0), time_s: 1.0, input_representation: algname_d, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
   let(:results_left) { [result_a, result_b] * 5 }
   let(:results_right) { [result_d] * 5 }
   let(:resultss) { [results_left, results_right] }

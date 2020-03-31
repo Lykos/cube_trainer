@@ -4,9 +4,10 @@ module CubeTrainer
   module Training
     # Class that handles storing and querying results.
     class ResultsModel
-      def initialize(mode)
+      def initialize(mode, user)
         @mode = mode
-        @results = Result.where(mode: mode).to_a
+        @user = user
+        @results = user.results.where(mode: mode).to_a
         @result_listeners = []
       end
 
@@ -19,7 +20,7 @@ module CubeTrainer
       def record_result(created_at, partial_result, input)
         raise ArgumentError unless partial_result.is_a?(PartialResult)
 
-        result = Result.from_partial(@mode, created_at, partial_result, input)
+        result = user.results.from_partial(@mode, created_at, partial_result, input)
         results.unshift(result)
         result.save!
         @result_listeners.each { |l| l.record_result(result) }

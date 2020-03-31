@@ -12,7 +12,7 @@ require 'ostruct'
 ITERATIONS = 300
 
 def compute_average(results_model, generator)
-  Training::Result.delete_all
+  Result.delete_all
   learner = FakeLearner.new
   trainer = Training::Trainer.new(learner, results_model, generator)
   ITERATIONS.times { trainer.one_iteration }
@@ -22,17 +22,18 @@ def compute_average(results_model, generator)
 end
 
 describe Training::InputSampler do
+  let(:user) { User.create!(name: 'abc', password: 'password', password_confirmation: 'password') }  
   ITEMS = ('a'..'c').to_a.permutation(2).map { |p| Training::InputItem.new(LetterPair.new(p)) }
 
   let(:options) { OpenStruct.new }
 
   it 'performs better than random sampling' do
-    results_model = Training::ResultsModel.new(:items)
+    results_model = Training::ResultsModel.new(:items, user)
 
     smart_sampler = described_class.new(ITEMS, results_model, options, 1.0)
     smart_average = compute_average(results_model, smart_sampler)
 
-    results_model = Training::ResultsModel.new(:items)
+    results_model = Training::ResultsModel.new(:items, user)
     random_sampler = Training::RandomSampler.new(ITEMS)
     random_average = compute_average(results_model, random_sampler)
 

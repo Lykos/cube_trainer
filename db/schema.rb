@@ -10,28 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_31_184449) do
+ActiveRecord::Schema.define(version: 2020_03_31_202413) do
 
-  create_table "cube_trainer_training_download_states", force: :cascade do |t|
+  create_table "cube_trainer_training_users", force: :cascade do |t|
+    t.string "name"
+    t.string "password_digest"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "download_states", force: :cascade do |t|
     t.text "model"
     t.datetime "downloaded_at"
     t.string "timestamps"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["model"], name: "index_cube_trainer_training_download_states_on_model", unique: true
+    t.index ["model"], name: "index_download_states_on_model", unique: true
   end
 
-  create_table "cube_trainer_training_inputs", force: :cascade do |t|
+  create_table "inputs", force: :cascade do |t|
     t.text "mode"
     t.text "input_representation"
     t.string "timestamps"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "user_id", null: false
-    t.index ["user_id"], name: "index_cube_trainer_training_inputs_on_user_id"
+    t.index ["user_id"], name: "index_inputs_on_user_id"
   end
 
-  create_table "cube_trainer_training_results", force: :cascade do |t|
+  create_table "results", force: :cascade do |t|
     t.text "mode", null: false
     t.float "time_s", null: false
     t.text "input_representation", null: false
@@ -44,18 +51,11 @@ ActiveRecord::Schema.define(version: 2020_03_31_184449) do
     t.text "hostname", null: false
     t.datetime "uploaded_at", precision: 6
     t.integer "user_id", null: false
-    t.index ["created_at"], name: "index_cube_trainer_training_results_on_created_at"
-    t.index ["hostname", "created_at"], name: "index_cube_trainer_training_results_on_hostname_and_created_at", unique: true
-    t.index ["mode"], name: "index_cube_trainer_training_results_on_mode"
-    t.index ["uploaded_at"], name: "index_cube_trainer_training_results_on_uploaded_at"
-    t.index ["user_id"], name: "index_cube_trainer_training_results_on_user_id"
-  end
-
-  create_table "cube_trainer_training_users", force: :cascade do |t|
-    t.string "name"
-    t.string "password_digest"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.index "\"hostname\", \"user\", \"created_at\"", name: "index_results_on_hostname_and_user_and_created_at", unique: true
+    t.index "\"mode\", \"user\"", name: "index_results_on_mode_and_user"
+    t.index ["created_at"], name: "index_results_on_created_at"
+    t.index ["uploaded_at"], name: "index_results_on_uploaded_at"
+    t.index ["user_id"], name: "index_results_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|

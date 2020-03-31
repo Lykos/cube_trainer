@@ -16,18 +16,18 @@ class TimerController < ApplicationController
   MODE = :ulb_corner_commutators
 
   def index
-    @results = CubeTrainer::Training::Result.where(mode: MODE)
+    @results = current_user.results.where(mode: MODE)
   end
 
   def next_input
     generator = OPTIONS.commutator_info.generator_class.new(OPTIONS)
-    results_model = CubeTrainer::Training::ResultsModel.new(MODE)
+    results_model = CubeTrainer::Training::ResultsModel.new(MODE, current_user)
     input_sampler = generator.input_sampler(results_model)
-    @results = CubeTrainer::Training::Result.where(mode: MODE)
+    @results = current_user.results.where(mode: MODE)
     logger.info(@results.length)
     @input_item = input_sampler.random_item
     @input =
-      CubeTrainer::Training::Input.new(
+      user.inputs.new(
         mode: MODE, input_representation: @input_item.representation
       )
     @input.save!
@@ -36,19 +36,19 @@ class TimerController < ApplicationController
   end
 
   def delete
-    CubeTrainer::Training::Result.find(params[:id]).destroy!
+    current_user.results.find(params[:id]).destroy!
     redirect_to('/timer/index')
   end
 
   def drop_input
-    @input = CubeTrainer::Training::Input.find(params[:id])
+    @input = current_user.inputs.find(params[:id])
     @input.destroy!
   end
 
   def stop
-    @input = CubeTrainer::Training::Input.find(params[:id])
+    @input = current_user.inputs.find(params[:id])
     partial_result = CubeTrainer::Training::PartialResult.new(params[:time_s])
-    CubeTrainer::Training::Result.from_input_and_partial(@input, partial_result).save!
+    current_user.results.from_input_and_partial(@input, partial_result).save!
     @input.destroy!
   end
 end
