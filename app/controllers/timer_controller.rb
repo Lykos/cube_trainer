@@ -6,24 +6,16 @@ require 'ostruct'
 
 # Controller for showing inputs to the human and getting results.
 class TimerController < ApplicationController
-  OPTIONS =
-    begin
-      options = CubeTrainer::Training::CommutatorOptions.default_options
-      options.commutator_info =
-        CubeTrainer::Training::CommutatorOptions::COMMUTATOR_TYPES[:corners] || raise
-      options
-    end
-  MODE = :ulb_corner_commutators
-
   def index
-    @results = current_user.results.where(mode: MODE)
+    @results = current_user.results.where(mode: mode.legacy_mode)
   end
 
   def next_input
-    generator = OPTIONS.commutator_info.generator_class.new(OPTIONS)
-    results_model = CubeTrainer::Training::ResultsModel.new(MODE, current_user)
+    CommutatorTypes::COMMUTATOR_TYPES[mode.type] || raise
+    generator = commutator_info.generator_class.new(mode)
+    results_model = CubeTrainer::Training::ResultsModel.new(mode.legacy_mode, current_user)
     input_sampler = generator.input_sampler(results_model)
-    @results = current_user.results.where(mode: MODE)
+    @results = current_user.results.where(mode: mode.legacy_mode)
     logger.info(@results.length)
     @input_item = input_sampler.random_item
     @input =
@@ -37,7 +29,7 @@ class TimerController < ApplicationController
 
   def delete
     current_user.results.find(params[:id]).destroy!
-    redirect_to('/timer/index')
+    redirect_to '/timer/index'
   end
 
   def drop_input
@@ -50,5 +42,11 @@ class TimerController < ApplicationController
     partial_result = CubeTrainer::Training::PartialResult.new(params[:time_s])
     current_user.results.from_input_and_partial(@input, partial_result).save!
     @input.destroy!
+  end
+
+  private
+
+  def mode
+    @mode ||= user.modes.find(params[:mode_id])
   end
 end

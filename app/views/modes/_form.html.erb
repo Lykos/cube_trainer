@@ -12,11 +12,6 @@
   <% end %>
 
   <div class="field">
-    <%= form.label :user_id %>
-    <%= form.number_field :user_id %>
-  </div>
-
-  <div class="field">
     <%= form.label :name %>
     <%= form.text_field :name %>
   </div>
@@ -28,12 +23,12 @@
 
   <div class="field">
     <%= form.label :type %>
-    <%= form.text_field :type %>
+    <%= f.select :show_input_mode, Mode::TYPES.sort %>
   </div>
 
   <div class="field">
     <%= form.label :show_input_mode %>
-    <%= form.text_field :show_input_mode %>
+    <%= f.select :show_input_mode, Mode::SHOW_INPUT_MODES.sort %>
   </div>
 
   <div class="field">

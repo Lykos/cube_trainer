@@ -16,4 +16,9 @@ class ApplicationController < ActionController::Base
   def authorized
     redirect_to '/welcome', alert: 'Not logged in' unless logged_in?
   end
+
+  # Checks that the user is the current user.
+  def check_owner_is_current_user
+    redirect_to '/welcome', alert: "Can't modify other user." unless get_owner == current_user
+  end
 end

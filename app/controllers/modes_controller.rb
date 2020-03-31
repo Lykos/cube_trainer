@@ -1,10 +1,11 @@
 class ModesController < ApplicationController
   before_action :set_mode, only: [:show, :edit, :update, :destroy]
+  before_action :check_owner_is_current_user, only: [:show, :edit, :update, :destroy]
 
   # GET /modes
   # GET /modes.json
   def index
-    @modes = Mode.all
+    @modes = current_user.modes
   end
 
   # GET /modes/1
@@ -14,7 +15,7 @@ class ModesController < ApplicationController
 
   # GET /modes/new
   def new
-    @mode = Mode.new
+    @mode = current_user.modes.new
   end
 
   # GET /modes/1/edit
@@ -24,7 +25,7 @@ class ModesController < ApplicationController
   # POST /modes
   # POST /modes.json
   def create
-    @mode = Mode.new(mode_params)
+    @mode = current_user.modes.new(mode_params)
 
     respond_to do |format|
       if @mode.save
@@ -62,13 +63,22 @@ class ModesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_mode
-      @mode = Mode.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def mode_params
-      params.require(:mode).permit(:user_id, :name, :known, :type, :show_input_mode, :buffer, :goal_badness)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_mode
+    get_mode
+  end
+
+  def get_mode
+    @mode ||= Mode.find(params[:id])
+  end
+
+  def get_owner
+    get_mode.user
+  end
+
+  # Only allow a list of trusted parameters through.
+  def mode_params
+    params.require(:mode).permit(:name, :known, :type, :show_input_mode, :buffer, :goal_badness)
+  end
 end
