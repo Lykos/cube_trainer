@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :check_user_is_current_user, only: [:update, :destroy]
+  skip_before_action :authorized, only: [:new, :create]
 
   # GET /users
   # GET /users.json
@@ -62,13 +64,23 @@ class UsersController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user
-      @user = User.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def user_params
-      params.require(:user).permit(:name, :password, :password_confirmation)
-    end
+  # Checks that the user is the current user.
+  def check_user_is_current_user
+    redirect_to '/welcome', alert: "Can't modify other user." unless get_user == current_user
+  end
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_user
+    @user = get_user
+  end
+
+  def get_user
+    User.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def user_params
+    params.require(:user).permit(:name, :password, :password_confirmation)
+  end
 end
