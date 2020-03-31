@@ -7,6 +7,8 @@ module CubeTrainer
     # Result of giving one task to the learner and judging their performance.
     # TODO Migrate from LegacyResult in lib/ to this.
     class Result < ApplicationRecord
+      belongs_to :user
+
       POSITIVE_INTEGER = {
         only_integer: true,
         greater_than_or_equal_to: 0
@@ -15,6 +17,7 @@ module CubeTrainer
       attribute :mode, :symbol
       attribute :input_representation, :input_representation
 
+      validates :user_id, presence: true
       validates :hostname, presence: true
       validates :mode, presence: true
       validates :time_s, numericality: { greater_than: 0 }

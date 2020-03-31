@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_25_185817) do
+ActiveRecord::Schema.define(version: 2020_03_31_184449) do
 
   create_table "cube_trainer_training_download_states", force: :cascade do |t|
     t.text "model"
@@ -27,6 +27,8 @@ ActiveRecord::Schema.define(version: 2020_03_25_185817) do
     t.string "timestamps"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_cube_trainer_training_inputs_on_user_id"
   end
 
   create_table "cube_trainer_training_results", force: :cascade do |t|
@@ -41,10 +43,26 @@ ActiveRecord::Schema.define(version: 2020_03_25_185817) do
     t.datetime "updated_at", precision: 6, null: false
     t.text "hostname", null: false
     t.datetime "uploaded_at", precision: 6
+    t.integer "user_id", null: false
     t.index ["created_at"], name: "index_cube_trainer_training_results_on_created_at"
     t.index ["hostname", "created_at"], name: "index_cube_trainer_training_results_on_hostname_and_created_at", unique: true
     t.index ["mode"], name: "index_cube_trainer_training_results_on_mode"
     t.index ["uploaded_at"], name: "index_cube_trainer_training_results_on_uploaded_at"
+    t.index ["user_id"], name: "index_cube_trainer_training_results_on_user_id"
+  end
+
+  create_table "cube_trainer_training_users", force: :cascade do |t|
+    t.string "name"
+    t.string "password_digest"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "password_digest", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
 end
