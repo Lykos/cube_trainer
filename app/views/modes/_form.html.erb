@@ -1,0 +1,52 @@
+<%= form_with(model: mode, local: true) do |form| %>
+  <% if mode.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(mode.errors.count, "error") %> prohibited this mode from being saved:</h2>
+
+      <ul>
+        <% mode.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :user_id %>
+    <%= form.number_field :user_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :known %>
+    <%= form.check_box :known %>
+  </div>
+
+  <div class="field">
+    <%= form.label :type %>
+    <%= form.text_field :type %>
+  </div>
+
+  <div class="field">
+    <%= form.label :show_input_mode %>
+    <%= form.text_field :show_input_mode %>
+  </div>
+
+  <div class="field">
+    <%= form.label :buffer %>
+    <%= form.text_field :buffer %>
+  </div>
+
+  <div class="field">
+    <%= form.label :goal_badness %>
+    <%= form.text_field :goal_badness %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :modes
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
   post 'logout', to: 'sessions#logout'

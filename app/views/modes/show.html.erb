@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>User:</strong>
+  <%= @mode.user_id %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @mode.name %>
+</p>
+
+<p>
+  <strong>Known:</strong>
+  <%= @mode.known %>
+</p>
+
+<p>
+  <strong>Type:</strong>
+  <%= @mode.type %>
+</p>
+
+<p>
+  <strong>Show input mode:</strong>
+  <%= @mode.show_input_mode %>
+</p>
+
+<p>
+  <strong>Buffer:</strong>
+  <%= @mode.buffer %>
+</p>
+
+<p>
+  <strong>Goal badness:</strong>
+  <%= @mode.goal_badness %>
+</p>
+
+<%= link_to 'Edit', edit_mode_path(@mode) %> |
+<%= link_to 'Back', modes_path %>

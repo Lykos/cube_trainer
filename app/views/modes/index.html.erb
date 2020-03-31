@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Modes</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Name</th>
+      <th>Known</th>
+      <th>Type</th>
+      <th>Show input mode</th>
+      <th>Buffer</th>
+      <th>Goal badness</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @modes.each do |mode| %>
+      <tr>
+        <td><%= mode.user_id %></td>
+        <td><%= mode.name %></td>
+        <td><%= mode.known %></td>
+        <td><%= mode.type %></td>
+        <td><%= mode.show_input_mode %></td>
+        <td><%= mode.buffer %></td>
+        <td><%= mode.goal_badness %></td>
+        <td><%= link_to 'Show', mode %></td>
+        <td><%= link_to 'Edit', edit_mode_path(mode) %></td>
+        <td><%= link_to 'Destroy', mode, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Mode', new_mode_path %>
