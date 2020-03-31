@@ -10,6 +10,12 @@
   </head>
 
   <body>
+    <% if logged_in? %>
+      <%= button_to "Logout", '/logout', method: :post %>
+    <% else %>
+      <%= button_to "Login", '/login', method: :get%>
+      <%= button_to "Sign Up", '/users/new', method: :get%>
+    <% end %>
     <%= yield %>
   </body>
 </html>
