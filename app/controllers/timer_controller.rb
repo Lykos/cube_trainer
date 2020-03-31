@@ -19,11 +19,6 @@ class TimerController < ApplicationController
     @results = CubeTrainer::Training::Result.where(mode: MODE)
   end
 
-  def ajax_test
-    logger.info params
-    render json: 'Start text from backend', status: :ok
-  end
-
   def next_input
     generator = OPTIONS.commutator_info.generator_class.new(OPTIONS)
     results_model = CubeTrainer::Training::ResultsModel.new(MODE)
@@ -43,6 +38,11 @@ class TimerController < ApplicationController
   def delete
     CubeTrainer::Training::Result.find(params[:id]).destroy!
     redirect_to('/timer/index')
+  end
+
+  def drop_input
+    @input = CubeTrainer::Training::Input.find(params[:id])
+    @input.destroy!
   end
 
   def stop

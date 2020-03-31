@@ -34,8 +34,8 @@ interface InputItem {
       <button class="timer-button" (click)="stopAndPause()">
         Stop and Pause
       </button>
-      <button class="timer-button" (click)="reset()">
-        Reset
+      <button class="timer-button" (click)="dropAndPause()">
+        Drop and Pause
       </button>
     </ng-container>
     <ng-template #notRunning>
@@ -45,6 +45,7 @@ interface InputItem {
     </ng-template>
   </section>
 </div>
+<mat-card>asdf</mat-card>
 `,
   styles: [`
 container {
@@ -97,6 +98,18 @@ export class TimerComponent implements OnDestroy {
     return this.state == TimerState.Running;
   }
 
+  dropAndPause() {
+    this.stopTimer();
+    this.state = TimerState.Paused;
+    Rails.ajax({
+      type: 'POST', 
+      url: '/timer/drop_input',
+      data: `id=${this.input!.id}`,
+      success: (response: any) => {},
+      error: (response: any) => { this.onError(response); }
+    });
+  }
+
   start() {
     Rails.ajax({
       type: 'POST', 
@@ -108,7 +121,6 @@ export class TimerComponent implements OnDestroy {
   }
 
   startFor(input: InputItem) {
-    console.log(input);
     this.input = input;
     this.state = TimerState.Running;
     const start = now();
