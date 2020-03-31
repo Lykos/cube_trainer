@@ -20,7 +20,7 @@ module CubeTrainer
       def record_result(created_at, partial_result, input)
         raise ArgumentError unless partial_result.is_a?(PartialResult)
 
-        result = user.results.from_partial(@mode, created_at, partial_result, input)
+        result = @user.results.from_partial(@mode, created_at, partial_result, input)
         results.unshift(result)
         result.save!
         @result_listeners.each { |l| l.record_result(result) }
