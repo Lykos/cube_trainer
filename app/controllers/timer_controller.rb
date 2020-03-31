@@ -27,7 +27,7 @@ class TimerController < ApplicationController
     logger.info(@results.length)
     @input_item = input_sampler.random_item
     @input =
-      user.inputs.new(
+      current_user.inputs.new(
         mode: MODE, input_representation: @input_item.representation
       )
     @input.save!
