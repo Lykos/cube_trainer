@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :users
   get 'timer/index'
   post 'timer/next_input'
   post 'timer/stop'
