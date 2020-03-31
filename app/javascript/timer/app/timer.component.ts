@@ -45,7 +45,6 @@ interface InputItem {
     </ng-template>
   </section>
 </div>
-<mat-card>asdf</mat-card>
 `,
   styles: [`
 container {
