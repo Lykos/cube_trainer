@@ -1,6 +1,7 @@
 import { now } from '../../utils/instant';
 import { Duration } from '../../utils/duration';
 import { Component, OnDestroy } from '@angular/core';
+// @ts-ignore
 import Rails from '@rails/ujs';
 
 // Hack because we can't get <timer [mode]=""> to work.
