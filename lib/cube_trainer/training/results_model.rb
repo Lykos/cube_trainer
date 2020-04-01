@@ -4,10 +4,9 @@ module CubeTrainer
   module Training
     # Class that handles storing and querying results.
     class ResultsModel
-      def initialize(mode, user)
+      def initialize(mode)
         @mode = mode
-        @user = user
-        @results = user.results.where(mode: mode).to_a
+        @results = mode.inputs.map(&:result).compact
         @result_listeners = []
       end
 
@@ -17,17 +16,17 @@ module CubeTrainer
         @result_listeners.push(listener)
       end
 
-      def record_result(created_at, partial_result, input)
+      def record_result(partial_result, input)
         raise ArgumentError unless partial_result.is_a?(PartialResult)
 
-        result = @user.results.from_partial(@mode, created_at, partial_result, input)
+        result = input.from_partial(@mode, partial_result)
         results.unshift(result)
         result.save!
         @result_listeners.each { |l| l.record_result(result) }
       end
 
       def delete_after_time(timestamp)
-        results.each { |r| r.destroy if r.created_at + r.time_s > timestamp }
+        inputs.each { |r| r.destroy if r.created_at + r.time_s > timestamp }
         results.delete_if { |r| r.created_at + r.time_s > timestamp }
         @result_listeners.each { |l| l.delete_after_time(@mode, timestamp) }
       end
@@ -40,7 +39,7 @@ module CubeTrainer
       end
 
       def inputs_for_word(word)
-        results.select { |r| r.word == word }.map(&:input).uniq
+        results.select { |r| r.word == word }.map(&:input_representation).uniq
       end
     end
   end

@@ -7,16 +7,18 @@
     <th></th>
   </tr>
  
-  <% @results.each do |result| %>
-    <tr>
-      <td><%= result.created_at %></td>
-      <td><%= result.mode %></td>
-      <td><%= result.time %></td>
-      <td><%= result.input_representation %></td>
-      <td><%= button_to 'Delete',
-	      action: :delete,
-	      params: { id: result.id },
-	      data: { confirm: 'Are you sure?' } %></td>
-    </tr>
+  <% @inputs.each do |input| %>
+    <% if input.result %>
+      <tr>
+        <td><%= input.created_at %></td>
+        <td><%= input.mode.name %></td>
+        <td><%= input.result.time %></td>
+        <td><%= input.input_representation %></td>
+        <td><%= button_to 'Delete',
+  		action: :delete,
+  		params: { id: input.id },
+  		data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
   <% end %>
 </table>

@@ -3,7 +3,12 @@
 # Input that is used as for training for the user.
 # The part of the result that is already fixed after sampling.
 class Input < ApplicationRecord
-  belongs_to :user
-  attribute :mode, :symbol
+  belongs_to :mode
+  has_one :result
+  attribute :legacy_mode, :symbol
   attribute :input_representation, :input_representation
+
+  validates :input_representation, presence: true  
+
+  before_validation { self.hostname ||= self.class.current_hostname }
 end

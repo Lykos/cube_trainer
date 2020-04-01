@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_01_001952) do
+ActiveRecord::Schema.define(version: 2020_04_01_075552) do
 
   create_table "cube_trainer_training_users", force: :cascade do |t|
     t.string "name"
@@ -29,13 +29,16 @@ ActiveRecord::Schema.define(version: 2020_04_01_001952) do
   end
 
   create_table "inputs", force: :cascade do |t|
-    t.text "mode"
+    t.text "legacy_mode"
     t.text "input_representation"
     t.string "timestamps"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "user_id", null: false
-    t.index ["user_id"], name: "index_inputs_on_user_id"
+    t.integer "legacy_user_id"
+    t.string "hostname", null: false
+    t.integer "mode_id", null: false
+    t.index ["legacy_user_id"], name: "index_inputs_on_legacy_user_id"
+    t.index ["mode_id"], name: "index_inputs_on_mode_id"
   end
 
   create_table "modes", force: :cascade do |t|
@@ -53,23 +56,25 @@ ActiveRecord::Schema.define(version: 2020_04_01_001952) do
   end
 
   create_table "results", force: :cascade do |t|
-    t.text "mode", null: false
+    t.text "legacy_mode"
     t.float "time_s", null: false
-    t.text "input_representation", null: false
+    t.text "legacy_input_representation"
     t.integer "failed_attempts", default: 0, null: false
     t.text "word"
     t.boolean "success", default: true, null: false
     t.integer "num_hints", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "hostname", null: false
+    t.text "legacy_hostname"
     t.datetime "uploaded_at", precision: 6
-    t.integer "user_id", null: false
+    t.integer "legacy_user_id"
+    t.integer "input_id", null: false
     t.index "\"hostname\", \"user\", \"created_at\"", name: "index_results_on_hostname_and_user_and_created_at", unique: true
     t.index "\"mode\", \"user\"", name: "index_results_on_mode_and_user"
     t.index ["created_at"], name: "index_results_on_created_at"
+    t.index ["input_id"], name: "index_results_on_input_id", unique: true
+    t.index ["legacy_user_id"], name: "index_results_on_legacy_user_id"
     t.index ["uploaded_at"], name: "index_results_on_uploaded_at"
-    t.index ["user_id"], name: "index_results_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -81,4 +86,6 @@ ActiveRecord::Schema.define(version: 2020_04_01_001952) do
     t.index ["name"], name: "index_users_on_name", unique: true
   end
 
+  add_foreign_key "inputs", "modes"
+  add_foreign_key "results", "inputs"
 end
