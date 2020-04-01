@@ -12,12 +12,8 @@
 
 ActiveRecord::Schema.define(version: 2020_04_01_075552) do
 
-  create_table "cube_trainer_training_users", force: :cascade do |t|
-    t.string "name"
-    t.string "password_digest"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "download_states", force: :cascade do |t|
     t.text "model"
@@ -29,16 +25,16 @@ ActiveRecord::Schema.define(version: 2020_04_01_075552) do
   end
 
   create_table "inputs", force: :cascade do |t|
-    t.text "legacy_mode"
+    t.text "old_mode"
     t.text "input_representation"
     t.string "timestamps"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "legacy_user_id"
+    t.integer "old_user_id"
     t.string "hostname", null: false
-    t.integer "mode_id", null: false
-    t.index ["legacy_user_id"], name: "index_inputs_on_legacy_user_id"
+    t.bigint "mode_id", null: false
     t.index ["mode_id"], name: "index_inputs_on_mode_id"
+    t.index ["old_user_id"], name: "index_inputs_on_old_user_id"
   end
 
   create_table "modes", force: :cascade do |t|
@@ -56,24 +52,24 @@ ActiveRecord::Schema.define(version: 2020_04_01_075552) do
   end
 
   create_table "results", force: :cascade do |t|
-    t.text "legacy_mode"
+    t.text "old_mode"
     t.float "time_s", null: false
-    t.text "legacy_input_representation"
+    t.text "old_input_representation"
     t.integer "failed_attempts", default: 0, null: false
     t.text "word"
     t.boolean "success", default: true, null: false
     t.integer "num_hints", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "legacy_hostname"
+    t.text "old_hostname"
     t.datetime "uploaded_at", precision: 6
-    t.integer "legacy_user_id"
-    t.integer "input_id", null: false
-    t.index "\"hostname\", \"user\", \"created_at\"", name: "index_results_on_hostname_and_user_and_created_at", unique: true
-    t.index "\"mode\", \"user\"", name: "index_results_on_mode_and_user"
+    t.integer "old_user_id"
+    t.bigint "input_id", null: false
     t.index ["created_at"], name: "index_results_on_created_at"
     t.index ["input_id"], name: "index_results_on_input_id", unique: true
-    t.index ["legacy_user_id"], name: "index_results_on_legacy_user_id"
+    t.index ["old_hostname", "old_user_id", "created_at"], name: "index_results_on_old_hostname_and_old_user_id_and_created_at", unique: true
+    t.index ["old_mode", "old_user_id"], name: "index_results_on_old_mode_and_old_user_id"
+    t.index ["old_user_id"], name: "index_results_on_old_user_id"
     t.index ["uploaded_at"], name: "index_results_on_uploaded_at"
   end
 
