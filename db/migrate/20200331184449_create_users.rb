@@ -9,8 +9,7 @@ class CreateUsers < ActiveRecord::Migration[6.0]
 
     # Lol, don't worry, this is not the prod password, but I needed to bootstrap users
     # somehow.
-    user = User.new(name: 'bernhard', password: 'abc123', password_confirmation: 'abc123')
-    user.save!
+    user = User.create!(name: 'bernhard', password: 'abc123', password_confirmation: 'abc123')
 
     add_column :cube_trainer_training_results, :user_id, :integer, default: user.id, null: false
     change_column :cube_trainer_training_results, :user_id, :integer, default: nil

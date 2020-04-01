@@ -1,6 +1,8 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_action :check_owner_is_current_user, only: [:update, :destroy]
+  before_action :set_admin, only: [:new, :edit]
+  before_action :check_admin, only: [:index]
+  before_action :check_owner_is_current_user, only: [:show, :edit, :update, :destroy]
   skip_before_action :authorized, only: [:new, :create]
 
   # GET /users
@@ -70,6 +72,10 @@ class UsersController < ApplicationController
     get_user
   end
 
+  def set_admin
+    @admin = admin_logged_in?
+  end
+
   def get_user
     @user ||= User.find(params[:id])
   end
@@ -78,6 +84,10 @@ class UsersController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def user_params
-    params.require(:user).permit(:name, :password, :password_confirmation)
+    if admin_logged_in?
+      params.require(:user).permit(:name, :password, :password_confirmation, :admin)
+    else
+      params.require(:user).permit(:name, :password, :password_confirmation)
+    end
   end
 end

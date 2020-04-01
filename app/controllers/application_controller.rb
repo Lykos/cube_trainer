@@ -13,12 +13,24 @@ class ApplicationController < ActionController::Base
     !current_user.nil?
   end
 
+  def admin_logged_in?       
+    current_user&.admin?
+  end
+
   def authorized
-    redirect_to '/welcome', alert: 'Not logged in' unless logged_in?
+    redirect_to '/welcome', notice: 'Not logged in' unless logged_in?
+  end
+
+  def authorized_as_admin
+    redirect_to '/welcome', notice: 'Not admin' unless current_user&.admin?
+  end
+
+  def check_admin
+    redirect_to '/welcome', notice: 'Not admin' unless admin_logged_in?
   end
 
   # Checks that the user is the current user.
   def check_owner_is_current_user
-    redirect_to '/welcome', alert: "Can't modify other user." unless get_owner == current_user
+    redirect_to '/welcome', notice: "Can't modify other user." unless get_owner == current_user || admin_logged_in?
   end
 end

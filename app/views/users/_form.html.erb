@@ -26,6 +26,13 @@
     <%= form.password_field :password_confirmation %>
   </div>
 
+  <% if @admin %>
+    <div class="field">
+      <%= form.label :admin %>
+      <%= form.check_box :admin %>
+    </div>
+  <% end %>
+
   <div class="actions">
     <%= form.submit %>
   </div>
