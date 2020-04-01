@@ -2,11 +2,11 @@
 
 require Rails.root.join('db/migrate/<%= @file_name %>.rb')
 
-describe AddFavoriteColorToUsers do
+describe <%= @class_name %> do
   let(:migrations_paths) { ActiveRecord::Migrator.migrations_paths }
   let(:migrations) { ActiveRecord::MigrationContext.new(migrations_paths).migrations }
-  let(:previous_version) { 20181204143322 }
-  let(:current_version) { 20190106184413 }
+  let(:previous_version) { <% @previous_version %> }
+  let(:current_version) { <% @current_version %> }
   subject { ActiveRecord::Migrator.new(action, migrations, version_after_action).migrate }
 
   around do |example|

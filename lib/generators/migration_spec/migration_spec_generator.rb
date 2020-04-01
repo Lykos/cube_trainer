@@ -10,16 +10,18 @@ class MigrationSpecGenerator < Rails::Generators::NamedBase
     @file_name = file_name
     @previous_version = options[:previous_version]
     @current_version = current_version
-    template('spec.rb.erb', "spec/migrations/#{spec_file_name}")
+    @class_name = spec_file_name_base.camelize
+    raise if @current_version < @previous_version
+    template('spec.rb.erb', "spec/migrations/#{spec_file_name_base}_spec.rb")
   end
 
   private
 
   def current_version
-    file_name[/^\d+/]
+    file_name[/^\d+/].to_i
   end
 
-  def spec_file_name
-    "#{file_name.gsub(/^\d+_/, '')}_spec.rb"
+  def spec_file_name_base
+    "#{file_name.gsub(/^\d+_/, '')}"
   end
 end
