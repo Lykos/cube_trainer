@@ -1,25 +1,14 @@
 import { now } from '../../utils/instant';
 import { Duration } from '../../utils/duration';
+import { InputItem, TimerInputComponent } from './timer_input';
 import { Component, OnDestroy } from '@angular/core';
 // @ts-ignore
 import Rails from '@rails/ujs';
 
-// Hack because we can't get <timer [mode]=""> to work.
-declare global {
-  interface Window {
-    modeId: number;
-  }
-}
-
-enum TimerState {
+enum StopWatchState {
   NotStarted,
   Running,
   Paused
-};
-
-interface InputItem {
-  readonly id: number;
-  readonly inputRepresentation: String;
 };
 
 @Component({
@@ -27,90 +16,55 @@ interface InputItem {
   template: `
 <div class="container">
   <section class="error" *ngIf="error"> {{error}} </section>
-  <section *ngIf="input" class="timer-input-label">
-    {{input.inputRepresentation}}
-  </section>
-  <section class="timer-counter-label">
-    <div *ngIf="duration; else elseBlock"> {{duration}} </div>
-    <ng-template #elseBlock> Press Start </ng-template>
-  </section>
-  <section class="timer-button-container">
-    <ng-container *ngIf="running(); else notRunning">
-      <button class="timer-button" (click)="stopAndStart()">
-        Stop and Start
-      </button>
-      <button class="timer-button" (click)="stopAndPause()">
-        Stop and Pause
-      </button>
-      <button class="timer-button" (click)="dropAndPause()">
-        Drop and Pause
-      </button>
-    </ng-container>
-    <ng-template #notRunning>
-      <button class="timer-button" (click)="start()">
-        Start
-      </button>
-    </ng-template>
-  </section>
+  <timer-input [input]=input></timer-input>
+  <mat-card>
+    <mat-card-title>Time</mat-card-title>
+    <mat-card-content>
+      <div *ngIf="duration; else elseBlock"> {{duration}} </div>
+      <ng-template #elseBlock> Press Start </ng-template>
+    </mat-card-content>
+    <mat-card-actions>
+      <ng-container *ngIf="running(); else notRunning">
+        <button mat-button (click)="stopAndStart()">
+          Stop and Start
+        </button>
+        <button mat-button (click)="stopAndPause()">
+          Stop and Pause
+        </button>
+        <button mat-button (click)="dropAndPause()">
+          Drop and Pause
+        </button>
+      </ng-container>
+      <ng-template #notRunning>
+        <button mat-button (click)="start()">
+          Start
+        </button>
+      </ng-template>
+    </mat-card-actions>
+  </mat-card>
 </div>
-`,
-  styles: [`
-container {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: monospace;
-}
-
-.timer-input-label{
-  display: flex;
-  align-items: center;
-  font-size: 10em;
-  margin-bottom: 0.5em;
-  min-height: 350px;
-}
-
-.timer-counter-label{
-  display: flex;
-  align-items: center;
-  font-size: 10em;
-  margin-bottom: 0.5em;
-  min-height: 350px;
-}
-
-.timer-button-container{
-  display: flex;
-}
-
-.timer-button{
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background: #fff;
-      font-size: 2em;
-      padding: 10px;
-      margin: 5px 10px;
-      min-width: 150px;
-}
-`]
+`
 })
 export class TimerComponent implements OnDestroy {
   error: String | undefined = undefined;
   duration: Duration | undefined = undefined;
   intervalRef: any = undefined;
-  state: TimerState = TimerState.NotStarted;
+  state: StopWatchState = StopWatchState.NotStarted;
   input: InputItem | undefined = undefined;
 
+  @Input()
+  modeId: number = undefined;
+
   running() {
-    return this.state == TimerState.Running;
+    return this.state == StopWatchState.Running;
   }
 
   dropAndPause() {
     this.stopTimer();
-    this.state = TimerState.Paused;
+    this.state = StopWatchState.Paused;
     Rails.ajax({
       type: 'POST', 
-      url: `/timer/${window.modeId}/drop_input`,
+      url: `/timer/${this.modeId}/drop_input`,
       data: `id=${this.input!.id}`,
       success: (response: any) => {},
       error: (response: any) => { this.onError(response); }
@@ -120,7 +74,7 @@ export class TimerComponent implements OnDestroy {
   start() {
     Rails.ajax({
       type: 'POST', 
-      url: `/timer/${window.modeId}/next_input`,
+      url: `/timer/${this.modeId}/next_input`,
       data: '',
       success: (response: any) => { this.startFor(response); },
       error: (response: any) => { this.onError(response); }
@@ -129,7 +83,7 @@ export class TimerComponent implements OnDestroy {
 
   startFor(input: InputItem) {
     this.input = input;
-    this.state = TimerState.Running;
+    this.state = StopWatchState.Running;
     const start = now();
     this.intervalRef = setInterval(() => {
       this.duration = start.durationUntil(now());
@@ -138,10 +92,10 @@ export class TimerComponent implements OnDestroy {
 
   stopAnd(onSuccess: () => void) {
     this.stopTimer();
-    this.state = TimerState.Paused;
+    this.state = StopWatchState.Paused;
     Rails.ajax({
       type: 'POST', 
-      url: `/timer/${window.modeId}/stop`,
+      url: `/timer/${this.modeId}/stop`,
       // TODO find a better way to encode this data.
       data: `id=${this.input!.id}&time_s=${this.duration!.toSeconds()}`,
       success: (response: any) => { onSuccess(); },
