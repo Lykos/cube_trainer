@@ -64,10 +64,6 @@ class AddInputIdToResults < ActiveRecord::Migration[6.0]
     change_column_null :results, :old_hostname, true
     change_column_null :results, :old_user_id, true
     change_column_null :results, :old_input_representation, true
-    change_column_null :results, :legacy_mode, true
-    change_column_null :results, :legacy_hostname, true
-    change_column_null :results, :legacy_user_id, true
-    change_column_null :results, :legacy_input_representation, true
     reversible do |dir|
       dir.up {}
       dir.down do
