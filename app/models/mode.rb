@@ -14,6 +14,7 @@ class Mode < ApplicationRecord
   MODE_TYPES = COMMUTATOR_INFOS_BY_MODE_TYPE.keys
 
   has_many :inputs, dependent: :destroy
+  belongs_to :user
 
   attribute :mode_type, :symbol
   attribute :show_input_mode, :symbol

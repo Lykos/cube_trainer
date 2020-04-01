@@ -13,5 +13,5 @@ class Input < ApplicationRecord
   validates :input_representation, presence: true
   validates :mode_id, presence: true
 
-  before_validation { hostname ||= OsHelper.hostname }
+  before_validation { self.hostname ||= OsHelper.hostname }
 end
