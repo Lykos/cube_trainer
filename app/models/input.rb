@@ -4,7 +4,7 @@
 # The part of the result that is already fixed after sampling.
 class Input < ApplicationRecord
   belongs_to :mode
-  has_one :result
+  has_one :result, dependent: :destroy
   attribute :legacy_mode, :symbol
   attribute :input_representation, :input_representation
 

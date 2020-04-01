@@ -11,7 +11,7 @@ class Mode < ApplicationRecord
   validates :mode_type, inclusion: MODE_TYPES
   attribute :show_input_mode, :symbol
   validates :show_input_mode, inclusion: SHOW_INPUT_MODES
-  has_many :inputs
+  has_many :inputs, dependent: :destroy
 
   # TODO: Make it configurable
   def letter_scheme

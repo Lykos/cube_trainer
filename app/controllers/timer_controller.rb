@@ -22,7 +22,6 @@ class TimerController < ApplicationController
 
   def delete
     @input = mode.inputs.find(params[:id])
-    @input.result&.destroy!
     @input.destroy!
   end
 
