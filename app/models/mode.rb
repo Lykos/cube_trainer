@@ -13,11 +13,16 @@ class Mode < ApplicationRecord
     COMMUTATOR_TYPES.values.map { |v| [v.result_symbol, v] }.to_h
   MODE_TYPES = COMMUTATOR_INFOS_BY_MODE_TYPE.keys
 
-  attribute :mode_type, :symbol
-  validates :mode_type, inclusion: MODE_TYPES
-  attribute :show_input_mode, :symbol
-  validates :show_input_mode, inclusion: SHOW_INPUT_MODES
   has_many :inputs, dependent: :destroy
+
+  attribute :mode_type, :symbol
+  attribute :show_input_mode, :symbol
+
+  validates :user_id, presence: true
+  validates :name, presence: true
+  validates :mode_type, presence: true, inclusion: MODE_TYPES
+  validates :show_input_mode, presence: true, inclusion: SHOW_INPUT_MODES
+  # TODO: Validate buffer and mode dependent fields
 
   # TODO: Make it configurable
   def letter_scheme

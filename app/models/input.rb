@@ -5,10 +5,13 @@
 class Input < ApplicationRecord
   belongs_to :mode
   has_one :result, dependent: :destroy
+
   attribute :old_mode, :symbol
   attribute :input_representation, :input_representation
 
-  validates :input_representation, presence: true  
+  validates :hostname, presence: true
+  validates :input_representation, presence: true
+  validates :mode_id, presence: true
 
   before_validation { hostname ||= OsHelper.hostname }
 end
