@@ -3,6 +3,12 @@ require 'cube_trainer/training/commutator_types'
 class AddModeIdToInputs < ActiveRecord::Migration[6.0]
   include CubeTrainer::Training::CommutatorTypes
 
+  class Input < ApplicationRecord
+  end
+
+  class Mode < ApplicationRecord
+  end
+
   def extract_mode_params(legacy_mode)
     if COMMUTATOR_TYPES.include?(legacy_mode)
       return [nil, nil, legacy_mode]
@@ -23,6 +29,8 @@ class AddModeIdToInputs < ActiveRecord::Migration[6.0]
 
   def add_mode_to_inputs
     modes = {}
+    Input.reset_column_information
+    Mode.reset_column_information
     Input.all.each do |r|
       mode_name = r.legacy_mode.to_s.gsub('_', ' ')
       buffer, show_input_mode, mode_type = extract_mode_params(r.legacy_mode)
@@ -54,7 +62,7 @@ class AddModeIdToInputs < ActiveRecord::Migration[6.0]
         add_mode_to_inputs
       end
       dir.down do
-        # Nothing the added columns die anyway.
+        # Nothing. The added data gets removed by the schema changes.
       end
     end
     change_column_null :inputs, :mode_id, false

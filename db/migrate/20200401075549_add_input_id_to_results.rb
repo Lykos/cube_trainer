@@ -3,17 +3,30 @@ require 'cube_trainer/training/commutator_types'
 class AddInputIdToResults < ActiveRecord::Migration[6.0]
   include CubeTrainer::Training::CommutatorTypes
 
+  class Result < ApplicationRecord
+  end
+
+  class Input < ApplicationRecord
+  end
+
   def add_input_to_results
     inputs = {}
+    Result.reset_column_information
+    Input.reset_column_information
     Result.all.each do |r|
       user_id = r.legacy_user_id
       mode = r.legacy_mode
       input_representation = r.legacy_input_representation
       input = inputs[[user_id, mode, input_representation]] ||=
         begin
-          input = Input.find_or_initialize_by(user_id: user_id, mode: mode, input_representation: input_representation)
+          input =
+            Input.find_or_initialize_by(
+              user_id: user_id,
+              mode: mode,
+              input_representation: input_representation
+            )
           input.hostname ||= r.legacy_hostname
-          input.save(validate: false)
+          input.save!
           input
         end
       r.input = input
@@ -22,6 +35,7 @@ class AddInputIdToResults < ActiveRecord::Migration[6.0]
   end
 
   def remove_inputs_without_hostname
+    Input.reset_column_information
     Input.where(hostname: nil).destroy_all
   end
 
@@ -38,7 +52,7 @@ class AddInputIdToResults < ActiveRecord::Migration[6.0]
         remove_inputs_without_hostname
       end
       dir.down do
-        # Nothing the added columns die anyway.
+        # Nothing. The added data gets removed by the schema changes.
       end
     end
     change_column_null :inputs, :hostname, false
