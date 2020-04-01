@@ -1,0 +1,8 @@
+Description:
+    Stubs out a test of a migration. Pass the base name of the migration file.
+
+Example:
+    `rails generate migration_spec 20200401000000_create_users`
+
+    This will create:
+        spec/create_users_spec.rb
