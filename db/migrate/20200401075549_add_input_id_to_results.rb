@@ -36,7 +36,14 @@ class AddInputIdToResults < ActiveRecord::Migration[6.0]
 
   def remove_inputs_without_hostname
     Input.reset_column_information
-    Input.where(hostname: nil).destroy_all
+    Input.where(hostname: nil).destroy_all!
+  end
+
+  def delete_non_legacy_data
+    Result.where(legacy_user_id: nil).destroy_all!
+    Result.where(legacy_mode: nil).destroy_all!
+    Result.where(legacy_hostname: nil).destroy_all!
+    Result.where(legacy_input_representation: nil).destroy_all!
   end
 
   def change
@@ -61,5 +68,11 @@ class AddInputIdToResults < ActiveRecord::Migration[6.0]
     change_column_null :results, :legacy_hostname, true
     change_column_null :results, :legacy_user_id, true
     change_column_null :results, :legacy_input_representation, true
+    reversible do |dir|
+      dir.up {}
+      dir.down do
+        delete_non_legacy_data
+      end
+    end
   end
 end
