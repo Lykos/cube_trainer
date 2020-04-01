@@ -3531,6 +3531,11 @@ http-errors@~1.7.2:
     statuses ">= 1.5.0 < 2"
     toidentifier "1.0.0"
 
+http-methods-enum@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/http-methods-enum/-/http-methods-enum-0.1.1.tgz#728e940366748f51013bc3bef3272091bdf66bb5"
+  integrity sha512-M754eK9zqkHrdm7mZEjSjslLRjT98ZxIqzm+2G+KocEEo4dRNlbzYkJv03OQw30dnTvugpLBQs6S8ICgaWl7uA==
+
 "http-parser-js@>=0.4.0 <0.4.11":
   version "0.4.10"
   resolved "https://registry.yarnpkg.com/http-parser-js/-/http-parser-js-0.4.10.tgz#92c9c1374c35085f75db359ec56cc257cbb93fa4"

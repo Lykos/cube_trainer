@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 
 export interface InputItem {
   readonly id: number;
-  readonly inputRepresentation: String;
+  readonly inputRepresentation: string;
 };
 
 @Component({

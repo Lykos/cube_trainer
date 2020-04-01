@@ -1,6 +1,7 @@
 import { now } from '../../../utils/instant';
 import { Duration } from '../../../utils/duration';
 import { InputItem } from './trainer_input.component';
+import { TrainerService } from './trainer.service';
 import { Component, OnDestroy, Input } from '@angular/core';
 // @ts-ignore
 import Rails from '@rails/ujs';
@@ -46,7 +47,7 @@ enum StopWatchState {
 `
 })
 export class TrainerComponent implements OnDestroy {
-  error: String | undefined = undefined;
+  error: string | undefined = undefined;
   duration: Duration | undefined = undefined;
   intervalRef: any = undefined;
   state: StopWatchState = StopWatchState.NotStarted;
@@ -54,6 +55,8 @@ export class TrainerComponent implements OnDestroy {
 
   @Input()
   public modeId: number | undefined = undefined;
+
+  constructor(private readonly trainerService: TrainerService) {}
 
   running() {
     return this.state == StopWatchState.Running;
@@ -115,7 +118,7 @@ export class TrainerComponent implements OnDestroy {
     clearInterval(this.intervalRef);
   }
 
-  onError(error: String) {
+  onError(error: string) {
     this.stopTimer();
     this.error = error;
   }
