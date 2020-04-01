@@ -14,7 +14,10 @@ syncer = CubeTrainer::Training::DatabaseSyncer.new(CubeTrainer::Training::Result
 syncer.download!
 at_exit { syncer.upload! }
 ActiveRecord::Base.connected_to(database: :primary) do
-  user = User.where(name: Etc.getlogin).first_or_create(password: 'abc123', password_confirmation: 'abc123')
+  user = User.where(name: OsHelper.os_user).first_or_create!(
+    password: OsHelper.default_password,
+    password_confirmation: OsHelper.default_password
+  )
   results_model = CubeTrainer::Training::ResultsModel.new(
     CubeTrainer::BufferHelper.mode_for_options(options), user
   )

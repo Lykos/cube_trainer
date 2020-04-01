@@ -7,12 +7,8 @@ class AddAdmin < ActiveRecord::Migration[6.0]
     reversible do |dir|
       dir.up do
         User.reset_column_information
-        user = User.find_by(name: 'bernhard')
+        user = User.find_by(name: OsHelper.os_user)
         user.admin = true
-        # Lol, don't worry, this is not the prod password, but I needed to bootstrap users
-        # somehow.
-        user.password = 'abc123'
-        user.password_confirmation = 'abc123'
         user.save!
       end
       dir.down do

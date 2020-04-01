@@ -10,5 +10,5 @@ class Input < ApplicationRecord
 
   validates :input_representation, presence: true  
 
-  before_validation { self.hostname ||= self.class.current_hostname }
+  before_validation { hostname ||= OsHelper.hostname }
 end
