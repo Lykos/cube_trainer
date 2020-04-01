@@ -1,8 +1,8 @@
 import './polyfills.ts';
 
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { CubeTrainerModule } from './app/cube_trainer.module';
+import { AppModule } from './app/app.module';
 
 document.addEventListener('DOMContentLoaded', () => {
-  platformBrowserDynamic().bootstrapModule(CubeTrainerModule);
+  platformBrowserDynamic().bootstrapModule(AppModule);
 });

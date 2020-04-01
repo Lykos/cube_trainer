@@ -1,12 +1,12 @@
 import { Component, Input } from '@angular/core';
 
-interface InputItem {
+export interface InputItem {
   readonly id: number;
   readonly inputRepresentation: String;
 };
 
 @Component({
-  selector: 'timer-input',
+  selector: 'trainer-input',
   template: `
 <mat-card *ngIf="input">
   <mat-card-title>Input</mat-card-title>
@@ -14,7 +14,7 @@ interface InputItem {
 </mat-card>
 `
 })
-export class TimerInputComponent implements OnChanges {
+export class TrainerInputComponent {
   @Input()
-  input: InputItem = undefined;
+  input: InputItem | undefined = undefined;
 }

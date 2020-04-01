@@ -1,6 +1,6 @@
-import { now } from '../../utils/instant';
-import { Duration } from '../../utils/duration';
-import { InputItem, TimerInputComponent } from './timer_input';
+import { now } from '../../../utils/instant';
+import { Duration } from '../../../utils/duration';
+import { InputItem } from './trainer_input.component';
 import { Component, OnDestroy, Input } from '@angular/core';
 // @ts-ignore
 import Rails from '@rails/ujs';
@@ -12,11 +12,11 @@ enum StopWatchState {
 };
 
 @Component({
-  selector: 'timer',
+  selector: 'trainer',
   template: `
 <div class="container">
   <section class="error" *ngIf="error"> {{error}} </section>
-  <timer-input [input]=input></timer-input>
+  <trainer-input [input]=input></trainer-input>
   <mat-card>
     <mat-card-title>Time</mat-card-title>
     <mat-card-content>
@@ -45,7 +45,7 @@ enum StopWatchState {
 </div>
 `
 })
-export class TimerComponent implements OnDestroy {
+export class TrainerComponent implements OnDestroy {
   error: String | undefined = undefined;
   duration: Duration | undefined = undefined;
   intervalRef: any = undefined;
@@ -53,7 +53,7 @@ export class TimerComponent implements OnDestroy {
   input: InputItem | undefined = undefined;
 
   @Input()
-  modeId: number = undefined;
+  public modeId: number | undefined = undefined;
 
   running() {
     return this.state == StopWatchState.Running;

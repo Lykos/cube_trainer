@@ -1,17 +1,15 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { CubeTrainerComponent } from './cube_trainer.component';
-import { TimerComponent } from './timer.component';
-import { TimerInputComponent } from './timer_input.component';
+import { TrainerComponent } from './trainer.component';
+import { TrainerInputComponent } from './trainer_input.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
-    CubeTrainerComponent,
-    TimerComponent,
-    TimerInputComponent,
+    TrainerComponent,
+    TrainerInputComponent,
   ],
   imports: [
     BrowserModule,
@@ -19,9 +17,9 @@ import { MatCardModule } from '@angular/material/card';
     MatCardModule,
     BrowserAnimationsModule,
   ],
+  exports: [
+    TrainerComponent,
+  ],
   providers: [],
-  bootstrap: [
-    CubeTrainerComponent,
-  ]
 })
-export class CubeTrainerModule { }
+export class TrainerModule { }
