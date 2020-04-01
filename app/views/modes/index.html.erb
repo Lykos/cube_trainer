@@ -8,10 +8,11 @@
       <th>User</th>
       <th>Name</th>
       <th>Known</th>
-      <th>Type</th>
+      <th>Mode type</th>
       <th>Show input mode</th>
       <th>Buffer</th>
       <th>Goal badness</th>
+      <th>Cube size</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -22,10 +23,12 @@
         <td><%= mode.user_id %></td>
         <td><%= mode.name %></td>
         <td><%= mode.known %></td>
-        <td><%= mode.type %></td>
+        <td><%= mode.mode_type %></td>
         <td><%= mode.show_input_mode %></td>
         <td><%= mode.buffer %></td>
         <td><%= mode.goal_badness %></td>
+        <td><%= mode.cube_size %></td>
+        <td><%= link_to 'Use', timer_path(mode) %></td>
         <td><%= link_to 'Show', mode %></td>
         <td><%= link_to 'Edit', edit_mode_path(mode) %></td>
         <td><%= link_to 'Destroy', mode, method: :delete, data: { confirm: 'Are you sure?' } %></td>

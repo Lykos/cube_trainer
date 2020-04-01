@@ -5,4 +5,5 @@ class User < ApplicationRecord
   validates :password_confirmation, presence: true
   has_many :results, dependent: :destroy
   has_many :inputs, dependent: :destroy
+  has_many :modes, dependent: :destroy
 end

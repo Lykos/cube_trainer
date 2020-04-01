@@ -1,4 +1,8 @@
 <h1>Timer</h1>
 <timer>Loading timer...</timer>
+<!-- Haaaaaaaack because <timer [mode]=""> doesn't work -->
+<script type='text/javascript'>
+  window.modeId = <%= @mode.id %>;
+</script>
 <%= javascript_pack_tag 'timer', 'data-turbolinks-track': 'reload' %>
 <%= render 'results_table' %>

@@ -26,6 +26,7 @@ class ModesController < ApplicationController
   # POST /modes.json
   def create
     @mode = current_user.modes.new(mode_params)
+    logger.info @mode.inspect
 
     respond_to do |format|
       if @mode.save
@@ -79,6 +80,6 @@ class ModesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def mode_params
-    params.require(:mode).permit(:name, :known, :type, :show_input_mode, :buffer, :goal_badness)
+    params.require(:mode).permit(:name, :known, :mode_type, :show_input_mode, :buffer, :goal_badness, :cube_size)
   end
 end

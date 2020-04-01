@@ -1118,6 +1118,17 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+angular-new-router@angular/router:
+  version "0.5.3"
+  resolved "https://codeload.github.com/angular/router/tar.gz/f642b4caad6501609182487ce5e7107d9876d912"
+  dependencies:
+    angular2 "^2.0.0-beta.8"
+
+angular2@^2.0.0-beta.8:
+  version "2.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/angular2/-/angular2-2.0.0-beta.21.tgz#78643e590641526a2596dcd1d5cca3a5509ed76d"
+  integrity sha1-eGQ+WQZBUmolltzR1cyjpVCe120=
+
 ansi-colors@^3.0.0:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-3.2.4.tgz#e3a3da4bfbae6c86a9c285625de124a234026fbf"

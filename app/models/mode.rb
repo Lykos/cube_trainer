@@ -1,28 +1,52 @@
 require 'cube_trainer/training/commutator_types'
+require 'cube_trainer/letter_scheme'
+require 'cube_trainer/color_scheme'
 require 'cube_trainer/buffer_helper'
 
 class Mode < ApplicationRecord
   SHOW_INPUT_MODES = %i(picture name)
-  TYPES = CommutatorTypes::COMMUTATOR_TYPES.keys
+  MODE_TYPES = CubeTrainer::Training::CommutatorTypes::COMMUTATOR_TYPES.keys
 
-  attribute :type, :symbol
-  validates :type, inclusion: TYPES
+  attribute :mode_type, :symbol
+  validates :mode_type, inclusion: MODE_TYPES
   attribute :show_input_mode, :symbol
   validates :show_input_mode, inclusion: SHOW_INPUT_MODES
   belongs_to :user
 
   # TODO: Make it configurable
   def letter_scheme
-    @letter_scheme ||= BernhardLetterScheme.new
+    @letter_scheme ||= CubeTrainer::BernhardLetterScheme.new
   end
 
   # TODO: Make it configurable
   def color_scheme
-    ColorScheme::BERNHARD
+    CubeTrainer::ColorScheme::BERNHARD
   end
 
   def commutator_info
-    CommutatorTypes::COMMUTATOR_TYPES[type]
+    CubeTrainer::Training::CommutatorTypes::COMMUTATOR_TYPES[mode_type]
+  end
+
+  def generator
+    commutator_info.generator_class.new(self)
+  end
+
+  def verbose
+    false
+  end
+
+  def restrict_colors
+    color_scheme.colors
+  end
+
+  def test_comms_mode
+    :ignore
+  end
+
+  def restrict_letters; end
+
+  def exclude_letters
+    []
   end
 
   def picture
@@ -31,6 +55,6 @@ class Mode < ApplicationRecord
 
   # TODO: Get rid of this
   def legacy_mode
-    BufferHelper.mode_for_options(self)
+    CubeTrainer::BufferHelper.mode_for_options(self)
   end
 end

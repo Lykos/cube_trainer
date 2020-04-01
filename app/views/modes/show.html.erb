@@ -11,8 +11,8 @@
 </p>
 
 <p>
-  <strong>Type:</strong>
-  <%= @mode.type %>
+  <strong>Mode type:</strong>
+  <%= @mode.mode_type %>
 </p>
 
 <p>
@@ -30,5 +30,11 @@
   <%= @mode.goal_badness %>
 </p>
 
+<p>
+  <strong>Cube size:</strong>
+  <%= @mode.cube_size %>
+</p>
+
+<%= link_to 'Use', timer_path(@mode) %>
 <%= link_to 'Edit', edit_mode_path(@mode) %> |
 <%= link_to 'Back', modes_path %>

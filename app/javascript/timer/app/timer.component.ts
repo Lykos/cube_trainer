@@ -3,6 +3,13 @@ import { Duration } from '../../utils/duration';
 import { Component, OnDestroy } from '@angular/core';
 import Rails from '@rails/ujs';
 
+// Hack because we can't get <timer [mode]=""> to work.
+declare global {
+  interface Window {
+    modeId: number;
+  }
+}
+
 enum TimerState {
   NotStarted,
   Running,
@@ -102,7 +109,7 @@ export class TimerComponent implements OnDestroy {
     this.state = TimerState.Paused;
     Rails.ajax({
       type: 'POST', 
-      url: '/timer/drop_input',
+      url: `/timer/${window.modeId}/drop_input`,
       data: `id=${this.input!.id}`,
       success: (response: any) => {},
       error: (response: any) => { this.onError(response); }
@@ -112,7 +119,7 @@ export class TimerComponent implements OnDestroy {
   start() {
     Rails.ajax({
       type: 'POST', 
-      url: '/timer/next_input',
+      url: `/timer/${window.modeId}/next_input`,
       data: '',
       success: (response: any) => { this.startFor(response); },
       error: (response: any) => { this.onError(response); }
@@ -133,7 +140,7 @@ export class TimerComponent implements OnDestroy {
     this.state = TimerState.Paused;
     Rails.ajax({
       type: 'POST', 
-      url: '/timer/stop',
+      url: `/timer/${window.modeId}/stop`,
       // TODO find a better way to encode this data.
       data: `id=${this.input!.id}&time_s=${this.duration!.toSeconds()}`,
       success: (response: any) => { onSuccess(); },

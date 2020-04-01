@@ -11,16 +11,14 @@ class TimerController < ApplicationController
   end
 
   def next_input
-    CommutatorTypes::COMMUTATOR_TYPES[mode.type] || raise
-    generator = commutator_info.generator_class.new(mode)
     results_model = CubeTrainer::Training::ResultsModel.new(mode.legacy_mode, current_user)
-    input_sampler = generator.input_sampler(results_model)
+    input_sampler = mode.generator.input_sampler(results_model)
     @results = current_user.results.where(mode: mode.legacy_mode)
     logger.info(@results.length)
     @input_item = input_sampler.random_item
     @input =
       current_user.inputs.new(
-        mode: MODE, input_representation: @input_item.representation
+        mode: mode.legacy_mode, input_representation: @input_item.representation
       )
     @input.save!
     response = {id: @input.id, inputRepresentation: @input_item.representation.to_s}
@@ -47,6 +45,6 @@ class TimerController < ApplicationController
   private
 
   def mode
-    @mode ||= user.modes.find(params[:mode_id])
+    @mode ||= current_user.modes.find(params[:mode_id])
   end
 end

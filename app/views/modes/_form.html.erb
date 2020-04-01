@@ -22,13 +22,13 @@
   </div>
 
   <div class="field">
-    <%= form.label :type %>
-    <%= f.select :show_input_mode, Mode::TYPES.sort %>
+    <%= form.label :mode_type %>
+    <%= form.select :mode_type, Mode::MODE_TYPES.sort %>
   </div>
 
   <div class="field">
     <%= form.label :show_input_mode %>
-    <%= f.select :show_input_mode, Mode::SHOW_INPUT_MODES.sort %>
+    <%= form.select :show_input_mode, Mode::SHOW_INPUT_MODES.sort %>
   </div>
 
   <div class="field">
@@ -39,6 +39,11 @@
   <div class="field">
     <%= form.label :goal_badness %>
     <%= form.text_field :goal_badness %>
+  </div>
+
+  <div class="field">
+    <%= form.label :cube_size %>
+    <%= form.text_field :cube_size %>
   </div>
 
   <div class="actions">

@@ -4,7 +4,7 @@ class CreateModes < ActiveRecord::Migration[6.0]
       t.integer :user_id
       t.string :name
       t.boolean :known
-      t.string :type
+      t.string :mode_type
       t.string :show_input_mode
       t.string :buffer
       t.float :goal_badness

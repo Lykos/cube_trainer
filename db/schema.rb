@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_31_212037) do
+ActiveRecord::Schema.define(version: 2020_03_31_235937) do
 
   create_table "cube_trainer_training_users", force: :cascade do |t|
     t.string "name"
@@ -42,12 +42,14 @@ ActiveRecord::Schema.define(version: 2020_03_31_212037) do
     t.integer "user_id"
     t.string "name"
     t.boolean "known"
-    t.string "type"
+    t.string "mode_type"
     t.string "show_input_mode"
     t.string "buffer"
     t.float "goal_badness"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "cube_size"
+    t.index ["user_id", "name"], name: "index_modes_on_user_id_and_name", unique: true
   end
 
   create_table "results", force: :cascade do |t|
