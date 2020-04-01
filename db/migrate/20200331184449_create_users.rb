@@ -1,5 +1,6 @@
 class CreateUsers < ActiveRecord::Migration[6.0]
   class User < ApplicationRecord
+    has_secure_password
   end
 
   def change
@@ -10,14 +11,15 @@ class CreateUsers < ActiveRecord::Migration[6.0]
       t.timestamps
     end
 
+    user = nil
     reversible do |dir|
       dir.up do
         User.reset_column_information
         user =
           User.create!(
-            name: os_user,
-            password: default_password,
-            password_confirmation: default_password
+            name: OsHelper.os_user,
+            password: OsHelper.default_password,
+            password_confirmation: OsHelper.default_password
           )
       end
       dir.down do
@@ -25,11 +27,11 @@ class CreateUsers < ActiveRecord::Migration[6.0]
       end
     end
 
-    add_column :cube_trainer_training_results, :user_id, :integer, default: user.id, null: false
+    add_column :cube_trainer_training_results, :user_id, :integer, default: user&.id, null: false
     change_column :cube_trainer_training_results, :user_id, :integer, default: nil
     add_index :cube_trainer_training_results, :user_id
 
-    add_column :cube_trainer_training_inputs, :user_id, :integer, default: user.id, null: false
+    add_column :cube_trainer_training_inputs, :user_id, :integer, default: user&.id, null: false
     change_column :cube_trainer_training_inputs, :user_id, :integer, default: nil
     add_index :cube_trainer_training_inputs, :user_id
   end
