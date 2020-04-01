@@ -1,7 +1,7 @@
 import { now } from '../../utils/instant';
 import { Duration } from '../../utils/duration';
 import { InputItem, TimerInputComponent } from './timer_input';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, Input } from '@angular/core';
 // @ts-ignore
 import Rails from '@rails/ujs';
 

@@ -1,8 +1,8 @@
 import './polyfills.ts';
 
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { TimerModule } from './app/timer.module';
+import { CubeTrainerModule } from './app/cube_trainer.module';
 
 document.addEventListener('DOMContentLoaded', () => {
-  platformBrowserDynamic().bootstrapModule(TimerModule);
+  platformBrowserDynamic().bootstrapModule(CubeTrainerModule);
 });

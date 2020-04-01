@@ -1,7 +1,7 @@
-<timer>Loading timer...</timer>
+<cube-trainer>Loading cube trainer...</cube-trainer>
 <!-- Haaaaaaaack because <timer [mode]=""> doesn't work -->
 <script type='text/javascript'>
   window.modeId = <%= @mode.id %>;
 </script>
-<%= javascript_pack_tag 'timer', 'data-turbolinks-track': 'reload' %>
+<%= javascript_pack_tag 'cube_trainer', 'data-turbolinks-track': 'reload' %>
 <%= render 'results_table' %>
