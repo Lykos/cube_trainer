@@ -1,27 +1,39 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/utils/array_helper'
+
 # Generator for a spec for a migration.
 class MigrationSpecGenerator < Rails::Generators::NamedBase
-  class_option :previous_version, type: :numeric, default: ActiveRecord::Migrator.current_version
   source_root File.expand_path('templates', __dir__)
 
   def create_spec_file
-    raise unless file_name =~ /^\d+_[a-z0-9_]+/
-    @file_name = file_name
-    @previous_version = options[:previous_version]
-    @current_version = current_version
-    @class_name = spec_file_name_base.camelize
+    @previous_version = previous_version
+    @current_version = current_migration.version
     raise if @current_version < @previous_version
-    template('spec.rb.erb', "spec/migrations/#{spec_file_name_base}_spec.rb")
+    @migration_file_name = current_migration.filename
+    template('spec.rb.erb', "spec/migrations/#{file_name}_spec.rb")
   end
 
   private
 
-  def current_version
-    file_name[/^\d+/].to_i
+  include CubeTrainer::Utils::ArrayHelper
+
+  def migrations
+    migrations_paths = ActiveRecord::Migrator.migrations_paths
+    schema_migration = ActiveRecord::Base.connection.schema_migration
+    migration_context = ActiveRecord::MigrationContext.new(migrations_paths, schema_migration)
+    @migrations ||= migration_context.migrations
   end
 
-  def spec_file_name_base
-    "#{file_name.gsub(/^\d+_/, '')}"
+  def current_migration
+    @current_migration ||= find_only(migrations) { |m| m.name == class_name }
+  end
+
+  def previous_version
+    @previous_version ||=
+      begin
+        current_index = migrations.index(current_migration)
+        migrations[current_index - 1].version
+      end
   end
 end
