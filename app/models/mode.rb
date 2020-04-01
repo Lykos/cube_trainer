@@ -1,11 +1,17 @@
-require 'cube_trainer/training/commutator_types'
-require 'cube_trainer/letter_scheme'
-require 'cube_trainer/color_scheme'
 require 'cube_trainer/buffer_helper'
+require 'cube_trainer/color_scheme'
+require 'cube_trainer/letter_scheme'
+require 'cube_trainer/training/commutator_types'
+require 'cube_trainer/utils/array_helper'
 
 class Mode < ApplicationRecord
+  include CubeTrainer::Utils::ArrayHelper
+  include CubeTrainer::Training::CommutatorTypes
+
   SHOW_INPUT_MODES = %i(picture name)
-  MODE_TYPES = CubeTrainer::Training::CommutatorTypes::COMMUTATOR_TYPES.keys
+  COMMUTATOR_INFOS_BY_MODE_TYPE =
+    COMMUTATOR_TYPES.values.map { |v| [v.result_symbol, v] }.to_h
+  MODE_TYPES = COMMUTATOR_INFOS_BY_MODE_TYPE.keys
 
   attribute :mode_type, :symbol
   validates :mode_type, inclusion: MODE_TYPES
@@ -24,7 +30,7 @@ class Mode < ApplicationRecord
   end
 
   def commutator_info
-    CubeTrainer::Training::CommutatorTypes::COMMUTATOR_TYPES[mode_type]
+    COMMUTATOR_INFOS_BY_MODE_TYPE[mode_type]
   end
 
   def generator

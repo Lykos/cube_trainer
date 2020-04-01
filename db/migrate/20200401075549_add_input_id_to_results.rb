@@ -14,22 +14,18 @@ class AddInputIdToResults < ActiveRecord::Migration[6.0]
     Result.reset_column_information
     Input.reset_column_information
     Result.all.each do |r|
-      user_id = r.legacy_user_id
-      mode = r.legacy_mode
-      input_representation = r.legacy_input_representation
-      input = inputs[[user_id, mode, input_representation]] ||=
-        begin
-          input =
-            Input.find_or_initialize_by(
-              user_id: user_id,
-              mode: mode,
-              input_representation: input_representation
-            )
-          input.hostname ||= r.legacy_hostname
-          input.save!
-          input
-        end
-      r.input = input
+      user_id = r.old_user_id
+      mode = r.old_mode
+      input_representation = r.old_input_representation
+      input =
+        Input.new(
+          user_id: user_id,
+          mode: mode,
+          input_representation: input_representation
+        )
+      input.hostname ||= r.old_hostname
+      input.save!
+      r.input_id = input.id
       r.save!
     end
   end
@@ -41,10 +37,10 @@ class AddInputIdToResults < ActiveRecord::Migration[6.0]
 
   def change
     add_column :inputs, :hostname, :string
-    rename_column :results, :mode, :legacy_mode
-    rename_column :results, :hostname, :legacy_hostname
-    rename_column :results, :user_id, :legacy_user_id
-    rename_column :results, :input_representation, :legacy_input_representation
+    rename_column :results, :mode, :old_mode
+    rename_column :results, :hostname, :old_hostname
+    rename_column :results, :user_id, :old_user_id
+    rename_column :results, :input_representation, :old_input_representation
     add_reference :results, :input, index: { unique: true }, foreign_key: true
     reversible do |dir|
       dir.up do 
@@ -57,9 +53,9 @@ class AddInputIdToResults < ActiveRecord::Migration[6.0]
     end
     change_column_null :inputs, :hostname, false
     change_column_null :results, :input_id, false
-    change_column_null :results, :legacy_mode, true
-    change_column_null :results, :legacy_hostname, true
-    change_column_null :results, :legacy_user_id, true
-    change_column_null :results, :legacy_input_representation, true
+    change_column_null :results, :old_mode, true
+    change_column_null :results, :old_hostname, true
+    change_column_null :results, :old_user_id, true
+    change_column_null :results, :old_input_representation, true
   end
 end

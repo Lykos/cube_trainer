@@ -9,8 +9,8 @@ class Result < ApplicationRecord
   }.freeze
 
   belongs_to :input
-  attribute :legacy_mode, :symbol
-  attribute :legacy_input_representation, :input_representation
+  attribute :old_mode, :symbol
+  attribute :old_input_representation, :input_representation
 
   validates :time_s, numericality: { greater_than: 0 }
   validates :failed_attempts, numericality: POSITIVE_INTEGER

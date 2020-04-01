@@ -5,7 +5,7 @@
 class Input < ApplicationRecord
   belongs_to :mode
   has_one :result, dependent: :destroy
-  attribute :legacy_mode, :symbol
+  attribute :old_mode, :symbol
   attribute :input_representation, :input_representation
 
   validates :input_representation, presence: true  
