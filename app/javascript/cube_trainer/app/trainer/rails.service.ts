@@ -1,9 +1,9 @@
+import snakeCase from 'snake-case-typescript';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 // @ts-ignore
 import Rails from '@rails/ujs';
-// @ts-ignore
-import HttpMethodsEnum from 'http-methods-enum';
+import { HttpVerb } from './http_verb';
 
 class UrlParameterPath {
   path: string[];
@@ -19,7 +19,7 @@ class UrlParameterPath {
   }
 
   key() {
-    return this.root + this.path.map(s => `[${s}]`).join('');
+    return snakeCase(this.root) + this.path.map(s => `[${snakeCase(s)}]`).join('');
   }
 
   serializeWithValue(value: any) {
@@ -31,18 +31,21 @@ class UrlParameterPath {
   providedIn: 'root',
 })
 export class RailsService {
-  ajax<X>(type: HttpMethodsEnum, url: string, data: object): Observable<X> {
+  ajax<X>(type: HttpVerb, url: string, data: object): Observable<X> {
     return new Observable<X>((observer) => {
+      let subscribed = true;
+      const params = this.serializeUrlParams(data);
+      console.log(params);
       const xhr = Rails.ajax({
 	type,
 	url,
-	data: this.serializeUrlParams(data),
-	success: (response: X) => { observer.next(response); },
-	error: (response: any) => { observer.error(response); }
+	data: params,
+	success: (response: X) => { if (subscribed) { observer.next(response); } },
+	error: (response: any) => { if (subscribed) { observer.error(response); } }
       });
       return {
 	unsubscribe() {
-	  xhr.abort();
+	  subscribed = false;
 	}
       };
     });
@@ -53,7 +56,7 @@ export class RailsService {
     for (let [key, value] of Object.entries(data)) {
       this.serializeUrlParamsPart(value, new UrlParameterPath(key), partsAccumulator);
     }
-    return partsAccumulator.join('');
+    return partsAccumulator.join('&');
   }
 
   private serializeUrlParamsPart(value: any, path: UrlParameterPath, partsAccumulator: string[]) {

@@ -1,6 +1,6 @@
 import { now } from '../../../utils/instant';
 import { Duration } from '../../../utils/duration';
-import { InputItem } from './trainer_input.component';
+import { InputItem } from './input_item';
 import { TrainerService } from './trainer.service';
 import { Component, OnDestroy, Input } from '@angular/core';
 // @ts-ignore
@@ -16,7 +16,6 @@ enum StopWatchState {
   selector: 'trainer',
   template: `
 <div class="container">
-  <section class="error" *ngIf="error"> {{error}} </section>
   <trainer-input [input]=input></trainer-input>
   <mat-card>
     <mat-card-title>Time</mat-card-title>
@@ -47,7 +46,6 @@ enum StopWatchState {
 `
 })
 export class TrainerComponent implements OnDestroy {
-  error: string | undefined = undefined;
   duration: Duration | undefined = undefined;
   intervalRef: any = undefined;
   state: StopWatchState = StopWatchState.NotStarted;
@@ -65,23 +63,11 @@ export class TrainerComponent implements OnDestroy {
   dropAndPause() {
     this.stopTimer();
     this.state = StopWatchState.Paused;
-    Rails.ajax({
-      type: 'POST', 
-      url: `/timer/${this.modeId}/drop_input`,
-      data: `id=${this.input!.id}`,
-      success: (response: any) => {},
-      error: (response: any) => { this.onError(response); }
-    });
+    this.trainerService.dropInput(this.modeId!, this.input!).subscribe(r => {});
   }
 
   start() {
-    Rails.ajax({
-      type: 'POST', 
-      url: `/timer/${this.modeId}/next_input`,
-      data: '',
-      success: (response: any) => { this.startFor(response); },
-      error: (response: any) => { this.onError(response); }
-    });
+    this.trainerService.nextInput(this.modeId!).subscribe(input => this.startFor(input));
   }
 
   startFor(input: InputItem) {
@@ -96,14 +82,7 @@ export class TrainerComponent implements OnDestroy {
   stopAnd(onSuccess: () => void) {
     this.stopTimer();
     this.state = StopWatchState.Paused;
-    Rails.ajax({
-      type: 'POST', 
-      url: `/timer/${this.modeId}/stop`,
-      // TODO find a better way to encode this data.
-      data: `id=${this.input!.id}&time_s=${this.duration!.toSeconds()}`,
-      success: (response: any) => { onSuccess(); },
-      error: (response: any) => { this.onError(response); }
-    });
+    this.trainerService.stop(this.modeId!, this.input!, this.duration!).subscribe(r => onSuccess());
   }
 
   stopAndPause() {
@@ -116,11 +95,6 @@ export class TrainerComponent implements OnDestroy {
 
   stopTimer() {
     clearInterval(this.intervalRef);
-  }
-
-  onError(error: string) {
-    this.stopTimer();
-    this.error = error;
   }
 
   ngOnDestroy() {

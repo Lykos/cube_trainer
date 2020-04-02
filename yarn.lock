@@ -4311,6 +4311,11 @@ loud-rejection@^1.0.0:
     currently-unhandled "^0.4.1"
     signal-exit "^3.0.0"
 
+lower-case@^1.1.1:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/lower-case/-/lower-case-1.1.4.tgz#9a2cabd1b9e8e0ae993a4bf7d5875c39c42e8eac"
+  integrity sha1-miyr0bno4K6ZOkv31YdcOcQujqw=
+
 lower-case@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/lower-case/-/lower-case-2.0.1.tgz#39eeb36e396115cc05e29422eaea9e692c9408c7"
@@ -4681,6 +4686,13 @@ nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
+
+no-case@^2.2.0:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/no-case/-/no-case-2.3.2.tgz#60b813396be39b3f1288a4c1ed5d1e7d28b464ac"
+  integrity sha512-rmTZ9kz+f3rCvK2TD1Ue/oZlns7OGoIWP4fc3llxxRXlOkHKoWPPWJOfFYpITabSow43QJbRIoHQXtt10VldyQ==
+  dependencies:
+    lower-case "^1.1.1"
 
 no-case@^3.0.3:
   version "3.0.3"
@@ -6660,6 +6672,13 @@ simple-swizzle@^0.2.2:
   integrity sha1-pNprY1/8zMoz9w0Xy5JZLeleVXo=
   dependencies:
     is-arrayish "^0.3.1"
+
+snake-case-typescript@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/snake-case-typescript/-/snake-case-typescript-0.0.2.tgz#a972a21e3c7963e31f25c15a5ad5e31cb3eb14c7"
+  integrity sha512-nj5TlO4MmGKvy8OBvbS8E/V55V0QhNEp0pwecNocIPVj8o7nG1AGe+wr8qq4JcyNZ13rgARGeANKbbTrSPgMMg==
+  dependencies:
+    no-case "^2.2.0"
 
 snapdragon-node@^2.0.1:
   version "2.1.1"

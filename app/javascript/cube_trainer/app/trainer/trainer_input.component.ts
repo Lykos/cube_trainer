@@ -1,9 +1,5 @@
 import { Component, Input } from '@angular/core';
-
-export interface InputItem {
-  readonly id: number;
-  readonly inputRepresentation: string;
-};
+import { InputItem } from './input_item';
 
 @Component({
   selector: 'trainer-input',

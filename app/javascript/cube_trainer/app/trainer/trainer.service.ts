@@ -1,7 +1,8 @@
+import { Duration } from '../../../utils/duration';
 import { RailsService } from './rails.service';
 import { Injectable } from '@angular/core';
-// @ts-ignore
-import HttpMethodsEnum from 'http-methods-enum';
+import { InputItem } from './input_item';
+import { HttpVerb } from './http_verb';
 
 @Injectable({
   providedIn: 'root',
@@ -9,11 +10,19 @@ import HttpMethodsEnum from 'http-methods-enum';
 export class TrainerService {
   constructor(private readonly rails: RailsService) {}
 
-  path(mode: number, method: string) {
-    return `/timer/${mode}/${method}`;
+  path(modeId: number, method: string) {
+    return `/timer/${modeId}/${method}`;
   }
 
-  nextInput(mode: number) {
-    this.rails.ajax(HttpMethodsEnum.Post, this.path(mode, 'next_input'), {});
+  nextInput(modeId: number) {
+    return this.rails.ajax<InputItem>(HttpVerb.Post, this.path(modeId, 'next_input'), {});
+  }
+
+  dropInput(modeId: number, input: InputItem) {
+    return this.rails.ajax<void>(HttpVerb.Post, this.path(modeId, 'drop_input'), {id: input.id});
+  }
+
+  stop(modeId: number, input: InputItem, duration: Duration) {
+    return this.rails.ajax<void>(HttpVerb.Post, this.path(modeId, 'stop'), {id: input.id, timeS: duration.toSeconds()});
   }
 }
