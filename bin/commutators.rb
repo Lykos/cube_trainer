@@ -3,24 +3,19 @@
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/training/commutator_sets'
 require 'cube_trainer/training/commutator_options'
-require 'cube_trainer/training/database_syncer'
 require 'cube_trainer/training/results_model'
 require 'cube_trainer/training/stats_computer'
 require 'cube_trainer/training/trainer'
 require 'etc'
 
 options = CubeTrainer::Training::CommutatorOptions.parse(ARGV)
-syncer = CubeTrainer::Training::DatabaseSyncer.new(CubeTrainer::Training::Result)
-syncer.download!
-at_exit { syncer.upload! }
 ActiveRecord::Base.connected_to(database: :primary) do
   user = User.where(name: OsHelper.os_user).first_or_create!(
     password: OsHelper.default_password,
     password_confirmation: OsHelper.default_password
   )
-  results_model = CubeTrainer::Training::ResultsModel.new(
-    CubeTrainer::BufferHelper.mode_for_options(options), user
-  )
+  mode = Mode.from_options(options)
+  results_model = CubeTrainer::Training::ResultsModel.new(mode)
   generator = options.commutator_info.generator_class.new(options)
   hinter = generator.hinter
   learner = options.commutator_info.learner_class.new(hinter, results_model, options)
