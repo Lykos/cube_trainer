@@ -24,7 +24,7 @@ enum StopWatchState {
       <ng-template #elseBlock> Press Start </ng-template>
     </mat-card-content>
     <mat-card-actions>
-      <ng-container *ngIf="running(); else notRunning">
+      <ng-container *ngIf="running; else notRunning">
         <button mat-button (click)="stopAndStart()">
           Stop and Start
         </button>
@@ -56,7 +56,7 @@ export class TrainerComponent implements OnDestroy {
 
   constructor(private readonly trainerService: TrainerService) {}
 
-  running() {
+  get running() {
     return this.state == StopWatchState.Running;
   }
 

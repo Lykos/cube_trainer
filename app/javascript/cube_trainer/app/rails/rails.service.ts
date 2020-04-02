@@ -35,8 +35,7 @@ export class RailsService {
     return new Observable<X>((observer) => {
       let subscribed = true;
       const params = this.serializeUrlParams(data);
-      console.log(params);
-      const xhr = Rails.ajax({
+      Rails.ajax({
 	type,
 	url,
 	data: params,

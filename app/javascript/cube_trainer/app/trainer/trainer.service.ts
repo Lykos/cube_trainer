@@ -1,8 +1,8 @@
 import { Duration } from '../../../utils/duration';
-import { RailsService } from './rails.service';
+import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { InputItem } from './input_item';
-import { HttpVerb } from './http_verb';
+import { HttpVerb } from '../rails/http_verb';
 
 @Injectable({
   providedIn: 'root',

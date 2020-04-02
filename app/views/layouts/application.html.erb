@@ -7,16 +7,10 @@
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_pack_tag 'timer', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_pack_tag 'cube_trainer', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>
-    <% if logged_in? %>
-      <%= button_to "Logout", '/logout', method: :post %>
-    <% else %>
-      <%= button_to "Login", '/login', method: :get%>
-      <%= button_to "Sign Up", '/users/new', method: :get%>
-    <% end %>
     <%= yield %>
   </body>
 </html>
