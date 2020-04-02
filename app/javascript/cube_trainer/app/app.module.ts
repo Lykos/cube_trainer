@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { TrainerModule } from './trainer/trainer.module';
+import { ToolbarModule } from './toolbar/toolbar.module';
 
 @NgModule({
   declarations: [
@@ -9,6 +10,7 @@ import { TrainerModule } from './trainer/trainer.module';
   ],
   imports: [
     BrowserModule,
+    ToolbarModule,
     TrainerModule,
   ],
   bootstrap: [

@@ -8,12 +8,14 @@ declare global {
 }
 
 @Component({
-  selector: 'cube-trainer',
-  template: `<trainer [modeId]="modeId">Loading timer...</trainer>`
+  selector: 'hack-trainer',
+  template: `
+<trainer [modeId]="modeId">Loading trainer...</trainer>
+`
 })
-export class AppComponent {
+export class HackTrainerComponent {
   // TODO: The way we pass modeId is a terrible hack.
   get modeId() {
     return window.modeId;
   }
-};
+}
