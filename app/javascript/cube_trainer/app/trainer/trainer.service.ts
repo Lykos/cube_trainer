@@ -11,7 +11,7 @@ export class TrainerService {
   constructor(private readonly rails: RailsService) {}
 
   path(modeId: number, method: string) {
-    return `/timer/${modeId}/${method}`;
+    return `/training/${modeId}/${method}`;
   }
 
   nextInput(modeId: number) {

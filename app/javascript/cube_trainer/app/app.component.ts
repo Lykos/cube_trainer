@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'cube-trainer',
   template: `
 <toolbar>Loading toolbar...</toolbar>
-<hack-trainer>Loading trainer...</hack-trainer>
+<router-outlet></router-outlet>
 `
 })
 export class AppComponent {

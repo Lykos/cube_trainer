@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { UserService } from '../user/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'toolbar',
   template: `
 <mat-toolbar>
-  <ng-container *ngIf="!loggedIn; else loggedIn">
+  <ng-container *ngIf="loggedOut; else loggedIn">
     <button mat-button (click)="login()">
       Login
     </button>
@@ -24,7 +25,11 @@ import { UserService } from '../user/user.service';
 export class ToolbarComponent {
   loggedIn = false;
 
-  constructor(private readonly userService: UserService) {}
+  get loggedOut() {
+    return !this.loggedIn;
+  }
+
+  constructor(private readonly userService: UserService, private readonly router: Router) {}
 
   login() {
     this.loggedIn = true;
@@ -32,7 +37,7 @@ export class ToolbarComponent {
   }
 
   signup() {
-    this.userService.create('bernhard', 'abc123', 'abc123', true);
+    this.router.navigate(['/signup']);
   }
 
   logout() {
