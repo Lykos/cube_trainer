@@ -5,7 +5,7 @@ import { UserService } from './user.service';
   selector: 'login',
   template: `
 <mat-card>
-  <mat-card-title>Sign Up</mat-card-title>
+  <mat-card-title>Login</mat-card-title>
   <mat-card-content>
     <mat-form-field appearance="fill">
       <mat-label>Name</mat-label>

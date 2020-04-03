@@ -1,5 +1,5 @@
-import { now } from '../../../utils/instant';
-import { Duration } from '../../../utils/duration';
+import { now } from '../utils/instant';
+import { Duration } from '../utils/duration';
 import { InputItem } from './input_item';
 import { TrainerService } from './trainer.service';
 import { Component, OnDestroy, Input } from '@angular/core';

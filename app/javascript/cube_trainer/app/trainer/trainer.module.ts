@@ -7,6 +7,7 @@ import { TrainerService } from './trainer.service';
 import { TrainerInputComponent } from './trainer_input.component';
 import { RailsModule } from '../rails/rails.module';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { MatCardModule } from '@angular/material/card';
   imports: [
     BrowserModule,
     MatCardModule,
+    MatButtonModule,
     BrowserAnimationsModule,
     RailsModule,
   ],

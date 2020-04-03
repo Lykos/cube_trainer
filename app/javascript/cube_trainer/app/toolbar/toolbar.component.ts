@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'toolbar',
   template: `
-<mat-toolbar>
+<mat-toolbar color="primary">
   <ng-container *ngIf="loggedOut; else loggedIn">
     <button mat-button (click)="login()">
       Login
@@ -32,8 +32,7 @@ export class ToolbarComponent {
   constructor(private readonly userService: UserService, private readonly router: Router) {}
 
   login() {
-    this.loggedIn = true;
-    this.userService.login('bernhard', 'abc123');
+    this.router.navigate(['/login']);
   }
 
   signup() {

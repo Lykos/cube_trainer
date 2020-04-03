@@ -1,4 +1,4 @@
-import { Duration } from '../../../utils/duration';
+import { Duration } from '../utils/duration';
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { InputItem } from './input_item';
