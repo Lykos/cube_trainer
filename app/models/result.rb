@@ -12,10 +12,11 @@ class Result < ApplicationRecord
   attribute :old_mode, :symbol
   attribute :old_input_representation, :input_representation
 
-  validates :time_s, numericality: { greater_than: 0 }
+  validates :time_s, presence: true, numericality: { greater_than: 0 }
   validates :failed_attempts, numericality: POSITIVE_INTEGER
   validates :success, presence: true
   validates :num_hints, numericality: POSITIVE_INTEGER
+  validates :input_id, presence: true, uniqueness: true
 
   def self.from_input_and_partial(input, partial_result)
     new(

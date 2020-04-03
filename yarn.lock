@@ -2,6 +2,18 @@
 # yarn lockfile v1
 
 
+"@angular/animations@^9.0.0":
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-9.1.0.tgz#3030e290683c0e2d63fa61060d36f659511d3b2c"
+  integrity sha512-o7X3HM+eocoryw3VrDUtG6Wci2KwtzyBFo3KBJXjQ16X6fwdkjTG+hLb7pp2CBFBEJW4tPYEy7cSBmEfMRTqag==
+
+"@angular/cdk@^9.2.0":
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-9.2.0.tgz#587e4a9d5046fa89a68d8eddaee6b185e2915842"
+  integrity sha512-jeeznvNDpR9POuxzz8Y0zFvMynG9HCJo3ZPTqOjlOq8Lj8876+rLsHDvKEMeLdwlkdi1EweYJW1CLQzI+TwqDA==
+  optionalDependencies:
+    parse5 "^5.0.0"
+
 "@angular/common@^9.1.0":
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/@angular/common/-/common-9.1.0.tgz#f9b5353a28f9da6c06266bc7244bbabf9e005176"
@@ -17,6 +29,11 @@
   resolved "https://registry.yarnpkg.com/@angular/core/-/core-9.1.0.tgz#9dfc386bd1461e0fd4786031fd245da04371421c"
   integrity sha512-RVlyegdIAij0P1wLY5ObIdsBAzvmHkHfElnmfiNKhaDftP6U/3zRtaKDu0bq0jvn1WCQ8zXxFQ8AWyKZwyFS+w==
 
+"@angular/forms@^9.1.0":
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-9.1.0.tgz#de14e34aa37bd41a28f93fee8666cd7f6393078c"
+  integrity sha512-5GC8HQlPChPV+168zLlm4yj4syA6N9ChSKV0tmzj1zIfMcub1UAOaB9IYaXRHQsjPFh9OuQXwmkzScyAfhEVjA==
+
 "@angular/material@^9.2.0":
   version "9.2.0"
   resolved "https://registry.yarnpkg.com/@angular/material/-/material-9.2.0.tgz#1b6f0a2e115f93885d7fc2dc4b258d8c9cf6821f"
@@ -31,6 +48,11 @@
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-9.1.0.tgz#0bd40db37c9e314944c149de935b0f6cdd1f7350"
   integrity sha512-OsS/blUjl8ranmDaRADjFAmvnlmwbT6WNU7dVov7FhV0rqesbwaOJ5bR0LSYHYpej7Jaa6oYk0v0XWkaH9LTFg==
+
+"@angular/router@^9.1.0":
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/router/-/router-9.1.0.tgz#df059c0f64fa41ada8f6b5ce741fe47d49f10194"
+  integrity sha512-cExO1nPnoPFiUJWZ28hTHozPLFoCmqr3xqcM57We0hhKE0esdrO+gRWKRH0EJERukLbU8coPKVhA8daGUpASiQ==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.8.3":
   version "7.8.3"
@@ -2712,6 +2734,11 @@ es-to-primitive@^1.2.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
+es6-shim@^0.35.0:
+  version "0.35.5"
+  resolved "https://registry.yarnpkg.com/es6-shim/-/es6-shim-0.35.5.tgz#46f59dc0a84a1c5029e8ff1166ca0a902077a9ab"
+  integrity sha512-E9kK/bjtCQRpN1K28Xh4BlmP8egvZBGJJ+9GtnzOwt7mdqtrjHFuVGr7QJfdjBIKqrlU5duPf3pCBoDrkjVYFg==
+
 escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
@@ -3509,6 +3536,11 @@ http-errors@~1.7.2:
     statuses ">= 1.5.0 < 2"
     toidentifier "1.0.0"
 
+http-methods-enum@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/http-methods-enum/-/http-methods-enum-0.1.1.tgz#728e940366748f51013bc3bef3272091bdf66bb5"
+  integrity sha512-M754eK9zqkHrdm7mZEjSjslLRjT98ZxIqzm+2G+KocEEo4dRNlbzYkJv03OQw30dnTvugpLBQs6S8ICgaWl7uA==
+
 "http-parser-js@>=0.4.0 <0.4.11":
   version "0.4.10"
   resolved "https://registry.yarnpkg.com/http-parser-js/-/http-parser-js-0.4.10.tgz#92c9c1374c35085f75db359ec56cc257cbb93fa4"
@@ -4284,6 +4316,11 @@ loud-rejection@^1.0.0:
     currently-unhandled "^0.4.1"
     signal-exit "^3.0.0"
 
+lower-case@^1.1.1:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/lower-case/-/lower-case-1.1.4.tgz#9a2cabd1b9e8e0ae993a4bf7d5875c39c42e8eac"
+  integrity sha1-miyr0bno4K6ZOkv31YdcOcQujqw=
+
 lower-case@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/lower-case/-/lower-case-2.0.1.tgz#39eeb36e396115cc05e29422eaea9e692c9408c7"
@@ -4654,6 +4691,13 @@ nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
+
+no-case@^2.2.0:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/no-case/-/no-case-2.3.2.tgz#60b813396be39b3f1288a4c1ed5d1e7d28b464ac"
+  integrity sha512-rmTZ9kz+f3rCvK2TD1Ue/oZlns7OGoIWP4fc3llxxRXlOkHKoWPPWJOfFYpITabSow43QJbRIoHQXtt10VldyQ==
+  dependencies:
+    lower-case "^1.1.1"
 
 no-case@^3.0.3:
   version "3.0.3"
@@ -5124,6 +5168,11 @@ parse-srcset@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/parse-srcset/-/parse-srcset-1.0.2.tgz#f2bd221f6cc970a938d88556abc589caaaa2bde1"
   integrity sha1-8r0iH2zJcKk42IVWq8WJyqqiveE=
+
+parse5@^5.0.0:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/parse5/-/parse5-5.1.1.tgz#f68e4e5ba1852ac2cadc00f4555fff6c2abb6178"
+  integrity sha512-ugq4DFI0Ptb+WWjAdOK16+u/nHfiIrcE+sh8kZMaM0WllQKLI9rOUq6c2b7cwPkXdzfQESqvoqK6ug7U/Yyzug==
 
 parseurl@~1.3.2, parseurl@~1.3.3:
   version "1.3.3"
@@ -6179,6 +6228,11 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
+reflect-metadata@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.2.tgz#ea23e5823dc830f292822bd3da9b89fd57bffb03"
+  integrity sha1-6iPlgj3IMPKSgivT2puJ/Ve/+wM=
+
 regenerate-unicode-properties@^8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/regenerate-unicode-properties/-/regenerate-unicode-properties-8.2.0.tgz#e5de7111d655e7ba60c057dbe9ff37c87e65cdec"
@@ -6396,7 +6450,7 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rxjs@^6.5.4:
+rxjs@^6.5.3:
   version "6.5.4"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.4.tgz#e0777fe0d184cec7872df147f303572d414e211c"
   integrity sha512-naMQXcgEo3csAEGvw/NydRA0fuS2nDZJiw1YUWFKU7aPPAPGZEsD4Iimit96qwCieH6y614MCLYwdkrWx7z/7Q==
@@ -6623,6 +6677,13 @@ simple-swizzle@^0.2.2:
   integrity sha1-pNprY1/8zMoz9w0Xy5JZLeleVXo=
   dependencies:
     is-arrayish "^0.3.1"
+
+snake-case-typescript@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/snake-case-typescript/-/snake-case-typescript-0.0.2.tgz#a972a21e3c7963e31f25c15a5ad5e31cb3eb14c7"
+  integrity sha512-nj5TlO4MmGKvy8OBvbS8E/V55V0QhNEp0pwecNocIPVj8o7nG1AGe+wr8qq4JcyNZ13rgARGeANKbbTrSPgMMg==
+  dependencies:
+    no-case "^2.2.0"
 
 snapdragon-node@^2.0.1:
   version "2.1.1"
@@ -7767,7 +7828,7 @@ yargs@^7.0.0:
     y18n "^3.2.1"
     yargs-parser "^5.0.0"
 
-zone.js@^0.10.3:
+zone.js@~0.10.2:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.10.3.tgz#3e5e4da03c607c9dcd92e37dd35687a14a140c16"
   integrity sha512-LXVLVEq0NNOqK/fLJo3d0kfzd4sxwn2/h67/02pjCjfKDxgx1i9QqpvtHD8CrBnSSwMw5+dy11O7FRX5mkO7Cg==
