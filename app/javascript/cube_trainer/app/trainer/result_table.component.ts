@@ -1,12 +1,11 @@
 import { ResultService } from './result.service';
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 // @ts-ignore
 import Rails from '@rails/ujs';
 import { Observable } from 'rxjs';
-import { Result } from './result';
-import { MatTableDataSource } from '@angular/material/table';
+import { ResultsDataSource } from './results_data_source';
 
 @Component({
   selector: 'result-table',
@@ -14,6 +13,9 @@ import { MatTableDataSource } from '@angular/material/table';
 <mat-card>
   <mat-card-title>Results</mat-card-title>
   <mat-card-content>
+    <div class="spinner-container" *ngIf="dataSource.loading$ | async">
+      <mat-spinner></mat-spinner>
+    </div>
     <table #resultTable mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef> Timestamp </th>
@@ -34,18 +36,19 @@ import { MatTableDataSource } from '@angular/material/table';
 </mat-card>
 `
 })
-export class ResultTableComponent implements AfterViewInit {
+export class ResultTableComponent implements OnInit {
   modeId: Observable<number>;
-  dataSource = new MatTableDataSource<Result>();
+  dataSource: ResultsDataSource;
   
-  constructor(private readonly resultService: ResultService,
+  constructor(resultService: ResultService,
 	      activatedRoute: ActivatedRoute) {
     this.modeId = activatedRoute.params.pipe(map(p => p.modeId));
+    this.dataSource = new ResultsDataSource(resultService);
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.modeId.subscribe(modeId => {
-      this.resultService.list(modeId).subscribe(results => this.dataSource.data = results);
+      this.dataSource.loadResults(modeId);
     });
   }
 }

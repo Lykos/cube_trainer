@@ -11,6 +11,7 @@ import { TrainerInputComponent } from './trainer_input.component';
 import { ResultTableComponent } from './result_table.component';
 import { RailsModule } from '../rails/rails.module';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
@@ -25,6 +26,7 @@ import { MatButtonModule } from '@angular/material/button';
     BrowserModule,
     MatCardModule,
     MatTableModule,
+    MatProgressSpinnerModule,
     MatButtonModule,
     BrowserAnimationsModule,
     RailsModule,
