@@ -5,8 +5,8 @@ import { AuthenticationService } from './authentication.service';
   selector: 'login',
   template: `
 <mat-card>
+  <mat-card-title>Login</mat-card-title>
   <form (ngSubmit)="onSubmit()">
-    <mat-card-title>Login</mat-card-title>
     <mat-card-content>
       <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
@@ -17,12 +17,15 @@ import { AuthenticationService } from './authentication.service';
         <mat-label>Password</mat-label>
         <input required [(ngModel)]="password" name="password" matInput type="password">
       </mat-form-field>
-      <mat-card-actions>
-        <button mat-button type="submit">
-          Submit
-        </button>
-      </mat-card-actions>
+      <mat-label color='warn' *ngIf="loginFailed">
+        User name or password incorrect.
+      </mat-label>
     </mat-card-content>
+    <mat-card-actions>
+      <button mat-button type="submit">
+        Submit
+      </button>
+    </mat-card-actions>
   </form>
 </mat-card>
 `
@@ -30,10 +33,14 @@ import { AuthenticationService } from './authentication.service';
 export class LoginComponent {
   name = '';
   password = '';
+  loginFailed = false;
 
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   onSubmit() {
-    this.authenticationService.login(this.name, this.password).subscribe(r => {});
+    this.authenticationService.login(this.name, this.password).subscribe(
+      r => { this.loginFailed = false; }
+      err => { this.loginFailed = true; }
+    );
   }
 }

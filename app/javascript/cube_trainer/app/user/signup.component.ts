@@ -1,27 +1,27 @@
 import { Component } from '@angular/core';
 import { UserService } from './user.service';
-import { User } from './user';
+import { NewUser } from './new_user';
 
 @Component({
   selector: 'signup',
   template: `
 <mat-card>
+  <mat-card-title>Sign Up</mat-card-title>
   <form (ngSubmit)="onSubmit()">
-    <mat-card-title>Sign Up</mat-card-title>
     <mat-card-content>
       <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
-        <input required [(ngModel)]="user.name" name="name" matInput type="text">
+        <input required [(ngModel)]="newUser.name" name="name" matInput type="text">
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
         <mat-label>Password</mat-label>
-        <input required [(ngModel)]="user.password" name="password" matInput type="password">
+        <input required [(ngModel)]="newUser.password" name="password" matInput type="password">
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
         <mat-label>Confirm Password</mat-label>
-        <input required [(ngModel)]="user.confirmPassword" name="confirmPassword" matInput type="password">
+        <input required [(ngModel)]="newUser.passwordConfirmation" name="passwordConfirmation" matInput type="password">
       </mat-form-field>
       <mat-card-actions>
         <button mat-button type="submit">
@@ -35,10 +35,10 @@ import { User } from './user';
 })
 export class SignupComponent {
   readonly newUser: NewUser = {
-    name = '';
-    password = '';
-    confirmPassword = '';
-    admin = false;
+    name: '',
+    password: '',
+    passwordConfirmation: '',
+    admin: false,
   };
 
   constructor(private readonly userService: UserService) {}

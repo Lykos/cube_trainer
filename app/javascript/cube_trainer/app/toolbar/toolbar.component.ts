@@ -27,7 +27,7 @@ export class ToolbarComponent {
   loggedIn = false;
 
   constructor(private readonly authenticationService: AuthenticationService, private readonly router: Router) {
-    this.authenticationService.currentUserObservable.subscribe((user) => { console.log(user); this.loggedIn = hasValue(user) });
+    this.authenticationService.currentUserObservable.subscribe((user) => { this.loggedIn = hasValue(user) });
   }
 
   login() {

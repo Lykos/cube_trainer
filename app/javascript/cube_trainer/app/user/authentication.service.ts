@@ -18,7 +18,6 @@ export class AuthenticationService {
   constructor(private readonly rails: RailsService) {
     const unparsed = ofNull(localStorage.getItem(LOCAL_STORAGE_USER_KEY));
     const parsed = mapOptional(unparsed, s => JSON.parse(s));
-    console.log('parsed', parsed);
     this.currentUserSubject = new BehaviorSubject<Optional<User>>(parsed);
     this.currentUserObservable = this.currentUserSubject.asObservable();
   }
@@ -31,10 +30,9 @@ export class AuthenticationService {
     return hasValue(this.currentUser);
   }
   
-  login(name: string, password: string) {
-    return this.rails.ajax<void>(HttpVerb.Post, '/login', {name, password})
+  login(username: string, password: string) {
+    return this.rails.ajax<void>(HttpVerb.Post, '/login', {username, password})
       .pipe(map((user: any) => {
-	console.log('logged in', user);
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(user));
         this.currentUserSubject.next(some(user));

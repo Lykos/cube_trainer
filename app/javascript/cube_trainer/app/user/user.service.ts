@@ -1,7 +1,7 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http_verb';
-import { NewUser } from '../new_user';
+import { NewUser } from './new_user';
 @Injectable({
   providedIn: 'root',
 })
