@@ -5,7 +5,10 @@ class ModesController < ApplicationController
   # GET /modes
   # GET /modes.json
   def index
-    @modes = current_user.modes
+    respond_to do |format|
+      format.html { render 'application/empty' }
+      format.json { render json: current_user.modes, status: :ok }
+    end
   end
 
   # GET /modes/1

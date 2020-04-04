@@ -1,15 +1,19 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http_verb';
-import { NewUser } from './new_user';
+import { Mode } from './mode';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UserService {
+export class ModeService {
   constructor(private readonly rails: RailsService) {}
 
-  create(newUser: NewUser) {
-    return this.rails.ajax<void>(HttpVerb.Post, '/users', {user: newUser});
+  list() {
+    return this.rails.ajax<Mode[]>(HttpVerb.Get, '/modes', {});
+  }
+
+  create(mode: Mode) {
+    return this.rails.ajax<Mode>(HttpVerb.Post, '/modes', {mode});
   }
 }

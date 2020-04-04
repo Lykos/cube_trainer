@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthenticationService } from './authentication.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'login',
@@ -17,12 +18,13 @@ import { AuthenticationService } from './authentication.service';
         <mat-label>Password</mat-label>
         <input required [(ngModel)]="password" name="password" matInput type="password">
       </mat-form-field>
+      <br>
       <mat-label color='warn' *ngIf="loginFailed">
         User name or password incorrect.
       </mat-label>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-button type="submit">
+      <button mat-button color="primary" type="submit">
         Submit
       </button>
     </mat-card-actions>
@@ -35,12 +37,16 @@ export class LoginComponent {
   password = '';
   loginFailed = false;
 
-  constructor(private readonly authenticationService: AuthenticationService) {}
+  constructor(private readonly authenticationService: AuthenticationService,
+	      private readonly router: Router) {}
 
   onSubmit() {
     this.authenticationService.login(this.name, this.password).subscribe(
-      r => { this.loginFailed = false; }
-      err => { this.loginFailed = true; }
+      r => {
+	this.loginFailed = false;
+	this.router.navigate(['/modes']);
+      },
+      err => { this.loginFailed = true; },
     );
   }
 }

@@ -24,7 +24,7 @@ import { NewUser } from './new_user';
         <input required [(ngModel)]="newUser.passwordConfirmation" name="passwordConfirmation" matInput type="password">
       </mat-form-field>
       <mat-card-actions>
-        <button mat-button type="submit">
+        <button mat-button color="primary" type="submit">
           Submit
         </button>
       </mat-card-actions>

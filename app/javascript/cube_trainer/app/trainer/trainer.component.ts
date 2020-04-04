@@ -3,6 +3,7 @@ import { Duration } from '../utils/duration';
 import { InputItem } from './input_item';
 import { TrainerService } from './trainer.service';
 import { Component, OnDestroy, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 // @ts-ignore
 import Rails from '@rails/ujs';
 
@@ -50,11 +51,12 @@ export class TrainerComponent implements OnDestroy {
   intervalRef: any = undefined;
   state: StopWatchState = StopWatchState.NotStarted;
   input: InputItem | undefined = undefined;
+  modeId: Observable<number>;
 
-  @Input()
-  public modeId: number | undefined = undefined;
-
-  constructor(private readonly trainerService: TrainerService) {}
+  constructor(private readonly trainerService: TrainerService,
+	      private readonly activatedRoute: ActivatedRoute) {
+    this.modeId = route.params.pipe(map(p => p.modeId));
+  }
 
   get running() {
     return this.state == StopWatchState.Running;
@@ -63,11 +65,15 @@ export class TrainerComponent implements OnDestroy {
   dropAndPause() {
     this.stopTimer();
     this.state = StopWatchState.Paused;
-    this.trainerService.dropInput(this.modeId!, this.input!).subscribe(r => {});
+    this.modeId.subscribe(modeId => {
+      this.trainerService.dropInput(modeId, this.input!).subscribe(r => {});
+    });
   }
 
   start() {
-    this.trainerService.nextInput(this.modeId!).subscribe(input => this.startFor(input));
+    this.modeId.subscribe(modeId => {
+      this.trainerService.nextInput(modeId).subscribe(input => this.startFor(input));
+    });
   }
 
   startFor(input: InputItem) {
@@ -82,7 +88,9 @@ export class TrainerComponent implements OnDestroy {
   stopAnd(onSuccess: () => void) {
     this.stopTimer();
     this.state = StopWatchState.Paused;
-    this.trainerService.stop(this.modeId!, this.input!, this.duration!).subscribe(r => onSuccess());
+    this.modeId.subscribe(modeId => {
+      this.trainerService.stop(modeId.input!, this.duration!).subscribe(r => onSuccess());
+    });
   }
 
   stopAndPause() {

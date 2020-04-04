@@ -2,20 +2,29 @@ class SessionsController < ApplicationController
   skip_before_action :authorized, only: [:new, :create]
 
   def new
+    respond_to do |format|
+      format.html { render 'application/empty' }
+    end
+  end
+
+  def welcome
+    respond_to do |format|
+      format.html { render 'application/empty' }
+    end
   end
 
   def create
    @user = User.find_by(name: params[:username])
    if @user && @user.authenticate(params[:password])
      session[:user_id] = @user.id
-     render status: :ok
+     head :ok
    else
-     render status: :unauthorized     
+     head :unauthorized     
    end
   end
   
   def logout
     session.delete(:user_id)
-    render status: :ok
+    head :ok
   end
 end

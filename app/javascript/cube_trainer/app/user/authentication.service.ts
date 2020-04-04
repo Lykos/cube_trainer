@@ -31,8 +31,8 @@ export class AuthenticationService {
   }
   
   login(username: string, password: string) {
-    return this.rails.ajax<void>(HttpVerb.Post, '/login', {username, password})
-      .pipe(map((user: any) => {
+    return this.rails.ajax<User>(HttpVerb.Post, '/login', {username, password})
+      .pipe(map(user => {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(user));
         this.currentUserSubject.next(some(user));
