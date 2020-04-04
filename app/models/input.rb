@@ -19,11 +19,12 @@ class Input < ApplicationRecord
     {
       id: id,
       mode: mode,
-      input_representation: input_representation,
+      input_representation: input_representation.to_s,
       time_s: result.time_s,
       failed_attempts: result.failed_attempts,
       success: result.success,
       num_hints: result.num_hints,
+      created_at: created_at,
     }
   end
 end

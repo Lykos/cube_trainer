@@ -9,8 +9,9 @@ class ResultsController < ApplicationController
     respond_to do |format|
       format.html { render 'application/empty' }
       format.json do
-        logger.info "Doing JAYSON"
-        render json: @mode.inputs.select(&:result).map(&:to_simple_result), status: :ok
+        # TODO this is inefficient
+        results = @mode.inputs.select(&:result).map(&:to_simple_result)
+        render json: results, status: :ok
       end
     end
   end
