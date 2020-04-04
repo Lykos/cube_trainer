@@ -2,10 +2,12 @@ import { now } from '../utils/instant';
 import { Duration } from '../utils/duration';
 import { InputItem } from './input_item';
 import { TrainerService } from './trainer.service';
-import { Component, OnDestroy, Input } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
+import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 // @ts-ignore
 import Rails from '@rails/ujs';
+import { Observable } from 'rxjs';
 
 enum StopWatchState {
   NotStarted,
@@ -43,6 +45,7 @@ enum StopWatchState {
       </ng-template>
     </mat-card-actions>
   </mat-card>
+  <result-table></result-table>
 </div>
 `
 })
@@ -54,8 +57,8 @@ export class TrainerComponent implements OnDestroy {
   modeId: Observable<number>;
 
   constructor(private readonly trainerService: TrainerService,
-	      private readonly activatedRoute: ActivatedRoute) {
-    this.modeId = route.params.pipe(map(p => p.modeId));
+	      activatedRoute: ActivatedRoute) {
+    this.modeId = activatedRoute.params.pipe(map(p => p.modeId));
   }
 
   get running() {
@@ -89,7 +92,7 @@ export class TrainerComponent implements OnDestroy {
     this.stopTimer();
     this.state = StopWatchState.Paused;
     this.modeId.subscribe(modeId => {
-      this.trainerService.stop(modeId.input!, this.duration!).subscribe(r => onSuccess());
+      this.trainerService.stop(modeId, modeId.input!, this.duration!).subscribe(r => onSuccess());
     });
   }
 

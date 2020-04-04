@@ -7,7 +7,7 @@ require 'ostruct'
 # Controller for showing inputs to the human and getting results.
 class TimerController < ApplicationController
   def index
-    @inputs = mode.inputs
+    render 'application/empty'
   end
 
   def next_input

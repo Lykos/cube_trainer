@@ -10,12 +10,9 @@ import { Router } from '@angular/router';
   <mat-card-title>Modes</mat-card-title>
   <mat-card-content>
     <table mat-table [dataSource]="modes">
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let mode"> {{mode.name}} </td>
-      </ng-container>
+      <mat-text-column name="name"></mat-text-column>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-      <tr mat-row *matRowDef="let mode; columns: columnsToDisplay" routerLink="/training/'+mode.id"></tr>
+      <tr mat-row *matRowDef="let mode; columns: columnsToDisplay" (click)="onClick(mode)"></tr>
     </table>
   </mat-card-content>
   <mat-card-actions>
@@ -32,6 +29,10 @@ export class ModesComponent implements OnInit {
 
   constructor(private readonly modeService: ModeService,
 	      private readonly router: Router) {}
+
+  onClick(mode: Mode) {
+    this.router.navigate([`/training/${mode.id}`]);
+  }
 
   ngOnInit() {
     this.modeService.list().subscribe(modes => {

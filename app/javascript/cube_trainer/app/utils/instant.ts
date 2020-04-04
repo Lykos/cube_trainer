@@ -58,7 +58,11 @@ export class Instant {
     } else if (this.equals(infinitePast)) {
       return "infinitePast";
     }
-    return new Date(this.toUnixMillis()).toISOString();
+    return this.toDate().toISOString();
+  }
+
+  toDate() {
+    return new Date(this.toUnixMillis());
   }
 }
 
