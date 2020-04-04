@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UserService } from './authentication.service';
+import { AuthenticationService } from './authentication.service';
 
 @Component({
   selector: 'login',
@@ -10,12 +10,12 @@ import { UserService } from './authentication.service';
     <mat-card-content>
       <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
-        <input required [(ngModel)]="name" matInput type="text">
+        <input required [(ngModel)]="name" name="name" matInput type="text">
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
         <mat-label>Password</mat-label>
-        <input required [(ngModel)]="password" matInput type="password">
+        <input required [(ngModel)]="password" name="password" matInput type="password">
       </mat-form-field>
       <mat-card-actions>
         <button mat-button type="submit">
@@ -28,12 +28,12 @@ import { UserService } from './authentication.service';
 `
 })
 export class LoginComponent {
-  name: string | undefined = undefined;
-  password: string | undefined = undefined;
+  name = '';
+  password = '';
 
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   onSubmit() {
-    this.authenticationService.login(this.name, this.password);
+    this.authenticationService.login(this.name!, this.password!);
   }
 }

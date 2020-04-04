@@ -10,17 +10,17 @@ import { UserService } from './user.service';
     <mat-card-content>
       <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
-        <input required [(ngModel)]="name"  matInput type="text">
+        <input required [(ngModel)]="name" name="name" matInput type="text">
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
         <mat-label>Password</mat-label>
-        <input required [(ngModel)]="password" matInput type="password">
+        <input required [(ngModel)]="password" name="password" matInput type="password">
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
         <mat-label>Confirm Password</mat-label>
-        <input required [(ngModel)]="confirmPassword" matInput type="password">
+        <input required [(ngModel)]="confirmPassword" name="confirmPassword" matInput type="password">
       </mat-form-field>
       <mat-card-actions>
         <button mat-button type="submit">
@@ -33,9 +33,9 @@ import { UserService } from './user.service';
 `
 })
 export class SignupComponent {
-  name: string | undefined = undefined;
-  password: string | undefined = undefined;
-  confirmPassword: string | undefined = undefined;
+  name = '';
+  password = '';
+  confirmPassword = '';
 
   constructor(private readonly userService: UserService) {}
 

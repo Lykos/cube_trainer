@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UserService } from '../user/authentication.service';
+import { AuthenticationService } from '../user/authentication.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -23,10 +23,8 @@ import { Router } from '@angular/router';
 `
 })
 export class ToolbarComponent {
-  loggedIn = false;
-
   get loggedOut() {
-    return !this.loggedIn;
+    return !this.authenticationService.loggedIn;
   }
 
   constructor(private readonly authenticationService: AuthenticationService, private readonly router: Router) {}
@@ -40,7 +38,6 @@ export class ToolbarComponent {
   }
 
   logout() {
-    this.loggedIn = false;
     this.authenticationService.logout();
   }
 }

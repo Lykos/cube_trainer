@@ -48,3 +48,7 @@ export function hasValue<X>(optional: Optional<X>): boolean {
     case "none": return false;
   }
 }
+
+export function ofNull<X>(orNull: X | null | undefined): Optional<X> {
+  return orNull ? some(orNull) : none;
+}

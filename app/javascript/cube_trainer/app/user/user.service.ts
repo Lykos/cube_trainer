@@ -6,6 +6,8 @@ import { HttpVerb } from '../rails/http_verb';
   providedIn: 'root',
 })
 export class UserService {
+  constructor(private readonly rails: RailsService) {}
+
   create(name: string, password: string, passwordConfirmation: string, admin: boolean) {
     return this.rails.ajax<void>(HttpVerb.Post, 'users/create', {name, password, passwordConfirmation, admin});
   }
