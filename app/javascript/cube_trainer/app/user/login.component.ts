@@ -34,6 +34,6 @@ export class LoginComponent {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   onSubmit() {
-    this.authenticationService.login(this.name!, this.password!);
+    this.authenticationService.login(this.name, this.password).subscribe(r => {});
   }
 }

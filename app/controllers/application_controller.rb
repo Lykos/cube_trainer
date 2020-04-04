@@ -18,11 +18,11 @@ class ApplicationController < ActionController::Base
   end
 
   def authorized
-    render status: :unauthorized unless logged_in?
+    render json: {}, status: :unauthorized unless logged_in?
   end
 
   def authorized_as_admin
-    render status: :unauthorized unless admin_logged_in?
+    render json: {}, status: :unauthorized unless admin_logged_in?
   end
 
   # Checks that the user is the current user.

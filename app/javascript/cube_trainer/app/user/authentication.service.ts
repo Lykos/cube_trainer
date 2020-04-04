@@ -4,7 +4,7 @@ import { HttpVerb } from '../rails/http_verb';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { User } from './user';
-import { some, ofNull, mapOptional, Optional, hasValue } from '../utils/optional';
+import { some, none, ofNull, mapOptional, Optional, hasValue } from '../utils/optional';
 
 const LOCAL_STORAGE_USER_KEY = 'currentUser';
 
@@ -18,6 +18,7 @@ export class AuthenticationService {
   constructor(private readonly rails: RailsService) {
     const unparsed = ofNull(localStorage.getItem(LOCAL_STORAGE_USER_KEY));
     const parsed = mapOptional(unparsed, s => JSON.parse(s));
+    console.log('parsed', parsed);
     this.currentUserSubject = new BehaviorSubject<Optional<User>>(parsed);
     this.currentUserObservable = this.currentUserSubject.asObservable();
   }
@@ -33,6 +34,7 @@ export class AuthenticationService {
   login(name: string, password: string) {
     return this.rails.ajax<void>(HttpVerb.Post, '/login', {name, password})
       .pipe(map((user: any) => {
+	console.log('logged in', user);
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(user));
         this.currentUserSubject.next(some(user));
@@ -41,10 +43,9 @@ export class AuthenticationService {
   }
 
   logout() {
+    // remove user from local storage to log user out
+    localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
+    this.currentUserSubject.next(none);
     return this.rails.ajax<void>(HttpVerb.Post, '/logout', {});
-  }
-
-  create(name: string, password: string, passwordConfirmation: string, admin: boolean) {
-    return this.rails.ajax<void>(HttpVerb.Post, 'users/create', {name, password, passwordConfirmation, admin});
   }
 }

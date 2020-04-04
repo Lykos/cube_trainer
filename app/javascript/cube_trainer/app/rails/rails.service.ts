@@ -32,12 +32,15 @@ class UrlParameterPath {
 })
 export class RailsService {
   ajax<X>(type: HttpVerb, url: string, data: object): Observable<X> {
+    console.log('ajax', url);
     return new Observable<X>((observer) => {
       let subscribed = true;
       const params = this.serializeUrlParams(data);
+      console.log('params', params);
       Rails.ajax({
 	type,
 	url,
+	dataType: 'json',
 	data: params,
 	success: (response: X) => { if (subscribed) { observer.next(response); } },
 	error: (response: any) => { if (subscribed) { observer.error(response); } }

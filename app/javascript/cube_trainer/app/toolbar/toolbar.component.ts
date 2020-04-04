@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { AuthenticationService } from '../user/authentication.service';
 import { Router } from '@angular/router';
+import { hasValue } from '../utils/optional';
 
 @Component({
   selector: 'toolbar',
   template: `
 <mat-toolbar color="primary">
-  <ng-container *ngIf="loggedOut; else loggedIn">
+  <ng-container *ngIf="!loggedIn; else loggedInBlock">
     <button mat-button (click)="login()">
       Login
     </button>
@@ -14,7 +15,7 @@ import { Router } from '@angular/router';
       Sign Up
     </button>
   </ng-container>
-  <ng-template #loggedIn>
+  <ng-template #loggedInBlock>
     <button mat-button (click)="logout()">
       Logout
     </button>
@@ -23,11 +24,11 @@ import { Router } from '@angular/router';
 `
 })
 export class ToolbarComponent {
-  get loggedOut() {
-    return !this.authenticationService.loggedIn;
-  }
+  loggedIn = false;
 
-  constructor(private readonly authenticationService: AuthenticationService, private readonly router: Router) {}
+  constructor(private readonly authenticationService: AuthenticationService, private readonly router: Router) {
+    this.authenticationService.currentUserObservable.subscribe((user) => { console.log(user); this.loggedIn = hasValue(user) });
+  }
 
   login() {
     this.router.navigate(['/login']);
