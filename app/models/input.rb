@@ -14,4 +14,16 @@ class Input < ApplicationRecord
   validates :mode_id, presence: true
 
   before_validation { self.hostname ||= OsHelper.hostname }
+
+  def to_simple_result
+    SimpleResult.new(
+      id: id,
+      mode: mode,
+      input_representation: input_representation,
+      time_s: result.time_s,
+      failed_attempts: result.failed_attempts,
+      success: result.success,
+      num_hints: result.num_hints,
+    )
+  end
 end

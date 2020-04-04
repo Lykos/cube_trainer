@@ -5,7 +5,9 @@ Rails.application.routes.draw do
   get 'welcome', to: 'sessions#welcome'
   root 'sessions#welcome'
   resources :users
-  resources :modes
+  resources :modes do
+    resources :results, only: [:index, :show, :destroy]
+  end
   get 'training/:mode_id', to: 'timer#index', as: :timer
   post 'training/:mode_id/next_input', to: 'timer#next_input'
   post 'training/:mode_id/stop', to: 'timer#stop'

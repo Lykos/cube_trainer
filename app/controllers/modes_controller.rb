@@ -1,5 +1,5 @@
 class ModesController < ApplicationController
-  before_action :set_mode, only: [:show, :edit, :update, :destroy]
+  before_action :get_mode, only: [:show, :edit, :update, :destroy]
   before_action :check_owner_is_current_user, only: [:show, :edit, :update, :destroy]
 
   # GET /modes
@@ -67,11 +67,6 @@ class ModesController < ApplicationController
   end
 
   private
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_mode
-    get_mode
-  end
 
   def get_mode
     @mode ||= Mode.find(params[:id])
