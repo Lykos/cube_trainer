@@ -1,4 +1,4 @@
-class ModesController < ApplicationController
+class ResultsController < ApplicationController
   before_action :get_mode
   before_action :set_input, only: [:show, :destroy]
   before_action :check_owner_is_current_user
@@ -8,7 +8,10 @@ class ModesController < ApplicationController
   def index
     respond_to do |format|
       format.html { render 'application/empty' }
-      format.json { render json: @mode.inputs.map(&to_simple_result), status: :ok }
+      format.json do
+        logger.info "Doing JAYSON"
+        render json: @mode.inputs.select(&:result).map(&:to_simple_result), status: :ok
+      end
     end
   end
 

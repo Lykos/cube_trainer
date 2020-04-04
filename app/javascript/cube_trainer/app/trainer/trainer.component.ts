@@ -1,5 +1,5 @@
 import { now } from '../utils/instant';
-import { Duration } from '../utils/duration';
+import { Duration, zeroDuration } from '../utils/duration';
 import { InputItem } from './input_item';
 import { TrainerService } from './trainer.service';
 import { Component, OnDestroy } from '@angular/core';
@@ -22,10 +22,7 @@ enum StopWatchState {
   <trainer-input [input]=input></trainer-input>
   <mat-card>
     <mat-card-title>Time</mat-card-title>
-    <mat-card-content>
-      <div *ngIf="duration; else elseBlock"> {{duration}} </div>
-      <ng-template #elseBlock> Press Start </ng-template>
-    </mat-card-content>
+    <mat-card-content> {{duration}} </mat-card-content>
     <mat-card-actions>
       <ng-container *ngIf="running; else notRunning">
         <button mat-button (click)="stopAndStart()">
@@ -50,7 +47,7 @@ enum StopWatchState {
 `
 })
 export class TrainerComponent implements OnDestroy {
-  duration: Duration | undefined = undefined;
+  duration: Duration = zeroDuration;
   intervalRef: any = undefined;
   state: StopWatchState = StopWatchState.NotStarted;
   input: InputItem | undefined = undefined;

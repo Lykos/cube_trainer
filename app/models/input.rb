@@ -16,7 +16,7 @@ class Input < ApplicationRecord
   before_validation { self.hostname ||= OsHelper.hostname }
 
   def to_simple_result
-    SimpleResult.new(
+    {
       id: id,
       mode: mode,
       input_representation: input_representation,
@@ -24,6 +24,6 @@ class Input < ApplicationRecord
       failed_attempts: result.failed_attempts,
       success: result.success,
       num_hints: result.num_hints,
-    )
+    }
   end
 end

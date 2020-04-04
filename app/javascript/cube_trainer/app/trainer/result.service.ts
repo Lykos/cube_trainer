@@ -11,7 +11,7 @@ export class ResultService {
   constructor(private readonly rails: RailsService) {}
 
   list(modeId: number) {
-    return this.rails.ajax<Result[]>(HttpVerb.Post, `/modes/${modeId}/results`, {}).pipe(map(r => {
+    return this.rails.ajax<Result[]>(HttpVerb.Get, `/modes/${modeId}/results`, {}).pipe(map(r => {
       console.log(r);
       return r;
     }));
