@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { RailsModule } from '../rails/rails.module';
-import { UserService } from './user.service';
+import { UserService } from './authentication.service';
 import { NgModule } from '@angular/core';
 import { SignupComponent } from './signup.component';
 import { LoginComponent } from './login.component';

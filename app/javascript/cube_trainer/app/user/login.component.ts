@@ -1,34 +1,39 @@
 import { Component } from '@angular/core';
-import { UserService } from './user.service';
+import { UserService } from './authentication.service';
 
 @Component({
   selector: 'login',
   template: `
 <mat-card>
-  <mat-card-title>Login</mat-card-title>
-  <mat-card-content>
-    <mat-form-field appearance="fill">
-      <mat-label>Name</mat-label>
-      <input #name matInput type="text">
-    </mat-form-field>
-    <br>
-    <mat-form-field appearance="fill">
-      <mat-label>Password</mat-label>
-      <input #password matInput type="password">
-    </mat-form-field>
-    <mat-card-actions>
-      <button mat-button (click)="submit(name.value, password.value)">
-        Submit
-      </button>
-    </mat-card-actions>
-  </mat-card-content>
+  <form (ngSubmit)="onSubmit()">
+    <mat-card-title>Login</mat-card-title>
+    <mat-card-content>
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input required [(ngModel)]="name" matInput type="text">
+      </mat-form-field>
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input required [(ngModel)]="password" matInput type="password">
+      </mat-form-field>
+      <mat-card-actions>
+        <button mat-button type="submit">
+          Submit
+        </button>
+      </mat-card-actions>
+    </mat-card-content>
+  </form>
 </mat-card>
 `
 })
 export class LoginComponent {
-  constructor(private readonly userService: UserService) {}
+  name: string | undefined = undefined;
+  password: string | undefined = undefined;
 
-  submit(name: string, password: string) {
-    this.userService.login(name, password);
+  constructor(private readonly authenticationService: AuthenticationService) {}
+
+  onSubmit() {
+    this.authenticationService.login(this.name, this.password);
   }
 }

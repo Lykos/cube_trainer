@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/authentication.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -29,7 +29,7 @@ export class ToolbarComponent {
     return !this.loggedIn;
   }
 
-  constructor(private readonly userService: UserService, private readonly router: Router) {}
+  constructor(private readonly authenticationService: AuthenticationService, private readonly router: Router) {}
 
   login() {
     this.router.navigate(['/login']);
@@ -41,6 +41,6 @@ export class ToolbarComponent {
 
   logout() {
     this.loggedIn = false;
-    this.userService.logout();
+    this.authenticationService.logout();
   }
 }
