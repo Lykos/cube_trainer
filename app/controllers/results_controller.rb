@@ -1,10 +1,10 @@
 class ResultsController < ApplicationController
   before_action :get_mode
   before_action :set_input, only: [:show, :destroy]
-  before_action :check_owner_is_current_user
+  before_action :check_current_user_owns
 
-  # GET /modes
-  # GET /modes.json
+  # GET /modes/1/results
+  # GET /modes/1/results.json
   def index
     respond_to do |format|
       format.html { render 'application/empty' }
@@ -15,8 +15,8 @@ class ResultsController < ApplicationController
     end
   end
 
-  # GET /modes/1
-  # GET /modes/1.json
+  # GET /modes/1/results/1
+  # GET /modes/1/results/1.json
   def show
     respond_to do |format|
       format.html { render 'application/empty' }
@@ -24,6 +24,7 @@ class ResultsController < ApplicationController
     end
   end
 
+  # DELETE /modes/1/results/1.json
   def destroy
     @input.destroy
     head :no_content
@@ -32,7 +33,7 @@ class ResultsController < ApplicationController
   private
 
   def set_input
-    @input = Input.find(params[:id])
+    @input = Result.find(params[:id]).input
   end
 
   def get_mode

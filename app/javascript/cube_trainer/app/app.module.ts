@@ -16,7 +16,7 @@ const appRoutes: Routes = [
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
   { path: 'modes', component: ModesComponent },
-  { path: 'training/:modeId', component: TrainerComponent },
+  { path: 'trainer/:modeId', component: TrainerComponent },
 ];
 
 @NgModule({

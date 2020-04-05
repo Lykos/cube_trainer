@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   end
 
   # Checks that the user is the current user.
-  def check_owner_is_current_user
+  def check_current_user_owns
     redirect_to '/welcome', notice: "Can't modify other user." unless get_owner == current_user || admin_logged_in?
   end
 end

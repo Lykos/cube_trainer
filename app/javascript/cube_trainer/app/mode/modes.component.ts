@@ -31,7 +31,7 @@ export class ModesComponent implements OnInit {
 	      private readonly router: Router) {}
 
   onClick(mode: Mode) {
-    this.router.navigate([`/training/${mode.id}`]);
+    this.router.navigate([`/trainer/${mode.id}`]);
   }
 
   ngOnInit() {
