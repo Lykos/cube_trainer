@@ -16,7 +16,7 @@ import { ResultsDataSource } from './results_data_source';
     <div class="spinner-container" *ngIf="dataSource.loading$ | async">
       <mat-spinner></mat-spinner>
     </div>
-    <table #resultTable mat-table [dataSource]="dataSource">
+    <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef> Timestamp </th>
         <td mat-cell *matCellDef="let result"> {{result.timestamp | instant}} </td>
@@ -39,6 +39,7 @@ import { ResultsDataSource } from './results_data_source';
 export class ResultTableComponent implements OnInit {
   modeId: Observable<number>;
   dataSource: ResultsDataSource;
+  columnsToDisplay = ['timestamp', 'input', 'time'];
   
   constructor(resultService: ResultService,
 	      activatedRoute: ActivatedRoute) {
