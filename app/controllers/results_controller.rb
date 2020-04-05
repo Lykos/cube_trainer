@@ -9,7 +9,7 @@ class ResultsController < ApplicationController
     respond_to do |format|
       format.html { render 'application/empty' }
       format.json do
-        results = @mode.inputs.joins(:result).map(&:to_simple_result)
+        results = @mode.inputs.joins(:result).order(created_at: :desc).limit(params[:limit]).offset(params[:offset]).map(&:to_simple_result)
         render json: results, status: :ok
       end
     end

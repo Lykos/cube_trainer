@@ -21,9 +21,9 @@ export class ResultsDataSource implements DataSource<Result> {
     this.loadingSubject.complete();
   }
 
-  loadResults(modeId: number) {
+  loadResults(modeId: number, pageNumber = 0, pageSize = 100) {
     this.loadingSubject.next(true);
-    this.resultService.list(modeId).pipe(
+    this.resultService.list(modeId, pageNumber, pageSize).pipe(
       catchError(() => of([])),
       finalize(() => this.loadingSubject.next(false))
     )
