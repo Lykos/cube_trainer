@@ -23,11 +23,6 @@ export class ResultService {
   }
 
   list(modeId: number, offset: number, limit: number): Observable<Result[]> {
-    return this.rails.ajax<any>(HttpVerb.Get, `/modes/${modeId}/results`, {offset, limit}).pipe(map(results => {
-      
-      const r = results.map(this.parseResult);
-      console.log(r);
-      return r;
-    }));
+    return this.rails.ajax<any>(HttpVerb.Get, `/modes/${modeId}/results`, {offset, limit}).pipe(map(results => results.map(this.parseResult)));
   }
 }

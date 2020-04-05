@@ -1,10 +1,10 @@
 import { ResultService } from './result.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 // @ts-ignore
 import Rails from '@rails/ujs';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ResultsDataSource } from './results_data_source';
 
 @Component({
@@ -36,11 +36,13 @@ import { ResultsDataSource } from './results_data_source';
 </mat-card>
 `
 })
-export class ResultTableComponent implements OnInit {
+export class ResultTableComponent implements OnInit, OnDestroy {
   modeId: Observable<number>;
   dataSource: ResultsDataSource;
   columnsToDisplay = ['timestamp', 'input', 'time'];
-  
+  @Input() resultEvents$!: Observable<void>;
+  private eventsSubscription: Subscription;
+
   constructor(resultService: ResultService,
 	      activatedRoute: ActivatedRoute) {
     this.modeId = activatedRoute.params.pipe(map(p => p.modeId));
@@ -48,8 +50,17 @@ export class ResultTableComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.eventsSubscription = this.resultEvents$.subscribe(() => this.update());
+    this.update();
+  }
+
+  update() {
     this.modeId.subscribe(modeId => {
       this.dataSource.loadResults(modeId);
     });
+  }
+
+  ngOnDestroy() {
+    this.eventsSubscription.unsubscribe();
   }
 }

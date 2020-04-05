@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 // @ts-ignore
 import Rails from '@rails/ujs';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 enum StopWatchState {
   NotStarted,
@@ -42,7 +42,7 @@ enum StopWatchState {
       </ng-template>
     </mat-card-actions>
   </mat-card>
-  <result-table></result-table>
+  <result-table [resultEvents$]="resultEventsSubject.asObservable()"></result-table>
 </div>
 `
 })
@@ -52,6 +52,7 @@ export class TrainerComponent implements OnDestroy {
   state: StopWatchState = StopWatchState.NotStarted;
   input: InputItem | undefined = undefined;
   modeId: Observable<number>;
+  resultEventsSubject = new Subject<void>();
 
   constructor(private readonly trainerService: TrainerService,
 	      activatedRoute: ActivatedRoute) {
@@ -90,7 +91,7 @@ export class TrainerComponent implements OnDestroy {
     this.state = StopWatchState.Paused;
     this.modeId.subscribe(modeId => {
       this.trainerService.stop(modeId, this.input!, this.duration!).subscribe(r => {
-	
+	this.resultEventsSubject.next();
 	onSuccess();
       });
     });
