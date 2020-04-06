@@ -2,12 +2,26 @@ class ModesController < ApplicationController
   before_action :get_mode, only: [:show, :edit, :update, :destroy]
   before_action :check_current_user_owns, only: [:show, :edit, :update, :destroy]
 
+  # GET /mode_types.json
+  def types
+    render json:
+             [
+               {
+                 name: :corner_3twists,
+                 show_input_modes: Mode::SHOW_INPUT_MODES,
+                 has_buffer: true,
+                 default_cube_size: 3,
+                 has_goal_badness: true
+               }
+             ]
+  end
+
   # GET /modes
   # GET /modes.json
   def index
     respond_to do |format|
       format.html { render 'application/empty' }
-      format.json { render json: current_user.modes, status: :ok }
+      format.json { render json: current_user.modes }
     end
   end
 
@@ -16,6 +30,7 @@ class ModesController < ApplicationController
   def show
     respond_to do |format|
       format.html { render 'application/empty' }
+      format.json { render json: @mode }
     end
   end
 
@@ -37,14 +52,11 @@ class ModesController < ApplicationController
   # POST /modes.json
   def create
     @mode = current_user.modes.new(mode_params)
-    logger.info @mode.inspect
 
-    respond_to do |format|
-      if @mode.save
-        format.json { render :show, status: :created, location: @mode }
-      else
-        format.json { render json: @mode.errors, status: :unprocessable_entity }
-      end
+    if @mode.save
+      render json: @mode, status: :created
+    else
+      render json: @mode.errors, status: :unprocessable_entity
     end
   end
 
@@ -52,9 +64,9 @@ class ModesController < ApplicationController
   def update
     respond_to do |format|
       if @mode.update(mode_params)
-        format.json { render :show, status: :ok, location: @mode }
+        render :show, location: @mode
       else
-        format.json { render json: @mode.errors, status: :unprocessable_entity }
+        render json: @mode.errors, status: :unprocessable_entity
       end
     end
   end
@@ -63,7 +75,7 @@ class ModesController < ApplicationController
   def destroy
     @mode.destroy
     respond_to do |format|
-      format.json { head :no_content }
+      head :no_content
     end
   end
 

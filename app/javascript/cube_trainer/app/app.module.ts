@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { SignupComponent } from './user/signup.component';
 import { LoginComponent } from './user/login.component';
 import { ModesComponent } from './mode/modes.component';
+import { NewModeComponent } from './mode/new-mode.component';
 import { ModeModule } from './mode/mode.module';
 import { TrainerModule } from './trainer/trainer.module';
 import { TrainerComponent } from './trainer/trainer.component';
@@ -16,6 +17,7 @@ const appRoutes: Routes = [
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
   { path: 'modes', component: ModesComponent },
+  { path: 'modes/new', component: NewModeComponent },
   { path: 'trainer/:modeId', component: TrainerComponent },
 ];
 

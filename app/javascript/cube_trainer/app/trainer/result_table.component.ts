@@ -16,7 +16,7 @@ import { ResultsDataSource } from './results_data_source';
     <div class="spinner-container" *ngIf="dataSource.loading$ | async">
       <mat-spinner></mat-spinner>
     </div>
-    <table mat-table [dataSource]="dataSource">
+    <table mat-table class="mat-elevation-z2" [dataSource]="dataSource">
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef> Timestamp </th>
         <td mat-cell *matCellDef="let result"> {{result.timestamp | instant}} </td>

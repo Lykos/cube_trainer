@@ -40,7 +40,11 @@ export class RailsService {
 	url,
 	dataType: 'json',
 	data: params,
-	success: (response: X) => { if (subscribed) { observer.next(response); } },
+	success: (response: X) => {
+	  if (subscribed) {
+	    observer.next(response);
+	  }
+	},
 	error: (response: any, statusText: string, xhr: any) => { if (subscribed) { observer.error(xhr); } }
       });
       return {

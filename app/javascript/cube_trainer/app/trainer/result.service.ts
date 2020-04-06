@@ -13,7 +13,7 @@ import { fromDateString } from '../utils/instant'
 export class ResultService {
   constructor(private readonly rails: RailsService) {}
 
-  parseResult(result: any) {
+  parseResult(result: any): Result {
     return {
       id: result.id,
       timestamp: fromDateString(result.created_at),
@@ -23,6 +23,6 @@ export class ResultService {
   }
 
   list(modeId: number, offset: number, limit: number): Observable<Result[]> {
-    return this.rails.ajax<any>(HttpVerb.Get, `/modes/${modeId}/results`, {offset, limit}).pipe(map(results => results.map(this.parseResult)));
+    return this.rails.ajax<any[]>(HttpVerb.Get, `/modes/${modeId}/results`, {offset, limit}).pipe(map(results => results.map(this.parseResult)));
   }
 }

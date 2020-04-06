@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
     </table>
   </mat-card-content>
   <mat-card-actions>
-    <button mat-button color="primary" (click)="onNew()">
+    <button mat-raised-button color="primary" (click)="onNew()">
       New
     </button>
   </mat-card-actions>
@@ -35,8 +35,7 @@ export class ModesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.modeService.list().subscribe(modes => {
-      console.log(modes);
+    this.modeService.list().subscribe((modes: Mode[]) => {
       this.modes = modes
     });
   }

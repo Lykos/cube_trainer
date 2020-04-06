@@ -45,7 +45,7 @@ const passwordMatchValidator: ValidatorFn = (control: AbstractControl): Validati
           <strong>Password</strong> must match <strong>password confirmation</strong>.
         </mat-error>
       <mat-card-actions>
-        <button mat-button color="primary" type="submit" [disabled]="!signupForm.valid">
+        <button mat-raised-button color="primary" type="submit" [disabled]="!signupForm.valid">
           Submit
         </button>
       </mat-card-actions>

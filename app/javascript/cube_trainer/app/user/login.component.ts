@@ -31,7 +31,7 @@ import { Router } from '@angular/router';
       </mat-error>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-button color="primary" [disabled]="!loginForm.valid">
+      <button mat-raised-button color="primary" [disabled]="!loginForm.valid">
         Submit
       </button>
     </mat-card-actions>

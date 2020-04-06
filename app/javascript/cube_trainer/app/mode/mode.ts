@@ -1,4 +1,5 @@
-export interface Mode {
+import { NewMode } from './mode';
+
+export interface Mode extends NewMode {
   readonly id: number;
-  readonly name: string;
 }

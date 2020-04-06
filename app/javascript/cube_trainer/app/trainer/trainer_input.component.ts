@@ -12,5 +12,5 @@ import { InputItem } from './input_item';
 })
 export class TrainerInputComponent {
   @Input()
-  input: InputItem | undefined = undefined;
+  input!: InputItem;
 }
