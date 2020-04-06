@@ -37,19 +37,18 @@ import { ResultsDataSource } from './results_data_source';
 `
 })
 export class ResultTableComponent implements OnInit, OnDestroy {
-  modeId: Observable<number>;
-  dataSource: ResultsDataSource;
+  modeId!: Observable<number>;
+  dataSource!: ResultsDataSource;
   columnsToDisplay = ['timestamp', 'input', 'time'];
   @Input() resultEvents$!: Observable<void>;
-  private eventsSubscription: Subscription;
+  private eventsSubscription!: Subscription;
 
-  constructor(resultService: ResultService,
-	      activatedRoute: ActivatedRoute) {
-    this.modeId = activatedRoute.params.pipe(map(p => p.modeId));
-    this.dataSource = new ResultsDataSource(resultService);
-  }
+  constructor(private readonly resultService: ResultService,
+	      private readonly activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
+    this.modeId = this.activatedRoute.params.pipe(map(p => p.modeId));
+    this.dataSource = new ResultsDataSource(this.resultService);
     this.eventsSubscription = this.resultEvents$.subscribe(() => this.update());
     this.update();
   }

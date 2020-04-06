@@ -1,30 +1,51 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserService } from './user.service';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { NewUser } from './new_user';
+
+const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const password = control.get('password');
+  const passwordConfirmation = control.get('passwordConfirmation');
+
+  return password?.value && passwordConfirmation?.value && password.value !== passwordConfirmation.value ? { 'passwordMismatch': true } : null;
+}
 
 @Component({
   selector: 'signup',
   template: `
 <mat-card>
   <mat-card-title>Sign Up</mat-card-title>
-  <form (ngSubmit)="onSubmit()">
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
     <mat-card-content>
       <mat-form-field appearance="fill">
-        <mat-label>Name</mat-label>
-        <input required [(ngModel)]="newUser.name" name="name" matInput type="text">
+        <mat-label>Username</mat-label>
+        <input type="text" matInput formControlName="username">
+        <mat-error *ngIf="relevantInvalid(username) && username.errors.required">
+          You must provide a <strong>username</strong>.
+        </mat-error>
       </mat-form-field>
       <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Password</mat-label>
-        <input required [(ngModel)]="newUser.password" name="password" matInput type="password">
-      </mat-form-field>
-      <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Confirm Password</mat-label>
-        <input required [(ngModel)]="newUser.passwordConfirmation" name="passwordConfirmation" matInput type="password">
-      </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Password</mat-label>
+          <input type="password" matInput formControlName="password">
+          <mat-error *ngIf="relevantInvalid(password) && password.errors.required">
+            You must provide a <strong>password</strong>.
+          </mat-error>
+        </mat-form-field>
+        <br>
+        <mat-form-field appearance="fill">
+          <mat-label>Confirm Password</mat-label>
+          <input type="password" matInput formControlName="passwordConfirmation">
+          <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors.required">
+            You must provide a <strong>password confirmation</strong>.
+          </mat-error>
+        </mat-form-field>
+        <mat-error *ngIf="passwordMismatch">
+          <strong>Password</strong> must match <strong>password confirmation</strong>.
+        </mat-error>
       <mat-card-actions>
-        <button mat-button color="primary" type="submit">
+        <button mat-button color="primary" type="submit" [disabled]="!signupForm.valid">
           Submit
         </button>
       </mat-card-actions>
@@ -33,17 +54,47 @@ import { NewUser } from './new_user';
 </mat-card>
 `
 })
-export class SignupComponent {
-  readonly newUser: NewUser = {
-    name: '',
-    password: '',
-    passwordConfirmation: '',
-    admin: false,
-  };
+export class SignupComponent implements OnInit {
+  signupForm!: FormGroup;
 
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService,
+	      private readonly formBuilder: FormBuilder) {}
+
+  relevantInvalid(control: AbstractControl) {
+    return control.invalid && (control.dirty || control.touched);
+  }
+
+  ngOnInit() {
+    this.signupForm = this.formBuilder.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      passwordConfirmation: ['', Validators.required],
+    }, { validators: passwordMatchValidator });
+  }
 
   onSubmit() {
     this.userService.create(this.newUser).subscribe(r => {});
+  }
+
+  get username() { return this.signupForm.get('username')!; }
+
+  get password() { return this.signupForm.get('password')!; }
+
+  get passwordConfirmation() { return this.signupForm.get('passwordConfirmation')!; }
+
+  get newUser(): NewUser {
+    return {
+      name: this.username.value,
+      password: this.password.value,
+      passwordConfirmation: this.passwordConfirmation.value,
+      admin: false,
+    };
+  }
+
+  get passwordMismatch() {
+    console.log(this.signupForm, this.signupForm.errors, this.passwordConfirmation.touched, this.passwordConfirmation.dirty);
+    const r = this.signupForm.errors?.passwordMismatch && (this.passwordConfirmation.touched || this.passwordConfirmation.dirty);
+    console.log(r);
+    return r;
   }
 }

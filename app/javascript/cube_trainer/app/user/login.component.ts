@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from './authentication.service';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
@@ -7,24 +8,30 @@ import { Router } from '@angular/router';
   template: `
 <mat-card>
   <mat-card-title>Login</mat-card-title>
-  <form (ngSubmit)="onSubmit()">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <mat-card-content>
       <mat-form-field appearance="fill">
-        <mat-label>Name</mat-label>
-        <input required [(ngModel)]="name" name="name" matInput type="text">
+        <mat-label>Username</mat-label>
+        <input matInput type="text" formControlName="username">
+        <mat-error *ngIf="relevantInvalid(username) && username.errors.required">
+          You must provide a <strong>username</strong>.
+        </mat-error>
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
         <mat-label>Password</mat-label>
-        <input required [(ngModel)]="password" name="password" matInput type="password">
+        <input matInput type="password" formControlName="password">
+        <mat-error *ngIf="relevantInvalid(password) && password.errors.required">
+          You must provide a <strong>password</strong>.
+        </mat-error>
       </mat-form-field>
       <br>
-      <mat-label color='warn' *ngIf="loginFailed">
+      <mat-error *ngIf="loginFailed">
         User name or password incorrect.
-      </mat-label>
+      </mat-error>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-button color="primary" type="submit">
+      <button mat-button color="primary" [disabled]="!loginForm.valid">
         Submit
       </button>
     </mat-card-actions>
@@ -32,21 +39,40 @@ import { Router } from '@angular/router';
 </mat-card>
 `
 })
-export class LoginComponent {
-  name = '';
-  password = '';
+export class LoginComponent implements OnInit {
+  loginForm!: FormGroup;
   loginFailed = false;
 
   constructor(private readonly authenticationService: AuthenticationService,
-	      private readonly router: Router) {}
+	      private readonly router: Router,
+	      private readonly formBuilder: FormBuilder) {}
+
+  relevantInvalid(control: AbstractControl) {
+    return control.invalid && (control.dirty || control.touched);
+  }
+
+  ngOnInit() {
+    this.loginForm = this.formBuilder.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+    });
+  }
 
   onSubmit() {
-    this.authenticationService.login(this.name, this.password).subscribe(
-      r => {
-	this.loginFailed = false;
-	this.router.navigate(['/modes']);
-      },
-      err => { this.loginFailed = true; },
-    );
+    this.authenticationService.login(this.username.value, this.password.value)
+      .subscribe(
+	r => {
+	  this.router.navigate(['/modes']);
+	},
+	err => {
+	  if (err.status == 401) {
+	    this.loginFailed = true;
+	  }
+	},
+      );
   }
+
+  get username() { return this.loginForm.get('username')!; }
+
+  get password() { return this.loginForm.get('password')!; }
 }
