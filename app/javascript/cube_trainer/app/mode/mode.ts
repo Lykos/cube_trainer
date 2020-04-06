@@ -1,4 +1,4 @@
-import { NewMode } from './mode';
+import { NewMode } from './new-mode';
 
 export interface Mode extends NewMode {
   readonly id: number;

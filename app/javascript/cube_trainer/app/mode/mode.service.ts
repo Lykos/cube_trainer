@@ -6,7 +6,6 @@ import { NewMode } from './new-mode';
 import { ModeType } from './mode-type';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { ofNull } from '../utils/optional';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +18,7 @@ export class ModeService {
       name: modeType.name,
       showInputModes: modeType.show_input_modes,
       hasBuffer: modeType.has_buffer,
-      defaultCubeSize: ofNull(modeType.default_cube_size),
+      defaultCubeSize: modeType.default_cube_size,
       hasGoalBadness: modeType.has_goal_badness,
     }
   }
