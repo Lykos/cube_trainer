@@ -1,40 +1,41 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { RailsModule } from '../rails/rails.module';
-import { UserService } from './user.service';
-import { AuthenticationService } from './authentication.service';
+import { UserModule } from '../user/user.module';
+import { ModeService } from './mode.service';
+import { ModesComponent } from './modes.component';
 import { NgModule } from '@angular/core';
-import { SignupComponent } from './signup.component';
-import { LoginComponent } from './login.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
-    SignupComponent,
-    LoginComponent,
+    ModesComponent,
   ],
   imports: [
     BrowserModule,
     RailsModule,
+    UserModule,
+    MatTableModule,
+    RouterModule,
     MatButtonModule,
+    MatTableModule,
     MatCardModule,
     MatCheckboxModule,
     MatInputModule,
     MatFormFieldModule,
-    ReactiveFormsModule,
     FormsModule,
   ],
   providers: [
-    AuthenticationService,
-    UserService,
+    ModeService,
   ],
   exports: [
-    SignupComponent,
-    LoginComponent,
+    ModesComponent,
   ],
 })
-export class UserModule {}
+export class ModeModule {}

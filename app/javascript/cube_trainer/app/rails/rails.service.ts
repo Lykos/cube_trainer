@@ -38,9 +38,10 @@ export class RailsService {
       Rails.ajax({
 	type,
 	url,
+	dataType: 'json',
 	data: params,
 	success: (response: X) => { if (subscribed) { observer.next(response); } },
-	error: (response: any) => { if (subscribed) { observer.error(response); } }
+	error: (response: any, statusText: string, xhr: any) => { if (subscribed) { observer.error(xhr); } }
       });
       return {
 	unsubscribe() {

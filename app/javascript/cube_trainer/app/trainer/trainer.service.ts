@@ -1,4 +1,4 @@
-import { Duration } from '../../../utils/duration';
+import { Duration } from '../utils/duration';
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { InputItem } from './input_item';
@@ -10,19 +10,20 @@ import { HttpVerb } from '../rails/http_verb';
 export class TrainerService {
   constructor(private readonly rails: RailsService) {}
 
-  path(modeId: number, method: string) {
-    return `/training/${modeId}/${method}`;
+  constructPath(modeId: number, input?: InputItem) {
+    const suffix = input ? `/${input.id}` : '';
+    return `/trainer/${modeId}/inputs${suffix}`;
   }
 
-  nextInput(modeId: number) {
-    return this.rails.ajax<InputItem>(HttpVerb.Post, this.path(modeId, 'next_input'), {});
+  create(modeId: number) {
+    return this.rails.ajax<InputItem>(HttpVerb.Post, this.constructPath(modeId), {});
   }
 
-  dropInput(modeId: number, input: InputItem) {
-    return this.rails.ajax<void>(HttpVerb.Post, this.path(modeId, 'drop_input'), {id: input.id});
+  destroy(modeId: number, input: InputItem) {
+    return this.rails.ajax<void>(HttpVerb.Delete, this.constructPath(modeId, input), {});
   }
 
   stop(modeId: number, input: InputItem, duration: Duration) {
-    return this.rails.ajax<void>(HttpVerb.Post, this.path(modeId, 'stop'), {id: input.id, timeS: duration.toSeconds()});
+    return this.rails.ajax<void>(HttpVerb.Post, this.constructPath(modeId, input), {timeS: duration.toSeconds()});
   }
 }

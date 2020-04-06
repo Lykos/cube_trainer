@@ -1,10 +1,13 @@
-import { now } from '../../../utils/instant';
-import { Duration } from '../../../utils/duration';
+import { now } from '../utils/instant';
+import { Duration, zeroDuration } from '../utils/duration';
 import { InputItem } from './input_item';
 import { TrainerService } from './trainer.service';
-import { Component, OnDestroy, Input } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
+import { map } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 // @ts-ignore
 import Rails from '@rails/ujs';
+import { Observable, Subject } from 'rxjs';
 
 enum StopWatchState {
   NotStarted,
@@ -19,10 +22,7 @@ enum StopWatchState {
   <trainer-input [input]=input></trainer-input>
   <mat-card>
     <mat-card-title>Time</mat-card-title>
-    <mat-card-content>
-      <div *ngIf="duration; else elseBlock"> {{duration}} </div>
-      <ng-template #elseBlock> Press Start </ng-template>
-    </mat-card-content>
+    <mat-card-content> {{duration}} </mat-card-content>
     <mat-card-actions>
       <ng-container *ngIf="running; else notRunning">
         <button mat-button (click)="stopAndStart()">
@@ -42,19 +42,22 @@ enum StopWatchState {
       </ng-template>
     </mat-card-actions>
   </mat-card>
+  <result-table [resultEvents$]="resultEventsSubject.asObservable()"></result-table>
 </div>
 `
 })
 export class TrainerComponent implements OnDestroy {
-  duration: Duration | undefined = undefined;
+  duration: Duration = zeroDuration;
   intervalRef: any = undefined;
   state: StopWatchState = StopWatchState.NotStarted;
   input: InputItem | undefined = undefined;
+  modeId: Observable<number>;
+  resultEventsSubject = new Subject<void>();
 
-  @Input()
-  public modeId: number | undefined = undefined;
-
-  constructor(private readonly trainerService: TrainerService) {}
+  constructor(private readonly trainerService: TrainerService,
+	      activatedRoute: ActivatedRoute) {
+    this.modeId = activatedRoute.params.pipe(map(p => p.modeId));
+  }
 
   get running() {
     return this.state == StopWatchState.Running;
@@ -63,11 +66,15 @@ export class TrainerComponent implements OnDestroy {
   dropAndPause() {
     this.stopTimer();
     this.state = StopWatchState.Paused;
-    this.trainerService.dropInput(this.modeId!, this.input!).subscribe(r => {});
+    this.modeId.subscribe(modeId => {
+      this.trainerService.destroy(modeId, this.input!).subscribe(r => {});
+    });
   }
 
   start() {
-    this.trainerService.nextInput(this.modeId!).subscribe(input => this.startFor(input));
+    this.modeId.subscribe(modeId => {
+      this.trainerService.create(modeId).subscribe(input => this.startFor(input));
+    });
   }
 
   startFor(input: InputItem) {
@@ -82,7 +89,12 @@ export class TrainerComponent implements OnDestroy {
   stopAnd(onSuccess: () => void) {
     this.stopTimer();
     this.state = StopWatchState.Paused;
-    this.trainerService.stop(this.modeId!, this.input!, this.duration!).subscribe(r => onSuccess());
+    this.modeId.subscribe(modeId => {
+      this.trainerService.stop(modeId, this.input!, this.duration!).subscribe(r => {
+	this.resultEventsSubject.next();
+	onSuccess();
+      });
+    });
   }
 
   stopAndPause() {

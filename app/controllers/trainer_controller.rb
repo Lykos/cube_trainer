@@ -5,12 +5,13 @@ require 'cube_trainer/training/results_model'
 require 'ostruct'
 
 # Controller for showing inputs to the human and getting results.
-class TimerController < ApplicationController
+class TrainerController < ApplicationController
   def index
-    @inputs = mode.inputs
+    render 'application/empty'
   end
 
-  def next_input
+  # POST /trainer/1/inputs
+  def create
     results_model = CubeTrainer::Training::ResultsModel.new(mode)
     input_sampler = mode.generator.input_sampler(results_model)
     @input_item = input_sampler.random_item
@@ -20,16 +21,13 @@ class TimerController < ApplicationController
     render json: response, status: :ok
   end
 
-  def delete
+  # DELETE /trainer/1/inputs/1
+  def destroy
     @input = mode.inputs.find(params[:id])
     @input.destroy!
   end
 
-  def drop_input
-    @input = mode.inputs.find(params[:id])
-    @input.destroy!
-  end
-
+  # POST /trainer/1/inputs/1
   def stop
     @input = mode.inputs.find(params[:id])
     partial_result = CubeTrainer::Training::PartialResult.new(params[:time_s])

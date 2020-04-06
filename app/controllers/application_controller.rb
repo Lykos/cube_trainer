@@ -18,19 +18,15 @@ class ApplicationController < ActionController::Base
   end
 
   def authorized
-    redirect_to '/welcome', notice: 'Not logged in' unless logged_in?
+    render json: {}, status: :unauthorized unless logged_in?
   end
 
   def authorized_as_admin
-    redirect_to '/welcome', notice: 'Not admin' unless current_user&.admin?
-  end
-
-  def check_admin
-    redirect_to '/welcome', notice: 'Not admin' unless admin_logged_in?
+    render json: {}, status: :unauthorized unless admin_logged_in?
   end
 
   # Checks that the user is the current user.
-  def check_owner_is_current_user
+  def check_current_user_owns
     redirect_to '/welcome', notice: "Can't modify other user." unless get_owner == current_user || admin_logged_in?
   end
 end

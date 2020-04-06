@@ -4,8 +4,10 @@ import { AppComponent } from './app.component';
 import { UserModule } from './user/user.module';
 import { SignupComponent } from './user/signup.component';
 import { LoginComponent } from './user/login.component';
+import { ModesComponent } from './mode/modes.component';
+import { ModeModule } from './mode/mode.module';
 import { TrainerModule } from './trainer/trainer.module';
-import { HackTrainerComponent } from './trainer/hack_trainer.component';
+import { TrainerComponent } from './trainer/trainer.component';
 import { ToolbarModule } from './toolbar/toolbar.module';
 import { RouterModule, Routes } from '@angular/router';
 import { APP_BASE_HREF } from '@angular/common';
@@ -13,7 +15,8 @@ import { APP_BASE_HREF } from '@angular/common';
 const appRoutes: Routes = [
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'training/:mode_id', component: HackTrainerComponent },
+  { path: 'modes', component: ModesComponent },
+  { path: 'trainer/:modeId', component: TrainerComponent },
 ];
 
 @NgModule({
@@ -25,6 +28,7 @@ const appRoutes: Routes = [
     ToolbarModule,
     TrainerModule,
     UserModule,
+    ModeModule,
     RouterModule.forRoot(
       appRoutes,
       { enableTracing: true } // <-- debugging purposes only

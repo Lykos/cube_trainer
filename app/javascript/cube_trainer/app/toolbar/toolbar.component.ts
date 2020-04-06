@@ -1,21 +1,22 @@
 import { Component } from '@angular/core';
-import { UserService } from '../user/user.service';
+import { AuthenticationService } from '../user/authentication.service';
 import { Router } from '@angular/router';
+import { hasValue } from '../utils/optional';
 
 @Component({
   selector: 'toolbar',
   template: `
-<mat-toolbar>
-  <ng-container *ngIf="loggedOut; else loggedIn">
-    <button mat-button (click)="login()">
+<mat-toolbar color="primary">
+  <ng-container *ngIf="!loggedIn; else loggedInBlock">
+    <button mat-button (click)="onLogin()">
       Login
     </button>
-    <button mat-button (click)="signup()">
+    <button mat-button (click)="onSignup()">
       Sign Up
     </button>
   </ng-container>
-  <ng-template #loggedIn>
-    <button mat-button (click)="logout()">
+  <ng-template #loggedInBlock>
+    <button mat-button (click)="onLogout()">
       Logout
     </button>
   </ng-template>
@@ -25,23 +26,21 @@ import { Router } from '@angular/router';
 export class ToolbarComponent {
   loggedIn = false;
 
-  get loggedOut() {
-    return !this.loggedIn;
+  constructor(private readonly authenticationService: AuthenticationService,
+	      private readonly router: Router) {
+    this.authenticationService.currentUserObservable.subscribe(
+      (user) => { this.loggedIn = hasValue(user) });
   }
 
-  constructor(private readonly userService: UserService, private readonly router: Router) {}
-
-  login() {
-    this.loggedIn = true;
-    this.userService.login('bernhard', 'abc123');
+  onLogin() {
+    this.router.navigate(['/login']);
   }
 
-  signup() {
+  onSignup() {
     this.router.navigate(['/signup']);
   }
 
-  logout() {
-    this.loggedIn = false;
-    this.userService.logout();
+  onLogout() {
+    this.authenticationService.logout();
   }
 }
