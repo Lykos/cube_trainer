@@ -191,6 +191,22 @@ module CubeTrainer
         @checker = checker || ImageChecker.new(format)
       end
 
+      def fetch(cube_state)
+        uri = uri(cube_state)
+        if (r = @cache[uri.to_s])
+          r
+        else
+          @cache[uri.to_s] = really_fetch_internal(uri)
+        end
+      end
+
+      def fetch_and_store(cube_state, output)
+        image = fetch(cube_state)
+        File.open(output, 'wb') { |f| f.write(image) }
+      end
+
+      private
+
       def serialize_color(color)
         case color
         when :transparent then 't'
@@ -230,20 +246,6 @@ module CubeTrainer
           return data if @checker.valid?(data)
         end
         raise "Didn't get a valid image after #{@retries} retries."
-      end
-
-      def fetch(cube_state)
-        uri = uri(cube_state)
-        if (r = @cache[uri.to_s])
-          r
-        else
-          @cache[uri.to_s] = really_fetch_internal(uri)
-        end
-      end
-
-      def fetch_and_store(cube_state, output)
-        image = fetch(cube_state)
-        File.open(output, 'wb') { |f| f.write(image) }
       end
 
       raise unless FACE_SYMBOL_ORDER.sort == Core::CubeConstants::FACE_SYMBOLS.sort
