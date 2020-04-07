@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
-  before_action :authorized
+  before_action :check_authorized
 
   def current_user
     User.find_by(id: session[:user_id])
@@ -15,11 +15,11 @@ class ApplicationController < ActionController::Base
     current_user&.admin?
   end
 
-  def authorized
+  def check_authorized
     render json: {}, status: :unauthorized unless logged_in?
   end
 
-  def authorized_as_admin
+  def check_authorized_as_admin
     render json: {}, status: :unauthorized unless admin_logged_in?
   end
 

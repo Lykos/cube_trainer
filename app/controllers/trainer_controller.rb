@@ -30,7 +30,7 @@ class TrainerController < ApplicationController
   # DELETE /trainer/1/inputs/1
   def destroy
     if @input.destroy
-      head :ok
+      head :no_content
     else
       render json: @input.errors, status: :unprocessable_entity
     end

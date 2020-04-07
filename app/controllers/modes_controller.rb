@@ -1,6 +1,6 @@
 class ModesController < ApplicationController
-  before_action :get_mode, only: [:show, :edit, :update, :destroy]
-  before_action :check_current_user_owns, only: [:show, :edit, :update, :destroy]
+  before_action :get_mode, only: [:show, :update, :destroy]
+  before_action :check_current_user_owns, only: [:show, :update, :destroy]
 
   # GET /mode_types.json
   def types
@@ -36,7 +36,6 @@ class ModesController < ApplicationController
 
   # GET /modes/new
   def new
-    @mode = current_user.modes.new
     respond_to do |format|
       format.html { render 'application/empty' }
     end
