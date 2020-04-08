@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "Users", type: :request do
   let(:user) do
     User.create!(
-      name: 'abc',
+      name: 'users_abc',
       password: 'password',
       password_confirmation: 'password'
     )
@@ -11,7 +11,7 @@ RSpec.describe "Users", type: :request do
 
   let(:eve) do
     User.create!(
-      name: 'eve',
+      name: 'users_eve',
       password: 'password',
       password_confirmation: 'password'
     )
@@ -19,7 +19,7 @@ RSpec.describe "Users", type: :request do
 
   let(:admin) do
     User.create!(
-      name: 'admin',
+      name: 'users_admin',
       password: 'password',
       password_confirmation: 'password',
       admin: true
@@ -41,7 +41,10 @@ RSpec.describe "Users", type: :request do
       get "/users", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body.length).to eq(3)
+      users = parsed_body.map { |u| User.new(u) }
+      expect(users).to include(admin)
+      expect(users).to include(eve)
+      expect(users).to include(user)
     end
 
     it 'returns unauthorized for non-admins' do
@@ -164,7 +167,7 @@ RSpec.describe "Users", type: :request do
     it 'returns unprocessable entity for invalid updates' do
       put "/users/#{user.id}", params: { user: { name: nil } }
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(User.find(user.id).name).to eq('abc')
+      expect(User.find(user.id).name).to eq('users_abc')
     end
 
     it 'returns unprocessable entity if setting admin' do
@@ -189,7 +192,7 @@ RSpec.describe "Users", type: :request do
       post "/login", params: { username: eve.name, password: eve.password }
       put "/users/#{user.id}", params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:not_found)
-      expect(User.find(user.id).name).to eq('abc')
+      expect(User.find(user.id).name).to eq('users_abc')
     end
   end
 

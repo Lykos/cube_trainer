@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe "Trainer", type: :request do
+RSpec.describe "Trainer", type: :request, focus: true do
   let(:user) do
     User.create!(
-      name: 'abc',
+      name: 'trainer_abc',
       password: 'password',
       password_confirmation: 'password'
     )
@@ -11,7 +11,7 @@ RSpec.describe "Trainer", type: :request do
 
   let(:eve) do
     User.create!(
-      name: 'eve',
+      name: 'trainer_eve',
       password: 'password',
       password_confirmation: 'password'
     )
@@ -19,7 +19,7 @@ RSpec.describe "Trainer", type: :request do
   
   let(:mode) do
     user.modes.create!(
-      name: 'test_mode',
+      name: 'trainer_test_mode',
       show_input_mode: :name,
       mode_type: :floating_2flips,
       goal_badness: 1,

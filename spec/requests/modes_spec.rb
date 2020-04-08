@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "Modes", type: :request do
   let(:user) do
     User.create!(
-      name: 'abc',
+      name: 'modes_abc',
       password: 'password',
       password_confirmation: 'password'
     )
@@ -11,7 +11,7 @@ RSpec.describe "Modes", type: :request do
 
   let(:eve) do
     User.create!(
-      name: 'eve',
+      name: 'modes_eve',
       password: 'password',
       password_confirmation: 'password'
     )
@@ -19,7 +19,7 @@ RSpec.describe "Modes", type: :request do
   
   let(:mode) do
     user.modes.create!(
-      name: 'test_mode',
+      name: 'modes_test_mode',
       show_input_mode: :name,
       mode_type: :floating_2flips,
       goal_badness: 1,

@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe "Modes", type: :request, focus: true do
+RSpec.describe "Sessions", type: :request do
   let(:user) do
     User.create!(
-      name: 'abc',
+      name: 'sessions_abc',
       password: 'password',
       password_confirmation: 'password'
     )
