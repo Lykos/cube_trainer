@@ -1,5 +1,5 @@
 class ResultsController < ApplicationController
-  before_action :get_mode
+  before_action :set_mode
   before_action :set_input, only: [:show, :destroy]
   before_action :check_current_user_owns
 
@@ -32,22 +32,25 @@ class ResultsController < ApplicationController
 
   # DELETE /modes/1/results/1.json
   def destroy
-    @input.destroy
-    head :no_content
+    if @input.destroy
+      head :no_content
+    else
+      render json: @input.errors, status: :unprocessable_entity
+    end
   end
 
   private
 
   def set_input
-    @input = Result.find(params[:id]).input
+    head :not_found unless @input = Result.find(params[:id]).input
   end
 
-  def get_mode
-    @mode ||= Mode.find(params[:mode_id])
+  def set_mode
+    head :not_found unless @mode = Mode.find(params[:mode_id])
   end
 
   def get_owner
-    get_mode.user
+    @mode.user
   end
 
   # Only allow a list of trusted parameters through.

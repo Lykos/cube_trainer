@@ -61,7 +61,7 @@ RSpec.describe "Modes", type: :request, focus: true do
 
   describe 'GET #show' do
     it 'returns http success' do
-      get "/modes", headers: headers
+      get "/modes/#{mode.id}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body).to eq(mode.to_json)
