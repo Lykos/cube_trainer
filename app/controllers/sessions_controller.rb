@@ -3,16 +3,12 @@ class SessionsController < ApplicationController
 
   # GET /login
   def new
-    respond_to do |format|
-      format.html { render 'application/empty' }
-    end
+    render 'application/empty'
   end
 
   # GET /welcome
   def welcome
-    respond_to do |format|
-      format.html { render 'application/empty' }
-    end
+    render 'application/empty'
   end
 
   # POST /login
