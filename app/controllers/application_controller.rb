@@ -24,7 +24,8 @@ class ApplicationController < ActionController::Base
   end
 
   # Checks that the user is the current user.
+  # In order to not allow reverse engineering, we have to return not_found in all such cases.
   def check_current_user_owns
-    redirect_to '/welcome', notice: "Can't modify other user." unless get_owner == current_user || admin_logged_in?
+    head :not_found unless get_owner == current_user || admin_logged_in?
   end
 end
