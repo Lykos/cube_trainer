@@ -8,20 +8,21 @@ class Mode < ApplicationRecord
   include CubeTrainer::Utils::ArrayHelper
   include CubeTrainer::Training::CommutatorTypes
 
-  SHOW_INPUT_MODES = %i(picture name)
-  COMMUTATOR_INFOS_BY_MODE_TYPE =
+  COMMUTATOR_INFOS_BY_MODE_TYPE_NAME =
     COMMUTATOR_TYPES.values.map { |v| [v.result_symbol, v] }.to_h
-  MODE_TYPES = COMMUTATOR_INFOS_BY_MODE_TYPE.keys
+  MODE_TYPES = COMMUTATOR_INFOS_BY_MODE_TYPE_NAME.values
+  MODE_TYPE_NAMES = COMMUTATOR_INFOS_BY_MODE_TYPE_NAME.keys
 
   has_many :inputs, dependent: :destroy
   belongs_to :user
 
+  # Make this a mode type
   attribute :mode_type, :symbol
   attribute :show_input_mode, :symbol
 
   validates :user_id, presence: true
   validates :name, presence: true
-  validates :mode_type, presence: true, inclusion: MODE_TYPES
+  validates :mode_type, presence: true, inclusion: MODE_TYPE_NAMES
   validates :show_input_mode, presence: true, inclusion: SHOW_INPUT_MODES
   # TODO: Validate buffer and mode dependent fields
 
@@ -36,7 +37,7 @@ class Mode < ApplicationRecord
   end
 
   def commutator_info
-    COMMUTATOR_INFOS_BY_MODE_TYPE[mode_type]
+    COMMUTATOR_INFOS_BY_MODE_TYPE_NAME[mode_type]
   end
 
   def generator

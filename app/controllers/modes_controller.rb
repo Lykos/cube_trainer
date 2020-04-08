@@ -4,16 +4,7 @@ class ModesController < ApplicationController
 
   # GET /mode_types.json
   def types
-    render json:
-             [
-               {
-                 name: :corner_3twists,
-                 show_input_modes: Mode::SHOW_INPUT_MODES,
-                 has_buffer: true,
-                 default_cube_size: 3,
-                 has_goal_badness: true
-               }
-             ]
+    render json: Mode::MODE_TYPES.map { |m| m.to_simple }
   end
 
   # GET /modes
