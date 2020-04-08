@@ -27,7 +27,7 @@ RSpec.describe "Modes", type: :request, focus: true do
     )
   end
 
-  let(:headers) { { 'CONTENT_TYPE' => 'application/json' } }
+  let(:headers) { { 'ACCEPT' => 'application/json' } }
 
   before(:each) do
     post "/login", params: { username: user.name, password: user.password }
@@ -44,13 +44,16 @@ RSpec.describe "Modes", type: :request, focus: true do
 
   describe 'GET #index' do
     it 'returns http success' do
+      mode
       get "/modes", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body).to eq([mode.to_json])
+      expect(parsed_body.length).to eq(1)
+      expect(Mode.new(parsed_body[0])).to eq(mode)
     end
 
     it 'returns nothing for another user' do
+      mode
       post "/login", params: { username: eve.name, password: eve.password }
       get "/modes", headers: headers
       expect(response).to have_http_status(:success)
@@ -64,7 +67,7 @@ RSpec.describe "Modes", type: :request, focus: true do
       get "/modes/#{mode.id}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body).to eq(mode.to_json)
+      expect(Mode.new(parsed_body)).to eq(mode)
     end
 
     it 'returns not found for unknown modes' do
@@ -74,7 +77,7 @@ RSpec.describe "Modes", type: :request, focus: true do
 
     it 'returns not found for another user' do
       post "/login", params: { username: eve.name, password: eve.password }
-      get "/modes", headers: headers
+      get "/modes/#{mode.id}", headers: headers
       expect(response).to have_http_status(:not_found)
     end
   end
@@ -135,7 +138,7 @@ RSpec.describe "Modes", type: :request, focus: true do
 
     it 'returns unprocessable entity for invalid updates' do
       put "/modes/#{mode.id}", params: { mode: { name: nil } }
-      expect(response).to have_http_status(:not_found)
+      expect(response).to have_http_status(:unprocessable_entity)
       expect(Mode.find(mode.id).goal_badness).to eq(1)
     end
 

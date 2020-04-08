@@ -27,7 +27,7 @@ RSpec.describe "Trainer", type: :request do
     )
   end
 
-  let(:headers) { { 'CONTENT_TYPE' => 'application/json' } }
+  let(:headers) { { 'ACCEPT' => 'application/json' } }
 
   before(:each) do
     post "/login", params: { username: user.name, password: user.password }

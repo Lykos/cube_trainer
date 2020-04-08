@@ -42,11 +42,11 @@ class ResultsController < ApplicationController
   private
 
   def set_input
-    head :not_found unless @input = Result.find(params[:id]).input
+    head :not_found unless @input = Result.find_by(id: params[:id])&.input
   end
 
   def set_mode
-    head :not_found unless @mode = Mode.find(params[:mode_id])
+    head :not_found unless @mode = Mode.find_by(id: params[:mode_id])
   end
 
   def get_owner
