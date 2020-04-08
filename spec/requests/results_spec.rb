@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Results", type: :request, focus: true do
+RSpec.describe "Results", type: :request do
   let(:user) do
     User.create!(
       name: 'abc',

@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :update, :destroy]
   before_action :check_authorized_as_admin, only: [:index]
-  before_action :check_owner_is_current_user, only: [:show, :update, :destroy]
+  before_action :check_current_user_owns, only: [:show, :update, :destroy]
   skip_before_action :check_authorized, only: [:new, :create]
 
   # GET /users

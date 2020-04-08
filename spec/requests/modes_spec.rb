@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Modes", type: :request, focus: true do
+RSpec.describe "Modes", type: :request do
   let(:user) do
     User.create!(
       name: 'abc',
