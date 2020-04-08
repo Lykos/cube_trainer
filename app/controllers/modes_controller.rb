@@ -1,5 +1,5 @@
 class ModesController < ApplicationController
-  before_action :get_mode, only: [:show, :update, :destroy]
+  before_action :set_mode, only: [:show, :update, :destroy]
   before_action :check_current_user_owns, only: [:show, :update, :destroy]
 
   # GET /mode_types.json
@@ -36,16 +36,12 @@ class ModesController < ApplicationController
 
   # GET /modes/new
   def new
-    respond_to do |format|
-      format.html { render 'application/empty' }
-    end
+    render 'application/empty'
   end
 
   # GET /modes/1/edit
   def edit
-    respond_to do |format|
-      format.html { render 'application/empty' }
-    end
+    render 'application/empty'
   end
 
   # POST /modes.json
@@ -61,31 +57,30 @@ class ModesController < ApplicationController
 
   # PATCH/PUT /modes/1.json
   def update
-    respond_to do |format|
-      if @mode.update(mode_params)
-        render :show, location: @mode
-      else
-        render json: @mode.errors, status: :unprocessable_entity
-      end
+    if @mode.update(mode_params)
+      render json: @mode, status: :ok
+    else
+      render json: @mode.errors, status: :unprocessable_entity
     end
   end
 
   # DELETE /modes/1.json
   def destroy
-    @mode.destroy
-    respond_to do |format|
+    if @mode.destroy
       head :no_content
+    else 
+      render json: @mode.errors, status: :unprocessable_entity
     end
   end
 
   private
 
-  def get_mode
-    @mode ||= Mode.find(params[:id])
+  def set_mode
+    head :not_found unless @mode = Mode.find_by(id: params[:id])
   end
 
   def get_owner
-    get_mode.user
+    @mode.user
   end
 
   # Only allow a list of trusted parameters through.

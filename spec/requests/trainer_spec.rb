@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Trainer", type: :request, focus: true do
+RSpec.describe "Trainer", type: :request do
   let(:user) do
     User.create!(
       name: 'abc',
@@ -31,6 +31,13 @@ RSpec.describe "Trainer", type: :request, focus: true do
 
   before(:each) do
     post "/login", params: { username: user.name, password: user.password }
+  end
+
+  describe 'GET #index' do
+    it 'returns http success' do
+      get "/trainer/#{mode.id}"
+      expect(response).to have_http_status(:success)
+    end
   end
 
   describe 'POST #create' do
@@ -68,7 +75,7 @@ RSpec.describe "Trainer", type: :request, focus: true do
       expect(response).to have_http_status(:not_found)
     end
 
-    it 'returns not found for unknown ids' do
+    it 'returns not found for unknown inputs' do
       delete "/trainer/1/inputs/1243943"
       expect(response).to have_http_status(:not_found)
     end
@@ -97,7 +104,7 @@ RSpec.describe "Trainer", type: :request, focus: true do
       expect(response).to have_http_status(:not_found)
     end
 
-    it 'returns not found for unknown ids' do
+    it 'returns not found for unknown inputs' do
       post "/trainer/1/inputs/1243943"
       expect(response).to have_http_status(:not_found)
     end
