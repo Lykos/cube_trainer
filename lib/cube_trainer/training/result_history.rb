@@ -26,6 +26,51 @@ module CubeTrainer
         reset
       end
 
+      def add_reset_listener(listener)
+        @reset_listeners.push(listener)
+      end
+
+      def occurred_today?(item)
+        last_occurrence_days_ago(item).zero?
+      end
+
+      # On how many different days the item appeared.
+      def occurrence_days(item)
+        occurrence_days_hash[item.representation]
+      end
+
+      def occurrences(item)
+        @occurrences[item.representation]
+      end
+
+      def last_hinted_days_ago(item)
+        @last_hinted_days_ago[item.representation]
+      end
+
+      def badness_average(item)
+        @badness_histories[item.representation].average
+      end
+
+      def last_occurrence_days_ago(item)
+        @occurrence_days_ago[item.representation].last || Float::INFINITY
+      end
+
+      # Returns how many items have occurred since the last occurrence of this item
+      # (0 if it was the last picked item).
+      def items_since_last_occurrence(item)
+        occ = @occurrence_indices[item.representation]
+        return Float::INFINITY if occ.nil?
+
+        @current_occurrence_index - occ
+      end
+
+      private
+
+      def occurrence_days_hash
+        @occurrence_days_hash ||=
+          @mode.inputs.joins(:result).group(:input_representation).distinct.count('floor(extract(epoch from age(inputs.created_at)) / 86400)')
+      end
+
       # Reset caches and incremental state, recompute everything from scratch.
       def reset
         @current_occurrence_index = 0
@@ -41,10 +86,6 @@ module CubeTrainer
           record_result(r)
         end
         @reset_listeners.each(&:reset)
-      end
-
-      def add_reset_listener(listener)
-        @reset_listeners.push(listener)
       end
 
       def new_cube_average
@@ -65,15 +106,6 @@ module CubeTrainer
       # Badness for the given result.
       def result_badness(result)
         result.time_s + @failed_seconds * result.failed_attempts + @hint_seconds * result.num_hints
-      end
-
-      # Returns how many items have occurred since the last occurrence of this item
-      # (0 if it was the last picked item).
-      def items_since_last_occurrence(item)
-        occ = @occurrence_indices[item.representation]
-        return Float::INFINITY if occ.nil?
-
-        @current_occurrence_index - occ
       end
 
       # Insert a new result.
@@ -97,10 +129,6 @@ module CubeTrainer
         @occurrences[input_representation] += 1
       end
 
-      def last_occurrence_days_ago(item)
-        @occurrence_days_ago[item.representation].last || Float::INFINITY
-      end
-
       def update_last_occurrence_days_ago(input_representation, days_ago)
         occurrence_days_ago = @occurrence_days_ago[input_representation]
         return unless occurrence_days_ago.empty? || occurrence_days_ago.last > days_ago
@@ -115,23 +143,6 @@ module CubeTrainer
         @last_hinted_days_ago[repr] = days_ago
       end
 
-      def badness_average(item)
-        @badness_histories[item.representation].average
-      end
-
-      def occurrences(item)
-        @occurrences[item.representation]
-      end
-
-      def occurred_today?(item)
-        last_occurrence_days_ago(item).zero?
-      end
-
-      # On how many different days the item appeared.
-      def occurrence_days(item)
-        @occurrence_days_ago[item.representation].length
-      end
-
       # On how many different days the item appeared since the user last used a hint for it.
       def occurrence_days_since_last_hint(item)
         last_hinted_days_ago = last_hinted_days_ago(item)
@@ -140,10 +151,6 @@ module CubeTrainer
         @occurrence_days_ago[item.representation].count do |days_ago|
           days_ago < last_hinted_days_ago
         end
-      end
-
-      def last_hinted_days_ago(item)
-        @last_hinted_days_ago[item.representation]
       end
     end
   end
