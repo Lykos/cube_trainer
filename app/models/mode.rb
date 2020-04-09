@@ -9,9 +9,9 @@ class Mode < ApplicationRecord
   include CubeTrainer::Training::CommutatorTypes
 
   COMMUTATOR_INFOS_BY_MODE_TYPE_NAME =
-    COMMUTATOR_TYPES.values.map { |v| [v.result_symbol, v] }.to_h
-  MODE_TYPES = COMMUTATOR_INFOS_BY_MODE_TYPE_NAME.values
-  MODE_TYPE_NAMES = COMMUTATOR_INFOS_BY_MODE_TYPE_NAME.keys
+    COMMUTATOR_TYPES.values.map { |v| [v.result_symbol, v] }.to_h.freeze
+  MODE_TYPES = COMMUTATOR_INFOS_BY_MODE_TYPE_NAME.values.freeze
+  MODE_TYPE_NAMES = COMMUTATOR_INFOS_BY_MODE_TYPE_NAME.keys.freeze
 
   has_many :inputs, dependent: :destroy
   belongs_to :user
