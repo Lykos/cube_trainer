@@ -10,7 +10,7 @@ BROKEN_MODE_TYPE_NAMES = [
   :floating_2twists_and_corner_3twists
 ]
 
-shared_examples 'commutator_set', focus: true do |info|
+shared_examples 'commutator_set' do |info|
 
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:options) do

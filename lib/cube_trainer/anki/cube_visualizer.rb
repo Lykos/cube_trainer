@@ -205,6 +205,12 @@ module CubeTrainer
         File.open(output, 'wb') { |f| f.write(image) }
       end
 
+      def uri(cube_state)
+        uri = BASE_URI.dup
+        uri.query = URI.encode_www_form(@url_params + cube_state_params(cube_state))
+        uri
+      end
+
       private
 
       def serialize_color(color)
@@ -227,12 +233,6 @@ module CubeTrainer
           [:pzl, cube_state.n],
           [:fd, serialized_cube_state]
         ]
-      end
-
-      def uri(cube_state)
-        uri = BASE_URI.dup
-        uri.query = URI.encode_www_form(@url_params + cube_state_params(cube_state))
-        uri
       end
 
       def really_fetch_internal(uri)
