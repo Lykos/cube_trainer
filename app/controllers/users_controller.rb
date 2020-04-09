@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :update, :destroy]
   before_action :check_authorized_as_admin, only: [:index]
+  before_action :check_authorized_as_admin_if_setting_admin, only: [:create, :update]
   before_action :check_current_user_owns, only: [:show, :update, :destroy]
   skip_before_action :check_authorized, only: [:new, :create]
 
@@ -65,6 +66,12 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def check_authorized_as_admin_if_setting_admin
+    return unless params[:user] && params[:user][:admin] && !admin_logged_in?
+
+    render json: 'Only admins can set the `admin` field.', status: :unauthorized 
+  end
 
   def set_user
     head :not_found unless @user = User.find_by(id: params[:id])

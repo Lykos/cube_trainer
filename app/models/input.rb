@@ -17,7 +17,7 @@ class Input < ApplicationRecord
 
   def to_simple_result
     {
-      id: id,
+      id: result.id,
       mode: mode,
       input_representation: input_representation.to_s,
       time_s: result.time_s,

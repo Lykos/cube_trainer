@@ -118,7 +118,7 @@ RSpec.describe "Users", type: :request do
       expect(response).to have_http_status(:unprocessable_entity)
     end
 
-    it "doesn't set admin if not admin" do
+    it "returns unauthorized if setting admin while not admin" do
       post "/users", params: {
              user: {
                name: 'new_user',
@@ -127,10 +127,7 @@ RSpec.describe "Users", type: :request do
                admin: true
              }
            }
-      expect(response).to have_http_status(:created)
-      parsed_body = JSON.parse(response.body)
-      expect(parsed_body['id']).not_to eq(user.id)
-      expect(User.find(parsed_body['id']).admin).to eq(false)
+      expect(response).to have_http_status(:unauthorized)
     end
   end
 
@@ -140,7 +137,7 @@ RSpec.describe "Users", type: :request do
       put "/users/#{admin.id}", params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:success)
       admin.reload
-      expect(admin.name).to eq(dodo)
+      expect(admin.name).to eq('dodo')
       expect(admin.admin).to eq(true)
     end
 
@@ -150,9 +147,9 @@ RSpec.describe "Users", type: :request do
       expect(User.find(user.id).name).to eq('abc')
     end
 
-    it 'returns unprocessable entity if setting admin' do
+    it 'returns unauthorized if setting admin' do
       put "/users/#{user.id}", params: { user: { admin: true } }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unauthorized)
       expect(User.find(user.id).admin).to eq(false)
     end
 

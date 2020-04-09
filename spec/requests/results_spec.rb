@@ -1,42 +1,11 @@
 require 'rails_helper'
+require 'fixtures'
 
-RSpec.describe "Results", type: :request do
-  let(:user) do
-    User.create!(
-      name: 'modes_abc',
-      password: 'password',
-      password_confirmation: 'password'
-    )
-  end
-
-  let(:input) do
-    mode.inputs.create!(input_representation: CubeTrainer::LetterPair.new(%w(a b)))
-  end
-
-  let(:result) do
-    partial_result = CubeTrainer::Training::PartialResult.new(10)
-    result = Result.from_input_and_partial(input, partial_result)
-    result.save!
-    result
-  end
-
-  let(:eve) do
-    User.create!(
-      name: 'modes_eve',
-      password: 'password',
-      password_confirmation: 'password'
-    )
-  end
-  
-  let(:mode) do
-    user.modes.create!(
-      name: 'modes_test_mode',
-      show_input_mode: :name,
-      mode_type: :floating_2flips,
-      goal_badness: 1,
-      cube_size: 3
-    )
-  end
+RSpec.describe "Results", type: :request, focus: true do
+  include_context :user
+  include_context :eve
+  include_context :input
+  include_context :result
 
   let(:headers) { { 'ACCEPT' => 'application/json' } }
 
@@ -46,6 +15,8 @@ RSpec.describe "Results", type: :request do
 
   describe 'GET #index' do
     it 'returns http success' do
+      Result.delete_all
+      result
       get "/modes/#{mode.id}/results", params: { offset: 0, limit: 100 }, headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)

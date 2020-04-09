@@ -59,3 +59,23 @@ shared_context :mode do
     mode
   end
 end
+
+shared_context :input do
+  include_context :mode
+
+  let(:input) do
+    mode.inputs.find_or_create_by!(input_representation: CubeTrainer::LetterPair.new(%w(a b)))
+  end
+end
+
+shared_context :result do
+  include_context :input
+
+  let(:result) do
+    input.result&.destroy!
+    partial_result = CubeTrainer::Training::PartialResult.new(10)
+    result = Result.from_input_and_partial(input, partial_result)
+    result.save!
+    result
+  end
+end
