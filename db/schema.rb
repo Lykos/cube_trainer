@@ -12,6 +12,9 @@
 
 ActiveRecord::Schema.define(version: 2020_04_01_192053) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "download_states", force: :cascade do |t|
     t.text "model", null: false
     t.datetime "downloaded_at"
@@ -27,7 +30,7 @@ ActiveRecord::Schema.define(version: 2020_04_01_192053) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "old_user_id"
     t.string "hostname", null: false
-    t.integer "mode_id", null: false
+    t.bigint "mode_id", null: false
     t.index ["mode_id"], name: "index_inputs_on_mode_id"
   end
 
@@ -57,7 +60,7 @@ ActiveRecord::Schema.define(version: 2020_04_01_192053) do
     t.text "old_hostname"
     t.datetime "uploaded_at", precision: 6
     t.integer "old_user_id"
-    t.integer "input_id", null: false
+    t.bigint "input_id", null: false
     t.index ["input_id"], name: "index_results_on_input_id", unique: true
   end
 
