@@ -5,6 +5,7 @@ require 'cube_trainer/alg_name'
 require 'cube_trainer/core/parser'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/sequence_hinter'
+require 'fixtures'
 
 class FakeHeterogenousSequenceHinter < Training::HeterogenousSequenceHinter
   def generate_combinations(input)
@@ -13,9 +14,10 @@ class FakeHeterogenousSequenceHinter < Training::HeterogenousSequenceHinter
 end
 
 describe Training::HeterogenousSequenceHinter do
+  include_context :mode
+
   include Core
 
-  let(:user) { User.new(name: 'abc', password: 'password') }
   let(:cube_size) { 3 }
   let(:algname_a) { SimpleAlgName.new('a') }
   let(:algname_b) { SimpleAlgName.new('b') }
@@ -25,9 +27,24 @@ describe Training::HeterogenousSequenceHinter do
   let(:algorithm_b) { parse_algorithm('R') }
   let(:algorithm_c) { parse_algorithm('U') }
   let(:algorithm_d) { parse_algorithm('U2') }
-  let(:result_a) { user.results.new(mode: :mode, created_at: Time.at(0), time_s: 1.0, input_representation: algname_a, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
-  let(:result_b) { user.results.new(mode: :mode, created_at: Time.at(0), time_s: 2.0, input_representation: algname_b, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
-  let(:result_d) { user.results.new(mode: :mode, created_at: Time.at(0), time_s: 1.0, input_representation: algname_d, failed_attempts: 0, word: nil, success: true, num_hints: 0) }
+  let(:result_a) do
+    Result.create!(
+      input: mode.inputs.create!(created_at: Time.at(0), input_representation: algname_a),
+      time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
+    )
+  end
+  let(:result_b) do
+    Result.create!(
+      input: mode.inputs.create!(created_at: Time.at(0), input_representation: algname_b),
+      time_s: 2.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
+    )
+  end
+  let(:result_d) do
+    Result.create!(
+      input: mode.inputs.create!(created_at: Time.at(0), input_representation: algname_d),
+      time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
+    )
+  end
   let(:results_left) { [result_a, result_b] * 5 }
   let(:results_right) { [result_d] * 5 }
   let(:resultss) { [results_left, results_right] }

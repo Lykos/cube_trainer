@@ -4,7 +4,7 @@ require 'cube_trainer/training/commutator_sets'
 require 'cube_trainer/training/commutator_options'
 require 'ostruct'
 
-shared_examples 'commutator_set' do |info|
+shared_examples 'commutator_set', focus: true do |info|
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:options) do
     options = Training::CommutatorOptions.default_options

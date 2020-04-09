@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'fixtures'
 
-RSpec.describe "Results", type: :request, focus: true do
+RSpec.describe "Results", type: :request do
   include_context :user
   include_context :eve
   include_context :input
