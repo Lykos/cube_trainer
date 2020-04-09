@@ -16,21 +16,21 @@ module CubeTrainer
         [@config[:repetition_boundary], @config[:num_items] / 2].min
       end
 
-      # Adjusts a badness score in order to punish overly fast repetition, even for high badness.
-      def repetition_adjusted_score(index, badness_score)
-        !index.nil? && index < repetition_boundary ? 0 : badness_score
+      # Used to punish overly fast repetition, even for high badness.
+      def too_recently?(input_item)
+        @result_history.last_items(repetition_boundary).include?(input_item.representation)
       end
 
       # Computes an exponentially growing score based on the given badness that
       # allows us to strongly prefer bad items.
       def score(input_item)
+        return 0 if too_recently?(input_item)
+
         bad_badness = (@result_history.badness_average(input_item) - @config[:goal_badness]) /
                       @config[:goal_badness]
         return 0 unless bad_badness.positive?
-
-        score = @config[:badness_base]**bad_badness
-        index = @result_history.items_since_last_occurrence(input_item)
-        repetition_adjusted_score(index, score)
+        
+        @config[:badness_base]**bad_badness
       end
 
       def color_symbol

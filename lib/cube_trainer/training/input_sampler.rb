@@ -98,8 +98,7 @@ module CubeTrainer
 
         @items = items
         @config = create_config(mode)
-        @result_history = create_result_history(mode)
-        @sampler = create_sampler
+        @mode = mode
       end
 
       attr_reader :items
@@ -168,7 +167,10 @@ module CubeTrainer
       end
 
       def random_item
-        managed_sample = @sampler.random_item
+        @result_history = create_result_history(@mode)
+        sampler = create_sampler
+        managed_sample = sampler.random_item
+
         item = managed_sample.input_item
         item
       end

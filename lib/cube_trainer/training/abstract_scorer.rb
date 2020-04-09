@@ -31,7 +31,7 @@ module CubeTrainer
           begin
             class_name = snake_case_class_name(self.class)
             raise unless class_name.end_with?('_scorer')
-
+            
             class_name.gsub(/_scorer$/, '').colorize(color_symbol)
           end
       end

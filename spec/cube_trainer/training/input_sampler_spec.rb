@@ -3,39 +3,35 @@
 require 'cube_trainer/training/fake_learner'
 require 'cube_trainer/training/trainer'
 require 'cube_trainer/training/input_item'
-require 'cube_trainer/training/results_model'
 require 'cube_trainer/training/commutator_sets'
 require 'cube_trainer/training/stats_computer'
 require 'cube_trainer/letter_pair'
+require 'fixtures'
 require 'ostruct'
 
 ITERATIONS = 300
 
-def compute_average(results_model, generator)
+def compute_average(mode, generator)
   Result.delete_all
   learner = FakeLearner.new
-  trainer = Training::Trainer.new(learner, results_model, generator)
+  trainer = Training::Trainer.new(learner, mode, generator)
   ITERATIONS.times { trainer.one_iteration }
   raise 'Not all inputs covered.' unless learner.items_learned == generator.items.length
 
   learner.average_time
 end
 
-describe Training::InputSampler do
-  let(:user) { User.create!(name: 'abc', password: 'password', password_confirmation: 'password') }  
+describe Training::InputSampler, focus: true do
+  include_context :mode
+
   ITEMS = ('a'..'c').to_a.permutation(2).map { |p| Training::InputItem.new(LetterPair.new(p)) }
 
-  let(:options) { OpenStruct.new }
-
   it 'performs better than random sampling' do
-    results_model = Training::ResultsModel.new(:items, user)
+    smart_sampler = described_class.new(ITEMS, mode)
+    smart_average = compute_average(mode, smart_sampler)
 
-    smart_sampler = described_class.new(ITEMS, results_model, options, 1.0)
-    smart_average = compute_average(results_model, smart_sampler)
-
-    results_model = Training::ResultsModel.new(:items, user)
     random_sampler = Training::RandomSampler.new(ITEMS)
-    random_average = compute_average(results_model, random_sampler)
+    random_average = compute_average(mode, random_sampler)
 
     expect(smart_average).to be < random_average
   end

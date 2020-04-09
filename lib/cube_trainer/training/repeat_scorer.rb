@@ -46,10 +46,8 @@ module CubeTrainer
         # When the item is completely new, repeat often, then less and less often, but also
         # adjust to the total number of items.
         rep_index = repetition_index(input_item.representation, occ)
-        index = @result_history.items_since_last_occurrence(input_item)
-        raise 'Not completely new item has no index.' if index.nil?
 
-        rep_index_score(index, rep_index)
+        @result_history.last_items(rep_index).include?(input_item.representation) ? 0 : 1
       end
 
       # After how many other items should this item be repeated.

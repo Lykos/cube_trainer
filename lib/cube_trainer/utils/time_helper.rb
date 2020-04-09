@@ -5,13 +5,13 @@ module CubeTrainer
     # A few time related helper methods.
     module TimeHelper
       def days_between(left, right)
-        (right - left) / 1.day
+        days(right - left)
       end
 
       def time_in_unit(time_s, unit)
         return time_s if time_s.infinite?
 
-        time_1 / 1.day
+        (time_s / unit).floor
       end
 
       def days(time_s)

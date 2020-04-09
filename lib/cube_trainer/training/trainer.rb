@@ -5,17 +5,18 @@ module CubeTrainer
     # Class that gives random inputs to a learner class and measures and records how well the
     # learner performs.
     class Trainer
-      def initialize(learner, results_model, generator)
+      def initialize(learner, mode, generator)
         @learner = learner
-        @results_model = results_model
+        @mode = mode
         @generator = generator
       end
 
       def one_iteration
-        input = @generator.random_item
-        timestamp = Time.now
-        partial_result = @learner.execute(input)
-        @results_model.record_result(timestamp, partial_result, input.representation)
+        input_item = @generator.random_item
+        input = @mode.inputs.new(input_representation: input_item.representation)
+        input.save!
+        partial_result = @learner.execute(input_item)
+        Result.from_input_and_partial(input, partial_result).save!
       end
 
       def run
