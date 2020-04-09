@@ -1,31 +1,10 @@
 require 'rails_helper'
+require 'fixtures'
 
 RSpec.describe "Modes", type: :request do
-  let(:user) do
-    User.create!(
-      name: 'modes_abc',
-      password: 'password',
-      password_confirmation: 'password'
-    )
-  end
-
-  let(:eve) do
-    User.create!(
-      name: 'modes_eve',
-      password: 'password',
-      password_confirmation: 'password'
-    )
-  end
-  
-  let(:mode) do
-    user.modes.create!(
-      name: 'modes_test_mode',
-      show_input_mode: :name,
-      mode_type: :floating_2flips,
-      goal_badness: 1,
-      cube_size: 3
-    )
-  end
+  include_context :user
+  include_context :eve
+  include_context :mode
 
   let(:headers) { { 'ACCEPT' => 'application/json' } }
 

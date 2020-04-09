@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/commutator_options'
-require 'cube_trainer/training/results_model'
 require 'ostruct'
 
 # Controller for showing inputs to the human and getting results.

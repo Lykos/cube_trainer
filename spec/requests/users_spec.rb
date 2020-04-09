@@ -1,30 +1,10 @@
 require 'rails_helper'
+require 'fixtures'
 
 RSpec.describe "Users", type: :request do
-  let(:user) do
-    User.create!(
-      name: 'users_abc',
-      password: 'password',
-      password_confirmation: 'password'
-    )
-  end
-
-  let(:eve) do
-    User.create!(
-      name: 'users_eve',
-      password: 'password',
-      password_confirmation: 'password'
-    )
-  end
-
-  let(:admin) do
-    User.create!(
-      name: 'users_admin',
-      password: 'password',
-      password_confirmation: 'password',
-      admin: true
-    )
-  end
+  include_context :user
+  include_context :eve
+  include_context :admin
 
   let(:headers) { { 'ACCEPT' => 'application/json' } }
 

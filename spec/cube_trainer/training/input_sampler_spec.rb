@@ -21,7 +21,7 @@ def compute_average(mode, generator)
   learner.average_time
 end
 
-describe Training::InputSampler, focus: true do
+describe Training::InputSampler do
   include_context :mode
 
   ITEMS = ('a'..'c').to_a.permutation(2).map { |p| Training::InputItem.new(LetterPair.new(p)) }

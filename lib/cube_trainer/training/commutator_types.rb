@@ -30,12 +30,14 @@ module CubeTrainer
         def to_simple
           {
             name: result_symbol,
-            default_buffer_size: default_buffer_size,
+            default_cube_size: default_cube_size,
             has_buffer: has_buffer?,
             has_goal_badness: has_goal_badness?,
             show_input_modes: show_input_modes
           }
         end
+
+        alias name result_symbol
       end
 
       COMMUTATOR_TYPES = {
