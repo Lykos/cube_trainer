@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'fixtures'
 
-RSpec.describe "Modes", type: :request, focus: true do
+RSpec.describe "Modes", type: :request do
   include_context :user
   include_context :eve
   include_context :mode

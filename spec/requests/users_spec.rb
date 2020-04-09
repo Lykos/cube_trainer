@@ -147,7 +147,7 @@ RSpec.describe "Users", type: :request do
     it 'returns unprocessable entity for invalid updates' do
       put "/users/#{user.id}", params: { user: { name: nil } }
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(User.find(user.id).name).to eq('users_abc')
+      expect(User.find(user.id).name).to eq('abc')
     end
 
     it 'returns unprocessable entity if setting admin' do
@@ -172,7 +172,7 @@ RSpec.describe "Users", type: :request do
       post "/login", params: { username: eve.name, password: eve.password }
       put "/users/#{user.id}", params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:not_found)
-      expect(User.find(user.id).name).to eq('users_abc')
+      expect(User.find(user.id).name).to eq('abc')
     end
   end
 
