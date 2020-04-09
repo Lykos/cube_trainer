@@ -11,11 +11,11 @@ module CubeTrainer
     class StatsComputer
       include Utils::MathHelper
 
-      def initialize(now, options)
+      def initialize(now, mode)
         raise TypeError unless now.is_a?(Time)
 
         @now = now
-        @options = options
+        @mode = mode
       end
 
       def results_for_inputs(inputs)
@@ -44,7 +44,7 @@ module CubeTrainer
       def expected_time_per_type_stats
         @expected_time_per_type_stats ||=
           begin
-            computer = ExpectedTimeComputer.new(@now, @options)
+            computer = ExpectedTimeComputer.new(@now, @mode)
             computer.compute_expected_time_per_type_stats
           end
       end
@@ -108,12 +108,8 @@ module CubeTrainer
         grouped_averages.sort_by { |t| -t[1] }.freeze
       end
 
-      def mode
-        @mode ||= BufferHelper.mode_for_options(@options)
-      end
-
       def results
-        @results ||= Result.where(mode: mode).to_a.freeze
+        @results ||= @mode.inputs.joins(:result).pluck(&:result)
       end
 
       def grouped_results
