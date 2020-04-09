@@ -4,10 +4,22 @@ module CubeTrainer
   module Utils
     # A few time related helper methods.
     module TimeHelper
-      SECONDS_PER_DAY = 24 * 60 * 60
-
       def days_between(left, right)
-        ((right - left) / SECONDS_PER_DAY).floor
+        (right - left) / 1.day
+      end
+
+      def time_in_unit(time_s, unit)
+        return time_s if time_s.infinite?
+
+        time_1 / 1.day
+      end
+
+      def days(time_s)
+        time_in_unit(time_s, 1.day)
+      end
+
+      def minutes(time_s)
+        time_in_unit(time_s, 1.minute)
       end
     end
   end

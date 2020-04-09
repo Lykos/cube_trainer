@@ -13,8 +13,7 @@ module CubeTrainer
 
       def initialize(config, result_model)
         super
-        reset
-        result_model.add_reset_listener(self)
+        @repetition_indices = {}
       end
 
       def extra_info(input_item)
@@ -51,10 +50,6 @@ module CubeTrainer
         raise 'Not completely new item has no index.' if index.nil?
 
         rep_index_score(index, rep_index)
-      end
-
-      def reset
-        @repetition_indices = {}
       end
 
       # After how many other items should this item be repeated.

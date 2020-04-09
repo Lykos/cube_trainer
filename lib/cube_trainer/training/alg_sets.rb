@@ -18,13 +18,8 @@ module CubeTrainer
         @options = options
       end
 
-      def input_sampler(results_model)
-        InputSampler.new(
-          input_items,
-          results_model,
-          @options,
-          goal_badness
-        )
+      def input_sampler(mode)
+        InputSampler.new(input_items, mode)
       end
 
       def goal_badness

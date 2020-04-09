@@ -7,9 +7,9 @@ module CubeTrainer
     # A scorer that prefers items that the human forgot on recent training days.
     class ForgottenScorer < AbstractRevisitScorer
       def extra_info(input_item)
-        last_hinted_days_ago = @result_history.last_hinted_days_ago(input_item)
+        last_hint_days_ago = @result_history.last_hint_days_ago(input_item)
         occ_days_since_last_hint = relevant_occurrence_days(input_item)
-        "days since last hinted: #{last_hinted_days_ago}; occurrence days since last hint: " \
+        "days since last hint: #{last_hint_days_ago}; occurrence days since last hint: " \
         "#{occ_days_since_last_hint}"
       end
 
@@ -18,7 +18,7 @@ module CubeTrainer
       end
 
       def revisit_necessary?(input_item)
-        @result_history.last_hinted_days_ago(input_item) &&
+        @result_history.last_hint_days_ago(input_item) &&
           @result_history.occurrence_days_since_last_hint(input_item) <
             @config[:repeat_forgotten_item_days_boundary]
       end

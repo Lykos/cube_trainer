@@ -10,24 +10,15 @@ module CubeTrainer
       include Utils::TimeHelper
 
       def initialize(
-        results_model,
+        mode:,
         badness_memory:,
         hint_seconds:,
         failed_seconds:
       )
-        raise unless results_model.respond_to?(:results)
-
-        @results_model = results_model
-        @results_model.add_result_listener(self)
+        @mode = mode
         @badness_memory = badness_memory
         @hint_seconds = hint_seconds
         @failed_seconds = failed_seconds
-        @reset_listeners = []
-        reset
-      end
-
-      def add_reset_listener(listener)
-        @reset_listeners.push(listener)
       end
 
       def occurred_today?(item)
@@ -40,117 +31,107 @@ module CubeTrainer
       end
 
       def occurrences(item)
-        @occurrences[item.representation]
+        occurrences_hash[item.representation]
       end
 
-      def last_hinted_days_ago(item)
-        @last_hinted_days_ago[item.representation]
+      # Infinite for items that have never occurred or never got a hint.
+      def last_hint_age(item)
+        last_hint_age_hash[item.representation]
+      end
+
+      def last_hint_days_ago(item)
+        days(last_hint_age(item))
       end
 
       def badness_average(item)
-        @badness_histories[item.representation].average
+        badness_average_hash[item.representation]
+      end
+
+      # Infinite for items that have never occurred.
+      def last_occurrence_age(item)
+        last_occurrence_age_hash[item.representation]
       end
 
       def last_occurrence_days_ago(item)
-        @occurrence_days_ago[item.representation].last || Float::INFINITY
+        days(last_occurrence_age(item))
       end
 
-      # Returns how many items have occurred since the last occurrence of this item
-      # (0 if it was the last picked item).
-      def items_since_last_occurrence(item)
-        occ = @occurrence_indices[item.representation]
-        return Float::INFINITY if occ.nil?
-
-        @current_occurrence_index - occ
-      end
-
-      private
-
-      def occurrence_days_hash
-        @occurrence_days_hash ||=
-          @mode.inputs.joins(:result).group(:input_representation).distinct.count('floor(extract(epoch from age(inputs.created_at)) / 86400)')
-      end
-
-      # Reset caches and incremental state, recompute everything from scratch.
-      def reset
-        @current_occurrence_index = 0
-        @occurrence_indices = {}
-        @badness_histories = {}
-        @badness_histories.default_proc = ->(h, k) { h[k] = new_cube_average }
-        @occurrences = {}
-        @occurrences.default = 0
-        @last_hinted_days_ago = {}
-        @occurrence_days_ago = {}
-        @occurrence_days_ago.default_proc = ->(h, k) { h[k] = [] }
-        @results_model.results.sort_by(&:created_at).each do |r|
-          record_result(r)
-        end
-        @reset_listeners.each(&:reset)
-      end
-
-      def new_cube_average
-        Native::CubeAverage.new(@badness_memory, 0)
-      end
-
-      # Called by the results model to notify us about changes on the results.
-      # It's not worth it to reimplement fancy logic here, we just recompute everything from
-      # scratch.
-      def delete_after_time(*_args)
-        reset
-      end
-
-      # Called by the results model to notify us about changes on the results.
-      # We don't need to do anything here.
-      def replace_word(*_args); end
-
-      # Badness for the given result.
-      def result_badness(result)
-        result.time_s + @failed_seconds * result.failed_attempts + @hint_seconds * result.num_hints
-      end
-
-      # Insert a new result.
-      def record_result(result)
-        repr = result.input_representation
-        update_badness_histories(result)
-        update_occurrences(repr)
-        days_ago = days_between(result.created_at, Time.now)
-        update_last_occurrence_days_ago(repr, days_ago)
-        update_last_hinted_days_ago(result, days_ago)
-      end
-
-      def update_badness_histories(result)
-        repr = result.input_representation
-        @badness_histories[repr].push(result_badness(result))
-      end
-
-      def update_occurrences(input_representation)
-        @current_occurrence_index += 1
-        @occurrence_indices[input_representation] = @current_occurrence_index
-        @occurrences[input_representation] += 1
-      end
-
-      def update_last_occurrence_days_ago(input_representation, days_ago)
-        occurrence_days_ago = @occurrence_days_ago[input_representation]
-        return unless occurrence_days_ago.empty? || occurrence_days_ago.last > days_ago
-
-        occurrence_days_ago.push(days_ago)
-      end
-
-      def update_last_hinted_days_ago(result, days_ago)
-        return unless result.num_hints.positive?
-
-        repr = result.input_representation
-        @last_hinted_days_ago[repr] = days_ago
+      def last_occurrence_minutes_ago(item)
+        minutes(last_occurrence_age(item))
       end
 
       # On how many different days the item appeared since the user last used a hint for it.
       def occurrence_days_since_last_hint(item)
-        last_hinted_days_ago = last_hinted_days_ago(item)
-        return occurrence_days(item) if last_hinted_days_ago.nil?
+        @occurrence_days_since_last_hint ||= calculate_occurrence_days_since_last_hint(item)
+      end
 
-        @occurrence_days_ago[item.representation].count do |days_ago|
-          days_ago < last_hinted_days_ago
-        end
+      private
+      
+      # On how many different days the item appeared since the user last used a hint for it.
+      def calculate_occurrence_days_since_last_hint(item)
+        last_hint_age = last_hint_age(item)
+        return occurrence_days(item) if last_hint_age.infinite?
+
+        # TODO Avoid having one query per item.
+        @mode.inputs.joins(:result).where(input_representation: item.input_representation).where("date_trunc('day', inputs.created_at) > ?", Time.now - last_hint_age)
+      end
+
+      def badness_average_hash
+        @badness_average_hash ||=
+          begin
+            # TODO: Find a way to construct this with Arel.
+            badness_array_expression = Arel.sql(@mode.inputs.sanitize_sql_for_conditions(['array_agg(results.time_s + ? * results.failed_attempts + ? * results.num_hints order by results.created_at desc)', @failed_seconds, @hint_seconds]))
+            result = @mode.inputs.joins(:result).
+                       group(:input_representation).
+                       pluck(:input_representation, badness_array_expression).to_h
+            result.transform_values do |badnesses|
+              badnesses[0...@badness_memory].inject(new_cube_average) { |avg, badness| avg.push(badness) }.average
+            end
+            result.default = Float::NAN
+            result
+          end
+      end
+
+      def last_hint_age_hash
+        @last_occurrence_age_hash ||=
+          begin
+            now = Time.now
+            result = @mode.inputs.joins(:result).where('results.num_hints > 0').group(:input_representation).maximum(:created_at).transform_values { |time| time - now }
+            result.default = Float::INFINITY
+            result
+          end
+      end
+
+      def last_occurrence_age_hash
+        @last_occurrence_age_hash ||=
+          begin
+            now = Time.now
+            result = @mode.inputs.joins(:result).group(:input_representation).maximum(:created_at).transform_values { |time| time - now }
+            result.default = Float::INFINITY
+            result
+          end
+      end
+
+      def occurrence_days_hash
+        @occurrence_days_hash ||=
+          begin
+            result = @mode.inputs.joins(:result).group(:input_representation).distinct.count('floor(extract(epoch from age(inputs.created_at)) / 86400)')
+            result.default = 0
+            result
+          end
+      end
+
+      def occurrences_hash
+        @occurrences_hash ||=
+          begin
+            result = @mode.inputs.joins(:result).group(:input_representation).count
+            result.default = 0
+            result
+          end
+      end
+
+      def new_cube_average
+        Native::CubeAverage.new(@badness_memory, 0)
       end
     end
   end

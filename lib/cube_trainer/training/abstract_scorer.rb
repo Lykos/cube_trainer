@@ -29,11 +29,11 @@ module CubeTrainer
       def tag
         @tag ||=
           begin
-                            class_name = snake_case_class_name(self.class)
-                            raise unless class_name.end_with?('_scorer')
+            class_name = snake_case_class_name(self.class)
+            raise unless class_name.end_with?('_scorer')
 
-                            class_name.gsub(/_scorer$/, '').colorize(color_symbol)
-                          end
+            class_name.gsub(/_scorer$/, '').colorize(color_symbol)
+          end
       end
 
       def extra_info(_input_item)

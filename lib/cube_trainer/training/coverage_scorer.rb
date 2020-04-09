@@ -7,9 +7,8 @@ module CubeTrainer
     # Abstract class for a scorer that prefers items that haven't been shown in a while.
     class AbstractCoverageScorer < AbstractScorer
       def extra_info(input_item)
-        'items since last occurrence: ' \
-        "#{@result_history.items_since_last_occurrence(input_item)}; " \
-        "days since last occurrence: #{@result_history.last_occurrence_days_ago(input_item)}"
+        'last occurrence age: ' \
+        "#{@result_history.last_occurrence_age(input_item)}"
       end
 
       def score(input_item)
@@ -24,11 +23,10 @@ module CubeTrainer
       end
     end
 
-    # A scorer that prefers items that haven't been shown in a while, i.e. with lots of items in
-    # between.
+    # A scorer that prefers items that haven't been shown recently
     class CoverageScorer < AbstractCoverageScorer
       def long_ago_metric(input_item)
-        @result_history.items_since_last_occurrence(input_item)
+        @result_history.last_occurrence_minutes_ago(input_item)
       end
 
       def exponent_config_key
@@ -36,7 +34,7 @@ module CubeTrainer
       end
     end
 
-    # A scorer that prefers items that haven't been shown in a lot of training days.
+    # A scorer that prefers items that haven't been shown in recent training days.
     class DaysCoverageScorer < AbstractCoverageScorer
       def long_ago_metric(input_item)
         @result_history.last_occurrence_days_ago(input_item)

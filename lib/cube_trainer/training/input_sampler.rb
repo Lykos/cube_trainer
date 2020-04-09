@@ -88,39 +88,33 @@ module CubeTrainer
 
       # `items` are the items from which we get samples. They have to be an array of InputItem.
       #         But the representation inside InputItem can be anything.
-      # `results_model` is a helper object that retrieves results to get historic scores.
-      def initialize(
-        items,
-        results_model,
-        options,
-        goal_badness = nil
-      )
+      # `mode` is the mode that is used to retrieve associated previous results and for all kinds
+      #        of options.
+      def initialize(items, mode)
         raise ArgumentError unless items.is_a?(Array)
         unless items.all? { |e| e.is_a?(InputItem) }
           raise ArgumentError, "Invalid items #{items.inspect}."
         end
-        raise unless goal_badness.is_a?(Float)
 
         @items = items
-        @config = create_config(goal_badness, options)
-        @verbose = options.verbose
-        @result_history = create_result_history(results_model)
+        @config = create_config(mode)
+        @result_history = create_result_history(mode)
         @sampler = create_sampler
       end
 
       attr_reader :items
 
-      def create_config(goal_badness, options)
+      def create_config(mode)
         config = DEFAULT_CONFIG.dup
         config[:num_items] = items.length
-        config[:goal_badness] = goal_badness if goal_badness
-        config[:known] = options.known
+        config[:goal_badness] = mode.goal_badness if mode.goal_badness
+        config[:known] = mode.known
         config
       end
 
-      def create_result_history(results_model)
+      def create_result_history(mode)
         ResultHistory.new(
-          results_model,
+          mode: mode,
           badness_memory: @config[:badness_memory],
           failed_seconds: @config[:failed_seconds],
           hint_seconds: @config[:hint_seconds]
@@ -176,7 +170,6 @@ module CubeTrainer
       def random_item
         managed_sample = @sampler.random_item
         item = managed_sample.input_item
-        puts managed_sample.sampling_info if @verbose
         item
       end
     end
