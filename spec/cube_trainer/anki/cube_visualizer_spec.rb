@@ -35,7 +35,7 @@ class FakeChecker
   end
 end
 
-describe Anki::CubeVisualizer, focus: true do
+describe Anki::CubeVisualizer do
   include Core
 
   let(:color_scheme) { ColorScheme::BERNHARD }

@@ -14,5 +14,5 @@ Rails.application.routes.draw do
   post 'trainer/:mode_id/inputs', to: 'trainer#create'
   delete 'trainer/:mode_id/inputs/:id', to: 'trainer#destroy'
   post 'trainer/:mode_id/inputs/:id', to: 'trainer#stop'
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  get 'trainer/:mode_id/cube_images/:input_id', to: 'cube_images#show'
 end
