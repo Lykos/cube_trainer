@@ -23,12 +23,29 @@ export class ModeService {
     }
   }
 
+  parseMode(mode: any): Mode {
+    return {
+      id: mode.id,
+      modeType: mode.mode_type,
+      name: mode.name,
+      known: mode.known,
+      showInputMode: mode.show_input_mode,
+      buffer: mode.buffer,
+      goalBadness: mode.goalBadness,
+      cubeSize: mode.cubeSize,
+    }
+  }
+
   listTypes(): Observable<ModeType[]> {
     return this.rails.ajax<any[]>(HttpVerb.Get, '/mode_types', {}).pipe(map(modeTypes => modeTypes.map(this.parseModeType)));
   }
 
   list(): Observable<Mode[]> {
-    return this.rails.ajax<Mode[]>(HttpVerb.Get, '/modes', {});
+    return this.rails.ajax<Mode[]>(HttpVerb.Get, '/modes', {}).pipe(map(modeTypes => modeTypes.map(this.parseMode)));
+  }
+
+  show(modeId: number): Observable<Mode> {
+    return this.rails.ajax<Mode>(HttpVerb.Get, `/modes/${modeId}`, {}).pipe(map(this.parseMode));
   }
 
   create(mode: NewMode): Observable<Mode> {

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { InputItem } from './input_item';
 import { HttpVerb } from '../rails/http_verb';
 import { PartialResult } from './partial-result';
+import { Mode } from '../mode/mode';
 
 @Injectable({
   providedIn: 'root',
@@ -10,9 +11,14 @@ import { PartialResult } from './partial-result';
 export class TrainerService {
   constructor(private readonly rails: RailsService) {}
 
+  inputImgSrc(mode: Mode, input: InputItem, ) {
+    return `${this.constructPath(mode.id, input)}/image`
+  }
+
   constructPath(modeId: number, input?: InputItem) {
     const suffix = input ? `/${input.id}` : '';
     return `/trainer/${modeId}/inputs${suffix}`;
+
   }
 
   create(modeId: number) {

@@ -6,7 +6,6 @@ class CubeImagesController < ApplicationController
     @input = mode.inputs.find(params[:input_id])
     # TODO Make this efficient
     input_item = @mode.generator.input_items.find { |i| i.representation == @input.input_representation }
-    p input_item
     unless input_item
       head :not_found
       return

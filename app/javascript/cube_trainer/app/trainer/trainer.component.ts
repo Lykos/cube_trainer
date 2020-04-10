@@ -20,7 +20,7 @@ enum StopWatchState {
   template: `
 <div layout="row" layout-sm="column">
   <div flex>
-    <trainer-input [input]=input></trainer-input>
+    <trainer-input [input]="input" [modeId$]="modeId$" *ngIf="input"></trainer-input>
     <mat-card>
       <mat-card-title>Time</mat-card-title>
       <mat-card-content> {{duration}} </mat-card-content>
@@ -55,12 +55,12 @@ export class TrainerComponent implements OnDestroy {
   intervalRef: any = undefined;
   state: StopWatchState = StopWatchState.NotStarted;
   input: InputItem | undefined = undefined;
-  modeId: Observable<number>;
+  modeId$: Observable<number>;
   resultEventsSubject = new Subject<void>();
 
   constructor(private readonly trainerService: TrainerService,
 	      activatedRoute: ActivatedRoute) {
-    this.modeId = activatedRoute.params.pipe(map(p => p.modeId));
+    this.modeId$ = activatedRoute.params.pipe(map(p => p.modeId));
   }
 
   get running() {
@@ -74,13 +74,13 @@ export class TrainerComponent implements OnDestroy {
   dropAndPause() {
     this.stopTimer();
     this.state = StopWatchState.Paused;
-    this.modeId.subscribe(modeId => {
+    this.modeId$.subscribe(modeId => {
       this.trainerService.destroy(modeId, this.input!).subscribe(r => {});
     });
   }
 
   start() {
-    this.modeId.subscribe(modeId => {
+    this.modeId$.subscribe(modeId => {
       this.trainerService.create(modeId).subscribe(input => this.startFor(input));
     });
   }
@@ -100,7 +100,7 @@ export class TrainerComponent implements OnDestroy {
   stopAnd(onSuccess: () => void) {
     this.stopTimer();
     this.state = StopWatchState.Paused;
-    this.modeId.subscribe(modeId => {
+    this.modeId$.subscribe(modeId => {
       this.trainerService.stop(modeId, this.input!, {duration: this.duration!}).subscribe(r => {
 	this.resultEventsSubject.next();
 	onSuccess();
