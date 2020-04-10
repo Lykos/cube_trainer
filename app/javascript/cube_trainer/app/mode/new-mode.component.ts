@@ -115,14 +115,15 @@ export class NewModeComponent implements OnInit {
   }
 
   ngOnInit() {
+    // TODO Smart form validators depending on the situation.
     this.modeService.listTypes().subscribe((modeTypes: ModeType[]) => this.modeTypes = modeTypes);
     this.modeTypesGroup = this.formBuilder.group({
       name: ['', Validators.required],
       modeType: ['', Validators.required],
     });
     this.setupGroup = this.formBuilder.group({
-      cubeSize: ['', Validators.required],
-      buffer: ['', Validators.required],
+      cubeSize: [''],
+      buffer: [''],
     });
     this.trainingGroup = this.formBuilder.group({
       showInputMode: ['', Validators.required],

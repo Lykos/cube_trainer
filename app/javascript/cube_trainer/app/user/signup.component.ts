@@ -92,9 +92,6 @@ export class SignupComponent implements OnInit {
   }
 
   get passwordMismatch() {
-    console.log(this.signupForm, this.signupForm.errors, this.passwordConfirmation.touched, this.passwordConfirmation.dirty);
-    const r = this.signupForm.errors?.passwordMismatch && (this.passwordConfirmation.touched || this.passwordConfirmation.dirty);
-    console.log(r);
-    return r;
+    return this.signupForm.errors?.passwordMismatch && (this.passwordConfirmation.touched || this.passwordConfirmation.dirty);
   }
 }

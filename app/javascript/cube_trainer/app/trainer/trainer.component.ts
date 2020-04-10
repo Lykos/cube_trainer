@@ -101,7 +101,7 @@ export class TrainerComponent implements OnDestroy {
     this.stopTimer();
     this.state = StopWatchState.Paused;
     this.modeId.subscribe(modeId => {
-      this.trainerService.stop(modeId, this.input!, this.duration!).subscribe(r => {
+      this.trainerService.stop(modeId, this.input!, {duration: this.duration!}).subscribe(r => {
 	this.resultEventsSubject.next();
 	onSuccess();
       });
