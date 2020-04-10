@@ -68,9 +68,11 @@ class UsersController < ApplicationController
   private
 
   def check_authorized_as_admin_if_setting_admin
-    return unless params[:user] && params[:user][:admin] && !admin_logged_in?
+    return unless params[:user] && params[:user][:admin] && params[:user][:admin] != 'false' && !admin_logged_in?
 
-    render json: 'Only admins can set the `admin` field.', status: :unauthorized 
+    @user ||= User.new
+    @user.errors.add(:admin, :admin_unauthorized, message: 'can only be set by admins')
+    render json: @user.errors, status: :unauthorized 
   end
 
   def set_user
@@ -86,6 +88,8 @@ class UsersController < ApplicationController
     if admin_logged_in?
       params.require(:user).permit(:name, :password, :password_confirmation, :admin)
     else
+      # Note that we already check that `:admin` gets filtered out earlier.
+      # This is an additional safety net.
       params.require(:user).permit(:name, :password, :password_confirmation)
     end
   end
