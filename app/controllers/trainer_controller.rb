@@ -36,12 +36,12 @@ class TrainerController < ApplicationController
 
   # POST /trainer/1/inputs/1
   def stop
-    partial_result = CubeTrainer::Training::PartialResult.new(params[:time_s])
+    p partial_result
     result = Result.from_input_and_partial(@input, partial_result)
     if result.save
       head :created
     else
-      render json: result.errors, status: :unprocessable_entity      
+      render json: p(result.errors), status: :unprocessable_entity      
     end
   end
 
@@ -53,5 +53,14 @@ class TrainerController < ApplicationController
 
   def set_mode
     head :not_found unless @mode = current_user.modes.find_by(id: params[:mode_id])
+  end
+
+  def partial_result_params
+    params.require(:partial_result).permit(:time_s, :failed_attempts, :word, :success, :num_hints)
+  end
+
+  def partial_result
+    # TODO Get this from the hash.
+    CubeTrainer::Training::PartialResult.new(partial_result_params[:time_s])
   end
 end
