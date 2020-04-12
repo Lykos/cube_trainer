@@ -16,8 +16,7 @@ class TrainerController < ApplicationController
 
   # POST /trainer/1/inputs
   def create
-    input_sampler = @mode.generator.input_sampler(@mode)
-    input_item = input_sampler.random_item
+    input_item = @mode.random_item
     input = @mode.inputs.new(input_representation: input_item.representation)
     if input.save
       response = {id: input.id, inputRepresentation: input_item.representation.to_s}

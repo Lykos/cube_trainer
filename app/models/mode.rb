@@ -8,23 +8,23 @@ class Mode < ApplicationRecord
   include CubeTrainer::Utils::ArrayHelper
   include CubeTrainer::Training::CommutatorTypes
 
-  COMMUTATOR_INFOS_BY_MODE_TYPE_NAME =
-    COMMUTATOR_TYPES.values.map { |v| [v.result_symbol, v] }.to_h.freeze
-  MODE_TYPES = COMMUTATOR_INFOS_BY_MODE_TYPE_NAME.values.freeze
-  MODE_TYPE_NAMES = COMMUTATOR_INFOS_BY_MODE_TYPE_NAME.keys.freeze
+  MODE_TYPES = COMMUTATOR_TYPES.values.freeze
 
   has_many :inputs, dependent: :destroy
   belongs_to :user
 
   # Make this a mode type
-  attribute :mode_type, :symbol
+  attribute :mode_type, :mode_type
   attribute :show_input_mode, :symbol
 
   validates :user_id, presence: true
   validates :name, presence: true
-  validates :mode_type, presence: true, inclusion: MODE_TYPE_NAMES
+  validates :mode_type, presence: true
   validates :show_input_mode, presence: true, inclusion: SHOW_INPUT_MODES
-  # TODO: Validate buffer and mode dependent fields
+  validates :buffer, presence: true, if: ->{ mode_type.has_buffer? }
+  validates :cube_size, presence: true, if: ->{ mode_type.default_cube_size }
+  validate :show_input_mode_has_to_be_in_show_input_modes_of_mode_type
+  validate :buffer_valid, if: ->{ mode_type.has_buffer? }
 
   # TODO: Make it configurable
   def letter_scheme
@@ -36,13 +36,22 @@ class Mode < ApplicationRecord
     CubeTrainer::ColorScheme::BERNHARD
   end
 
+  # TODO: Deprecate this
   def commutator_info
-    COMMUTATOR_INFOS_BY_MODE_TYPE_NAME[mode_type]
+    mode_type
   end
 
   def generator
-    commutator_info.generator_class.new(self)
+    mode_type.generator_class.new(self)
   end
+
+  def input_sampler
+    generator.input_sampler(self)
+  end
+
+  def random_item
+    input_sampler.random_item
+  end    
 
   def verbose
     false
@@ -69,5 +78,30 @@ class Mode < ApplicationRecord
   # TODO: Get rid of this
   def legacy_mode
     CubeTrainer::BufferHelper.mode_for_options(self)
+  end
+
+  def part_type
+    mode_type.part_type
+  end
+
+  private
+
+  def show_input_mode_has_to_be_in_show_input_modes_of_mode_type
+    unless mode_type.show_input_modes.include?(show_input_mode)
+      errors.add(:show_input_mode, 'has to be in show input modes of the mode type')
+    end
+  end
+
+  def buffer_valid
+    unless buffer_valid?
+      errors.add(:buffer, "has to be a valid #{part_type}")
+    end
+  end
+
+  def buffer_valid?
+    begin
+      part_type.parse(buffer)
+    rescue ArgumentError
+    end
   end
 end
