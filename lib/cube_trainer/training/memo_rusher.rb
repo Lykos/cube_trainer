@@ -86,7 +86,7 @@ module CubeTrainer
         wait_for_any_char(action_name: 'stop')
         time_s = Time.now - start
         puts "Time: #{format_time(time_s)}"
-        PartialResult.new(time_s, success: ask_success)
+        PartialResult.new(time_s: time_s, success: ask_success)
       end
     end
   end

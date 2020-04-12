@@ -73,7 +73,7 @@ shared_context :result do
 
   let(:result) do
     input.result&.destroy!
-    partial_result = CubeTrainer::Training::PartialResult.new(10)
+    partial_result = PartialResult.new(time_s: 10)
     result = Result.from_input_and_partial(input, partial_result)
     result.save!
     result

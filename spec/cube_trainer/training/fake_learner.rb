@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/training/partial_result'
-
 # A fake learner that learns stuff and forgets it after a while.
 class FakeLearner
   FORGET_RATE = 0.01
@@ -70,6 +68,6 @@ class FakeLearner
     end
     @indices[input] = @current_index
     @current_index += 1
-    CubeTrainer::Training::PartialResult.new(stats.execute, failed_attempts: 0, word: nil)
+    PartialResult.new(time_s: stats.execute, failed_attempts: 0, word: nil)
   end
 end

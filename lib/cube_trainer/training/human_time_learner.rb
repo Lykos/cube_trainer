@@ -2,7 +2,6 @@
 
 require 'cube_trainer/console_helpers'
 require 'cube_trainer/core/cube_print_helper'
-require 'cube_trainer/training/partial_result'
 require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
@@ -41,7 +40,7 @@ module CubeTrainer
         end
         data = time_before_any_key_press(@hinter.hints(input.representation))
         handle_user_input_data(input, data)
-        PartialResult.new(data.time_s, num_hints: data.num_hints)
+        PartialResult.new(time_s: data.time_s, num_hints: data.num_hints)
       end
     end
   end

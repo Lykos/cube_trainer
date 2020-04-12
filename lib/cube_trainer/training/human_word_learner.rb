@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/console_helpers'
-require 'cube_trainer/training/partial_result'
 require 'cube_trainer/utils/string_helper'
 
 module CubeTrainer
@@ -67,7 +66,7 @@ module CubeTrainer
           end
         end
         puts "Time: #{format_time(time_s)}; Failed attempts: #{failed_attempts}; Word: #{word}"
-        PartialResult.new(time_s, failed_attempts: failed_attempts, word: word)
+        PartialResult.new(time_s: time_s, failed_attempts: failed_attempts, word: word)
       end
       # rubocop:enable Metrics/PerceivedComplexity
       # rubocop:enable Metrics/CyclomaticComplexity
