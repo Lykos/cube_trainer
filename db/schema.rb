@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_01_192053) do
+ActiveRecord::Schema.define(version: 2020_04_12_011243) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "achievements", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "type", null: false
+    t.integer "param"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_achievements_on_name", unique: true
+  end
 
   create_table "download_states", force: :cascade do |t|
     t.text "model", null: false
