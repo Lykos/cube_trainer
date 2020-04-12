@@ -33,8 +33,19 @@ module CubeTrainer
             default_cube_size: default_cube_size,
             has_buffer: has_buffer?,
             has_goal_badness: has_goal_badness?,
-            show_input_modes: show_input_modes
+            show_input_modes: show_input_modes,
+            buffers: buffers
           }
+        end
+
+        def part_type
+          generator_class::PART_TYPE
+        end
+
+        def buffers
+          return unless has_buffer?
+
+          part_type::ELEMENTS.map(&:to_s)
         end
 
         alias name result_symbol

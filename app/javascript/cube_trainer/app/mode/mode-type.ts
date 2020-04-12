@@ -6,4 +6,5 @@ export interface ModeType {
   readonly hasBuffer: boolean;
   readonly defaultCubeSize?: number;
   readonly hasGoalBadness: boolean;
+  readonly buffers: string[];
 }

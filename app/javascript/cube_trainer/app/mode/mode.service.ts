@@ -20,6 +20,7 @@ export class ModeService {
       hasBuffer: modeType.has_buffer,
       defaultCubeSize: modeType.default_cube_size,
       hasGoalBadness: modeType.has_goal_badness,
+      buffers: modeType.buffers,
     }
   }
 

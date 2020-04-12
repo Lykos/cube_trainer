@@ -1,3 +1,5 @@
+require 'cube_trainer/training/commutator_types'
+
 class ModeTypeType < ActiveRecord::Type::String
   include CubeTrainer::Training::CommutatorTypes
 

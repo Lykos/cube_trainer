@@ -36,7 +36,9 @@ import { Router } from '@angular/router';
       </mat-form-field>
       <mat-form-field *ngIf="hasBuffer">
         <mat-label>Buffer</mat-label>
-        <input matInput formControlName="buffer" type="text">
+        <mat-select formControlName="buffer">
+          <mat-option *ngFor="let buffer of modeType.buffers" [value]="buffer"> {{buffer}} </mat-option>
+        </mat-select>
       </mat-form-field>
       <div>
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
