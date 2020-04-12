@@ -14,6 +14,8 @@ module CubeTrainer
       ALL_ROTATIONS = Face::ELEMENTS.product(CubeDirection::ALL_DIRECTIONS).map { |f, d| new(f, d) }
       NON_ZERO_ROTATIONS =
         Face::ELEMENTS.product(CubeDirection::NON_ZERO_DIRECTIONS).map { |f, d| new(f, d) }
+      LEFT = new(Face::U, CubeDirection::BACKWARD)
+      RIGHT = new(Face::U, CubeDirection::FORWARD)
 
       # Translates a Skewb direction into a cube direction.
       def self.translated_direction(direction)

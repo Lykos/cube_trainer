@@ -28,6 +28,7 @@ export class ResultsDataSource implements DataSource<Result> {
       finalize(() => this.loadingSubject.next(false))
     )
       .subscribe((results: Result[]) => {
+	this.loadingSubject.next(false);
 	return this.resultsSubject.next(results);
       });
   }    

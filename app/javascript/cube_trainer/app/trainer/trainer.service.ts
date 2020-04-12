@@ -4,6 +4,7 @@ import { InputItem } from './input_item';
 import { HttpVerb } from '../rails/http_verb';
 import { PartialResult } from './partial-result';
 import { Mode } from '../mode/mode';
+import { ImgSide } from './img-side';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +12,8 @@ import { Mode } from '../mode/mode';
 export class TrainerService {
   constructor(private readonly rails: RailsService) {}
 
-  inputImgSrc(mode: Mode, input: InputItem, ) {
-    return `${this.constructPath(mode.id, input)}/image`
+  inputImgSrc(mode: Mode, input: InputItem, imgSide: ImgSide) {
+    return `${this.constructPath(mode.id, input)}/image/${imgSide}.jpg`
   }
 
   constructPath(modeId: number, input?: InputItem) {
