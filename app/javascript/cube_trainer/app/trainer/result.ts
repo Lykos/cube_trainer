@@ -1,4 +1,3 @@
-import { Duration } from '../utils/duration';
 import { Instant } from '../utils/instant';
 import { PartialResult } from './partial-result';
 
