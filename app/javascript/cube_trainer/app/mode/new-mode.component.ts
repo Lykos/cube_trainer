@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { hasValue } from '../utils/optional';
 import { ModeType } from './mode-type';
 import { ModeService } from './mode.service';
 import { NewMode } from './new-mode';
@@ -87,7 +86,7 @@ export class NewModeComponent implements OnInit {
   }
 
   get hasCubeSize() {
-    return this.modeType && hasValue(this.modeType.defaultCubeSize);
+    return this.modeType && this.modeType.defaultCubeSize;
   }
 
   get hasBuffer() {
