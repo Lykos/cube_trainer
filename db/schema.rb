@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_12_011243) do
+ActiveRecord::Schema.define(version: 2020_04_12_012525) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "achievement_grants", force: :cascade do |t|
+    t.bigint "achievement_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["achievement_id"], name: "index_achievement_grants_on_achievement_id", unique: true
+    t.index ["user_id", "achievement_id"], name: "index_achievement_grants_on_user_id_and_achievement_id", unique: true
+    t.index ["user_id"], name: "index_achievement_grants_on_user_id", unique: true
+  end
 
   create_table "achievements", force: :cascade do |t|
     t.string "name", null: false
@@ -22,6 +32,7 @@ ActiveRecord::Schema.define(version: 2020_04_12_011243) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_achievements_on_name", unique: true
+    t.index ["type"], name: "index_achievements_on_type"
   end
 
   create_table "download_states", force: :cascade do |t|
@@ -82,6 +93,8 @@ ActiveRecord::Schema.define(version: 2020_04_12_011243) do
     t.index ["name"], name: "index_users_on_name", unique: true
   end
 
+  add_foreign_key "achievement_grants", "achievements"
+  add_foreign_key "achievement_grants", "users"
   add_foreign_key "inputs", "modes"
   add_foreign_key "modes", "users"
   add_foreign_key "results", "inputs"
