@@ -88,7 +88,7 @@ module CubeTrainer
         end
 
         # TODO Avoid having one query per item.
-        @mode.inputs.joins(:result).where(input_representation: item.representation).where("date_trunc('day', inputs.created_at) > ?", last_hint_age - Time.now).count
+        @mode.inputs.joins(:result).where(input_representation: item.representation).where("date_trunc('day', inputs.created_at) > ?", Time.now - last_hint_age).count
       end
 
       def badness_average_cache
