@@ -73,7 +73,7 @@ RSpec.describe "Trainer", type: :request do
     it 'returns http success' do
       post "/trainer/#{mode.id}/inputs", headers: headers
       input_id = JSON.parse(response.body)['id']
-      post "/trainer/#{mode.id}/inputs/#{input_id}", params: { time_s: 10 }
+      post "/trainer/#{mode.id}/inputs/#{input_id}", params: { partial_result: { time_s: 10 } }
       expect(response).to have_http_status(:success)
       expect(Input.find(input_id).result.time).to eq(10.seconds)
     end
@@ -88,18 +88,32 @@ RSpec.describe "Trainer", type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
-    it 'returns unprocessable entity if no time is given' do
+    it 'returns bad request if no partial result is given' do
       post "/trainer/#{mode.id}/inputs", headers: headers
       input_id = JSON.parse(response.body)['id']
       post "/trainer/#{mode.id}/inputs/#{input_id}"
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'returns bad request if no numeric time is given' do
+      post "/trainer/#{mode.id}/inputs", headers: headers
+      input_id = JSON.parse(response.body)['id']
+      post "/trainer/#{mode.id}/inputs/#{input_id}", params: { partial_result: { time_s: true } }
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'returns bad request if no time is given' do
+      post "/trainer/#{mode.id}/inputs", headers: headers
+      input_id = JSON.parse(response.body)['id']
+      post "/trainer/#{mode.id}/inputs/#{input_id}", params: { partial_result: { success: true } }
+      expect(response).to have_http_status(:bad_request)
     end
 
     it 'returns not found for other users' do
       post "/trainer/#{mode.id}/inputs", headers: headers
       input_id = JSON.parse(response.body)['id']
       post "/login", params: { username: eve.name, password: eve.password }
-      post "/trainer/#{mode.id}/inputs/#{input_id}", params: { time_s: 10 }
+      post "/trainer/#{mode.id}/inputs/#{input_id}", params: { partial_result: { time_s: 10 } }
       expect(response).to have_http_status(:not_found)
       input = Input.find_by(id: input_id)
       expect(input).not_to be(nil)

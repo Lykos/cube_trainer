@@ -39,7 +39,9 @@ class ModesController < ApplicationController
   def create
     @mode = current_user.modes.new(mode_params)
 
-    if @mode.save
+    if !@mode.valid?
+      render json: @mode, status: :bad_request
+    elsif @mode.save
       render json: @mode, status: :created
     else
       render json: @mode.errors, status: :unprocessable_entity

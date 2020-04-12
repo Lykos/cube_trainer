@@ -107,7 +107,7 @@ RSpec.describe "Users", type: :request do
       expect(User.find(parsed_body['id']).admin).to eq(true)
     end
 
-    it 'returns unprocessable entity for invalid users' do
+    it 'returns bad request for invalid users' do
       post "/users", params: {
              user: {
                name: 'new_user',
@@ -115,7 +115,7 @@ RSpec.describe "Users", type: :request do
                password_confirmation: 'cde'
              }
            }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:bad_request)
     end
 
     it "returns unauthorized if setting admin while not admin" do

@@ -14,7 +14,7 @@ class Result < ApplicationRecord
 
   validates :time_s, presence: true, numericality: { greater_than: 0 }
   validates :failed_attempts, numericality: POSITIVE_INTEGER
-  validates :success, presence: true
+  validates :success, presence: true, inclusion: [true, false]
   validates :num_hints, numericality: POSITIVE_INTEGER
   validates :input_id, presence: true, uniqueness: true
 
@@ -22,10 +22,10 @@ class Result < ApplicationRecord
     new(
       input: input,
       time_s: partial_result.time_s,
-      failed_attempts: partial_result.failed_attempts,
+      failed_attempts: partial_result.failed_attempts || 0,
       word: partial_result.word,
-      success: partial_result.success,
-      num_hints: partial_result.num_hints,
+      success: partial_result.success.nil? ? true : partial_result.success,
+      num_hints: partial_result.num_hints || 0,
     )
   end
 

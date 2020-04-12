@@ -98,7 +98,7 @@ RSpec.describe "Modes", type: :request do
       expect(Mode.find(parsed_body['id']).name).to eq('test_mode2')
     end
 
-    it 'returns unprocessable entity for invalid modes' do
+    it 'returns bad request for invalid modes' do
       post "/modes", params: {
              mode: {
                name: 'test_mode2',
@@ -108,7 +108,7 @@ RSpec.describe "Modes", type: :request do
                cube_size: 3
              }
            }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:bad_request)
     end
   end
 

@@ -16,7 +16,7 @@ class SessionsController < ApplicationController
    @user = User.find_by(name: params[:username])
    if @user && @user.authenticate(params[:password])
      session[:user_id] = @user.id
-     head :ok
+     head :no_content
    else
      head :unauthorized     
    end
@@ -25,6 +25,6 @@ class SessionsController < ApplicationController
   # POST /logout
   def logout
     session.delete(:user_id)
-    head :ok
+    head :no_content
   end
 end
