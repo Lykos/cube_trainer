@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
   template: `
 <mat-card>
   <mat-card-title>{{title}}</mat-card-title>
+  <mat-card-subtitle>Received {{timestamp | instant}}</mat-card-subtitle>
   <mat-card-content>
     {{body}}
   </mat-card-content>
@@ -31,6 +32,10 @@ export class MessageComponent implements OnInit {
     this.messageId$ = this.activatedRoute.params.pipe(map(p => p.messageId));
   }
 
+  get timestamp() {
+    return this.message?.timestamp;
+  }
+
   get title() {
     return this.message?.title;
   }
@@ -50,6 +55,7 @@ export class MessageComponent implements OnInit {
       this.messageId$.subscribe(messageId => {
 	this.messagesService.show(userId, messageId).subscribe((message: Message) =>
 	  this.message = message);
+	this.messagesService.markAsRead(userId, messageId).subscribe(r => {});
       });
     });
   }

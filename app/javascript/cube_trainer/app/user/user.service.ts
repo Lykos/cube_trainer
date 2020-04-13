@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 export class UserService {
   constructor(private readonly rails: RailsService) {}
 
-  create(newUser: NewUser) {
+  create(newUser: NewUser): Observable<void> {
     return this.rails.ajax<void>(HttpVerb.Post, '/users', {user: newUser});
   }
 
