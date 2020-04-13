@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 <div>
   <h2>Achievements</h2>
   <div>
-    <table mat-table [dataSource]="achievements">
+    <table mat-table class="mat-elevation-z2" [dataSource]="achievements">
       <mat-text-column name="name"></mat-text-column>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let achievement; columns: columnsToDisplay" (click)="onClick(achievement)"></tr>

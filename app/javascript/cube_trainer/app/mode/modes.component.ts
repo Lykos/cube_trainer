@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 <div>
   <h2>Modes</h2>
   <div>
-    <table mat-table [dataSource]="modes">
+    <table mat-table class="mat-elevation-z2" [dataSource]="modes">
       <mat-text-column name="name"></mat-text-column>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let mode; columns: columnsToDisplay" (click)="onClick(mode)"></tr>

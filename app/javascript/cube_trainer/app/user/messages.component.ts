@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators';
 <div>
   <h2>Messages</h2>
   <div>
-    <table mat-table [dataSource]="messages">
+    <table mat-table class="mat-elevation-z2" [dataSource]="messages">
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef> Timestamp </th>
         <td mat-cell *matCellDef="let message"> {{message.timestamp | instant}} </td>
