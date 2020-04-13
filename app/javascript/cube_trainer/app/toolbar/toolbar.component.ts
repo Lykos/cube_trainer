@@ -59,7 +59,7 @@ export class ToolbarComponent implements OnInit {
 
   ngOnInit() {
     this.authenticationService.currentUser$.subscribe(
-      (user) => { console.log('user in toolbar', user); this.user = user; });
+      (user) => this.user = user);
   }
 
   onCubeTrainer() {
