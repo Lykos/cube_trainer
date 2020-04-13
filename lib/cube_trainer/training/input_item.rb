@@ -4,6 +4,7 @@ module CubeTrainer
   module Training
     # An input item that has a representation that will be stored and used as a key and
     # potentially an associated cube state.
+    # TODO: Move this functionality into Input.
     class InputItem
       def initialize(representation, cube_state = nil)
         @representation = representation
