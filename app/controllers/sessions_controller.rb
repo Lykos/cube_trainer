@@ -16,7 +16,7 @@ class SessionsController < ApplicationController
    @user = User.find_by(name: params[:username])
    if @user && @user.authenticate(params[:password])
      session[:user_id] = @user.id
-     head :no_content
+     render json: @user.to_simple, status: :ok
    else
      head :unauthorized     
    end

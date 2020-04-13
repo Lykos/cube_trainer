@@ -13,13 +13,13 @@ const LOCAL_STORAGE_USER_KEY = 'currentUser';
 })
 export class AuthenticationService {
   private currentUserSubject: BehaviorSubject<Optional<User>>;
-  public readonly currentUserObservable: Observable<Optional<User>>;
+  public readonly currentUser$: Observable<Optional<User>>;
 
   constructor(private readonly rails: RailsService) {
     const unparsed = ofNull(localStorage.getItem(LOCAL_STORAGE_USER_KEY));
     const parsed = mapOptional(unparsed, s => JSON.parse(s));
     this.currentUserSubject = new BehaviorSubject<Optional<User>>(parsed);
-    this.currentUserObservable = this.currentUserSubject.asObservable();
+    this.currentUser$ = this.currentUserSubject.asObservable();
   }
 
   public get currentUser(): Optional<User> {
