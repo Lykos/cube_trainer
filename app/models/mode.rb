@@ -1,15 +1,10 @@
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/letter_scheme'
-require 'cube_trainer/training/commutator_types'
 require 'cube_trainer/utils/array_helper'
+require 'mode_type'
 
 class Mode < ApplicationRecord
-  include CubeTrainer::Utils::ArrayHelper
-  include CubeTrainer::Training::CommutatorTypes
-
-  MODE_TYPES = COMMUTATOR_TYPES.values.freeze
-
   has_many :inputs, dependent: :destroy
   belongs_to :user
 
@@ -20,7 +15,7 @@ class Mode < ApplicationRecord
   validates :user_id, presence: true
   validates :name, presence: true
   validates :mode_type, presence: true
-  validates :show_input_mode, presence: true, inclusion: SHOW_INPUT_MODES
+  validates :show_input_mode, presence: true, inclusion: ModeType::SHOW_INPUT_MODES
   validates :buffer, presence: true, if: ->{ mode_type.has_buffer? }
   validates :cube_size, presence: true, if: ->{ mode_type.default_cube_size }
   validate :show_input_mode_has_to_be_in_show_input_modes_of_mode_type
@@ -36,17 +31,21 @@ class Mode < ApplicationRecord
     CubeTrainer::ColorScheme::BERNHARD
   end
 
-  # TODO: Deprecate this
-  def commutator_info
-    mode_type
+  # TODO: deprecate
+  def test_comm_modes
+    :fail
   end
 
   def generator
-    mode_type.generator_class.new(self)
+    @generator ||= mode_type.generator_class.new(self)
   end
 
   def input_sampler
-    generator.input_sampler(self)
+    @input_sampler ||= generator.input_sampler(self)
+  end
+
+  def input_items
+    generator.input_items
   end
 
   def random_item
@@ -73,11 +72,6 @@ class Mode < ApplicationRecord
 
   def picture
     show_input_mode == :picture
-  end
-
-  # TODO: Get rid of this
-  def legacy_mode
-    CubeTrainer::BufferHelper.mode_for_options(self)
   end
 
   def part_type

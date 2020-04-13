@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/training/commutator_options'
-require 'ostruct'
-
 # Controller for showing inputs to the human and getting results.
 class TrainerController < ApplicationController
   before_action :set_mode

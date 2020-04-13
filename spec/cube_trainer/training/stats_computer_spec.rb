@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/stats_computer'
-require 'cube_trainer/training/commutator_options'
 require 'cube_trainer/training/input_item'
 require 'fixtures'
 require 'ostruct'

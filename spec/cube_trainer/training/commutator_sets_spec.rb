@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/commutator_sets'
-require 'cube_trainer/training/commutator_options'
-require 'ostruct'
+require 'rails_helper'
 
 BROKEN_MODE_TYPE_NAMES = [
   :corner_twists_plus_parities_ul_ub,
@@ -10,22 +9,20 @@ BROKEN_MODE_TYPE_NAMES = [
   :floating_2twists_and_corner_3twists
 ]
 
-shared_examples 'commutator_set' do |info|
-
+shared_examples 'commutator_set' do |mode_type|
   let(:letter_scheme) { BernhardLetterScheme.new }
-  let(:options) do
-    options = Training::CommutatorOptions.default_options
-    options.commutator_info = info
-    options.cube_size = info.default_cube_size
-    options.test_comms_mode = :fail
-    options
+  let(:mode) do
+    Mode.new(
+      mode_type: mode_type,
+      cube_size: mode_type.default_cube_size,
+    )
   end
-  let(:generator) { info.generator_class.new(options) }
-  let(:input_items) { generator.input_items }
-  let(:hinter) { generator.hinter }
+  let(:generator) { mode.generator }
+  let(:input_items) { mode.input_items }
+  let(:hinter) { mode.hinter }
 
   it 'parses all comms correctly and give a hint on a random one' do
-    skip if BROKEN_MODE_TYPE_NAMES.include?(info.name)
+    skip if BROKEN_MODE_TYPE_NAMES.include?(mode_type.name)
     if input_items
       input_item = input_items.sample
       hinter.hints(input_item.representation)
@@ -33,10 +30,10 @@ shared_examples 'commutator_set' do |info|
   end
 end
 
-Training::CommutatorOptions::COMMUTATOR_TYPES.each do |_key, info|
-  next unless info.default_cube_size
+ModeType::ALL.each do |mode_type|
+  next unless mode_type.default_cube_size
 
-  describe info.generator_class do
-    it_behaves_like 'commutator_set', info
+  describe mode_type.generator_class do
+    it_behaves_like 'commutator_set', mode_type
   end
 end

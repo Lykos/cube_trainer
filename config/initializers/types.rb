@@ -1,5 +1,6 @@
 require 'symbol_type'
 require 'input_representation_type'
+require 'mode_type'
 require 'mode_type_type'
 require 'achievement_type_type'
 
