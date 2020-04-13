@@ -26,18 +26,18 @@ enum StopWatchState {
       <div> {{duration}} </div>
       <div>
         <ng-container *ngIf="running; else notRunning">
-          <button mat-raised-button color="primary" (click)="stopAndStart()">
+          <button mat-raised-button color="primary" (click)="onStopAndStart()">
             Stop and Start
           </button>
-          <button mat-raised-button color="primary" (click)="stopAndPause()">
+          <button mat-raised-button color="primary" (click)="onStopAndPause()">
             Stop and Pause
           </button>
-          <button mat-raised-button color="primary" (click)="dropAndPause()">
+          <button mat-raised-button color="primary" (click)="onDropAndPause()">
             Drop and Pause
           </button>
         </ng-container>
         <ng-template #notRunning>
-          <button mat-raised-button color="primary" (click)="start()">
+          <button mat-raised-button color="primary" (click)="onStart()">
             Start
           </button>
         </ng-template>
@@ -71,7 +71,7 @@ export class TrainerComponent implements OnDestroy {
     return this.state == StopWatchState.NotStarted;
   }
 
-  dropAndPause() {
+  onDropAndPause() {
     this.stopTimer();
     this.state = StopWatchState.Paused;
     this.modeId$.subscribe(modeId => {
@@ -79,7 +79,7 @@ export class TrainerComponent implements OnDestroy {
     });
   }
 
-  start() {
+  onStart() {
     this.modeId$.subscribe(modeId => {
       this.trainerService.create(modeId).subscribe(input => this.startFor(input));
     });
@@ -108,12 +108,12 @@ export class TrainerComponent implements OnDestroy {
     });
   }
 
-  stopAndPause() {
+  onStopAndPause() {
     this.stopAnd(() => {});
   }
 
-  stopAndStart() {
-    this.stopAnd(() => this.start());
+  onStopAndStart() {
+    this.stopAnd(() => this.onStart());
   }
 
   stopTimer() {
@@ -128,9 +128,9 @@ export class TrainerComponent implements OnDestroy {
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
     if (this.running) {
-      this.stopAndStart();
+      this.onStopAndStart();
     } else if (this.notStarted) {
-      this.start();
+      this.onStart();
     }
   }
 }
