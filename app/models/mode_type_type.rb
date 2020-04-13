@@ -12,7 +12,7 @@ class ModeTypeType < ActiveRecord::Type::String
 
   def serialize(value)
     return if value.nil?
-    raise TypeError unless value.is_a?(ModeType)
+    value = cast(value) unless value.is_a?(ModeType)
 
     value.name
   end
