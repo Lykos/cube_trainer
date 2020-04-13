@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :messages
   get 'signup', to: 'users#new'
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
@@ -8,6 +7,7 @@ Rails.application.routes.draw do
   root 'sessions#welcome'
   resources :achievements
   resources :users do
+    resources :messages
     resources :achievement_grants, only: [:index, :show]
   end
   resources :modes do

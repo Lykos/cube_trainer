@@ -1,74 +1,74 @@
 class MessagesController < ApplicationController
+  before_action :set_user
   before_action :set_message, only: [:show, :edit, :update, :destroy]
+  before_action :check_current_user_owns
 
-  # GET /messages
-  # GET /messages.json
+  # GET /users/1/messages
+  # GET /users/1/messages.json
   def index
-    @messages = Message.all
+    respond_to do |format|
+      format.html { render 'application/empty' }
+      format.json { render json: current_user.messages }
+    end
   end
 
-  # GET /messages/1
-  # GET /messages/1.json
+  # GET /users/1/messages/1
+  # GET /users/1/messages/1.json
   def show
+    respond_to do |format|
+      format.html { render 'application/empty' }
+      format.json { render json: @message }
+    end
   end
 
-  # GET /messages/new
-  def new
-    @message = Message.new
-  end
-
-  # GET /messages/1/edit
+  # GET /users/1/messages/1/edit
   def edit
+    render 'application/empty'
   end
 
-  # POST /messages
-  # POST /messages.json
-  def create
-    @message = Message.new(message_params)
-
-    respond_to do |format|
-      if @message.save
-        format.html { redirect_to @message, notice: 'Message was successfully created.' }
-        format.json { render :show, status: :created, location: @message }
-      else
-        format.html { render :new }
-        format.json { render json: @message.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /messages/1
-  # PATCH/PUT /messages/1.json
+  # PATCH/PUT /users/1/messages/1
+  # PATCH/PUT /users/1/messages/1.json
   def update
-    respond_to do |format|
-      if @message.update(message_params)
-        format.html { redirect_to @message, notice: 'Message was successfully updated.' }
-        format.json { render :show, status: :ok, location: @message }
-      else
-        format.html { render :edit }
-        format.json { render json: @message.errors, status: :unprocessable_entity }
-      end
+    if @message.update(message_params)
+      render json: @message, status: :ok
+    else
+      render json: @message.errors, status: :unprocessable_entity
     end
   end
 
-  # DELETE /messages/1
-  # DELETE /messages/1.json
+  # DELETE /users/1/messages/1
+  # DELETE /users/1/messages/1.json
   def destroy
-    @message.destroy
-    respond_to do |format|
-      format.html { redirect_to messages_url, notice: 'Message was successfully destroyed.' }
-      format.json { head :no_content }
+    if @message.destroy
+      head :no_content
+    else 
+      render json: @message.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_message
-      @message = Message.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def message_params
-      params.require(:message).permit(:user_id, :title, :message, :read)
-    end
+  def set_user
+    head :not_found unless @user = User.find_by(id: params[:user_id])
+  end
+
+  def set_message
+    head :not_found unless @message = @user.messages.find_by(id: params[:id])
+  end
+
+  def get_owner
+    @user
+  end
+
+  # Only allow a list of trusted parameters through.
+  def message_params
+    params.require(:message).permit(:read)
+  end
+
+  # Checks that the user is the current user.
+  # Note that this is different from other controllers because not even admin can see the messages.
+  # In order to not allow reverse engineering, we have to return not_found in all such cases.
+  def check_current_user_owns
+    head :not_found unless get_owner == current_user
+  end
 end

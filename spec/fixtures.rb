@@ -64,6 +64,17 @@ shared_context :achievement_grant do
   end
 end
 
+shared_context :user_message do
+  include_context :user
+
+  let(:user_message) do
+    message = Message.find_or_initialize_by(user: user, title: 'message_title')
+    message.update(text: 'message_text', read: false)
+    message.save!
+    message
+  end
+end
+
 shared_context :mode do
   include_context :user
 
