@@ -5,7 +5,10 @@ Rails.application.routes.draw do
   post 'logout', to: 'sessions#logout'
   get 'welcome', to: 'sessions#welcome'
   root 'sessions#welcome'
-  resources :users
+  resources :achievements
+  resources :users do
+    resources :achievement_grants, only: [:index, :show]
+  end
   resources :modes do
     resources :results, only: [:index, :show, :destroy]
   end
