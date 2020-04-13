@@ -69,7 +69,7 @@ shared_context :user_message do
 
   let(:user_message) do
     message = Message.find_or_initialize_by(user: user, title: 'message_title')
-    message.update(text: 'message_text', read: false)
+    message.update(body: 'message_body', read: false)
     message.save!
     message
   end
