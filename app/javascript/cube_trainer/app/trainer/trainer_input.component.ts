@@ -16,12 +16,10 @@ import { Observable } from 'rxjs';
   <img flex [src]="imgRightSrc">
 </div>
 </ng-container>
-<span class="trainer-input" *ngIf="showName">{{input.inputRepresentation}}</span>
+<span class="trainer-input" *ngIf="showName">{{input.representation}}</span>
 <div class="hints" *ngIf="numHints > 0">
   <div class="hint" *ngFor="let hint of hints">
-    <span class="hintRow" *ngFor="let row of hint.rows">
-      {{row}}
-    </span>
+    {{hint}}
   </div>
 </div>
 `
