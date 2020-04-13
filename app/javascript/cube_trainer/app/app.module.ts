@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { UserModule } from './user/user.module';
+import { UserComponent } from './user/user.component';
+import { AchievementsComponent } from './user/achievements.component';
 import { SignupComponent } from './user/signup.component';
 import { LoginComponent } from './user/login.component';
 import { ModesComponent } from './mode/modes.component';
@@ -17,6 +19,8 @@ const appRoutes: Routes = [
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
   { path: 'modes', component: ModesComponent },
+  { path: 'achievements', component: AchievementsComponent },
+  { path: 'users/:userId', component: UserComponent },
   { path: 'modes/new', component: NewModeComponent },
   { path: 'trainer/:modeId', component: TrainerComponent },
 ];
