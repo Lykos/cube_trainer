@@ -9,6 +9,7 @@ import { ActivatedRoute } from '@angular/router';
   selector: 'user',
   template: `
 <h1>{{userName}}</h1>
+<messages></messages>
 <achievement-grants></achievement-grants>
 `
 })

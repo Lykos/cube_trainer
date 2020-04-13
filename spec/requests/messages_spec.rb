@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Messages", type: :request, focus: true do
+RSpec.describe "Messages", type: :request do
   include_context :user
   include_context :eve
   include_context :user_message

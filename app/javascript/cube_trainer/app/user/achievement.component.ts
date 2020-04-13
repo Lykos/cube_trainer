@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'achievements',
+  selector: 'achievement',
   template: `
 <mat-card>
   <mat-card-title>{{name}}</mat-card-title>
@@ -22,7 +22,6 @@ import { map } from 'rxjs/operators';
 export class AchievementComponent implements OnInit {
   achievementId$: Observable<number>;
   achievement: Achievement | undefined = undefined;
-  columnsToDisplay = ['timestamp', 'achievement'];
 
   constructor(private readonly achievementsService: AchievementsService,
 	      private readonly router: Router,

@@ -4,7 +4,10 @@ import { AppComponent } from './app.component';
 import { UserModule } from './user/user.module';
 import { UserComponent } from './user/user.component';
 import { AchievementsComponent } from './user/achievements.component';
+import { AchievementGrantsComponent } from './user/achievement-grants.component';
 import { AchievementComponent } from './user/achievement.component';
+import { MessageComponent } from './user/message.component';
+import { MessagesComponent } from './user/messages.component';
 import { SignupComponent } from './user/signup.component';
 import { LoginComponent } from './user/login.component';
 import { ModesComponent } from './mode/modes.component';
@@ -23,6 +26,9 @@ const appRoutes: Routes = [
   { path: 'achievements', component: AchievementsComponent },
   { path: 'achievements/:achievementId', component: AchievementComponent },
   { path: 'users/:userId', component: UserComponent },
+  { path: 'users/:userId/achievement_grants', component: AchievementGrantsComponent },
+  { path: 'users/:userId/messages', component: MessagesComponent },
+  { path: 'users/:userId/messages/:messageId', component: MessageComponent },
   { path: 'modes/new', component: NewModeComponent },
   { path: 'trainer/:modeId', component: TrainerComponent },
 ];
