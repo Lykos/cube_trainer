@@ -6,21 +6,21 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'modes',
   template: `
-<mat-card>
-  <mat-card-title>Modes</mat-card-title>
-  <mat-card-content>
+<div>
+  <h2>Modes</h2>
+  <div>
     <table mat-table [dataSource]="modes">
       <mat-text-column name="name"></mat-text-column>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let mode; columns: columnsToDisplay" (click)="onClick(mode)"></tr>
     </table>
-  </mat-card-content>
-  <mat-card-actions>
+  </div>
+  <div>
     <button mat-raised-button color="primary" (click)="onNew()">
       New
     </button>
-  </mat-card-actions>
-</mat-card>
+  </div>
+</div>
 `
 })
 export class ModesComponent implements OnInit {
@@ -35,9 +35,7 @@ export class ModesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.modeService.list().subscribe((modes: Mode[]) => {
-      this.modes = modes
-    });
+    this.modeService.list().subscribe((modes: Mode[]) => this.modes = modes);
   }
 
   onNew() {

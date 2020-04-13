@@ -21,10 +21,10 @@ enum StopWatchState {
 <div layout="row" layout-sm="column">
   <div flex>
     <trainer-input [input]="input" [modeId$]="modeId$" *ngIf="input"></trainer-input>
-    <mat-card>
-      <mat-card-title>Time</mat-card-title>
-      <mat-card-content> {{duration}} </mat-card-content>
-      <mat-card-actions>
+    <div>
+      <h2>Time</h2>
+      <div> {{duration}} </div>
+      <div>
         <ng-container *ngIf="running; else notRunning">
           <button mat-raised-button color="primary" (click)="stopAndStart()">
             Stop and Start
@@ -41,8 +41,8 @@ enum StopWatchState {
             Start
           </button>
         </ng-template>
-      </mat-card-actions>
-    </mat-card>
+      </div>
+    </div>
   </div>
   <div flex>
     <result-table [resultEvents$]="resultEventsSubject.asObservable()"></result-table>

@@ -10,9 +10,9 @@ import { ResultsDataSource } from './results_data_source';
 @Component({
   selector: 'result-table',
   template: `
-<mat-card>
-  <mat-card-title>Results</mat-card-title>
-  <mat-card-content>
+<div>
+  <h2>Results</h2>
+  <div>
     <div class="spinner-container" *ngIf="dataSource.loading$ | async">
       <mat-spinner></mat-spinner>
     </div>
@@ -32,29 +32,30 @@ import { ResultsDataSource } from './results_data_source';
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let result; columns: columnsToDisplay"></tr>
     </table>
-  </mat-card-content>
-</mat-card>
+  </div>
+</div>
 `
 })
 export class ResultTableComponent implements OnInit, OnDestroy {
-  modeId!: Observable<number>;
+  modeId$: Observable<number>;
   dataSource!: ResultsDataSource;
   columnsToDisplay = ['timestamp', 'input', 'time'];
   @Input() resultEvents$!: Observable<void>;
   private eventsSubscription!: Subscription;
 
   constructor(private readonly resultService: ResultService,
-	      private readonly activatedRoute: ActivatedRoute) {}
+	      activatedRoute: ActivatedRoute) {
+    this.modeId$ = activatedRoute.params.pipe(map(p => p.modeId));
+  }
 
   ngOnInit() {
-    this.modeId = this.activatedRoute.params.pipe(map(p => p.modeId));
     this.dataSource = new ResultsDataSource(this.resultService);
     this.eventsSubscription = this.resultEvents$.subscribe(() => this.update());
     this.update();
   }
 
   update() {
-    this.modeId.subscribe(modeId => {
+    this.modeId$.subscribe(modeId => {
       this.dataSource.loadResults(modeId);
     });
   }

@@ -38,11 +38,13 @@ export class ModeService {
   }
 
   listTypes(): Observable<ModeType[]> {
-    return this.rails.ajax<any[]>(HttpVerb.Get, '/mode_types', {}).pipe(map(modeTypes => modeTypes.map(this.parseModeType)));
+    return this.rails.ajax<any[]>(HttpVerb.Get, '/mode_types', {}).pipe(
+      map(modeTypes => modeTypes.map(this.parseModeType)));
   }
 
   list(): Observable<Mode[]> {
-    return this.rails.ajax<Mode[]>(HttpVerb.Get, '/modes', {}).pipe(map(modeTypes => modeTypes.map(this.parseMode)));
+    return this.rails.ajax<Mode[]>(HttpVerb.Get, '/modes', {}).pipe(
+      map(modeTypes => modeTypes.map(this.parseMode)));
   }
 
   show(modeId: number): Observable<Mode> {

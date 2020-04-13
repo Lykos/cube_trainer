@@ -1,12 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../user/authentication.service';
 import { Router } from '@angular/router';
-import { hasValue } from '../utils/optional';
+import { User } from '../user/user';
+import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional';
 
 @Component({
   selector: 'toolbar',
   template: `
 <mat-toolbar color="primary">
+  <ng-container *ngIf="loggedIn">
+    <button mat-button (click)="onCubeTrainer()">
+      Cube Trainer
+    </button>
+  </ng-container>
+  <div class="horizontal-spacer"></div>
   <ng-container *ngIf="!loggedIn; else loggedInBlock">
     <button mat-button (click)="onLogin()">
       Login
@@ -16,20 +23,47 @@ import { hasValue } from '../utils/optional';
     </button>
   </ng-container>
   <ng-template #loggedInBlock>
+    <button mat-button (click)="onUser()">
+      {{userName}}
+    </button>
     <button mat-button (click)="onLogout()">
       Logout
     </button>
   </ng-template>
 </mat-toolbar>
-`
+`,
+  styles: [`
+.horizontal-spacer {
+  flex: 1 1 auto;
+}
+`]
 })
-export class ToolbarComponent {
-  loggedIn = false;
-
+export class ToolbarComponent implements OnInit {
+  user: Optional<User> = none;
+  
   constructor(private readonly authenticationService: AuthenticationService,
 	      private readonly router: Router) {
-    this.authenticationService.currentUserObservable.subscribe(
-      (user) => { this.loggedIn = hasValue(user) });
+  }
+
+  get userName() {
+    return orElse(mapOptional(this.user, u => u.name), '');
+  }
+
+  get loggedIn() {
+    return hasValue(this.user);
+  }
+
+  ngOnInit() {
+    this.authenticationService.currentUser$.subscribe(
+      (user) => { console.log('user in toolbar', user); this.user = user; });
+  }
+
+  onCubeTrainer() {
+    this.router.navigate(['/modes']);
+  }
+
+  onUser() {
+    this.router.navigate(['/user']);
   }
 
   onLogin() {
