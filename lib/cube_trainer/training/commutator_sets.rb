@@ -306,7 +306,7 @@ module CubeTrainer
 
           # Now we generate letter pairs
           extended_solutions.map do |s|
-            s.map { |comm| LetterPair.new(comm.map { |p| @letter_scheme.letter(p) }) }
+            s.map { |comm| LetterPair.new(comm.map { |p| letter(p) }) }
           end
         end
         # rubocop:enable Metrics/MethodLength
