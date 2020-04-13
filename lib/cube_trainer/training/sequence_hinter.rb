@@ -3,6 +3,7 @@
 require 'cube_trainer/alg_name'
 require 'cube_trainer/core/cube_state'
 require 'cube_trainer/training/input_sampler'
+require 'cube_trainer/training/result_history'
 require 'cube_trainer/native'
 require 'cube_trainer/utils/array_helper'
 require 'ostruct'
@@ -112,27 +113,33 @@ module CubeTrainer
         end
       UNKNOWN_SCORE = UnknownScore.new
 
-      def initialize(cube_size, resultss, hinters)
+      def initialize(cube_size, modes, hinters)
         Core::CubeState.check_cube_size(cube_size)
-        raise ArgumentError if resultss.length != hinters.length || resultss.empty?
+        raise TypeError unless modes.all? { |m| m.is_a?(Mode) }
+        raise ArgumentError if modes.length != hinters.length || modes.empty?
 
         hinters.each do |h|
           raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints)
         end
         @cube_size = cube_size
-        @valuess = compute_valuess(resultss)
+        @valuess = compute_valuess(modes)
         @hinters = hinters
         @hints = {}
         @metric = :sqtm
       end
 
-      def compute_valuess(resultss)
-        resultss.map do |results|
+      def compute_valuess(modes)
+        modes.map do |mode|
           values = {}
-          results.group_by(&:input_representation).each do |l, rs|
-            avg = Native::CubeAverage.new(InputSampler::DEFAULT_CONFIG[:badness_memory], 0)
-            rs.sort_by(&:created_at).each { |r| avg.push(r.time_s) }
-            values[l] = ActualScore.new(avg.average)
+          # TODO: get values for options in a more future proof way.
+          result_history = ResultHistory.new(
+            mode: mode,
+            badness_memory: InputSampler::DEFAULT_CONFIG[:badness_memory],
+            hint_seconds: InputSampler::DEFAULT_CONFIG[:hint_seconds],
+            failed_seconds: InputSampler::DEFAULT_CONFIG[:failed_seconds]
+          )
+          result_history.badness_averages.each do |r, b|
+            values[r] = ActualScore.new(b)
           end
           values
         end

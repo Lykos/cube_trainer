@@ -106,7 +106,6 @@ class Mode < ApplicationRecord
   end
 
   def used_mode(mode_type)
-    p mode_type
     used_modes.find_by(mode_type: mode_type)
   end
 

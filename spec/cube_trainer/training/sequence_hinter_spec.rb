@@ -27,31 +27,27 @@ describe Training::HeterogenousSequenceHinter do
   let(:algorithm_b) { parse_algorithm('R') }
   let(:algorithm_c) { parse_algorithm('U') }
   let(:algorithm_d) { parse_algorithm('U2') }
-  let(:result_a) do
-    Result.create!(
-      input: mode.inputs.create!(created_at: Time.at(0), input_representation: algname_a),
-      time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
-    )
+  before(:each) do
+    Result.destroy_all
+    5.times do |i|
+      Result.create!(
+        input: mode.inputs.create!(created_at: Time.at(i), input_representation: algname_a),
+        time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
+      )
+      Result.create!(
+        input: mode.inputs.create!(created_at: Time.at(i), input_representation: algname_b),
+        time_s: 2.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
+      )
+      Result.create!(
+        input: mode.inputs.create!(created_at: Time.at(i), input_representation: algname_d),
+        time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
+      )
+    end
   end
-  let(:result_b) do
-    Result.create!(
-      input: mode.inputs.create!(created_at: Time.at(0), input_representation: algname_b),
-      time_s: 2.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
-    )
-  end
-  let(:result_d) do
-    Result.create!(
-      input: mode.inputs.create!(created_at: Time.at(0), input_representation: algname_d),
-      time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
-    )
-  end
-  let(:results_left) { [result_a, result_b] * 5 }
-  let(:results_right) { [result_d] * 5 }
-  let(:resultss) { [results_left, results_right] }
   let(:hinter_left) { Training::AlgHinter.new(algname_a => algorithm_a, algname_b => algorithm_b, algname_c => algorithm_c) }
   let(:hinter_right) { Training::AlgHinter.new(algname_d => algorithm_d) }
   let(:hinters) { [hinter_left, hinter_right] }
-  let(:hinter) { FakeHeterogenousSequenceHinter.new(cube_size, resultss, hinters) }
+  let(:hinter) { FakeHeterogenousSequenceHinter.new(cube_size, [mode, mode], hinters) }
 
   it 'can give a prioritized list of hints' do
     input = CombinedAlgName.new([

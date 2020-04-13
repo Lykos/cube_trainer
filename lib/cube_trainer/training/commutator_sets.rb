@@ -149,15 +149,10 @@ module CubeTrainer
         parity_mode = @mode.used_mode(:corner_parities)
         return NoHinter.new(input_items) unless corner_mode && parity_mode
 
-        corner_results = corner_mode.results
         corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_mode)
-
-        parity_results = parity_mode.results
         parity_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, parity_mode)
-
         CornerTwistPlusParityHinter.new(
-          corner_results, parity_results, corner_hinter,
-          parity_hinter, mode
+          corner_mode, parity_mode, corner_hinter, parity_hinter, mode
         )
       end
 
@@ -180,8 +175,8 @@ module CubeTrainer
         include CornerTwistSetsHelper
         include Utils::ArrayHelper
 
-        def initialize(corner_results, parity_results, corner_hinter, parity_hinter, mode)
-          super(mode.cube_size, [corner_results, parity_results], [corner_hinter, parity_hinter])
+        def initialize(corner_mode, parity_mode, corner_hinter, parity_hinter, mode)
+          super(mode.cube_size, [corner_mode, parity_mode], [corner_hinter, parity_hinter])
           @letter_scheme = mode.letter_scheme
         end
 
@@ -216,9 +211,8 @@ module CubeTrainer
       def hinter
         return NoHinter.new(input_items) unless corner_mode = @mode.used_mode(:corner_commutators)
 
-        corner_results = corner_mode.results
         corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_mode)
-        Corner3TwistHinter.new(corner_results, corner_hinter, mode)
+        Corner3TwistHinter.new(corner_mode, corner_hinter, mode)
       end
 
       def goal_badness
@@ -249,9 +243,9 @@ module CubeTrainer
       class Corner3TwistHinter < HomogenousSequenceHinter
         include CornerTwistSetsHelper
 
-        # Note that this should be the results for corner comms, not for corner 3 twists.
-        def initialize(corner_results, corner_hinter, mode)
-          super(mode.cube_size, corner_results, corner_hinter)
+        # Note that `mode` should be the mode for corner comms, not for corner 3 twists.
+        def initialize(corner_mode, corner_hinter, mode)
+          super(mode.cube_size, corner_mode, corner_hinter)
           @letter_scheme = mode.letter_scheme
         end
 
