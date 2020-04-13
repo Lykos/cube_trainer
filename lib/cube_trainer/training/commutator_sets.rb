@@ -146,6 +146,7 @@ module CubeTrainer
       include CornerTwistSetsHelper
 
       PART_TYPE = Core::Corner
+      PARITY_PART_TYPE = Core::Edge
 
       def hinter
         corner_options = corner_options(options)
@@ -449,6 +450,7 @@ module CubeTrainer
       include CornerTwistSetsHelper
 
       PART_TYPE = Core::Corner
+      PARITY_PART_TYPE = Core::Edge
 
       def hinter
         @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('parities', input_items, @options)

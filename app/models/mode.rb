@@ -20,6 +20,8 @@ class Mode < ApplicationRecord
   validates :cube_size, presence: true, if: ->{ mode_type.default_cube_size }
   validate :show_input_mode_has_to_be_in_show_input_modes_of_mode_type
   validate :buffer_valid, if: ->{ mode_type.has_buffer? }
+  validates :first_parity_part, :second_parity_part, presence: true, if: ->{ mode_type.has_parity_parts? }
+  validate :parity_parts_valid, if: ->{ mode_type.has_parity_parts? }
 
   # TODO: Make it configurable
   def letter_scheme
@@ -78,12 +80,20 @@ class Mode < ApplicationRecord
     mode_type.part_type
   end
 
+  def parity_part_type
+    mode_type.parity_part_type
+  end
+
   def hinter
     generator.hinter
   end
 
   def hints(input)
     hinter.hints(input.input_representation)
+  end
+
+  def parity_parts
+    [first_parity_part, second_parity_part]
   end
 
   private
@@ -103,6 +113,33 @@ class Mode < ApplicationRecord
   def buffer_valid?
     begin
       part_type.parse(buffer)
+    rescue ArgumentError
+    end
+  end
+
+  def parity_parts_valid
+    unless first_parity_part < second_parity_part
+      errors.add(:second_parity_part, "has to be alphabetically after first_parity_part")
+    end
+    unless parity_part_valid?(first_parity_part)
+      errors.add(:first_parity_part, "has to be a valid #{parity_part_type}")
+    end
+    unless parity_part_valid?(second_parity_part)
+      errors.add(:second_parity_part, "has to be a valid #{parity_part_type}")
+    end
+    return unless parity_parts.all? { |p| parity_part_valid?(p) }
+
+    first_part = parity_part_type.parse(first_parity_part)
+    second_part = parity_part_type.parse(second_parity_part)
+    if first_part.turned_equals?(second_part)
+      errors.add(:second_parity_part, 'has to be a different piece from first_parity_part')
+    end
+    # TODO validate rotation
+  end
+
+  def parity_part_valid?(parity_part)
+    begin
+      parity_part_type.parse(parity_part)
     rescue ArgumentError
     end
   end

@@ -19,10 +19,12 @@ class ModeType
                 :has_buffer,
                 :has_goal_badness,
                 :show_input_modes,
-                :used_mode_types
+                :used_mode_types,
+                :has_parity_parts
 
   alias has_goal_badness? has_goal_badness
   alias has_buffer? has_buffer
+  alias has_parity_parts? has_parity_parts
 
   # Returns a simple version for the current user that can be returned to the frontend.
   def to_simple(user=nil)
@@ -48,6 +50,10 @@ class ModeType
 
   def part_type
     generator_class::PART_TYPE
+  end
+
+  def parity_part_type
+    generator_class::PARITY_PART_TYPE
   end
 
   def buffers
@@ -76,22 +82,24 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :corner_parities_ul_ub,
+      name: :corner_parities,
       generator_class: CornerParities,
       learner_type: :case_time,
       default_cube_size: 3,
       has_buffer: true,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_parity_parts: true
     ),
     ModeType.new(
-      name: :corner_twists_plus_parities_ul_ub,
+      name: :corner_twists_plus_parities,
       generator_class: CornerTwistsPlusParities,
       learner_type: :case_time,
       default_cube_size: 3,
       has_buffer: true,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_parity_parts: true
     ),
     ModeType.new(
       name: :floating_2twists,
