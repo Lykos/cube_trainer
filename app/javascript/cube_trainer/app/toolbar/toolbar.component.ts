@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../user/authentication.service';
+import { MessagesService } from '../user/messages.service';
 import { Router } from '@angular/router';
 import { User } from '../user/user';
 import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional';
@@ -23,7 +24,7 @@ import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional
     </button>
   </ng-container>
   <ng-template #loggedInBlock>
-    <button mat-button (click)="onUser()">
+    <button mat-button (click)="onUser()" [matBadge]="unreadMessagesBadge" matBadgeColor="accent">
       {{userName}}
     </button>
     <button mat-button (click)="onLogout()">
@@ -40,9 +41,15 @@ import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional
 })
 export class ToolbarComponent implements OnInit {
   user: Optional<User> = none;
-  
+  unreadMessagesCount: number | undefined = undefined;
+
   constructor(private readonly authenticationService: AuthenticationService,
+	      private readonly messagesService: MessagesService,
 	      private readonly router: Router) {
+  }
+
+  get unreadMessagesBadge() {
+    return this.unreadMessagesCount == 0 ? undefined : this.unreadMessagesCount;
   }
 
   get userName() {
@@ -57,9 +64,18 @@ export class ToolbarComponent implements OnInit {
     return hasValue(this.user);
   }
 
+  get numBadges() {
+    return this.unreadMessagesCount;
+  }
+
   ngOnInit() {
     this.authenticationService.currentUser$.subscribe(
-      (user) => this.user = user);
+      (user) => {
+	this.user = user;
+	mapOptional(user, u => {
+	  this.messagesService.countUnread(u.id).subscribe(count => this.unreadMessagesCount = count);
+	});
+      });
   }
 
   onCubeTrainer() {

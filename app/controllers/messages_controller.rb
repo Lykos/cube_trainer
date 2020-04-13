@@ -3,12 +3,17 @@ class MessagesController < ApplicationController
   before_action :set_message, only: [:show, :edit, :update, :destroy]
   before_action :check_current_user_owns
 
+  # GET /users/1/messages/count_unread.json
+  def count_unread
+    render json: @user.messages.where(read: false).count
+  end
+
   # GET /users/1/messages
   # GET /users/1/messages.json
   def index
     respond_to do |format|
       format.html { render 'application/empty' }
-      format.json { render json: current_user.messages }
+      format.json { render json: @user.messages }
     end
   end
 
@@ -56,10 +61,6 @@ class MessagesController < ApplicationController
     head :not_found unless @message = @user.messages.find_by(id: params[:id])
   end
 
-  def get_owner
-    @user
-  end
-
   # Only allow a list of trusted parameters through.
   def message_params
     params.require(:message).permit(:read)
@@ -69,6 +70,6 @@ class MessagesController < ApplicationController
   # Note that this is different from other controllers because not even admin can see the messages.
   # In order to not allow reverse engineering, we have to return not_found in all such cases.
   def check_current_user_owns
-    head :not_found unless get_owner == current_user
+    head :not_found unless @user == current_user
   end
 end

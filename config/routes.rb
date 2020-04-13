@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :modes do
     resources :results, only: [:index, :show, :destroy]
   end
+  get 'users/:user_id/unread_messages_count', to: 'messages#count_unread'
   get 'mode_types', to: 'mode_types#index'
   get 'trainer/:mode_id', to: 'trainer#index'
   post 'trainer/:mode_id/inputs', to: 'trainer#create'

@@ -22,6 +22,10 @@ export class MessagesService {
     }
   }
 
+  countUnread(userId: number): Observable<number> {
+    return this.rails.ajax<number>(HttpVerb.Get, `/users/${userId}/unread_messages_count`, {})
+  }
+
   list(userId: number): Observable<Message[]> {
     return this.rails.ajax<any[]>(HttpVerb.Get, `/users/${userId}/messages`, {}).pipe(
       map(messages => messages.map(this.parseMessage)));
