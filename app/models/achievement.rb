@@ -3,7 +3,7 @@ class Achievement < ApplicationRecord
   validates :name, presence: true, uniqueness: true
   validates :achievement_type, presence: true
   has_many :users, through: :achievement_grants
-  has_many :achievement_grants
+  has_many :achievement_grants, dependent: :destroy
   validate :param_existence
 
   private
