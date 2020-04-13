@@ -29,7 +29,7 @@ import { Router } from '@angular/router';
 })
 export class ModesComponent implements OnInit {
   modes: Mode[] = [];
-  columnsToDisplay = ['name'];
+  columnsToDisplay = ['name', 'numResults'];
 
   constructor(private readonly modeService: ModeService,
 	      private readonly router: Router) {}
