@@ -1,7 +1,9 @@
+# TODO Make this a sub-resource of user
 class ModesController < ApplicationController
   before_action :set_mode, only: [:show, :update, :destroy]
   before_action :check_current_user_owns, only: [:show, :update, :destroy]
 
+  # TODO move out
   # GET /mode_types.json
   def types
     render json: Mode::MODE_TYPES.map { |m| m.to_simple }

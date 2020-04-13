@@ -11,6 +11,8 @@ class AchievementType
     @has_param
   end
 
-  ALL = [].freeze
+  ALL = [
+    AchievementType.new(:fake, false)
+  ].freeze
   BY_NAME = ALL.map { |a| [a.name, a] }.to_h.freeze
 end

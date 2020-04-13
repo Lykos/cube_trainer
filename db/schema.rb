@@ -27,12 +27,12 @@ ActiveRecord::Schema.define(version: 2020_04_12_012525) do
 
   create_table "achievements", force: :cascade do |t|
     t.string "name", null: false
-    t.string "type", null: false
+    t.string "achievement_type", null: false
     t.integer "param"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["achievement_type"], name: "index_achievements_on_achievement_type"
     t.index ["name"], name: "index_achievements_on_name", unique: true
-    t.index ["type"], name: "index_achievements_on_type"
   end
 
   create_table "download_states", force: :cascade do |t|

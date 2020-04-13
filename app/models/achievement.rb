@@ -3,11 +3,12 @@ class Achievement < ApplicationRecord
   validates :name, presence: true, uniqueness: true
   validates :achievement_type, presence: true
   has_many :users, through: :achievement_grants
-  validate :param
+  has_many :achievement_grants
+  validate :param_existence
 
   private
 
-  def param
+  def param_existence
     if !achievement_type.has_param? && param
       errors.add(:param, "should not be set for #{achievement_type.name}")
     elsif achievement_type.has_param? && !param
