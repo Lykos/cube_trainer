@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators';
 <mat-card>
   <mat-card-title>{{title}}</mat-card-title>
   <mat-card-content>
-    {{text}}
+    {{body}}
   </mat-card-content>
   <mat-card-actions>
     <button mat-raised-button color="primary" (click)="onAll()">All Messages</button>
@@ -31,12 +31,12 @@ export class MessageComponent implements OnInit {
     this.messageId$ = this.activatedRoute.params.pipe(map(p => p.messageId));
   }
 
-  get name() {
+  get title() {
     return this.message?.title;
   }
 
-  get description() {
-    return this.message?.text;
+  get body() {
+    return this.message?.body;
   }
 
   onAll() {

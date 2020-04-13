@@ -16,7 +16,7 @@ export class MessagesService {
     return {
       id: message.id,
       title: message.title,
-      text: message.text,
+      body: message.body,
       read: message.read,
       timestamp: fromDateString(message.created_at),
     }
