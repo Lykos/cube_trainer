@@ -17,6 +17,7 @@ RSpec.describe "ModeTypes", type: :request do
       parsed_body = JSON.parse(response.body)
       expected_modes = ModeType::ALL.map(&:to_simple).map do |m|
         m[:name] = m[:name].to_s
+        m[:learner_type] = m[:learner_type].to_s
         m[:show_input_modes] = m[:show_input_modes].map(&:to_s) if m[:show_input_modes]
         m.transform_keys!(&:to_s)
       end

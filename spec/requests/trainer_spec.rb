@@ -24,7 +24,7 @@ RSpec.describe "Trainer", type: :request do
       post "/trainer/#{mode.id}/inputs", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body.keys).to eq(['id', 'inputRepresentation'])
+      expect(parsed_body.keys).to eq(['id', 'representation', 'hints'])
       expect(Input.find(parsed_body['id'])).not_to be(nil)
     end
 

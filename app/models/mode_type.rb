@@ -18,13 +18,14 @@ class ModeType
                 :default_cube_size,
                 :has_buffer,
                 :has_goal_badness,
-                :show_input_modes
+                :show_input_modes,
+                :used_mode_types
 
   alias has_goal_badness? has_goal_badness
   alias has_buffer? has_buffer
 
-  # Returns a simple version that can be returned to the frontend.
-  def to_simple
+  # Returns a simple version for the current user that can be returned to the frontend.
+  def to_simple(user=nil)
     {
       name: name,
       learner_type: learner_type,
@@ -33,7 +34,16 @@ class ModeType
       has_goal_badness: has_goal_badness?,
       show_input_modes: show_input_modes,
       buffers: buffers
-    }
+    }.tap { |r| r[:useable_modes] = useable_modes(user) if user }
+  end
+
+  def useable_modes(user)
+    used_mode_types.map do |used_mode_type|
+      {
+        modes: user.modes.find_by(mode_type: used_mode_type),
+        purpose: used_mode_type.name
+      }
+    end
   end
 
   def part_type
