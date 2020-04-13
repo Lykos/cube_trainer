@@ -84,6 +84,14 @@ class Mode < ApplicationRecord
     mode_type.part_type
   end
 
+  def hinter
+    generator.hinter
+  end
+
+  def hints(input)
+    hinter.hints(input.input_representation)
+  end
+
   private
 
   def show_input_mode_has_to_be_in_show_input_modes_of_mode_type

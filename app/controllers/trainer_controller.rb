@@ -19,7 +19,11 @@ class TrainerController < ApplicationController
     input_item = @mode.random_item
     input = @mode.inputs.new(input_representation: input_item.representation)
     if input.save
-      response = {id: input.id, representation: input_item.representation.to_s}
+      response = {
+        id: input.id,
+        representation: input_item.representation.to_s,
+        hints: @mode.hints(input).map(&:to_s)
+      }
       render json: response, status: :created
     else
       render json: input.errors, status: :unprocessable_entity
