@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_12_012525) do
+ActiveRecord::Schema.define(version: 2020_04_13_075113) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,6 +54,16 @@ ActiveRecord::Schema.define(version: 2020_04_12_012525) do
     t.index ["mode_id"], name: "index_inputs_on_mode_id"
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.text "message"
+    t.boolean "read"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
   create_table "modes", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "name", null: false
@@ -65,6 +75,16 @@ ActiveRecord::Schema.define(version: 2020_04_12_012525) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "cube_size"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.text "message"
+    t.boolean "read"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "results", force: :cascade do |t|
@@ -96,6 +116,8 @@ ActiveRecord::Schema.define(version: 2020_04_12_012525) do
   add_foreign_key "achievement_grants", "achievements"
   add_foreign_key "achievement_grants", "users"
   add_foreign_key "inputs", "modes"
+  add_foreign_key "messages", "users"
   add_foreign_key "modes", "users"
+  add_foreign_key "notifications", "users"
   add_foreign_key "results", "inputs"
 end
