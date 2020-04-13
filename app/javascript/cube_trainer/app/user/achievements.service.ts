@@ -11,6 +11,10 @@ export class AchievementsService {
   constructor(private readonly rails: RailsService) {}
 
   list(): Observable<Achievement[]> {
-    return this.rails.ajax<Achievement[]>(HttpVerb.Post, '/achievements', {});
+    return this.rails.ajax<Achievement[]>(HttpVerb.Get, '/achievements', {});
+  }
+
+  show(achievementId: number): Observable<Achievement> {
+    return this.rails.ajax<Achievement>(HttpVerb.Get, `/achievements/${achievementId}`, {});
   }
 }

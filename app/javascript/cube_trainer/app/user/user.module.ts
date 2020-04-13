@@ -3,6 +3,7 @@ import { RailsModule } from '../rails/rails.module';
 import { UserService } from './user.service';
 import { UserComponent } from './user.component';
 import { AchievementsComponent } from './achievements.component';
+import { AchievementComponent } from './achievement.component';
 import { AchievementGrantsComponent } from './achievement-grants.component';
 import { AuthenticationService } from './authentication.service';
 import { AchievementsService } from './achievements.service';
@@ -24,6 +25,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     SignupComponent,
     LoginComponent,
     AchievementsComponent,
+    AchievementComponent,
     AchievementGrantsComponent,
     UserComponent,
   ],
@@ -47,6 +49,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     AchievementGrantsService,
   ],
   exports: [
+    AchievementComponent,
     SignupComponent,
     LoginComponent,
     AchievementsComponent,

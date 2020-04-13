@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators';
 <div>
   <h2>Achievements</h2>
   <div>
-    <table mat-table [dataSource]="modes">
+    <table mat-table [dataSource]="achievementGrants">
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef> Timestamp </th>
         <td mat-cell *matCellDef="let achievementGrant"> {{achievementGrant.timestamp | instant}} </td>

@@ -5,6 +5,7 @@ class AchievementGrant < ApplicationRecord
   def to_simple
     {
       id: id,
+      created_at: created_at,
       achievement: achievement
     }
   end
