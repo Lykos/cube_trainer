@@ -1,5 +1,6 @@
 require 'net/http'
 require 'cube_trainer/core/algorithm'
+require 'cube_trainer/anki/cube_visualizer'
 
 class CubeImagesController < ApplicationController
   before_action :set_mode
