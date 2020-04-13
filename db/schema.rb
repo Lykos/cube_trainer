@@ -56,9 +56,9 @@ ActiveRecord::Schema.define(version: 2020_04_13_075113) do
 
   create_table "messages", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "title"
-    t.text "message"
-    t.boolean "read"
+    t.string "title", null: false
+    t.text "text"
+    t.boolean "read", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_messages_on_user_id"
