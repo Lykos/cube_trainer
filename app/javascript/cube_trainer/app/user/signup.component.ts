@@ -87,7 +87,6 @@ export class SignupComponent implements OnInit {
       name: this.username.value,
       password: this.password.value,
       passwordConfirmation: this.passwordConfirmation.value,
-      admin: false,
     };
   }
 
