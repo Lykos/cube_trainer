@@ -49,6 +49,10 @@ export class ToolbarComponent implements OnInit {
     return orElse(mapOptional(this.user, u => u.name), '');
   }
 
+  get userId() {
+    return orElse(mapOptional(this.user, u => u.id), 0);
+  }
+
   get loggedIn() {
     return hasValue(this.user);
   }
@@ -63,7 +67,7 @@ export class ToolbarComponent implements OnInit {
   }
 
   onUser() {
-    this.router.navigate(['/user']);
+    this.router.navigate([`/users/${this.userId}`]);
   }
 
   onLogin() {
