@@ -36,7 +36,7 @@ enum StopWatchState {
           <button mat-raised-button color="primary" (click)="onDropAndPause()">
             Drop and Pause
           </button>
-          <button mat-raised-button color="primary" (click)="onHint()">
+          <button mat-raised-button color="primary" *ngIf="hintsAvailable" (click)="onHint()">
             Hint
           </button>
         </ng-container>
@@ -66,6 +66,10 @@ export class TrainerComponent implements OnDestroy {
   constructor(private readonly trainerService: TrainerService,
 	      activatedRoute: ActivatedRoute) {
     this.modeId$ = activatedRoute.params.pipe(map(p => p.modeId));
+  }
+
+  get hintsAvailable() {
+    return this.numHintsSubject.value < this.maxHints;
   }
 
   get maxHints() {
@@ -147,7 +151,7 @@ export class TrainerComponent implements OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'h' && this.numHintsSubject.value < this.maxHints) {
+    if (event.key === 'h' && this.hintsAvailable) {
       this.onHint();
       return;
     }
