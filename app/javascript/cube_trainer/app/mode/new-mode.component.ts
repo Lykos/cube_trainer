@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { ModeType } from './mode-type';
 import { ModeService } from './mode.service';
 import { NewMode } from './new-mode';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 @Component({
@@ -77,7 +78,8 @@ export class NewModeComponent implements OnInit {
   
   constructor(private readonly formBuilder: FormBuilder,
 	      private readonly modeService: ModeService,
-	      private readonly router: Router) {}
+	      private readonly router: Router,
+	      private readonly snackBar: MatSnackBar) {}
 
   relevantInvalid(control: AbstractControl) {
     return control.invalid && (control.dirty || control.touched);
@@ -136,6 +138,7 @@ export class NewModeComponent implements OnInit {
   onSubmit() {
     this.modeService.create(this.mode).subscribe(
       r => {
+	this.snackBar.open('Mode Created!', 'Close');
 	this.router.navigate([`/modes`]);
       });
   }
