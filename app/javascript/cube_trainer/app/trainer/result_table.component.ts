@@ -29,6 +29,10 @@ import { ResultsDataSource } from './results_data_source';
         <th mat-header-cell *matHeaderCellDef> Time </th>
         <td mat-cell *matCellDef="let result"> {{result.duration | duration}} </td>
       </ng-container>
+      <ng-container matColumnDef="numHints">
+        <th mat-header-cell *matHeaderCellDef> Num Hints </th>
+        <td mat-cell *matCellDef="let result"> {{result.numHints}} </td>
+      </ng-container>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let result; columns: columnsToDisplay"></tr>
     </table>
@@ -39,7 +43,7 @@ import { ResultsDataSource } from './results_data_source';
 export class ResultTableComponent implements OnInit, OnDestroy {
   modeId$: Observable<number>;
   dataSource!: ResultsDataSource;
-  columnsToDisplay = ['timestamp', 'input', 'time'];
+  columnsToDisplay = ['timestamp', 'input', 'time', 'numHints'];
   @Input() resultEvents$!: Observable<void>;
   private eventsSubscription!: Subscription;
 

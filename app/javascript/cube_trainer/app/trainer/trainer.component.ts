@@ -5,9 +5,10 @@ import { TrainerService } from './trainer.service';
 import { HostListener, Component, OnDestroy } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
+import { PartialResult } from './partial-result';
 // @ts-ignore
 import Rails from '@rails/ujs';
-import { Observable, Subject } from 'rxjs';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 
 enum StopWatchState {
   NotStarted,
@@ -20,7 +21,7 @@ enum StopWatchState {
   template: `
 <div layout="row" layout-sm="column">
   <div flex>
-    <trainer-input [input]="input" [modeId$]="modeId$" *ngIf="input"></trainer-input>
+    <trainer-input [input]="input" [modeId$]="modeId$" [numHints$]="numHintsSubject.asObservable()" *ngIf="input"></trainer-input>
     <div>
       <h2>Time</h2>
       <div> {{duration}} </div>
@@ -34,6 +35,9 @@ enum StopWatchState {
           </button>
           <button mat-raised-button color="primary" (click)="onDropAndPause()">
             Drop and Pause
+          </button>
+          <button mat-raised-button color="primary" (click)="onHint()">
+            Hint
           </button>
         </ng-container>
         <ng-template #notRunning>
@@ -55,6 +59,7 @@ export class TrainerComponent implements OnDestroy {
   intervalRef: any = undefined;
   state: StopWatchState = StopWatchState.NotStarted;
   input: InputItem | undefined = undefined;
+  private readonly numHintsSubject = new BehaviorSubject(0);
   modeId$: Observable<number>;
   resultEventsSubject = new Subject<void>();
 
@@ -63,12 +68,23 @@ export class TrainerComponent implements OnDestroy {
     this.modeId$ = activatedRoute.params.pipe(map(p => p.modeId));
   }
 
+  get maxHints() {
+    return this.input && this.input.hints ? this.input.hints.length : 0;
+  }
+
   get running() {
     return this.state == StopWatchState.Running;
   }
 
   get notStarted() {
     return this.state == StopWatchState.NotStarted;
+  }
+
+  get partialResult(): PartialResult {
+    return {
+      numHints: this.numHintsSubject.value,
+      duration: this.duration!,
+    }
   }
 
   onDropAndPause() {
@@ -101,7 +117,7 @@ export class TrainerComponent implements OnDestroy {
     this.stopTimer();
     this.state = StopWatchState.Paused;
     this.modeId$.subscribe(modeId => {
-      this.trainerService.stop(modeId, this.input!, {duration: this.duration!}).subscribe(r => {
+      this.trainerService.stop(modeId, this.input!, this.partialResult).subscribe(r => {
 	this.resultEventsSubject.next();
 	onSuccess();
       });
@@ -116,6 +132,10 @@ export class TrainerComponent implements OnDestroy {
     this.stopAnd(() => this.onStart());
   }
 
+  onHint() {
+    this.numHintsSubject.next(this.numHintsSubject.value + 1);
+  }
+
   stopTimer() {
     clearInterval(this.intervalRef);
     this.intervalRef = undefined;
@@ -127,6 +147,10 @@ export class TrainerComponent implements OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'h' && this.numHintsSubject.value < this.maxHints) {
+      this.onHint();
+      return;
+    }
     if (this.running) {
       this.onStopAndStart();
     } else if (this.notStarted) {

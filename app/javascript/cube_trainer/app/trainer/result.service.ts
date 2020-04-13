@@ -19,10 +19,12 @@ export class ResultService {
       timestamp: fromDateString(result.created_at),
       duration: seconds(result.time_s),
       inputRepresentation: result.input_representation,
+      numHints: result.num_hints,
     };
   }
 
   list(modeId: number, offset: number, limit: number): Observable<Result[]> {
-    return this.rails.ajax<any[]>(HttpVerb.Get, `/modes/${modeId}/results`, {offset, limit}).pipe(map(results => results.map(this.parseResult)));
+    return this.rails.ajax<any[]>(HttpVerb.Get, `/modes/${modeId}/results`, {offset, limit}).pipe(
+      map(results => results.map(this.parseResult)));
   }
 }

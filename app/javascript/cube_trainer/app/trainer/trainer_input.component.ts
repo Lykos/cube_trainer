@@ -17,6 +17,13 @@ import { Observable } from 'rxjs';
 </div>
 </ng-container>
 <span class="trainer-input" *ngIf="showName">{{input.inputRepresentation}}</span>
+<div class="hints" *ngIf="numHints > 0">
+  <div class="hint" *ngFor="let hint of hints">
+    <span class="hintRow" *ngFor="let row of hint.rows">
+      {{row}}
+    </span>
+  </div>
+</div>
 `
 })
 export class TrainerInputComponent implements OnInit {
@@ -26,10 +33,18 @@ export class TrainerInputComponent implements OnInit {
   @Input()
   modeId$!: Observable<number>;
 
+  @Input()
+  numHints$!: Observable<number>;
+
   mode: Mode | undefined = undefined;
+  numHints: number | undefined = undefined;
 
   constructor(private readonly trainerService: TrainerService,
 	      private readonly modeService: ModeService) {}
+
+  get hints() {
+    return this.input?.hints ? this.input.hints : [];
+  }
 
   get showImage() {
     return this.mode && this.mode.showInputMode == ShowInputMode.Picture;
@@ -55,5 +70,6 @@ export class TrainerInputComponent implements OnInit {
     this.modeId$.subscribe(modeId => {
       this.modeService.show(modeId).subscribe(mode => this.mode = mode);
     });
+    this.numHints$.subscribe(numHints => this.numHints = numHints);
   }
 }
