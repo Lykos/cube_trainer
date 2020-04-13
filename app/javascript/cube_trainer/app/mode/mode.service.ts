@@ -34,6 +34,7 @@ export class ModeService {
       buffer: mode.buffer,
       goalBadness: mode.goalBadness,
       cubeSize: mode.cubeSize,
+      numResults: mode.num_results,
     }
   }
 

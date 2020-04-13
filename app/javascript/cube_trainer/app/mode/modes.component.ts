@@ -11,6 +11,10 @@ import { Router } from '@angular/router';
   <div>
     <table mat-table class="mat-elevation-z2" [dataSource]="modes">
       <mat-text-column name="name"></mat-text-column>
+      <ng-container matColumnDef="numResults">
+        <th mat-header-cell *matHeaderCellDef> Number of Results </th>
+        <td mat-cell *matCellDef="let mode"> {{mode.numResults}} </td>
+      </ng-container>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let mode; columns: columnsToDisplay" (click)="onClick(mode)"></tr>
     </table>
