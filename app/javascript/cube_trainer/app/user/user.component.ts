@@ -8,17 +8,21 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'user',
   template: `
-<h1>{{user.name}}</h1>
+<h1>{{userName}}</h1>
 <achievement-grants></achievement-grants>
 `
 })
 export class UserComponent implements OnInit {
   userId$: Observable<number>;
-  user!: User;
+  user: User | undefined = undefined;
 
   constructor(private readonly userService: UserService,
 	      private readonly activatedRoute: ActivatedRoute) {
     this.userId$ = this.activatedRoute.params.pipe(map(p => p.userId));
+  }
+
+  get userName() {
+    return this.user?.name;
   }
 
   ngOnInit() {
