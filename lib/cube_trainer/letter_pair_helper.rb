@@ -11,33 +11,32 @@ module CubeTrainer
     end
 
     def rotations
-      @rotations ||=
-        begin
-          self.class::PART_TYPE::ELEMENTS.flat_map do |c|
-            letters = c.rotations.map { |r| letter_scheme.letter(r) }
-            LetterPairHelper.letter_pairs(letters.permutation(2))
-          end
-        end
+      self.class::PART_TYPE::ELEMENTS.flat_map do |c|
+        letters = c.rotations.map { |r| letter(r) }
+        LetterPairHelper.letter_pairs(letters.permutation(2))
+      end
     end
 
     def neighbors
-      @neighbors ||=
-        begin
-          self.class::PART_TYPE::ELEMENTS.flat_map do |c|
-            letters = c.neighbors.map { |r| letter_scheme.letter(r) }
-            LetterPairHelper.letter_pairs(letters.permutation(2))
-          end
-        end
+      self.class::PART_TYPE::ELEMENTS.flat_map do |c|
+        letters = c.neighbors.map { |r| letter(r) }
+        LetterPairHelper.letter_pairs(letters.permutation(2))
+      end
     end
 
-    def letter_pairs_for_piece
-      @letter_pairs_for_piece ||=
-        begin
-          buffer_letters =
-            buffer.rotations.map { |c| letter_scheme.letter(c) }
-          valid_letters = letter_scheme.alphabet - buffer_letters
-          LetterPairHelper.letter_pairs(valid_letters.permutation(2))
-        end
+    def letter_pairs_for_part_type
+      buffer_letters =
+        @mode.parsed_buffer.rotations.map { |c| letter(c) }
+      valid_letters = @mode.letter_scheme.alphabet - buffer_letters
+      LetterPairHelper.letter_pairs(valid_letters.permutation(2))
+    end
+
+    def letter(part)
+      @mode.letter_scheme.letter(part)
+    end
+
+    def letter_pair_for_parts(part_pair)
+      LetterPair.new(part_pair.map { |p| letter(p) })
     end
   end
 end

@@ -11,20 +11,16 @@ module CubeTrainer
     class LetterPairAlgSet
       include LetterPairHelper
 
-      def initialize(options)
-        @letter_scheme = options.letter_scheme
-        @color_scheme = options.color_scheme
-        @options = options
+      def initialize(mode)
+        @mode = mode
       end
 
-      def input_sampler(mode)
-        InputSampler.new(input_items, mode)
+      def solved_cube_state
+        @mode.solved_cube_state
       end
 
-      attr_reader :letter_scheme, :options
-
-      def buffer
-        @buffer ||= BufferHelper.determine_buffer(self.class::PART_TYPE, options)
+      def input_sampler
+        InputSampler.new(input_items, @mode)
       end
 
       def goal_badness
@@ -36,10 +32,11 @@ module CubeTrainer
       end
 
       # If restrict_letters is not nil, only commutators for those letters are used.
+      # TODO: Move this to somewhere else
       def restricted_input_items
-        if options.restrict_letters && !options.restrict_letters.empty?
+        if @mode.restrict_letters && !@mode.restrict_letters.empty?
           generate_input_items.select do |p|
-            p.representation.contains_any_letter?(options.restrict_letters)
+            p.representation.contains_any_letter?(@mode.restrict_letters)
           end
         else
           generate_input_items
@@ -49,7 +46,7 @@ module CubeTrainer
       def input_items
         @input_items ||=
           restricted_input_items.reject do |p|
-            p.representation.contains_any_letter?(options.exclude_letters)
+            p.representation.contains_any_letter?(@mode.exclude_letters)
           end
       end
 

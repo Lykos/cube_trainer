@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_13_123859) do
+ActiveRecord::Schema.define(version: 2020_04_13_125818) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,6 +62,13 @@ ActiveRecord::Schema.define(version: 2020_04_13_123859) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "mode_usages", force: :cascade do |t|
+    t.bigint "mode_id", null: false
+    t.bigint "used_mode_id", null: false
+    t.index ["mode_id"], name: "index_mode_usages_on_mode_id"
+    t.index ["used_mode_id"], name: "index_mode_usages_on_used_mode_id"
   end
 
   create_table "modes", force: :cascade do |t|
@@ -119,6 +126,8 @@ ActiveRecord::Schema.define(version: 2020_04_13_123859) do
   add_foreign_key "achievement_grants", "users"
   add_foreign_key "inputs", "modes"
   add_foreign_key "messages", "users"
+  add_foreign_key "mode_usages", "modes"
+  add_foreign_key "mode_usages", "modes", column: "used_mode_id"
   add_foreign_key "modes", "users"
   add_foreign_key "notifications", "users"
   add_foreign_key "results", "inputs"

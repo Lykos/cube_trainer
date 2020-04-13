@@ -22,6 +22,7 @@ class Mode < ApplicationRecord
   validate :buffer_valid, if: ->{ mode_type.has_buffer? }
   validates :first_parity_part, :second_parity_part, presence: true, if: ->{ mode_type.has_parity_parts? }
   validate :parity_parts_valid, if: ->{ mode_type.has_parity_parts? }
+  has_and_belongs_to_many :used_modes, class_name: :Mode, join_table: :mode_usages, association_foreign_key: :used_mode_id
 
   # TODO: Make it configurable
   def letter_scheme
@@ -43,7 +44,7 @@ class Mode < ApplicationRecord
   end
 
   def input_sampler
-    @input_sampler ||= generator.input_sampler(self)
+    @input_sampler ||= generator.input_sampler
   end
 
   def input_items
@@ -96,6 +97,18 @@ class Mode < ApplicationRecord
     [first_parity_part, second_parity_part]
   end
 
+  def solved_cube_state
+    color_scheme.solved_cube_state(cube_size)
+  end
+
+  def parsed_buffer
+    part_type.parse(buffer)
+  end
+
+  def used_mode(mode_type)
+    used_modes.find_by(mode_type: mode_type)
+  end
+
   private
 
   def show_input_mode_has_to_be_in_show_input_modes_of_mode_type
@@ -118,6 +131,8 @@ class Mode < ApplicationRecord
   end
 
   def parity_parts_valid
+    return unless first_parity_part && second_parity_part
+
     unless first_parity_part < second_parity_part
       errors.add(:second_parity_part, "has to be alphabetically after first_parity_part")
     end

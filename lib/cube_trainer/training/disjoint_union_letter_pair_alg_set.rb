@@ -7,8 +7,8 @@ module CubeTrainer
   module Training
     # Class that generates input items for alg sets that are the disjoint union of two alg sets.
     class DisjointUnionLetterPairAlgSet < LetterPairAlgSet
-      def initialize(options, *alg_sets)
-        super(options)
+      def initialize(mode, *alg_sets)
+        super(mode)
         @alg_sets = alg_sets
       end
 
