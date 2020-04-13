@@ -88,6 +88,7 @@ RSpec.describe "Users", type: :request do
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).not_to eq(user.id)
       expect(User.find(parsed_body['id']).name).to eq('new_user')
+      expect(User.find(parsed_body['id']).messages.first.title).to eq('Welcome')
     end
 
     it 'returns http success for admin' do
