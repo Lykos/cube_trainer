@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   resources :modes do
     resources :results, only: [:index, :show, :destroy]
   end
-  get 'mode_types', to: 'modes#types'
+  get 'mode_types', to: 'mode_types#index'
   get 'trainer/:mode_id', to: 'trainer#index'
   post 'trainer/:mode_id/inputs', to: 'trainer#create'
   delete 'trainer/:mode_id/inputs/:id', to: 'trainer#destroy'
