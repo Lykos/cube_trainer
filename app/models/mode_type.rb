@@ -12,7 +12,8 @@ class ModeType
 
   SHOW_INPUT_MODES = %i(picture name)
 
-  attr_accessor :name,
+  attr_accessor :key,
+                :name,
                 :generator_class,
                 :learner_type,
                 :default_cube_size,
@@ -22,6 +23,12 @@ class ModeType
                 :used_mode_types,
                 :has_parity_parts
 
+  validates :key, presence: true
+  validates :name, presence: true
+  validates :generator_class, presence: true
+  validates :learner_type, presence: true
+  validates :show_input_modes, presence: true
+
   alias has_goal_badness? has_goal_badness
   alias has_buffer? has_buffer
   alias has_parity_parts? has_parity_parts
@@ -29,7 +36,7 @@ class ModeType
   # Returns a simple version for the current user that can be returned to the frontend.
   def to_simple(user=nil)
     {
-      name: name,
+      key: key,
       learner_type: learner_type,
       default_cube_size: default_cube_size,
       has_buffer: has_buffer?,
@@ -43,7 +50,7 @@ class ModeType
     used_mode_types.map do |used_mode_type|
       {
         modes: user.modes.find_by(mode_type: used_mode_type),
-        purpose: used_mode_type.name
+        purpose: used_mode_type.key
       }
     end
   end
@@ -64,7 +71,8 @@ class ModeType
 
   ALL = [
     ModeType.new(
-      name: :memo_rush,
+      key: :memo_rush,
+      name: 'Memo Rush',
       generator_class: CubeScrambles,
       learner_type: :memo_rush,
       default_cube_size: 3,
@@ -73,7 +81,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :corner_commutators,
+      key: :corner_commutators,
+      name: 'Corner Commutators',
       generator_class: CornerCommutators,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -82,7 +91,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :corner_parities,
+      key: :corner_parities,
+      name: 'Corner Parities',
       generator_class: CornerParities,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -92,7 +102,8 @@ class ModeType
       has_parity_parts: true
     ),
     ModeType.new(
-      name: :corner_twists_plus_parities,
+      key: :corner_twists_plus_parities,
+      name: 'Corner 1 Twists + Parities',
       generator_class: CornerTwistsPlusParities,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -102,7 +113,8 @@ class ModeType
       has_parity_parts: true
     ),
     ModeType.new(
-      name: :floating_2twists,
+      key: :floating_2twists,
+      name: 'Floating Corner 2 Twists',
       generator_class: FloatingCorner2Twists,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -111,7 +123,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :corner_3twists,
+      key: :corner_3twists,
+      name: 'Corner 3 Twists',
       generator_class: Corner3Twists,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -120,7 +133,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :floating_2twists_and_corner_3twists,
+      key: :floating_2twists_and_corner_3twists,
+      name: 'Floating Corner 2 Twists + 3 Twists',
       generator_class: FloatingCorner2TwistsAnd3Twists,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -129,7 +143,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :floating_2flips,
+      key: :floating_2flips,
+      name: 'Floating Edge 2 Flips',
       generator_class: FloatingEdgeFlips,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -138,7 +153,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :edge_commutators,
+      key: :edge_commutators,
+      name: 'Edge Commutators',
       generator_class: EdgeCommutators,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -147,7 +163,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :wing_commutators,
+      key: :wing_commutators,
+      name: 'Wing Commutators',
       generator_class: WingCommutators,
       learner_type: :case_time,
       default_cube_size: 4,
@@ -156,7 +173,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :xcenter_commutators,
+      key: :xcenter_commutators,
+      name: 'X-Center Commutators',
       generator_class: XCenterCommutators,
       learner_type: :case_time,
       default_cube_size: 4,
@@ -165,7 +183,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :tcenter_commutators,
+      key: :tcenter_commutators,
+      name: 'T-Center Commutators',
       generator_class: TCenterCommutators,
       learner_type: :case_time,
       default_cube_size: 5,
@@ -174,7 +193,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :letters_to_word,
+      key: :letters_to_word,
+      name: 'Letters To Word',
       generator_class: LettersToWord,
       learner_type: :word,
       has_buffer: false,
@@ -182,7 +202,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :oh_plls_by_name,
+      key: :plls,
+      name: 'PLLs',
       generator_class: Plls,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -191,16 +212,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :plls_by_name,
-      generator_class: Plls,
-      learner_type: :case_time,
-      default_cube_size: 3,
-      has_buffer: false,
-      has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
-    ),
-    ModeType.new(
-      name: :oh_colls_by_name,
+      key: :colls,
+      name: 'COLLs',
       generator_class: Colls,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -209,16 +222,8 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     ),
     ModeType.new(
-      name: :colls_by_name,
-      generator_class: Colls,
-      learner_type: :case_time,
-      default_cube_size: 3,
-      has_buffer: false,
-      has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
-    ),
-    ModeType.new(
-      name: :olls_plus_cp,
+      key: :olls_plus_cp,
+      name: 'OLLs + CP',
       generator_class: OllsPlusCp,
       learner_type: :case_time,
       default_cube_size: 3,
@@ -227,4 +232,10 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     )
   ].freeze
+  ALL.each { |m| m.validate!(:create) }
+  BY_KEY = ALL.map { |a| [a.key, a] }.to_h.freeze
+
+  def self.find_by_key(key)
+    BY_KEY[key.to_sym]
+  end
 end

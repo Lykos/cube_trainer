@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   post 'logout', to: 'sessions#logout'
   get 'welcome', to: 'sessions#welcome'
   root 'sessions#welcome'
+  resources :mode_types, only: [:index, :show]
   resources :achievements
   resources :users do
     resources :messages
@@ -14,7 +15,6 @@ Rails.application.routes.draw do
     resources :results, only: [:index, :show, :destroy]
   end
   get 'users/:user_id/unread_messages_count', to: 'messages#count_unread'
-  get 'mode_types', to: 'mode_types#index'
   get 'trainer/:mode_id', to: 'trainer#index'
   post 'trainer/:mode_id/inputs', to: 'trainer#create'
   delete 'trainer/:mode_id/inputs/:id', to: 'trainer#destroy'
