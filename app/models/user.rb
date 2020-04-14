@@ -4,7 +4,6 @@ class User < ApplicationRecord
   has_many :modes, dependent: :destroy
   has_many :messages, dependent: :destroy
   has_many :achievement_grants, dependent: :destroy
-  has_many :achievements, through: :achievement_grants
   after_create :send_welcome_message
 
   def to_simple

@@ -232,7 +232,7 @@ class ModeType
       show_input_modes: SHOW_INPUT_MODES
     )
   ].freeze
-  ALL.each { |m| m.validate!(:create) }
+  ALL.each(&:validate!)
   BY_KEY = ALL.map { |a| [a.key, a] }.to_h.freeze
 
   def self.find_by_key(key)

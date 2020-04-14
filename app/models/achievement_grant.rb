@@ -1,5 +1,5 @@
 class AchievementGrant < ApplicationRecord
-  belongs_to :achievement
+  attribute :achievement, :achievement_type
   belongs_to :user
   after_create :send_achievement_grant_message
 

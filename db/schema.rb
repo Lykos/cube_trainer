@@ -19,8 +19,8 @@ ActiveRecord::Schema.define(version: 2020_04_14_085606) do
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "achievement_key", null: false
-    t.index ["user_id", "achievement_key"], name: "index_achievement_grants_on_user_id_and_achievement_key", unique: true
+    t.string "achievement", null: false
+    t.index ["user_id", "achievement"], name: "index_achievement_grants_on_user_id_and_achievement", unique: true
     t.index ["user_id"], name: "index_achievement_grants_on_user_id", unique: true
   end
 

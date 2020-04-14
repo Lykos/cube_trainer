@@ -1,18 +1,16 @@
-class AchievementType
-  def initialize(name, has_param)
-    @name = name
-    @has_param = has_param
-    freeze
+class AchievementType < ActiveRecord::Type::String
+  def cast(value)
+    return if value.nil?
+    return value if value.is_a?(Achievement)
+    raise TypeError unless value.is_a?(String) || value.is_a?(Symbol)
+
+    Achievement.find_by_key(value) || (raise ArgumentError)
   end
 
-  attr_reader :name
+  def serialize(value)
+    return if value.nil?
+    raise TypeError unless value.is_a?(Achievement)
 
-  def has_param?
-    @has_param
+    value.key
   end
-
-  ALL = [
-    AchievementType.new(:fake, false)
-  ].freeze
-  BY_NAME = ALL.map { |a| [a.name, a] }.to_h.freeze
 end

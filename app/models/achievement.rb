@@ -1,18 +1,25 @@
-class Achievement < ApplicationRecord
-  attribute :achievement_type, :achievement_type
-  validates :name, presence: true, uniqueness: true
-  validates :achievement_type, presence: true
-  has_many :users, through: :achievement_grants
-  has_many :achievement_grants, dependent: :destroy
-  validate :param_existence
+class Achievement
+  include ActiveModel::Model
+  attr_accessor :key, :name, :description
 
-  private
+  validates :key, presence: true
+  validates :name, presence: true
 
-  def param_existence
-    if !achievement_type.has_param? && param
-      errors.add(:param, "should not be set for #{achievement_type.name}")
-    elsif achievement_type.has_param? && !param
-      errors.add(:param, "has to be set for #{achievement_type.name}")
-    end
+  def to_simple
+    {
+      key: key,
+      name: name,
+      description: description
+    }
+  end
+
+  ALL = [
+    Achievement.new(key: :fake, name: 'Fake', description: 'Fake achievement for tests.')
+  ].freeze
+  ALL.each(&:validate!)
+  BY_KEY = ALL.map { |a| [a.key, a] }.to_h.freeze
+
+  def self.find_by_key(key)
+    BY_KEY[key.to_sym]
   end
 end

@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'fixtures'
 
-RSpec.describe "ModeTypes", type: :request, focus: true do
+RSpec.describe "ModeTypes", type: :request do
   include_context :user
 
   let(:headers) { { 'ACCEPT' => 'application/json' } }

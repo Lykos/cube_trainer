@@ -41,26 +41,11 @@ shared_context :admin do
   end  
 end
 
-shared_context :achievement do
-  let(:achievement) do
-    achievement = Achievement.find_or_initialize_by(
-      name: 'achievement'
-    )
-    achievement.update(
-      achievement_type: :fake,
-      param: nil
-    )
-    achievement.save!
-    achievement
-  end
-end
-
 shared_context :achievement_grant do
-  include_context :achievement
   include_context :user
 
   let(:achievement_grant) do
-    AchievementGrant.find_or_create_by!(user: user, achievement: achievement)
+    AchievementGrant.find_or_create_by!(user: user, achievement: :fake)
   end
 end
 
