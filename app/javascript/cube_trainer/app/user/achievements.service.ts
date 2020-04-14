@@ -14,7 +14,7 @@ export class AchievementsService {
     return this.rails.ajax<Achievement[]>(HttpVerb.Get, '/achievements', {});
   }
 
-  show(achievementId: number): Observable<Achievement> {
-    return this.rails.ajax<Achievement>(HttpVerb.Get, `/achievements/${achievementId}`, {});
+  show(achievementKey: string): Observable<Achievement> {
+    return this.rails.ajax<Achievement>(HttpVerb.Get, `/achievements/${achievementKey}`, {});
   }
 }

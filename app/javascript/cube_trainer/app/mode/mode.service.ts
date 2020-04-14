@@ -15,6 +15,7 @@ export class ModeService {
 
   parseModeType(modeType: any): ModeType {
     return {
+      key: modeType.key,
       name: modeType.name,
       showInputModes: modeType.show_input_modes,
       hasBuffer: modeType.has_buffer,

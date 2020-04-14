@@ -26,7 +26,7 @@ export class AchievementsComponent implements OnInit {
 	      private readonly router: Router) {}
 
   onClick(achievement: Achievement) {
-    this.router.navigate([`/achievements/${achievement.id}`]);
+    this.router.navigate([`/achievements/${achievement.key}`]);
   }
 
   ngOnInit() {

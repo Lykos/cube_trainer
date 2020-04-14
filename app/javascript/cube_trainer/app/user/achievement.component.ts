@@ -20,13 +20,13 @@ import { map } from 'rxjs/operators';
 `
 })
 export class AchievementComponent implements OnInit {
-  achievementId$: Observable<number>;
+  achievementKey$: Observable<string>;
   achievement: Achievement | undefined = undefined;
 
   constructor(private readonly achievementsService: AchievementsService,
 	      private readonly router: Router,
 	      private readonly activatedRoute: ActivatedRoute) {
-    this.achievementId$ = this.activatedRoute.params.pipe(map(p => p.achievementId));
+    this.achievementKey$ = this.activatedRoute.params.pipe(map(p => p.achievementKey));
   }
 
   get name() {
@@ -42,8 +42,8 @@ export class AchievementComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.achievementId$.subscribe(achievementId => {
-      this.achievementsService.show(achievementId).subscribe((achievement: Achievement) =>
+    this.achievementKey$.subscribe(achievementKey => {
+      this.achievementsService.show(achievementKey).subscribe((achievement: Achievement) =>
 	this.achievement = achievement);
     });
   }

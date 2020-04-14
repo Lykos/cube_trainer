@@ -24,7 +24,7 @@ const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'modes', component: ModesComponent },
   { path: 'achievements', component: AchievementsComponent },
-  { path: 'achievements/:achievementId', component: AchievementComponent },
+  { path: 'achievements/:achievementKey', component: AchievementComponent },
   { path: 'users/:userId', component: UserComponent },
   { path: 'users/:userId/achievement_grants', component: AchievementGrantsComponent },
   { path: 'users/:userId/messages', component: MessagesComponent },

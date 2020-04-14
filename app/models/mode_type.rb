@@ -37,6 +37,7 @@ class ModeType
   def to_simple(user=nil)
     {
       key: key,
+      name: name,
       learner_type: learner_type,
       default_cube_size: default_cube_size,
       has_buffer: has_buffer?,
