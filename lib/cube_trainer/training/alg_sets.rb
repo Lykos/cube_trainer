@@ -14,12 +14,12 @@ module CubeTrainer
     class AlgSet
       include Utils::StringHelper
 
-      def initialize(options)
-        @options = options
+      def initialize(mode)
+        @mode = mode
       end
 
-      def input_sampler(mode)
-        InputSampler.new(input_items, mode)
+      def input_sampler
+        InputSampler.new(input_items, @mode)
       end
 
       def goal_badness
@@ -31,7 +31,7 @@ module CubeTrainer
       end
 
       def hinter
-        @hinter ||= AlgHintParser.parse_hints(name, @options.verbose)
+        @hinter ||= AlgHintParser.parse_hints(name, @mode.verbose)
       end
 
       def input_items
@@ -39,7 +39,7 @@ module CubeTrainer
       end
 
       def generate_input_items
-        state = @options.color_scheme.solved_cube_state(@options.cube_size)
+        state = @mode.color_scheme.solved_cube_state(@mode.cube_size)
         hinter.entries.map do |name, alg|
           alg.inverse.apply_temporarily_to(state) do |s|
             InputItem.new(name, s.dup)
