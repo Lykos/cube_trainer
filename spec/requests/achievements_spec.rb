@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'fixtures'
 
-RSpec.describe "Achievements", type: :request, focus: true do
+RSpec.describe "Achievements", type: :request do
   include_context :user
 
   let(:headers) { { 'ACCEPT' => 'application/json' } }

@@ -13,6 +13,13 @@ RSpec.describe "AchievementGrants", type: :request do
     post "/login", params: { username: user.name, password: user.password }
   end
 
+  let(:expected_achievement) do
+    achievement = Achievement.find_by_key(:fake).to_simple
+    achievement[:key] = achievement[:key].to_s
+    achievement.transform_keys!(&:to_s)
+    achievement
+  end
+
   describe 'GET #index' do
     it 'returns http success' do
       achievement_grant
@@ -21,7 +28,7 @@ RSpec.describe "AchievementGrants", type: :request do
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be >= 1
       contains_achievement_grant = parsed_body.any? do |p|
-        Achievement.new(p['achievement']) == achievement && p['id'] == achievement_grant.id
+        p['achievement'] == expected_achievement && p['id'] == achievement_grant.id
       end
       expect(contains_achievement_grant).to be(true)
     end
@@ -34,7 +41,7 @@ RSpec.describe "AchievementGrants", type: :request do
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be >= 1
       contains_achievement_grant = parsed_body.any? do |p|
-        Achievement.new(p['achievement']) == achievement && p['id'] == achievement_grant.id
+        p['achievement'] == expected_achievement && p['id'] == achievement_grant.id
       end
       expect(contains_achievement_grant).to be(true)
     end
@@ -53,7 +60,7 @@ RSpec.describe "AchievementGrants", type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).to eq(achievement_grant.id)
-      expect(Achievement.new(parsed_body['achievement'])).to eq(achievement)
+      expect(parsed_body['achievement']).to eq(expected_achievement)
     end
 
     it 'returns http success for admin' do
@@ -62,7 +69,7 @@ RSpec.describe "AchievementGrants", type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).to eq(achievement_grant.id)
-      expect(Achievement.new(parsed_body['achievement'])).to eq(achievement)
+      expect(parsed_body['achievement']).to eq(expected_achievement)
     end
 
     it 'returns not found for unknown achievement_grants' do

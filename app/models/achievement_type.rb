@@ -9,7 +9,7 @@ class AchievementType < ActiveRecord::Type::String
 
   def serialize(value)
     return if value.nil?
-    raise TypeError unless value.is_a?(Achievement)
+    value = cast(value) unless value.is_a?(Achievement)
 
     value.key
   end
