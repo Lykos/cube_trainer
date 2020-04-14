@@ -107,7 +107,7 @@ export class NewModeComponent implements OnInit {
 
   get mode(): NewMode {
     return {
-      modeType: this.modeType!.name,
+      modeType: this.modeType!.key,
       name: this.modeTypesGroup.get('name')!.value,
       known: !!this.trainingGroup.get('known')!.value,
       showInputMode: this.trainingGroup.get('showInputMode')!.value,

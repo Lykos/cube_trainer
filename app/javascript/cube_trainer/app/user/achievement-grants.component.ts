@@ -39,7 +39,7 @@ export class AchievementGrantsComponent implements OnInit {
   }
 
   onClick(achievementGrant: AchievementGrant) {
-    this.router.navigate([`/achievements/${achievementGrant.achievement.id}`]);
+    this.router.navigate([`/achievements/${achievementGrant.achievement.key}`]);
   }
 
   ngOnInit() {
