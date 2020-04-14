@@ -106,6 +106,7 @@ export class TrainerComponent implements OnDestroy {
   }
 
   startFor(input: InputItem) {
+    this.numHintsSubject.next(0);
     this.input = input;
     this.state = StopWatchState.Running;
     const start = now();
