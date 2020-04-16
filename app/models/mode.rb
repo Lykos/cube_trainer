@@ -23,6 +23,7 @@ class Mode < ApplicationRecord
   validates :first_parity_part, :second_parity_part, presence: true, if: ->{ mode_type.has_parity_parts? }
   validate :parity_parts_valid, if: ->{ mode_type.has_parity_parts? }
   has_and_belongs_to_many :used_modes, class_name: :Mode, join_table: :mode_usages, association_foreign_key: :used_mode_id
+  after_create :grant_mode_achievement
 
   # TODO: Make it configurable
   def letter_scheme
@@ -110,6 +111,10 @@ class Mode < ApplicationRecord
   end
 
   private
+
+  def grant_mode_achievement
+    user.grant_achievement_if_not_granted(:mode_creator)
+  end
 
   def show_input_mode_has_to_be_in_show_input_modes_of_mode_type
     unless mode_type.show_input_modes.include?(show_input_mode)

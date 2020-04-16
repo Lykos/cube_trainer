@@ -239,4 +239,8 @@ class ModeType
   def self.find_by_key(key)
     BY_KEY[key.to_sym]
   end
+
+  def self.find_by_key!(key)
+    find_by_key(key) || (raise ArgumentError)
+  end
 end

@@ -4,7 +4,7 @@ class AchievementType < ActiveRecord::Type::String
     return value if value.is_a?(Achievement)
     raise TypeError unless value.is_a?(String) || value.is_a?(Symbol)
 
-    Achievement.find_by_key(value) || (raise ArgumentError)
+    Achievement.find_by_key!(value)
   end
 
   def serialize(value)

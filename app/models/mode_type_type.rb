@@ -4,7 +4,7 @@ class ModeTypeType < ActiveRecord::Type::String
     return value if value.is_a?(ModeType)
     raise TypeError unless value.is_a?(String) || value.is_a?(Symbol)
 
-    ModeType.find_by_key(value) || (raise ArgumentError)
+    ModeType.find_by_key!(value)
   end
 
   def serialize(value)

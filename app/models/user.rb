@@ -15,6 +15,12 @@ class User < ApplicationRecord
     }
   end
 
+  def grant_achievement_if_not_granted(achievement_key)
+    return if achievement_grants.exists?(achievement: achievement_key)
+
+    achievement_grants.create(achievement: achievement_key)
+  end
+
   private
 
   def send_welcome_message
