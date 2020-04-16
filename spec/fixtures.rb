@@ -4,6 +4,7 @@ shared_context :user do
       name: 'abc'
     )
     user.update(
+      email: 'abc@example.org',
       password: 'password',
       password_confirmation: 'password'
     )
@@ -18,6 +19,7 @@ shared_context :eve do
       name: 'eve'
     )
     user.update(
+      email: 'eve@example.org',
       password: 'password',
       password_confirmation: 'password'
     )
@@ -32,6 +34,7 @@ shared_context :admin do
       name: 'admin'
     )
     user.update(
+      email: 'admin@example.org',
       password: 'password',
       password_confirmation: 'password',
       admin: true

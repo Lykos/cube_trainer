@@ -80,6 +80,7 @@ RSpec.describe "Users", type: :request do
       post "/users", params: {
              user: {
                name: 'new_user',
+               email: 'new_user@example.org',
                password: 'abc',
                password_confirmation: 'abc'
              }
@@ -96,6 +97,7 @@ RSpec.describe "Users", type: :request do
       post "/users", params: {
              user: {
                name: 'new_user',
+               email: 'new_user@example.org',
                password: 'abc',
                password_confirmation: 'abc',
                admin: true
@@ -112,6 +114,7 @@ RSpec.describe "Users", type: :request do
       post "/users", params: {
              user: {
                name: 'new_user',
+               email: 'new_user@example.org',
                password: 'abc',
                password_confirmation: 'cde'
              }
@@ -123,6 +126,7 @@ RSpec.describe "Users", type: :request do
       post "/users", params: {
              user: {
                name: 'new_user',
+               email: 'new_user@example.org',
                password: 'abc',
                password_confirmation: 'abc',
                admin: true

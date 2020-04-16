@@ -88,11 +88,11 @@ class UsersController < ApplicationController
   # Only allow a list of trusted parameters through.
   def user_params
     if admin_logged_in?
-      params.require(:user).permit(:name, :password, :password_confirmation, :admin)
+      params.require(:user).permit(:name, :password, :password_confirmation, :email, :admin)
     else
       # Note that we already check that `:admin` gets filtered out earlier.
       # This is an additional safety net.
-      params.require(:user).permit(:name, :password, :password_confirmation)
+      params.require(:user).permit(:name, :password, :password_confirmation, :email)
     end
   end
 end

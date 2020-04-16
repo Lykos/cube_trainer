@@ -1,13 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Sessions", type: :request do
-  let(:user) do
-    User.create!(
-      name: 'sessions_abc',
-      password: 'password',
-      password_confirmation: 'password'
-    )
-  end
+  include_context :user
 
   let(:headers) { { 'ACCEPT' => 'application/json' } }
 
