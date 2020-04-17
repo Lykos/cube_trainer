@@ -43,6 +43,7 @@ export class RailsService {
 	success: (response: X) => {
 	  if (subscribed) {
 	    observer.next(response);
+	    observer.complete();
 	  }
 	},
 	error: (response: any, statusText: string, xhr: any) => { if (subscribed) { observer.error(xhr); } }
