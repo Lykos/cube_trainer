@@ -27,25 +27,35 @@ const passwordMatchValidator: ValidatorFn = (control: AbstractControl): Validati
         </mat-error>
       </mat-form-field>
       <br>
-
-        <mat-form-field appearance="fill">
-          <mat-label>Password</mat-label>
-          <input type="password" matInput formControlName="password">
-          <mat-error *ngIf="relevantInvalid(password) && password.errors.required">
-            You must provide a <strong>password</strong>.
-          </mat-error>
-        </mat-form-field>
-        <br>
-        <mat-form-field appearance="fill">
-          <mat-label>Confirm Password</mat-label>
-          <input type="password" matInput formControlName="passwordConfirmation">
-          <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors.required">
-            You must provide a <strong>password confirmation</strong>.
-          </mat-error>
-        </mat-form-field>
-        <mat-error *ngIf="passwordMismatch">
-          <strong>Password</strong> must match <strong>password confirmation</strong>.
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input type="email" matInput formControlName="email">
+        <mat-error *ngIf="relevantInvalid(email) && email.errors.required">
+          You must provide an <strong>email</strong>.
         </mat-error>
+        <mat-error *ngIf="relevantInvalid(email) && email.errors.email">
+          You must provide a valid <strong>email</strong>.
+        </mat-error>
+      </mat-form-field>
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input type="password" matInput formControlName="password">
+        <mat-error *ngIf="relevantInvalid(password) && password.errors.required">
+          You must provide a <strong>password</strong>.
+        </mat-error>
+      </mat-form-field>
+      <br>
+      <mat-form-field appearance="fill">
+        <mat-label>Confirm Password</mat-label>
+        <input type="password" matInput formControlName="passwordConfirmation">
+        <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors.required">
+          You must provide a <strong>password confirmation</strong>.
+        </mat-error>
+      </mat-form-field>
+      <mat-error *ngIf="passwordMismatch">
+        <strong>Password</strong> must match <strong>password confirmation</strong>.
+      </mat-error>
       <mat-card-actions>
         <button mat-raised-button color="primary" type="submit" [disabled]="!signupForm.valid">
           Submit
@@ -71,6 +81,7 @@ export class SignupComponent implements OnInit {
   ngOnInit() {
     this.signupForm = this.formBuilder.group({
       username: ['', Validators.required],
+      email: ['', [Validators.email, Validators.required]],
       password: ['', Validators.required],
       passwordConfirmation: ['', Validators.required],
     }, { validators: passwordMatchValidator });
@@ -85,6 +96,8 @@ export class SignupComponent implements OnInit {
 
   get username() { return this.signupForm.get('username')!; }
 
+  get email() { return this.signupForm.get('email')!; }
+
   get password() { return this.signupForm.get('password')!; }
 
   get passwordConfirmation() { return this.signupForm.get('passwordConfirmation')!; }
@@ -92,6 +105,7 @@ export class SignupComponent implements OnInit {
   get newUser(): NewUser {
     return {
       name: this.username.value,
+      email: this.email.value,
       password: this.password.value,
       passwordConfirmation: this.passwordConfirmation.value,
     };
