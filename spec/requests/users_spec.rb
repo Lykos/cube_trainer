@@ -17,20 +17,20 @@ RSpec.describe "Users", type: :request do
       user
       get "/username_or_email_exists", params: { username_or_email: user.name }, headers: headers
       expect(response).to have_http_status(:success)
-      expect(JSON.parse(response.body)).to eq('true')
+      expect(JSON.parse(response.body)).to eq(true)
     end
 
     it 'returns true if an email exists' do
       user
       get "/username_or_email_exists", params: { username_or_email: user.email }, headers: headers
       expect(response).to have_http_status(:success)
-      expect(JSON.parse(response.body)).to eq('true')
+      expect(JSON.parse(response.body)).to eq(true)
     end
 
     it "returns false if an username/email doesn't exist" do
       get "/username_or_email_exists", params: { username_or_email: 'grmlefex' }, headers: headers
       expect(response).to have_http_status(:success)
-      expect(JSON.parse(response.body)).to eq('false')
+      expect(JSON.parse(response.body)).to eq(false)
     end
   end
 

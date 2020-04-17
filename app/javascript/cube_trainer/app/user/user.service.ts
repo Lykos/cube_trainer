@@ -13,7 +13,7 @@ export class UserService {
   constructor(private readonly rails: RailsService) {}
 
   isUsernameOrEmailTaken(usernameOrEmail: string): Observable<boolean> {
-    return this.rails.ajax<boolean>(HttpVerb.Get, '/user_name_or_email_exists', {usernameOrEmail}).pipe(map(answer => {console.log('exists', answer); return answer;}));
+    return this.rails.ajax<boolean>(HttpVerb.Get, '/username_or_email_exists', {usernameOrEmail}).pipe(map(answer => {console.log('exists', answer); return answer;}));
   }
 
   create(newUser: NewUser): Observable<void> {

@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   post 'logout', to: 'sessions#logout'
   get 'welcome', to: 'sessions#welcome'
   root 'sessions#welcome'
-  get 'user_name_or_email_exists', to: 'users#user_name_or_email_exists?'
+  get 'username_or_email_exists', to: 'users#user_name_or_email_exists?'
   resources :mode_types, only: [:index, :show]
   resources :achievements
   resources :users do
