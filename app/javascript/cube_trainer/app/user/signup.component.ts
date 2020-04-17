@@ -1,11 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from './user.service';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, AsyncValidatorFn, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { NewUser } from './new_user';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
-const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+function uniqueUsernameOrEmailValidatorFn(userService: UserService): AsyncValidatorFn {
+  return (ctrl: AbstractControl): Observable<ValidationErrors | null> => {
+    return userService.isUsernameOrEmailTaken(ctrl.value).pipe(
+      map(isTaken => { const r = (isTaken ? { uniqueUsernameOrEmail: true } : null); console.log('result: ', r); return r; }),
+      catchError(() => of(null))
+    );
+  }
+}
+
+const passwordMatchValidatorFn: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = control.get('password');
   const passwordConfirmation = control.get('passwordConfirmation');
 
@@ -25,6 +36,9 @@ const passwordMatchValidator: ValidatorFn = (control: AbstractControl): Validati
         <mat-error *ngIf="relevantInvalid(username) && username.errors.required">
           You must provide a <strong>username</strong>.
         </mat-error>
+        <mat-error *ngIf="relevantInvalid(username) && username.errors.uniqueUsernameOrEmail">
+          This <strong>username</strong> is already taken.
+        </mat-error>
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">
@@ -35,6 +49,9 @@ const passwordMatchValidator: ValidatorFn = (control: AbstractControl): Validati
         </mat-error>
         <mat-error *ngIf="relevantInvalid(email) && email.errors.email">
           You must provide a valid <strong>email</strong>.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(email) && email.errors.uniqueUsernameOrEmail">
+          This <strong>email</strong> is already taken.
         </mat-error>
       </mat-form-field>
       <br>
@@ -80,11 +97,11 @@ export class SignupComponent implements OnInit {
 
   ngOnInit() {
     this.signupForm = this.formBuilder.group({
-      username: ['', Validators.required],
-      email: ['', [Validators.email, Validators.required]],
+      username: ['', { validators: Validators.required, asyncValidators: uniqueUsernameOrEmailValidatorFn(this.userService), updateOn: 'blur' }],
+      email: ['', { validators: [Validators.email, Validators.required], asyncValidators: uniqueUsernameOrEmailValidatorFn(this.userService), updateOn: 'blur' }],
       password: ['', Validators.required],
       passwordConfirmation: ['', Validators.required],
-    }, { validators: passwordMatchValidator });
+    }, { validators: passwordMatchValidatorFn });
   }
 
   onSubmit() {
