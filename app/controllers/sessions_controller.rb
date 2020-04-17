@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
 
   # POST /login
   def create
-   @user = User.find_by(name: params[:username])
+   @user = User.find_by(name: params[:username]) || User.find_by(email: params[:email])
    if @user && @user.authenticate(params[:password])
      session[:user_id] = @user.id
      render json: @user.to_simple, status: :ok
