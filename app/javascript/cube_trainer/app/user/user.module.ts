@@ -10,6 +10,7 @@ import { AchievementGrantsComponent } from './achievement-grants.component';
 import { AuthenticationService } from './authentication.service';
 import { MessagesService } from './messages.service';
 import { AchievementsService } from './achievements.service';
+import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
 import { AchievementGrantsService } from './achievement-grants.service';
 import { NgModule } from '@angular/core';
 import { SignupComponent } from './signup.component';
@@ -55,6 +56,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MessagesService,
     AchievementsService,
     AchievementGrantsService,
+    UniqueUsernameOrEmailValidator,
   ],
   exports: [
     AchievementComponent,

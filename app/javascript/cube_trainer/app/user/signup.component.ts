@@ -1,20 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from './user.service';
-import { FormBuilder, FormGroup, Validators, AbstractControl, AsyncValidatorFn, ValidatorFn, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors } from '@angular/forms';
+import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
 import { NewUser } from './new_user';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
-
-function uniqueUsernameOrEmailValidatorFn(userService: UserService): AsyncValidatorFn {
-  return (ctrl: AbstractControl): Observable<ValidationErrors | null> => {
-    return userService.isUsernameOrEmailTaken(ctrl.value).pipe(
-      map(isTaken => { const r = (isTaken ? { uniqueUsernameOrEmail: true } : null); console.log('result: ', r); return r; }),
-      catchError(() => of(null))
-    );
-  }
-}
 
 const passwordMatchValidatorFn: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = control.get('password');
@@ -89,7 +79,8 @@ export class SignupComponent implements OnInit {
   constructor(private readonly userService: UserService,
 	      private readonly formBuilder: FormBuilder,
 	      private readonly router: Router,
-	      private readonly snackBar: MatSnackBar) {}
+	      private readonly snackBar: MatSnackBar,
+	      private readonly uniqueUsernameOrEmailValidator: UniqueUsernameOrEmailValidator) {}
 
   relevantInvalid(control: AbstractControl) {
     return control.invalid && (control.dirty || control.touched);
@@ -97,8 +88,8 @@ export class SignupComponent implements OnInit {
 
   ngOnInit() {
     this.signupForm = this.formBuilder.group({
-      username: ['', { validators: Validators.required, asyncValidators: uniqueUsernameOrEmailValidatorFn(this.userService), updateOn: 'blur' }],
-      email: ['', { validators: [Validators.email, Validators.required], asyncValidators: uniqueUsernameOrEmailValidatorFn(this.userService), updateOn: 'blur' }],
+      username: ['', { validators: Validators.required, asyncValidators: this.uniqueUsernameOrEmailValidator.validate, updateOn: 'blur' }],
+      email: ['', { validators: [Validators.email, Validators.required], asyncValidators: this.uniqueUsernameOrEmailValidator.validate, updateOn: 'blur' }],
       password: ['', Validators.required],
       passwordConfirmation: ['', Validators.required],
     }, { validators: passwordMatchValidatorFn });
@@ -110,7 +101,7 @@ export class SignupComponent implements OnInit {
       this.router.navigate(['/login']);
     });
   }
-
+    
   get username() { return this.signupForm.get('username')!; }
 
   get email() { return this.signupForm.get('email')!; }
