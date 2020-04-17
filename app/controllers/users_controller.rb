@@ -83,9 +83,7 @@ class UsersController < ApplicationController
   def check_authorized_as_admin_if_setting_admin
     return unless params[:user] && params[:user][:admin] && params[:user][:admin] != 'false' && !admin_logged_in?
 
-    @user ||= User.new
-    @user.errors.add(:admin, :admin_unauthorized, message: 'can only be set by admins')
-    render json: @user.errors, status: :unauthorized 
+    render 'application/hackerman', status: :unauthorized 
   end
 
   def set_user
