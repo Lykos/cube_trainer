@@ -10,6 +10,7 @@ class User < ApplicationRecord
     {
       id: id,
       name: name,
+      email: email,
       created_at: created_at,
       admin: admin
     }
