@@ -8,7 +8,7 @@ class TrainerController < ApplicationController
   before_action :set_partial_result, only: [:stop]
 
   def index
-    render 'application/empty'
+    render 'application/cube_trainer'
   end
 
   # POST /trainer/1/inputs

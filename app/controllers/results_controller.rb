@@ -7,7 +7,7 @@ class ResultsController < ApplicationController
   # GET /modes/1/results.json
   def index
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json do
         results = @mode.inputs
                     .joins(:result)
@@ -25,7 +25,7 @@ class ResultsController < ApplicationController
   # GET /modes/1/results/1.json
   def show
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: @input.to_simple_result, status: :ok }
     end
   end

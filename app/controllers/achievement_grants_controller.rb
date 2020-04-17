@@ -7,7 +7,7 @@ class AchievementGrantsController < ApplicationController
   # GET /user/1/achievement_grants.json
   def index
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: @user.achievement_grants.map(&:to_simple) }
     end
   end
@@ -16,7 +16,7 @@ class AchievementGrantsController < ApplicationController
   # GET /user/1/achievement_grants/1.json
   def show
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: @achievement_grant.to_simple }
     end
   end

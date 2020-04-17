@@ -12,7 +12,7 @@ class MessagesController < ApplicationController
   # GET /users/1/messages.json
   def index
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: @user.messages }
     end
   end
@@ -21,14 +21,14 @@ class MessagesController < ApplicationController
   # GET /users/1/messages/1.json
   def show
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: @message }
     end
   end
 
   # GET /users/1/messages/1/edit
   def edit
-    render 'application/empty'
+    render 'application/cube_trainer'
   end
 
   # PATCH/PUT /users/1/messages/1

@@ -5,7 +5,7 @@ class ModeTypesController < ApplicationController
   # GET /mode_types.json
   def index
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: ModeType::ALL.map { |m| m.to_simple } }
     end
   end
@@ -14,7 +14,7 @@ class ModeTypesController < ApplicationController
   # GET /mode_types/mode_created.json
   def show
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: @mode_type.to_simple }
     end
   end

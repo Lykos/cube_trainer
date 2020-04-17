@@ -3,12 +3,12 @@ class SessionsController < ApplicationController
 
   # GET /login
   def new
-    render 'application/empty'
+    render 'application/cube_trainer'
   end
 
   # GET /welcome
   def welcome
-    render 'application/empty'
+    render 'application/cube_trainer'
   end
 
   # POST /login

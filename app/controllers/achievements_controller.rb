@@ -5,7 +5,7 @@ class AchievementsController < ApplicationController
   # GET /achievements.json
   def index
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: Achievement::ALL.map(&:to_simple) }
     end
   end
@@ -14,7 +14,7 @@ class AchievementsController < ApplicationController
   # GET /achievements/mode_created.json
   def show
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: @achievement.to_simple }
     end
   end

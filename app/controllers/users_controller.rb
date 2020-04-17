@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   # GET /username_or_email_exists
   def user_name_or_email_exists?
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json do
         username_or_email = params[:username_or_email]
         render json: User.exists?(name: username_or_email) || User.exists?(email: username_or_email), status: :ok
@@ -20,7 +20,7 @@ class UsersController < ApplicationController
   # GET /users.json
   def index
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: User.all, status: :ok }
     end
   end
@@ -29,19 +29,19 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
     respond_to do |format|
-      format.html { render 'application/empty' }
+      format.html { render 'application/cube_trainer' }
       format.json { render json: @user, status: :ok }
     end      
   end
 
   # GET /users/new
   def new
-    render 'application/empty'
+    render 'application/cube_trainer'
   end
 
   # GET /users/1/edit
   def edit
-    render 'application/empty'
+    render 'application/cube_trainer'
   end
 
   # POST /users
