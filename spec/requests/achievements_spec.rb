@@ -1,13 +1,13 @@
 require 'rails_helper'
 require 'fixtures'
+require 'requests/requests_helper'
 
 RSpec.describe "Achievements", type: :request do
   include_context :user
-
-  let(:headers) { { 'ACCEPT' => 'application/json' } }
+  include_context :headers
 
   before(:each) do
-    post "/login", params: { username: user.name, password: user.password }
+    login(user.name, user.password)
   end
 
   describe 'GET #index' do

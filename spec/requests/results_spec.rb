@@ -6,11 +6,10 @@ RSpec.describe "Results", type: :request do
   include_context :eve
   include_context :input
   include_context :result
-
-  let(:headers) { { 'ACCEPT' => 'application/json' } }
+  include_context :headers
 
   before(:each) do
-    post "/login", params: { username: user.name, password: user.password }
+    login(user.name, user.password)
   end
 
   describe 'GET #index' do
@@ -32,7 +31,7 @@ RSpec.describe "Results", type: :request do
     end
 
     it 'returns not found for another user' do
-      post "/login", params: { username: eve.name, password: eve.password }
+      login(eve.name, eve.password)
       get "/modes/#{mode.id}/results", headers: headers
       expect(response).to have_http_status(:not_found)
     end
@@ -58,7 +57,7 @@ RSpec.describe "Results", type: :request do
     end
 
     it 'returns not found for another user' do
-      post "/login", params: { username: eve.name, password: eve.password }
+      login(eve.name, eve.password)
       get "/modes/#{mode.id}/results", headers: headers
       expect(response).to have_http_status(:not_found)
     end
@@ -77,7 +76,7 @@ RSpec.describe "Results", type: :request do
     end
 
     it 'returns not found for other users' do
-      post "/login", params: { username: eve.name, password: eve.password }
+      login(eve.name, eve.password)
       delete "/modes/#{mode.id}/results/#{result.id}"
       expect(response).to have_http_status(:not_found)
       expect(Result.exists?(result.id)).to be(true)

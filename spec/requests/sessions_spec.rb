@@ -1,9 +1,9 @@
 require 'rails_helper'
+require 'requests/requests_helper'
 
 RSpec.describe "Sessions", type: :request do
   include_context :user
-
-  let(:headers) { { 'ACCEPT' => 'application/json' } }
+  include_context :headers
 
   describe 'GET #login' do
     it 'returns http success' do
@@ -20,20 +20,25 @@ RSpec.describe "Sessions", type: :request do
   end
 
   describe 'POST #login' do
-    it 'returns http success' do
-      post "/login", params: { username: user.name, password: user.password }, headers: headers
+    it 'returns http success with name' do
+      login(user.name, user.password)
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'returns http success with email' do
+      login(user.email, user.password)
       expect(response).to have_http_status(:success)
     end
 
     it 'returns unauthorized for wrong password' do
-      post "/login", params: { username: user.name, password: 'dodo' }, headers: headers
+      login(user.name, 'dodo')
       expect(response).to have_http_status(:unauthorized)
     end
   end
 
   describe 'POST #logout' do
     it 'returns http success' do
-      post "/login", params: { username: user.name, password: user.password }, headers: headers
+      login(user.name, user.password)
       post "/logout", headers: headers
       expect(response).to have_http_status(:success)
     end

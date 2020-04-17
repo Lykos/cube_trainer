@@ -1,15 +1,15 @@
 require 'rails_helper'
 require 'fixtures'
+require 'requests/requests_helper'
 
 RSpec.describe "Modes", type: :request do
   include_context :user
   include_context :eve
   include_context :mode
-
-  let(:headers) { { 'ACCEPT' => 'application/json' } }
+  include_context :headers
 
   before(:each) do
-    post "/login", params: { username: user.name, password: user.password }
+    login(user.name, user.password)
   end
 
   describe 'GET #index' do
@@ -25,7 +25,7 @@ RSpec.describe "Modes", type: :request do
 
     it 'returns nothing for another user' do
       mode
-      post "/login", params: { username: eve.name, password: eve.password }
+      login(eve.name, eve.password)
       get "/modes", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
@@ -47,7 +47,7 @@ RSpec.describe "Modes", type: :request do
     end
 
     it 'returns not found for another user' do
-      post "/login", params: { username: eve.name, password: eve.password }
+      login(eve.name, eve.password)
       get "/modes/#{mode.id}", headers: headers
       expect(response).to have_http_status(:not_found)
     end
@@ -119,7 +119,7 @@ RSpec.describe "Modes", type: :request do
     end
 
     it 'returns not found for other users' do
-      post "/login", params: { username: eve.name, password: eve.password }
+      login(eve.name, eve.password)
       put "/modes/#{mode.id}", params: { mode: { goal_badness: 2 } }
       expect(response).to have_http_status(:not_found)
       expect(Mode.find(mode.id).goal_badness).to eq(1)
@@ -139,7 +139,7 @@ RSpec.describe "Modes", type: :request do
     end
 
     it 'returns not found for other users' do
-      post "/login", params: { username: eve.name, password: eve.password }
+      login(eve.name, eve.password)
       delete "/modes/#{mode.id}"
       expect(response).to have_http_status(:not_found)
       expect(Mode.exists?(mode.id)).to be(true)

@@ -1,15 +1,37 @@
 require 'rails_helper'
+require 'requests/requests_helper'
 require 'fixtures'
 
 RSpec.describe "Users", type: :request do
   include_context :user
   include_context :eve
   include_context :admin
-
-  let(:headers) { { 'ACCEPT' => 'application/json' } }
+  include_context :headers
 
   before(:each) do
-    post "/login", params: { username: user.name, password: user.password }
+    login(user.name, user.password)
+  end
+
+  describe 'GET #username_or_email_exists?' do
+    it 'returns true if a user exists' do
+      user
+      get "/username_or_email_exists", params: { username_or_email: user.name }, headers: headers
+      expect(response).to have_http_status(:success)
+      expect(JSON.parse(response.body)).to eq('true')
+    end
+
+    it 'returns true if an email exists' do
+      user
+      get "/username_or_email_exists", params: { username_or_email: user.email }, headers: headers
+      expect(response).to have_http_status(:success)
+      expect(JSON.parse(response.body)).to eq('true')
+    end
+
+    it "returns false if an username/email doesn't exist" do
+      get "/username_or_email_exists", params: { username_or_email: 'grmlefex' }, headers: headers
+      expect(response).to have_http_status(:success)
+      expect(JSON.parse(response.body)).to eq('false')
+    end
   end
 
   describe 'GET #index' do
@@ -17,7 +39,7 @@ RSpec.describe "Users", type: :request do
       admin
       eve
       user
-      post "/login", params: { username: admin.name, password: admin.password }
+      login(admin.name, admin.password)
       get "/users", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
@@ -42,7 +64,7 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns http success for admin' do
-      post "/login", params: { username: admin.name, password: admin.password }
+      login(admin.name, admin.password)
       get "/users/#{user.id}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
@@ -55,7 +77,7 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns not found for another user' do
-      post "/login", params: { username: eve.name, password: eve.password }
+      login(eve.name, eve.password)
       get "/users/#{user.id}", headers: headers
       expect(response).to have_http_status(:not_found)
     end
@@ -93,7 +115,7 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns http success for admin' do
-      post "/login", params: { username: admin.name, password: admin.password }
+      login(admin.name, admin.password)
       post "/users", params: {
              user: {
                name: 'new_user',
@@ -108,6 +130,32 @@ RSpec.describe "Users", type: :request do
       expect(parsed_body['id']).not_to eq(user.id)
       expect(User.find(parsed_body['id']).name).to eq('new_user')
       expect(User.find(parsed_body['id']).admin).to eq(true)
+    end
+
+    it 'returns bad request for users with existing name' do
+      user
+      post "/users", params: {
+             user: {
+               name: user.name,
+               email: 'new_user@example.org',
+               password: 'abc',
+               password_confirmation: 'abc'
+             }
+           }
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'returns bad request for users with existing email' do
+      user
+      post "/users", params: {
+             user: {
+               name: 'new_user',
+               email: user.email,
+               password: 'abc',
+               password_confirmation: 'abc'
+             }
+           }
+      expect(response).to have_http_status(:bad_request)
     end
 
     it 'returns bad request for invalid users' do
@@ -138,7 +186,7 @@ RSpec.describe "Users", type: :request do
 
   describe 'PUT #update' do
     it 'returns http success' do
-      post "/login", params: { username: admin.name, password: admin.password }
+      login(admin.name, admin.password)
       put "/users/#{admin.id}", params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:success)
       admin.reload
@@ -159,7 +207,7 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns success for admin' do
-      post "/login", params: { username: admin.name, password: admin.password }
+      login(admin.name, admin.password)
       put "/users/#{user.id}", params: { user: { admin: true } }
       expect(response).to have_http_status(:success)
       expect(User.find(user.id).admin).to eq(true)
@@ -171,7 +219,7 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns not found for other users' do
-      post "/login", params: { username: eve.name, password: eve.password }
+      login(eve.name, eve.password)
       put "/users/#{user.id}", params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:not_found)
       expect(User.find(user.id).name).to eq('abc')
@@ -191,7 +239,7 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns not found for other users' do
-      post "/login", params: { username: eve.name, password: eve.password }
+      login(eve.name, eve.password)
       delete "/users/#{user.id}"
       expect(response).to have_http_status(:not_found)
       expect(User.exists?(user.id)).to be(true)

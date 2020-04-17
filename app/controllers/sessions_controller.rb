@@ -13,13 +13,14 @@ class SessionsController < ApplicationController
 
   # POST /login
   def create
-   @user = User.find_by(name: params[:username]) || User.find_by(email: params[:email])
-   if @user && @user.authenticate(params[:password])
-     session[:user_id] = @user.id
-     render json: @user.to_simple, status: :ok
-   else
-     head :unauthorized     
-   end
+    username_or_email = params[:username_or_email]
+    @user = User.find_by(name: username_or_email) || User.find_by(email: username_or_email)
+    if @user && @user.authenticate(params[:password])
+      session[:user_id] = @user.id
+      render json: @user.to_simple, status: :ok
+    else
+      head :unauthorized     
+    end
   end
   
   # POST /logout
