@@ -11,10 +11,10 @@ import { Router } from '@angular/router';
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <mat-card-content>
       <mat-form-field appearance="fill">
-        <mat-label>Username</mat-label>
-        <input matInput type="text" formControlName="username">
-        <mat-error *ngIf="relevantInvalid(username) && username.errors.required">
-          You must provide a <strong>username</strong>.
+        <mat-label>Username or Email</mat-label>
+        <input matInput type="text" formControlName="usernameOrEmail">
+        <mat-error *ngIf="relevantInvalid(username) && usernameOrEmail.errors.required">
+          You must provide a <strong>username</strong> or <strong>email</strong>.
         </mat-error>
       </mat-form-field>
       <br>
@@ -53,13 +53,13 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      username: ['', Validators.required],
+      usernameOrEmail: ['', Validators.required],
       password: ['', Validators.required],
     });
   }
 
   onSubmit() {
-    this.authenticationService.login(this.username.value, this.password.value)
+    this.authenticationService.login(this.usernameOrEmail.value, this.password.value)
       .subscribe(
 	r => {
 	  this.router.navigate(['/modes']);
@@ -72,7 +72,7 @@ export class LoginComponent implements OnInit {
       );
   }
 
-  get username() { return this.loginForm.get('username')!; }
+  get usernameOrEmail() { return this.loginForm.get('usernameOrEmail')!; }
 
   get password() { return this.loginForm.get('password')!; }
 }
