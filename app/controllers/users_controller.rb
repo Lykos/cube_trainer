@@ -5,6 +5,17 @@ class UsersController < ApplicationController
   before_action :check_current_user_owns, only: [:show, :update, :destroy]
   skip_before_action :check_authorized, only: [:new, :create]
 
+  # GET /username_or_email_exists
+  def user_name_or_email_exists?
+    respond_to do |format|
+      format.html { render 'application/empty' }
+      format.json do
+        username_or_email = params[:username_or_email]
+        render json: User.exists?(name: username_or_email) || User.exists?(email: username_or_email), status: :ok
+      end
+    end
+  end
+
   # GET /users
   # GET /users.json
   def index
