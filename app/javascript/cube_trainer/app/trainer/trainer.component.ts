@@ -1,6 +1,6 @@
 import { now } from '../utils/instant';
 import { Duration, zeroDuration } from '../utils/duration';
-import { InputItem } from './input_item';
+import { InputItem } from './input-item';
 import { TrainerService } from './trainer.service';
 import { HostListener, Component, OnDestroy } from '@angular/core';
 import { map } from 'rxjs/operators';
@@ -49,7 +49,7 @@ enum StopWatchState {
     </div>
   </div>
   <div flex>
-    <result-table [resultEvents$]="resultEventsSubject.asObservable()"></result-table>
+    <results-table [resultEvents$]="resultEventsSubject.asObservable()"></results-table>
   </div>
 </div>
 `

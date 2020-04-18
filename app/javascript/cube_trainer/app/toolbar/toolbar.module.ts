@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { ToolbarComponent } from './toolbar.component';
-import { UserModule } from '../user/user.module';
+import { UsersModule } from '../users/users.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { BrowserModule } from '@angular/platform-browser';
@@ -15,7 +15,7 @@ import { MatBadgeModule } from '@angular/material/badge';
     BrowserModule,
     MatToolbarModule,
     BrowserAnimationsModule,
-    UserModule,
+    UsersModule,
     MatButtonModule,
     MatBadgeModule,
   ],

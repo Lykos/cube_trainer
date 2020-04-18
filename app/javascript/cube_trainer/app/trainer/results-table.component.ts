@@ -1,14 +1,14 @@
-import { ResultService } from './result.service';
+import { ResultService } from './results.service';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 // @ts-ignore
 import Rails from '@rails/ujs';
 import { Observable, Subscription } from 'rxjs';
-import { ResultsDataSource } from './results_data_source';
+import { ResultsDataSource } from './results.data-source';
 
 @Component({
-  selector: 'result-table',
+  selector: 'results-table',
   template: `
 <div>
   <h2>Results</h2>
@@ -40,7 +40,7 @@ import { ResultsDataSource } from './results_data_source';
 </div>
 `
 })
-export class ResultTableComponent implements OnInit, OnDestroy {
+export class ResultsTableComponent implements OnInit, OnDestroy {
   modeId$: Observable<number>;
   dataSource!: ResultsDataSource;
   columnsToDisplay = ['timestamp', 'input', 'time', 'numHints'];

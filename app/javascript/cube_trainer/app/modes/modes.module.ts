@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { RailsModule } from '../rails/rails.module';
-import { UserModule } from '../user/user.module';
-import { ModeService } from './mode.service';
+import { UsersModule } from '../users/users.module';
+import { ModesService } from './modes.service';
 import { ModesComponent } from './modes.component';
 import { NewModeComponent } from './new-mode.component';
 import { NgModule } from '@angular/core';
@@ -27,7 +27,7 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
     BrowserModule,
     RailsModule,
     MatSnackBarModule,
-    UserModule,
+    UsersModule,
     MatTableModule,
     RouterModule,
     MatButtonModule,
@@ -43,11 +43,11 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
     ReactiveFormsModule,
   ],
   providers: [
-    ModeService,
+    ModesService,
   ],
   exports: [
     ModesComponent,
     NewModeComponent,
   ],
 })
-export class ModeModule {}
+export class ModesModule {}

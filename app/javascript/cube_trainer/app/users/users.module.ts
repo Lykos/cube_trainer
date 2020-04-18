@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { RailsModule } from '../rails/rails.module';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { UserComponent } from './user.component';
 import { MessagesComponent } from './messages.component';
 import { MessageComponent } from './message.component';
@@ -52,7 +52,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   ],
   providers: [
     AuthenticationService,
-    UserService,
+    UsersService,
     MessagesService,
     AchievementsService,
     AchievementGrantsService,
@@ -69,4 +69,4 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MessageComponent,
   ],
 })
-export class UserModule {}
+export class UsersModule {}

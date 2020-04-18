@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class ModeService {
+export class ModesService {
   constructor(private readonly rails: RailsService) {}
 
   parseModeType(modeType: any): ModeType {

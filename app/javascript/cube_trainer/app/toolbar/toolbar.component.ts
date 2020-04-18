@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../user/authentication.service';
-import { MessagesService } from '../user/messages.service';
+import { AuthenticationService } from '../users/authentication.service';
+import { MessagesService } from '../users/messages.service';
 import { Router } from '@angular/router';
-import { User } from '../user/user';
+import { User } from '../users/user';
 import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional';
 
 @Component({

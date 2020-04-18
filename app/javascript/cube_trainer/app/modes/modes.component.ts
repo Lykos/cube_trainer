@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModeService } from './mode.service';
+import { ModesService } from './modes.service';
 import { Mode } from './mode';
 import { Router } from '@angular/router';
 
@@ -31,7 +31,7 @@ export class ModesComponent implements OnInit {
   modes: Mode[] = [];
   columnsToDisplay = ['name', 'numResults'];
 
-  constructor(private readonly modeService: ModeService,
+  constructor(private readonly modesService: ModesService,
 	      private readonly router: Router) {}
 
   onClick(mode: Mode) {
@@ -39,7 +39,7 @@ export class ModesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.modeService.list().subscribe((modes: Mode[]) => this.modes = modes);
+    this.modesService.list().subscribe((modes: Mode[]) => this.modes = modes);
   }
 
   onNew() {

@@ -1,14 +1,14 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http_verb';
-import { NewUser } from './new_user';
+import { NewUser } from './new-user';
 import { User } from './user';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UserService {
+export class UsersService {
   constructor(private readonly rails: RailsService) {}
 
   isUsernameOrEmailTaken(usernameOrEmail: string): Observable<boolean> {

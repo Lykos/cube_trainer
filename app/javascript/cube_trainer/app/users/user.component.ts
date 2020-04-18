@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { User } from './user';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -17,7 +17,7 @@ export class UserComponent implements OnInit {
   userId$: Observable<number>;
   user: User | undefined = undefined;
 
-  constructor(private readonly userService: UserService,
+  constructor(private readonly usersService: UsersService,
 	      private readonly activatedRoute: ActivatedRoute) {
     this.userId$ = this.activatedRoute.params.pipe(map(p => p.userId));
   }
@@ -28,7 +28,7 @@ export class UserComponent implements OnInit {
 
   ngOnInit() {
     this.userId$.subscribe(userId => {
-      this.userService.show(userId);
+      this.usersService.show(userId);
     });
   }
 }

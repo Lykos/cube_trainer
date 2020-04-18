@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ModeType } from './mode-type';
-import { ModeService } from './mode.service';
+import { ModesService } from './modes.service';
 import { NewMode } from './new-mode';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -77,7 +77,7 @@ export class NewModeComponent implements OnInit {
   modeTypes!: ModeType[];
   
   constructor(private readonly formBuilder: FormBuilder,
-	      private readonly modeService: ModeService,
+	      private readonly modesService: ModesService,
 	      private readonly router: Router,
 	      private readonly snackBar: MatSnackBar) {}
 
@@ -119,7 +119,7 @@ export class NewModeComponent implements OnInit {
 
   ngOnInit() {
     // TODO Smart form validators depending on the situation.
-    this.modeService.listTypes().subscribe((modeTypes: ModeType[]) => this.modeTypes = modeTypes);
+    this.modesService.listTypes().subscribe((modeTypes: ModeType[]) => this.modeTypes = modeTypes);
     this.modeTypesGroup = this.formBuilder.group({
       name: ['', Validators.required],
       modeType: ['', Validators.required],
@@ -136,7 +136,7 @@ export class NewModeComponent implements OnInit {
   }
 
   onSubmit() {
-    this.modeService.create(this.mode).subscribe(
+    this.modesService.create(this.mode).subscribe(
       r => {
 	this.snackBar.open('Mode Created!', 'Close');
 	this.router.navigate([`/modes`]);

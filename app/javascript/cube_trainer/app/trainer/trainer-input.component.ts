@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Mode } from '../mode/mode';
-import { ShowInputMode } from '../mode/show-input-mode';
-import { ModeService } from '../mode/mode.service';
+import { Mode } from '../modes/mode';
+import { ShowInputMode } from '../modes/show-input-mode';
+import { ModesService } from '../modes/modes.service';
 import { TrainerService } from './trainer.service';
-import { InputItem } from './input_item';
+import { InputItem } from './input-item';
 import { ImgSide } from './img-side';
 import { Observable } from 'rxjs';
 
@@ -43,7 +43,7 @@ export class TrainerInputComponent implements OnInit {
   numHints: number | undefined = undefined;
 
   constructor(private readonly trainerService: TrainerService,
-	      private readonly modeService: ModeService) {}
+	      private readonly modesService: ModesService) {}
 
   get hints() {
     return this.input?.hints ? this.input.hints : [];
@@ -71,7 +71,7 @@ export class TrainerInputComponent implements OnInit {
 
   ngOnInit() {
     this.modeId$.subscribe(modeId => {
-      this.modeService.show(modeId).subscribe(mode => this.mode = mode);
+      this.modesService.show(modeId).subscribe(mode => this.mode = mode);
     });
     this.numHints$.subscribe(numHints => this.numHints = numHints);
   }

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
-import { NewUser } from './new_user';
+import { NewUser } from './new-user';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
@@ -76,7 +76,7 @@ const passwordMatchValidatorFn: ValidatorFn = (control: AbstractControl): Valida
 export class SignupComponent implements OnInit {
   signupForm!: FormGroup;
 
-  constructor(private readonly userService: UserService,
+  constructor(private readonly usersService: UsersService,
 	      private readonly formBuilder: FormBuilder,
 	      private readonly router: Router,
 	      private readonly snackBar: MatSnackBar,
@@ -96,7 +96,7 @@ export class SignupComponent implements OnInit {
   }
 
   onSubmit() {
-    this.userService.create(this.newUser).subscribe(r => {
+    this.usersService.create(this.newUser).subscribe(r => {
       this.snackBar.open('Signup successful!', 'Close');
       this.router.navigate(['/login']);
     });

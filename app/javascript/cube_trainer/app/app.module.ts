@@ -1,18 +1,18 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
-import { UserModule } from './user/user.module';
-import { UserComponent } from './user/user.component';
-import { AchievementsComponent } from './user/achievements.component';
-import { AchievementGrantsComponent } from './user/achievement-grants.component';
-import { AchievementComponent } from './user/achievement.component';
-import { MessageComponent } from './user/message.component';
-import { MessagesComponent } from './user/messages.component';
-import { SignupComponent } from './user/signup.component';
-import { LoginComponent } from './user/login.component';
-import { ModesComponent } from './mode/modes.component';
-import { NewModeComponent } from './mode/new-mode.component';
-import { ModeModule } from './mode/mode.module';
+import { UsersModule } from './users/users.module';
+import { UserComponent } from './users/user.component';
+import { AchievementsComponent } from './users/achievements.component';
+import { AchievementGrantsComponent } from './users/achievement-grants.component';
+import { AchievementComponent } from './users/achievement.component';
+import { MessageComponent } from './users/message.component';
+import { MessagesComponent } from './users/messages.component';
+import { SignupComponent } from './users/signup.component';
+import { LoginComponent } from './users/login.component';
+import { ModesComponent } from './modes/modes.component';
+import { NewModeComponent } from './modes/new-mode.component';
+import { ModesModule } from './modes/modes.module';
 import { TrainerModule } from './trainer/trainer.module';
 import { TrainerComponent } from './trainer/trainer.component';
 import { ToolbarModule } from './toolbar/toolbar.module';
@@ -41,8 +41,8 @@ const appRoutes: Routes = [
     BrowserModule,
     ToolbarModule,
     TrainerModule,
-    UserModule,
-    ModeModule,
+    UsersModule,
+    ModesModule,
     RouterModule.forRoot(
       appRoutes,
       { enableTracing: true } // <-- debugging purposes only

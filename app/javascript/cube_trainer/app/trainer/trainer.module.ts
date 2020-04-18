@@ -4,10 +4,10 @@ import { NgModule } from '@angular/core';
 import { TrainerComponent } from './trainer.component';
 import { TrainerService } from './trainer.service';
 import { UtilsModule } from '../utils/utils.module';
-import { ResultService } from './result.service';
+import { ResultService } from './results.service';
 import { MatTableModule } from '@angular/material/table';
-import { TrainerInputComponent } from './trainer_input.component';
-import { ResultTableComponent } from './result_table.component';
+import { TrainerInputComponent } from './trainer-input.component';
+import { ResultsTableComponent } from './results-table.component';
 import { RailsModule } from '../rails/rails.module';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -17,7 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
   declarations: [
     TrainerComponent,
     TrainerInputComponent,
-    ResultTableComponent,
+    ResultsTableComponent,
   ],
   imports: [
     BrowserModule,
