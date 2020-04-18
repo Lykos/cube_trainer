@@ -33,9 +33,6 @@ enum StopWatchState {
           <button mat-raised-button color="primary" (click)="onStopAndPause()">
             Stop and Pause
           </button>
-          <button mat-raised-button color="primary" (click)="onDropAndPause()">
-            Drop and Pause
-          </button>
           <button mat-raised-button color="primary" *ngIf="hintsAvailable" (click)="onHint()">
             Hint
           </button>
@@ -89,14 +86,6 @@ export class TrainerComponent implements OnDestroy {
       numHints: this.numHintsSubject.value,
       duration: this.duration!,
     }
-  }
-
-  onDropAndPause() {
-    this.stopTimer();
-    this.state = StopWatchState.Paused;
-    this.modeId$.subscribe(modeId => {
-      this.trainerService.destroy(modeId, this.input!).subscribe(r => {});
-    });
   }
 
   onStart() {
