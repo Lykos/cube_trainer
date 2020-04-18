@@ -12,6 +12,10 @@ export class ResultsDataSource implements DataSource<Result> {
 
   constructor(private readonly resultService: ResultService) {}
 
+  get data() {
+    return this.resultsSubject.value;
+  }
+
   connect(collectionViewer: CollectionViewer): Observable<Result[]> {
     return this.resultsSubject.asObservable();
   }

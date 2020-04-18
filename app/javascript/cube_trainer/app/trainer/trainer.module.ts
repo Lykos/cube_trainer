@@ -10,8 +10,10 @@ import { TrainerInputComponent } from './trainer-input.component';
 import { ResultsTableComponent } from './results-table.component';
 import { RailsModule } from '../rails/rails.module';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { MatRippleModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -22,9 +24,11 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [
     BrowserModule,
     MatCardModule,
+    MatRippleModule,
     MatTableModule,
     MatProgressSpinnerModule,
     MatButtonModule,
+    MatCheckboxModule,
     BrowserAnimationsModule,
     RailsModule,
     UtilsModule,

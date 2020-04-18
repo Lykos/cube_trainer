@@ -27,4 +27,8 @@ export class ResultService {
     return this.rails.ajax<any[]>(HttpVerb.Get, `/modes/${modeId}/results`, {offset, limit}).pipe(
       map(results => results.map(this.parseResult)));
   }
+
+  destroy(modeId: number, resultId: number): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Delete, `/modes/${modeId}/results/${resultId}`, {});
+  }
 }
