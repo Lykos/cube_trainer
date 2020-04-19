@@ -14,7 +14,6 @@ class ModeTypeType < ActiveRecord::Type::String
     return if value.nil?
 
     value = cast(value) unless value.is_a?(ModeType)
-
     value.key
   end
 end

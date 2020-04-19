@@ -54,6 +54,14 @@ shared_context :achievement_grant do
   end
 end
 
+shared_context :stat do
+  include_context :mode
+
+  let(:stat) do
+    Stat.find_or_create_by!(mode: mode, stat_type: :averages)
+  end
+end
+
 shared_context :user_message do
   include_context :user
 

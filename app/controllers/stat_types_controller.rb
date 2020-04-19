@@ -1,31 +1,31 @@
 # frozen_string_literal: true
 
-# Controller that allows retrieval of stats.
+# Controller that allows retrieval of stat types.
 # Note that it does NOT include which modes have them.
-class StatsController < ApplicationController
-  before_action :set_stat, only: [:show]
+class StatTypesController < ApplicationController
+  before_action :set_stat_type, only: [:show]
 
-  # GET /stats
-  # GET /stats.json
+  # GET /stat_types
+  # GET /stat_types.json
   def index
     respond_to do |format|
       format.html { render 'application/cube_trainer' }
-      format.json { render json: Stat::ALL.map(&:to_simple) }
+      format.json { render json: StatType::ALL.map(&:to_simple) }
     end
   end
 
-  # GET /stats/mode_created
-  # GET /stats/mode_created.json
+  # GET /stat_types/mode_created
+  # GET /stat_types/mode_created.json
   def show
     respond_to do |format|
       format.html { render 'application/cube_trainer' }
-      format.json { render json: @stat.to_simple }
+      format.json { render json: @stat_type.to_simple }
     end
   end
 
   private
 
-  def set_stat
-    head(:not_found) unless (@stat = Stat.find_by(key: params[:id]))
+  def set_stat_type
+    head(:not_found) unless (@stat_type = StatType.find_by(key: params[:id]))
   end
 end

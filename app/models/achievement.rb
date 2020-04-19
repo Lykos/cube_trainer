@@ -23,6 +23,11 @@ class Achievement
       key: :mode_creator,
       name: 'Mode Creator',
       description: 'You figured out how to use this website and created your first training mode!'
+    ),
+    Achievement.new(
+      key: :stat_creator,
+      name: 'Statistician',
+      description: 'You assigned your first stat to a mode!'
     )
   ].freeze
   ALL.each(&:validate!)

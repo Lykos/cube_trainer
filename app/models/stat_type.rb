@@ -2,7 +2,7 @@
 
 # Model for stats.
 # Note that it does NOT include which modes have them.
-class Stat
+class StatType
   include ActiveModel::Model
   attr_accessor :key, :name, :description
 
@@ -18,20 +18,22 @@ class Stat
   end
 
   ALL = [
-    Stat.new(
+    StatType.new(
       key: :averages,
       name: 'Averages',
       description: 'Averages like ao5, ao12, ao50, etc..'
     ),
-    Stat.new(
+    StatType.new(
       key: :mo3,
       name: 'Mean of 3'
     ),
-    Stat.new(
+    StatType.new(
       key: :averages_per_input_item,
       name: 'Averages per Input Item',
-      description: 'Averages like ao5, ao12, ao50, etc. per input item. Note that this makes almost no sense for modes where the input is a scramble since every single scramble would be counted separately.'
-    )
+      description: <<~DESCRIPTION)
+        Averages like ao5, ao12, ao50, etc. per input item.
+        Note that this makes almost no sense for modes where the input is a scramble since every single scramble would be counted separately.
+      DESCRIPTION
   ].freeze
   ALL.each(&:validate!)
   BY_KEY = ALL.index_by(&:key).freeze

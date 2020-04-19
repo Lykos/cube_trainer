@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_19_121314) do
+ActiveRecord::Schema.define(version: 2020_04_19_221211) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -104,6 +104,15 @@ ActiveRecord::Schema.define(version: 2020_04_19_121314) do
     t.index ["input_id"], name: "index_results_on_input_id", unique: true
   end
 
+  create_table "stats", force: :cascade do |t|
+    t.bigint "mode_id", null: false
+    t.string "stat_type", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["mode_id", "stat_type"], name: "index_stats_on_mode_id_and_stat_type", unique: true
+    t.index ["mode_id"], name: "index_stats_on_mode_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.string "password_digest", null: false
@@ -123,4 +132,5 @@ ActiveRecord::Schema.define(version: 2020_04_19_121314) do
   add_foreign_key "modes", "users"
   add_foreign_key "notifications", "users"
   add_foreign_key "results", "inputs"
+  add_foreign_key "stats", "modes"
 end

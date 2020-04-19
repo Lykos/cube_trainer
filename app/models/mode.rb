@@ -28,6 +28,7 @@ class Mode < ApplicationRecord
             presence: true,
             if: -> { mode_type.has_parity_parts? }
   validate :parity_parts_valid, if: -> { mode_type.has_parity_parts? }
+  has_many :stats, dependent: :destroy
 
   # rubocop:disable Rails/HasAndBelongsToMany
   has_and_belongs_to_many :used_modes,

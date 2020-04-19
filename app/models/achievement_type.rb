@@ -14,7 +14,6 @@ class AchievementType < ActiveRecord::Type::String
     return if value.nil?
 
     value = cast(value) unless value.is_a?(Achievement)
-
     value.key
   end
 end
