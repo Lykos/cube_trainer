@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { TrainerComponent } from './trainer.component';
 import { TrainerService } from './trainer.service';
 import { UtilsModule } from '../utils/utils.module';
-import { ResultService } from './results.service';
+import { ResultsService } from './results.service';
 import { MatTableModule } from '@angular/material/table';
 import { TrainerInputComponent } from './trainer-input.component';
 import { ResultsTableComponent } from './results-table.component';
@@ -38,7 +38,7 @@ import { MatRippleModule } from '@angular/material/core';
   ],
   providers: [
     TrainerService,
-    ResultService,
+    ResultsService,
   ],
 })
 export class TrainerModule {}

@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { ResultService } from './results.service';
+import { ResultsService } from './results.service';
 import { Result } from './result';
 import { Component, OnInit, OnDestroy, Input, LOCALE_ID, Inject } from '@angular/core';
 import { map } from 'rxjs/operators';
@@ -78,7 +78,7 @@ export class ResultsTableComponent implements OnInit, OnDestroy {
   private eventsSubscription!: Subscription;
   private selection = new SelectionModel<Result>(true, []);
 
-  constructor(private readonly resultsService: ResultService,
+  constructor(private readonly resultsService: ResultsService,
 	      @Inject(LOCALE_ID) private readonly locale: string,
 	      activatedRoute: ActivatedRoute) {
     this.modeId$ = activatedRoute.params.pipe(map(p => p.modeId));

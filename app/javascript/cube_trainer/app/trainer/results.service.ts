@@ -10,7 +10,7 @@ import { fromDateString } from '../utils/instant'
 @Injectable({
   providedIn: 'root',
 })
-export class ResultService {
+export class ResultsService {
   constructor(private readonly rails: RailsService) {}
 
   parseResult(result: any): Result {
