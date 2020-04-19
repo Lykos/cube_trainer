@@ -122,7 +122,8 @@ module CubeTrainer
       end
 
       def buffer_coordinates
-        @buffer_coordinates ||= Core::Coordinate.solved_positions(@mode.parsed_buffer, @mode.cube_size, 0)
+        @buffer_coordinates ||=
+          Core::Coordinate.solved_positions(@mode.parsed_buffer, @mode.cube_size, 0)
       end
 
       def generate_input_items
@@ -209,7 +210,7 @@ module CubeTrainer
       PART_TYPE = Core::Corner
 
       def hinter
-        return NoHinter.new(input_items) unless corner_mode = @mode.used_mode(:corner_commutators)
+        return NoHinter.new(input_items) unless (corner_mode = @mode.used_mode(:corner_commutators))
 
         corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_mode)
         Corner3TwistHinter.new(corner_mode, corner_hinter, @mode)

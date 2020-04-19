@@ -8,6 +8,8 @@ require 'cube_trainer/training/human_time_learner'
 require 'cube_trainer/training/letters_to_word'
 require 'cube_trainer/training/alg_sets'
 
+# Model for mode types. They are basic templates which users use to create their training modes.
+# rubocop:disable Metrics/ClassLength
 class ModeType
   include ActiveModel::Model
   include CubeTrainer::Training
@@ -31,8 +33,8 @@ class ModeType
   validates :generator_class, presence: true
   validates :learner_type, presence: true
   validates :show_input_modes, presence: true
-  validates :default_cube_size, presence: true, if: :has_cube_size?
-  validate :default_cube_size_valid, if: :has_cube_size?
+  validates :default_cube_size, presence: true, if: :cube_size?
+  validate :default_cube_size_valid, if: :cube_size?
 
   alias has_goal_badness? has_goal_badness
   alias has_buffer? has_buffer
@@ -43,6 +45,7 @@ class ModeType
   end
 
   # Takes an external errors list so it can be used for other models, too.
+  # rubocop:disable Metrics/CyclomaticComplexity
   def validate_cube_size(cube_size, errors, attribute)
     unless cube_size <= max_cube_size
       errors.add(attribute, "has to be at most #{max_cube_size} for mode type #{name}")
@@ -53,10 +56,11 @@ class ModeType
     if cube_size.odd? && !odd_cube_size_allowed?
       errors.add(attribute, "cannot be odd for mode type #{name}")
     end
-    if cube_size.even? && !even_cube_size_allowed?
+    if cube_size.even? && !even_cube_size_allowed? # rubocop:disable Style/GuardClause
       errors.add(attribute, "cannot be even for mode type #{name}")
     end
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   # Returns a simple version for the current user that can be returned to the frontend.
   def to_simple(user = nil)
@@ -81,7 +85,7 @@ class ModeType
   end
 
   def cube_size_spec
-    return unless has_cube_size?
+    return unless cube_size?
 
     {
       default: default_cube_size,
@@ -92,21 +96,27 @@ class ModeType
     }
   end
 
-  def has_cube_size?
-    !!part_type
+  def cube_size?
+    part_type
   end
 
   def min_cube_size
-    parity_part_type_min_cube_size = parity_part_type ? parity_part_type.min_cube_size : -Float::INFINITY
+    parity_part_type_min_cube_size =
+      parity_part_type ? parity_part_type.min_cube_size : -Float::INFINITY
 
     maximal_min_cube_size = [part_type.min_cube_size, parity_part_type_min_cube_size].max
     wrong_parity?(maximal_min_cube_size) ? maximal_min_cube_size + 1 : maximal_min_cube_size
   end
 
   def max_cube_size
-    parity_part_type_max_cube_size = parity_part_type ? parity_part_type.max_cube_size : Float::INFINITY
+    parity_part_type_max_cube_size =
+      parity_part_type ? parity_part_type.max_cube_size : Float::INFINITY
 
-    minimal_max_cube_size = [part_type.max_cube_size, parity_part_type_max_cube_size, MAX_SUPPORTED_CUBE_SIZE].min
+    minimal_max_cube_size = [
+      part_type.max_cube_size,
+      parity_part_type_max_cube_size,
+      MAX_SUPPORTED_CUBE_SIZE
+    ].min
     wrong_parity?(minimal_max_cube_size) ? minimal_max_cube_size - 1 : minimal_max_cube_size
   end
 
@@ -115,11 +125,13 @@ class ModeType
   end
 
   def odd_cube_size_allowed?
-    part_type.exists_on_odd_cube_sizes? && (parity_part_type.nil? || parity_part_type.exists_on_odd_cube_sizes?)
+    part_type.exists_on_odd_cube_sizes? &&
+      (parity_part_type.nil? || parity_part_type.exists_on_odd_cube_sizes?)
   end
 
   def even_cube_size_allowed?
-    part_type.exists_on_even_cube_sizes? && (parity_part_type.nil? || parity_part_type.exists_on_even_cube_sizes?)
+    part_type.exists_on_even_cube_sizes? &&
+      (parity_part_type.nil? || parity_part_type.exists_on_even_cube_sizes?)
   end
 
   def part_type
@@ -310,3 +322,4 @@ class ModeType
     find_by_key(key) || (raise ArgumentError)
   end
 end
+# rubocop:enable Metrics/ClassLength

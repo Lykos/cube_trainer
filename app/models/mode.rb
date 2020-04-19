@@ -6,6 +6,7 @@ require 'cube_trainer/letter_scheme'
 require 'cube_trainer/utils/array_helper'
 require 'mode_type'
 
+# Model for training modes that the user created.
 class Mode < ApplicationRecord
   has_many :inputs, dependent: :destroy
   belongs_to :user
@@ -18,14 +19,19 @@ class Mode < ApplicationRecord
   validates :name, presence: true, uniqueness: { scope: :user }
   validates :mode_type, presence: true
   validates :show_input_mode, presence: true, inclusion: ModeType::SHOW_INPUT_MODES
+  validate :show_input_mode_valid
   validates :buffer, presence: true, if: -> { mode_type.has_buffer? }
-  validates :cube_size, presence: true, if: -> { mode_type.has_cube_size? }
-  validate :cube_size_valid, if: -> { mode_type.has_cube_size? }
-  validate :show_input_mode_has_to_be_in_show_input_modes_of_mode_type
+  validates :cube_size, presence: true, if: -> { mode_type.cube_size? }
+  validate :cube_size_valid, if: -> { mode_type.cube_size? }
   validate :buffer_valid, if: -> { mode_type.has_buffer? }
-  validates :first_parity_part, :second_parity_part, presence: true, if: -> { mode_type.has_parity_parts? }
+  validates :first_parity_part, :second_parity_part,
+            presence: true,
+            if: -> { mode_type.has_parity_parts? }
   validate :parity_parts_valid, if: -> { mode_type.has_parity_parts? }
-  has_and_belongs_to_many :used_modes, class_name: :Mode, join_table: :mode_usages, association_foreign_key: :used_mode_id
+  has_and_belongs_to_many :used_modes,
+                          class_name: :Mode,
+                          join_table: :mode_usages,
+                          association_foreign_key: :used_mode_id
   after_create :grant_mode_achievement
 
   # TODO: Make it configurable
@@ -119,10 +125,10 @@ class Mode < ApplicationRecord
     user.grant_achievement_if_not_granted(:mode_creator)
   end
 
-  def show_input_mode_has_to_be_in_show_input_modes_of_mode_type
-    unless mode_type.show_input_modes.include?(show_input_mode)
-      errors.add(:show_input_mode, 'has to be in show input modes of the mode type')
-    end
+  def show_input_mode_valid
+    return if mode_type.show_input_modes.include?(show_input_mode)
+
+    errors.add(:show_input_mode, 'has to be in show input modes of the mode type')
   end
 
   def buffer_valid
@@ -131,13 +137,14 @@ class Mode < ApplicationRecord
 
   def buffer_valid?
     part_type.parse(buffer)
-  rescue ArgumentError
+  rescue ArgumentError # rubocop:disable Lint/SuppressedException
   end
 
   def cube_size_valid
     mode_type.validate_cube_size(cube_size, errors, :cube_size)
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def parity_parts_valid
     return unless first_parity_part && second_parity_part
 
@@ -154,13 +161,14 @@ class Mode < ApplicationRecord
 
     first_part = parity_part_type.parse(first_parity_part)
     second_part = parity_part_type.parse(second_parity_part)
-    if first_part.turned_equals?(second_part)
-      errors.add(:second_parity_part, 'has to be a different piece from first_parity_part')
-    end
+    return unless first_part.turned_equals?(second_part)
+
+    errors.add(:second_parity_part, 'has to be a different piece from first_parity_part')
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   def parity_part_valid?(parity_part)
     parity_part_type.parse(parity_part)
-  rescue ArgumentError
+  rescue ArgumentError # rubocop:disable Lint/SuppressedException
   end
 end

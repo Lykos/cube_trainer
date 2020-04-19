@@ -2,6 +2,7 @@
 
 require 'etc'
 
+# Helper for OS related stuff.
 module OsHelper
   def self.os_user
     Etc.getlogin

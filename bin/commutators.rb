@@ -14,7 +14,7 @@ ActiveRecord::Base.connected_to(database: :primary) do
     password: OsHelper.default_password,
     password_confirmation: OsHelper.default_password
   )
-  mode = Mode.from_options(options)
+  mode = user.modes.find(name: options.mode_name)
   results_model = CubeTrainer::Training::ResultsModel.new(mode)
   generator = options.commutator_info.generator_class.new(options)
   hinter = generator.hinter

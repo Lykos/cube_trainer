@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Model for achievement grants (i.e. which user has which achievement).
 class AchievementGrant < ApplicationRecord
   attribute :achievement, :achievement
   belongs_to :user

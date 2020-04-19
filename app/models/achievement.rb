@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Model for possible achievements.
 class Achievement
   include ActiveModel::Model
   attr_accessor :key, :name, :description

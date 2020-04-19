@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Active record type for achievements.
 class AchievementType < ActiveRecord::Type::String
   def cast(value)
     return if value.nil?
