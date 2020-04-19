@@ -72,25 +72,7 @@ Style/HashTransformValues:
 Style/IpAddresses:
   Enabled: true
 Style/MethodCallWithArgsParentheses:
-  Enabled: true
-  IgnoredMethods:
-  - print
-  - puts
-  - warn
-  - raise
-  - require
-  - require_relative
-  - include
-  - it_behaves_like
-  - include_examples
-  - exit
-  - run
-  - abort
-  Exclude:
-  - Gemfile
-  - Rakefile
-  - lib/tasks/*.rake
-  - 'spec/**/*.rb'
+  Enabled: false
 Style/OptionHash:
   Enabled: true
 Style/ReturnNil:
