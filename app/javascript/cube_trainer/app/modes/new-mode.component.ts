@@ -44,7 +44,7 @@ import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validato
     <form [formGroup]="setupGroup">
       <mat-form-field *ngIf="hasMultipleCubeSizes">
         <mat-label>Cube Size</mat-label>
-        <input matInput formControlName="cubeSize" type="number">
+        <input matInput formControlName="cubeSize" type="number" [value]="defaultCubeSize">
         <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.required">
           You must provide a <strong>cube size</strong> for this mode type.
         </mat-error>
