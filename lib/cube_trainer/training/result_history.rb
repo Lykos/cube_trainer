@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/utils/time_helper'
+require 'cube_trainer/utils/sql_helper'
 require 'set'
 
 module CubeTrainer
@@ -9,6 +10,7 @@ module CubeTrainer
     # Does intensive caching, so it shouldn't be reused beyond sampling of a handful of items.
     class ResultHistory
       include Utils::TimeHelper
+      include Utils::SqlHelper
 
       def initialize(
         mode:,
@@ -64,13 +66,14 @@ module CubeTrainer
       # On how many different days the item appeared since the user last used a hint for it.
       def occurrence_days_since_last_hint(item)
         # TODO: Don't recalculate this per item.
-        (@occurrence_days_since_last_hint ||= {})[item.representation] ||= calculate_occurrence_days_since_last_hint(item)
+        (@occurrence_days_since_last_hint ||= {})[item.representation] ||=
+          calculate_occurrence_days_since_last_hint(item)
       end
 
       def last_items(num_items)
         if @max_num_items.nil? || num_items > @max_num_items
           @max_num_items = num_items
-          @last_items = @mode.inputs.joins(:result).order(created_at: :desc).limit(num_items).pluck(:input_representation).reverse
+          @last_items = fetch_last_items(num_items)
         end
 
         adjusted_num_items = [num_items, @last_items.length].min
@@ -80,13 +83,13 @@ module CubeTrainer
       def badness_averages
         @badness_averages ||=
           begin
-            # TODO: Find a way to construct this with Arel.
-            badness_array_expression = Arel.sql(@mode.inputs.sanitize_sql_for_conditions(['array_agg(results.time_s + ? * results.failed_attempts + ? * results.num_hints order by results.created_at desc)', @failed_seconds, @hint_seconds]))
             result = @mode.inputs.joins(:result)
                           .group(:input_representation)
-                          .pluck(:input_representation, badness_array_expression).to_h
+                          .pluck(:input_representation, badness_array_exp).to_h
             result.transform_values! do |badnesses|
-              badnesses[0...@badness_memory].each_with_object(new_cube_average) { |badness, avg| avg.push(badness); }.average
+              badnesses[0...@badness_memory].each_with_object(new_cube_average) do |badness, avg|
+                avg.push(badness)
+              end.average
             end
             result.default = Float::NAN
             result
@@ -95,6 +98,19 @@ module CubeTrainer
 
       private
 
+      def badness_array_exp
+        badness_exp =
+          results_table[:time_s] +
+          results_table[:failed_attempts] * @failed_seconds +
+          results_table[:num_hints] * @hint_seconds
+        created_at = results_table[:created_at]
+        array_agg(badness_exp, order: created_at.desc)
+      end
+
+      def fetch_last_items(num_items)
+        @mode.inputs.joins(:result).order(created_at: :desc).limit(num_items).pluck(:input_representation).reverse
+      end
+
       # On how many different days the item appeared since the user last used a hint for it.
       # Can be infinite if the user never used a hint.
       def calculate_occurrence_days_since_last_hint(item)
@@ -102,14 +118,23 @@ module CubeTrainer
         return Float::INFINITY if last_hint_age.infinite?
 
         # TODO: Avoid having one query per item.
-        @mode.inputs.joins(:result).where(input_representation: item.representation).where("date_trunc('day', inputs.created_at) > ?", Time.now - last_hint_age).count
+        created_at = input_table[:created_at]
+        @mode.inputs.joins(:result).where(input_representation: item.representation).where(days_old_exp > days(Time.now - last_hint_age)).count
+      end
+
+      def results_table
+        @results_table ||= Result.arel_table
+      end
+
+      def inputs_table
+        @inputs_table ||= Input.arel_table
       end
 
       def last_hint_age_cache
         @last_occurrence_age_cache ||=
           begin
             now = Time.now
-            result = @mode.inputs.joins(:result).where('results.num_hints > 0').group(:input_representation).maximum(:created_at).transform_values! { |time| now - time }
+            result = @mode.inputs.joins(:result).where(Result.arel_table[:num_hints] > 0).group(:input_representation).maximum(:created_at).transform_values! { |time| now - time }
             result.default = Float::INFINITY
             result
           end
@@ -125,10 +150,15 @@ module CubeTrainer
           end
       end
 
+      def days_old_exp
+        floor(extract(:epoch, age(inputs_table[:created_at])) / 86400)
+      end
+
       def occurrence_days_cache
         @occurrence_days_cache ||=
           begin
-            result = @mode.inputs.joins(:result).group(:input_representation).distinct.count('floor(extract(epoch from age(inputs.created_at)) / 86400)')
+            
+            result = @mode.inputs.joins(:result).group(:input_representation).distinct.count()
             result.default = 0
             result
           end
