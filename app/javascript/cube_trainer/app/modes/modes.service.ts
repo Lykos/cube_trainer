@@ -20,9 +20,6 @@ function parseCubeSizeSpec(rawCubeSizeSpec: any): CubeSizeSpec {
 
 function parseModeType(rawModeType: any): ModeType {
   const cubeSizeSpec = rawModeType.cube_size_spec ? parseCubeSizeSpec(rawModeType.cube_size_spec) : undefined;
-  if (rawModeType.key === 'tcenter_commutators') {
-    console.log('cube size spec', cubeSizeSpec);
-  }
   return {
     key: rawModeType.key,
     name: rawModeType.name,
