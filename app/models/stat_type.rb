@@ -22,7 +22,7 @@ class StatType
 
   def stat_parts(mode)
     parts.each do |part|
-      [part.name, part.calculate(mode)]
+      { name: part.name, time_s: part.calculate(mode) }
     end
   end
 
