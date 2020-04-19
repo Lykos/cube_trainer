@@ -49,6 +49,22 @@ module CubeTrainer
         parts.freeze
       end
 
+      def self.min_cube_size
+        2
+      end
+
+      def self.max_cube_size
+        Float::INFINITY
+      end
+
+      def self.exists_on_even_cube_sizes?
+        true
+      end
+
+      def self.exists_on_odd_cube_sizes?
+        true
+      end
+
       def base_index_on_face(cube_size, incarnation_index)
         base_index_on_other_face(solved_face, cube_size, incarnation_index)
       end
@@ -152,6 +168,14 @@ module CubeTrainer
     # This is an unmoveable center piece, it's mostly used as a helper class for other pieces.
     class Face < Part
       FACES = 1
+
+      def self.min_cube_size
+        3
+      end
+
+      def self.exists_on_even_cube_sizes?
+        false
+      end
 
       def self.for_face_symbol(face_symbol)
         for_face_symbols([face_symbol])
@@ -296,6 +320,10 @@ module CubeTrainer
     class MoveableCenter < Part
       FACES = 1
 
+      def self.min_cube_size
+        4
+      end
+
       def self.valid?(face_symbols)
         self::CORRESPONDING_PART_CLASS.valid?(face_symbols)
       end
@@ -372,6 +400,18 @@ module CubeTrainer
 
       ELEMENTS = generate_parts
 
+      def self.min_cube_size
+        3
+      end
+
+      def self.max_cube_size
+        3
+      end
+
+      def self.exists_on_even_cube_sizes?
+        false
+      end
+
       # Edges on uneven bigger cubes are midges, so edges only exist for 3x3.
       def num_incarnations(cube_size)
         cube_size == 3 ? 1 : 0
@@ -390,6 +430,14 @@ module CubeTrainer
 
       ELEMENTS = generate_parts
 
+      def self.min_cube_size
+        5
+      end
+
+      def self.exists_on_even_cube_sizes?
+        false
+      end
+
       # One index of such a piece on a on a NxN face.
       def base_index_on_other_face(_face, cube_size, _incarnation_index)
         [0, Coordinate.middle(cube_size)]
@@ -407,6 +455,14 @@ module CubeTrainer
       FACES = 2
 
       ELEMENTS = generate_parts
+
+      def self.min_cube_size
+        4
+      end
+
+      def self.exists_on_odd_cube_sizes?
+        false
+      end
 
       def self.for_face_symbols(face_symbols)
         # One additional face symbol is usually mentioned for wings.
@@ -579,6 +635,14 @@ module CubeTrainer
     class TCenter < MoveableCenter
       CORRESPONDING_PART_CLASS = Edge
       ELEMENTS = generate_parts
+
+      def self.min_cube_size
+        5
+      end
+
+      def self.exists_on_even_cube_sizes?
+        false
+      end
 
       def num_incarnations(cube_size)
         if cube_size.even?

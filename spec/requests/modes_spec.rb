@@ -12,7 +12,7 @@ RSpec.describe "Modes", type: :request do
     login(user.name, user.password)
   end
 
-  describe 'GET #name_exists_for_user?', focus: true do
+  describe 'GET #name_exists_for_user?' do
     it 'returns true if a user exists' do
       get "/mode_name_exists_for_user", params: { mode_name: mode.name }, headers: headers
       expect(response).to have_http_status(:success)

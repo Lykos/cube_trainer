@@ -17,7 +17,8 @@ class Mode < ApplicationRecord
   validates :mode_type, presence: true
   validates :show_input_mode, presence: true, inclusion: ModeType::SHOW_INPUT_MODES
   validates :buffer, presence: true, if: ->{ mode_type.has_buffer? }
-  validates :cube_size, presence: true, if: ->{ mode_type.default_cube_size }
+  validates :cube_size, presence: true, if: ->{ mode_type.has_cube_size? }
+  validate :cube_size_valid, if: ->{ mode_type.has_cube_size? }
   validate :show_input_mode_has_to_be_in_show_input_modes_of_mode_type
   validate :buffer_valid, if: ->{ mode_type.has_buffer? }
   validates :first_parity_part, :second_parity_part, presence: true, if: ->{ mode_type.has_parity_parts? }
@@ -135,6 +136,10 @@ class Mode < ApplicationRecord
     end
   end
 
+  def cube_size_valid
+    mode_type.validate_cube_size(cube_size, errors, :cube_size)
+  end
+
   def parity_parts_valid
     return unless first_parity_part && second_parity_part
 
@@ -154,7 +159,6 @@ class Mode < ApplicationRecord
     if first_part.turned_equals?(second_part)
       errors.add(:second_parity_part, 'has to be a different piece from first_parity_part')
     end
-    # TODO validate rotation
   end
 
   def parity_part_valid?(parity_part)

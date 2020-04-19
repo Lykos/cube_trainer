@@ -11,6 +11,7 @@ class ModeType
   include CubeTrainer::Training
 
   SHOW_INPUT_MODES = %i(picture name)
+  MAX_SUPPORTED_CUBE_SIZE = 7
 
   attr_accessor :key,
                 :name,
@@ -28,10 +29,32 @@ class ModeType
   validates :generator_class, presence: true
   validates :learner_type, presence: true
   validates :show_input_modes, presence: true
+  validates :default_cube_size, presence: true, if: :has_cube_size?
+  validate :default_cube_size_valid, if: :has_cube_size?
 
   alias has_goal_badness? has_goal_badness
   alias has_buffer? has_buffer
   alias has_parity_parts? has_parity_parts
+
+  def default_cube_size_valid
+    validate_cube_size(default_cube_size, errors, :default_cube_size)
+  end
+
+  # Takes an external errors list so it can be used for other models, too.
+  def validate_cube_size(cube_size, errors, attribute)
+    unless cube_size <= max_cube_size
+      errors.add(attribute, "has to be at most #{max_cube_size} for mode type #{name}")
+    end
+    unless cube_size >= min_cube_size
+      errors.add(attribute, "has to be at least #{min_cube_size} for mode type #{name}")
+    end
+    if cube_size.odd? && !odd_cube_size_allowed?
+      errors.add(attribute, "cannot be odd for mode type #{name}")
+    end
+    if cube_size.even? && !even_cube_size_allowed?
+      errors.add(attribute, "cannot be even for mode type #{name}")
+    end
+  end
 
   # Returns a simple version for the current user that can be returned to the frontend.
   def to_simple(user=nil)
@@ -39,8 +62,7 @@ class ModeType
       key: key,
       name: name,
       learner_type: learner_type,
-      default_cube_size: default_cube_size,
-      has_buffer: has_buffer?,
+      cube_size_spec: cube_size_spec,
       has_goal_badness: has_goal_badness?,
       show_input_modes: show_input_modes,
       buffers: buffers
@@ -56,12 +78,48 @@ class ModeType
     end
   end
 
+  def cube_size_spec
+    return unless has_cube_size?
+    {
+      default: default_cube_size,
+      min: min_cube_size,
+      max: max_cube_size,
+      odd_allowed: odd_cube_size_allowed?,
+      even_allowed: even_cube_size_allowed?
+    }
+  end
+
+  def has_cube_size?
+    !!part_type
+  end
+
+  def min_cube_size
+    return part_type.min_cube_size unless parity_part_type && parity_part_type.min_cube_size < part_type.min_cube_size
+
+    parity_part_type.min_cube_size
+  end
+
+  def max_cube_size
+    return MAX_SUPPORTED_CUBE_SIZE if part_type.max_cube_size > MAX_SUPPORTED_CUBE_SIZE
+    return part_type.max_cube_size unless parity_part_type && parity_part_type.max_cube_size < part_type.max_cube_size
+
+    parity_part_type.max_cube_size
+  end
+
+  def odd_cube_size_allowed?
+    part_type.exists_on_odd_cube_sizes? && (parity_part_type.nil? || parity_part_type.exists_on_odd_cube_sizes?)
+  end
+
+  def even_cube_size_allowed?
+    part_type.exists_on_even_cube_sizes? && (parity_part_type.nil? || parity_part_type.exists_on_even_cube_sizes?)
+  end
+
   def part_type
-    generator_class::PART_TYPE
+    generator_class.const_defined?(:PART_TYPE) ? generator_class::PART_TYPE : nil
   end
 
   def parity_part_type
-    generator_class::PARITY_PART_TYPE
+    generator_class.const_defined?(:PARITY_PART_TYPE) ? generator_class::PARITY_PART_TYPE : nil
   end
 
   def buffers
