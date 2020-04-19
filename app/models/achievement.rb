@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Model for possible achievements.
+# Note that it does NOT include which users have them.
 class Achievement
   include ActiveModel::Model
   attr_accessor :key, :name, :description

@@ -27,11 +27,11 @@ class AchievementGrantsController < ApplicationController
   private
 
   def set_user
-    head(:not_found) unless @user = User.find_by(id: params[:user_id])
+    head(:not_found) unless (@user = User.find_by(id: params[:user_id]))
   end
 
   def set_achievement_grant
-    head(:not_found) unless @achievement_grant = @user.achievement_grants.find_by(id: params[:id])
+    head(:not_found) unless (@achievement_grant = @user.achievement_grants.find_by(id: params[:id]))
   end
 
   def owner

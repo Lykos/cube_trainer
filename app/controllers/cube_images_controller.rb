@@ -41,10 +41,12 @@ class CubeImagesController < ApplicationController
   end
 
   def set_input_item
+    head(:not_found) unless (@input_item = fetch_input_item)
+  end
+
+  def fetch_input_item
     # TODO: Make this efficient
-    unless @input_item = @mode.generator.input_items.find { |i| i.representation == @input.input_representation }
-      head(:not_found)
-    end
+    @mode.generator.input_items.find { |i| i.representation == @input.input_representation }
   end
 
   def set_cube_state

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-# Controller that allows retrieval of achievements. Note that it does NOT include which users have them.
+# Controller that allows retrieval of achievements.
+# Note that it does NOT include which users have them.
 class AchievementsController < ApplicationController
   before_action :set_achievement, only: [:show]
 
@@ -25,6 +26,6 @@ class AchievementsController < ApplicationController
   private
 
   def set_achievement
-    head(:not_found) unless @achievement = Achievement.find_by_key(params[:id])
+    head(:not_found) unless (@achievement = Achievement.find_by_key(params[:id]))
   end
 end
