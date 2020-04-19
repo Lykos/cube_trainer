@@ -16,6 +16,7 @@
     "@rails/activestorage": "^6.0.0",
     "@rails/ujs": "^6.0.0",
     "@rails/webpacker": "5.0.1",
+    "@rxweb/reactive-form-validators": "^1.9.9-beta4",
     "angular-new-router": "angular/router",
     "core-js": "^3.6.4",
     "es6-shim": "^0.35.0",
