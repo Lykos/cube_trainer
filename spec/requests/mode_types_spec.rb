@@ -1,6 +1,7 @@
 require 'rails_helper'
 require 'fixtures'
 require 'requests/requests_helper'
+require 'matchers'
 
 RSpec.describe "ModeTypes", type: :request do
   include_context :user
@@ -15,13 +16,7 @@ RSpec.describe "ModeTypes", type: :request do
       get "/mode_types", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expected_mode_types = ModeType::ALL.map(&:to_simple).map do |m|
-        m[:key] = m[:key].to_s
-        m[:learner_type] = m[:learner_type].to_s
-        m[:show_input_modes] = m[:show_input_modes].map(&:to_s) if m[:show_input_modes]
-        m.transform_keys!(&:to_s)
-      end
-      expect(parsed_body).to eq(expected_mode_types)
+      expect(parsed_body).to eq_modulo_symbol_vs_string(ModeType::ALL.map(&:to_simple))
     end
   end
 
@@ -32,12 +27,7 @@ RSpec.describe "ModeTypes", type: :request do
       get "/mode_types/#{mode_type.key}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expected_mode_type = mode_type.to_simple
-      expected_mode_type[:key] = expected_mode_type[:key].to_s
-      expected_mode_type[:learner_type] = expected_mode_type[:learner_type].to_s
-      expected_mode_type[:show_input_modes] = expected_mode_type[:show_input_modes].map(&:to_s) if expected_mode_type[:show_input_modes]
-      expected_mode_type.transform_keys!(&:to_s)
-      expect(parsed_body).to eq(expected_mode_type)
+      expect(parsed_body).to eq_modulo_symbol_vs_string(mode_type.to_simple)
     end
 
     it 'returns not found for unknown mode types' do
