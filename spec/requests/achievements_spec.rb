@@ -26,7 +26,7 @@ RSpec.describe 'Achievements', type: :request do
       get '/achievements/fake', headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body).to eq_modulo_symbol_vs_string(Achievement.find_by_key(:fake).to_simple)
+      expect(parsed_body).to eq_modulo_symbol_vs_string(Achievement.find_by(key: :fake).to_simple)
     end
 
     it 'returns not found for unknown achievements' do

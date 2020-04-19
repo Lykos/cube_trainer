@@ -33,10 +33,10 @@ module CubeTrainer
 
     # Exits in the case of character q.
     # Downcases the character before returning it.
-    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     def time_before_any_key_press(hints = [])
       # TODO: Explain to the human what magic letters exist.
-      start = Time.now
+      start = Time.zone.now
       char = nil
       num_hints = 0
       loop do
@@ -48,17 +48,17 @@ module CubeTrainer
           else
             puts 'No hint available.'
           end
-        elsif Time.now - start >= MIN_SECONDS
+        elsif Time.zone.now - start >= MIN_SECONDS
           break
         end
       end
-      time_s = Time.now - start
+      time_s = Time.zone.now - start
       if char == 'q'
         puts 'Pressed q. Exiting.'
         exit
       end
       KeyPressWaitData.new(char, time_s, num_hints)
     end
-    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
   end
 end

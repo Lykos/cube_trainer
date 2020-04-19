@@ -127,7 +127,7 @@ module CubeTrainer
           .inputs
           .joins(:result)
           .where(input_representation: item.representation)
-          .where(days_old_exp > days(Time.now - last_hint_age))
+          .where(days_old_exp > days(Time.zone.now - last_hint_age))
           .count
       end
 
@@ -142,7 +142,7 @@ module CubeTrainer
       def last_hint_age_cache
         @last_hint_age_cache ||=
           begin
-            now = Time.now
+            now = Time.zone.now
             result =
               @mode
               .inputs
@@ -159,7 +159,7 @@ module CubeTrainer
       def last_occurrence_age_cache
         @last_occurrence_age_cache ||=
           begin
-            now = Time.now
+            now = Time.zone.now
             result =
               @mode
               .inputs

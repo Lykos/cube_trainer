@@ -22,7 +22,7 @@ class InputRepresentationType < ActiveRecord::Type::String
     CubeTrainer::Training::Scramble
   ].freeze
   INPUT_REPRESENTATION_NAME_TO_CLASS =
-    INPUT_REPRESENTATION_CLASSES.map { |e| [simple_class_name(e), e] }.to_h.freeze
+    INPUT_REPRESENTATION_CLASSES.index_by { |e| simple_class_name(e) }.freeze
   SEPARATOR = ':'
 
   def cast(value)

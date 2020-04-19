@@ -34,7 +34,7 @@ module CubeTrainer
       # If restrict_letters is not nil, only commutators for those letters are used.
       # TODO: Move this to somewhere else
       def restricted_input_items
-        if @mode.restrict_letters && !@mode.restrict_letters.empty?
+        if @mode.restrict_letters.present?
           generate_input_items.select do |p|
             p.representation.contains_any_letter?(@mode.restrict_letters)
           end

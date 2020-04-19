@@ -34,7 +34,7 @@ module CubeTrainer
       def download!
         puts 'Fetching downloads.'
         download_state = fetch_download_state
-        now = Time.now
+        now = Time.zone.now
         downloaded = fetch_downloaded(download_state, now)
         if downloaded.empty?
           puts 'Nothing downloaded.'
@@ -108,7 +108,7 @@ module CubeTrainer
         progress_bar = ProgressBar.create(title: 'Uploaded', total: to_upload.length)
         ActiveRecord::Base.connected_to(database: :global) do
           to_upload.each do |u|
-            u.uploaded_at = Time.now
+            u.uploaded_at = Time.zone.now
             create_or_update_by_key(u)
             progress_bar.increment
           end

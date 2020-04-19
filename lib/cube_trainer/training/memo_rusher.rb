@@ -44,7 +44,7 @@ module CubeTrainer
           exit(0)
         when 'd'
           puts 'Pressed d. Deleting results for the last 10 seconds and exiting.'
-          @results_model.delete_after_time(Time.now - 10)
+          @results_model.delete_after_time(Time.zone.now - 10)
           exit
         end
         char
@@ -61,10 +61,10 @@ module CubeTrainer
       end
 
       def wait_for_memo_start
-        start = Time.now
+        start = Time.zone.now
         puts "Max #{@memo_time_s} seconds to memo."
         if wait_for_any_char(action_name: 'start execution', timeout_s: @memo_time_s)
-          time_s = Time.now - start
+          time_s = Time.zone.now - start
           puts "Memo time: #{format_time(time_s)}"
         else
           puts_and_say('Go!', 'en')
@@ -81,10 +81,10 @@ module CubeTrainer
 
         puts scramble
         wait_for_any_char(action_name: 'start')
-        start = Time.now
+        start = Time.zone.now
         wait_for_memo_start
         wait_for_any_char(action_name: 'stop')
-        time_s = Time.now - start
+        time_s = Time.zone.now - start
         puts "Time: #{format_time(time_s)}"
         PartialResult.new(time_s: time_s, success: ask_success)
       end

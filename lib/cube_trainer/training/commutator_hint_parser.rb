@@ -151,7 +151,7 @@ module CubeTrainer
       end
 
       def parse_hint_table_cell(cell)
-        return EmptyEntry if cell.nil? || cell.empty? || blacklisted?(cell)
+        return EmptyEntry if cell.blank? || blacklisted?(cell)
 
         alg = parse_commutator(cell, false)
         # Ignore very short algorithms. They are never valid and they can be things like piece

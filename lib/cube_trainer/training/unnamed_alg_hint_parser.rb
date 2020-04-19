@@ -40,7 +40,7 @@ module CubeTrainer
         comms = []
         raw_hints.each do |row|
           row.each do |cell|
-            next if cell.nil? || cell.empty?
+            next if cell.blank?
 
             comm = parse_commutator(cell, false)
             # Ignore very short algorithms. They are never valid and they can be things like piece

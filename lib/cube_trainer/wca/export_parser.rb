@@ -95,7 +95,7 @@ module CubeTrainer
       end
 
       def key_by(hash, key)
-        hash.map { |e| [e[key], e] }.to_h.freeze
+        hash.index_by { |e| e[key] }.freeze
       end
     end
   end

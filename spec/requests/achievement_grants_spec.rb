@@ -16,7 +16,7 @@ RSpec.describe 'AchievementGrants', type: :request do
   end
 
   let(:expected_achievement) do
-    achievement = Achievement.find_by_key(:fake).to_simple
+    achievement = Achievement.find_by(key: :fake).to_simple
     achievement[:key] = achievement[:key].to_s
     achievement.transform_keys!(&:to_s)
     achievement

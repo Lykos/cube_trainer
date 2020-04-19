@@ -112,9 +112,9 @@ module CubeTrainer
             single_rotation_algs = Rotation::NON_ZERO_ROTATIONS.map { |e| Algorithm.move(e) }
             combined_rotation_algs = self.combined_rotation_algs
             rotation_algs = trivial_rotation_algs + single_rotation_algs + combined_rotation_algs
-            rotation_algs.map do |alg|
-              [rotated_center_state(alg.moves), alg]
-            end.to_h.freeze
+            rotation_algs.index_by do |alg|
+              rotated_center_state(alg.moves)
+            end.freeze
           end
       end
 

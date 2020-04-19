@@ -24,7 +24,7 @@ module CubeTrainer
       def handle_user_input_data(input, data)
         if data.char == 'd'
           puts 'Pressed d. Deleting results for the last 10 seconds and exiting.'
-          @results_model.delete_after_time(Time.now - 10)
+          @results_model.delete_after_time(Time.zone.now - 10)
           exit
         else
           puts input.representation if @picture

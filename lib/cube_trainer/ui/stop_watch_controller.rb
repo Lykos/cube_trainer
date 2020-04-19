@@ -31,7 +31,7 @@ module CubeTrainer
       end
 
       def current_time
-        Time.now
+        Time.zone.now
       end
 
       def time_s

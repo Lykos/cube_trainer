@@ -20,11 +20,11 @@ module CubeTrainer
           end_before_start = date_order_proxy(end_month, end_day) >
                              date_order_proxy(Integer(r[:month], 10), Integer(r[:day], 10))
           end_year = end_before_start ? Integer(r[:year], 10) + 1 : Integer(r[:year], 10)
-          Time.new(end_year, Integer(r[:endmonth], 10), Integer(r[:endday], 10))
+          Time.zone.local(end_year, Integer(r[:endmonth], 10), Integer(r[:endday], 10))
         end
       RESULT_KEYS = %i[value1 value2 value3 value4 value5].freeze
       ALGORITHM = new { |e, r| parse_algorithm_for_eventid(e, r[:eventid]) }
-      START_DATE = new { |_e, r| Time.new(r[:year], r[:month], r[:day]) }
+      START_DATE = new { |_e, r| Time.zone.local(r[:year], r[:month], r[:day]) }
       BOOLEAN =
         new do |e, _r|
           case e

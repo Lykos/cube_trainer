@@ -9,7 +9,7 @@ require 'yaml'
 
 options = CubeTrainer::Training::CommutatorOptions.parse(ARGV)
 ActiveRecord::Base.connected_to(database: :primary) do
-  computer = CubeTrainer::Training::StatsComputer.new(Time.now, options)
+  computer = CubeTrainer::Training::StatsComputer.new(Time.zone.now, options)
 
   # Detailed stats
   computer.averages.each { |c, t| puts "#{c}  #{t.round(2)} s" }

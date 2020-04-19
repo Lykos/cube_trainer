@@ -26,6 +26,6 @@ class AchievementsController < ApplicationController
   private
 
   def set_achievement
-    head(:not_found) unless (@achievement = Achievement.find_by_key(params[:id]))
+    head(:not_found) unless (@achievement = Achievement.find_by(key: params[:id]))
   end
 end

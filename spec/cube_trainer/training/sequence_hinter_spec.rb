@@ -31,15 +31,15 @@ describe Training::HeterogenousSequenceHinter do
     Result.destroy_all
     5.times do |i|
       Result.create!(
-        input: mode.inputs.create!(created_at: Time.at(i), input_representation: algname_a),
+        input: mode.inputs.create!(created_at: Time.zone.at(i), input_representation: algname_a),
         time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
       )
       Result.create!(
-        input: mode.inputs.create!(created_at: Time.at(i), input_representation: algname_b),
+        input: mode.inputs.create!(created_at: Time.zone.at(i), input_representation: algname_b),
         time_s: 2.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
       )
       Result.create!(
-        input: mode.inputs.create!(created_at: Time.at(i), input_representation: algname_d),
+        input: mode.inputs.create!(created_at: Time.zone.at(i), input_representation: algname_d),
         time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
       )
     end

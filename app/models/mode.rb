@@ -28,10 +28,14 @@ class Mode < ApplicationRecord
             presence: true,
             if: -> { mode_type.has_parity_parts? }
   validate :parity_parts_valid, if: -> { mode_type.has_parity_parts? }
+
+  # rubocop:disable Rails/HasAndBelongsToMany
   has_and_belongs_to_many :used_modes,
                           class_name: :Mode,
                           join_table: :mode_usages,
                           association_foreign_key: :used_mode_id
+  # rubocop:enable Rails/HasAndBelongsToMany
+
   after_create :grant_mode_achievement
 
   # TODO: Make it configurable
@@ -57,13 +61,9 @@ class Mode < ApplicationRecord
     @input_sampler ||= generator.input_sampler
   end
 
-  def input_items
-    generator.input_items
-  end
+  delegate :input_items, to: :generator
 
-  def random_item
-    input_sampler.random_item
-  end
+  delegate :random_item, to: :input_sampler
 
   def verbose
     false
@@ -87,17 +87,11 @@ class Mode < ApplicationRecord
     show_input_mode == :picture
   end
 
-  def part_type
-    mode_type.part_type
-  end
+  delegate :part_type, to: :mode_type
 
-  def parity_part_type
-    mode_type.parity_part_type
-  end
+  delegate :parity_part_type, to: :mode_type
 
-  def hinter
-    generator.hinter
-  end
+  delegate :hinter, to: :generator
 
   def hints(input)
     hinter.hints(input.input_representation)

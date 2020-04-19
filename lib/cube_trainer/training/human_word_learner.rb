@@ -38,7 +38,7 @@ module CubeTrainer
         time_s = nil
         word = nil
         failed_attempts = 0
-        start = Time.now
+        start = Time.zone.now
         until !word.nil? && @hinter.good_word?(input, word)
           if !word.nil? && !COMMANDS.include?(word)
             failed_attempts += 1
@@ -49,7 +49,7 @@ module CubeTrainer
             end
           end
           word = gets.chomp.downcase
-          time_s = Time.now - start
+          time_s = Time.zone.now - start
           case word
           when 'hint'
             # Brutal punishment for failed attempts
@@ -59,7 +59,7 @@ module CubeTrainer
             display_hints(hints)
           when 'delete'
             puts 'Deleting results for the last 30 seconds and exiting.'
-            @results_model.delete_after_time(Time.now - 30)
+            @results_model.delete_after_time(Time.zone.now - 30)
             exit
           when 'quit'
             exit

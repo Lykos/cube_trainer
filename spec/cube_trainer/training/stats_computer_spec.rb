@@ -23,7 +23,7 @@ end
 xdescribe Training::StatsComputer do
   include_context :user
 
-  let(:now) { Time.at(0) }
+  let(:now) { Time.zone.at(0) }
   let(:t_10_minutes_ago) { now - 600 }
   let(:t_2_hours_ago) { now - 2 * 3600 }
   let(:t_2_days_ago) { now - 2 * 24 * 3600 }

@@ -19,7 +19,7 @@ ActiveRecord::Base.connected_to(database: :primary) do
   generator = options.commutator_info.generator_class.new(options)
   hinter = generator.hinter
   learner = options.commutator_info.learner_class.new(hinter, results_model, options)
-  stats_computer = CubeTrainer::Training::StatsComputer.new(Time.now, options)
+  stats_computer = CubeTrainer::Training::StatsComputer.new(Time.zone.now, options)
 
   if generator.input_items
     stats = stats_computer.input_stats(generator.input_items)

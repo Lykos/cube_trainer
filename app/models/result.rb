@@ -29,9 +29,7 @@ class Result < ApplicationRecord
     )
   end
 
-  def input_representation
-    input.input_representation
-  end
+  delegate :input_representation, to: :input
 
   def time
     time_s&.seconds
