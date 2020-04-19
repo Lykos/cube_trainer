@@ -27,6 +27,6 @@ class ApplicationController < ActionController::Base
   # Checks that the user is the current user.
   # In order to not allow reverse engineering, we have to return not_found in all such cases.
   def check_current_user_owns
-    head(:not_found) unless get_owner == current_user || admin_logged_in?
+    head(:not_found) unless owner == current_user || admin_logged_in?
   end
 end

@@ -11,7 +11,8 @@ class UsersController < ApplicationController
   # GET /username_or_email_exists
   def name_or_email_exists?
     username_or_email = params[:username_or_email]
-    render(json: User.exists?(name: username_or_email) || User.exists?(email: username_or_email), status: :ok)
+    exists = User.exists?(name: username_or_email) || User.exists?(email: username_or_email)
+    render(json: exists, status: :ok)
   end
 
   # GET /users
@@ -79,7 +80,10 @@ class UsersController < ApplicationController
   private
 
   def check_authorized_as_admin_if_setting_admin
-    unless params[:user] && params[:user][:admin] && params[:user][:admin] != 'false' && !admin_logged_in?
+    unless params[:user] &&
+           params[:user][:admin] &&
+           params[:user][:admin] != 'false' &&
+           !admin_logged_in?
       return
     end
 
@@ -87,10 +91,10 @@ class UsersController < ApplicationController
   end
 
   def set_user
-    head(:not_found) unless @user = User.find_by(id: params[:id])
+    head(:not_found) unless (@user = User.find_by(id: params[:id]))
   end
 
-  def get_owner
+  def owner
     @user
   end
 

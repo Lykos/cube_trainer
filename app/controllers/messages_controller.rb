@@ -57,11 +57,11 @@ class MessagesController < ApplicationController
   private
 
   def set_user
-    head(:not_found) unless @user = User.find_by(id: params[:user_id])
+    head(:not_found) unless (@user = User.find_by(id: params[:user_id]))
   end
 
   def set_message
-    head(:not_found) unless @message = @user.messages.find_by(id: params[:id])
+    head(:not_found) unless (@message = @user.messages.find_by(id: params[:id]))
   end
 
   # Only allow a list of trusted parameters through.

@@ -52,11 +52,11 @@ class TrainerController < ApplicationController
   private
 
   def set_input
-    head(:not_found) unless @input = @mode.inputs.find_by(id: params[:id])
+    head(:not_found) unless (@input = @mode.inputs.find_by(id: params[:id]))
   end
 
   def set_mode
-    head(:not_found) unless @mode = current_user.modes.find_by(id: params[:mode_id])
+    head(:not_found) unless (@mode = current_user.modes.find_by(id: params[:mode_id]))
   end
 
   def partial_result_params

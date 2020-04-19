@@ -5,7 +5,9 @@ module CubeTrainer
     # Helper methods to construct SQL queries using Arel.
     module SqlHelper
       def check_exp(exp, optional: false)
-        raise TypeError unless (optional && exp.nil?) || exp.is_a?(Arel::Node) || exp.is_a?(Arel::Attribute)
+        return if (optional && exp.nil?) || exp.is_a?(Arel::Node) || exp.is_a?(Arel::Attribute)
+
+        raise TypeError
       end
 
       def array_agg(exp, order: nil)
@@ -47,8 +49,8 @@ module CubeTrainer
       ].freeze
 
       def extract(field, timestamp_or_interval)
-        raise ArgumentError unless FIELDS.include?(field)
         check_exp(timestamp_or_interval)
+        raise ArgumentError unless FIELDS.include?(field)
 
         Arel::Nodes::Extract.new(timestamp_or_interval, Arel::Nodes::SqlLiteral.new(field.to_s))
       end

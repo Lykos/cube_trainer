@@ -72,15 +72,17 @@ class ModesController < ApplicationController
   private
 
   def set_mode
-    head(:not_found) unless @mode = Mode.find_by(id: params[:id])
+    head(:not_found) unless (@mode = Mode.find_by(id: params[:id]))
   end
 
-  def get_owner
+  def owner
     @mode.user
   end
 
   # Only allow a list of trusted parameters through.
   def mode_params
-    params.require(:mode).permit(:name, :known, :mode_type, :show_input_mode, :buffer, :goal_badness, :cube_size)
+    params
+      .require(:mode)
+      .permit(:name, :known, :mode_type, :show_input_mode, :buffer, :goal_badness, :cube_size)
   end
 end
