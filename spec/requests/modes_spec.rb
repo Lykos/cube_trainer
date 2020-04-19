@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'fixtures'
 require 'requests/requests_helper'
 
-RSpec.describe "Modes", type: :request do
+RSpec.describe 'Modes', type: :request do
   include_context :user
   include_context :eve
   include_context :mode
@@ -14,13 +16,13 @@ RSpec.describe "Modes", type: :request do
 
   describe 'GET #name_exists_for_user?' do
     it 'returns true if a user exists' do
-      get "/mode_name_exists_for_user", params: { mode_name: mode.name }, headers: headers
+      get '/mode_name_exists_for_user', params: { mode_name: mode.name }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
     end
 
     it "returns false if a name doesn't exist" do
-      get "/mode_name_exists_for_user", params: { mode_name: 'new_mode_name' }, headers: headers
+      get '/mode_name_exists_for_user', params: { mode_name: 'new_mode_name' }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(false)
     end
@@ -29,7 +31,7 @@ RSpec.describe "Modes", type: :request do
   describe 'GET #index' do
     it 'returns http success' do
       mode
-      get "/modes", headers: headers
+      get '/modes', headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be >= 1
@@ -40,7 +42,7 @@ RSpec.describe "Modes", type: :request do
     it 'returns nothing for another user' do
       mode
       login(eve.name, eve.password)
-      get "/modes", headers: headers
+      get '/modes', headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body).to be_empty
@@ -56,7 +58,7 @@ RSpec.describe "Modes", type: :request do
     end
 
     it 'returns not found for unknown modes' do
-      get "/modes/143432332"
+      get '/modes/143432332'
       expect(response).to have_http_status(:not_found)
     end
 
@@ -83,15 +85,15 @@ RSpec.describe "Modes", type: :request do
 
   describe 'POST #create' do
     it 'returns http success' do
-      post "/modes", params: {
-             mode: {
-               name: 'test_mode2',
-               show_input_mode: :name,
-               mode_type: :floating_2flips,
-               goal_badness: 1,
-               cube_size: 3
-             }
-           }
+      post '/modes', params: {
+        mode: {
+          name: 'test_mode2',
+          show_input_mode: :name,
+          mode_type: :floating_2flips,
+          goal_badness: 1,
+          cube_size: 3
+        }
+      }
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).not_to eq(mode.id)
@@ -99,15 +101,15 @@ RSpec.describe "Modes", type: :request do
     end
 
     it 'returns bad request for invalid modes' do
-      post "/modes", params: {
-             mode: {
-               name: 'test_mode2',
-               show_input_mode: :lol,
-               mode_type: :floating_2flips,
-               goal_badness: 1,
-               cube_size: 3
-             }
-           }
+      post '/modes', params: {
+        mode: {
+          name: 'test_mode2',
+          show_input_mode: :lol,
+          mode_type: :floating_2flips,
+          goal_badness: 1,
+          cube_size: 3
+        }
+      }
       expect(response).to have_http_status(:bad_request)
     end
   end
@@ -128,7 +130,7 @@ RSpec.describe "Modes", type: :request do
     end
 
     it 'returns not found for unknown modes' do
-      put "/modes/143432332", params: { mode: { goal_badness: 2 } }
+      put '/modes/143432332', params: { mode: { goal_badness: 2 } }
       expect(response).to have_http_status(:not_found)
     end
 
@@ -148,7 +150,7 @@ RSpec.describe "Modes", type: :request do
     end
 
     it 'returns not found for unknown modes' do
-      delete "/modes/143432332"
+      delete '/modes/143432332'
       expect(response).to have_http_status(:not_found)
     end
 

@@ -14,12 +14,12 @@ shared_examples 'commutator_set' do |mode_type|
       name: mode_type,
       show_input_mode: :name,
       mode_type: mode_type,
-      cube_size: mode_type.default_cube_size,
+      cube_size: mode_type.default_cube_size
     )
     mode.buffer = mode.letter_scheme.default_buffer(mode.part_type) if mode_type.has_buffer?
     if mode_type.has_parity_parts?
-      mode.first_parity_part = CubeTrainer::Core::Edge.for_face_symbols([:U, :B])
-      mode.second_parity_part = CubeTrainer::Core::Edge.for_face_symbols([:U, :R])
+      mode.first_parity_part = CubeTrainer::Core::Edge.for_face_symbols(%i[U B])
+      mode.second_parity_part = CubeTrainer::Core::Edge.for_face_symbols(%i[U R])
     end
     mode.validate!
     mode

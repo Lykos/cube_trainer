@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/letter_scheme'
@@ -16,13 +18,13 @@ class Mode < ApplicationRecord
   validates :name, presence: true, uniqueness: { scope: :user }
   validates :mode_type, presence: true
   validates :show_input_mode, presence: true, inclusion: ModeType::SHOW_INPUT_MODES
-  validates :buffer, presence: true, if: ->{ mode_type.has_buffer? }
-  validates :cube_size, presence: true, if: ->{ mode_type.has_cube_size? }
-  validate :cube_size_valid, if: ->{ mode_type.has_cube_size? }
+  validates :buffer, presence: true, if: -> { mode_type.has_buffer? }
+  validates :cube_size, presence: true, if: -> { mode_type.has_cube_size? }
+  validate :cube_size_valid, if: -> { mode_type.has_cube_size? }
   validate :show_input_mode_has_to_be_in_show_input_modes_of_mode_type
-  validate :buffer_valid, if: ->{ mode_type.has_buffer? }
-  validates :first_parity_part, :second_parity_part, presence: true, if: ->{ mode_type.has_parity_parts? }
-  validate :parity_parts_valid, if: ->{ mode_type.has_parity_parts? }
+  validate :buffer_valid, if: -> { mode_type.has_buffer? }
+  validates :first_parity_part, :second_parity_part, presence: true, if: -> { mode_type.has_parity_parts? }
+  validate :parity_parts_valid, if: -> { mode_type.has_parity_parts? }
   has_and_belongs_to_many :used_modes, class_name: :Mode, join_table: :mode_usages, association_foreign_key: :used_mode_id
   after_create :grant_mode_achievement
 
@@ -55,7 +57,7 @@ class Mode < ApplicationRecord
 
   def random_item
     input_sampler.random_item
-  end    
+  end
 
   def verbose
     false
@@ -124,16 +126,12 @@ class Mode < ApplicationRecord
   end
 
   def buffer_valid
-    unless buffer_valid?
-      errors.add(:buffer, "has to be a valid #{part_type}")
-    end
+    errors.add(:buffer, "has to be a valid #{part_type}") unless buffer_valid?
   end
 
   def buffer_valid?
-    begin
-      part_type.parse(buffer)
-    rescue ArgumentError
-    end
+    part_type.parse(buffer)
+  rescue ArgumentError
   end
 
   def cube_size_valid
@@ -144,7 +142,7 @@ class Mode < ApplicationRecord
     return unless first_parity_part && second_parity_part
 
     unless first_parity_part < second_parity_part
-      errors.add(:second_parity_part, "has to be alphabetically after first_parity_part")
+      errors.add(:second_parity_part, 'has to be alphabetically after first_parity_part')
     end
     unless parity_part_valid?(first_parity_part)
       errors.add(:first_parity_part, "has to be a valid #{parity_part_type}")
@@ -162,9 +160,7 @@ class Mode < ApplicationRecord
   end
 
   def parity_part_valid?(parity_part)
-    begin
-      parity_part_type.parse(parity_part)
-    rescue ArgumentError
-    end
+    parity_part_type.parse(parity_part)
+  rescue ArgumentError
   end
 end

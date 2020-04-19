@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The part of the result that is directly dependent on the performance of the user.
 # Forms a result together with the input, i.e. the information which case the user solved.
 class PartialResult

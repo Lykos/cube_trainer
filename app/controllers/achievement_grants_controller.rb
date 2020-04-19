@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Controller that allows retrieval of achievement grants (i.e. which user has which achievements).
 class AchievementGrantsController < ApplicationController
   before_action :set_user
   before_action :check_current_user_owns
@@ -24,11 +27,11 @@ class AchievementGrantsController < ApplicationController
   private
 
   def set_user
-    head :not_found unless @user = User.find_by(id: params[:user_id])
+    head(:not_found) unless @user = User.find_by(id: params[:user_id])
   end
 
   def set_achievement_grant
-    head :not_found unless @achievement_grant = @user.achievement_grants.find_by(id: params[:id])
+    head(:not_found) unless @achievement_grant = @user.achievement_grants.find_by(id: params[:id])
   end
 
   def get_owner

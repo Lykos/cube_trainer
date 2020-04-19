@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AchievementGrant < ApplicationRecord
   attribute :achievement, :achievement
   belongs_to :user

@@ -24,7 +24,7 @@ class Input < ApplicationRecord
       failed_attempts: result.failed_attempts,
       success: result.success,
       num_hints: result.num_hints,
-      created_at: created_at,
+      created_at: created_at
     }
   end
 end

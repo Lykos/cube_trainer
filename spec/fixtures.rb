@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_context :user do
   let(:user) do
     user = User.find_or_initialize_by(
@@ -10,7 +12,7 @@ shared_context :user do
     )
     user.save!
     user
-  end  
+  end
 end
 
 shared_context :eve do
@@ -25,7 +27,7 @@ shared_context :eve do
     )
     user.save!
     user
-  end  
+  end
 end
 
 shared_context :admin do
@@ -41,7 +43,7 @@ shared_context :admin do
     )
     user.save!
     user
-  end  
+  end
 end
 
 shared_context :achievement_grant do
@@ -86,7 +88,7 @@ shared_context :input do
   include_context :mode
 
   let(:input) do
-    mode.inputs.find_or_create_by!(input_representation: CubeTrainer::LetterPair.new(%w(a b)))
+    mode.inputs.find_or_create_by!(input_representation: CubeTrainer::LetterPair.new(%w[a b]))
   end
 end
 

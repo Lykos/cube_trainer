@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'fixtures'
 require 'requests/requests_helper'
 require 'matchers'
 
-RSpec.describe "ModeTypes", type: :request do
+RSpec.describe 'ModeTypes', type: :request do
   include_context :user
   include_context :headers
 
@@ -13,7 +15,7 @@ RSpec.describe "ModeTypes", type: :request do
 
   describe 'GET #index' do
     it 'returns http success' do
-      get "/mode_types", headers: headers
+      get '/mode_types', headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body).to eq_modulo_symbol_vs_string(ModeType::ALL.map(&:to_simple))
@@ -31,7 +33,7 @@ RSpec.describe "ModeTypes", type: :request do
     end
 
     it 'returns not found for unknown mode types' do
-      get "/modes/non_existing"
+      get '/modes/non_existing'
       expect(response).to have_http_status(:not_found)
     end
   end

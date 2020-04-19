@@ -63,7 +63,7 @@ module CubeTrainer
 
       # On how many different days the item appeared since the user last used a hint for it.
       def occurrence_days_since_last_hint(item)
-        # TODO Don't recalculate this per item.
+        # TODO: Don't recalculate this per item.
         (@occurrence_days_since_last_hint ||= {})[item.representation] ||= calculate_occurrence_days_since_last_hint(item)
       end
 
@@ -82,11 +82,11 @@ module CubeTrainer
           begin
             # TODO: Find a way to construct this with Arel.
             badness_array_expression = Arel.sql(@mode.inputs.sanitize_sql_for_conditions(['array_agg(results.time_s + ? * results.failed_attempts + ? * results.num_hints order by results.created_at desc)', @failed_seconds, @hint_seconds]))
-            result = @mode.inputs.joins(:result).
-                       group(:input_representation).
-                       pluck(:input_representation, badness_array_expression).to_h
+            result = @mode.inputs.joins(:result)
+                          .group(:input_representation)
+                          .pluck(:input_representation, badness_array_expression).to_h
             result.transform_values! do |badnesses|
-              badnesses[0...@badness_memory].inject(new_cube_average) { |avg, badness| avg.push(badness); avg }.average
+              badnesses[0...@badness_memory].each_with_object(new_cube_average) { |badness, avg| avg.push(badness); }.average
             end
             result.default = Float::NAN
             result
@@ -94,16 +94,14 @@ module CubeTrainer
       end
 
       private
-      
+
       # On how many different days the item appeared since the user last used a hint for it.
       # Can be infinite if the user never used a hint.
       def calculate_occurrence_days_since_last_hint(item)
         last_hint_age = last_hint_age(item)
-        if last_hint_age.infinite?
-          return Float::INFINITY
-        end
+        return Float::INFINITY if last_hint_age.infinite?
 
-        # TODO Avoid having one query per item.
+        # TODO: Avoid having one query per item.
         @mode.inputs.joins(:result).where(input_representation: item.representation).where("date_trunc('day', inputs.created_at) > ?", Time.now - last_hint_age).count
       end
 

@@ -25,7 +25,7 @@ class Result < ApplicationRecord
       failed_attempts: partial_result.failed_attempts || 0,
       word: partial_result.word,
       success: partial_result.success.nil? ? true : partial_result.success,
-      num_hints: partial_result.num_hints || 0,
+      num_hints: partial_result.num_hints || 0
     )
   end
 

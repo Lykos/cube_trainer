@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'requests/requests_helper'
 
-RSpec.describe "Messages", type: :request do
+RSpec.describe 'Messages', type: :request do
   include_context :user
   include_context :eve
   include_context :user_message

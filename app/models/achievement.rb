@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Achievement
   include ActiveModel::Model
   attr_accessor :key, :name, :description

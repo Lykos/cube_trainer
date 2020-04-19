@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'fixtures'
 require 'requests/requests_helper'
 
-RSpec.describe "AchievementGrants", type: :request do
+RSpec.describe 'AchievementGrants', type: :request do
   include_context :user
   include_context :admin
   include_context :eve
@@ -27,9 +29,10 @@ RSpec.describe "AchievementGrants", type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be >= 1
-      contains_achievement_grant = parsed_body.any? do |p|
-        p['achievement'] == expected_achievement && p['id'] == achievement_grant.id
-      end
+      contains_achievement_grant =
+        parsed_body.any? do |p|
+          p['achievement'] == expected_achievement && p['id'] == achievement_grant.id
+        end
       expect(contains_achievement_grant).to be(true)
     end
 
@@ -40,9 +43,10 @@ RSpec.describe "AchievementGrants", type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be >= 1
-      contains_achievement_grant = parsed_body.any? do |p|
-        p['achievement'] == expected_achievement && p['id'] == achievement_grant.id
-      end
+      contains_achievement_grant =
+        parsed_body.any? do |p|
+          p['achievement'] == expected_achievement && p['id'] == achievement_grant.id
+        end
       expect(contains_achievement_grant).to be(true)
     end
 

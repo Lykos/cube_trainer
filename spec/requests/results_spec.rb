@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'fixtures'
 
-RSpec.describe "Results", type: :request do
+RSpec.describe 'Results', type: :request do
   include_context :user
   include_context :eve
   include_context :input

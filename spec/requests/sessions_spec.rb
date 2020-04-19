@@ -1,20 +1,22 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'requests/requests_helper'
 
-RSpec.describe "Sessions", type: :request do
+RSpec.describe 'Sessions', type: :request do
   include_context :user
   include_context :headers
 
   describe 'GET #login' do
     it 'returns http success' do
-      get "/login"
+      get '/login'
       expect(response).to have_http_status(:success)
     end
   end
 
   describe 'GET #welcome' do
     it 'returns unauthorized if not logged in' do
-      get "/welcome"
+      get '/welcome'
       expect(response).to have_http_status(:unauthorized)
     end
   end
@@ -39,12 +41,12 @@ RSpec.describe "Sessions", type: :request do
   describe 'POST #logout' do
     it 'returns http success' do
       login(user.name, user.password)
-      post "/logout", headers: headers
+      post '/logout', headers: headers
       expect(response).to have_http_status(:success)
     end
 
     it 'returns unauthorized if not logged in' do
-      post "/logout", headers: headers
+      post '/logout', headers: headers
       expect(response).to have_http_status(:unauthorized)
     end
   end

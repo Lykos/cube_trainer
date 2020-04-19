@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'fixtures'
 
-RSpec.describe "Trainer", type: :request do
+RSpec.describe 'Trainer', type: :request do
   include_context :user
   include_context :eve
   include_context :mode
@@ -23,12 +25,12 @@ RSpec.describe "Trainer", type: :request do
       post "/trainer/#{mode.id}/inputs", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body.keys).to eq(['id', 'representation', 'hints'])
+      expect(parsed_body.keys).to eq(%w[id representation hints])
       expect(Input.find(parsed_body['id'])).not_to be(nil)
     end
 
     it 'returns not found for unknown modes' do
-      post "/trainer/143432332/inputs"
+      post '/trainer/143432332/inputs'
       expect(response).to have_http_status(:not_found)
     end
 
@@ -49,12 +51,12 @@ RSpec.describe "Trainer", type: :request do
     end
 
     it 'returns not found for unknown modes' do
-      delete "/trainer/143432332/inputs/1"
+      delete '/trainer/143432332/inputs/1'
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for unknown inputs' do
-      delete "/trainer/1/inputs/1243943"
+      delete '/trainer/1/inputs/1243943'
       expect(response).to have_http_status(:not_found)
     end
 
@@ -78,12 +80,12 @@ RSpec.describe "Trainer", type: :request do
     end
 
     it 'returns not found for unknown modes' do
-      post "/trainer/143432332/inputs/1"
+      post '/trainer/143432332/inputs/1'
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for unknown inputs' do
-      post "/trainer/1/inputs/1243943"
+      post '/trainer/1/inputs/1243943'
       expect(response).to have_http_status(:not_found)
     end
 

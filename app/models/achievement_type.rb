@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AchievementType < ActiveRecord::Type::String
   def cast(value)
     return if value.nil?
@@ -9,6 +11,7 @@ class AchievementType < ActiveRecord::Type::String
 
   def serialize(value)
     return if value.nil?
+
     value = cast(value) unless value.is_a?(Achievement)
 
     value.key

@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 require 'net/http'
 require 'cube_trainer/core/algorithm'
 require 'cube_trainer/anki/cube_visualizer'
 
+# Controller that generates and serves cube images.
 class CubeImagesController < ApplicationController
   before_action :set_mode
   before_action :set_input
@@ -20,7 +23,7 @@ class CubeImagesController < ApplicationController
 
   FORMAT = :jpg
   ROTATE_LEFT = CubeTrainer::Core::Algorithm.move(CubeTrainer::Core::Rotation::LEFT)
-  
+
   def set_mode
     @mode = current_user.modes.find(params[:mode_id])
   end
@@ -33,19 +36,20 @@ class CubeImagesController < ApplicationController
     case params[:img_side]
     when 'left' then @transformation = ROTATE_LEFT
     when 'right' then @transformation = CubeTrainer::Core::Algorithm::EMPTY
-    else head :bad_request
+    else head(:bad_request)
     end
   end
 
   def set_input_item
-    # TODO Make this efficient
-    head :not_found unless @input_item = @mode.generator.input_items.find { |i| i.representation == @input.input_representation }
+    # TODO: Make this efficient
+    unless @input_item = @mode.generator.input_items.find { |i| i.representation == @input.input_representation }
+      head(:not_found)
+    end
   end
 
   def set_cube_state
-    head :unprocessable_entity unless @cube_state = @input_item.cube_state
+    head(:unprocessable_entity) unless @cube_state = @input_item.cube_state
   end
-
 
   class CacheWrapper
     def [](key)

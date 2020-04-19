@@ -7,7 +7,7 @@ require 'ostruct'
 
 def construct_mode(mode_type)
   mode = user.modes.find_or_initialize_by(
-    name: mode_type.to_s,
+    name: mode_type.to_s
   )
   mode.update(
     show_input_mode: :name,
@@ -28,14 +28,15 @@ xdescribe Training::StatsComputer do
   let(:t_2_hours_ago) { now - 2 * 3600 }
   let(:t_2_days_ago) { now - 2 * 24 * 3600 }
   let(:mode) { construct_mode(:corner_commutators) }
-  let(:letter_pair_a) { LetterPair.new(%w(a a)) }
-  let(:letter_pair_b) { LetterPair.new(%w(a b)) }
-  let(:letter_pair_c) { LetterPair.new(%w(a c)) }
+  let(:letter_pair_a) { LetterPair.new(%w[a a]) }
+  let(:letter_pair_b) { LetterPair.new(%w[a b]) }
+  let(:letter_pair_c) { LetterPair.new(%w[a c]) }
   let(:fill_letter_pairs) { ('a'..'z').map { |l| LetterPair.new(['b', l]) } }
   let(:results) do
     Result.delete_all
     other_modes = Mode::MODE_TYPE_NAMES.reject { |k| k == :corner_commutators }.map { |k| construct_mode(k) }
-    other_mode_results = other_modes.map.with_index do |mode, i|
+    other_mode_results =
+      other_modes.map.with_index do |mode, i|
         Result.create!(
           input: mode.inputs.create!(created_at: t_2_days_ago + 100 + i, input_representation: letter_pair_b),
           time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0

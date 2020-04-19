@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/training/commutator_hint_parser'
 require 'cube_trainer/training/commutator_sets'
 require 'cube_trainer/training/cube_scrambles'
@@ -10,7 +12,7 @@ class ModeType
   include ActiveModel::Model
   include CubeTrainer::Training
 
-  SHOW_INPUT_MODES = %i(picture name)
+  SHOW_INPUT_MODES = %i[picture name].freeze
   MAX_SUPPORTED_CUBE_SIZE = 7
 
   attr_accessor :key,
@@ -57,7 +59,7 @@ class ModeType
   end
 
   # Returns a simple version for the current user that can be returned to the frontend.
-  def to_simple(user=nil)
+  def to_simple(user = nil)
     {
       key: key,
       name: name,
@@ -80,6 +82,7 @@ class ModeType
 
   def cube_size_spec
     return unless has_cube_size?
+
     {
       default: default_cube_size,
       min: min_cube_size,

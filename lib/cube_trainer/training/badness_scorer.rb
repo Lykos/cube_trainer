@@ -29,7 +29,7 @@ module CubeTrainer
         bad_badness = (@result_history.badness_average(input_item) - @config[:goal_badness]) /
                       @config[:goal_badness]
         return 0 unless bad_badness.positive?
-        
+
         @config[:badness_base]**bad_badness
       end
 

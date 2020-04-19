@@ -10,6 +10,7 @@ class MigrationSpecGenerator < Rails::Generators::NamedBase
     @previous_version = previous_version
     @current_version = current_migration.version
     raise if @current_version < @previous_version
+
     @migration_file_name = current_migration.filename
     template('spec.rb.erb', "spec/migrations/#{file_name}_spec.rb")
   end

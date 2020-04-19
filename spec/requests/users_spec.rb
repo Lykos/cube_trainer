@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'requests/requests_helper'
 require 'fixtures'
 
-RSpec.describe "Users", type: :request do
+RSpec.describe 'Users', type: :request do
   include_context :user
   include_context :eve
   include_context :admin
@@ -10,19 +12,19 @@ RSpec.describe "Users", type: :request do
 
   describe 'GET #username_or_email_exists?' do
     it 'returns true if a user exists' do
-      get "/username_or_email_exists", params: { username_or_email: user.name }, headers: headers
+      get '/username_or_email_exists', params: { username_or_email: user.name }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
     end
 
     it 'returns true if an email exists' do
-      get "/username_or_email_exists", params: { username_or_email: user.email }, headers: headers
+      get '/username_or_email_exists', params: { username_or_email: user.email }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
     end
 
     it "returns false if an username/email doesn't exist" do
-      get "/username_or_email_exists", params: { username_or_email: 'grmlefex' }, headers: headers
+      get '/username_or_email_exists', params: { username_or_email: 'grmlefex' }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(false)
     end
@@ -34,7 +36,7 @@ RSpec.describe "Users", type: :request do
       eve
       user
       login(admin.name, admin.password)
-      get "/users", headers: headers
+      get '/users', headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       users = parsed_body.map { |u| User.new(u) }
@@ -45,7 +47,7 @@ RSpec.describe "Users", type: :request do
 
     it 'returns unauthorized for non-admins' do
       login(user.name, user.password)
-      get "/users", headers: headers
+      get '/users', headers: headers
       expect(response).to have_http_status(:unauthorized)
     end
   end
@@ -69,7 +71,7 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns not found for unknown users' do
-      get "/users/143432332"
+      get '/users/143432332'
       expect(response).to have_http_status(:not_found)
     end
 
@@ -82,7 +84,7 @@ RSpec.describe "Users", type: :request do
 
   describe 'GET #new' do
     it 'returns http success' do
-      get "/users/new"
+      get '/users/new'
       expect(response).to have_http_status(:success)
     end
   end
@@ -98,14 +100,14 @@ RSpec.describe "Users", type: :request do
 
   describe 'POST #create' do
     it 'returns http success' do
-      post "/users", params: {
-             user: {
-               name: 'new_user',
-               email: 'new_user@example.org',
-               password: 'abc',
-               password_confirmation: 'abc'
-             }
-           }
+      post '/users', params: {
+        user: {
+          name: 'new_user',
+          email: 'new_user@example.org',
+          password: 'abc',
+          password_confirmation: 'abc'
+        }
+      }
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).not_to eq(user.id)
@@ -115,15 +117,15 @@ RSpec.describe "Users", type: :request do
 
     it 'returns http success for admin' do
       login(admin.name, admin.password)
-      post "/users", params: {
-             user: {
-               name: 'new_user',
-               email: 'new_user@example.org',
-               password: 'abc',
-               password_confirmation: 'abc',
-               admin: true
-             }
-           }
+      post '/users', params: {
+        user: {
+          name: 'new_user',
+          email: 'new_user@example.org',
+          password: 'abc',
+          password_confirmation: 'abc',
+          admin: true
+        }
+      }
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).not_to eq(user.id)
@@ -132,51 +134,51 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns bad request for users with existing name' do
-      post "/users", params: {
-             user: {
-               name: user.name,
-               email: 'new_user@example.org',
-               password: 'abc',
-               password_confirmation: 'abc'
-             }
-           }
+      post '/users', params: {
+        user: {
+          name: user.name,
+          email: 'new_user@example.org',
+          password: 'abc',
+          password_confirmation: 'abc'
+        }
+      }
       expect(response).to have_http_status(:bad_request)
     end
 
     it 'returns bad request for users with existing email' do
-      post "/users", params: {
-             user: {
-               name: 'new_user',
-               email: user.email,
-               password: 'abc',
-               password_confirmation: 'abc'
-             }
-           }
+      post '/users', params: {
+        user: {
+          name: 'new_user',
+          email: user.email,
+          password: 'abc',
+          password_confirmation: 'abc'
+        }
+      }
       expect(response).to have_http_status(:bad_request)
     end
 
     it 'returns bad request for invalid users' do
-      post "/users", params: {
-             user: {
-               name: 'new_user',
-               email: 'new_user@example.org',
-               password: 'abc',
-               password_confirmation: 'cde'
-             }
-           }
+      post '/users', params: {
+        user: {
+          name: 'new_user',
+          email: 'new_user@example.org',
+          password: 'abc',
+          password_confirmation: 'cde'
+        }
+      }
       expect(response).to have_http_status(:bad_request)
     end
 
-    it "returns unauthorized if setting admin while not admin" do
-      post "/users", params: {
-             user: {
-               name: 'new_user',
-               email: 'new_user@example.org',
-               password: 'abc',
-               password_confirmation: 'abc',
-               admin: true
-             }
-           }
+    it 'returns unauthorized if setting admin while not admin' do
+      post '/users', params: {
+        user: {
+          name: 'new_user',
+          email: 'new_user@example.org',
+          password: 'abc',
+          password_confirmation: 'abc',
+          admin: true
+        }
+      }
       expect(response).to have_http_status(:unauthorized)
     end
   end
@@ -215,7 +217,7 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns not found for unknown users' do
-      put "/users/143432332", params: { user: { name: 'dodo' } }
+      put '/users/143432332', params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:not_found)
     end
 
@@ -239,7 +241,7 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns not found for unknown users' do
-      delete "/users/143432332"
+      delete '/users/143432332'
       expect(response).to have_http_status(:not_found)
     end
 
