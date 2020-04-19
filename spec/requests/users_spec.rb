@@ -2,26 +2,20 @@ require 'rails_helper'
 require 'requests/requests_helper'
 require 'fixtures'
 
-RSpec.describe "Users", type: :request do
+RSpec.describe "Users", type: :request, focus: true do
   include_context :user
   include_context :eve
   include_context :admin
   include_context :headers
 
-  before(:each) do
-    login(user.name, user.password)
-  end
-
   describe 'GET #username_or_email_exists?' do
     it 'returns true if a user exists' do
-      user
       get "/username_or_email_exists", params: { username_or_email: user.name }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
     end
 
     it 'returns true if an email exists' do
-      user
       get "/username_or_email_exists", params: { username_or_email: user.email }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
@@ -50,12 +44,15 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns unauthorized for non-admins' do
+      login(user.name, user.password)
       get "/users", headers: headers
       expect(response).to have_http_status(:unauthorized)
     end
   end
 
   describe 'GET #show' do
+    before(:each) { login(user.name, user.password) }
+
     it 'returns http success' do
       get "/users/#{user.id}", headers: headers
       expect(response).to have_http_status(:success)
@@ -85,12 +82,14 @@ RSpec.describe "Users", type: :request do
 
   describe 'GET #new' do
     it 'returns http success' do
-      get "/users/#{user.id}new"
+      get "/users/new"
       expect(response).to have_http_status(:success)
     end
   end
 
   describe 'GET #edit' do
+    before(:each) { login(user.name, user.password) }
+
     it 'returns http success' do
       get "/users/#{user.id}/edit"
       expect(response).to have_http_status(:success)
@@ -133,7 +132,6 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns bad request for users with existing name' do
-      user
       post "/users", params: {
              user: {
                name: user.name,
@@ -146,7 +144,6 @@ RSpec.describe "Users", type: :request do
     end
 
     it 'returns bad request for users with existing email' do
-      user
       post "/users", params: {
              user: {
                name: 'new_user',
@@ -185,6 +182,10 @@ RSpec.describe "Users", type: :request do
   end
 
   describe 'PUT #update' do
+    before(:each) do
+      login(user.name, user.password)
+    end
+
     it 'returns http success' do
       login(admin.name, admin.password)
       put "/users/#{admin.id}", params: { user: { name: 'dodo' } }
@@ -227,6 +228,10 @@ RSpec.describe "Users", type: :request do
   end
 
   describe 'DELETE #destroy' do
+    before(:each) do
+      login(user.name, user.password)
+    end
+
     it 'returns http success' do
       delete "/users/#{user.id}"
       expect(response).to have_http_status(:success)

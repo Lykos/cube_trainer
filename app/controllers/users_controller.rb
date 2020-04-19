@@ -3,10 +3,10 @@ class UsersController < ApplicationController
   before_action :check_authorized_as_admin, only: [:index]
   before_action :check_authorized_as_admin_if_setting_admin, only: [:create, :update]
   before_action :check_current_user_owns, only: [:show, :update, :destroy]
-  skip_before_action :check_authorized, only: [:new, :create]
+  skip_before_action :check_authorized, only: [:new, :create, :name_or_email_exists?]
 
   # GET /username_or_email_exists
-  def user_name_or_email_exists?
+  def name_or_email_exists?
     respond_to do |format|
       format.html { render 'application/cube_trainer' }
       format.json do
