@@ -34,7 +34,7 @@ class AchievementGrantsController < ApplicationController
     head(:not_found) unless @achievement_grant = @user.achievement_grants.find_by(id: params[:id])
   end
 
-  def get_owner
+  def owner
     @user
   end
 end
