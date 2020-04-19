@@ -87,9 +87,7 @@ module CubeTrainer
                           .group(:input_representation)
                           .pluck(:input_representation, badness_array_exp).to_h
             result.transform_values! do |badnesses|
-              badnesses[0...@badness_memory].each_with_object(new_cube_average) do |badness, avg|
-                avg.push(badness)
-              end.average
+              new_cube_average.push_all(badnesses[0...@badness_memory])
             end
             result.default = Float::NAN
             result
