@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { UniqueModeNameValidator } from './unique-mode-name.validator';
 import { ModeType } from './mode-type';
 import { ModesService } from './modes.service';
 import { NewMode } from './new-mode';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { RxwebValidators } from "@rxweb/reactive-form-validators";
 
 @Component({
   selector: 'edit-mode',
@@ -16,12 +18,21 @@ import { Router } from '@angular/router';
       <mat-form-field>
         <mat-label>Name</mat-label>
         <input matInput formControlName="name" type="text">
+        <mat-error *ngIf="relevantInvalid(name) && name.errors.required">
+          You must provide a <strong>name</strong>.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(name) && name.errors.uniqueModeName">
+          You already have a mode with the same <strong>name</strong>.
+        </mat-error>
       </mat-form-field>
       <mat-form-field>
         <mat-label>Mode Type</mat-label>
         <mat-select formControlName="modeType">
           <mat-option *ngFor="let modeType of modeTypes" [value]="modeType"> {{modeType.name}} </mat-option>
         </mat-select>
+        <mat-error *ngIf="relevantInvalid(modeType) && modeType.errors.required">
+          You must provide a <strong>mode type</strong>.
+        </mat-error>
       </mat-form-field>
       <div>
         <button mat-raised-button color="primary" matStepperNext>Next</button>
@@ -34,12 +45,18 @@ import { Router } from '@angular/router';
       <mat-form-field *ngIf="hasCubeSize">
         <mat-label>Cube Size</mat-label>
         <input matInput formControlName="cubeSize" type="number">
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.required">
+          You must provide a <strong>cube size</strong>.
+        </mat-error>
       </mat-form-field>
       <mat-form-field *ngIf="hasBuffer">
         <mat-label>Buffer</mat-label>
         <mat-select formControlName="buffer">
           <mat-option *ngFor="let buffer of modeType.buffers" [value]="buffer"> {{buffer}} </mat-option>
         </mat-select>
+        <mat-error *ngIf="relevantInvalid(buffer) && buffer.errors.required">
+          You must provide a <strong>buffer</strong>.
+        </mat-error>
       </mat-form-field>
       <div>
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
@@ -79,36 +96,49 @@ export class NewModeComponent implements OnInit {
   constructor(private readonly formBuilder: FormBuilder,
 	      private readonly modesService: ModesService,
 	      private readonly router: Router,
-	      private readonly snackBar: MatSnackBar) {}
+	      private readonly snackBar: MatSnackBar,
+	      private readonly uniqueModeNameValidator: UniqueModeNameValidator) {}
 
   relevantInvalid(control: AbstractControl) {
     return control.invalid && (control.dirty || control.touched);
   }
 
+  get name() {
+    return this.modeTypesGroup.get('name')!;
+  }
+
   get hasMultipleShowInputModes() {
-    return this.modeType && this.modeType.showInputModes.length > 1;
+    return this.modeType.value && this.modeType.value.showInputModes.length > 1;
+  }
+
+  get cubeSize() {
+    return this.setupGroup.get('cubeSize')!;
+  }
+
+  get buffer() {
+    return this.setupGroup.get('buffer')!;
   }
 
   get hasCubeSize() {
-    return this.modeType && this.modeType.defaultCubeSize;
+    return this.modeType.value && this.modeType.value.defaultCubeSize;
   }
 
   get hasBuffer() {
-    return this.modeType?.hasBuffer;
+    return this.modeType.value?.hasBuffer;
   }
 
   get hasGoalBadness() {
-    return this.modeType?.hasGoalBadness;
+    return this.modeType.value?.hasGoalBadness;
   }
 
   get modeType() {
-    return this.modeTypesGroup.get('modeType')?.value;
+    return this.modeTypesGroup.get('modeType')!;
   }
 
-  get mode(): NewMode {
+  get newMode(): NewMode {
     return {
-      modeType: this.modeType!.key,
-      name: this.modeTypesGroup.get('name')!.value,
+      modeType: this.modeType.value!.key,
+      name: this.name.value,
       known: !!this.trainingGroup.get('known')!.value,
       showInputMode: this.trainingGroup.get('showInputMode')!.value,
       buffer: this.setupGroup.get('buffer')!.value,
@@ -121,22 +151,22 @@ export class NewModeComponent implements OnInit {
     // TODO Smart form validators depending on the situation.
     this.modesService.listTypes().subscribe((modeTypes: ModeType[]) => this.modeTypes = modeTypes);
     this.modeTypesGroup = this.formBuilder.group({
-      name: ['', Validators.required],
+      name: ['', { validators: Validators.required, asyncValidators: this.uniqueModeNameValidator.validate, updateOn: 'blur' }],
       modeType: ['', Validators.required],
     });
     this.setupGroup = this.formBuilder.group({
-      cubeSize: [''],
-      buffer: [''],
+      cubeSize: ['', RxwebValidators.required({ conditionalExpression: () => this.hasCubeSize })],
+      buffer: ['', RxwebValidators.required({ conditionalExpression: () => this.hasBuffer })],
     });
     this.trainingGroup = this.formBuilder.group({
       showInputMode: ['', Validators.required],
-      goalBadness: ['', Validators.required],
-      known: ['', Validators.required],
+      goalBadness: ['', RxwebValidators.required({ conditionalExpression: () => this.hasGoalBadness })],
+      known: ['']
     });
   }
 
   onSubmit() {
-    this.modesService.create(this.mode).subscribe(
+    this.modesService.create(this.newMode).subscribe(
       r => {
 	this.snackBar.open('Mode Created!', 'Close');
 	this.router.navigate([`/modes`]);

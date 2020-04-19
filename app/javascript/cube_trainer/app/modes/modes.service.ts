@@ -39,6 +39,10 @@ export class ModesService {
     }
   }
 
+  isModeNameTaken(modeName: string): Observable<boolean> {
+    return this.rails.ajax<boolean>(HttpVerb.Get, '/mode_name_exists_for_user', {modeName});
+  }
+
   listTypes(): Observable<ModeType[]> {
     return this.rails.ajax<any[]>(HttpVerb.Get, '/mode_types', {}).pipe(
       map(modeTypes => modeTypes.map(this.parseModeType)));

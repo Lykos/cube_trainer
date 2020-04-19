@@ -1,7 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { RailsModule } from '../rails/rails.module';
 import { UsersModule } from '../users/users.module';
+import { UniqueModeNameValidator } from './unique-mode-name.validator';
 import { ModesService } from './modes.service';
+import { RxReactiveFormsModule } from "@rxweb/reactive-form-validators"
 import { ModesComponent } from './modes.component';
 import { NewModeComponent } from './new-mode.component';
 import { NgModule } from '@angular/core';
@@ -41,9 +43,11 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
     MatCheckboxModule,
     FormsModule,
     ReactiveFormsModule,
+    RxReactiveFormsModule,
   ],
   providers: [
     ModesService,
+    UniqueModeNameValidator,
   ],
   exports: [
     ModesComponent,

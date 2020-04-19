@@ -14,13 +14,13 @@ RSpec.describe "Modes", type: :request do
 
   describe 'GET #name_exists_for_user?', focus: true do
     it 'returns true if a user exists' do
-      get "/mode_name_exists_for_user", params: { name: mode.name }, headers: headers
+      get "/mode_name_exists_for_user", params: { mode_name: mode.name }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
     end
 
     it "returns false if a name doesn't exist" do
-      get "/mode_name_exists_for_user", params: { name: 'new_mode_name' }, headers: headers
+      get "/mode_name_exists_for_user", params: { mode_name: 'new_mode_name' }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(false)
     end
