@@ -11,7 +11,8 @@ class Stat < ApplicationRecord
     {
       id: id,
       created_at: created_at,
-      stat_type: stat_type.to_simple
+      stat_type: stat_type.to_simple,
+      stat_parts: stat_type.stat_parts(mode)
     }
   end
 
