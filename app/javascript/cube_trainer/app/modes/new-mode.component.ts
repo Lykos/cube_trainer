@@ -6,15 +6,15 @@ import { ModesService } from './modes.service';
 import { NewMode } from './new-mode';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { RxwebValidators } from "@rxweb/reactive-form-validators";
+import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";
 
 @Component({
   selector: 'edit-mode',
   template: `
 <mat-horizontal-stepper linear #stepper>
-  <mat-step [stepControl]="modeTypesGroup">
+  <mat-step [stepControl]="modeTypeGroup">
     <ng-template matStepLabel>Choose mode type</ng-template>
-    <form [formGroup]="modeTypesGroup">
+    <form [formGroup]="modeTypeGroup">
       <mat-form-field>
         <mat-label>Name</mat-label>
         <input matInput formControlName="name" type="text">
@@ -42,17 +42,29 @@ import { RxwebValidators } from "@rxweb/reactive-form-validators";
   <mat-step [stepControl]="setupGroup">
     <ng-template matStepLabel>Setup basics</ng-template>
     <form [formGroup]="setupGroup">
-      <mat-form-field *ngIf="hasCubeSize">
+      <mat-form-field *ngIf="hasMultipleCubeSizes">
         <mat-label>Cube Size</mat-label>
         <input matInput formControlName="cubeSize" type="number">
         <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.required">
           You must provide a <strong>cube size</strong> for this mode type.
         </mat-error>
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.minNumber">
+          The <strong>cube size</strong> has to be at least {{minCubeSize}} for this mode type.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.maxNumber">
+          The <strong>cube size</strong> can be at most {{maxCubeSize}} for this mode type.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.odd">
+          The <strong>cube size</strong> has to be odd for this cube size.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.even">
+          The <strong>cube size</strong> has to be even for this cube size.
+        </mat-error>
       </mat-form-field>
       <mat-form-field *ngIf="hasBuffer">
         <mat-label>Buffer</mat-label>
         <mat-select formControlName="buffer">
-          <mat-option *ngFor="let buffer of modeType.buffers" [value]="buffer"> {{buffer}} </mat-option>
+          <mat-option *ngFor="let buffer of modeType.value.buffers" [value]="buffer"> {{buffer}} </mat-option>
         </mat-select>
         <mat-error *ngIf="relevantInvalid(buffer) && buffer.errors.required">
           You must provide a <strong>buffer</strong> for this mode type.
@@ -70,7 +82,7 @@ import { RxwebValidators } from "@rxweb/reactive-form-validators";
       <mat-form-field *ngIf="hasMultipleShowInputModes">
         <mat-label>show input mode</mat-label>
         <mat-select formControlName="showInputMode">
-          <mat-option *ngFor="let showInputMode of modeType.showInputModes" [value]="showInputMode"> {{showInputMode}} </mat-option>
+          <mat-option *ngFor="let showInputMode of modeType.value.showInputModes" [value]="showInputMode"> {{showInputMode}} </mat-option>
         </mat-select>
         <mat-error *ngIf="relevantInvalid(showInputMode) && showInputMode.errors.required">
           You must select a <strong>show input mode</strong> for this mode type.
@@ -81,6 +93,9 @@ import { RxwebValidators } from "@rxweb/reactive-form-validators";
         <input matInput formControlName="goalBadness" type="number">
         <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors.required">
           You must provide a <strong>goal badness</strong> for this mode type.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors.numeric">
+          The <strong>goal badness</strong> has to be a positive number.
         </mat-error>
       </mat-form-field>
       <mat-checkbox formControlName="known">Known</mat-checkbox>
@@ -94,7 +109,7 @@ import { RxwebValidators } from "@rxweb/reactive-form-validators";
 `,
 })
 export class NewModeComponent implements OnInit {
-  modeTypesGroup!: FormGroup;
+  modeTypeGroup!: FormGroup;
   setupGroup!: FormGroup;
   trainingGroup!: FormGroup;
   modeTypes!: ModeType[];
@@ -110,7 +125,7 @@ export class NewModeComponent implements OnInit {
   }
 
   get name() {
-    return this.modeTypesGroup.get('name')!;
+    return this.modeTypeGroup.get('name')!;
   }
 
   get hasMultipleShowInputModes() {
@@ -126,35 +141,67 @@ export class NewModeComponent implements OnInit {
   }
 
   get goalBadness() {
-    return this.setupGroup.get('goalBadness')!;
+    return this.trainingGroup.get('goalBadness')!;
   }
 
-  get hasCubeSize() {
-    return this.modeType.value && this.modeType.value.defaultCubeSize;
+  get showInputMode() {
+    return this.trainingGroup.get('showInputMode')!;
+  }
+
+  get hasMultipleCubeSizes() {
+    return this.modeType.value?.cubeSizeSpec && this.minCubeSize < this.maxCubeSize;
   }
 
   get hasBuffer() {
-    return this.modeType.value?.hasBuffer;
+    return !!this.modeType.value?.buffers?.length;
   }
 
   get hasGoalBadness() {
     return this.modeType.value?.hasGoalBadness;
   }
 
+  get defaultCubeSize() {
+    return this.modeType.value?.cubeSizeSpec?.default;
+  }
+
+  get minCubeSize() {
+    return this.modeType.value?.cubeSizeSpec?.min;
+  }
+
+  get maxCubeSize() {
+    return this.modeType.value?.cubeSizeSpec?.max;
+  }
+
+  get oddAllowed() {
+    return this.modeType.value?.cubeSizeSpec?.oddAllowed;
+  }
+
+  get evenAllowed() {
+    return this.modeType.value?.cubeSizeSpec?.evenAllowed;
+  }
+
   get modeType() {
-    return this.modeTypesGroup.get('modeType')!;
+    return this.modeTypeGroup.get('modeType')!;
   }
 
   get selectedShowInputMode() {
     if (this.modeType.value && this.modeType.value.showInputModes.length == 1) {
       return this.modeType.value.showInputModes[0];
     } else if (this.hasMultipleShowInputModes) {
-      return this.trainingGroup.get('showInputMode')!.value;
+      return this.showInputMode.value;
     } else {
       return undefined;
     }
   }
-    
+
+  get selectedCubeSize() {
+    if (this.hasMultipleCubeSizes) {
+      return this.cubeSize.value;
+    } else {
+      return this.defaultCubeSize;
+    }
+  }
+
   get newMode(): NewMode {
     return {
       modeType: this.modeType.value!.key,
@@ -167,19 +214,55 @@ export class NewModeComponent implements OnInit {
     };
   }
 
+  minCubeSizeValidator(value: number) {
+    return RxwebValidators.minNumber({ conditionalExpression: () => this.minCubeSize === value, value });
+  }
+
+  maxCubeSizeValidator(value: number) {
+    return RxwebValidators.maxNumber({ conditionalExpression: () => this.maxCubeSize === value, value });
+  }
+
+  cubeSizeValidators() {
+    const validators = [
+      RxwebValidators.minNumber({ value: 2 }),
+      RxwebValidators.maxNumber({ value: 7 }),
+      this.minCubeSizeValidator(7),
+      this.maxCubeSizeValidator(2),
+    ];
+    for (var i = 3; i <= 6; ++i) {
+      validators.push(this.minCubeSizeValidator(i));
+      validators.push(this.maxCubeSizeValidator(i));
+    }
+    return validators;
+  }
+
   ngOnInit() {
     this.modesService.listTypes().subscribe((modeTypes: ModeType[]) => this.modeTypes = modeTypes);
-    this.modeTypesGroup = this.formBuilder.group({
+    this.modeTypeGroup = this.formBuilder.group({
       name: ['', { validators: Validators.required, asyncValidators: this.uniqueModeNameValidator.validate, updateOn: 'blur' }],
       modeType: ['', Validators.required],
     });
     this.setupGroup = this.formBuilder.group({
-      cubeSize: ['', RxwebValidators.required({ conditionalExpression: () => this.hasCubeSize })],
+      cubeSize: ['', RxwebValidators.compose({
+	conditionalExpression: () => this.hasMultipleCubeSizes,
+	validators: [
+	  RxwebValidators.required(),
+	  RxwebValidators.digit(),
+	  RxwebValidators.odd({ conditionalExpression: () => !this.evenAllowed }),
+	  RxwebValidators.even({ conditionalExpression: () => !this.oddAllowed }),
+	].concat(this.cubeSizeValidators()),
+      })],
       buffer: ['', RxwebValidators.required({ conditionalExpression: () => this.hasBuffer })],
     });
     this.trainingGroup = this.formBuilder.group({
       showInputMode: ['', RxwebValidators.required({ conditionalExpression: () => this.hasMultipleShowInputModes })],
-      goalBadness: ['', RxwebValidators.required({ conditionalExpression: () => this.hasGoalBadness })],
+      goalBadness: ['', RxwebValidators.compose({
+	conditionalExpression: () => this.hasGoalBadness,
+	validators: [
+	  RxwebValidators.required(),
+	  RxwebValidators.numeric({ acceptValue: NumericValueType.PositiveNumber, allowDecimal: true })
+	],
+      })],
       known: ['']
     });
   }
