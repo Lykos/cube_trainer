@@ -46,7 +46,7 @@ import { RxwebValidators } from "@rxweb/reactive-form-validators";
         <mat-label>Cube Size</mat-label>
         <input matInput formControlName="cubeSize" type="number">
         <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.required">
-          You must provide a <strong>cube size</strong>.
+          You must provide a <strong>cube size</strong> for this mode type.
         </mat-error>
       </mat-form-field>
       <mat-form-field *ngIf="hasBuffer">
@@ -55,7 +55,7 @@ import { RxwebValidators } from "@rxweb/reactive-form-validators";
           <mat-option *ngFor="let buffer of modeType.buffers" [value]="buffer"> {{buffer}} </mat-option>
         </mat-select>
         <mat-error *ngIf="relevantInvalid(buffer) && buffer.errors.required">
-          You must provide a <strong>buffer</strong>.
+          You must provide a <strong>buffer</strong> for this mode type.
         </mat-error>
       </mat-form-field>
       <div>
@@ -72,10 +72,16 @@ import { RxwebValidators } from "@rxweb/reactive-form-validators";
         <mat-select formControlName="showInputMode">
           <mat-option *ngFor="let showInputMode of modeType.showInputModes" [value]="showInputMode"> {{showInputMode}} </mat-option>
         </mat-select>
+        <mat-error *ngIf="relevantInvalid(showInputMode) && showInputMode.errors.required">
+          You must select a <strong>show input mode</strong> for this mode type.
+        </mat-error>
       </mat-form-field>
       <mat-form-field *ngIf="hasGoalBadness">
         <mat-label>Goal Time per Element</mat-label>
         <input matInput formControlName="goalBadness" type="number">
+        <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors.required">
+          You must provide a <strong>goal badness</strong> for this mode type.
+        </mat-error>
       </mat-form-field>
       <mat-checkbox formControlName="known">Known</mat-checkbox>
       <div>
@@ -119,6 +125,10 @@ export class NewModeComponent implements OnInit {
     return this.setupGroup.get('buffer')!;
   }
 
+  get goalBadness() {
+    return this.setupGroup.get('goalBadness')!;
+  }
+
   get hasCubeSize() {
     return this.modeType.value && this.modeType.value.defaultCubeSize;
   }
@@ -135,20 +145,29 @@ export class NewModeComponent implements OnInit {
     return this.modeTypesGroup.get('modeType')!;
   }
 
+  get selectedShowInputMode() {
+    if (this.modeType.value && this.modeType.value.showInputModes.length == 1) {
+      return this.modeType.value.showInputModes[0];
+    } else if (this.hasMultipleShowInputModes) {
+      return this.trainingGroup.get('showInputMode')!.value;
+    } else {
+      return undefined;
+    }
+  }
+    
   get newMode(): NewMode {
     return {
       modeType: this.modeType.value!.key,
       name: this.name.value,
       known: !!this.trainingGroup.get('known')!.value,
-      showInputMode: this.trainingGroup.get('showInputMode')!.value,
-      buffer: this.setupGroup.get('buffer')!.value,
-      goalBadness: this.trainingGroup.get('goalBadness')!.value,
-      cubeSize: this.setupGroup.get('cubeSize')!.value,
+      showInputMode: this.selectedShowInputMode,
+      buffer: this.buffer.value,
+      goalBadness: this.goalBadness.value,
+      cubeSize: this.cubeSize.value,
     };
   }
 
   ngOnInit() {
-    // TODO Smart form validators depending on the situation.
     this.modesService.listTypes().subscribe((modeTypes: ModeType[]) => this.modeTypes = modeTypes);
     this.modeTypesGroup = this.formBuilder.group({
       name: ['', { validators: Validators.required, asyncValidators: this.uniqueModeNameValidator.validate, updateOn: 'blur' }],
@@ -159,7 +178,7 @@ export class NewModeComponent implements OnInit {
       buffer: ['', RxwebValidators.required({ conditionalExpression: () => this.hasBuffer })],
     });
     this.trainingGroup = this.formBuilder.group({
-      showInputMode: ['', Validators.required],
+      showInputMode: ['', RxwebValidators.required({ conditionalExpression: () => this.hasMultipleShowInputModes })],
       goalBadness: ['', RxwebValidators.required({ conditionalExpression: () => this.hasGoalBadness })],
       known: ['']
     });
