@@ -1,17 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from './users.service';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
 import { NewUser } from './new-user';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-
-const passwordMatchValidatorFn: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  const password = control.get('password');
-  const passwordConfirmation = control.get('passwordConfirmation');
-
-  return password?.value && passwordConfirmation?.value && password.value !== passwordConfirmation.value ? { 'passwordMismatch': true } : null;
-}
+import { RxwebValidators } from "@rxweb/reactive-form-validators";
 
 @Component({
   selector: 'signup',
@@ -59,10 +53,10 @@ const passwordMatchValidatorFn: ValidatorFn = (control: AbstractControl): Valida
         <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors.required">
           You must provide a <strong>password confirmation</strong>.
         </mat-error>
+        <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors.compare">
+          <strong>Password</strong> must match <strong>password confirmation</strong>.
+        </mat-error>
       </mat-form-field>
-      <mat-error *ngIf="passwordMismatch">
-        <strong>Password</strong> must match <strong>password confirmation</strong>.
-      </mat-error>
       <mat-card-actions>
         <button mat-raised-button color="primary" type="submit" [disabled]="!signupForm.valid">
           Submit
@@ -91,8 +85,8 @@ export class SignupComponent implements OnInit {
       username: ['', { validators: Validators.required, asyncValidators: this.uniqueUsernameOrEmailValidator.validate, updateOn: 'blur' }],
       email: ['', { validators: [Validators.email, Validators.required], asyncValidators: this.uniqueUsernameOrEmailValidator.validate, updateOn: 'blur' }],
       password: ['', Validators.required],
-      passwordConfirmation: ['', Validators.required],
-    }, { validators: passwordMatchValidatorFn });
+      passwordConfirmation: ['', [Validators.required, RxwebValidators.compare({ fieldName: 'password' })]],
+    });
   }
 
   onSubmit() {
