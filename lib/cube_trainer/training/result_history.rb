@@ -108,7 +108,12 @@ module CubeTrainer
       end
 
       def fetch_last_items(num_items)
-        @mode.inputs.joins(:result).order(created_at: :desc).limit(num_items).pluck(:input_representation).reverse
+        @mode
+          .inputs
+          .joins(:result)
+          .order(created_at: :desc)
+          .limit(num_items)
+          .pluck(:input_representation).reverse
       end
 
       # On how many different days the item appeared since the user last used a hint for it.
@@ -118,8 +123,12 @@ module CubeTrainer
         return Float::INFINITY if last_hint_age.infinite?
 
         # TODO: Avoid having one query per item.
-        created_at = input_table[:created_at]
-        @mode.inputs.joins(:result).where(input_representation: item.representation).where(days_old_exp > days(Time.now - last_hint_age)).count
+        @mode
+          .inputs
+          .joins(:result)
+          .where(input_representation: item.representation)
+          .where(days_old_exp > days(Time.now - last_hint_age))
+          .count
       end
 
       def results_table
@@ -131,10 +140,17 @@ module CubeTrainer
       end
 
       def last_hint_age_cache
-        @last_occurrence_age_cache ||=
+        @last_hint_age_cache ||=
           begin
             now = Time.now
-            result = @mode.inputs.joins(:result).where(Result.arel_table[:num_hints] > 0).group(:input_representation).maximum(:created_at).transform_values! { |time| now - time }
+            result =
+              @mode
+              .inputs
+              .joins(:result)
+              .where(Result.arel_table[:num_hints].gt(0))
+              .group(:input_representation)
+              .maximum(:created_at)
+              .transform_values! { |time| now - time }
             result.default = Float::INFINITY
             result
           end
@@ -144,21 +160,32 @@ module CubeTrainer
         @last_occurrence_age_cache ||=
           begin
             now = Time.now
-            result = @mode.inputs.joins(:result).group(:input_representation).maximum(:created_at).transform_values! { |time| now - time }
+            result =
+              @mode
+              .inputs
+              .joins(:result)
+              .group(:input_representation)
+              .maximum(:created_at)
+              .transform_values! { |time| now - time }
             result.default = Float::INFINITY
             result
           end
       end
 
       def days_old_exp
-        floor(extract(:epoch, age(inputs_table[:created_at])) / 86400)
+        floor(extract(:epoch, age(inputs_table[:created_at])) / 86_400)
       end
 
       def occurrence_days_cache
         @occurrence_days_cache ||=
           begin
-            
-            result = @mode.inputs.joins(:result).group(:input_representation).distinct.count()
+            result =
+              @mode
+              .inputs
+              .joins(:result)
+              .group(:input_representation)
+              .distinct
+              .count(days_old_exp)
             result.default = 0
             result
           end
