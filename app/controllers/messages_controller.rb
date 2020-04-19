@@ -8,7 +8,7 @@ class MessagesController < ApplicationController
 
   # GET /users/1/messages/count_unread.json
   def count_unread
-    render(json: @user.messages.where(read: false).count)
+    render json: @user.messages.where(read: false).count
   end
 
   # GET /users/1/messages
@@ -31,16 +31,16 @@ class MessagesController < ApplicationController
 
   # GET /users/1/messages/1/edit
   def edit
-    render('application/cube_trainer')
+    render 'application/cube_trainer'
   end
 
   # PATCH/PUT /users/1/messages/1
   # PATCH/PUT /users/1/messages/1.json
   def update
     if @message.update(message_params)
-      render(json: @message, status: :ok)
+      render json: @message, status: :ok
     else
-      render(json: @message.errors, status: :unprocessable_entity)
+      render json: @message.errors, status: :unprocessable_entity
     end
   end
 
@@ -48,20 +48,20 @@ class MessagesController < ApplicationController
   # DELETE /users/1/messages/1.json
   def destroy
     if @message.destroy
-      head(:no_content)
+      head :no_content
     else
-      render(json: @message.errors, status: :unprocessable_entity)
+      render json: @message.errors, status: :unprocessable_entity
     end
   end
 
   private
 
   def set_user
-    head(:not_found) unless (@user = User.find_by(id: params[:user_id]))
+    head :not_found unless (@user = User.find_by(id: params[:user_id]))
   end
 
   def set_message
-    head(:not_found) unless (@message = @user.messages.find_by(id: params[:id]))
+    head :not_found unless (@message = @user.messages.find_by(id: params[:id]))
   end
 
   # Only allow a list of trusted parameters through.
@@ -73,6 +73,6 @@ class MessagesController < ApplicationController
   # Note that this is different from other controllers because not even admin can see the messages.
   # In order to not allow reverse engineering, we have to return not_found in all such cases.
   def check_current_user_owns
-    head(:not_found) unless @user == current_user
+    head :not_found unless @user == current_user
   end
 end

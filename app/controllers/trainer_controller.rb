@@ -8,7 +8,7 @@ class TrainerController < ApplicationController
   before_action :set_partial_result, only: [:stop]
 
   def index
-    render('application/cube_trainer')
+    render 'application/cube_trainer'
   end
 
   # POST /trainer/1/inputs
@@ -21,18 +21,18 @@ class TrainerController < ApplicationController
         representation: input_item.representation.to_s,
         hints: @mode.hints(input).map(&:to_s)
       }
-      render(json: response, status: :created)
+      render json: response, status: :created
     else
-      render(json: input.errors, status: :unprocessable_entity)
+      render json: input.errors, status: :unprocessable_entity
     end
   end
 
   # DELETE /trainer/1/inputs/1
   def destroy
     if @input.destroy
-      head(:no_content)
+      head :no_content
     else
-      render(json: @input.errors, status: :unprocessable_entity)
+      render json: @input.errors, status: :unprocessable_entity
     end
   end
 
@@ -41,22 +41,22 @@ class TrainerController < ApplicationController
     # TODO: What if a result already exists?
     result = Result.from_input_and_partial(@input, @partial_result)
     if !result.valid?
-      render(json: result.errors, status: :bad_request)
+      render json: result.errors, status: :bad_request
     elsif result.save
       head(:created)
     else
-      render(json: result.errors, status: :unprocessable_entity)
+      render json: result.errors, status: :unprocessable_entity
     end
   end
 
   private
 
   def set_input
-    head(:not_found) unless (@input = @mode.inputs.find_by(id: params[:id]))
+    head :not_found unless (@input = @mode.inputs.find_by(id: params[:id]))
   end
 
   def set_mode
-    head(:not_found) unless (@mode = current_user.modes.find_by(id: params[:mode_id]))
+    head :not_found unless (@mode = current_user.modes.find_by(id: params[:mode_id]))
   end
 
   def partial_result_params

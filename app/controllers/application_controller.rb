@@ -17,16 +17,16 @@ class ApplicationController < ActionController::Base
   end
 
   def check_authorized
-    render(json: {}, status: :unauthorized) unless logged_in?
+    render json: {}, status: :unauthorized unless logged_in?
   end
 
   def check_authorized_as_admin
-    render(json: {}, status: :unauthorized) unless admin_logged_in?
+    render json: {}, status: :unauthorized unless admin_logged_in?
   end
 
   # Checks that the user is the current user.
   # In order to not allow reverse engineering, we have to return not_found in all such cases.
   def check_current_user_owns
-    head(:not_found) unless owner == current_user || admin_logged_in?
+    head :not_found unless owner == current_user || admin_logged_in?
   end
 end

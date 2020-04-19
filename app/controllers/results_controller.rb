@@ -36,20 +36,20 @@ class ResultsController < ApplicationController
   # DELETE /modes/1/results/1.json
   def destroy
     if @input.destroy
-      head(:no_content)
+      head :no_content
     else
-      render(json: @input.errors, status: :unprocessable_entity)
+      render json: @input.errors, status: :unprocessable_entity
     end
   end
 
   private
 
   def set_input
-    head(:not_found) unless (@input = Result.find_by(id: params[:id])&.input)
+    head :not_found unless (@input = Result.find_by(id: params[:id])&.input)
   end
 
   def set_mode
-    head(:not_found) unless (@mode = Mode.find_by(id: params[:mode_id]))
+    head :not_found unless (@mode = Mode.find_by(id: params[:mode_id]))
   end
 
   def owner

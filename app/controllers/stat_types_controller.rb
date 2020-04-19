@@ -26,6 +26,6 @@ class StatTypesController < ApplicationController
   private
 
   def set_stat_type
-    head(:not_found) unless (@stat_type = StatType.find_by(key: params[:id]))
+    head :not_found unless (@stat_type = StatType.find_by(key: params[:id]))
   end
 end

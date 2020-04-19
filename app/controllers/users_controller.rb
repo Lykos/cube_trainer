@@ -12,7 +12,7 @@ class UsersController < ApplicationController
   def name_or_email_exists?
     username_or_email = params[:username_or_email]
     exists = User.exists?(name: username_or_email) || User.exists?(email: username_or_email)
-    render(json: exists, status: :ok)
+    render json: exists, status: :ok
   end
 
   # GET /users
@@ -35,12 +35,12 @@ class UsersController < ApplicationController
 
   # GET /users/new
   def new
-    render('application/cube_trainer')
+    render 'application/cube_trainer'
   end
 
   # GET /users/1/edit
   def edit
-    render('application/cube_trainer')
+    render 'application/cube_trainer'
   end
 
   # POST /users
@@ -49,11 +49,11 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if !@user.valid?
-      render(json: @user.errors, status: :bad_request)
+      render json: @user.errors, status: :bad_request
     elsif @user.save
-      render(json: @user, status: :created)
+      render json: @user, status: :created
     else
-      render(json: @user.errors, status: :unprocessable_entity)
+      render json: @user.errors, status: :unprocessable_entity
     end
   end
 
@@ -61,9 +61,9 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1.json
   def update
     if @user.update(user_params)
-      render(json: @user, status: :ok)
+      render json: @user, status: :ok
     else
-      render(json: @user.errors, status: :unprocessable_entity)
+      render json: @user.errors, status: :unprocessable_entity
     end
   end
 
@@ -71,9 +71,9 @@ class UsersController < ApplicationController
   # DELETE /users/1.json
   def destroy
     if @user.destroy
-      head(:no_content)
+      head :no_content
     else
-      render(json: @user.errors, status: :unprocessable_entity)
+      render json: @user.errors, status: :unprocessable_entity
     end
   end
 
@@ -87,11 +87,11 @@ class UsersController < ApplicationController
       return
     end
 
-    render('application/hackerman', status: :unauthorized)
+    render 'application/hackerman', status: :unauthorized
   end
 
   def set_user
-    head(:not_found) unless (@user = User.find_by(id: params[:id]))
+    head :not_found unless (@user = User.find_by(id: params[:id]))
   end
 
   def owner

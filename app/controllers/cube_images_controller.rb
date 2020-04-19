@@ -41,7 +41,7 @@ class CubeImagesController < ApplicationController
   end
 
   def set_input_item
-    head(:not_found) unless (@input_item = fetch_input_item)
+    head :not_found unless (@input_item = fetch_input_item)
   end
 
   def fetch_input_item

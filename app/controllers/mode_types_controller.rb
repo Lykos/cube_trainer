@@ -26,6 +26,6 @@ class ModeTypesController < ApplicationController
   private
 
   def set_mode_type
-    head(:not_found) unless (@mode_type = ModeType.find_by(key: params[:id]))
+    head :not_found unless (@mode_type = ModeType.find_by(key: params[:id]))
   end
 end
