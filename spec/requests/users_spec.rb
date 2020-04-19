@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'requests/requests_helper'
 require 'fixtures'
 
-RSpec.describe "Users", type: :request, focus: true do
+RSpec.describe "Users", type: :request do
   include_context :user
   include_context :eve
   include_context :admin

@@ -3,6 +3,10 @@ class ModesController < ApplicationController
   before_action :set_mode, only: [:show, :update, :destroy]
   before_action :check_current_user_owns, only: [:show, :update, :destroy]
 
+  def name_exists_for_user?
+    render json: current_user.modes.exists?(name: params[:name]), status: :ok
+  end
+
   # GET /modes
   # GET /modes.json
   def index

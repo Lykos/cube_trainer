@@ -7,13 +7,8 @@ class UsersController < ApplicationController
 
   # GET /username_or_email_exists
   def name_or_email_exists?
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json do
-        username_or_email = params[:username_or_email]
-        render json: User.exists?(name: username_or_email) || User.exists?(email: username_or_email), status: :ok
-      end
-    end
+    username_or_email = params[:username_or_email]
+    render json: User.exists?(name: username_or_email) || User.exists?(email: username_or_email), status: :ok
   end
 
   # GET /users
