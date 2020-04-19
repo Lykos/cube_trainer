@@ -1,8 +1,7 @@
 require:
 - rubocop-performance
 - rubocop-rake
-# TODO enable:
-# - rubocop-rails
+- rubocop-rails
 AllCops:
   Exclude:
   - 'lib/**/*_ui.rb'
@@ -50,6 +49,14 @@ Metrics/ClassLength:
   Max: 200
 Metrics/ModuleLength:
   Max: 200
+Rails/Output:
+  # TODO: Enable
+  Enabled: false
+Rails/Exit:
+  # TODO: Enable
+  Enabled: false
+Rails/Output:
+  Enabled: false
 Style/AutoResourceCleanup:
   Enabled: true
 Style/CollectionMethods:
