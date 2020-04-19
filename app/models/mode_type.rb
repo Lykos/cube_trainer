@@ -94,16 +94,21 @@ class ModeType
   end
 
   def min_cube_size
-    return part_type.min_cube_size unless parity_part_type && parity_part_type.min_cube_size < part_type.min_cube_size
+    parity_part_type_min_cube_size = parity_part_type ? parity_part_type.min_cube_size : -Float::INFINITY
 
-    parity_part_type.min_cube_size
+    maximal_min_cube_size = [part_type.min_cube_size, parity_part_type_min_cube_size].max
+    wrong_parity?(maximal_min_cube_size) ? maximal_min_cube_size + 1 : maximal_min_cube_size
   end
 
   def max_cube_size
-    return MAX_SUPPORTED_CUBE_SIZE if part_type.max_cube_size > MAX_SUPPORTED_CUBE_SIZE
-    return part_type.max_cube_size unless parity_part_type && parity_part_type.max_cube_size < part_type.max_cube_size
+    parity_part_type_max_cube_size = parity_part_type ? parity_part_type.max_cube_size : Float::INFINITY
 
-    parity_part_type.max_cube_size
+    minimal_max_cube_size = [part_type.max_cube_size, parity_part_type_max_cube_size, MAX_SUPPORTED_CUBE_SIZE].min
+    wrong_parity?(minimal_max_cube_size) ? minimal_max_cube_size - 1 : minimal_max_cube_size
+  end
+
+  def wrong_parity?(cube_size)
+    (cube_size.even? && !even_cube_size_allowed?) || (cube_size.odd? && !odd_cube_size_allowed?)
   end
 
   def odd_cube_size_allowed?
