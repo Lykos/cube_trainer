@@ -135,6 +135,30 @@ static VALUE CubeAverage_push(const VALUE self, const VALUE new_value) {
   return DBL2NUM(data->average);
 }
 
+static VALUE CubeAverage_push_all(const VALUE self, const VALUE new_values) {
+  Check_Type(new_values, T_ARRAY);
+  CubeAverageData* data;
+  GetInitializedCubeAverageData(self, data);
+
+  const size_t num_values = RARRAY_LEN(new_values);
+  if (num_values == 0) {
+    return DBL2NUM(data->average);
+  }
+  const size_t insert_index = data->insert_index;
+  const size_t capacity = data->capacity;
+  const size_t start = num_values > capacity ? num_values - capacity : 0;
+  for (size_t i = start; i < RARRAY_LEN(new_values); ++i) {
+    const VALUE new_value = rb_ary_entry(new_values, i);
+    data->values[(insert_index + i) % capacity] = NUM2DBL(new_value);
+  }
+
+  data->size = MIN(data->size + num_values, capacity);
+  data->insert_index = (insert_index + num_values) % capacity;
+  data->average = compute_cube_average(data->values, data->size);
+  
+  return DBL2NUM(data->average);
+}
+
 static VALUE CubeAverage_saturated(const VALUE self) {
   const CubeAverageData* data;
   GetInitializedCubeAverageData(self, data);
@@ -154,6 +178,7 @@ void init_cube_average_class_under(const VALUE module) {
   rb_define_method(CubeAverageClass, "capacity", CubeAverage_capacity, 0);
   rb_define_method(CubeAverageClass, "length", CubeAverage_length, 0);
   rb_define_method(CubeAverageClass, "push", CubeAverage_push, 1);
+  rb_define_method(CubeAverageClass, "push_all", CubeAverage_push_all, 1);
   rb_define_method(CubeAverageClass, "saturated?", CubeAverage_saturated, 0);
   rb_define_method(CubeAverageClass, "average", CubeAverage_average, 0);
 }

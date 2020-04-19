@@ -91,7 +91,41 @@ describe Native::CubeAverage do
       expect(average_computer.average).to be == 5
     end
 
-    it 'is not saturated' do
+    it 'is saturated' do
+      expect(average_computer).to be_saturated
+    end
+  end
+
+  context 'when zero elements get pushed at once' do
+    before do
+      average_computer.push_all([])
+    end
+
+    it 'returns the default average initially' do
+      expect(average_computer.average).to be == 6
+    end
+  end
+
+  context 'when two elements get pushed at once' do
+    before do
+      average_computer.push_all([1, 3])
+    end
+
+    it 'returns the default average initially' do
+      expect(average_computer.average).to be == 2
+    end
+  end
+
+  context 'when many elements get pushed at once' do
+    before do
+      average_computer.push_all([2, 1, 7, 6, 4, 5])
+    end
+
+    it 'returns the mathematical average without the element that gets thrown out, the top and bottom element as the average' do
+      expect(average_computer.average).to be == 5
+    end
+
+    it 'is saturated' do
       expect(average_computer).to be_saturated
     end
   end
