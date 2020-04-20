@@ -5,6 +5,15 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:11
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: cube_trainer
+          POSTGRES_PASSWORD: PjQaAYuGZ1ksUhTFvE4=
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
     - uses: actions/checkout@v1
     - name: Set up Ruby 2.6
@@ -16,13 +25,24 @@ jobs:
     - name: Install Package Dependencies
       uses: mstksg/get-package@v1
       with:
-        apt-get: libsqlite3-dev # libqt4-dev ruby-dev cmake
+        apt-get: libsqlite3-dev libpq-dev # libqt4-dev ruby-dev cmake
     - name: Install gem dependencies
       run: |
         gem install bundler
         bundle config set without 'ui'
         bundle install --jobs 4 --retry 3
-    - name: Build and test with Rake
+    - name: Setup Database
       run: |
-        rails compile
-        rails spec
+        cp config/database.yml.github-actions config/database.yml
+        bundle exec rake db:create
+        bundle exec rake db:schema:load
+      env:
+        RAILS_ENV: test
+    - name: Compile extensions.
+      run: bundle exec rake compile
+      env:
+        RAILS_ENV: test
+    - name: Run Rspec
+      run: bundle exec rake spec
+      env:
+        RAILS_ENV: test
