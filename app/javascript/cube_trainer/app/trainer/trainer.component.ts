@@ -48,6 +48,9 @@ enum StopWatchState {
   <div flex>
     <results-table [resultEvents$]="resultEventsSubject.asObservable()"></results-table>
   </div>
+  <div flex>
+    <stats-table [statEvents$]="resultEventsSubject.asObservable()"></stats-table>
+  </div>
 </div>
 `
 })

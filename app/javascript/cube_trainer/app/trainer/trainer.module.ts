@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { TrainerComponent } from './trainer.component';
 import { TrainerService } from './trainer.service';
 import { UtilsModule } from '../utils/utils.module';
+import { ModesModule } from '../modes/modes.module';
 import { ResultsService } from './results.service';
 import { MatTableModule } from '@angular/material/table';
 import { TrainerInputComponent } from './trainer-input.component';
@@ -25,6 +26,7 @@ import { MatRippleModule } from '@angular/material/core';
     BrowserModule,
     MatCardModule,
     MatRippleModule,
+    ModesModule,
     MatTableModule,
     MatProgressSpinnerModule,
     MatButtonModule,
