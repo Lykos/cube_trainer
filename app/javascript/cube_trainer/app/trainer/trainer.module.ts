@@ -10,6 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 import { TrainerInputComponent } from './trainer-input.component';
 import { ResultsTableComponent } from './results-table.component';
 import { RailsModule } from '../rails/rails.module';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -28,6 +29,7 @@ import { MatRippleModule } from '@angular/material/core';
     MatRippleModule,
     ModesModule,
     MatTableModule,
+    MatSnackBarModule,
     MatProgressSpinnerModule,
     MatButtonModule,
     MatCheckboxModule,

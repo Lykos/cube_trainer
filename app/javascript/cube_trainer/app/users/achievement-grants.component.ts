@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
   selector: 'achievement-grants',
   template: `
 <div>
-  <h2>Achievements</h2>
+  <h2>Your Achievements</h2>
   <div>
     <table mat-table class="mat-elevation-z2" [dataSource]="achievementGrants">
       <ng-container matColumnDef="timestamp">

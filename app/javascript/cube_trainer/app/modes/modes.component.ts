@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ModesService } from './modes.service';
 import { Mode } from './mode';
 import { Router } from '@angular/router';
+import { DeleteModeConfirmationDialog } from './delete-mode-confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'modes',
@@ -53,6 +56,8 @@ export class ModesComponent implements OnInit {
   columnsToDisplay = ['name', 'numResults', 'use', 'delete'];
 
   constructor(private readonly modesService: ModesService,
+	      private readonly dialog: MatDialog,
+	      private readonly snackBar: MatSnackBar,
 	      private readonly router: Router) {}
 
   onUse(mode: Mode) {
@@ -60,6 +65,10 @@ export class ModesComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.update();
+  }
+
+  update() {
     this.modesService.list().subscribe((modes: Mode[]) => this.modes = modes);
   }
 
@@ -68,8 +77,13 @@ export class ModesComponent implements OnInit {
   }
 
   onDelete(mode: Mode) {
-    this.modesService.destroy(mode.id).subscribe(() => {
-      this.modesService.list().subscribe((modes: Mode[]) => this.modes = modes);
+    const dialogRef = this.dialog.open(DeleteModeConfirmationDialog, { data: mode });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+	this.snackBar.open(`Mode ${mode.name} deleted`, 'Close');
+	this.modesService.destroy(mode.id).subscribe(() => this.update());
+      }
     });
   }
 }

@@ -5,6 +5,7 @@ import { UsersModule } from '../users/users.module';
 import { UniqueModeNameValidator } from './unique-mode-name.validator';
 import { ModesService } from './modes.service';
 import { StatsService } from './stats.service';
+import { DeleteModeConfirmationDialog } from './delete-mode-confirmation-dialog.component';
 import { RxReactiveFormsModule } from "@rxweb/reactive-form-validators"
 import { StatsTableComponent } from './stats-table.component';
 import { ModesComponent } from './modes.component';
@@ -27,16 +28,19 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
     StatsTableComponent,
     ModesComponent,
     NewModeComponent,
+    DeleteModeConfirmationDialog,
   ],
   imports: [
     BrowserModule,
     RailsModule,
+    MatDialogModule,
     MatSnackBarModule,
     UsersModule,
     UtilsModule,
@@ -69,6 +73,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     StatsTableComponent,
     ModesComponent,
     NewModeComponent,
+  ],
+  entryComponents: [
+    DeleteModeConfirmationDialog,
   ],
 })
 export class ModesModule {}

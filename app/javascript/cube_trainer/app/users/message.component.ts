@@ -3,6 +3,7 @@ import { MessagesService } from './messages.service';
 import { Message } from './message';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -10,11 +11,12 @@ import { map } from 'rxjs/operators';
   template: `
 <mat-card>
   <mat-card-title>{{title}}</mat-card-title>
-  <mat-card-subtitle>Received {{timestamp | instant}}</mat-card-subtitle>
+  <mat-card-subtitle>Received {{timestamp ? (timestamp | instant) : undefined}}</mat-card-subtitle>
   <mat-card-content>
     {{body}}
   </mat-card-content>
   <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="onDelete()">Delete</button>
     <button mat-raised-button color="primary" (click)="onAll()">All Messages</button>
   </mat-card-actions>
 </mat-card>
@@ -27,6 +29,7 @@ export class MessageComponent implements OnInit {
 
   constructor(private readonly messagesService: MessagesService,
 	      private readonly router: Router,
+	      private readonly snackBar: MatSnackBar,
 	      private readonly activatedRoute: ActivatedRoute) {
     this.userId$ = this.activatedRoute.params.pipe(map(p => p.userId));
     this.messageId$ = this.activatedRoute.params.pipe(map(p => p.messageId));
@@ -47,6 +50,17 @@ export class MessageComponent implements OnInit {
   onAll() {
     this.userId$.subscribe(userId => {    
       this.router.navigate([`/users/${userId}/messages`]);
+    });
+  }
+
+  onDelete() {
+    this.userId$.subscribe(userId => {
+      this.messageId$.subscribe(messageId => {
+	this.messagesService.destroy(userId, messageId).subscribe(() => {
+	  this.snackBar.open(`Message ${this.message!.title} deleted!`, 'Close');
+	  this.router.navigate([`/users/${userId}/messages`]);
+	});
+      });      
     });
   }
 

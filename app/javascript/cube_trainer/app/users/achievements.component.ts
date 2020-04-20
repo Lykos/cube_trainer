@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   selector: 'achievements',
   template: `
 <div>
-  <h2>Achievements</h2>
+  <h2>All Achievements</h2>
   <div>
     <table mat-table class="mat-elevation-z2" [dataSource]="achievements">
       <ng-container matColumnDef="name">

@@ -385,7 +385,7 @@ export class NewModeComponent implements OnInit {
   onSubmit() {
     this.modesService.create(this.newMode).subscribe(
       r => {
-	this.snackBar.open('Mode Created!', 'Close');
+	this.snackBar.open(`Mode ${this.newMode.name} Created!`, 'Close');
 	this.router.navigate([`/modes`]);
       });
   }

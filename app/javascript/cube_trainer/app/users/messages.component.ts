@@ -4,6 +4,7 @@ import { MessagesService } from './messages.service';
 import { formatDate } from '@angular/common';
 import { Message } from './message';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, zip } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -74,6 +75,7 @@ export class MessagesComponent implements OnInit {
   constructor(private readonly messagesService: MessagesService,
 	      @Inject(LOCALE_ID) private readonly locale: string,
 	      private readonly router: Router,
+	      private readonly snackBar: MatSnackBar,
 	      private readonly activatedRoute: ActivatedRoute) {
     this.userId$ = this.activatedRoute.params.pipe(map(p => p.userId));
   }
@@ -101,6 +103,7 @@ export class MessagesComponent implements OnInit {
 	this.messagesService.markAsRead(modeId, message.id));
       zip(...observables).subscribe((voids) => {
 	this.selection.clear();
+	this.snackBar.open(`Marked ${observables.length} messages as read!`, 'Close');
 	this.update();
       });
     });
@@ -112,6 +115,7 @@ export class MessagesComponent implements OnInit {
 	this.messagesService.destroy(modeId, message.id));
       zip(...observables).subscribe((voids) => {
 	this.selection.clear();
+	this.snackBar.open(`Deleted ${observables.length} messages!`, 'Close');
 	this.update();
       });
     });

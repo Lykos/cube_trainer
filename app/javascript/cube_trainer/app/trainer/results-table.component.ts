@@ -4,6 +4,7 @@ import { Result } from './result';
 import { Component, OnInit, OnDestroy, Input, LOCALE_ID, Inject } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { formatDate } from '@angular/common';
 // @ts-ignore
 import Rails from '@rails/ujs';
@@ -79,6 +80,7 @@ export class ResultsTableComponent implements OnInit, OnDestroy {
   private selection = new SelectionModel<Result>(true, []);
 
   constructor(private readonly resultsService: ResultsService,
+	      private readonly snackBar: MatSnackBar,
 	      @Inject(LOCALE_ID) private readonly locale: string,
 	      activatedRoute: ActivatedRoute) {
     this.modeId$ = activatedRoute.params.pipe(map(p => p.modeId));
@@ -106,6 +108,7 @@ export class ResultsTableComponent implements OnInit, OnDestroy {
 	this.resultsService.destroy(modeId, result.id));
       zip(...observables).subscribe((voids) => {
 	this.selection.clear();
+	this.snackBar.open(`Deleted ${observables.length} results!`, 'Close');
 	this.update();
       });
     });
