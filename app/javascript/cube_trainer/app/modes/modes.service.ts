@@ -68,6 +68,10 @@ export class ModesService {
     return this.rails.ajax<Mode>(HttpVerb.Get, `/modes/${modeId}`, {}).pipe(map(parseMode));
   }
 
+  destroy(modeId: number): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Delete, `/modes/${modeId}`, {});
+  }
+
   create(mode: NewMode): Observable<Mode> {
     return this.rails.ajax<Mode>(HttpVerb.Post, '/modes', {mode});
   }

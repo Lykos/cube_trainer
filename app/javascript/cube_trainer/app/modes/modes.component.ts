@@ -15,8 +15,24 @@ import { Router } from '@angular/router';
         <th mat-header-cell *matHeaderCellDef> Number of Results </th>
         <td mat-cell *matCellDef="let mode"> {{mode.numResults}} </td>
       </ng-container>
+      <ng-container matColumnDef="use">
+        <th mat-header-cell *matHeaderCellDef> Use </th>
+        <td mat-cell *matCellDef="let mode">
+          <button mat-icon-button (click)="onUse(mode)">
+            <span class="material-icons">play_arrow</span>
+          </button>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="delete">
+        <th mat-header-cell *matHeaderCellDef> Delete </th>
+        <td mat-cell *matCellDef="let mode">
+          <button mat-icon-button (click)="onDelete(mode)">
+            <span class="material-icons">delete</span>
+          </button>
+        </td>
+      </ng-container>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-      <tr mat-row *matRowDef="let mode; columns: columnsToDisplay" (click)="onClick(mode)"></tr>
+      <tr mat-row *matRowDef="let mode; columns: columnsToDisplay"></tr>
     </table>
   </div>
   <div>
@@ -25,16 +41,21 @@ import { Router } from '@angular/router';
     </button>
   </div>
 </div>
-`
+`,
+  styles: [`
+table {
+  width: 100%;
+}
+`]
 })
 export class ModesComponent implements OnInit {
   modes: Mode[] = [];
-  columnsToDisplay = ['name', 'numResults'];
+  columnsToDisplay = ['name', 'numResults', 'use', 'delete'];
 
   constructor(private readonly modesService: ModesService,
 	      private readonly router: Router) {}
 
-  onClick(mode: Mode) {
+  onUse(mode: Mode) {
     this.router.navigate([`/trainer/${mode.id}`]);
   }
 
@@ -44,5 +65,11 @@ export class ModesComponent implements OnInit {
 
   onNew() {
     this.router.navigate(['/modes/new']);
+  }
+
+  onDelete(mode: Mode) {
+    this.modesService.destroy(mode.id).subscribe(() => {
+      this.modesService.list().subscribe((modes: Mode[]) => this.modes = modes);
+    });
   }
 }
