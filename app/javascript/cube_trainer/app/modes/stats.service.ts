@@ -1,0 +1,47 @@
+import { RailsService } from '../rails/rails.service';
+import { Injectable } from '@angular/core';
+import { HttpVerb } from '../rails/http_verb';
+import { Stat } from './stat';
+import { StatPart } from './stat-part';
+import { StatType } from './stat-type';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { seconds } from '../utils/duration'
+import { fromDateString } from '../utils/instant'
+
+function parseStatPart(statPart: any): StatPart {
+  return {
+    name: statPart.name,
+    duration: seconds(statPart.time_s),
+  }
+}
+
+function parseStat(stat: any): Stat {
+  return {
+    id: stat.id,
+    timestamp: fromDateString(stat.created_at),
+    statType: stat.stat_type,
+    parts: stat.stat_parts.map(parseStatPart),
+  };
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class StatsService {
+  constructor(private readonly rails: RailsService) {}
+
+
+  listTypes(): Observable<StatType[]> {
+    return this.rails.ajax<StatType[]>(HttpVerb.Get, '/stat_types', {});
+  }
+  
+  list(modeId: number): Observable<Stat[]> {
+    return this.rails.ajax<any[]>(HttpVerb.Get, `/modes/${modeId}/stats`, {}).pipe(
+      map(stats => stats.map(parseStat)));
+  }
+
+  destroy(modeId: number, statId: number): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Delete, `/modes/${modeId}/stats/${statId}`, {});
+  }
+}

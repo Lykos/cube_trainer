@@ -1,8 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RailsModule } from '../rails/rails.module';
 import { UsersModule } from '../users/users.module';
 import { UniqueModeNameValidator } from './unique-mode-name.validator';
 import { ModesService } from './modes.service';
+import { StatsService } from './stats.service';
 import { RxReactiveFormsModule } from "@rxweb/reactive-form-validators"
 import { ModesComponent } from './modes.component';
 import { NewModeComponent } from './new-mode.component';
@@ -30,6 +32,7 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
     RailsModule,
     MatSnackBarModule,
     UsersModule,
+    BrowserAnimationsModule,
     MatTableModule,
     RouterModule,
     MatButtonModule,
@@ -47,6 +50,7 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
   ],
   providers: [
     ModesService,
+    StatsService,
     UniqueModeNameValidator,
   ],
   exports: [
