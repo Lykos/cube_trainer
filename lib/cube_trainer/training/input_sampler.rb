@@ -111,12 +111,13 @@ module CubeTrainer
         config
       end
 
-      def create_result_history(mode)
+      def create_result_history(cached_inputs)
         ResultHistory.new(
-          mode: mode,
+          mode: @mode,
           badness_memory: @config[:badness_memory],
           failed_seconds: @config[:failed_seconds],
-          hint_seconds: @config[:hint_seconds]
+          hint_seconds: @config[:hint_seconds],
+          cached_inputs: cached_inputs,
         )
       end
 
@@ -166,8 +167,8 @@ module CubeTrainer
         CombinedSampler::SubSampler.new(sampler, sampling_fraction)
       end
 
-      def random_item
-        @result_history = create_result_history(@mode)
+      def random_item(cached_inputs=[])
+        @result_history = create_result_history(cached_inputs)
         sampler = create_sampler
         managed_sample = sampler.random_item
 
@@ -184,7 +185,7 @@ module CubeTrainer
 
       attr_reader :items
 
-      def random_item
+      def random_item(cached_inputs=[])
         @items.sample
       end
     end

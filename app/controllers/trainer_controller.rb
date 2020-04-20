@@ -13,7 +13,7 @@ class TrainerController < ApplicationController
 
   # POST /trainer/1/inputs
   def create
-    input_item = @mode.random_item
+    input_item = @mode.random_item(cached_item_ids)
     input = @mode.inputs.new(input_representation: input_item.representation)
     if input.save
       response = {
@@ -50,6 +50,14 @@ class TrainerController < ApplicationController
   end
 
   private
+
+  def cached_inputs
+    @cached_inputs ||= @mode.inputs.where(id: cached_item_ids)
+  end
+
+  def cached_item_ids
+    @cached_item_ids ||= params[:cached_item_ids] || []
+  end
 
   def set_input
     head :not_found unless (@input = @mode.inputs.find_by(id: params[:id]))

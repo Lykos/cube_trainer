@@ -9,6 +9,10 @@ class Input < ApplicationRecord
   attribute :old_mode, :symbol
   attribute :input_representation, :input_representation
 
+  def representation
+    input_representation
+  end
+
   validates :hostname, presence: true
   validates :input_representation, presence: true
   validates :mode_id, presence: true
