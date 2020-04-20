@@ -30,6 +30,10 @@ export class MessagesService {
     return this.rails.ajax<void>(HttpVerb.Put, `/users/${userId}/messages/${messageId}`, {message: {read: true}})
   }
 
+  destroy(userId: number, messageId: number): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Delete, `/users/${userId}/messages/${messageId}`, {})
+  }
+
   list(userId: number): Observable<Message[]> {
     return this.rails.ajax<any[]>(HttpVerb.Get, `/users/${userId}/messages`, {}).pipe(
       map(messages => messages.map(this.parseMessage)));

@@ -21,7 +21,12 @@ import { Router } from '@angular/router';
     </table>
   </div>
 </div>
-`
+`,
+  styles: [`
+table {
+  width: 100%;
+}
+`]
 })
 export class AchievementsComponent implements OnInit {
   achievements: Achievement[] = [];

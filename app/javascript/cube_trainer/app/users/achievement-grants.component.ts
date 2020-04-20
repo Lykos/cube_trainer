@@ -27,7 +27,12 @@ import { map } from 'rxjs/operators';
     </table>
   </div>
 </div>
-`
+`,
+  styles: [`
+table {
+  width: 100%;
+}
+`]
 })
 export class AchievementGrantsComponent implements OnInit {
   userId$: Observable<number>;
