@@ -57,9 +57,9 @@ group :development do
 
   gem 'rake-compiler'
   gem 'rubocop', '>=0.80'
-  gem 'rubocop-performance', require: false
-  gem 'rubocop-rails', require: false
-  gem 'rubocop-rake', require: false
+  gem 'rubocop-performance'
+  gem 'rubocop-rails'
+  gem 'rubocop-rake'
 end
 
 group :test do
