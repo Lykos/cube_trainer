@@ -88,6 +88,7 @@ export class TrainerComponent implements OnDestroy {
     return {
       numHints: this.numHintsSubject.value,
       duration: this.duration!,
+      success: true,
     }
   }
 

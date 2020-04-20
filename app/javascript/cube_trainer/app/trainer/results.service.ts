@@ -14,6 +14,7 @@ function parseResult(result: any): Result {
     duration: seconds(result.time_s),
     inputRepresentation: result.input_representation,
     numHints: result.num_hints,
+    success: result.success,
   };
 }
 

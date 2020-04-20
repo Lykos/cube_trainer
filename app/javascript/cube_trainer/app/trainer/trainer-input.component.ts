@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
   <img flex [src]="imgRightSrc">
 </div>
 </ng-container>
-<span class="trainer-input mat-elevation-z2" *ngIf="showName">{{input.representation}}</span>
+<span class="trainer-input mat-elevation-z4" *ngIf="showName">{{input.representation}}</span>
 <div class="hints" *ngIf="numHints > 0">
   <div class="hint" *ngFor="let hint of hints">
     {{hint}}
