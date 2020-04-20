@@ -317,7 +317,7 @@ class ModeType
   end
 
   def self.find_by!(key:)
-    find_by(key: key) || (raise ArgumentError)
+    find_by(key: key) || (raise ArgumentError, "Unknown mode type #{key}.")
   end
 end
 # rubocop:enable Metrics/ClassLength
