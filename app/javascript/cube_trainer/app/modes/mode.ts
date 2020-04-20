@@ -1,6 +1,6 @@
-import { NewMode } from './new-mode';
+import { ModeBase } from './mode-base';
 
-export interface Mode extends NewMode {
+export interface Mode extends ModeBase {
   readonly id: number;
   readonly numResults: number;
 }

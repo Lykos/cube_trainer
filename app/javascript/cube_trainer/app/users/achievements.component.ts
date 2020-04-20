@@ -10,7 +10,12 @@ import { Router } from '@angular/router';
   <h2>Achievements</h2>
   <div>
     <table mat-table class="mat-elevation-z2" [dataSource]="achievements">
-      <mat-text-column name="name"></mat-text-column>
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let achievement" matTooltip="{{achievement.description}}">
+          {{achievement.name}}
+        </td>
+      </ng-container>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let achievement; columns: columnsToDisplay" (click)="onClick(achievement)"></tr>
     </table>

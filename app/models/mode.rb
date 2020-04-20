@@ -11,10 +11,11 @@ class Mode < ApplicationRecord
   has_many :inputs, dependent: :destroy
   belongs_to :user
 
-  # Make this a mode type
   attribute :mode_type, :mode_type
   attribute :show_input_mode, :symbol
+  attr_accessor :stat_types
 
+  before_validation :set_stats
   validates :user_id, presence: true
   validates :name, presence: true, uniqueness: { scope: :user }
   validates :mode_type, presence: true
@@ -165,5 +166,13 @@ class Mode < ApplicationRecord
   def parity_part_valid?(parity_part)
     parity_part_type.parse(parity_part)
   rescue ArgumentError # rubocop:disable Lint/SuppressedException
+  end
+
+  def set_stats
+    return unless stat_types.present? && stats.blank?
+
+    stat_types.each_with_index do |stat_type, index|
+      stats.build(stat_type: stat_type, index: index)
+    end
   end
 end

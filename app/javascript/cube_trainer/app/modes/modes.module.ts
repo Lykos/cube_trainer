@@ -15,6 +15,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { UtilsModule } from '../utils/utils.module';
 import { MatSelectModule } from '@angular/material/select';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
@@ -25,6 +26,7 @@ import { RouterModule } from '@angular/router';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRippleModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -50,11 +52,13 @@ import { MatRippleModule } from '@angular/material/core';
     MatCardModule,
     MatInputModule,
     MatFormFieldModule,
+    DragDropModule,
     MatSelectModule,
     MatCheckboxModule,
     FormsModule,
     ReactiveFormsModule,
     RxReactiveFormsModule,
+    MatTooltipModule,
   ],
   providers: [
     ModesService,

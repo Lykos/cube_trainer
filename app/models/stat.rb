@@ -8,13 +8,13 @@ class Stat < ApplicationRecord
   after_create :grant_stat_achievement
 
   def to_simple
-    {
+    p({
       id: id,
       index: index,
       created_at: created_at,
       stat_type: stat_type.to_simple,
       stat_parts: stat_type.stat_parts(mode)
-    }
+    })
   end
 
   def grant_stat_achievement

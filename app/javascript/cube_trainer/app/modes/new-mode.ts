@@ -1,11 +1,5 @@
-import { ShowInputMode } from './show-input-mode';
+import { ModeBase } from './mode-base';
 
-export interface NewMode {
-  readonly modeType: string;
-  readonly name: string;
-  readonly known: boolean;
-  readonly showInputMode: ShowInputMode;
-  readonly buffer?: string;
-  readonly goalBadness?: number;
-  readonly cubeSize?: number
+export interface NewMode extends ModeBase {
+  readonly statTypes: string[];
 }

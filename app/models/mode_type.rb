@@ -96,10 +96,6 @@ class ModeType
     }
   end
 
-  def cube_size?
-    part_type
-  end
-
   def min_cube_size
     parity_part_type_min_cube_size =
       parity_part_type ? parity_part_type.min_cube_size : -Float::INFINITY
@@ -137,6 +133,8 @@ class ModeType
   def part_type
     generator_class.const_defined?(:PART_TYPE) ? generator_class::PART_TYPE : nil
   end
+
+  alias cube_size? part_type
 
   def parity_part_type
     generator_class.const_defined?(:PARITY_PART_TYPE) ? generator_class::PARITY_PART_TYPE : nil

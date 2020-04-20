@@ -21,7 +21,7 @@ class StatType
   end
 
   def stat_parts(mode)
-    parts.each do |part|
+    parts.map do |part|
       { name: part.name, time_s: part.calculate(mode) }
     end
   end

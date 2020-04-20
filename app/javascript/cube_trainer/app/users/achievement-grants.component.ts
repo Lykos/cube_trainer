@@ -18,7 +18,9 @@ import { map } from 'rxjs/operators';
       </ng-container>
       <ng-container matColumnDef="achievement">
         <th mat-header-cell *matHeaderCellDef> Achievement </th>
-        <td mat-cell *matCellDef="let achievementGrant"> {{achievementGrant.achievement.name}} </td>
+        <td mat-cell *matCellDef="let achievementGrant" matTooltip="{{achievementGrant.achievement.description}}">
+          {{achievementGrant.achievement.name}}
+        </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let achievementGrant; columns: columnsToDisplay" (click)="onClick(achievementGrant)"></tr>

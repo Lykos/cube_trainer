@@ -3,10 +3,13 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { UniqueModeNameValidator } from './unique-mode-name.validator';
 import { ModeType } from './mode-type';
 import { ModesService } from './modes.service';
+import { StatsService } from './stats.service';
 import { NewMode } from './new-mode';
+import { StatType } from './stat-type';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'edit-mode',
@@ -101,21 +104,131 @@ import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validato
       <mat-checkbox formControlName="known">Known</mat-checkbox>
       <div>
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
-        <button mat-raised-button color="primary" (click)="onSubmit()">Submit</button>
+        <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
     </form>
   </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Setup Stats</ng-template>
+    <div cdkDropListGroup>
+      <div class="stats-container">
+        <h2>Available stats</h2>
+      
+        <div
+          cdkDropList
+          [cdkDropListData]="statTypes"
+          class="stats-list"
+          cdkDropListSortingDisabled
+          (cdkDropListDropped)="drop($event)">
+          <div
+            class="stats-box"
+            *ngFor="let statType of statTypes"
+            cdkDrag
+            matTooltip="{{statType.description}}">
+            {{statType.name}}
+          </div>
+        </div>
+      </div>
+      
+      <div class="stats-container">
+        <h2>Picked Stats</h2>
+      
+        <div
+          cdkDropList
+          [cdkDropListData]="pickedStatTypes"
+          class="stats-list"
+          (cdkDropListDropped)="drop($event)">
+          <div
+            class="stats-box"
+            *ngFor="let statType of pickedStatTypes"
+            cdkDrag
+            matTooltip="{{statType.description}}">
+            {{statType.name}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <button mat-raised-button color="primary" matStepperPrevious>Back</button>
+      <button mat-raised-button color="primary" (click)="onSubmit()">Submit</button>
+    </div>
+  </mat-step>
 </mat-horizontal-stepper>
 `,
+  styles: [`
+/* Animate items as they're being sorted. */
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Animate an item that has been dropped. */
+.cdk-drag-animating {
+  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.stats-container {
+  width: 400px;
+  max-width: 100%;
+  margin: 0 25px 25px 0;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.stats-list {
+  border: solid 1px #ccc;
+  min-height: 60px;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+  display: block;
+}
+
+.stats-box {
+  padding: 20px 10px;
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  cursor: move;
+  background: white;
+  font-size: 14px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.stats-box:last-child {
+  border: none;
+}
+
+.stats-list.cdk-drop-list-dragging .stats-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+`]
 })
 export class NewModeComponent implements OnInit {
   modeTypeGroup!: FormGroup;
   setupGroup!: FormGroup;
   trainingGroup!: FormGroup;
   modeTypes!: ModeType[];
+  statTypes: StatType[] = [];
+  pickedStatTypes: StatType[] = [];
   
   constructor(private readonly formBuilder: FormBuilder,
 	      private readonly modesService: ModesService,
+	      private readonly statsService: StatsService,
 	      private readonly router: Router,
 	      private readonly snackBar: MatSnackBar,
 	      private readonly uniqueModeNameValidator: UniqueModeNameValidator) {}
@@ -211,6 +324,7 @@ export class NewModeComponent implements OnInit {
       buffer: this.buffer.value,
       goalBadness: this.goalBadness.value,
       cubeSize: this.cubeSize.value,
+      statTypes: this.pickedStatTypes.map(s => s.key),
     };
   }
 
@@ -238,6 +352,7 @@ export class NewModeComponent implements OnInit {
 
   ngOnInit() {
     this.modesService.listTypes().subscribe((modeTypes: ModeType[]) => this.modeTypes = modeTypes);
+    this.statsService.listTypes().subscribe((statTypes: StatType[]) => this.statTypes = statTypes);
     this.modeTypeGroup = this.formBuilder.group({
       name: ['', { validators: Validators.required, asyncValidators: this.uniqueModeNameValidator.validate, updateOn: 'blur' }],
       modeType: ['', Validators.required],
@@ -273,5 +388,16 @@ export class NewModeComponent implements OnInit {
 	this.snackBar.open('Mode Created!', 'Close');
 	this.router.navigate([`/modes`]);
       });
+  }
+
+  drop(event: CdkDragDrop<StatType[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(event.previousContainer.data,
+                        event.container.data,
+                        event.previousIndex,
+                        event.currentIndex);
+    }
   }
 }

@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RailsModule } from '../rails/rails.module';
 import { UsersService } from './users.service';
 import { UserComponent } from './user.component';
@@ -24,6 +25,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { UtilsModule } from '../utils/utils.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {MatTooltipModule} from '@angular/material/tooltip';
+
 
 @NgModule({
   declarations: [
@@ -38,6 +41,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     RailsModule,
     MatButtonModule,
     MatCardModule,
@@ -48,6 +52,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MatFormFieldModule,
     ReactiveFormsModule,
     FormsModule,
+    MatTooltipModule,
     UtilsModule,
   ],
   providers: [
