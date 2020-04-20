@@ -58,7 +58,10 @@ shared_context :stat do
   include_context :mode
 
   let(:stat) do
-    Stat.find_or_create_by!(mode: mode, stat_type: :averages)
+    stat = Stat.find_or_initialize_by(mode: mode, stat_type: :averages)
+    stat.update(index: 0)
+    stat.save!
+    stat
   end
 end
 

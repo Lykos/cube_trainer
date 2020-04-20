@@ -10,6 +10,7 @@ class Stat < ApplicationRecord
   def to_simple
     {
       id: id,
+      index: index,
       created_at: created_at,
       stat_type: stat_type.to_simple,
       stat_parts: stat_type.stat_parts(mode)
