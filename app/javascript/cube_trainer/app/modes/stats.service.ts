@@ -19,6 +19,7 @@ function parseStatPart(statPart: any): StatPart {
 function parseStat(stat: any): Stat {
   return {
     id: stat.id,
+    index: stat.index,
     timestamp: fromDateString(stat.created_at),
     statType: stat.stat_type,
     parts: stat.stat_parts.map(parseStatPart),
@@ -30,7 +31,6 @@ function parseStat(stat: any): Stat {
 })
 export class StatsService {
   constructor(private readonly rails: RailsService) {}
-
 
   listTypes(): Observable<StatType[]> {
     return this.rails.ajax<StatType[]>(HttpVerb.Get, '/stat_types', {});
