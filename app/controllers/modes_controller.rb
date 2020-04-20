@@ -83,6 +83,7 @@ class ModesController < ApplicationController
   def mode_params
     params
       .require(:mode)
-      .permit(:name, :known, :mode_type, :show_input_mode, :buffer, :goal_badness, :cube_size, stat_types: [])
+      .permit(:name, :known, :mode_type, :show_input_mode, :buffer, :goal_badness, :cube_size,
+              stat_types: [])
   end
 end

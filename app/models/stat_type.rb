@@ -34,6 +34,7 @@ class StatType
       .else(Arel::Nodes::Quoted.new('Infinity'))
   end
 
+  # Stat part that computes an average like ao5.
   class Average
     def initialize(size)
       @size = size
@@ -54,14 +55,14 @@ class StatType
     end
   end
 
+  # Stat part that computes a mean like mo5.
   class Mean
     def initialize(size)
       @size = size
     end
 
     def calculate(mode)
-      times =
-        mode
+      mode
         .inputs
         .joins(:result)
         .limit(@size)
