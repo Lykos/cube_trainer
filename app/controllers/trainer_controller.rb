@@ -13,7 +13,7 @@ class TrainerController < ApplicationController
 
   # POST /trainer/1/inputs
   def create
-    input_item = @mode.random_item(cached_item_ids)
+    input_item = @mode.random_item(cached_inputs)
     input = @mode.inputs.new(input_representation: input_item.representation)
     if input.save
       response = {
@@ -52,11 +52,11 @@ class TrainerController < ApplicationController
   private
 
   def cached_inputs
-    @cached_inputs ||= @mode.inputs.where(id: cached_item_ids)
+    @cached_inputs ||= @mode.inputs.where(id: cached_input_ids)
   end
 
-  def cached_item_ids
-    @cached_item_ids ||= params[:cached_item_ids] || []
+  def cached_input_ids
+    @cached_input_ids ||= params[:cached_input_ids] || []
   end
 
   def set_input

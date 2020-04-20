@@ -94,7 +94,7 @@ export class TrainerComponent implements OnDestroy {
 
   onStart() {
     this.modeId$.subscribe(modeId => {
-      this.trainerService.create(modeId).subscribe(input => this.startFor(input));
+      this.trainerService.nextInputItemWithCache(modeId).subscribe(input => this.startFor(input));
     });
   }
 
