@@ -16,7 +16,7 @@ module CubeTrainer
 
       def create_adaptive_sampler(items)
         managed_items = items.map { |i| ManagedInputItem.new(self, i) }
-        AdaptiveSampler.new(managed_items) { |i| score(i.input_item) }
+        AdaptiveSampler.new(snake_case_class_name(self.class), managed_items) { |i| score(i.input_item) }
       end
 
       def sampling_info(input_item)

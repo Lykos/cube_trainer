@@ -24,19 +24,20 @@ module CubeTrainer
       include Utils::SamplingHelper
       SubSampler = Struct.new(:subsampler, :weight)
 
-      def initialize(subsamplers)
+      def initialize(name, subsamplers)
         subsamplers.each do |s|
           raise TypeError, "#{s.inspect} is not a subsampler." unless s.is_a?(SubSampler)
           raise TypeError unless s.weight.is_a?(Numeric)
           raise ArgumentError unless s.weight > 0.0
           raise TypeError unless s.subsampler.is_a?(Sampler)
         end
+        @name = name
         @subsamplers = subsamplers
       end
 
       def random_item
         subsamplers = ready_subsamplers
-        raise SamplingError if subsamplers.empty?
+        raise SamplingError, "No ready subsampler for combined sampler #{@name}." if subsamplers.empty?
 
         sample_by(subsamplers, &:weight).subsampler.random_item
       end
@@ -75,14 +76,15 @@ module CubeTrainer
     class AdaptiveSampler < Sampler
       include Utils::SamplingHelper
 
-      def initialize(items, &get_weight)
+      def initialize(name, items, &get_weight)
+        @name = name
         @items = items
         @get_weight_proc = get_weight
       end
 
       def random_item
         ready_items = items
-        raise SamplingError if ready_items.empty?
+        raise SamplingError, "No ready item for adaptive sampler #{@name}." if ready_items.empty?
 
         sample_by(ready_items, &@get_weight_proc)
       end

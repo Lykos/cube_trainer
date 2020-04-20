@@ -142,6 +142,7 @@ module CubeTrainer
       def create_normal_sampler
         new_fraction = @config[:known] ? SAMPLING_FRACTIONS[:new_known] : SAMPLING_FRACTIONS[:new]
         CombinedSampler.new(
+          'normal_sampler',
           [
             create_adaptive_subsampler(BadnessScorer, SAMPLING_FRACTIONS[:badness]),
             CombinedSampler::SubSampler.new(create_coverage_sampler, SAMPLING_FRACTIONS[:coverage]),
