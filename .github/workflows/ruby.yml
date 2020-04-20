@@ -30,14 +30,14 @@ jobs:
       run: |
         gem install bundler
         bundle install --jobs 4 --retry 3
+    - name: Compile extensions.
+      run: bundle exec rake compile
+      env:
+        RAILS_ENV: test
     - name: Setup Database
       run: |
         bundle exec rake db:create
         bundle exec rake db:schema:load
-      env:
-        RAILS_ENV: test
-    - name: Compile extensions.
-      run: bundle exec rake compile
       env:
         RAILS_ENV: test
     - name: Run Rspec
