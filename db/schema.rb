@@ -107,8 +107,10 @@ ActiveRecord::Schema.define(version: 2020_04_19_221211) do
   create_table "stats", force: :cascade do |t|
     t.bigint "mode_id", null: false
     t.string "stat_type", null: false
+    t.integer "index", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["mode_id", "index"], name: "index_stats_on_mode_id_and_index", unique: true
     t.index ["mode_id", "stat_type"], name: "index_stats_on_mode_id_and_stat_type", unique: true
     t.index ["mode_id"], name: "index_stats_on_mode_id"
   end
