@@ -30,14 +30,19 @@ import { map } from 'rxjs/operators';
           </mat-checkbox>
         </td>
       </ng-container>
+      <mat-text-column name="title"></mat-text-column>
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef> Timestamp </th>
         <td mat-cell *matCellDef="let message"> {{message.timestamp | instant}} </td>
       </ng-container>
-      <mat-text-column name="title"></mat-text-column>
-      <mat-text-column name="read"></mat-text-column>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-      <tr mat-row *matRowDef="let message; columns: columnsToDisplay" (click)="onClick(message)"></tr>
+      <tr
+        mat-row
+        *matRowDef="let message; columns: columnsToDisplay"
+        (click)="onClick(message)"
+        [class.read-message]="message.read"
+        [class.unread-message]="!message.read">
+      </tr>
     </table>
     <button #deleteButton mat-fab (click)="onDeleteSelected()" *ngIf="selection.hasValue()">
       <span class="material-icons">delete</span>
@@ -55,12 +60,15 @@ table {
 .mat-column-select {
   overflow: initial;
 }
+.unread-message {
+  font-weight: bold;
+}
 `]
 })
 export class MessagesComponent implements OnInit {
   userId$: Observable<number>;
   messages: Message[] = [];
-  columnsToDisplay = ['select', 'timestamp', 'title', 'read'];
+  columnsToDisplay = ['select', 'title', 'timestamp'];
   private selection = new SelectionModel<Message>(true, []);
 
   constructor(private readonly messagesService: MessagesService,

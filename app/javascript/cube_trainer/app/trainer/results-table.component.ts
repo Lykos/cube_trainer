@@ -19,7 +19,7 @@ import { ResultsDataSource } from './results.data-source';
     <div class="spinner-container" *ngIf="dataSource.loading$ | async">
       <mat-spinner></mat-spinner>
     </div>
-    <table mat-table class="mat-elevation-z2" [dataSource]="dataSource" matRipple [matRippleTrigger]="deleteButton">
+    <table mat-table class="mat-elevation-z2" [dataSource]="dataSource">
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
           <mat-checkbox (change)="$event ? masterToggle() : null"
@@ -46,7 +46,7 @@ import { ResultsDataSource } from './results.data-source';
       </ng-container>
       <ng-container matColumnDef="time">
         <th mat-header-cell *matHeaderCellDef> Time </th>
-        <td mat-cell *matCellDef="let result"> {{result.duration | duration}} </td>
+        <td mat-cell *matCellDef="let result"> {{result.success ? (result.duration | duration) : 'DNF'}} </td>
       </ng-container>
       <ng-container matColumnDef="numHints">
         <th mat-header-cell *matHeaderCellDef> Num Hints </th>
@@ -55,7 +55,7 @@ import { ResultsDataSource } from './results.data-source';
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let result; columns: columnsToDisplay"></tr>
     </table>
-    <button #deleteButton mat-fab (click)="onDeleteSelected()" *ngIf="selection.hasValue()">
+    <button mat-fab (click)="onDeleteSelected()" *ngIf="selection.hasValue()">
       <span class="material-icons">delete</span>
     </button>
   </div>
@@ -73,7 +73,7 @@ table {
 export class ResultsTableComponent implements OnInit, OnDestroy {
   modeId$: Observable<number>;
   dataSource!: ResultsDataSource;
-  columnsToDisplay = ['select', 'timestamp', 'input', 'time', 'numHints'];
+  columnsToDisplay = ['select', 'input', 'time', 'numHints', 'timestamp'];
   @Input() resultEvents$!: Observable<void>;
   private eventsSubscription!: Subscription;
   private selection = new SelectionModel<Result>(true, []);

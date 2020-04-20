@@ -37,7 +37,7 @@ table {
 export class AchievementGrantsComponent implements OnInit {
   userId$: Observable<number>;
   achievementGrants: AchievementGrant[] = [];
-  columnsToDisplay = ['timestamp', 'achievement'];
+  columnsToDisplay = ['achievement', 'timestamp'];
 
   constructor(private readonly achievementGrantsService: AchievementGrantsService,
 	      private readonly router: Router,

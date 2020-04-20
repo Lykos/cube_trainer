@@ -10,7 +10,7 @@ import { StatsDataSource } from './stats.data-source';
 @Component({
   selector: 'stats-table',
   template: `
-<div>
+<div *ngIf="dataSource.data.length > 0">
   <h2>Stats</h2>
   <div>
     <div class="spinner-container" *ngIf="dataSource.loading$ | async">
