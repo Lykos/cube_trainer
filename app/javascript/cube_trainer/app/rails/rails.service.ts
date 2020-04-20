@@ -18,6 +18,12 @@ class UrlParameterPath {
     return new UrlParameterPath(this.root, extendedPath);
   }
 
+  withArraySegment() {
+    const extendedPath: string[] = Object.assign([], this.path);
+    extendedPath.push('[]');
+    return new UrlParameterPath(this.root, extendedPath);
+  }
+
   key() {
     return snakeCase(this.root) + this.path.map(s => `[${snakeCase(s)}]`).join('');
   }
@@ -66,8 +72,14 @@ export class RailsService {
 
   private serializeUrlParamsPart(value: any, path: UrlParameterPath, partsAccumulator: string[]) {
     if (typeof value === "object") {
-      for (let [key, subValue] of Object.entries(value)) {
-	this.serializeUrlParamsPart(subValue, path.withSegment(key), partsAccumulator);
+      if (value instanceof Array) {
+	for (let subValue of value) {
+	  this.serializeUrlParamsPart(subValue, path.withArraySegment(), partsAccumulator);
+	}
+      } else {
+	for (let [key, subValue] of Object.entries(value)) {
+	  this.serializeUrlParamsPart(subValue, path.withSegment(key), partsAccumulator);
+	}
       }
     } else {
       partsAccumulator.push(path.serializeWithValue(value));
