@@ -8,8 +8,6 @@ class CreateStats < ActiveRecord::Migration[6.0]
 
       t.index [:mode_id, :stat_type], unique: true
       t.index [:mode_id, :index], unique: true
-
-      default_scope { order(index: :asc) }
     end
   end
 end

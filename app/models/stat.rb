@@ -7,6 +7,8 @@ class Stat < ApplicationRecord
 
   after_create :grant_stat_achievement
 
+  default_scope { order(index: :asc) }
+
   def to_simple
     {
       id: id,
