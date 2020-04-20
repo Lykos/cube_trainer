@@ -33,7 +33,6 @@ jobs:
         bundle install --jobs 4 --retry 3
     - name: Setup Database
       run: |
-        cp config/database.yml.github-actions config/database.yml
         bundle exec rake db:create
         bundle exec rake db:schema:load
       env:
