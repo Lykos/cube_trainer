@@ -12,7 +12,8 @@ import { fromDateString } from '../utils/instant'
 function parseStatPart(statPart: any): StatPart {
   return {
     name: statPart.name,
-    duration: seconds(statPart.time_s),
+    duration: statPart.success ? seconds(statPart.time_s) : undefined,
+    success: statPart.success,
   }
 }
 

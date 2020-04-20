@@ -22,7 +22,12 @@ class StatType
 
   def stat_parts(mode)
     parts.map do |part|
-      { name: part.name, time_s: part.calculate(mode) }
+      value = part.calculate(mode)
+      {
+        name: part.name,
+        time_s: value&.finite? ? value : nil,
+        success: value&.finite?
+      }
     end
   end
 
@@ -67,6 +72,7 @@ class StatType
         .joins(:result)
         .limit(@size)
         .pluck(StatType.time_s_expression.average)
+        .first
     end
 
     def name

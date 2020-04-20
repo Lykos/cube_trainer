@@ -2,5 +2,6 @@ import { Duration } from '../utils/duration';
 
 export interface StatPart {
   readonly name: string;
-  readonly duration: Duration;
+  readonly duration: Duration | undefined;
+  readonly success: boolean;
 }
