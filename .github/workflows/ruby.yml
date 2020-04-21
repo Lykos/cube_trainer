@@ -15,6 +15,11 @@ jobs:
           POSTGRES_PASSWORD: PjQaAYuGZ1ksUhTFvE4=
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
+    - name: Run some debug diagnostics
+      run: |
+        sudo ls -l /tmp/.s.PGSQL.5432
+        sudo ls -l /var/run/postgresql/.s.PGSQL.5432
+        sudo ln -s /tmp/.s.PGSQL.5432 /var/run/postgresql/.s.PGSQL.5432
     - uses: actions/checkout@v1
     - name: Set up Ruby 2.6
       uses: actions/setup-ruby@v1
