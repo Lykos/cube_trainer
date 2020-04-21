@@ -177,6 +177,8 @@ module CubeTrainer
       end
 
       def create_cache(options)
+        return unless options.cache
+
         throw NotImplementedError, 'The old Sqlite3 cache had to be removed, but no new rails based one has been added yet.'
       end
 

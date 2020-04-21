@@ -17,7 +17,7 @@ shared_examples 'cube_state' do |cube_size|
   
   include CubePrintHelper
 
-  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
+  let(:letter_scheme) { TwistyPuzzles::BernhardLetterScheme.new }
   let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:cycle_factory) { PartCycleFactory.new(cube_size, 0) }
 

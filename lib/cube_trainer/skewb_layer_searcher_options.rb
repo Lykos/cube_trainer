@@ -11,7 +11,7 @@ module CubeTrainer
     def self.default_options
       options = OpenStruct.new
       options.color_scheme = TwistyPuzzles::ColorScheme::BERNHARD
-      options.letter_scheme = BernhardTwistyPuzzles::LetterScheme.new
+      options.letter_scheme = TwistyPuzzles::BernhardLetterScheme.new
       options
     end
 

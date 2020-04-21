@@ -42,7 +42,7 @@ class Mode < ApplicationRecord
 
   # TODO: Make it configurable
   def letter_scheme
-    @letter_scheme ||= CubeTrainer::BernhardTwistyPuzzles::LetterScheme.new
+    @letter_scheme ||= TwistyPuzzles::BernhardLetterScheme.new
   end
 
   # TODO: Make it configurable

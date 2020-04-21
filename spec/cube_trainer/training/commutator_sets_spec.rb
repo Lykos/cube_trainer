@@ -8,7 +8,7 @@ require 'fixtures'
 shared_examples 'commutator_set' do |mode_type|
   include_context :user
 
-  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
+  let(:letter_scheme) { TwistyPuzzles::BernhardLetterScheme.new }
   let(:mode) do
     mode = user.modes.new(
       name: mode_type,

@@ -9,7 +9,7 @@ describe Training::HintParser do
   include TwistyPuzzles
 
   let(:part_type) { TwistyPuzzles::Corner }
-  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
+  let(:letter_scheme) { TwistyPuzzles::BernhardLetterScheme.new }
   let(:buffer) { letter_scheme.default_buffer(part_type) }
   let(:hint_parser) do
     Training::CommutatorHintParser.new(

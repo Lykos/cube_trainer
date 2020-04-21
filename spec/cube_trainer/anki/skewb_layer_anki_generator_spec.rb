@@ -62,7 +62,7 @@ describe Anki::SkewbLayerAnkiGenerator do
     options.color_scheme = TwistyPuzzles::ColorScheme::WCA
     options.output = output.path
     options.depth = 2
-    options.letter_scheme = BernhardTwistyPuzzles::LetterScheme.new
+    options.letter_scheme = TwistyPuzzles::BernhardLetterScheme.new
     options
   end
   let(:options) { base_options }

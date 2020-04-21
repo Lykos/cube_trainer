@@ -44,7 +44,7 @@ module TwistyPuzzles
   end
 
   # Letter scheme used by Bernhard Brodowsky.
-  class BernhardTwistyPuzzles::LetterScheme < TwistyPuzzles::LetterScheme
+  class TwistyPuzzles::BernhardLetterScheme < TwistyPuzzles::LetterScheme
     PART_TYPE_BUFFERS = {
       Corner => Corner.for_face_symbols(%i[U L B]),
       Edge => Edge.for_face_symbols(%i[U F]),

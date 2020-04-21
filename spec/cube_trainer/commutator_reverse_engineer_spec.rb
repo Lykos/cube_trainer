@@ -9,7 +9,7 @@ require 'twisty_puzzles'
 describe CommutatorReverseEngineer do
   include TwistyPuzzles
 
-  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
+  let(:letter_scheme) { TwistyPuzzles::BernhardLetterScheme.new }
   let(:cube_size) { 3 }
   let(:engineer) { described_class.new(part_type, buffer, letter_scheme, cube_size) }
 
