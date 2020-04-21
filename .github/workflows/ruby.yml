@@ -13,11 +13,7 @@ jobs:
         env:
           POSTGRES_USER: cube_trainer
           POSTGRES_PASSWORD: PjQaAYuGZ1ksUhTFvE4=
-        options: >-
-	  --health-cmd pg_isready
-	  --health-interval 10s
-	  --health-timeout 5s
-	  --health-retries 5
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
     - uses: actions/checkout@v1
     - name: Set up Ruby 2.6
