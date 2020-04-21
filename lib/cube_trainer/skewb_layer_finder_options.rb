@@ -2,7 +2,7 @@
 
 require 'ostruct'
 require 'cube_trainer/cube_trainer_options_parser'
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Command line options for the skewb layer finder binary.

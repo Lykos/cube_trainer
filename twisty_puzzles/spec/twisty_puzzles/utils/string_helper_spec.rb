@@ -2,7 +2,7 @@
 
 require 'twisty_puzzles/utils/string_helper'
 
-describe Utils::StringHelper do
+describe TwistyPuzzles::Utils::StringHelper do
   include described_class
 
   it 'transforms to camel case correctly' do

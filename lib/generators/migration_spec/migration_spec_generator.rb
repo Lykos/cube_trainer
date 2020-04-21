@@ -17,7 +17,7 @@ class MigrationSpecGenerator < Rails::Generators::NamedBase
 
   private
 
-  include CubeTrainer::Utils::ArrayHelper
+  include TwistyPuzzles::Utils::ArrayHelper
 
   def migrations
     migrations_paths = ActiveRecord::Migrator.migrations_paths

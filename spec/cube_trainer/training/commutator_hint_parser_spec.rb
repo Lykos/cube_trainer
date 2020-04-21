@@ -3,12 +3,12 @@
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'cube_trainer/training/commutator_hint_parser'
-require 'cube_trainer/letter_scheme'
+require 'twisty_puzzles'
 
 describe Training::HintParser do
-  include Core
+  include TwistyPuzzles
 
-  let(:part_type) { Core::Corner }
+  let(:part_type) { TwistyPuzzles::Corner }
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:buffer) { letter_scheme.default_buffer(part_type) }
   let(:hint_parser) do

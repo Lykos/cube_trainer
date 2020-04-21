@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/buffer_helper'
-require 'cube_trainer/native'
+require 'twisty_puzzles'
 require 'cube_trainer/training/probabilities'
 require 'cube_trainer/utils/math_helper'
 

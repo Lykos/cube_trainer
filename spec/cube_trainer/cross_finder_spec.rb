@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'cube_trainer/cross_finder'
 
 describe CrossFinder do
-  include Core
+  include TwistyPuzzles
 
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cube_state) { color_scheme.solved_cube_state(3) }
@@ -15,12 +15,12 @@ describe CrossFinder do
   it 'finds an existing cross' do
     expect(cross_finder.find_cross(cube_state, 0).extract_algorithms).to eq(
       {
-        yellow: [Core::Algorithm::EMPTY],
-        red: [Core::Algorithm::EMPTY],
-        green: [Core::Algorithm::EMPTY],
-        blue: [Core::Algorithm::EMPTY],
-        orange: [Core::Algorithm::EMPTY],
-        white: [Core::Algorithm::EMPTY]
+        yellow: [TwistyPuzzles::Algorithm::EMPTY],
+        red: [TwistyPuzzles::Algorithm::EMPTY],
+        green: [TwistyPuzzles::Algorithm::EMPTY],
+        blue: [TwistyPuzzles::Algorithm::EMPTY],
+        orange: [TwistyPuzzles::Algorithm::EMPTY],
+        white: [TwistyPuzzles::Algorithm::EMPTY]
       }
     )
   end

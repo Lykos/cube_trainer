@@ -22,7 +22,7 @@ describe CubeScrambler do
       Rantly { range(0, 5) }
     end.check do |length|
       scrambler.random_algorithm(length).moves.each do |move|
-        expect(move).to be_a(Core::CubeMove)
+        expect(move).to be_a(TwistyPuzzles::CubeMove)
       end
     end
   end

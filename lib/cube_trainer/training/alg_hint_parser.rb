@@ -12,15 +12,15 @@ module CubeTrainer
   module Training
     # Parses hints for an alg set (e.g. for PLLs).
     class AlgHintParser < HintParser
-      include Utils::StringHelper
-      include Core
+      include TwistyPuzzles::Utils::StringHelper
+      include TwistyPuzzles
       ALG_SET_SEPARATOR = '_plus_'
       ADJACENT_PLL_NAME = SimpleAlgName.new('Ja')
       DIAGONAL_PLL_NAME = SimpleAlgName.new('Y')
-      SOLVED_HINTER = AlgHinter.new(SimpleAlgName.new('solved') => Core::Algorithm::EMPTY)
-      AUF_HINTER = AlgHinter.new(([[SimpleAlgName.new('auf skip'), Core::Algorithm::EMPTY]] +
-                                  Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
-                                    alg = Core::Algorithm.move(Core::FatMove.new(Core::Face::U, d))
+      SOLVED_HINTER = AlgHinter.new(SimpleAlgName.new('solved') => TwistyPuzzles::Algorithm::EMPTY)
+      AUF_HINTER = AlgHinter.new(([[SimpleAlgName.new('auf skip'), TwistyPuzzles::Algorithm::EMPTY]] +
+                                  TwistyPuzzles::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
+                                    alg = TwistyPuzzles::Algorithm.move(TwistyPuzzles::FatMove.new(TwistyPuzzles::Face::U, d))
                                     [SimpleAlgName.new(alg.to_s), alg]
                                   end).to_h)
 
@@ -41,7 +41,7 @@ module CubeTrainer
           alg =
             begin
               parse_algorithm(raw_alg)
-            rescue Core::CommutatorParseError => e
+            rescue TwistyPuzzles::CommutatorParseError => e
               warn "Couldn't parse alg '#{alg}': #{e}"
               next
             end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'cube_trainer/cube_trainer_options_parser'
@@ -10,13 +10,13 @@ module CubeTrainer
   module Anki
     # Command line options for the `cube_visualizer` binary.
     class CubeVisualizerOptions
-      extend Core
+      extend TwistyPuzzles
 
       def self.default_options
         options = OpenStruct.new
         options.color_scheme = ColorScheme::BERNHARD
         options.cube_size = 3
-        options.algorithm = Core::Algorithm::EMPTY
+        options.algorithm = TwistyPuzzles::Algorithm::EMPTY
         options.cache = true
         options
       end

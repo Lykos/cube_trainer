@@ -9,7 +9,7 @@ module CubeTrainer
     # Cache for stable things that we fetched from the web.
     class Cache
       include XDGHelper
-      include Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
 
       CACHE_DB_FILE = 'cache.sqlite3'
 

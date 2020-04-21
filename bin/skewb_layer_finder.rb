@@ -7,7 +7,7 @@ require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_finder_options'
 require 'cube_trainer/skewb_layer_finder'
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 
 SEARCH_DEPTH = 6
 

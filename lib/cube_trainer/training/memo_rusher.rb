@@ -10,7 +10,7 @@ module CubeTrainer
     # Learner class for letting the human performing a memo rush on a given input scramble.
     class MemoRusher
       include ConsoleHelpers
-      include Utils::StringHelper
+      include TwistyPuzzles::Utils::StringHelper
 
       def initialize(_hinter, results_model, options)
         unless options.memo_time_s&.positive?
@@ -77,7 +77,7 @@ module CubeTrainer
 
       def execute(input)
         scramble = input.representation
-        raise TypeError unless scramble.is_a?(Core::Algorithm)
+        raise TypeError unless scramble.is_a?(TwistyPuzzles::Algorithm)
 
         puts scramble
         wait_for_any_char(action_name: 'start')

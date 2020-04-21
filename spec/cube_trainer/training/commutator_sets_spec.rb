@@ -18,8 +18,8 @@ shared_examples 'commutator_set' do |mode_type|
     )
     mode.buffer = mode.letter_scheme.default_buffer(mode.part_type) if mode_type.has_buffer?
     if mode_type.has_parity_parts?
-      mode.first_parity_part = CubeTrainer::Core::Edge.for_face_symbols(%i[U B])
-      mode.second_parity_part = CubeTrainer::Core::Edge.for_face_symbols(%i[U R])
+      mode.first_parity_part = TwistyPuzzles::Edge.for_face_symbols(%i[U B])
+      mode.second_parity_part = TwistyPuzzles::Edge.for_face_symbols(%i[U R])
     end
     mode.validate!
     mode

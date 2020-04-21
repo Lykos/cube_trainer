@@ -10,7 +10,7 @@ module TwistyPuzzles
   # A color scheme that assigns a color to each face.
   class ColorScheme
     include CubeConstants
-    include Utils::ArrayHelper
+    include TwistyPuzzles::Utils::ArrayHelper
 
     RESERVED_COLORS = %i[transparent unknown oriented].freeze
 

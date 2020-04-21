@@ -20,8 +20,8 @@ module CubeTrainer
 
     def cross_adjustments(face)
       (@cross_adjustments ||= {})[face] ||=
-        Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
-          Core::Algorithm.move(Core::FatMove.new(face, d))
+        TwistyPuzzles::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
+          TwistyPuzzles::Algorithm.move(TwistyPuzzles::FatMove.new(face, d))
         end
     end
 
@@ -31,24 +31,24 @@ module CubeTrainer
         raise UnimplementedError, 'Scoring for crosses on big cubes in not implemented.'
       end
 
-      cross_color = state[Core::Coordinate.center(face, 3)]
+      cross_color = state[TwistyPuzzles::Coordinate.center(face, 3)]
       face.neighbors.count { |neighbor| cross_part_solved?(state, face, cross_color, neighbor) }
     end
 
     def cross_part_solved?(state, face, cross_color, neighbor)
       # There are two, but we just take one
       other_neighbor = (neighbor.neighbors & face.neighbors).first
-      neighbor_color = state[Core::Coordinate.center(neighbor, 3)]
+      neighbor_color = state[TwistyPuzzles::Coordinate.center(neighbor, 3)]
       state[outer_coordinate(face, neighbor, other_neighbor)] == neighbor_color &&
         state[inner_coordinate(face, neighbor, other_neighbor)] == cross_color
     end
 
     def outer_coordinate(face, neighbor, other_neighbor)
-      Core::Coordinate.from_face_distances(neighbor, 3, [[face, 0], [other_neighbor, 1]])
+      TwistyPuzzles::Coordinate.from_face_distances(neighbor, 3, [[face, 0], [other_neighbor, 1]])
     end
 
     def inner_coordinate(face, neighbor, other_neighbor)
-      Core::Coordinate.from_face_distances(face, 3, [[neighbor, 0], [other_neighbor, 1]])
+      TwistyPuzzles::Coordinate.from_face_distances(face, 3, [[neighbor, 0], [other_neighbor, 1]])
     end
 
     def face_color(_state, face)
@@ -61,14 +61,14 @@ module CubeTrainer
 
     def solved_colors(state)
       solved_faces =
-        Core::Face::ELEMENTS.select do |f|
+        TwistyPuzzles::Face::ELEMENTS.select do |f|
           no_auf_score_on_face(state, f) + 1 == solution_score
         end
-      solved_faces.map { |f| state[Core::Coordinate.center(f, 3)] }
+      solved_faces.map { |f| state[TwistyPuzzles::Coordinate.center(f, 3)] }
     end
 
     def generate_moves(_state)
-      Core::FatMove::OUTER_MOVES.map { |m| Core::Algorithm.move(m) }
+      TwistyPuzzles::FatMove::OUTER_MOVES.map { |m| TwistyPuzzles::Algorithm.move(m) }
     end
   end
 end

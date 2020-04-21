@@ -7,7 +7,7 @@ module CubeTrainer
   module Training
     # Class that parses hints from an algorithm or commutator file.
     class HintParser
-      include Utils::StringHelper
+      include TwistyPuzzles::Utils::StringHelper
 
       def csv_file
         "data/#{hint_type}/#{name}.csv"

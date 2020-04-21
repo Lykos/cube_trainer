@@ -2,7 +2,7 @@
 
 require 'csv'
 require 'cube_trainer/anki/alg_set_anki_generator'
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'tempfile'
 require 'ostruct'
 

@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'cube_trainer/commutator_checker'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'cube_trainer/letter_pair'
-require 'cube_trainer/letter_scheme'
+require 'twisty_puzzles'
 
 describe CommutatorChecker do
-  include Core
+  include TwistyPuzzles
 
-  let(:part_type) { Core::Corner }
+  let(:part_type) { TwistyPuzzles::Corner }
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cube_size) { 3 }

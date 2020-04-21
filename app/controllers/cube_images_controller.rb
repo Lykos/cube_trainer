@@ -22,7 +22,7 @@ class CubeImagesController < ApplicationController
   private
 
   FORMAT = :jpg
-  ROTATE_LEFT = CubeTrainer::Core::Algorithm.move(CubeTrainer::Core::Rotation::LEFT)
+  ROTATE_LEFT = TwistyPuzzles::Algorithm.move(TwistyPuzzles::Rotation::LEFT)
 
   def set_mode
     @mode = current_user.modes.find(params[:mode_id])
@@ -35,7 +35,7 @@ class CubeImagesController < ApplicationController
   def set_transformation
     case params[:img_side]
     when 'left' then @transformation = ROTATE_LEFT
-    when 'right' then @transformation = CubeTrainer::Core::Algorithm::EMPTY
+    when 'right' then @transformation = TwistyPuzzles::Algorithm::EMPTY
     else head(:bad_request)
     end
   end

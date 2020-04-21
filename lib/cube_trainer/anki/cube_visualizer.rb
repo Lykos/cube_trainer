@@ -3,7 +3,7 @@
 require 'cube_trainer/anki/image_checker'
 require 'cube_trainer/anki/cache'
 require 'cube_trainer/anki/exponential_backoff'
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
@@ -40,17 +40,17 @@ module CubeTrainer
     # Stage mask that masks a certain part of the cube after applying moves.
     # This supports the same format as the cube visualizer website.
     class StageMask
-      extend Core
+      extend TwistyPuzzles
       BASE_MASKS = %i[
         fl f2l ll cll ell oll ocll oell coll ocell wv vh els cls cmll
         cross f2l_3 f2l_2 f2l_sm f2l_1 f2b line 2x2x2 2x2x3
       ].freeze
       STAGE_MASK_REGEXP = Regexp.new("(#{StageMask::BASE_MASKS.join('|')})(?:-([xyz]['2]?+))?")
 
-      def initialize(base_mask, rotations = Core::Algorithm::EMPTY)
+      def initialize(base_mask, rotations = TwistyPuzzles::Algorithm::EMPTY)
         raise ArgumentError unless BASE_MASKS.include?(base_mask)
-        raise TypeError unless rotations.is_a?(Core::Algorithm)
-        raise TypeError unless rotations.moves.all? { |r| r.is_a?(Core::Rotation) }
+        raise TypeError unless rotations.is_a?(TwistyPuzzles::Algorithm)
+        raise TypeError unless rotations.moves.all? { |r| r.is_a?(TwistyPuzzles::Rotation) }
 
         @base_mask = base_mask
         @rotations = rotations
@@ -65,7 +65,7 @@ module CubeTrainer
         end
 
         raw_base_mask, raw_rotations = match.captures
-        rotations = raw_rotations ? parse_algorithm(raw_rotations) : Core::Algorithm::EMPTY
+        rotations = raw_rotations ? parse_algorithm(raw_rotations) : TwistyPuzzles::Algorithm::EMPTY
         StageMask.new(raw_base_mask.to_sym, rotations)
       end
     end
@@ -144,7 +144,7 @@ module CubeTrainer
     # Class that fetches images from
     # http://cube.crider.co.uk/visualcube.php
     class CubeVisualizer
-      include Core::CubePrintHelper
+      include TwistyPuzzles::CubePrintHelper
       COLORS = %i[black dgrey grey silver white yellow red orange blue green purple pink].freeze
       URL_PARAMETER_TYPES = [
         UrlParameterType.new(:fmt, Symbol, %i[png gif jpg svg tiff ico], required: true),
@@ -223,7 +223,7 @@ module CubeTrainer
       end
 
       def cube_state_params(cube_state)
-        raise TypeError unless cube_state.is_a?(Core::CubeState)
+        raise TypeError unless cube_state.is_a?(TwistyPuzzles::CubeState)
         raise ArgumentError unless MIN_N <= cube_state.n && cube_state.n <= MAX_N
 
         serialized_cube_state = FACE_SYMBOL_ORDER.map do |s|
@@ -248,7 +248,7 @@ module CubeTrainer
         raise "Didn't get a valid image after #{@retries} retries."
       end
 
-      raise unless FACE_SYMBOL_ORDER.sort == Core::CubeConstants::FACE_SYMBOLS.sort
+      raise unless FACE_SYMBOL_ORDER.sort == TwistyPuzzles::CubeConstants::FACE_SYMBOLS.sort
 
       def check_param_keys(keys)
         invalid_keys = keys - URL_PARAMETER_TYPE_KEYS

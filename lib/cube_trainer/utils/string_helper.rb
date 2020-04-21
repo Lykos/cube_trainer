@@ -3,7 +3,7 @@
 module CubeTrainer
   module Utils
     # A few string related helper methods.
-    module StringHelper
+    module TwistyPuzzles::Utils::StringHelper
       def camel_case_to_snake_case(camel_case)
         camel_case.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
                   .gsub(/([a-z\d])([A-Z])/, '\1_\2')

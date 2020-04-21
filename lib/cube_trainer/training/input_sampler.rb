@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'colorize'
-require 'cube_trainer/native'
+require 'twisty_puzzles'
 require 'cube_trainer/training/badness_scorer'
 require 'cube_trainer/training/coverage_scorer'
 require 'cube_trainer/training/forgotten_scorer'

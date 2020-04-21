@@ -2,8 +2,8 @@
 
 require 'csv'
 require 'cube_trainer/anki/skewb_layer_anki_generator'
-require 'cube_trainer/color_scheme'
-require 'cube_trainer/letter_scheme'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'tempfile'
 require 'ostruct'
 

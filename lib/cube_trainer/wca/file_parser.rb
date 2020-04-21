@@ -7,7 +7,7 @@ module CubeTrainer
   module WCA
     # Represents one column in a CSV file from the WCA export and contains parsing utilities.
     class Column
-      extend Core
+      extend TwistyPuzzles
 
       def initialize(&block)
         @transformation = block

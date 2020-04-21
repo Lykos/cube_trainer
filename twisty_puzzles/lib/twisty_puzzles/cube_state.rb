@@ -12,7 +12,7 @@ module TwistyPuzzles
   
     # Represents the state (i.e. the sticker positions) of a cube.
     class CubeState
-      include Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
       include CubePrintHelper
       include StateHelper
       include CubeConstants

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Helper class to give a fingerprint for a Skewb layer.
   class SkewbLayerFingerprinter
     def initialize(face)
-      raise ArgumentError unless face.is_a?(Core::Face)
+      raise ArgumentError unless face.is_a?(TwistyPuzzles::Face)
 
       @face = face
     end

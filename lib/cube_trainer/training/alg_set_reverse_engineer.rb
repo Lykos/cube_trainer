@@ -7,7 +7,7 @@ module CubeTrainer
     # Class that takes a list of input items and figures out which input item a
     # given alg belongs to.
     class AlgSetReverseEngineer
-      include Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
 
       def initialize(input_items, color_scheme, cube_size)
         @input_items = input_items

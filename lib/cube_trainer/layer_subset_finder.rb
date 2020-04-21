@@ -20,7 +20,7 @@ module CubeTrainer
     end
 
     def state_score(state)
-      Core::Face::ELEMENTS.map do |f|
+      TwistyPuzzles::Face::ELEMENTS.map do |f|
         if @color_restrictions.nil? || @color_restrictions.include?(face_color(state, f))
           score_on_face(state, f)
         else

@@ -7,7 +7,7 @@ module CubeTrainer
   module Training
     # Abstract class to create scores for input items.
     class AbstractScorer
-      include Utils::StringHelper
+      include TwistyPuzzles::Utils::StringHelper
 
       def initialize(config, result_history)
         @config = config

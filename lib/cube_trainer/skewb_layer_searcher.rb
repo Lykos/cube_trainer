@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
@@ -15,14 +15,14 @@ module CubeTrainer
   # rubocop:disable Rails/Delegate
   class SkewbLayerSearcher
     EXAMPLE_LAYER_FACE_SYMBOL = :D
-    EXAMPLE_LAYER_FACE = Core::Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
+    EXAMPLE_LAYER_FACE = TwistyPuzzles::Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
     ALGORITHM_TRANSFORMATIONS =
-      Core::AlgorithmTransformation.around_face_without_identity(EXAMPLE_LAYER_FACE)
+      TwistyPuzzles::AlgorithmTransformation.around_face_without_identity(EXAMPLE_LAYER_FACE)
 
     # Represents a possible Skewb layer with a solution.
     class SkewbLayerSolution
       def initialize(move, sub_solution)
-        raise TypeError unless move.nil? || move.is_a?(Core::SkewbMove)
+        raise TypeError unless move.nil? || move.is_a?(TwistyPuzzles::SkewbMove)
         raise ArgumentError unless sub_solution.nil? || sub_solution.is_a?(SkewbLayerSolution)
         raise ArgumentError unless move.nil? == sub_solution.nil?
 
@@ -50,18 +50,18 @@ module CubeTrainer
       def algorithm
         @algorithm ||=
           if move.nil?
-            Core::Algorithm::EMPTY
+            TwistyPuzzles::Algorithm::EMPTY
           else
-            Core::Algorithm.move(@move) + @sub_solution.algorithm
+            TwistyPuzzles::Algorithm.move(@move) + @sub_solution.algorithm
           end
       end
 
       def compiled_algorithm
         @compiled_algorithm ||=
           if move.nil?
-            Core::CompiledSkewbAlgorithm::EMPTY
+            TwistyPuzzles::CompiledSkewbAlgorithm::EMPTY
           else
-            Core::Algorithm.move(@move).compiled_for_skewb +
+            TwistyPuzzles::Algorithm.move(@move).compiled_for_skewb +
               @sub_solution.compiled_algorithm
           end
       end
@@ -84,10 +84,10 @@ module CubeTrainer
       def extract_own_algs
         if @sub_solution
           @sub_solution.extract_algorithms.map do |alg|
-            Core::Algorithm.move(@move) + alg
+            TwistyPuzzles::Algorithm.move(@move) + alg
           end
         else
-          [Core::Algorithm::EMPTY]
+          [TwistyPuzzles::Algorithm::EMPTY]
         end
       end
 
@@ -117,7 +117,7 @@ module CubeTrainer
     attr_reader :good_layer_solutions
 
     def derived_layer_solutions(layer_solution)
-      Core::SkewbNotation.sarah.non_zero_moves.reverse.collect_concat do |m|
+      TwistyPuzzles::SkewbNotation.sarah.non_zero_moves.reverse.collect_concat do |m|
         # Ignore possible moves along the same axis as the last move.
         if layer_solution.move && layer_solution.move.axis_corner == m.axis_corner
           []

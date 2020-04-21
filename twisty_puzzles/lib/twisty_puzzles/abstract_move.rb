@@ -9,8 +9,8 @@ module TwistyPuzzles
   # Base class for moves.
   class AbstractMove
     include Comparable
-    include Utils::StringHelper
-    include Utils::ArrayHelper
+    include TwistyPuzzles::Utils::StringHelper
+    include TwistyPuzzles::Utils::ArrayHelper
     AXES = %w[y z x].freeze
     # rubocop:disable Style/StringHashKeys
     SLICE_FACES = { 'E' => Face::D, 'S' => Face::F, 'M' => Face::L }.freeze

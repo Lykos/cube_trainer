@@ -16,7 +16,7 @@ class AddModeIdToInputs < ActiveRecord::Migration[6.0]
   # Simplified version of the mode model. We can't use the proper
   # one because future validations and functionality would break this migration.
   class Mode < ApplicationRecord
-    include CubeTrainer::Utils::ArrayHelper
+    include TwistyPuzzles::Utils::ArrayHelper
 
     attribute :mode_type, :symbol
     attribute :show_input_mode, :symbol

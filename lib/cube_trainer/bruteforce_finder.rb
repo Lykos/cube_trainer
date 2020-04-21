@@ -28,7 +28,7 @@ module CubeTrainer
 
     def extract_algorithms
       algs = {}
-      @colors.each { |c| algs[c] = [Core::Algorithm::EMPTY] }
+      @colors.each { |c| algs[c] = [TwistyPuzzles::Algorithm::EMPTY] }
       algs
     end
 

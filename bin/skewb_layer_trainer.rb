@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/skewb_scrambler'
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 
 SCRAMBLE_LENGTH = 15
 SEARCH_DEPTH = 7

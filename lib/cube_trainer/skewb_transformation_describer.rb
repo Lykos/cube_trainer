@@ -3,14 +3,14 @@
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
-require 'cube_trainer/color_scheme'
-require 'cube_trainer/letter_scheme'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Helper class to generate a concise human readable description of how a Skewb algorithm
   # moves parts around.
   class SkewbTransformationDescriber
-    include Utils::ArrayHelper
+    include TwistyPuzzles::Utils::ArrayHelper
 
     TOP_BOTTOM_CORNERS =
       DOUBLE_ARROW = ' ↔ '
@@ -20,7 +20,7 @@ module CubeTrainer
     class PartSequence
       def initialize(letter_scheme, parts)
         raise ArgumentError unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
-        raise ArgumentError unless parts.all? { |p| p.is_a?(Core::Part) }
+        raise ArgumentError unless parts.all? { |p| p.is_a?(TwistyPuzzles::Part) }
 
         @letter_scheme = letter_scheme
         @parts = parts
@@ -127,8 +127,8 @@ module CubeTrainer
       raise TypeError unless color_scheme.is_a?(ColorScheme)
       raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
 
-      check_types(interesting_faces, Core::Face)
-      check_types(interesting_corners, Core::Corner)
+      check_types(interesting_faces, TwistyPuzzles::Face)
+      check_types(interesting_corners, TwistyPuzzles::Corner)
       @interesting_faces = interesting_faces
       @interesting_corners = interesting_corners
       @show_staying = staying_mode == :show_staying
@@ -178,16 +178,16 @@ module CubeTrainer
     # Describes where each interesting piece comes from.
     def source_descriptions(algorithm)
       algorithm.apply_temporarily_to(@skewb_state) do |s|
-        find_part_sources(@interesting_corners, s, &Core::SkewbCoordinate.method(:for_corner)) +
-          find_part_sources(@interesting_faces, s, &Core::SkewbCoordinate.method(:for_center))
+        find_part_sources(@interesting_corners, s, &TwistyPuzzles::SkewbCoordinate.method(:for_corner)) +
+          find_part_sources(@interesting_faces, s, &TwistyPuzzles::SkewbCoordinate.method(:for_center))
       end.sort
     end
 
     # Describes what kind of tranformation the alg does in terms of piece cycles.
     def transformation_descriptions(algorithm)
       algorithm.apply_temporarily_to(@skewb_state) do |s|
-        find_part_target_cycles(@interesting_corners, s, &Core::SkewbCoordinate.method(:for_corner)) + # rubocop:disable Layout/LineLength
-          find_part_target_cycles(@interesting_faces, s, &Core::SkewbCoordinate.method(:for_center))
+        find_part_target_cycles(@interesting_corners, s, &TwistyPuzzles::SkewbCoordinate.method(:for_corner)) + # rubocop:disable Layout/LineLength
+          find_part_target_cycles(@interesting_faces, s, &TwistyPuzzles::SkewbCoordinate.method(:for_center))
       end.sort
     end
   end

@@ -28,11 +28,11 @@ RSpec::Matchers.define(:be_the_same_descriptions_as) do |expected|
 end
 
 describe SkewbTransformationDescriber do
-  include Core
+  include TwistyPuzzles
 
-  let(:top_corners) { Core::Corner::ELEMENTS.select { |c| c.face_symbols.first == :U } }
-  let(:bottom_corners) { Core::Corner::ELEMENTS.select { |c| c.face_symbols.first == :D } }
-  let(:non_bottom_faces) { Core::Face::ELEMENTS.reject { |c| c.face_symbol == :D } }
+  let(:top_corners) { TwistyPuzzles::Corner::ELEMENTS.select { |c| c.face_symbols.first == :U } }
+  let(:bottom_corners) { TwistyPuzzles::Corner::ELEMENTS.select { |c| c.face_symbols.first == :D } }
+  let(:non_bottom_faces) { TwistyPuzzles::Face::ELEMENTS.reject { |c| c.face_symbol == :D } }
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:top_corners_describer) do
     described_class.new([], top_corners, :show_staying, color_scheme)
@@ -43,7 +43,7 @@ describe SkewbTransformationDescriber do
   let(:bottom_describer) do
     described_class.new([], bottom_corners, :omit_staying, color_scheme)
   end
-  let(:sarah) { Core::SkewbNotation.sarah }
+  let(:sarah) { TwistyPuzzles::SkewbNotation.sarah }
 
   it 'describes center transformations of sledges accurately' do
     alg = parse_skewb_algorithm("F' L F L'", sarah)

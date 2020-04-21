@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/native'
+require 'twisty_puzzles'
 
 describe Native::CubeAverage do
   let(:average_computer) { described_class.new(5, 6) }

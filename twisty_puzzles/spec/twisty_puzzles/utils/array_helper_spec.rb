@@ -2,7 +2,7 @@
 
 require 'twisty_puzzles/utils/array_helper'
 
-describe Utils::ArrayHelper do
+describe TwistyPuzzles::Utils::ArrayHelper do
   include described_class
 
   it 'permutes empty arrays' do

@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_classifier'
 
 describe SkewbLayerClassifier do
-  include Core
+  include TwistyPuzzles
 
   let(:color_scheme) { ColorScheme::BERNHARD }
-  let(:classifier) { described_class.new(Core::Face::D, color_scheme) }
-  let(:sarah) { Core::SkewbNotation.sarah }
+  let(:classifier) { described_class.new(TwistyPuzzles::Face::D, color_scheme) }
+  let(:sarah) { TwistyPuzzles::SkewbNotation.sarah }
 
   it 'classifies the solved layer correctly' do
-    expect(classifier.classify_layer(Core::Algorithm::EMPTY)).to be == '4_solved'
+    expect(classifier.classify_layer(TwistyPuzzles::Algorithm::EMPTY)).to be == '4_solved'
     expect(classifier.classify_layer(parse_skewb_algorithm("R' F R F'", sarah))).to be == '4_solved'
   end
 

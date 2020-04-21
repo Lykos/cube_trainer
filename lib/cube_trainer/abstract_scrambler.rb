@@ -21,13 +21,13 @@ module CubeTrainer
     def random_algorithm(length)
       raise TypeError unless length.is_a?(Integer)
       raise ArgumentError if length.negative?
-      return Core::Algorithm::EMPTY if length.zero?
+      return TwistyPuzzles::Algorithm::EMPTY if length.zero?
 
       a = [moves.sample]
       (length - 1).times do
         a.push(random_move(a[-1]))
       end
-      Core::Algorithm.new(a)
+      TwistyPuzzles::Algorithm.new(a)
     end
   end
 end

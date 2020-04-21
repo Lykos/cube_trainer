@@ -15,7 +15,7 @@ module CubeTrainer
     include SkewbLayerHelper
 
     def face_color(state, face)
-      state[Core::SkewbCoordinate.for_center(face)]
+      state[TwistyPuzzles::SkewbCoordinate.for_center(face)]
     end
 
     def solved_colors(skewb_state)
@@ -31,7 +31,7 @@ module CubeTrainer
     end
 
     def generate_moves(_skewb_state)
-      Core::SkewbNotation.fixed_corner.non_zero_moves.map { |m| Core::Algorithm.move(m) }
+      TwistyPuzzles::SkewbNotation.fixed_corner.non_zero_moves.map { |m| TwistyPuzzles::Algorithm.move(m) }
     end
   end
 end

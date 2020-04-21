@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 
 describe ColorScheme do
   it 'returns the right colors for the Bernhard orientation' do

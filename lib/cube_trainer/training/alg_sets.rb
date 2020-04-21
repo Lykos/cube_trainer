@@ -12,7 +12,7 @@ module CubeTrainer
   module Training
     # Base class for alg sets (e.g. PLLs).
     class AlgSet
-      include Utils::StringHelper
+      include TwistyPuzzles::Utils::StringHelper
 
       def initialize(mode)
         @mode = mode

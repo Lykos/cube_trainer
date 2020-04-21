@@ -10,8 +10,8 @@ require 'twisty_puzzles/utils'
 
 # Result of giving one task to the learner and judging their performance.
 class InputRepresentationType < ActiveRecord::Type::String
-  extend CubeTrainer::Utils::StringHelper
-  include CubeTrainer::Utils::StringHelper
+  extend TwistyPuzzles::Utils::StringHelper
+  include TwistyPuzzles::Utils::StringHelper
 
   INPUT_REPRESENTATION_CLASSES = [
     CubeTrainer::LetterPair,

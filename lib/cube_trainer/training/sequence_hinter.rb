@@ -4,7 +4,7 @@ require 'cube_trainer/alg_name'
 require 'twisty_puzzles'
 require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/training/result_history'
-require 'cube_trainer/native'
+require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 require 'ostruct'
 
@@ -93,7 +93,7 @@ module CubeTrainer
     # Hinter that gives hints on how to solve a certain case based on a sequence of primitive cases,
     # e.g. solving a corner twist and a parity by a comm and a parity.
     class HeterogenousSequenceHinter
-      include Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
       DescriptionAndValue =
         Struct.new(:description, :value, :cancellations) do
           def <=>(other)
@@ -114,7 +114,7 @@ module CubeTrainer
       UNKNOWN_SCORE = UnknownScore.new
 
       def initialize(cube_size, modes, hinters)
-        Core::CubeState.check_cube_size(cube_size)
+        TwistyPuzzles::CubeState.check_cube_size(cube_size)
         raise TypeError unless modes.all? { |m| m.is_a?(Mode) }
         raise ArgumentError if modes.length != hinters.length || modes.empty?
 
@@ -222,7 +222,7 @@ module CubeTrainer
 
     # Hinter that gives hints on how to solve a sequence of algs.
     class AlgSequenceHinter
-      include Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
 
       def initialize(hinters)
         hinters.each do |h|

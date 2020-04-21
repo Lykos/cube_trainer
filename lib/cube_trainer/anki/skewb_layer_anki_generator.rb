@@ -22,9 +22,9 @@ module CubeTrainer
         'tags'
       ].freeze
 
-      TOP_CORNERS = Core::Corner::ELEMENTS.select { |c| c.face_symbols.first == :U }.freeze
-      BOTTOM_CORNERS = Core::Corner::ELEMENTS.select { |c| c.face_symbols.first == :D }.freeze
-      NON_BOTTOM_FACES = Core::Face::ELEMENTS.reject { |c| c.face_symbol == :D }.freeze
+      TOP_CORNERS = TwistyPuzzles::Corner::ELEMENTS.select { |c| c.face_symbols.first == :U }.freeze
+      BOTTOM_CORNERS = TwistyPuzzles::Corner::ELEMENTS.select { |c| c.face_symbols.first == :D }.freeze
+      NON_BOTTOM_FACES = TwistyPuzzles::Face::ELEMENTS.reject { |c| c.face_symbol == :D }.freeze
 
       def initialize(options)
         @options = options
@@ -42,7 +42,7 @@ module CubeTrainer
 
       def layer_improver
         @layer_improver ||= SkewbLayerImprover.new(
-          Core::Face::D,
+          TwistyPuzzles::Face::D,
           @options.color_scheme
         )
       end
@@ -112,7 +112,7 @@ module CubeTrainer
 
       def layer_classifier
         @layer_classifier ||= SkewbLayerClassifier.new(
-          Core::Face::D,
+          TwistyPuzzles::Face::D,
           @options.color_scheme
         )
       end

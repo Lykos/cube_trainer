@@ -8,10 +8,10 @@ module CubeTrainer
   # Helper class that improves a Skewb layer solution to one that is equivalent
   # modulo rotations and mirrors, but better according to some canonical metric.
   class SkewbLayerImprover
-    include Core::CubePrintHelper
+    include TwistyPuzzles::CubePrintHelper
     FACE_SYMBOLS_ORDERED_BY_PRIORITY = %i[D U F R L B].freeze
     CORNERS_ORDERED_BY_PRIORITY =
-      Core::Corner::ELEMENTS.sort_by do |c|
+      TwistyPuzzles::Corner::ELEMENTS.sort_by do |c|
         face_index = FACE_SYMBOLS_ORDERED_BY_PRIORITY.index(c.face_symbols.first)
         within_face_index =
           if c.face_symbols.first == :D
@@ -28,14 +28,14 @@ module CubeTrainer
         face_index * 4 + within_face_index
       end
     CORNER_COORDINATES_ORDERED_BY_PRIORITY =
-      CORNERS_ORDERED_BY_PRIORITY.map { |c| Core::SkewbCoordinate.for_corner(c) }
+      CORNERS_ORDERED_BY_PRIORITY.map { |c| TwistyPuzzles::SkewbCoordinate.for_corner(c) }
 
     def initialize(face, color_scheme)
-      raise ArgumentError unless face.is_a?(Core::Face)
+      raise ArgumentError unless face.is_a?(TwistyPuzzles::Face)
 
       @state = color_scheme.solved_skewb_state
       @solved_color = color_scheme.color(face)
-      @alg_transformations = Core::AlgorithmTransformation.around_face(face)
+      @alg_transformations = TwistyPuzzles::AlgorithmTransformation.around_face(face)
     end
 
     def alg_variations(algorithm)

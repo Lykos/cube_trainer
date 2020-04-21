@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_finder'
 
 describe SkewbLayerFinder do
-  include Core
+  include TwistyPuzzles
 
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:skewb_state) { color_scheme.solved_skewb_state }
-  let(:sarah) { Core::SkewbNotation.sarah }
-  let(:fixed_corner) { Core::SkewbNotation.fixed_corner }
+  let(:sarah) { TwistyPuzzles::SkewbNotation.sarah }
+  let(:fixed_corner) { TwistyPuzzles::SkewbNotation.fixed_corner }
 
   context 'when restricted' do
     let(:layer_finder) { described_class.new([:white]) }
@@ -20,7 +20,7 @@ describe SkewbLayerFinder do
     it 'finds an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to eq(
         {
-          white: [Core::Algorithm::EMPTY]
+          white: [TwistyPuzzles::Algorithm::EMPTY]
         }
       )
     end
@@ -118,12 +118,12 @@ describe SkewbLayerFinder do
     it 'finds an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to eq(
         {
-          yellow: [Core::Algorithm::EMPTY],
-          red: [Core::Algorithm::EMPTY],
-          green: [Core::Algorithm::EMPTY],
-          blue: [Core::Algorithm::EMPTY],
-          orange: [Core::Algorithm::EMPTY],
-          white: [Core::Algorithm::EMPTY]
+          yellow: [TwistyPuzzles::Algorithm::EMPTY],
+          red: [TwistyPuzzles::Algorithm::EMPTY],
+          green: [TwistyPuzzles::Algorithm::EMPTY],
+          blue: [TwistyPuzzles::Algorithm::EMPTY],
+          orange: [TwistyPuzzles::Algorithm::EMPTY],
+          white: [TwistyPuzzles::Algorithm::EMPTY]
         }
       )
     end

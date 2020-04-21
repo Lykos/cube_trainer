@@ -40,8 +40,8 @@ module CubeTrainer
 
     # Class that parses a commutator file.
     class CommutatorHintParser < HintParser
-      include Utils::StringHelper
-      include Core
+      include TwistyPuzzles::Utils::StringHelper
+      include TwistyPuzzles
       TEST_COMMS_MODES = %i[ignore warn fail].freeze
       BLACKLIST = ['flip'].freeze
 
@@ -160,7 +160,7 @@ module CubeTrainer
 
         maybe_letter_pair = reverse_engineer.find_letter_pair(alg.algorithm)
         AlgEntry.new(maybe_letter_pair, alg)
-      rescue Core::CommutatorParseError => e
+      rescue TwistyPuzzles::CommutatorParseError => e
         ErrorEntry.new("Couldn't parse commutator: #{e}")
       end
 

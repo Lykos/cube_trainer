@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/native'
+require 'twisty_puzzles'
 
 # Model for stats.
 # Note that it does NOT include which modes have them.

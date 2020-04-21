@@ -6,7 +6,7 @@ module TwistyPuzzles
   
     # Various constants about the cube.
     module CubeConstants
-      include Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
 
       # The order determines the priority of the faces.
       FACE_SYMBOLS = %i[U F R L B D].freeze

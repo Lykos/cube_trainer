@@ -6,7 +6,7 @@ module CubeTrainer
   module Training
     # Class that holds a scramble and potentially some metadata.
     class Scramble
-      extend Core
+      extend TwistyPuzzles
       def initialize(algorithm)
         @algorithm = algorithm
       end

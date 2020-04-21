@@ -7,7 +7,7 @@ module CubeTrainer
   # Class to generate cube scrambles.
   class CubeScrambler < AbstractScrambler
     def moves
-      Core::FatMove::OUTER_MOVES
+      TwistyPuzzles::FatMove::OUTER_MOVES
     end
 
     def possible_next_moves(last_move)

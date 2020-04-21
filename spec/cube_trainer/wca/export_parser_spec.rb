@@ -6,7 +6,7 @@ require 'cube_trainer/wca/stats_extractor'
 require 'tempfile'
 
 describe WCA::ExportParser do
-  include Core
+  include TwistyPuzzles
 
   before(:all) do
     filename = Tempfile.new(['WCA_export_example', '.tsv.zip'])

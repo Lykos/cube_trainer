@@ -16,7 +16,7 @@ end
 describe Training::HeterogenousSequenceHinter do
   include_context :mode
 
-  include Core
+  include TwistyPuzzles
 
   let(:cube_size) { 3 }
   let(:algname_a) { SimpleAlgName.new('a') }

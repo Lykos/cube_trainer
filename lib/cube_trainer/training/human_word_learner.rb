@@ -8,7 +8,7 @@ module CubeTrainer
     # Learner class that prints letter pairs to the console and has the human input fitting words.
     class HumanWordLearner
       include ConsoleHelpers
-      include Utils::StringHelper
+      include TwistyPuzzles::Utils::StringHelper
       COMMANDS = %w[hint replace delete quit].freeze
 
       def initialize(hinter, results_model, options)

@@ -11,7 +11,7 @@ module CubeTrainer
     # but we do know for each alg what it's supposed to do and hence we can reverse
     # engineer which alg is which (e.g. for corner twists).
     class UnnamedAlgHintParser < HintParser
-      include Core
+      include TwistyPuzzles
 
       def initialize(name, input_items, options)
         @name = name

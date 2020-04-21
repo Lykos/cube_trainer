@@ -3,7 +3,7 @@
 module TwistyPuzzles
   module Utils
     # A few array related helper methods.
-    module ArrayHelper
+    module TwistyPuzzles::Utils::ArrayHelper
       def apply_permutation(array, permutation)
         raise ArgumentError unless array.length == permutation.length
         raise ArgumentError unless permutation.uniq.length == permutation.length

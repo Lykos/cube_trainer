@@ -7,7 +7,7 @@ module CubeTrainer
   # Class to generate Skewb scrambles.
   class SkewbScrambler < AbstractScrambler
     def moves
-      Core::SkewbNotation.fixed_corner.non_zero_moves
+      TwistyPuzzles::SkewbNotation.fixed_corner.non_zero_moves
     end
 
     def possible_next_moves(last_move)

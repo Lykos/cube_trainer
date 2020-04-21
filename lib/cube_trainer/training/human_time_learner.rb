@@ -10,7 +10,7 @@ module CubeTrainer
     # something.
     class HumanTimeLearner
       include ConsoleHelpers
-      include Utils::StringHelper
+      include TwistyPuzzles::Utils::StringHelper
 
       def initialize(hinter, results_model, options)
         @hinter = hinter

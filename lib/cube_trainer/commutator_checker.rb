@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
@@ -11,7 +11,7 @@ module CubeTrainer
   # Class that checks whether a commutator algorithm does
   # what it's supposed to do and potentially fixes broken ones.
   class CommutatorChecker
-    include Core::CubePrintHelper
+    include TwistyPuzzles::CubePrintHelper
 
     # rubocop:disable Metrics/ParameterLists
     def initialize(
@@ -25,8 +25,8 @@ module CubeTrainer
       find_fixes: false,
       incarnation_index: 0
     )
-      Core::CubeState.check_cube_size(cube_size)
-      raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(Core::Part)
+      TwistyPuzzles::CubeState.check_cube_size(cube_size)
+      raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(TwistyPuzzles::Part)
       raise TypeError unless buffer.class == part_type
       raise ColorScheme unless color_scheme.is_a?(ColorScheme)
 
@@ -47,7 +47,7 @@ module CubeTrainer
     def init_helpers
       @alg_cube_state = @color_scheme.solved_cube_state(@cube_size)
       @cycle_cube_state = @color_scheme.solved_cube_state(@cube_size)
-      @part_cycle_factory = Core::PartCycleFactory.new(@cube_size, @incarnation_index)
+      @part_cycle_factory = TwistyPuzzles::PartCycleFactory.new(@cube_size, @incarnation_index)
     end
 
     def reset
@@ -149,7 +149,7 @@ module CubeTrainer
 
     def permutation_modifications(alg)
       if alg.length <= 3
-        alg.moves.permutation.map { |p| Core::Algorithm.new(p) }
+        alg.moves.permutation.map { |p| TwistyPuzzles::Algorithm.new(p) }
       else
         [alg]
       end
@@ -158,7 +158,7 @@ module CubeTrainer
     def alg_modifications(alg)
       perms = permutation_modifications(alg)
       a, *as = alg.moves.map { |m| move_modifications(m) }
-      perms + a.product(*as).map { |ms| Core::Algorithm.new(ms) }
+      perms + a.product(*as).map { |ms| TwistyPuzzles::Algorithm.new(ms) }
     end
 
     def comm_insert_modifications(algorithm)
@@ -168,10 +168,10 @@ module CubeTrainer
       b = algorithm.moves[2]
       move_modifications(algorithm.moves[1]).flat_map do |m|
         [
-          Core::Algorithm.new([a, m, a.inverse]),
-          Core::Algorithm.new([a.inverse, m, a]),
-          Core::Algorithm.new([b, m, b.inverse]),
-          Core::Algorithm.new([b.inverse, m, b])
+          TwistyPuzzles::Algorithm.new([a, m, a.inverse]),
+          TwistyPuzzles::Algorithm.new([a.inverse, m, a]),
+          TwistyPuzzles::Algorithm.new([b, m, b.inverse]),
+          TwistyPuzzles::Algorithm.new([b.inverse, m, b])
         ].uniq
       end
     end
@@ -188,7 +188,7 @@ module CubeTrainer
       setup_modifications = alg_modifications(commutator.setup)
       inner_commutator_modifications = commutator_modifications(commutator.inner_commutator)
       modification_combinations = setup_modifications.product(inner_commutator_modifications)
-      modification_combinations.map { |setup, comm| Core::SetupCommutator.new(setup, comm) }.uniq
+      modification_combinations.map { |setup, comm| TwistyPuzzles::SetupCommutator.new(setup, comm) }.uniq
     end
 
     def pure_commutator_modifications(commutator)
@@ -196,21 +196,21 @@ module CubeTrainer
       right_modifications = comm_part_modifications(commutator.second_part)
       modification_combinations = left_modifications.product(right_modifications)
       modification_combinations.flat_map do |a, b|
-        [Core::PureCommutator.new(a, b), Core::PureCommutator.new(b, a)]
+        [TwistyPuzzles::PureCommutator.new(a, b), TwistyPuzzles::PureCommutator.new(b, a)]
       end.uniq
     end
 
     def fake_commutator_modifications(commutator)
-      alg_modifications(commutator.algorithm).map { |a| Core::FakeCommutator.new(a) }
+      alg_modifications(commutator.algorithm).map { |a| TwistyPuzzles::FakeCommutator.new(a) }
     end
 
     def commutator_modifications(commutator)
       case commutator
-      when Core::SetupCommutator
+      when TwistyPuzzles::SetupCommutator
         setup_commutator_modifications(commutator)
-      when Core::PureCommutator
+      when TwistyPuzzles::PureCommutator
         pure_commutator_modifications(commutator)
-      when Core::FakeCommutator
+      when TwistyPuzzles::FakeCommutator
         fake_commutator_modifications(commutator)
       else
         raise ArgumentError

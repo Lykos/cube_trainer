@@ -10,7 +10,7 @@ module CubeTrainer
   module WCA
     # Helper class to crawl the WCA page and download the latest WCA export.
     class Crawler
-      include Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
       WCA_BASE_URL = 'https://www.worldcubeassociation.org'
       REDIRECT_LIMIT = 5
 

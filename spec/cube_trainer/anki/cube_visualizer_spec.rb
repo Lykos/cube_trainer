@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/anki/cube_visualizer'
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
@@ -36,7 +36,7 @@ class FakeChecker
 end
 
 describe Anki::CubeVisualizer do
-  include Core
+  include TwistyPuzzles
 
   let(:color_scheme) { ColorScheme::BERNHARD }
   let(:cube_size) { 3 }
@@ -64,32 +64,32 @@ describe Anki::CubeVisualizer do
   end
 
   it 'constructs a url for a cube with transparent parts' do
-    cube_state[Core::Coordinate.from_indices(Core::Face::U, 3, 0, 0)] = :transparent
-    cube_state[Core::Coordinate.from_indices(Core::Face::F, 3, 0, 1)] = :transparent
-    cube_state[Core::Coordinate.from_indices(Core::Face::R, 3, 0, 2)] = :transparent
-    cube_state[Core::Coordinate.from_indices(Core::Face::L, 3, 1, 0)] = :transparent
-    cube_state[Core::Coordinate.from_indices(Core::Face::B, 3, 1, 1)] = :transparent
-    cube_state[Core::Coordinate.from_indices(Core::Face::D, 3, 1, 2)] = :transparent
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::U, 3, 0, 0)] = :transparent
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::F, 3, 0, 1)] = :transparent
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::R, 3, 0, 2)] = :transparent
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::L, 3, 1, 0)] = :transparent
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::B, 3, 1, 1)] = :transparent
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::D, 3, 1, 2)] = :transparent
     expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.crider.co.uk/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuutrrtrrrrrrftfffffffdddtdddddllllltlllbbbbtbbbb')
   end
 
   it 'constructs a url for a cube with unknown parts' do
-    cube_state[Core::Coordinate.from_indices(Core::Face::U, 3, 0, 0)] = :unknown
-    cube_state[Core::Coordinate.from_indices(Core::Face::F, 3, 0, 1)] = :unknown
-    cube_state[Core::Coordinate.from_indices(Core::Face::R, 3, 0, 2)] = :unknown
-    cube_state[Core::Coordinate.from_indices(Core::Face::L, 3, 1, 0)] = :unknown
-    cube_state[Core::Coordinate.from_indices(Core::Face::B, 3, 1, 1)] = :unknown
-    cube_state[Core::Coordinate.from_indices(Core::Face::D, 3, 1, 2)] = :unknown
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::U, 3, 0, 0)] = :unknown
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::F, 3, 0, 1)] = :unknown
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::R, 3, 0, 2)] = :unknown
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::L, 3, 1, 0)] = :unknown
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::B, 3, 1, 1)] = :unknown
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::D, 3, 1, 2)] = :unknown
     expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.crider.co.uk/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuunrrnrrrrrrfnfffffffdddndddddlllllnlllbbbbnbbbb')
   end
 
   it 'constructs a url for a cube with oriented parts' do
-    cube_state[Core::Coordinate.from_indices(Core::Face::U, 3, 0, 0)] = :oriented
-    cube_state[Core::Coordinate.from_indices(Core::Face::F, 3, 0, 1)] = :oriented
-    cube_state[Core::Coordinate.from_indices(Core::Face::R, 3, 0, 2)] = :oriented
-    cube_state[Core::Coordinate.from_indices(Core::Face::L, 3, 1, 0)] = :oriented
-    cube_state[Core::Coordinate.from_indices(Core::Face::B, 3, 1, 1)] = :oriented
-    cube_state[Core::Coordinate.from_indices(Core::Face::D, 3, 1, 2)] = :oriented
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::U, 3, 0, 0)] = :oriented
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::F, 3, 0, 1)] = :oriented
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::R, 3, 0, 2)] = :oriented
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::L, 3, 1, 0)] = :oriented
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::B, 3, 1, 1)] = :oriented
+    cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::D, 3, 1, 2)] = :oriented
     expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.crider.co.uk/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuorrorrrrrrfofffffffdddodddddlllllolllbbbbobbbb')
   end
 
@@ -102,7 +102,7 @@ describe Anki::CubeVisualizer do
       fmt: fmt,
       size: 100,
       view: :plain,
-      stage: Anki::StageMask.new(:coll, Core::Algorithm.move(Core::Rotation.new(Core::Face::U, Core::CubeDirection::FORWARD))),
+      stage: Anki::StageMask.new(:coll, TwistyPuzzles::Algorithm.move(TwistyPuzzles::Rotation.new(TwistyPuzzles::Face::U, TwistyPuzzles::CubeDirection::FORWARD))),
       sch: color_scheme,
       bg: :black,
       cc: :white,
@@ -132,6 +132,6 @@ describe Anki::CubeVisualizer do
   it 'parses a stage mask correctly' do
     mask = Anki::StageMask.parse('coll-x2')
     expect(mask.base_mask).to eq(:coll)
-    expect(mask.rotations).to eq(Core::Algorithm.move(Core::Rotation.new(Core::Face::R, Core::CubeDirection::DOUBLE)))
+    expect(mask.rotations).to eq(TwistyPuzzles::Algorithm.move(TwistyPuzzles::Rotation.new(TwistyPuzzles::Face::R, TwistyPuzzles::CubeDirection::DOUBLE)))
   end
 end

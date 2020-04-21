@@ -7,7 +7,7 @@ module TwistyPuzzles
   
     # Module to print and display cube and Skewb states.
     module CubePrintHelper
-      include Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
 
       def color_symbol(color)
         case color

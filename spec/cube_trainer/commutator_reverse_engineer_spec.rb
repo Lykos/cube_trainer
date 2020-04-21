@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'cube_trainer/commutator_reverse_engineer'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
-require 'cube_trainer/letter_scheme'
+require 'twisty_puzzles'
 
 describe CommutatorReverseEngineer do
-  include Core
+  include TwistyPuzzles
 
   let(:letter_scheme) { BernhardLetterScheme.new }
   let(:cube_size) { 3 }
   let(:engineer) { described_class.new(part_type, buffer, letter_scheme, cube_size) }
 
   context 'for corners' do
-    let(:part_type) { Core::Corner }
-    let(:buffer) { Core::Corner.for_face_symbols(%i[U L B]) }
+    let(:part_type) { TwistyPuzzles::Corner }
+    let(:buffer) { TwistyPuzzles::Corner.for_face_symbols(%i[U L B]) }
 
     it 'finds the letters of ig' do
       alg = parse_commutator("[L', U R U']").algorithm
@@ -49,8 +49,8 @@ describe CommutatorReverseEngineer do
   end
 
   context 'for edges' do
-    let(:part_type) { Core::Edge }
-    let(:buffer) { Core::Edge.for_face_symbols(%i[U F]) }
+    let(:part_type) { TwistyPuzzles::Edge }
+    let(:buffer) { TwistyPuzzles::Edge.for_face_symbols(%i[U F]) }
 
     it 'finds the letters of a simple alg' do
       alg = parse_commutator("[R' F R, S]").algorithm

@@ -8,8 +8,8 @@ module TwistyPuzzles
   
     # Base class of cube parts. Represents one part or the position of one part on the cube.
     class Part
-      include Utils::ArrayHelper
-      extend Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
+      extend TwistyPuzzles::Utils::ArrayHelper
       include CubeConstants
       extend CubeConstants
       include Comparable

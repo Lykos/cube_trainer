@@ -3,7 +3,7 @@
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_trainer/color_scheme'
+require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_finder'
@@ -13,12 +13,12 @@ SCRAMBLE_LENGTH = 15
 SEARCH_DEPTH = 7
 
 def score_after_move(layer_finder, skewb_state, move)
-  alg = CubeTrainer::Core::Algorithm.move(move)
+  alg = TwistyPuzzles::Algorithm.move(move)
   alg.apply_temporarily_to(skewb_state) { |s| layer_finder.state_score(s) }
 end
 
 def max_score_after_one_move(layer_finder, skewb_state)
-  CubeTrainer::Core::FixedCornerSkewbMove::ALL.map do |m|
+  TwistyPuzzles::FixedCornerSkewbMove::ALL.map do |m|
     score_after_move(layer_finder, skewb_state, m)
   end.max
 end

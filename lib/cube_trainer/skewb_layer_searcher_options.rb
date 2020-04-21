@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/color_scheme'
-require 'cube_trainer/letter_scheme'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'cube_trainer/cube_trainer_options_parser'
 require 'ostruct'
 

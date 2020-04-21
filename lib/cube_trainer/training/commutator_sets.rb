@@ -16,7 +16,7 @@ module CubeTrainer
   module Training
     # Module containing useful methods for various sets of corner twists.
     module CornerTwistSetsHelper
-      ORIENTATION_FACES = [Core::Face::U, Core::Face::D].freeze
+      ORIENTATION_FACES = [TwistyPuzzles::Face::U, TwistyPuzzles::Face::D].freeze
 
       def orientation_face(part)
         faces = ORIENTATION_FACES.select { |f| part.face_symbols.include?(f.face_symbol) }
@@ -52,7 +52,7 @@ module CubeTrainer
     class FloatingCorner2Twists < LetterPairAlgSet
       include CornerTwistSetsHelper
 
-      PART_TYPE = Core::Corner
+      PART_TYPE = TwistyPuzzles::Corner
 
       def hinter
         @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('corner_twists', input_items, @mode)
@@ -63,7 +63,7 @@ module CubeTrainer
       end
 
       def part_cycle_factory
-        @part_cycle_factory ||= Core::PartCycleFactory.new(@mode.cube_size, 0)
+        @part_cycle_factory ||= TwistyPuzzles::PartCycleFactory.new(@mode.cube_size, 0)
       end
 
       def cube_state
@@ -111,7 +111,7 @@ module CubeTrainer
 
     # Class that generates input items for floating corner 2 twists and 3 twists.
     class FloatingCorner2TwistsAnd3Twists < DisjointUnionLetterPairAlgSet
-      PART_TYPE = Core::Corner
+      PART_TYPE = TwistyPuzzles::Corner
 
       def initialize(mode)
         super(
@@ -123,7 +123,7 @@ module CubeTrainer
 
       def buffer_coordinates
         @buffer_coordinates ||=
-          Core::Coordinate.solved_positions(@mode.parsed_buffer, @mode.cube_size, 0)
+          TwistyPuzzles::Coordinate.solved_positions(@mode.parsed_buffer, @mode.cube_size, 0)
       end
 
       def generate_input_items
@@ -142,8 +142,8 @@ module CubeTrainer
     class CornerTwistsPlusParities < LetterPairAlgSet
       include CornerTwistSetsHelper
 
-      PART_TYPE = Core::Corner
-      PARITY_PART_TYPE = Core::Edge
+      PART_TYPE = TwistyPuzzles::Corner
+      PARITY_PART_TYPE = TwistyPuzzles::Edge
 
       def hinter
         corner_mode = @mode.used_mode(:corner_commutators)
@@ -174,7 +174,7 @@ module CubeTrainer
       # Class that creates hints for corner twists plus parities.
       class CornerTwistPlusParityHinter < HeterogenousSequenceHinter
         include CornerTwistSetsHelper
-        include Utils::ArrayHelper
+        include TwistyPuzzles::Utils::ArrayHelper
 
         def initialize(corner_mode, parity_mode, corner_hinter, parity_hinter, mode)
           super(mode.cube_size, [corner_mode, parity_mode], [corner_hinter, parity_hinter])
@@ -191,7 +191,7 @@ module CubeTrainer
           twist_letter = only(twist_letter_pair.letters)
           twisted_part = @letter_scheme.for_letter(PART_TYPE, twist_letter)
           solved_twist_part = rotate_orientation_face_up(twisted_part)
-          Array.new(Core::Corner::FACES) do |rot|
+          Array.new(TwistyPuzzles::Corner::FACES) do |rot|
             twist_entry_letter = letter(twisted_part.rotate_by(rot))
             twist_exit_letter = letter(solved_twist_part.rotate_by(rot))
             comm = LetterPair.new([parity_letter, twist_entry_letter])
@@ -207,7 +207,7 @@ module CubeTrainer
     class Corner3Twists < LetterPairAlgSet
       include CornerTwistSetsHelper
 
-      PART_TYPE = Core::Corner
+      PART_TYPE = TwistyPuzzles::Corner
 
       def hinter
         return NoHinter.new(input_items) unless (corner_mode = @mode.used_mode(:corner_commutators))
@@ -223,7 +223,7 @@ module CubeTrainer
       # rubocop:disable Metrics/AbcSize
       def generate_input_items
         cube_state = @mode.solved_cube_state
-        part_cycle_factory = Core::PartCycleFactory.new(@mode.cube_size, 0)
+        part_cycle_factory = TwistyPuzzles::PartCycleFactory.new(@mode.cube_size, 0)
         buffer_twist = part_cycle_factory.multi_twist([@mode.parsed_buffer])
         1.upto(2).collect_concat do |twist_number|
           buffer_twist.apply_to(cube_state)
@@ -284,7 +284,7 @@ module CubeTrainer
 
           # Now we generate additional solutions by rotating both colors in one direction.
           extended_solutions =
-            Array.new(Core::Corner::FACES) do |rot|
+            Array.new(TwistyPuzzles::Corner::FACES) do |rot|
               solution_corners.map do |comm|
                 comm.map { |p| p.rotate_by(rot) }
               end
@@ -293,7 +293,7 @@ module CubeTrainer
           # Now we generate even more additional solutions by rotating the second corner of the
           # first comm and the first corner of the second comm in opposite directions.
           extended_solutions =
-            Core::Corner::FACES.times.collect_concat do |rot|
+            TwistyPuzzles::Corner::FACES.times.collect_concat do |rot|
               extended_solutions.map do |solution|
                 raise unless solution.length == 2
 
@@ -322,7 +322,7 @@ module CubeTrainer
 
     # Class that generates input items for floating edge flips.
     class FloatingEdgeFlips < LetterPairAlgSet
-      PART_TYPE = Core::Edge
+      PART_TYPE = TwistyPuzzles::Edge
 
       def hinter
         @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('edge_flips', input_items, @mode)
@@ -340,7 +340,7 @@ module CubeTrainer
 
       def generate_input_items
         cube_state = @mode.solved_cube_state
-        part_cycle_factory = Core::PartCycleFactory.new(@mode.cube_size, 0)
+        part_cycle_factory = TwistyPuzzles::PartCycleFactory.new(@mode.cube_size, 0)
         edge_combinations.map do |edge_pair|
           letter_pair = LetterPair.new(edge_pair.map { |e| letter(e) })
           flip_sticker_cycles = part_cycle_factory.multi_twist(edge_pair)
@@ -359,7 +359,7 @@ module CubeTrainer
 
     # Class that generates input items for corner commutators.
     class CornerCommutators < CommutatorSet
-      PART_TYPE = Core::Corner
+      PART_TYPE = TwistyPuzzles::Corner
 
       def generate_letter_pairs
         letter_pairs_for_part_type - rotations
@@ -372,7 +372,7 @@ module CubeTrainer
 
     # Class that generates input items for edge commutators.
     class EdgeCommutators < CommutatorSet
-      PART_TYPE = Core::Edge
+      PART_TYPE = TwistyPuzzles::Edge
 
       def generate_letter_pairs
         letter_pairs_for_part_type - rotations
@@ -385,7 +385,7 @@ module CubeTrainer
 
     # Class that generates input items for wing commutators.
     class WingCommutators < CommutatorSet
-      PART_TYPE = Core::Wing
+      PART_TYPE = TwistyPuzzles::Wing
 
       def generate_letter_pairs
         letter_pairs_for_part_type - rotations
@@ -398,7 +398,7 @@ module CubeTrainer
 
     # Class that generates input items for X center commutators.
     class XCenterCommutators < CommutatorSet
-      PART_TYPE = Core::XCenter
+      PART_TYPE = TwistyPuzzles::XCenter
 
       def generate_letter_pairs
         letter_pairs_for_part_type - neighbors
@@ -411,7 +411,7 @@ module CubeTrainer
 
     # Class that generates input items for T center commutators.
     class TCenterCommutators < CommutatorSet
-      PART_TYPE = Core::TCenter
+      PART_TYPE = TwistyPuzzles::TCenter
 
       def generate_letter_pairs
         letter_pairs_for_part_type - neighbors
@@ -426,8 +426,8 @@ module CubeTrainer
     class CornerParities < LetterPairAlgSet
       include CornerTwistSetsHelper
 
-      PART_TYPE = Core::Corner
-      PARITY_PART_TYPE = Core::Edge
+      PART_TYPE = TwistyPuzzles::Corner
+      PARITY_PART_TYPE = TwistyPuzzles::Edge
 
       def hinter
         @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('parities', input_items, @mode)

@@ -7,7 +7,7 @@ module TwistyPuzzles
   
     # Factory for sticker cycles given part cycles.
     class PartCycleFactory
-      include Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
 
       def initialize(cube_size, incarnation_index)
         CubeState.check_cube_size(cube_size)

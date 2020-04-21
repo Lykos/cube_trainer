@@ -22,7 +22,7 @@ describe SkewbScrambler do
       Rantly { range(0, 5) }
     end.check do |length|
       scrambler.random_algorithm(length).moves.each do |move|
-        expect(move).to be_a(Core::SkewbMove)
+        expect(move).to be_a(TwistyPuzzles::SkewbMove)
       end
     end
   end

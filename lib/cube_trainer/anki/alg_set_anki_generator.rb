@@ -18,12 +18,12 @@ module CubeTrainer
   module Anki
     # Class that generates an Anki deck for an alg set.
     class AlgSetAnkiGenerator
-      include Utils::ArrayHelper
+      include TwistyPuzzles::Utils::ArrayHelper
       FORMAT = :jpg
-      NON_ZERO_AUFS = Core::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
-        Core::Algorithm.move(Core::FatMove.new(Core::Face::U, d))
+      NON_ZERO_AUFS = TwistyPuzzles::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
+        TwistyPuzzles::Algorithm.move(TwistyPuzzles::FatMove.new(TwistyPuzzles::Face::U, d))
       end.freeze
-      AUFS = ([Core::Algorithm::EMPTY] + NON_ZERO_AUFS).freeze
+      AUFS = ([TwistyPuzzles::Algorithm::EMPTY] + NON_ZERO_AUFS).freeze
       # rubocop:disable Style/StringHashKeys
       LETTER_REPLACEMENTS = {
         'ä' => 'ae',
