@@ -24,7 +24,7 @@ enum StopWatchState {
     <trainer-input [input]="input" [modeId$]="modeId$" [numHints$]="numHintsSubject.asObservable()" *ngIf="input"></trainer-input>
     <div>
       <h2>Time</h2>
-      <div> {{duration}} </div>
+      <div class="stopwatch-time"> {{duration}} </div>
       <div>
         <ng-container *ngIf="running; else notRunning">
           <button mat-raised-button color="primary" (click)="onStopAndStart()">
@@ -52,7 +52,12 @@ enum StopWatchState {
     <stats-table [statEvents$]="resultEventsSubject.asObservable()"></stats-table>
   </div>
 </div>
-`
+`,
+  styles: [`
+.stopwatch-time {
+  font-size: xxx-large;
+}
+`]
 })
 export class TrainerComponent implements OnDestroy {
   duration: Duration = zeroDuration;
