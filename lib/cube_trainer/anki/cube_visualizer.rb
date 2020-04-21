@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/anki/image_checker'
-require 'cube_trainer/anki/cache'
 require 'cube_trainer/anki/exponential_backoff'
 require 'twisty_puzzles'
 require 'twisty_puzzles'

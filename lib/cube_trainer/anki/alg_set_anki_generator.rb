@@ -1,9 +1,9 @@
+# coding: utf-8
 # frozen_string_literal: true
 
 require 'csv'
 require 'cube_trainer/training/alg_hint_parser'
 require 'cube_trainer/anki/alg_set_parser'
-require 'cube_trainer/anki/cache'
 require 'cube_trainer/anki/cube_visualizer'
 require 'cube_trainer/anki/note_input'
 require 'twisty_puzzles'
@@ -177,7 +177,7 @@ module CubeTrainer
       end
 
       def create_cache(options)
-        options.cache ? Cache.new('cube_visualizer') : nil
+        throw NotImplementedError, 'The old Sqlite3 cache had to be removed, but no new rails based one has been added yet.'
       end
 
       def check_output_dir(output_dir)
