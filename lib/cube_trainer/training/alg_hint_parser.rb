@@ -18,11 +18,15 @@ module CubeTrainer
       ADJACENT_PLL_NAME = SimpleAlgName.new('Ja')
       DIAGONAL_PLL_NAME = SimpleAlgName.new('Y')
       SOLVED_HINTER = AlgHinter.new(SimpleAlgName.new('solved') => TwistyPuzzles::Algorithm::EMPTY)
-      AUF_HINTER = AlgHinter.new(([[SimpleAlgName.new('auf skip'), TwistyPuzzles::Algorithm::EMPTY]] +
-                                  TwistyPuzzles::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
-                                    alg = TwistyPuzzles::Algorithm.move(TwistyPuzzles::FatMove.new(TwistyPuzzles::Face::U, d))
-                                    [SimpleAlgName.new(alg.to_s), alg]
-                                  end).to_h)
+      AUF_HINTER =
+        AlgHinter.new(
+          ([[SimpleAlgName.new('auf skip'), TwistyPuzzles::Algorithm::EMPTY]] +
+           TwistyPuzzles::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
+             alg =
+               TwistyPuzzles::Algorithm.move(TwistyPuzzles::FatMove.new(TwistyPuzzles::Face::U, d))
+             [SimpleAlgName.new(alg.to_s), alg]
+           end).to_h
+        )
 
       def initialize(name, verbose)
         @name = name

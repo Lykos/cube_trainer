@@ -152,7 +152,8 @@ module CubeTrainer
               .where(Result.arel_table[:num_hints].gt(0))
               .group(:input_representation)
               .minimum(age_exp)
-            # We ignore the cached inputs here because we don't know whether they will trigger a hint.
+            # We ignore the cached inputs here because we don't know whether they will trigger a
+            # hint.
             result.default = Float::INFINITY
             result.freeze
           end
@@ -160,7 +161,7 @@ module CubeTrainer
 
       # Without taking cached_inputs into consideration.
       def raw_last_occurrence_age_cache
-        @last_occurrence_age_cache ||=
+        @raw_last_occurrence_age_cache ||=
           begin
             result =
               @mode
@@ -191,6 +192,7 @@ module CubeTrainer
         floor(age_exp / 86_400)
       end
 
+      # rubocop:disable Metrics/MethodLength
       def occurrence_days_cache
         @occurrence_days_cache ||=
           begin
@@ -202,13 +204,15 @@ module CubeTrainer
               .distinct
               .count(days_old_exp)
             result.default = 0
-            cached_items_not_seen_today = @cached_inputs.select do |i|
-              raw_last_occurrence_age_cache[i.representation] > 1.days
-            end
+            cached_items_not_seen_today =
+              @cached_inputs.select do |i|
+                raw_last_occurrence_age_cache[i.representation] > 1.day
+              end
             cached_items_not_seen_today.each { |i| result[i.representation] += 1 }
             result.freeze
           end
       end
+      # rubocop:enable Metrics/MethodLength
 
       def occurrences_cache
         @occurrences_cache ||=

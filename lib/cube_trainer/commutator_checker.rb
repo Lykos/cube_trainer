@@ -13,7 +13,7 @@ module CubeTrainer
   class CommutatorChecker
     include TwistyPuzzles::CubePrintHelper
 
-    # rubocop:disable Metrics/ParameterLists
+    # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
     def initialize(
       part_type:,
       buffer:,
@@ -26,7 +26,9 @@ module CubeTrainer
       incarnation_index: 0
     )
       TwistyPuzzles::CubeState.check_cube_size(cube_size)
-      raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(TwistyPuzzles::Part)
+      unless part_type.is_a?(Class) && part_type.ancestors.include?(TwistyPuzzles::Part)
+        raise TypeError
+      end
       raise TypeError unless buffer.class == part_type
       raise TwistyPuzzles::ColorScheme unless color_scheme.is_a?(TwistyPuzzles::ColorScheme)
 
@@ -42,7 +44,7 @@ module CubeTrainer
       init_helpers
       reset
     end
-    # rubocop:enable Metrics/ParameterLists
+    # rubocop:enable Metrics/ParameterLists, Metrics/MethodLength
 
     def init_helpers
       @alg_cube_state = @color_scheme.solved_cube_state(@cube_size)
@@ -188,7 +190,9 @@ module CubeTrainer
       setup_modifications = alg_modifications(commutator.setup)
       inner_commutator_modifications = commutator_modifications(commutator.inner_commutator)
       modification_combinations = setup_modifications.product(inner_commutator_modifications)
-      modification_combinations.map { |setup, comm| TwistyPuzzles::SetupCommutator.new(setup, comm) }.uniq
+      modification_combinations.map do |setup, comm|
+        TwistyPuzzles::SetupCommutator.new(setup, comm)
+      end.uniq
     end
 
     def pure_commutator_modifications(commutator)

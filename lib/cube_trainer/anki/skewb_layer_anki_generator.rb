@@ -23,7 +23,8 @@ module CubeTrainer
       ].freeze
 
       TOP_CORNERS = TwistyPuzzles::Corner::ELEMENTS.select { |c| c.face_symbols.first == :U }.freeze
-      BOTTOM_CORNERS = TwistyPuzzles::Corner::ELEMENTS.select { |c| c.face_symbols.first == :D }.freeze
+      BOTTOM_CORNERS =
+        TwistyPuzzles::Corner::ELEMENTS.select { |c| c.face_symbols.first == :D }.freeze
       NON_BOTTOM_FACES = TwistyPuzzles::Face::ELEMENTS.reject { |c| c.face_symbol == :D }.freeze
 
       def initialize(options)

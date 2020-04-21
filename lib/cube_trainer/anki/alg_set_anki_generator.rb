@@ -1,4 +1,3 @@
-# coding: utf-8
 # frozen_string_literal: true
 
 require 'csv'
@@ -179,7 +178,8 @@ module CubeTrainer
       def create_cache(options)
         return unless options.cache
 
-        throw NotImplementedError, 'The old Sqlite3 cache had to be removed, but no new rails based one has been added yet.'
+        throw NotImplementedError, 'The old Sqlite3 cache had to be removed, but no new rails ' \
+                                   'based one has been added yet.'
       end
 
       def check_output_dir(output_dir)

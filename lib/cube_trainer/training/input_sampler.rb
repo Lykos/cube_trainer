@@ -90,7 +90,7 @@ module CubeTrainer
       #         But the representation inside InputItem can be anything.
       # `mode` is the mode that is used to retrieve associated previous results and for all kinds
       #        of options.
-      def initialize(items, mode, logger=Rails.logger)
+      def initialize(items, mode, logger = Rails.logger)
         raise ArgumentError unless items.is_a?(Array)
         unless items.all? { |e| e.is_a?(InputItem) }
           raise ArgumentError, "Invalid items #{items.inspect}."
@@ -118,7 +118,7 @@ module CubeTrainer
           badness_memory: @config[:badness_memory],
           failed_seconds: @config[:failed_seconds],
           hint_seconds: @config[:hint_seconds],
-          cached_inputs: cached_inputs,
+          cached_inputs: cached_inputs
         )
       end
 
@@ -169,7 +169,7 @@ module CubeTrainer
         CombinedSampler::SubSampler.new(sampler, sampling_fraction)
       end
 
-      def random_item(cached_inputs=[])
+      def random_item(cached_inputs = [])
         @result_history = create_result_history(cached_inputs)
         sampler = create_sampler
         managed_sample = sampler.random_item
@@ -188,7 +188,7 @@ module CubeTrainer
 
       attr_reader :items
 
-      def random_item(cached_inputs=[])
+      def random_item(_cached_inputs = [])
         @items.sample
       end
     end

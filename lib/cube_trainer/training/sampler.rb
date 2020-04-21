@@ -37,7 +37,9 @@ module CubeTrainer
 
       def random_item
         subsamplers = ready_subsamplers
-        raise SamplingError, "No ready subsampler for combined sampler #{@name}." if subsamplers.empty?
+        if subsamplers.empty?
+          raise SamplingError, "No ready subsampler for combined sampler #{@name}."
+        end
 
         sample_by(subsamplers, &:weight).subsampler.random_item
       end

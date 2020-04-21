@@ -21,10 +21,10 @@ RSpec::Matchers.define(:eq_modulo_symbol_vs_string) do |expected|
   end
 end
 
-include TwistyPuzzles
-
-# TODO Don't copy these from the twisty_puzzles gem.
+# TODO: Don't copy these from the twisty_puzzles gem.
 RSpec::Matchers.define(:eq_commutator) do |expected|
+  include TwistyPuzzles
+
   match do |actual|
     expected = parse_commutator(expected) if expected.is_a?(String)
     actual == expected
@@ -34,10 +34,14 @@ RSpec::Matchers.define(:eq_commutator) do |expected|
   end
 end
 
-# TODO Don't copy these from the twisty_puzzles gem.
+# TODO: Don't copy these from the twisty_puzzles gem.
 RSpec::Matchers.define(:eq_sarahs_skewb_algorithm) do |expected|
+  include TwistyPuzzles
+
   match do |actual|
-    expected = parse_skewb_algorithm(expected, TwistyPuzzles::SkewbNotation.sarah) if expected.is_a?(String)
+    if expected.is_a?(String)
+      expected = parse_skewb_algorithm(expected, TwistyPuzzles::SkewbNotation.sarah)
+    end
     actual == expected
   end
   failure_message do |actual|

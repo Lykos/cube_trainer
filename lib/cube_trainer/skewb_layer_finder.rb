@@ -31,7 +31,9 @@ module CubeTrainer
     end
 
     def generate_moves(_skewb_state)
-      TwistyPuzzles::SkewbNotation.fixed_corner.non_zero_moves.map { |m| TwistyPuzzles::Algorithm.move(m) }
+      TwistyPuzzles::SkewbNotation.fixed_corner.non_zero_moves.map do |m|
+        TwistyPuzzles::Algorithm.move(m)
+      end
     end
   end
 end
