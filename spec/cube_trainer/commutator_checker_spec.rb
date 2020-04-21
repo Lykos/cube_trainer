@@ -2,8 +2,8 @@
 
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/commutator_checker'
-require 'cube_trainer/core/cube'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_scheme'
 

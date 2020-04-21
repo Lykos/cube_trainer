@@ -3,13 +3,13 @@
 require 'cube_trainer/commutator_reverse_engineer'
 require 'cube_trainer/training/commutator_hinter'
 require 'cube_trainer/commonality_finder'
-require 'cube_trainer/core/cube'
-require 'cube_trainer/core/cube_constants'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/commutator_checker'
 require 'cube_trainer/training/hint_parser'
-require 'cube_trainer/utils/string_helper'
+require 'twisty_puzzles/utils'
 
 module CubeTrainer
   module Training

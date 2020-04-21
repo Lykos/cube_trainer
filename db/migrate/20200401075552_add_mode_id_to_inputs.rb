@@ -1,6 +1,6 @@
 require 'cube_trainer/training/commutator_types'
 require 'cube_trainer/buffer_helper'
-require 'cube_trainer/utils/array_helper'
+require 'twisty_puzzles/utils'
 
 class AddModeIdToInputs < ActiveRecord::Migration[6.0]
   include CubeTrainer::Training::CommutatorTypes

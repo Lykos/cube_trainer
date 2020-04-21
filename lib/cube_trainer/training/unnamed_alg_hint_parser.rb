@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
 require 'cube_trainer/training/alg_hinter'
 require 'cube_trainer/training/alg_set_reverse_engineer'
 require 'cube_trainer/training/hint_parser'

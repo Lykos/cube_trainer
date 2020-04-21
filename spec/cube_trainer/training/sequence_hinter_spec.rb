@@ -2,7 +2,7 @@
 
 require 'cube_trainer/training/alg_hinter'
 require 'cube_trainer/alg_name'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/sequence_hinter'
 require 'fixtures'

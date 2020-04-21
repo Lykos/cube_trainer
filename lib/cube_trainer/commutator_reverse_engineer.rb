@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/coordinate'
-require 'cube_trainer/core/cube'
-require 'cube_trainer/core/cube_state'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'cube_trainer/letter_scheme'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/color_scheme'

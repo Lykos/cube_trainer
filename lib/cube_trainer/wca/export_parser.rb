@@ -4,7 +4,7 @@ require 'csv'
 require 'zip'
 require 'cube_trainer/wca/result'
 require 'cube_trainer/wca/file_parsers'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
 
 module CubeTrainer
   module WCA

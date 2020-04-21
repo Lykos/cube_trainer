@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/utils/array_helper'
+require 'twisty_puzzles/utils'
 
 # Generator for a spec for a migration.
 class MigrationSpecGenerator < Rails::Generators::NamedBase

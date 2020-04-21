@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/color_scheme'
-require 'cube_trainer/core/algorithm'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'cube_trainer/cross_finder'
 
 describe CrossFinder do

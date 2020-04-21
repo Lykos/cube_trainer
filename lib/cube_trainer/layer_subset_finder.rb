@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/bruteforce_finder'
-require 'cube_trainer/core/cube'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Class that finds a solution that is related to a score on a face.

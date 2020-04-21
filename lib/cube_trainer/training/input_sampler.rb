@@ -10,7 +10,7 @@ require 'cube_trainer/training/new_scorer'
 require 'cube_trainer/training/repeat_scorer'
 require 'cube_trainer/training/result_history'
 require 'cube_trainer/training/revisit_scorer'
-require 'cube_trainer/utils/string_helper'
+require 'twisty_puzzles/utils'
 
 module CubeTrainer
   module Training

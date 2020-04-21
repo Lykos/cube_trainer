@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/console_helpers'
-require 'cube_trainer/core/algorithm'
+require 'twisty_puzzles'
 require 'io/console'
 require 'timeout'
 

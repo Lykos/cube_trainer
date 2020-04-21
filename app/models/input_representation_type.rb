@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/alg_name'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
 require 'cube_trainer/letter_pair'
 require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/pao_letter_pair'
 require 'cube_trainer/training/scramble'
-require 'cube_trainer/utils/string_helper'
+require 'twisty_puzzles/utils'
 
 # Result of giving one task to the learner and judging their performance.
 class InputRepresentationType < ActiveRecord::Type::String

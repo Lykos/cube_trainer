@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/alg_name'
-require 'cube_trainer/core/cube_state'
+require 'twisty_puzzles'
 require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/training/result_history'
 require 'cube_trainer/native'
-require 'cube_trainer/utils/array_helper'
+require 'twisty_puzzles/utils'
 require 'ostruct'
 
 module CubeTrainer

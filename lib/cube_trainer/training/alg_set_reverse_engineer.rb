@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/utils/array_helper'
+require 'twisty_puzzles/utils'
 
 module CubeTrainer
   module Training

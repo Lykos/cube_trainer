@@ -3,7 +3,7 @@
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/letter_scheme'
-require 'cube_trainer/utils/array_helper'
+require 'twisty_puzzles/utils'
 require 'mode_type'
 
 # Model for training modes that the user created.

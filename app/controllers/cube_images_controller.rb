@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'net/http'
-require 'cube_trainer/core/algorithm'
+require 'twisty_puzzles'
 require 'cube_trainer/anki/cube_visualizer'
 
 # Controller that generates and serves cube images.

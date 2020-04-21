@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/cube'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'cube_trainer/training/commutator_hint_parser'
 require 'cube_trainer/letter_scheme'
 

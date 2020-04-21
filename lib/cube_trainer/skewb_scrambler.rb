@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/abstract_scrambler'
-require 'cube_trainer/core/skewb_move'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Class to generate Skewb scrambles.

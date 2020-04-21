@@ -3,8 +3,8 @@
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_trainer/core/cube_state'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'cube_trainer/color_scheme'
 
 # rubocop:disable Style/MixinUsage

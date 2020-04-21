@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/console_helpers'
-require 'cube_trainer/core/cube_print_helper'
-require 'cube_trainer/utils/string_helper'
+require 'twisty_puzzles'
+require 'twisty_puzzles/utils'
 
 module CubeTrainer
   module Training

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/algorithm'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Abstract class to generate scrambles.

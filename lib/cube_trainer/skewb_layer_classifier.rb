@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/skewb_state'
+require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_helper'
 
 module CubeTrainer

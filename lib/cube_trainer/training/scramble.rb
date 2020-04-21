@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
 
 module CubeTrainer
   module Training

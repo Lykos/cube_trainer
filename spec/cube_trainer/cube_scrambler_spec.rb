@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/cube_move'
+require 'twisty_puzzles'
 require 'cube_trainer/cube_scrambler'
 require 'rantly'
 require 'rantly/rspec_extensions'

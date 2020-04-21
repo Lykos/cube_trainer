@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/color_scheme'
-require 'cube_trainer/core/cube_state'
-require 'cube_trainer/core/commutator'
-require 'cube_trainer/core/algorithm'
-require 'cube_trainer/core/cube_print_helper'
-require 'cube_trainer/core/part_cycle_factory'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Class that checks whether a commutator algorithm does

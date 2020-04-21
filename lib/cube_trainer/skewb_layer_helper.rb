@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/coordinate'
-require 'cube_trainer/core/skewb_state'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Module with common helper methods related to Skewb layers.

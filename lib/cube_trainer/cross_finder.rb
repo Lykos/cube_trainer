@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/algorithm'
-require 'cube_trainer/core/coordinate'
-require 'cube_trainer/core/cube_move'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'cube_trainer/layer_subset_finder'
 
 module CubeTrainer

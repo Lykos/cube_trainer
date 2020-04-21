@@ -2,7 +2,7 @@
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'cube_trainer/core/cube'
+require 'twisty_puzzles'
 require 'cube_trainer/training/commutator_options'
 require 'cube_trainer/training/stats_computer'
 require 'yaml'

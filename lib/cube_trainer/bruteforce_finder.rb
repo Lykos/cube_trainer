@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/algorithm'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Partial set of solutions to get from a given puzzle state to one with some desired properties.

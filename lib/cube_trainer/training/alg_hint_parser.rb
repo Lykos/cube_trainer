@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/alg_name'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
 require 'cube_trainer/training/disjoint_union_hinter'
 require 'cube_trainer/training/hint_parser'
 require 'cube_trainer/training/alg_hinter'

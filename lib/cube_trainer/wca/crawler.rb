@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/wca/storer'
-require 'cube_trainer/utils/array_helper'
+require 'twisty_puzzles/utils'
 require 'net/http'
 require 'pathname'
 require 'wombat'

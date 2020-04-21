@@ -2,8 +2,8 @@
 
 require 'cube_trainer/color_scheme'
 require 'cube_trainer/commutator_reverse_engineer'
-require 'cube_trainer/core/cube'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'cube_trainer/letter_scheme'
 
 describe CommutatorReverseEngineer do

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/color_scheme'
-require 'cube_trainer/core/algorithm_transformation'
-require 'cube_trainer/core/cube'
-require 'cube_trainer/core/parser'
-require 'cube_trainer/core/skewb_move'
-require 'cube_trainer/core/skewb_notation'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/skewb_layer_fingerprinter'
 require 'set'

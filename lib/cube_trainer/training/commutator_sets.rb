@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/core/part_cycle_factory'
+require 'twisty_puzzles'
 require 'cube_trainer/letter_pair_helper'
 require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/training/commutator_hint_parser'
@@ -10,7 +10,7 @@ require 'cube_trainer/training/letter_pair_alg_set'
 require 'cube_trainer/training/no_hinter'
 require 'cube_trainer/training/sequence_hinter'
 require 'cube_trainer/training/unnamed_alg_hint_parser'
-require 'cube_trainer/utils/array_helper'
+require 'twisty_puzzles/utils'
 
 module CubeTrainer
   module Training

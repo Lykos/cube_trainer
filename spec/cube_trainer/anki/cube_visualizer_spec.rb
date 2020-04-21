@@ -2,11 +2,11 @@
 
 require 'cube_trainer/anki/cube_visualizer'
 require 'cube_trainer/color_scheme'
-require 'cube_trainer/core/algorithm'
-require 'cube_trainer/core/coordinate'
-require 'cube_trainer/core/cube'
-require 'cube_trainer/core/cube_direction'
-require 'cube_trainer/core/parser'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
+require 'twisty_puzzles'
 
 URL = 'http://cube.crider.co.uk/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
 IMAGE = 'some image'
