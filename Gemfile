@@ -33,6 +33,7 @@ gem 'pg'
 gem 'ruby-filemagic'
 gem 'ruby-progressbar'
 gem 'rubyzip'
+gem 'twisty_puzzles'
 gem 'wombat'
 gem 'xdg'
 
