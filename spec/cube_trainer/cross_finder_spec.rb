@@ -8,7 +8,7 @@ require 'cube_trainer/cross_finder'
 describe CrossFinder do
   include TwistyPuzzles
 
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:cube_state) { color_scheme.solved_cube_state(3) }
   let(:cross_finder) { described_class.new }
 

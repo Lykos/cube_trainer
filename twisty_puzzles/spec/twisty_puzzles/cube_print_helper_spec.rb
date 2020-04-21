@@ -22,7 +22,7 @@ describe CubePrintHelper do
   
   include described_class
 
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
 
   context 'when the cube size is 2' do
     let(:cube_size) { 2 }

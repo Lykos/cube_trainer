@@ -26,11 +26,11 @@ class AddModeIdToInputs < ActiveRecord::Migration[6.0]
     end
 
     def letter_scheme
-      @letter_scheme ||= CubeTrainer::BernhardLetterScheme.new
+      @letter_scheme ||= CubeTrainer::BernhardTwistyPuzzles::LetterScheme.new
     end
 
     def color_scheme
-      CubeTrainer::ColorScheme::BERNHARD
+      TwistyPuzzles::ColorScheme::BERNHARD
     end
 
     def legacy_mode

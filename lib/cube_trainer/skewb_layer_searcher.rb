@@ -98,7 +98,7 @@ module CubeTrainer
     end
 
     def initialize(color_scheme, verbose, max_length)
-      raise TypeError unless color_scheme.is_a?(ColorScheme)
+      raise TypeError unless color_scheme.is_a?(TwistyPuzzles::ColorScheme)
       raise TypeError unless max_length.nil? || max_length.is_a?(Integer)
 
       @verbose = verbose

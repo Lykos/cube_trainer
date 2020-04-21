@@ -34,7 +34,7 @@ module TwistyPuzzles
         end
 
         stickers_hash = create_stickers_hash(stickers)
-        new(Native::CubeState.new(cube_size, stickers_hash))
+        new(TwistyPuzzles::Native::CubeState.new(cube_size, stickers_hash))
       end
 
       def self.create_stickers_hash(stickers)
@@ -53,7 +53,7 @@ module TwistyPuzzles
       end
 
       def initialize(native)
-        raise TypeError unless native.is_a?(Native::CubeState)
+        raise TypeError unless native.is_a?(TwistyPuzzles::Native::CubeState)
 
         @native = native
       end

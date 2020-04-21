@@ -42,12 +42,12 @@ class Mode < ApplicationRecord
 
   # TODO: Make it configurable
   def letter_scheme
-    @letter_scheme ||= CubeTrainer::BernhardLetterScheme.new
+    @letter_scheme ||= CubeTrainer::BernhardTwistyPuzzles::LetterScheme.new
   end
 
   # TODO: Make it configurable
   def color_scheme
-    CubeTrainer::ColorScheme::BERNHARD
+    TwistyPuzzles::ColorScheme::BERNHARD
   end
 
   # TODO: deprecate

@@ -10,7 +10,7 @@ describe SkewbLayerImprover do
   include TwistyPuzzles
 
   let(:face) { TwistyPuzzles::Face::U }
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:improver) { described_class.new(face, color_scheme) }
   let(:sarah) { TwistyPuzzles::SkewbNotation.sarah }
 

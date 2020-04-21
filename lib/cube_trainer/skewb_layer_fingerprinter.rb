@@ -16,7 +16,7 @@ module CubeTrainer
     # It tries to be different for different types of layers, but it's not perfect yet, so some
     # layers will be mapped to the same number.
     def fingerprint(skewb_state)
-      Native.skewb_layer_fingerprint(skewb_state.native, @face.face_symbol)
+      TwistyPuzzles::Native.skewb_layer_fingerprint(skewb_state.native, @face.face_symbol)
     end
   end
 end

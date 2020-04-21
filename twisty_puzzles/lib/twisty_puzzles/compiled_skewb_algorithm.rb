@@ -18,11 +18,11 @@ module TwistyPuzzles
       end
 
       def self.for_moves(moves)
-        native = Native::SkewbAlgorithm.new(moves.map { |m| transform_move(m) })
+        native = TwistyPuzzles::Native::SkewbAlgorithm.new(moves.map { |m| transform_move(m) })
         new(native)
       end
 
-      NATIVE_CLASS = Native::SkewbAlgorithm
+      NATIVE_CLASS = TwistyPuzzles::Native::SkewbAlgorithm
       EMPTY = for_moves([])
     end
 end

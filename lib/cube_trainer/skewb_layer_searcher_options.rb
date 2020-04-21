@@ -10,8 +10,8 @@ module CubeTrainer
   class SkewbLayerSearcherOptions
     def self.default_options
       options = OpenStruct.new
-      options.color_scheme = ColorScheme::BERNHARD
-      options.letter_scheme = BernhardLetterScheme.new
+      options.color_scheme = TwistyPuzzles::ColorScheme::BERNHARD
+      options.letter_scheme = BernhardTwistyPuzzles::LetterScheme.new
       options
     end
 

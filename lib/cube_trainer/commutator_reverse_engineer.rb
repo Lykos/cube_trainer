@@ -13,7 +13,7 @@ module CubeTrainer
     def initialize(part_type, buffer, letter_scheme, cube_size)
       raise TypeError unless part_type.is_a?(Class)
       raise TypeError unless buffer.is_a?(TwistyPuzzles::Part) && buffer.is_a?(part_type)
-      raise TypeError unless letter_scheme.is_a?(LetterScheme)
+      raise TypeError unless letter_scheme.is_a?(TwistyPuzzles::LetterScheme)
       raise TypeError unless cube_size.is_a?(Integer)
 
       @part_type = part_type

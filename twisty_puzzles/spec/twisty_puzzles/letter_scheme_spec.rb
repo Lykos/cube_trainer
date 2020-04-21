@@ -3,8 +3,8 @@
 require 'twisty_puzzles/cube'
 require 'twisty_puzzles/letter_scheme'
 
-describe LetterScheme do |_clazz|
-  let(:letter_scheme) { BernhardLetterScheme.new }
+describe TwistyPuzzles::LetterScheme do |_clazz|
+  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
   let(:letter) { letter_scheme.alphabet.sample }
 
   it 'finds the corner with the right letter' do

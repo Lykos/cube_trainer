@@ -59,10 +59,10 @@ describe Anki::SkewbLayerAnkiGenerator do
   let(:output) { Tempfile.new(['deck', '.tsv']) }
   let(:base_options) do
     options = OpenStruct.new
-    options.color_scheme = ColorScheme::WCA
+    options.color_scheme = TwistyPuzzles::ColorScheme::WCA
     options.output = output.path
     options.depth = 2
-    options.letter_scheme = BernhardLetterScheme.new
+    options.letter_scheme = BernhardTwistyPuzzles::LetterScheme.new
     options
   end
   let(:options) { base_options }

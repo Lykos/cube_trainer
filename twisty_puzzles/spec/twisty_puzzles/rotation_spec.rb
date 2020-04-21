@@ -13,7 +13,7 @@ require 'rantly/shrinks'
 describe Rotation do
   
 
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:fixed_corner) { SkewbNotation.fixed_corner }
 
   shared_examples 'corner rotations' do |face_symbols, expected_rotation_algorithm|

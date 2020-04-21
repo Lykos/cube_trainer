@@ -11,8 +11,8 @@ describe CommutatorChecker do
   include TwistyPuzzles
 
   let(:part_type) { TwistyPuzzles::Corner }
-  let(:letter_scheme) { BernhardLetterScheme.new }
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:cube_size) { 3 }
   let(:piece_name) { 'corner' }
   let(:buffer) { letter_scheme.default_buffer(part_type) }

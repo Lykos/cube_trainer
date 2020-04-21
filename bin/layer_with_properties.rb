@@ -43,7 +43,7 @@ end
 
 layer_finder = CubeTrainer::SkewbLayerFinder.new
 scrambler = CubeTrainer::SkewbScrambler.new
-skewb_state = CubeTrainer::ColorScheme::BERNHARD.solved_skewb_state
+skewb_state = TwistyPuzzles::ColorScheme::BERNHARD.solved_skewb_state
 
 loop do
   scramble = scrambler.random_moves(SCRAMBLE_LENGTH)

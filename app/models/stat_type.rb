@@ -52,7 +52,7 @@ class StatType
         .joins(:result)
         .limit(@size)
         .pluck(StatType.time_s_expression)
-      CubeTrainer::Native::CubeAverage.new(@size, Float::NAN).push_all(times)
+      TwistyPuzzles::Native::CubeAverage.new(@size, Float::NAN).push_all(times)
     end
 
     def name

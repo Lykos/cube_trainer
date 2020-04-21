@@ -6,7 +6,7 @@ require 'set'
 
 describe SkewbLayerSearcher do
   let(:verbose) { false }
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
 
   def verify_zero_move_algs(zero_move_algs)
     expect(zero_move_algs).to be == [TwistyPuzzles::Algorithm::EMPTY]

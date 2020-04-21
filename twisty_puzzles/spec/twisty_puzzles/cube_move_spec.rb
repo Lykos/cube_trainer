@@ -8,7 +8,7 @@ require 'twisty_puzzles/parser'
 describe CubeMove do
   
 
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
 
   it 'inverts M slices correctly' do
     expect(parse_move('M').inverse).to eq_move("M'")

@@ -20,7 +20,7 @@ end
 describe SkewbState do
   
 
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:skewb_state) { color_scheme.solved_skewb_state }
 
   it 'is not equal to a state with one sticker changed' do
@@ -352,7 +352,7 @@ describe SkewbState do
     end
 
     context 'when using WCA orientation' do
-      let(:color_scheme) { ColorScheme::WCA }
+      let(:color_scheme) { TwistyPuzzles::ColorScheme::WCA }
 
       it "has the red layer solved after a B L' B' L sledge" do
         parse_skewb_algorithm("B L' B' L", fixed_corner).apply_to(skewb_state)

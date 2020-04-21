@@ -4,7 +4,7 @@ require 'twisty_puzzles/cube'
 
 module TwistyPuzzles
   # Letter scheme that maps stickers to letters.
-  class LetterScheme
+  class TwistyPuzzles::LetterScheme
     def initialize
       alphabet.each do |letter|
         raise "Uncanonical letter #{letter} in alphabet." if letter != canonicalize_letter(letter)
@@ -44,7 +44,7 @@ module TwistyPuzzles
   end
 
   # Letter scheme used by Bernhard Brodowsky.
-  class BernhardLetterScheme < LetterScheme
+  class BernhardTwistyPuzzles::LetterScheme < TwistyPuzzles::LetterScheme
     PART_TYPE_BUFFERS = {
       Corner => Corner.for_face_symbols(%i[U L B]),
       Edge => Edge.for_face_symbols(%i[U F]),

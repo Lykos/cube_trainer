@@ -38,7 +38,7 @@ end
 describe Anki::CubeVisualizer do
   include TwistyPuzzles
 
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:cube_size) { 3 }
   let(:cube_state) { color_scheme.solved_cube_state(cube_size) }
   let(:fetcher) { FakeFetcher.new(IMAGE) }

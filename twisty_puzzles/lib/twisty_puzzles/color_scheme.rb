@@ -8,7 +8,7 @@ require 'twisty_puzzles/utils/array_helper'
 
 module TwistyPuzzles
   # A color scheme that assigns a color to each face.
-  class ColorScheme
+  class TwistyPuzzles::ColorScheme
     include CubeConstants
     include TwistyPuzzles::Utils::ArrayHelper
 
@@ -71,7 +71,7 @@ module TwistyPuzzles
 
       add_missing_mappings(turned_face_symbols_to_colors, chirality_corner_source, unknown_index)
 
-      ColorScheme.new(turned_face_symbols_to_colors)
+      TwistyPuzzles::ColorScheme.new(turned_face_symbols_to_colors)
     end
 
     def solved_cube_state(cube_size)

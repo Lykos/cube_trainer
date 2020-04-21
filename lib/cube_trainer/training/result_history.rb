@@ -221,7 +221,7 @@ module CubeTrainer
       end
 
       def new_cube_average
-        Native::CubeAverage.new(@badness_memory, 0)
+        TwistyPuzzles::Native::CubeAverage.new(@badness_memory, 0)
       end
     end
   end

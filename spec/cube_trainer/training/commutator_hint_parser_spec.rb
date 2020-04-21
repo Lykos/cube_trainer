@@ -9,14 +9,14 @@ describe Training::HintParser do
   include TwistyPuzzles
 
   let(:part_type) { TwistyPuzzles::Corner }
-  let(:letter_scheme) { BernhardLetterScheme.new }
+  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
   let(:buffer) { letter_scheme.default_buffer(part_type) }
   let(:hint_parser) do
     Training::CommutatorHintParser.new(
       part_type: part_type,
       buffer: buffer,
       letter_scheme: letter_scheme,
-      color_scheme: ColorScheme::BERNHARD,
+      color_scheme: TwistyPuzzles::ColorScheme::BERNHARD,
       verbose: false,
       cube_size: 3,
       test_comms_mode: :ignore

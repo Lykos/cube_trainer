@@ -52,7 +52,7 @@ module TwistyPuzzles
         end
 
       def initialize(native)
-        raise TypeError unless native.is_a?(Native::SkewbState)
+        raise TypeError unless native.is_a?(TwistyPuzzles::Native::SkewbState)
 
         @native = native
       end
@@ -60,7 +60,7 @@ module TwistyPuzzles
       attr_reader :native
 
       def self.for_solved_colors(solved_colors)
-        native = Native::SkewbState.new(solved_colors)
+        native = TwistyPuzzles::Native::SkewbState.new(solved_colors)
         new(native)
       end
 

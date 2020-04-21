@@ -18,7 +18,7 @@ RSpec::Matchers.define(:be_one_of) do |*expected|
 end
 
 describe Edge do
-  let(:letter_scheme) { BernhardLetterScheme.new }
+  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
   let(:cube_size) { 3 }
 
   it 'returns the right solved_coordinate' do
@@ -52,7 +52,7 @@ end
 describe Midge do
   
 
-  let(:letter_scheme) { BernhardLetterScheme.new }
+  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
   let(:cube_size) { 5 }
 
   it 'returns the right solved_coordinate' do
@@ -86,7 +86,7 @@ end
 describe Wing do
   
 
-  let(:letter_scheme) { BernhardLetterScheme.new }
+  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
   let(:cube_size) { 4 }
 
   it 'parses wings in UB correctly' do
@@ -162,7 +162,7 @@ end
 describe Corner do
   
 
-  let(:letter_scheme) { BernhardLetterScheme.new }
+  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
   let(:cube_size) { 3 }
 
   it 'returns the right solved_coordinate' do
@@ -196,7 +196,7 @@ end
 describe Face do
   
 
-  let(:letter_scheme) { BernhardLetterScheme.new }
+  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
 
   it 'returns the right neighbor faces' do
     expect(Face::U.neighbors).to be_rotationally_equivalent_to([Face::R, Face::F, Face::L, Face::B])
@@ -288,7 +288,7 @@ end
 describe TCenter do
   
 
-  let(:letter_scheme) { BernhardLetterScheme.new }
+  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
   let(:cube_size) { 5 }
 
   it 'returns the right solved_coordinate' do
@@ -322,7 +322,7 @@ end
 describe XCenter do
   
 
-  let(:letter_scheme) { BernhardLetterScheme.new }
+  let(:letter_scheme) { BernhardTwistyPuzzles::LetterScheme.new }
   let(:cube_size) { 4 }
 
   it 'returns the right solved_coordinate' do

@@ -9,7 +9,7 @@ require 'cube_trainer/skewb_layer_classifier'
 describe SkewbLayerClassifier do
   include TwistyPuzzles
 
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:classifier) { described_class.new(TwistyPuzzles::Face::D, color_scheme) }
   let(:sarah) { TwistyPuzzles::SkewbNotation.sarah }
 

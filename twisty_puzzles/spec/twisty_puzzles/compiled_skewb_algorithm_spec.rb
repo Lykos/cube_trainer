@@ -13,7 +13,7 @@ describe CompiledCubeAlgorithm do
   
   include CubePrintHelper
 
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:skewb_state) { color_scheme.solved_skewb_state }
   let(:compile_then_transform_skewb_state) { skewb_state.dup }
   let(:transform_then_compile_skewb_state) { skewb_state.dup }

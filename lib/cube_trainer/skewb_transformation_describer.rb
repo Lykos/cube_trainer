@@ -19,7 +19,7 @@ module CubeTrainer
     # Represents a sequence of Skewb parts.
     class PartSequence
       def initialize(letter_scheme, parts)
-        raise ArgumentError unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
+        raise ArgumentError unless letter_scheme.nil? || letter_scheme.is_a?(TwistyPuzzles::LetterScheme)
         raise ArgumentError unless parts.all? { |p| p.is_a?(TwistyPuzzles::Part) }
 
         @letter_scheme = letter_scheme
@@ -124,8 +124,8 @@ module CubeTrainer
       letter_scheme = nil
     )
       raise ArgumentError unless %i[show_staying omit_staying].include?(staying_mode)
-      raise TypeError unless color_scheme.is_a?(ColorScheme)
-      raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(LetterScheme)
+      raise TypeError unless color_scheme.is_a?(TwistyPuzzles::ColorScheme)
+      raise TypeError unless letter_scheme.nil? || letter_scheme.is_a?(TwistyPuzzles::LetterScheme)
 
       check_types(interesting_faces, TwistyPuzzles::Face)
       check_types(interesting_corners, TwistyPuzzles::Corner)

@@ -28,7 +28,7 @@ module CubeTrainer
       TwistyPuzzles::CubeState.check_cube_size(cube_size)
       raise TypeError unless part_type.is_a?(Class) && part_type.ancestors.include?(TwistyPuzzles::Part)
       raise TypeError unless buffer.class == part_type
-      raise ColorScheme unless color_scheme.is_a?(ColorScheme)
+      raise TwistyPuzzles::ColorScheme unless color_scheme.is_a?(TwistyPuzzles::ColorScheme)
 
       @part_type = part_type
       @buffer = buffer

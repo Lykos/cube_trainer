@@ -12,7 +12,7 @@ require 'rantly/shrinks'
 describe SkewbNotation do
   
 
-  let(:color_scheme) { ColorScheme::WCA }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::WCA }
 
   it 'keep a Sarahs Skewb algorithm as a Sarahs Skewb algorithm' do
     parsed_algorithm = parse_skewb_algorithm("L F B' y R L F B' x R B'", described_class.sarah)

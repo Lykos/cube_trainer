@@ -37,7 +37,7 @@ describe Algorithm do
   
 
   let(:cube_size) { 3 }
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:sarah) { SkewbNotation.sarah }
 
   it 'inverts algorithms correctly' do

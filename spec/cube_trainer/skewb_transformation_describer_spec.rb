@@ -33,7 +33,7 @@ describe SkewbTransformationDescriber do
   let(:top_corners) { TwistyPuzzles::Corner::ELEMENTS.select { |c| c.face_symbols.first == :U } }
   let(:bottom_corners) { TwistyPuzzles::Corner::ELEMENTS.select { |c| c.face_symbols.first == :D } }
   let(:non_bottom_faces) { TwistyPuzzles::Face::ELEMENTS.reject { |c| c.face_symbol == :D } }
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:top_corners_describer) do
     described_class.new([], top_corners, :show_staying, color_scheme)
   end

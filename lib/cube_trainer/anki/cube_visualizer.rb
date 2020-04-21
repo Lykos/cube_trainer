@@ -19,7 +19,7 @@ module CubeTrainer
     end
 
     # Helper class to serialize a color scheme as a URL paramer by setting the list of colors.
-    class ColorSchemeUrlParameterSerializer
+    class TwistyPuzzles::ColorSchemeUrlParameterSerializer
       def self.serialize(value)
         CubeVisualizer::FACE_SYMBOL_ORDER.map { |s| value.color(s) }.join(',')
       end
@@ -154,9 +154,9 @@ module CubeTrainer
           parameter_value_serializer: StageMaskUrlParameterSerializer
         ),
         UrlParameterType.new(
-          :sch, ColorScheme, FakeInfiniteRange,
+          :sch, TwistyPuzzles::ColorScheme, FakeInfiniteRange,
           required: true,
-          parameter_value_serializer: ColorSchemeUrlParameterSerializer
+          parameter_value_serializer: TwistyPuzzles::ColorSchemeUrlParameterSerializer
         ),
         UrlParameterType.new(:bg, Symbol, COLORS),
         UrlParameterType.new(:cc, Symbol, COLORS),

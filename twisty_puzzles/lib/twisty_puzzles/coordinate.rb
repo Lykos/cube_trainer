@@ -137,7 +137,7 @@ module TwistyPuzzles
 
         x = Coordinate.canonicalize(x_index, cube_size)
         y = Coordinate.canonicalize(y_index, cube_size)
-        native = Native::CubeCoordinate.new(
+        native = TwistyPuzzles::Native::CubeCoordinate.new(
           cube_size,
           face.face_symbol,
           face.coordinate_index_base_face(0).face_symbol,
@@ -151,7 +151,7 @@ module TwistyPuzzles
       private_class_method :new
 
       def initialize(native)
-        raise TypeError unless native.is_a?(Native::CubeCoordinate)
+        raise TypeError unless native.is_a?(TwistyPuzzles::Native::CubeCoordinate)
 
         @native = native
       end
@@ -282,7 +282,7 @@ module TwistyPuzzles
       private_class_method :new
 
       def self.for_center(face)
-        native = Native::SkewbCoordinate.for_center(face.face_symbol)
+        native = TwistyPuzzles::Native::SkewbCoordinate.for_center(face.face_symbol)
         new(face, 0, native)
       end
 
@@ -291,7 +291,7 @@ module TwistyPuzzles
       end
 
       def self.for_corner(corner)
-        native = Native::SkewbCoordinate.for_corner(corner.face_symbols)
+        native = TwistyPuzzles::Native::SkewbCoordinate.for_corner(corner.face_symbols)
         new(Face.for_face_symbol(corner.face_symbols.first), 1 + corner.piece_index % 4, native)
       end
 

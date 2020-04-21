@@ -9,7 +9,7 @@ require 'cube_trainer/skewb_layer_finder'
 describe SkewbLayerFinder do
   include TwistyPuzzles
 
-  let(:color_scheme) { ColorScheme::BERNHARD }
+  let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
   let(:skewb_state) { color_scheme.solved_skewb_state }
   let(:sarah) { TwistyPuzzles::SkewbNotation.sarah }
   let(:fixed_corner) { TwistyPuzzles::SkewbNotation.fixed_corner }

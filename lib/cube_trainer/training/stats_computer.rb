@@ -80,7 +80,7 @@ module CubeTrainer
       end
 
       def average_time(results)
-        avg = Native::CubeAverage.new(5, 0)
+        avg = TwistyPuzzles::Native::CubeAverage.new(5, 0)
         results.sort_by(&:created_at).each { |r| avg.push(r.time_s) }
         avg.average
       end

@@ -26,7 +26,7 @@ describe Anki::AlgSetAnkiGenerator do
   let(:output) { Tempfile.new(['deck', '.tsv']) }
   let(:base_options) do
     options = OpenStruct.new
-    options.color_scheme = ColorScheme::WCA
+    options.color_scheme = TwistyPuzzles::ColorScheme::WCA
     options.output_dir = output_dir
     options.output = output.path
     options.cube_size = 3

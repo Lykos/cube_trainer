@@ -15,6 +15,6 @@ include CubePrintHelper
 puts 'Enter LL scramble'
 scramble_string = gets.chomp
 scramble = parse_algorithm(scramble_string)
-state = CubeTrainer::ColorScheme::BERNHARD.solved_cube_state(3)
+state = TwistyPuzzles::ColorScheme::BERNHARD.solved_cube_state(3)
 scramble.apply_to(state)
 puts ll_string(state, :color)
