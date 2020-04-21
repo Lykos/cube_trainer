@@ -29,7 +29,7 @@ jobs:
     - name: Install Package Dependencies
       uses: mstksg/get-package@v1
       with:
-        apt-get: libsqlite3-dev libpq-dev # libqt4-dev ruby-dev cmake
+        apt-get: libpq-dev
     - name: Install gem dependencies
       run: |
         gem install bundler
