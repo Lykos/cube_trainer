@@ -2,4 +2,5 @@ versions:
 - rubocop
 - rubocop-performance
 - rubocop-rake
+- rubocop-rails
 rubocop_fail_level: 'convention'
