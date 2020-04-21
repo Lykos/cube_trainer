@@ -90,24 +90,25 @@ module CubeTrainer
       #         But the representation inside InputItem can be anything.
       # `mode` is the mode that is used to retrieve associated previous results and for all kinds
       #        of options.
-      def initialize(items, mode)
+      def initialize(items, mode, logger=Rails.logger)
         raise ArgumentError unless items.is_a?(Array)
         unless items.all? { |e| e.is_a?(InputItem) }
           raise ArgumentError, "Invalid items #{items.inspect}."
         end
 
         @items = items
-        @config = create_config(mode)
         @mode = mode
+        @logger = logger
+        @config = create_config
       end
 
       attr_reader :items
 
-      def create_config(mode)
+      def create_config
         config = DEFAULT_CONFIG.dup
         config[:num_items] = items.length
-        config[:goal_badness] = mode.goal_badness if mode.goal_badness
-        config[:known] = mode.known
+        config[:goal_badness] = @mode.goal_badness if @mode.goal_badness
+        config[:known] = @mode.known
         config
       end
 
@@ -174,6 +175,7 @@ module CubeTrainer
         managed_sample = sampler.random_item
 
         item = managed_sample.input_item
+        @logger.debug "[#{item.representation}] #{managed_sample.sampling_info}"
         item
       end
     end

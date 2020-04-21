@@ -130,7 +130,7 @@ module CubeTrainer
           .inputs
           .joins(:result)
           .where(input_representation: item.representation)
-          .where(days_old_exp > days(Time.zone.now - last_hint_age))
+          .where(days_old_exp.gt(days(last_hint_age)))
           .count
       end
 
