@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'twisty_puzzles'
+
 def transform_symbols_to_strings(value)
   case value
   when Hash
@@ -16,5 +18,29 @@ end
 RSpec::Matchers.define(:eq_modulo_symbol_vs_string) do |expected|
   match do |actual|
     transform_symbols_to_strings(actual) == transform_symbols_to_strings(expected)
+  end
+end
+
+include TwistyPuzzles
+
+# TODO Don't copy these from the twisty_puzzles gem.
+RSpec::Matchers.define(:eq_commutator) do |expected|
+  match do |actual|
+    expected = parse_commutator(expected) if expected.is_a?(String)
+    actual == expected
+  end
+  failure_message do |actual|
+    "expected that #{actual} would equal commutator #{expected}"
+  end
+end
+
+# TODO Don't copy these from the twisty_puzzles gem.
+RSpec::Matchers.define(:eq_sarahs_skewb_algorithm) do |expected|
+  match do |actual|
+    expected = parse_skewb_algorithm(expected, TwistyPuzzles::SkewbNotation.sarah) if expected.is_a?(String)
+    actual == expected
+  end
+  failure_message do |actual|
+    "expected that #{actual} would equal algorithm #{expected} (using sarah's notation)"
   end
 end
