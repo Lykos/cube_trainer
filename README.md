@@ -20,10 +20,12 @@ This example is for Linux, but I'm sure you can figure out how to install postgr
 your OS, too.
 
 ```shell
-sudo apt install postgresql libpq-dev yarn
+sudo apt install postgresql libpq-dev
 ```
 
-### Install dependencies
+Install yarn as described here: https://classic.yarnpkg.com/en/docs/install/#debian-stable
+
+### Install Ruby & JS dependencies
 
 Using [Bundler](https://github.com/bundler/bundler) and [Yarn](https://github.com/yarnpkg/yarn):
 
