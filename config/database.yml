@@ -3,7 +3,7 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
   username: cube_trainer
-  password: PjQaAYuGZ1ksUhTFvE4=
+  password: cube_trainer
   encoding: unicode
 
 development:
@@ -22,5 +22,5 @@ production:
     <<: *default
     host: jaguar
     username: cube_trainer_global
-    password: MxbgvXhHYKKMXfnCn30=
+    password: cube_trainer_global
     database: cube_trainer_global
