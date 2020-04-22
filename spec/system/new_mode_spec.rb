@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'system_test_helper'
 
-describe 'modes', type: :system, focus: true do
+xdescribe 'modes', type: :system do
   include_context :logged_in
 
   it 'allows to create a new mode' do
