@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # CubeTrainer
-TODO: Write this
+TODO: Write more than just installation instructions
 
 ## Install
 
@@ -16,14 +16,14 @@ cd cube_trainer
 
 ### Install OS dependencies
 
-This example is for Linux, but I'm sure you can figure out how to install postgresql and yarn on
-your OS, too.
+This example is for Linux, but I'm sure you can figure out how to install
+Ruby, PostgreSQL and Yarn on your OS, too.
 
 ```shell
-sudo apt install postgresql libpq-dev
+sudo apt install ruby postgresql libpq-dev
 ```
 
-Install yarn as described here: https://classic.yarnpkg.com/en/docs/install/#debian-stable
+Install yarn as described here (you have to add a package source and then install via apt): https://classic.yarnpkg.com/en/docs/install/#debian-stable
 
 ### Install Ruby & JS dependencies
 
