@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'system_test_helper'
 
-xdescribe 'modes', type: :system, focus: true do
+xdescribe 'modes', type: :system do
   include_context :logged_in
 
   before do
