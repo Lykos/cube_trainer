@@ -34,7 +34,7 @@ export class TrainerService {
     return `${constructPath(mode.id, input)}/image/${imgSide}.jpg`
   }
 
-  inputItemsCache(modeId: number) {
+  private inputItemsCache(modeId: number) {
     const cache = this.inputItemsCacheMap.get(modeId);
     if (cache) {
       return cache;
@@ -46,6 +46,10 @@ export class TrainerService {
 
   nextInputItemWithCache(modeId: number): Observable<InputItem> {
     return this.inputItemsCache(modeId).next();
+  }
+
+  prewarmInputItemsCache(modeId: number) {
+    this.inputItemsCache(modeId);
   }
 
   create(modeId: number, cachedItems: InputItem[] = []): Observable<InputItem> {

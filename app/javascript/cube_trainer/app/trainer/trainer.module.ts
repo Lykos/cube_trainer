@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { TrainerComponent } from './trainer.component';
+import { StopwatchComponent } from './stopwatch.component';
 import { TrainerService } from './trainer.service';
 import { UtilsModule } from '../utils/utils.module';
 import { ModesModule } from '../modes/modes.module';
@@ -22,6 +23,7 @@ import { MatRippleModule } from '@angular/material/core';
     TrainerComponent,
     TrainerInputComponent,
     ResultsTableComponent,
+    StopwatchComponent,
   ],
   imports: [
     BrowserModule,

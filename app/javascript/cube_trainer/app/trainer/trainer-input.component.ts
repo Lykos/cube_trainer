@@ -37,10 +37,9 @@ export class TrainerInputComponent implements OnInit {
   modeId$!: Observable<number>;
 
   @Input()
-  numHints$!: Observable<number>;
+  numHints!: number;
 
   mode: Mode | undefined = undefined;
-  numHints: number | undefined = undefined;
 
   constructor(private readonly trainerService: TrainerService,
 	      private readonly modesService: ModesService) {}
@@ -73,6 +72,5 @@ export class TrainerInputComponent implements OnInit {
     this.modeId$.subscribe(modeId => {
       this.modesService.show(modeId).subscribe(mode => this.mode = mode);
     });
-    this.numHints$.subscribe(numHints => this.numHints = numHints);
   }
 }
