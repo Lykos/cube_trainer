@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fixtures'
 
 shared_context :logged_in do
@@ -5,8 +7,8 @@ shared_context :logged_in do
 
   before(:each) do
     visit '/login'
-    fill_in 'Username', :with => user.name
-    fill_in 'Password', :with => user.password
+    fill_in 'Username', with: user.name
+    fill_in 'Password', with: user.password
     click_button 'Submit'
   end
 end
