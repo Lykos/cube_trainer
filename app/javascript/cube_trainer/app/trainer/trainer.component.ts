@@ -4,8 +4,6 @@ import { map } from 'rxjs/operators';
 import { Mode } from '../modes/mode';
 import { ModesService } from '../modes/modes.service';
 import { ActivatedRoute } from '@angular/router';
-// @ts-ignore
-import Rails from '@rails/ujs';
 import { Observable, Subject } from 'rxjs';
 
 @Component({

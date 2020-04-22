@@ -5,8 +5,7 @@ import { Mode } from '../modes/mode';
 import { TrainerService } from './trainer.service';
 import { HostListener, Component, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { PartialResult } from './partial-result';
-// @ts-ignore
-import Rails from '@rails/ujs';
+import { interval } from 'rxjs';
 
 enum StopWatchState {
   NotStarted,
@@ -63,7 +62,7 @@ export class StopwatchComponent implements OnDestroy {
   private numHints_ = 0;
   private maxHints = 0;
   private duration: Duration = zeroDuration;
-  private intervalRef: any = undefined;
+  private intervalSubscription: any = undefined;
   private state: StopWatchState = StopWatchState.NotStarted;
 
   constructor(private readonly trainerService: TrainerService) {}
@@ -100,16 +99,16 @@ export class StopwatchComponent implements OnDestroy {
     this.inputItem.emit(input);
     this.state = StopWatchState.Running;
     const start = now();
-    if (this.intervalRef) {
+    if (this.intervalSubscription) {
       throw 'Timer started when it was already running.';
     }
-    this.intervalRef = setInterval(() => {
+    this.intervalSubscription = interval(10).subscribe(() => {
       this.duration = start.durationUntil(now());
     });
   }
 
   stopAnd(onSuccess: () => void) {
-    this.stopTimer();
+    this.stopInterval();
     this.state = StopWatchState.Paused;
     this.trainerService.stop(this.mode.id, this.input!, this.partialResult).subscribe(() => {
       this.resultSaved.emit();
@@ -132,13 +131,13 @@ export class StopwatchComponent implements OnDestroy {
     }
   }
 
-  stopTimer() {
-    clearInterval(this.intervalRef);
-    this.intervalRef = undefined;
+  stopInterval() {
+    this.intervalSubscription.unsubscribe();
+    this.intervalSubscription = undefined;
   }
 
   ngOnDestroy() {
-    this.stopTimer();
+    this.stopInterval();
   }
 
   @HostListener('window:keydown', ['$event'])
