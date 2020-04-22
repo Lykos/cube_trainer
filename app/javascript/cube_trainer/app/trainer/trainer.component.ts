@@ -21,12 +21,7 @@ import { Observable, Subject } from 'rxjs';
     <stats-table [statEvents$]="resultEventsSubject.asObservable()"></stats-table>
   </div>
 </div>
-`,
-  styles: [`
-.stopwatch-time {
-  font-size: xxx-large;
-}
-`]
+`
 })
 export class TrainerComponent {
   input: InputItem | undefined = undefined;
