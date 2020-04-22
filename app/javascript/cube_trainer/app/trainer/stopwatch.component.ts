@@ -1,12 +1,12 @@
 import { now } from '../utils/instant';
 import { Duration, zeroDuration } from '../utils/duration';
 import { InputItem } from './input-item';
+import { Mode } from '../modes/mode';
 import { TrainerService } from './trainer.service';
-import { HostListener, Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { HostListener, Component, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { PartialResult } from './partial-result';
 // @ts-ignore
 import Rails from '@rails/ujs';
-import { Observable } from 'rxjs';
 
 enum StopWatchState {
   NotStarted,
@@ -46,9 +46,9 @@ enum StopWatchState {
 }
 `]
 })
-export class StopwatchComponent implements OnInit, OnDestroy {
+export class StopwatchComponent implements OnDestroy {
   @Input()
-  private modeId$!: Observable<number>;
+  private mode!: Mode;
 
   @Output()
   private inputItem: EventEmitter<InputItem> = new EventEmitter();
@@ -89,9 +89,7 @@ export class StopwatchComponent implements OnInit, OnDestroy {
   }
 
   onStart() {
-    this.modeId$.subscribe(modeId => {
-      this.trainerService.nextInputItemWithCache(modeId).subscribe(input => this.startFor(input));
-    });
+    this.trainerService.nextInputItemWithCache(this.mode.id).subscribe(input => this.startFor(input));
   }
 
   startFor(input: InputItem) {
@@ -113,12 +111,9 @@ export class StopwatchComponent implements OnInit, OnDestroy {
   stopAnd(onSuccess: () => void) {
     this.stopTimer();
     this.state = StopWatchState.Paused;
-    this.modeId$.subscribe(modeId => {
-      this.trainerService.stop(modeId, this.input!, this.partialResult).subscribe(() => {
-	console.log('saved');
-	this.resultSaved.emit();
-	onSuccess();
-      });
+    this.trainerService.stop(this.mode.id, this.input!, this.partialResult).subscribe(() => {
+      this.resultSaved.emit();
+      onSuccess();
     });
   }
 
@@ -140,12 +135,6 @@ export class StopwatchComponent implements OnInit, OnDestroy {
   stopTimer() {
     clearInterval(this.intervalRef);
     this.intervalRef = undefined;
-  }
-
-  ngOnInit() {
-    this.modeId$.subscribe(modeId => {
-      this.trainerService.prewarmInputItemsCache(modeId);
-    });
   }
 
   ngOnDestroy() {

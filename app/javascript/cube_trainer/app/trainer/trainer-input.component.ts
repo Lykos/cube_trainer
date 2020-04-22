@@ -1,11 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Mode } from '../modes/mode';
 import { ShowInputMode } from '../modes/show-input-mode';
-import { ModesService } from '../modes/modes.service';
 import { TrainerService } from './trainer.service';
 import { InputItem } from './input-item';
 import { ImgSide } from './img-side';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'trainer-input',
@@ -31,18 +29,15 @@ import { Observable } from 'rxjs';
 })
 export class TrainerInputComponent implements OnInit {
   @Input()
-  input: InputItem | undefined = undefined;
+  input!: InputItem;
 
   @Input()
-  modeId$!: Observable<number>;
+  mode!: Mode
 
   @Input()
   numHints!: number;
 
-  mode: Mode | undefined = undefined;
-
-  constructor(private readonly trainerService: TrainerService,
-	      private readonly modesService: ModesService) {}
+  constructor(private readonly trainerService: TrainerService) {}
 
   get hints() {
     return this.input?.hints ? this.input.hints : [];
@@ -69,8 +64,5 @@ export class TrainerInputComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.modeId$.subscribe(modeId => {
-      this.modesService.show(modeId).subscribe(mode => this.mode = mode);
-    });
   }
 }
