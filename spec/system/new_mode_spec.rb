@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'system_test_helper'
 
-xdescribe 'modes', type: :system do
+xdescribe 'modes', type: :system, focus: true do
   include_context :logged_in
 
   before do
@@ -9,6 +9,7 @@ xdescribe 'modes', type: :system do
   end
 
   it 'allows to create a new mode' do
+    visit '/modes'
     click_button 'New'
 
     fill_in 'Name', with: 'system test mode'
