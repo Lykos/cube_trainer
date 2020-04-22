@@ -11,7 +11,7 @@ TODO: Write this
 
 ```shell
 git clone git@github.com:Lykos/cube_trainer.git
-cd project
+cd cube_trainer
 ```
 
 ### Install OS dependencies
