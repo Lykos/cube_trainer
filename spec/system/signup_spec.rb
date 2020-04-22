@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe 'signup', type: :system do
   before do
-    driven_by(:selenium_chrome)
+    driven_by(:selenium_chrome_headless)
   end
 
   it 'enables users to sign up and then login' do

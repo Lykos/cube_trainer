@@ -4,6 +4,10 @@ require 'system_test_helper'
 xdescribe 'modes', type: :system do
   include_context :logged_in
 
+  before do
+    driven_by(:selenium_chrome)
+  end
+
   it 'allows to create a new mode' do
     click_button 'New'
 
