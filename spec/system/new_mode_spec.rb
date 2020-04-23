@@ -35,6 +35,9 @@ describe 'modes', type: :system , focus: true do
 
     sleep(0.5)
     # Not adding any stats because drag and drop is buggy with Selenium.
+    draggable = find 'Averages'
+    droppable = find 'picked-stats-list'
+    draggable.drag_to droppable
     click_button 'Submit'
 
     sleep(1)
