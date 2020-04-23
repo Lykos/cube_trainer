@@ -43,6 +43,7 @@ Rails.application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
+  config.hosts << 'www.example.com'
   config.hosts << '127.0.0.1'
 
   # Raises error for missing translations.
