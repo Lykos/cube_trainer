@@ -55,8 +55,6 @@ Rails/Output:
 Rails/Exit:
   # TODO: Enable
   Enabled: false
-Rails/Output:
-  Enabled: false
 Style/AutoResourceCleanup:
   Enabled: true
 Style/CollectionMethods:
