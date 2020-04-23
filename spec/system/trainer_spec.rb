@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'system_test_helper'
+require 'system/system_spec_helper'
 require 'fixtures'
 
 describe 'trainer', type: :system do
