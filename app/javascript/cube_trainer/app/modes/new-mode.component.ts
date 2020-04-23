@@ -137,6 +137,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
           cdkDropList
           [cdkDropListData]="pickedStatTypes"
           class="stats-list"
+          id="picked-stats-list"
           (cdkDropListDropped)="drop($event)">
           <div
             class="stats-box"

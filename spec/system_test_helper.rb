@@ -2,15 +2,10 @@
 
 require 'fixtures'
 
-shared_context :logged_in do
-  include_context :user
-
-  before(:each) do
-    visit '/login'
-    fill_in 'Username', with: user.name
-    fill_in 'Password', with: user.password
-    click_button 'Submit'
-  end
+def login(user)
+  fill_in 'Username or Email', with: user.name
+  fill_in 'Password', with: user.password
+  click_button 'Submit'
 end
 
 # Use a material design select.
