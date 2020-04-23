@@ -33,11 +33,7 @@ describe 'modes', type: :system , focus: true do
     fill_in 'Goal Time per Element', with: '2.0'
     click_button 'Next'
 
-    sleep(0.5)
     # Not adding any stats because drag and drop is buggy with Selenium.
-    draggable = find 'Averages'
-    droppable = find 'picked-stats-list'
-    draggable.drag_to droppable
     click_button 'Submit'
 
     sleep(1)

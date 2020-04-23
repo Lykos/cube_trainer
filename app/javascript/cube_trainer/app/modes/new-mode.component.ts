@@ -118,6 +118,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
           cdkDropList
           [cdkDropListData]="statTypes"
           class="stats-list"
+          id="stats-list"
           cdkDropListSortingDisabled
           (cdkDropListDropped)="drop($event)">
           <div
