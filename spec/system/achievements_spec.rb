@@ -4,7 +4,7 @@ require 'rails_helper'
 require 'system_test_helper'
 require 'fixtures'
 
-describe 'messages', type: :system, focus: true do
+describe 'messages', type: :system do
   include_context :user
   include_context :achievement_grant
 
