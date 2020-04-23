@@ -1,6 +1,6 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '../rails/http_verb';
+import { HttpVerb } from '../rails/http-verb';
 import { Achievement } from './achievement';
 import { Observable } from 'rxjs';
 

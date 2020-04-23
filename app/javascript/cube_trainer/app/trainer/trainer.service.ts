@@ -1,7 +1,7 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { InputItem } from './input-item';
-import { HttpVerb } from '../rails/http_verb';
+import { HttpVerb } from '../rails/http-verb';
 import { PartialResult } from './partial-result';
 import { Mode } from '../modes/mode';
 import { ImgSide } from './img-side';

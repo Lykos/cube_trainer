@@ -1,6 +1,6 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '../rails/http_verb';
+import { HttpVerb } from '../rails/http-verb';
 import { Mode } from './mode';
 import { CubeSizeSpec } from './cube-size-spec';
 import { NewMode } from './new-mode';

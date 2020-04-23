@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 // @ts-ignore
 import Rails from '@rails/ujs';
-import { HttpVerb } from './http_verb';
+import { HttpVerb } from './http-verb';
 
 class UrlParameterPath {
   path: string[];
