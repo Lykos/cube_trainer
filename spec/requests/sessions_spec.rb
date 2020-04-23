@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'requests/requests_helper'
+require 'requests/requests_spec_helper'
 
 RSpec.describe 'Sessions', type: :request do
   include_context :user
@@ -23,24 +23,24 @@ RSpec.describe 'Sessions', type: :request do
 
   describe 'POST #login' do
     it 'returns http success with name' do
-      login(user.name, user.password)
+      post_login(user)
       expect(response).to have_http_status(:success)
     end
 
     it 'returns http success with email' do
-      login(user.email, user.password)
+      post_login(user.email, user.password)
       expect(response).to have_http_status(:success)
     end
 
     it 'returns unauthorized for wrong password' do
-      login(user.name, 'dodo')
+      post_login(user.name, 'dodo')
       expect(response).to have_http_status(:unauthorized)
     end
   end
 
   describe 'POST #logout' do
     it 'returns http success' do
-      login(user.name, user.password)
+      post_login(user)
       post '/logout', headers: headers
       expect(response).to have_http_status(:success)
     end

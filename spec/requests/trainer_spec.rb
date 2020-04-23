@@ -10,7 +10,7 @@ RSpec.describe 'Trainer', type: :request do
   include_context :headers
 
   before(:each) do
-    login(user.name, user.password)
+    post_login(user)
   end
 
   describe 'GET #index' do
@@ -47,7 +47,7 @@ RSpec.describe 'Trainer', type: :request do
     end
 
     it 'returns not found for other users' do
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       post "/trainer/#{mode.id}/inputs", headers: headers
       expect(response).to have_http_status(:not_found)
     end
@@ -75,7 +75,7 @@ RSpec.describe 'Trainer', type: :request do
     it 'returns not found for other users' do
       post "/trainer/#{mode.id}/inputs", headers: headers
       input_id = JSON.parse(response.body)['id']
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       delete "/trainer/#{mode.id}/inputs/#{input_id}"
       expect(response).to have_http_status(:not_found)
       expect(Input.exists?(id: input_id)).to be(true)
@@ -125,7 +125,7 @@ RSpec.describe 'Trainer', type: :request do
     it 'returns not found for other users' do
       post "/trainer/#{mode.id}/inputs", headers: headers
       input_id = JSON.parse(response.body)['id']
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       post "/trainer/#{mode.id}/inputs/#{input_id}", params: { partial_result: { time_s: 10 } }
       expect(response).to have_http_status(:not_found)
       input = Input.find_by(id: input_id)

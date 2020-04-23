@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'requests/requests_helper'
+require 'requests/requests_spec_helper'
 require 'fixtures'
 
 RSpec.describe 'Users', type: :request do
@@ -35,7 +35,7 @@ RSpec.describe 'Users', type: :request do
       admin
       eve
       user
-      login(admin.name, admin.password)
+      post_login(admin.name, admin.password)
       get '/users', headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
@@ -46,14 +46,14 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns unauthorized for non-admins' do
-      login(user.name, user.password)
+      post_login(user)
       get '/users', headers: headers
       expect(response).to have_http_status(:unauthorized)
     end
   end
 
   describe 'GET #show' do
-    before(:each) { login(user.name, user.password) }
+    before(:each) { post_login(user) }
 
     it 'returns http success' do
       get "/users/#{user.id}", headers: headers
@@ -63,7 +63,7 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns http success for admin' do
-      login(admin.name, admin.password)
+      post_login(admin.name, admin.password)
       get "/users/#{user.id}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
@@ -76,7 +76,7 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns not found for another user' do
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       get "/users/#{user.id}", headers: headers
       expect(response).to have_http_status(:not_found)
     end
@@ -90,7 +90,7 @@ RSpec.describe 'Users', type: :request do
   end
 
   describe 'GET #edit' do
-    before(:each) { login(user.name, user.password) }
+    before(:each) { post_login(user) }
 
     it 'returns http success' do
       get "/users/#{user.id}/edit"
@@ -116,7 +116,7 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns http success for admin' do
-      login(admin.name, admin.password)
+      post_login(admin.name, admin.password)
       post '/users', params: {
         user: {
           name: 'new_user',
@@ -185,11 +185,11 @@ RSpec.describe 'Users', type: :request do
 
   describe 'PUT #update' do
     before(:each) do
-      login(user.name, user.password)
+      post_login(user)
     end
 
     it 'returns http success' do
-      login(admin.name, admin.password)
+      post_login(admin.name, admin.password)
       put "/users/#{admin.id}", params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:success)
       admin.reload
@@ -210,7 +210,7 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns success for admin' do
-      login(admin.name, admin.password)
+      post_login(admin.name, admin.password)
       put "/users/#{user.id}", params: { user: { admin: true } }
       expect(response).to have_http_status(:success)
       expect(User.find(user.id).admin).to eq(true)
@@ -222,7 +222,7 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns not found for other users' do
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       put "/users/#{user.id}", params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:not_found)
       expect(User.find(user.id).name).to eq('abc')
@@ -231,7 +231,7 @@ RSpec.describe 'Users', type: :request do
 
   describe 'DELETE #destroy' do
     before(:each) do
-      login(user.name, user.password)
+      post_login(user)
     end
 
     it 'returns http success' do
@@ -246,7 +246,7 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns not found for other users' do
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       delete "/users/#{user.id}"
       expect(response).to have_http_status(:not_found)
       expect(User.exists?(user.id)).to be(true)

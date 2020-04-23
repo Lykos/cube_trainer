@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'requests/requests_helper'
+require 'requests/requests_spec_helper'
 
 RSpec.describe 'Messages', type: :request do
   include_context :user
@@ -10,7 +10,7 @@ RSpec.describe 'Messages', type: :request do
   include_context :headers
 
   before(:each) do
-    login(user.name, user.password)
+    post_login(user)
   end
 
   describe 'GET #index' do
@@ -26,7 +26,7 @@ RSpec.describe 'Messages', type: :request do
 
     it 'returns not found for another user' do
       user_message
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       get "/users/#{user.id}/messages", headers: headers
       expect(response).to have_http_status(:not_found)
     end
@@ -46,7 +46,7 @@ RSpec.describe 'Messages', type: :request do
     end
 
     it 'returns not found for another user' do
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       get "/users/#{user.id}/messages/#{user_message.id}", headers: headers
       expect(response).to have_http_status(:not_found)
     end
@@ -74,7 +74,7 @@ RSpec.describe 'Messages', type: :request do
     end
 
     it 'returns not found for other users' do
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       put "/users/#{user.id}/messages/#{user_message.id}", params: { message: { read: true } }
       expect(response).to have_http_status(:not_found)
       expect(Message.find(user_message.id).read).to eq(false)
@@ -94,7 +94,7 @@ RSpec.describe 'Messages', type: :request do
     end
 
     it 'returns not found for other users' do
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       delete "/users/#{user.id}/messages/#{user_message.id}"
       expect(response).to have_http_status(:not_found)
       expect(Message.exists?(user_message.id)).to be(true)

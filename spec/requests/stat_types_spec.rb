@@ -2,14 +2,14 @@
 
 require 'rails_helper'
 require 'fixtures'
-require 'requests/requests_helper'
+require 'requests/requests_spec_helper'
 
 RSpec.describe 'StatTypes', type: :request do
   include_context :user
   include_context :headers
 
   before(:each) do
-    login(user.name, user.password)
+    post_login(user)
   end
 
   describe 'GET #index' do

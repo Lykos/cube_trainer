@@ -11,7 +11,7 @@ RSpec.describe 'Results', type: :request do
   include_context :headers
 
   before(:each) do
-    login(user.name, user.password)
+    post_login(user)
   end
 
   describe 'GET #index' do
@@ -33,7 +33,7 @@ RSpec.describe 'Results', type: :request do
     end
 
     it 'returns not found for another user' do
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       get "/modes/#{mode.id}/results", headers: headers
       expect(response).to have_http_status(:not_found)
     end
@@ -59,7 +59,7 @@ RSpec.describe 'Results', type: :request do
     end
 
     it 'returns not found for another user' do
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       get "/modes/#{mode.id}/results", headers: headers
       expect(response).to have_http_status(:not_found)
     end
@@ -78,7 +78,7 @@ RSpec.describe 'Results', type: :request do
     end
 
     it 'returns not found for other users' do
-      login(eve.name, eve.password)
+      post_login(eve.name, eve.password)
       delete "/modes/#{mode.id}/results/#{result.id}"
       expect(response).to have_http_status(:not_found)
       expect(Result.exists?(result.id)).to be(true)
