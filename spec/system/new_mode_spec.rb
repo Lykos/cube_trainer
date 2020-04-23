@@ -8,7 +8,7 @@ describe 'modes', type: :system , focus: true do
   include_context :user
 
   before do
-    driven_by(:selenium_chrome)
+    driven_by(:selenium_chrome_headless)
   end
 
   it 'allows to create a new mode' do
@@ -33,6 +33,7 @@ describe 'modes', type: :system , focus: true do
     fill_in 'Goal Time per Element', with: '2.0'
     click_button 'Next'
 
+    sleep(0.5)
     # Not adding any stats because drag and drop is buggy with Selenium.
     click_button 'Submit'
 

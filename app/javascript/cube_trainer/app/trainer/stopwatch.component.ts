@@ -132,6 +132,9 @@ export class StopwatchComponent implements OnDestroy {
   }
 
   stopInterval() {
+    if (!this.intervalSubscription) {
+      return;
+    }
     this.intervalSubscription.unsubscribe();
     this.intervalSubscription = undefined;
   }
