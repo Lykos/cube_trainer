@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModesService } from './modes.service';
 import { Mode } from './mode';
-import { NewMode } from './new-mode';
+import { ModeUpdate } from './mode-update';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteModeConfirmationDialog } from './delete-mode-confirmation-dialog.component';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -99,9 +99,8 @@ export class ModeComponent implements OnInit {
     this.router.navigate([`/trainer/${this.mode!.id}`]);
   }
 
-  get updatedMode(): NewMode {
+  get modeUpdate(): ModeUpdate {
     return {
-      modeType: this.mode!.modeType.key,
       name: 'name',
       statTypes: [],
       known: this.mode!.known,
@@ -109,17 +108,20 @@ export class ModeComponent implements OnInit {
     };
   }
 
-  createModeForm(mode: Mode) {
+  createModeForm() {
     // TODO: Unify this with new-mode.component.ts
     return this.formBuilder.group({
       name: [mode.name, { validators: Validators.required, asyncValidators: this.uniqueModeNameValidator.validate, updateOn: 'blur' }],
       cubeSize: [mode.cubeSize, Validators.required],
       buffer: [mode.buffer, Validators.required],
-      showInputMode: [mode.cubeSize, Validators.required],
+      showInputMode: [
+	this.showInputMode || '',
+	Validators.required
+      ],
       goalBadness: [
-	mode.goalBadness || '',
-	(mode.modeType.hasGoalBadness ? [Validators.required, RxwebValidators.numeric({ acceptValue: NumericValueType.PositiveNumber, allowDecimal: true })] : [])
-				       ],
+	this.goalBadness || '',
+	(this.hasGoalBadness ? [Validators.required, RxwebValidators.numeric({ acceptValue: NumericValueType.PositiveNumber, allowDecimal: true })] : [])
+      ],
     });
   }
 
@@ -127,7 +129,7 @@ export class ModeComponent implements OnInit {
     this.modeId$.subscribe(modeId => {
       this.modesService.show(modeId).subscribe((mode: Mode) => {
 	this.mode = mode;
-	this.modeForm = this.createModeForm(mode);
+	this.modeForm = this.createModeForm();
       });
     });
   }
