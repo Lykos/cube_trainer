@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RailsModule } from '../rails/rails.module';
 import { UsersService } from './users.service';
+import { UserFormCreator } from './user-form-creator.service';
 import { UserComponent } from './user.component';
 import { MessagesComponent } from './messages.component';
 import { MessageComponent } from './message.component';
@@ -60,6 +61,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     UsersService,
     MessagesService,
     AchievementsService,
+    UserFormCreator,
     AchievementGrantsService,
     UniqueUsernameOrEmailValidator,
   ],

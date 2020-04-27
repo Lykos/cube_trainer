@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from './users.service';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
+import { FormGroup, AbstractControl } from '@angular/forms';
+import { UserFormCreator } from './user-form-creator.service';
 import { NewUser } from './new-user';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { RxwebValidators } from "@rxweb/reactive-form-validators";
 
 @Component({
   selector: 'signup',
@@ -16,11 +15,11 @@ import { RxwebValidators } from "@rxweb/reactive-form-validators";
     <mat-card-content>
       <mat-form-field appearance="fill">
         <mat-label>Username</mat-label>
-        <input type="text" matInput formControlName="username">
-        <mat-error *ngIf="relevantInvalid(username) && username.errors.required">
+        <input type="text" matInput formControlName="name">
+        <mat-error *ngIf="relevantInvalid(name) && name.errors.required">
           You must provide a <strong>username</strong>.
         </mat-error>
-        <mat-error *ngIf="relevantInvalid(username) && username.errors.uniqueUsernameOrEmail">
+        <mat-error *ngIf="relevantInvalid(name) && name.errors.uniqueUsernameOrEmail">
           This <strong>username</strong> is already taken.
         </mat-error>
       </mat-form-field>
@@ -71,22 +70,16 @@ export class SignupComponent implements OnInit {
   signupForm!: FormGroup;
 
   constructor(private readonly usersService: UsersService,
-	      private readonly formBuilder: FormBuilder,
 	      private readonly router: Router,
 	      private readonly snackBar: MatSnackBar,
-	      private readonly uniqueUsernameOrEmailValidator: UniqueUsernameOrEmailValidator) {}
+	      private readonly userFormCreator: UserFormCreator) {}
 
   relevantInvalid(control: AbstractControl) {
     return control.invalid && (control.dirty || control.touched);
   }
 
   ngOnInit() {
-    this.signupForm = this.formBuilder.group({
-      username: ['', { validators: Validators.required, asyncValidators: this.uniqueUsernameOrEmailValidator.validate, updateOn: 'blur' }],
-      email: ['', { validators: [Validators.email, Validators.required], asyncValidators: this.uniqueUsernameOrEmailValidator.validate, updateOn: 'blur' }],
-      password: ['', Validators.required],
-      passwordConfirmation: ['', [Validators.required, RxwebValidators.compare({ fieldName: 'password' })]],
-    });
+    this.signupForm = this.userFormCreator.createUserForm();
   }
 
   onSubmit() {
@@ -96,7 +89,7 @@ export class SignupComponent implements OnInit {
     });
   }
     
-  get username() { return this.signupForm.get('username')!; }
+  get name() { return this.signupForm.get('name')!; }
 
   get email() { return this.signupForm.get('email')!; }
 
@@ -106,7 +99,7 @@ export class SignupComponent implements OnInit {
 
   get newUser(): NewUser {
     return {
-      name: this.username.value,
+      name: this.name.value,
       email: this.email.value,
       password: this.password.value,
       passwordConfirmation: this.passwordConfirmation.value,
