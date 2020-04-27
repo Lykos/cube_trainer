@@ -15,12 +15,5 @@ test:
   database: cube_trainer_test
 
 production:
-  primary:
-    <<: *default
-    database: cube_trainer
-  global:
-    <<: *default
-    host: jaguar
-    username: cube_trainer_global
-    password: cube_trainer_global
-    database: cube_trainer_global
+  <<: *default
+  database: cube_trainer
