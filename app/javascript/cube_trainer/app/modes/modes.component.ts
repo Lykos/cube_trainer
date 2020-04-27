@@ -35,7 +35,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-      <tr mat-row *matRowDef="let mode; columns: columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let mode; columns: columnsToDisplay" (click)="onClick(mode)"></tr>
     </table>
   </div>
   <div>
@@ -74,6 +74,10 @@ export class ModesComponent implements OnInit {
 
   onNew() {
     this.router.navigate(['/modes/new']);
+  }
+
+  onClick(mode: Mode) {
+    this.router.navigate([`/modes/${mode.id}`]);
   }
 
   onDelete(mode: Mode) {

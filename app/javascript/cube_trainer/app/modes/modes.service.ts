@@ -31,9 +31,10 @@ function parseModeType(rawModeType: any): ModeType {
 }
 
 function parseMode(rawMode: any): Mode {
+  console.log(rawMode);
   return {
     id: rawMode.id,
-    modeType: rawMode.mode_type,
+    modeType: parseModeType(rawMode.mode_type),
     name: rawMode.name,
     known: rawMode.known,
     showInputMode: rawMode.show_input_mode,
@@ -65,6 +66,7 @@ export class ModesService {
   }
 
   show(modeId: number): Observable<Mode> {
+    console.log('show', modeId);
     return this.rails.ajax<Mode>(HttpVerb.Get, `/modes/${modeId}`, {}).pipe(map(parseMode));
   }
 

@@ -23,11 +23,11 @@ import { map } from 'rxjs/operators';
                         [aria-label]="checkboxLabel()">
           </mat-checkbox>
         </th>
-        <td mat-cell *matCellDef="let result">
+        <td mat-cell *matCellDef="let message">
           <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(result) : null"
-                        [checked]="selection.isSelected(result)"
-                        [aria-label]="checkboxLabel(result)">
+                        (change)="$event ? selection.toggle(message) : null"
+                        [checked]="selection.isSelected(message)"
+                        [aria-label]="checkboxLabel(message)">
           </mat-checkbox>
         </td>
       </ng-container>

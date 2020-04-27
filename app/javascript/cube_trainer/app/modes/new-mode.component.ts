@@ -353,6 +353,7 @@ export class NewModeComponent implements OnInit {
   }
 
   ngOnInit() {
+    // TODO: Unify this with mode.component.ts
     this.modesService.listTypes().subscribe((modeTypes: ModeType[]) => this.modeTypes = modeTypes);
     this.statsService.listTypes().subscribe((statTypes: StatType[]) => this.statTypes = statTypes);
     this.modeTypeGroup = this.formBuilder.group({
