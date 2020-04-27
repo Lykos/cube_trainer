@@ -17,7 +17,7 @@ class CreateUsers < ActiveRecord::Migration[6.0]
         User.reset_column_information
         user =
           User.create!(
-            name: OsHelper.os_user,
+            name: 'result_owner',
             password: OsHelper.default_password,
             password_confirmation: OsHelper.default_password
           )
