@@ -1,6 +1,4 @@
 class AddInputIdToResults < ActiveRecord::Migration[6.0]
-  include CubeTrainer::Training::CommutatorTypes
-
   class Result < ApplicationRecord
   end
 
