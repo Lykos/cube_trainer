@@ -1,5 +1,3 @@
-require 'cube_trainer/training/commutator_types'
-
 class AddInputIdToResults < ActiveRecord::Migration[6.0]
   include CubeTrainer::Training::CommutatorTypes
 
