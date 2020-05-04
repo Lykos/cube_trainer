@@ -26,7 +26,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { UtilsModule } from '../utils/utils.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { ColorSchemeComponent } from './color-scheme.component.ts'
 
 
 @NgModule({
@@ -39,6 +41,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MessageComponent,
     AchievementGrantsComponent,
     UserComponent,
+    ColorSchemeComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,6 +49,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     RailsModule,
     MatButtonModule,
     MatCardModule,
+    MatSelectModule,
     MatCheckboxModule,
     MatInputModule,
     MatTableModule,
@@ -71,6 +75,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     LoginComponent,
     AchievementsComponent,
     AchievementGrantsComponent,
+    ColorSchemeComponent,
     UserComponent,
     MessagesComponent,
     MessageComponent,
