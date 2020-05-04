@@ -2,6 +2,7 @@ import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
 import { NewUser } from './new-user';
+import { UserUpdate } from './user-update.model';
 import { User } from './user';
 import { Observable } from 'rxjs';
 
@@ -17,6 +18,10 @@ export class UsersService {
 
   create(newUser: NewUser): Observable<void> {
     return this.rails.ajax<void>(HttpVerb.Post, '/users', {user: newUser});
+  }
+
+  update(user: User, userUpdate: UserUpdate): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Patch, `/users/${user.id}`, {user: userUpdate});
   }
 
   show(userId: number): Observable<User> {

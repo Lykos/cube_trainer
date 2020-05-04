@@ -1,6 +1,6 @@
 default: &default
   adapter: postgresql
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
   timeout: 5000
   username: cube_trainer
   password: cube_trainer
@@ -15,12 +15,5 @@ test:
   database: cube_trainer_test
 
 production:
-  primary:
-    <<: *default
-    database: cube_trainer
-  global:
-    <<: *default
-    host: jaguar
-    username: cube_trainer_global
-    password: cube_trainer_global
-    database: cube_trainer_global
+  <<: *default
+  database: cube_trainer

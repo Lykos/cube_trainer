@@ -85,7 +85,8 @@ shared_context :mode do
     )
     mode.update(
       show_input_mode: :name,
-      mode_type: :floating_2flips,
+      mode_type: :edge_commutators,
+      buffer: 'UF',
       goal_badness: 1.0,
       cube_size: 3,
       known: false
