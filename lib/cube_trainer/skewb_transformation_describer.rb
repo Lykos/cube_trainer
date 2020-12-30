@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 
 module CubeTrainer
   # Helper class to generate a concise human readable description of how a Skewb algorithm

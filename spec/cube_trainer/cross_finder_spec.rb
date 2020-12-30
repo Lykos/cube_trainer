@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/cross_finder'
+require 'twisty_puzzles'
 
 describe CrossFinder do
   include TwistyPuzzles

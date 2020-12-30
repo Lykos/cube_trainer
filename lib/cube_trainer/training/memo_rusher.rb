@@ -25,10 +25,10 @@ module CubeTrainer
       attr_reader :muted
 
       def timed_getch(timeout_s)
-        return STDIN.getch unless timeout_s
+        return $stdin.getch unless timeout_s
 
         begin
-          Timeout.timeout(timeout_s) { STDIN.getch }
+          Timeout.timeout(timeout_s) { $stdin.getch }
         rescue Timeout::Error
           nil
         end

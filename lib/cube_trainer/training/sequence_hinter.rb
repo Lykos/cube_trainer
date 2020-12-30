@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/alg_name'
-require 'twisty_puzzles'
 require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/training/result_history'
+require 'ostruct'
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
-require 'ostruct'
 
 module CubeTrainer
   module Training
@@ -198,13 +197,13 @@ module CubeTrainer
       def hints(input)
         @hints[input] ||=
           begin
-                                   combinations = generate_combinations(input)
-                                   stuff = combinations_with_base_hints(combinations)
-                                   [
-                                     descriptions_and_values(stuff).sort.join("\n"),
-                                     base_hints_descriptions(stuff).sort.join("\n")
-                                   ]
-                                 end
+            combinations = generate_combinations(input)
+            stuff = combinations_with_base_hints(combinations)
+            [
+              descriptions_and_values(stuff).sort.join("\n"),
+              base_hints_descriptions(stuff).sort.join("\n")
+            ]
+          end
       end
 
       def generate_combinations(_input)

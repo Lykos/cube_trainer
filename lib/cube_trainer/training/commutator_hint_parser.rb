@@ -3,12 +3,10 @@
 require 'cube_trainer/commutator_reverse_engineer'
 require 'cube_trainer/training/commutator_hinter'
 require 'cube_trainer/commonality_finder'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/commutator_checker'
 require 'cube_trainer/training/hint_parser'
+require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 
 module CubeTrainer
@@ -65,9 +63,10 @@ module CubeTrainer
           raise ArgumentError, 'Having test_comms_mode == :warn, but !verbose is pointless.'
         end
 
+        super()
         @part_type = part_type
         @buffer = buffer
-        @name = buffer.to_s.downcase + '_' + snake_case_class_name(part_type)
+        @name = "#{buffer.to_s.downcase}_#{snake_case_class_name(part_type)}"
         @letter_scheme = letter_scheme
         @color_scheme = color_scheme
         @verbose = verbose

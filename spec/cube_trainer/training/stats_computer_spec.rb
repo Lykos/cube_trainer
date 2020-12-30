@@ -75,23 +75,23 @@ xdescribe Training::StatsComputer do
   end
 
   it 'computes how many results we had now and 24 hours ago' do
-    expect(computer.total_average).to be == (26 * 1.0 + 10.0 + 3.0) / 28
-    expect(computer.old_total_average).to be == (26 * 1.0 + 12.0) / 27
+    expect(computer.total_average).to be_within(0.1).of((26 * 1.0 + 10.0 + 3.0) / 28)
+    expect(computer.old_total_average).to be_within(0.1).of((26 * 1.0 + 12.0) / 27)
   end
 
   it 'computes how long each part of the solve takes' do
     stats = computer.expected_time_per_type_stats
     names = %i[corner_3twists corner_commutators edge_commutators floating_2flips floating_2twists]
     expect(stats.map { |s| s[:name] }.sort).to be == names
-    expect(stats.map { |s| s[:weight] }.reduce(:+)).to be == 1.0
+    expect(stats.map { |s| s[:weight] }.reduce(:+)).to be_within(0.1).of(1.0)
     stats.each do |s|
       expect(s[:expected_algs]).to be_a(Float)
       expect(s[:total_time]).to be_a(Float)
       expect(s[:weight]).to be_a(Float)
       if s[:name] == :corner_commutators
-        expect(s[:average]).to be == (26 * 1.0 + 10.0 + 3.0) / 28
+        expect(s[:average]).to be_within(0.1).of((26 * 1.0 + 10.0 + 3.0) / 28)
       else
-        expect(s[:average]).to be == 1.0
+        expect(s[:average]).to be_within(0.1).of(1.0)
       end
     end
   end

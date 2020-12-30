@@ -71,8 +71,7 @@ class StatType
         .inputs
         .joins(:result)
         .limit(@size)
-        .pluck(StatType.time_s_expression.average)
-        .first
+        .pick(StatType.time_s_expression.average)
     end
 
     def name

@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
-require 'twisty_puzzles'
 require 'cube_trainer/commutator_checker'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/letter_pair'
 require 'twisty_puzzles'
 

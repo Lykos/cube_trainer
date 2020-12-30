@@ -2,10 +2,9 @@
 
 require 'csv'
 require 'cube_trainer/anki/skewb_layer_anki_generator'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'tempfile'
 require 'ostruct'
+require 'tempfile'
+require 'twisty_puzzles'
 
 BASE_DECK = [
   ['case description', 'main alg', 'center_transformations', 'top_corner_transformations', 'alternative algs', 'name', 'tags'],

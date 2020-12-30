@@ -45,7 +45,6 @@ class ModeType
   end
 
   # Takes an external errors list so it can be used for other models, too.
-  # rubocop:disable Metrics/CyclomaticComplexity
   def validate_cube_size(cube_size, errors, attribute)
     unless cube_size <= max_cube_size
       errors.add(attribute, "has to be at most #{max_cube_size} for mode type #{name}")
@@ -60,7 +59,6 @@ class ModeType
       errors.add(attribute, "cannot be even for mode type #{name}")
     end
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
 
   # Returns a simple version for the current user that can be returned to the frontend.
   def to_simple(user = nil)

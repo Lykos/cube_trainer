@@ -2,11 +2,6 @@
 
 require 'cube_trainer/anki/cube_visualizer'
 require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 
 URL = 'http://cube.crider.co.uk/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
 IMAGE = 'some image'

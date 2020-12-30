@@ -3,10 +3,6 @@
 require 'cube_trainer/anki/image_checker'
 require 'cube_trainer/anki/exponential_backoff'
 require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'uri'
 
 module CubeTrainer
@@ -40,7 +36,7 @@ module CubeTrainer
     # This supports the same format as the cube visualizer website.
     class StageMask
       extend TwistyPuzzles
-      BASE_MASKS = %i[
+      BASE_MASKS = %w[
         fl f2l ll cll ell oll ocll oell coll ocell wv vh els cls cmll
         cross f2l_3 f2l_2 f2l_sm f2l_1 f2b line 2x2x2 2x2x3
       ].freeze

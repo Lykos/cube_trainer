@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'twisty_puzzles'
 require 'cube_trainer/training/alg_hinter'
 require 'cube_trainer/training/alg_set_reverse_engineer'
 require 'cube_trainer/training/hint_parser'
+require 'twisty_puzzles'
 
 module CubeTrainer
   module Training
@@ -14,6 +14,7 @@ module CubeTrainer
       include TwistyPuzzles
 
       def initialize(name, input_items, options)
+        super()
         @name = name
         @input_items = input_items
         @options = options

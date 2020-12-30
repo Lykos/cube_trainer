@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/cube_trainer_options_parser'
 require 'ostruct'
 
