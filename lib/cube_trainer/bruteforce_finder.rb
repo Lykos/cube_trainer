@@ -23,6 +23,7 @@ module CubeTrainer
     def initialize(colors)
       raise ArgumentError if colors.empty?
 
+      super()
       @colors = colors
     end
 
@@ -54,6 +55,7 @@ module CubeTrainer
       @length = internal_solution_sets.empty? ? nil : internal_solution_sets.first.length
       raise ArgumentError unless internal_solution_sets.all? { |s| s.length == @length }
 
+      super()
       @internal_solution_sets = internal_solution_sets
     end
 
@@ -73,6 +75,7 @@ module CubeTrainer
   # Solution sets that starts with one move and then another set of solutions.
   class FirstMovePlusSolutions < SolutionSet
     def initialize(extra_move, internal_solution_set)
+      super()
       @length = internal_solution_set.length + 1
       @extra_move = extra_move
       @internal_solution_set = internal_solution_set
@@ -95,7 +98,7 @@ module CubeTrainer
   # a given puzzle state to a state with some desired
   # properties.
   class BruteForceFinder
-    def initialize(find_all_solutions = true)
+    def initialize(find_all_solutions: true)
       @find_all_solutions = find_all_solutions
     end
 

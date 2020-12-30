@@ -62,7 +62,7 @@ module CubeTrainer
         if averages.empty?
           Float::INFINITY
         else
-          averages.map { |_c, t| t }.reduce(:+) / averages.length
+          averages.sum { |_c, t| t } / averages.length
         end
       end
 

@@ -24,13 +24,15 @@ end
 describe Training::InputSampler do
   include_context :mode
 
-  ITEMS = ('a'..'c').to_a.permutation(2).map { |p| Training::InputItem.new(LetterPair.new(p)) }
+  let(:items) do
+    ('a'..'c').to_a.permutation(2).map { |p| Training::InputItem.new(LetterPair.new(p)) }
+  end
 
   it 'performs better than random sampling' do
-    smart_sampler = described_class.new(ITEMS, mode)
+    smart_sampler = described_class.new(items, mode)
     smart_average = compute_average(mode, smart_sampler)
 
-    random_sampler = Training::RandomSampler.new(ITEMS)
+    random_sampler = Training::RandomSampler.new(items)
     random_average = compute_average(mode, random_sampler)
 
     expect(smart_average).to be < random_average

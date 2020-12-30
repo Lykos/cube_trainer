@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/skewb_transformation_describer'
+require 'twisty_puzzles'
 
 CYCLE_REGEXP = Regexp.new("#{SkewbTransformationDescriber::DOUBLE_ARROW}|" \
                           "#{SkewbTransformationDescriber::ARROW}| <-> | -> ")

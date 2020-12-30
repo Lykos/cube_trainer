@@ -56,6 +56,7 @@ module CubeTrainer
     def initialize(name)
       raise ArgumentError if name.include?(SEPARATOR)
 
+      super()
       @to_s = name
     end
 
@@ -69,6 +70,7 @@ module CubeTrainer
   # Combined names of algorithm cases, e.g. 'U2 + Ja'.
   class CombinedAlgName < AlgName
     def initialize(sub_names)
+      super()
       @sub_names = sub_names
     end
 

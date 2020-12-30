@@ -58,8 +58,8 @@ module CubeTrainer
           cell_letter_pair = cell.maybe_letter_pair
           interpretation_letter_pair = table_interpretation.letter_pair(row_index, col_index)
           cell_letter_pair && cell_letter_pair == interpretation_letter_pair ? 1 : 0
-        end.reduce(:+)
-      end.reduce(:+)
+        end.sum
+      end.sum
     end
 
     def self.find_row_interpretations(rows, axis_interpretation)

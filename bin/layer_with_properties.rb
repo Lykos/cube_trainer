@@ -4,8 +4,6 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/skewb_scrambler'
 
@@ -24,9 +22,10 @@ def max_score_after_one_move(layer_finder, skewb_state)
 end
 
 def inserting_second_piece_is_not_optimal(layer_finder, skewb_state, layer_solutions)
-  if layer_finder.state_score(skewb_state) >= 2
-    false
-  elsif max_score_after_one_move(layer_finder, skewb_state) < 2
+  if layer_finder.state_score(skewb_state) >= 2 || max_score_after_one_move(
+    layer_finder,
+    skewb_state
+  ) < 2
     false
   else
     layer_solutions.extract_algorithms.all? do |_c, as|

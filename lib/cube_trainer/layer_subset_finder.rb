@@ -6,8 +6,8 @@ require 'twisty_puzzles'
 module CubeTrainer
   # Class that finds a solution that is related to a score on a face.
   class LayerSubsetFinder < BruteForceFinder
-    def initialize(color_restrictions = nil, find_all_solutions = true)
-      super(find_all_solutions)
+    def initialize(color_restrictions = nil, find_all_solutions: true)
+      super(find_all_solutions: find_all_solutions)
       @color_restrictions = color_restrictions
     end
 

@@ -1,14 +1,9 @@
 # frozen_string_literal: true
 
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_finder'
 require 'cube_trainer/skewb_layer_fingerprinter'
 require 'set'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Searches all possible Skewb layers.

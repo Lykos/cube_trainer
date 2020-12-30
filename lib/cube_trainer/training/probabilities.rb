@@ -31,7 +31,7 @@ module CubeTrainer
       end
 
       def total
-        @total ||= base_numbers.flatten.reduce(:+)
+        @total ||= base_numbers.flatten.sum
       end
 
       def compute_expected_algs
@@ -39,7 +39,7 @@ module CubeTrainer
           numbers_by_num_twists.map.with_index do |number, num_twists|
             compute_expected_algs_for_num_targets(num_targets, num_twists) * number
           end
-        end.flatten.reduce(:+) / (total + 0.0)
+        end.flatten.sum / (total + 0.0)
       end
 
       def compute_expected_algs_for_num_targets(_num_targets, _num_twists)
@@ -180,7 +180,7 @@ module CubeTrainer
             EXPECTED_ALGS_COMPUTER_CLASSES.key?(m.mode_type)
           end
         per_type_stats = relevant_modes.map { |m| per_mode_stats(m) }
-        total_time = per_type_stats.map { |stats| stats[:total_time] }.reduce(:+)
+        total_time = per_type_stats.pluck(:total_time).sum
         per_type_stats.each { |stats| stats[:weight] = stats[:total_time] / total_time }
         per_type_stats
       end

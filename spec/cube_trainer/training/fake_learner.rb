@@ -54,7 +54,7 @@ class FakeLearner
 
   def average_time
     current_times = @input_stats.values.map(&:current_time)
-    current_times.reduce(:+) / current_times.length
+    current_times.sum / current_times.length
   end
 
   def items_in_between(input)

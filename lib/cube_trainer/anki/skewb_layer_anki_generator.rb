@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_classifier'
 require 'cube_trainer/skewb_layer_improver'
 require 'cube_trainer/skewb_layer_searcher'

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'twisty_puzzles'
 require 'cube_trainer/letter_pair_helper'
 require 'cube_trainer/letter_pair_sequence'
 require 'cube_trainer/training/commutator_hint_parser'
@@ -10,6 +9,7 @@ require 'cube_trainer/training/letter_pair_alg_set'
 require 'cube_trainer/training/no_hinter'
 require 'cube_trainer/training/sequence_hinter'
 require 'cube_trainer/training/unnamed_alg_hint_parser'
+require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 
 module CubeTrainer
@@ -268,7 +268,9 @@ module CubeTrainer
         end
 
         # rubocop:disable Metrics/AbcSize
+        # rubocop:disable Metrics/CyclomaticComplexity
         # rubocop:disable Metrics/MethodLength
+        # rubocop:disable Metrics/PerceivedComplexity
         def generate_directed_solutions(parts)
           raise unless parts.length == 2
 
@@ -310,7 +312,9 @@ module CubeTrainer
             s.map { |comm| LetterPair.new(comm.map { |p| letter(p) }) }
           end
         end
+        # rubocop:enable Metrics/PerceivedComplexity
         # rubocop:enable Metrics/MethodLength
+        # rubocop:enable Metrics/CyclomaticComplexity
         # rubocop:enable Metrics/AbcSize
 
         def generate_combinations(letter_pair)

@@ -9,14 +9,16 @@ module CubeTrainer
         raise ArgumentError, 'Cannot sample empty array.' if array.empty?
 
         weights = extract_weights(array, &block)
-        weight_sum = weights.reduce(:+)
-        raise ArgumentError, "Can't sample for total weight 0.0." if weight_sum == 0.0
+        weight_sum = weights.sum
+        raise ArgumentError, "Can't sample for total weight 0.0." if weight_sum == 0.0 # rubocop:disable Lint/FloatComparison
 
         index_by_weight(array, weights, random.rand * weight_sum)
       end
 
       private
 
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
       def extract_weights(array, &block)
         weights = array.map(&block)
         unless weights.all? { |w| w.is_a?(Numeric) }
@@ -32,6 +34,8 @@ module CubeTrainer
           weights
         end
       end
+      # rubocop:enable Metrics/PerceivedComplexity
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       def index_by_weight(array, weights, weight)
         prefix_weight = 0.0
