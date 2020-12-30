@@ -131,7 +131,7 @@ module CubeTrainer
 
       def alg_row(algs)
         main_alg = algs[0]
-        alternative_algs = algs[1..-1]
+        alternative_algs = algs[1..]
         classification = layer_classifier.classify_layer(algs[0])
         source_descriptions = layer_describer.source_descriptions(main_alg)
         name = name(source_descriptions)
