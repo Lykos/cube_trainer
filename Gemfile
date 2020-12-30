@@ -55,7 +55,7 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 
   gem 'rake-compiler'
-  gem 'rubocop', '>=0.80'
+  gem 'rubocop', '~> 1.7'
   gem 'rubocop-performance'
   gem 'rubocop-rails'
   gem 'rubocop-rake'
