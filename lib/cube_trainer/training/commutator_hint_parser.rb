@@ -153,7 +153,7 @@ module CubeTrainer
       def parse_hint_table_cell(cell)
         return EmptyEntry if cell.blank? || blacklisted?(cell)
 
-        alg = parse_commutator(cell, false)
+        alg = parse_commutator(cell, complete_parse: false)
         # Ignore very short algorithms. They are never valid and they can be things like piece
         # types.
         return EmptyEntry if alg.algorithm.length <= 3
