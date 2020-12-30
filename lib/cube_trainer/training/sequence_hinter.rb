@@ -174,7 +174,7 @@ module CubeTrainer
       end
 
       def sequence_cancellation_score(sequence)
-        sequence[0..-2].zip(sequence[1..-1]).sum do |left, right|
+        sequence[0..-2].zip(sequence[1..]).sum do |left, right|
           binary_cancellation_score(left, right)
         end
       end
@@ -242,7 +242,7 @@ module CubeTrainer
 
       def entries
         entries_components = @hinters.map(&:entries)
-        entries_components[0].product(*entries_components[1..-1]).map do |entry_combination|
+        entries_components[0].product(*entries_components[1..]).map do |entry_combination|
           name = entry_combination.sum { |e| e[0] }
           alg = entry_combination.sum { |e| e[1] }
           [name, alg]
