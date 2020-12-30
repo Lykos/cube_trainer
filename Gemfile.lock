@@ -321,7 +321,7 @@ DEPENDENCIES
   parallel
   pg
   pry
-  puma (~> 4.1)
+  puma (~> 4.3)
   rails (~> 6.0.2, >= 6.0.2.2)
   rake
   rake-compiler
