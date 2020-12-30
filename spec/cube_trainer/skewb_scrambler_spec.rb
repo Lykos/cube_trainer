@@ -32,7 +32,7 @@ describe SkewbScrambler do
       Rantly { range(2, 5) }
     end.check do |length|
       alg = scrambler.random_algorithm(length)
-      move_pairs = alg.moves[0..-2].zip(alg.moves[1..-1])
+      move_pairs = alg.moves[0..-2].zip(alg.moves[1..])
       move_pairs.each do |first, second|
         expect(first.axis_corner).to_not eq(second.axis_corner)
       end
