@@ -53,7 +53,8 @@ module CubeTrainer
       def ask_success
         puts 'Success (y/n)?'
         answer = wait_for_any_char.downcase
-        until %w[y n].include?(answer)
+        valid_answers = %w[y n]
+        until valid_answers.include?(answer)
           puts 'y/n?'
           answer = wait_for_any_char.downcase
         end

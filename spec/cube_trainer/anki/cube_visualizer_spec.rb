@@ -26,7 +26,7 @@ end
 
 class FakeChecker
   def valid?(data)
-    !data.include?('invalid')
+    data.exclude?('invalid')
   end
 end
 

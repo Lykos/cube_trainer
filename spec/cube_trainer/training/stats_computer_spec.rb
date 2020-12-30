@@ -82,8 +82,8 @@ xdescribe Training::StatsComputer do
   it 'computes how long each part of the solve takes' do
     stats = computer.expected_time_per_type_stats
     names = %i[corner_3twists corner_commutators edge_commutators floating_2flips floating_2twists]
-    expect(stats.map { |s| s[:name] }.sort).to be == names
-    expect(stats.map { |s| s[:weight] }.reduce(:+)).to be_within(0.1).of(1.0)
+    expect(stats.pluck(:name).sort).to be == names
+    expect(stats.pluck(:weight).sum).to be_within(0.1).of(1.0)
     stats.each do |s|
       expect(s[:expected_algs]).to be_a(Float)
       expect(s[:total_time]).to be_a(Float)

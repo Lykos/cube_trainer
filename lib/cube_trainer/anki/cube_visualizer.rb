@@ -222,7 +222,7 @@ module CubeTrainer
         raise ArgumentError unless MIN_N <= cube_state.n && cube_state.n <= MAX_N
 
         serialized_cube_state = FACE_SYMBOL_ORDER.map do |s|
-          face_lines(cube_state, s, &method(:serialize_color)).flatten.join
+          face_lines(cube_state, s) { |c| serialize_color(c) }.flatten.join
         end.join
         [
           [:pzl, cube_state.n],

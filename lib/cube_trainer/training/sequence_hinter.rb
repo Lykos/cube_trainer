@@ -174,15 +174,15 @@ module CubeTrainer
       end
 
       def sequence_cancellation_score(sequence)
-        sequence[0..-2].zip(sequence[1..-1]).map do |left, right|
+        sequence[0..-2].zip(sequence[1..-1]).sum do |left, right|
           binary_cancellation_score(left, right)
-        end.reduce(:+)
+        end
       end
 
       def descriptions_and_values(combinations_with_base_hints)
         combinations_with_base_hints.map do |ls, hs|
           description = ls.join(', ')
-          value = ls.map.with_index { |l, i| value(i, l) }.reduce(:+)
+          value = ls.map.with_index { |l, i| value(i, l) }.sum
           cancellations = sequence_cancellation_score(hs)
           DescriptionAndValue.new(description, value, cancellations)
         end
@@ -237,14 +237,14 @@ module CubeTrainer
       def hints(input)
         parts = input_parts(input)
         hint_components = @hinters.zip(parts).map { |h, i| only(h.hints(i)) }
-        [hint_components.reduce(:+)]
+        [hint_components.sum]
       end
 
       def entries
         entries_components = @hinters.map(&:entries)
         entries_components[0].product(*entries_components[1..-1]).map do |entry_combination|
-          name = entry_combination.map { |e| e[0] }.reduce(:+)
-          alg = entry_combination.map { |e| e[1] }.reduce(:+)
+          name = entry_combination.sum { |e| e[0] }
+          alg = entry_combination.sum { |e| e[1] }
           [name, alg]
         end
       end

@@ -119,7 +119,8 @@ module CubeTrainer
 
       def add_nils_to_table(table)
         max_row_length = table.map(&:length).max
-        table.map { |row| row + [nil] * (max_row_length - row.length) }
+        nil_array = [nil]
+        table.map { |row| row + nil_array * (max_row_length - row.length) }
       end
 
       def parse_hints_internal(raw_hints)

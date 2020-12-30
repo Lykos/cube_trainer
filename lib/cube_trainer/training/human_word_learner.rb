@@ -39,12 +39,12 @@ module CubeTrainer
         failed_attempts = 0
         start = Time.zone.now
         until !word.nil? && @hinter.good_word?(input, word)
-          if !word.nil? && !COMMANDS.include?(word)
+          if !word.nil? && COMMANDS.exclude?(word)
             failed_attempts += 1
-            if !input.matches_word?(word)
-              puts_and_say('Bad word!', 'en')
-            else
+            if input.matches_word?(word)
               puts_and_say('Incorrect!', 'en')
+            else
+              puts_and_say('Bad word!', 'en')
             end
           end
           word = gets.chomp.downcase
