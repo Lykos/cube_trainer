@@ -54,12 +54,12 @@ module CubeTrainer
 
       def ranks
         @ranks ||= begin
-                     ranks_single_and_average = parse_ranks_single_and_average
-                     ranks = {}
-                     add_rank_rows(ranks_single_and_average[:ranks_average], ranks, 'average')
-                     add_rank_rows(ranks_single_and_average[:ranks_single], ranks, 'single')
-                     ranks
-                   end.freeze
+          ranks_single_and_average = parse_ranks_single_and_average
+          ranks = {}
+          add_rank_rows(ranks_single_and_average[:ranks_average], ranks, 'average')
+          add_rank_rows(ranks_single_and_average[:ranks_single], ranks, 'single')
+          ranks
+        end.freeze
       end
 
       def scrambles

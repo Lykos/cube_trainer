@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
-require 'twisty_puzzles'
 require 'cube_trainer/commutator_reverse_engineer'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'twisty_puzzles'
 
 describe CommutatorReverseEngineer do

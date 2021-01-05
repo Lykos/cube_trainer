@@ -17,12 +17,14 @@ module CubeTrainer
         end
       end
 
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
       def matches?(start, rest)
         correct_start = @normalized_parts.select { |p| p.start_with?(start) }
         # No matches for the start letter.
         return false if correct_start.empty?
         # Part of the start letter also matches the rest.
-        return true if correct_start.any? { |p| p[1..-1].include?(rest) }
+        return true if correct_start.any? { |p| p[1..].include?(rest) }
         # There are multiple correct starts and any part starts with the rest.
         if correct_start.length > 1 && @normalized_parts.any? { |p| p.start_with?(rest) }
           return true
@@ -32,6 +34,8 @@ module CubeTrainer
 
         false
       end
+      # rubocop:enable Metrics/PerceivedComplexity
+      # rubocop:enable Metrics/CyclomaticComplexity
     end
 
     # Helper class to find words that fit a certain letter sequence.
@@ -43,7 +47,7 @@ module CubeTrainer
       def find_term(letter_sequence)
         normalized = letter_sequence.chomp.downcase
         start = normalized[0]
-        rest = normalized[1..-1]
+        rest = normalized[1..]
         @processed_terms.select { |t| t.matches?(start, rest) }.map(&:term)
       end
     end

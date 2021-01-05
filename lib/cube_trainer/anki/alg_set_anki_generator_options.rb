@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'ostruct'
 require 'cube_trainer/cube_trainer_options_parser'
 
@@ -20,6 +18,7 @@ module CubeTrainer
         options
       end
 
+      # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
       def self.parse(args)
         options = default_options
@@ -80,5 +79,6 @@ module CubeTrainer
       # rubocop:enable Metrics/BlockLength
     end
     # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
   end
 end

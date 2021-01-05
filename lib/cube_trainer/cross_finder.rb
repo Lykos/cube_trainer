@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/layer_subset_finder'
 
 module CubeTrainer

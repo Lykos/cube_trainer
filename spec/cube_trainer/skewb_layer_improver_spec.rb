@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_improver'
+require 'twisty_puzzles'
 
 describe SkewbLayerImprover do
   include TwistyPuzzles

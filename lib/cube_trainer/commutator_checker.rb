@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 
 module CubeTrainer
   # Class that checks whether a commutator algorithm does
@@ -29,7 +24,7 @@ module CubeTrainer
       unless part_type.is_a?(Class) && part_type.ancestors.include?(TwistyPuzzles::Part)
         raise TypeError
       end
-      raise TypeError unless buffer.class == part_type
+      raise TypeError unless buffer.instance_of?(part_type)
       raise TwistyPuzzles::ColorScheme unless color_scheme.is_a?(TwistyPuzzles::ColorScheme)
 
       @part_type = part_type

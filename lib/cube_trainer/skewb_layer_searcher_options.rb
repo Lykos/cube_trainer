@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/cube_trainer_options_parser'
 require 'ostruct'
+require 'twisty_puzzles'
 
 module CubeTrainer
   # Command line options for the skewb layer searcher binary.

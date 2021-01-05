@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 
 module CubeTrainer
   # Helper class to generate a concise human readable description of how a Skewb algorithm
@@ -180,16 +177,16 @@ module CubeTrainer
     # Describes where each interesting piece comes from.
     def source_descriptions(algorithm)
       algorithm.apply_temporarily_to(@skewb_state) do |s|
-        find_part_sources(@interesting_corners, s, &TwistyPuzzles::SkewbCoordinate.method(:for_corner)) + # rubocop:disable Layout/LineLength
-          find_part_sources(@interesting_faces, s, &TwistyPuzzles::SkewbCoordinate.method(:for_center)) # rubocop:disable Layout/LineLength
+        find_part_sources(@interesting_corners, s) { |c| TwistyPuzzles::SkewbCoordinate.for_corner(c) } + # rubocop:disable Layout/LineLength
+          find_part_sources(@interesting_faces, s) { |c| TwistyPuzzles::SkewbCoordinate.for_center(c) } # rubocop:disable Layout/LineLength
       end.sort
     end
 
     # Describes what kind of tranformation the alg does in terms of piece cycles.
     def transformation_descriptions(algorithm)
       algorithm.apply_temporarily_to(@skewb_state) do |s|
-        find_part_target_cycles(@interesting_corners, s, &TwistyPuzzles::SkewbCoordinate.method(:for_corner)) + # rubocop:disable Layout/LineLength
-          find_part_target_cycles(@interesting_faces, s, &TwistyPuzzles::SkewbCoordinate.method(:for_center)) # rubocop:disable Layout/LineLength
+        find_part_target_cycles(@interesting_corners, s) { |c| TwistyPuzzles::SkewbCoordinate.for_corner(c) } + # rubocop:disable Layout/LineLength
+          find_part_target_cycles(@interesting_faces, s) { |c| TwistyPuzzles::SkewbCoordinate.for_center(c) } # rubocop:disable Layout/LineLength
       end.sort
     end
   end

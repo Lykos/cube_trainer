@@ -40,5 +40,5 @@ ActiveRecord::Base.connected_to(database: :primary) do
          "(#{(stats[:weight] * 100).round(2)}%)"
     puts
   end
-  puts "Total time: #{lolstats.map { |stats| stats[:total_time] }.reduce(:+).round(2)} s"
+  puts "Total time: #{lolstats.pluck(:total_time).sum.round(2)} s"
 end

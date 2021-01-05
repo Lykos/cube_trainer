@@ -323,7 +323,7 @@ DEPENDENCIES
   parallel
   pg
   pry
-  puma (~> 4.1)
+  puma (~> 4.3)
   rails (~> 6.0.2, >= 6.0.2.2)
   rake
   rake-compiler
@@ -331,7 +331,7 @@ DEPENDENCIES
   rspec
   rspec-prof
   rspec-rails
-  rubocop (>= 0.80)
+  rubocop (~> 1.7)
   rubocop-performance
   rubocop-rails
   rubocop-rake
@@ -345,7 +345,7 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.0.0)
   thor
   turbolinks (~> 5)
-  twisty_puzzles (>= 0.0.5)
+  twisty_puzzles (>= 0.0.6)
   tzinfo-data
   web-console (>= 3.3.0)
   webdrivers
@@ -354,4 +354,4 @@ DEPENDENCIES
   xdg
 
 BUNDLED WITH
-   2.1.4
+   2.2.3

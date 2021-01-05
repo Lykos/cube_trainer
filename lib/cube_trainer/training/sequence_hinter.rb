@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/alg_name'
-require 'twisty_puzzles'
 require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/training/result_history'
+require 'ostruct'
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
-require 'ostruct'
 
 module CubeTrainer
   module Training
@@ -175,15 +174,15 @@ module CubeTrainer
       end
 
       def sequence_cancellation_score(sequence)
-        sequence[0..-2].zip(sequence[1..-1]).map do |left, right|
+        sequence[0..-2].zip(sequence[1..]).sum do |left, right|
           binary_cancellation_score(left, right)
-        end.reduce(:+)
+        end
       end
 
       def descriptions_and_values(combinations_with_base_hints)
         combinations_with_base_hints.map do |ls, hs|
           description = ls.join(', ')
-          value = ls.map.with_index { |l, i| value(i, l) }.reduce(:+)
+          value = ls.map.with_index { |l, i| value(i, l) }.sum
           cancellations = sequence_cancellation_score(hs)
           DescriptionAndValue.new(description, value, cancellations)
         end
@@ -198,13 +197,13 @@ module CubeTrainer
       def hints(input)
         @hints[input] ||=
           begin
-                                   combinations = generate_combinations(input)
-                                   stuff = combinations_with_base_hints(combinations)
-                                   [
-                                     descriptions_and_values(stuff).sort.join("\n"),
-                                     base_hints_descriptions(stuff).sort.join("\n")
-                                   ]
-                                 end
+            combinations = generate_combinations(input)
+            stuff = combinations_with_base_hints(combinations)
+            [
+              descriptions_and_values(stuff).sort.join("\n"),
+              base_hints_descriptions(stuff).sort.join("\n")
+            ]
+          end
       end
 
       def generate_combinations(_input)
@@ -238,14 +237,14 @@ module CubeTrainer
       def hints(input)
         parts = input_parts(input)
         hint_components = @hinters.zip(parts).map { |h, i| only(h.hints(i)) }
-        [hint_components.reduce(:+)]
+        [hint_components.sum]
       end
 
       def entries
         entries_components = @hinters.map(&:entries)
-        entries_components[0].product(*entries_components[1..-1]).map do |entry_combination|
-          name = entry_combination.map { |e| e[0] }.reduce(:+)
-          alg = entry_combination.map { |e| e[1] }.reduce(:+)
+        entries_components[0].product(*entries_components[1..]).map do |entry_combination|
+          name = entry_combination.sum { |e| e[0] }
+          alg = entry_combination.sum { |e| e[1] }
           [name, alg]
         end
       end

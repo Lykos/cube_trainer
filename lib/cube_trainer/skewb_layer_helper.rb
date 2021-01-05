@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'twisty_puzzles'
 
 module CubeTrainer
   # Module with common helper methods related to Skewb layers.

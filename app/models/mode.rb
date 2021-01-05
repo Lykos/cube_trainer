@@ -2,7 +2,6 @@
 
 require 'cube_trainer/buffer_helper'
 require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 require 'mode_type'
 
