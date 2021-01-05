@@ -28,6 +28,10 @@ gem 'bcrypt', '~> 3.1.13'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 
+# This is required as a dependency somewhere, but it shouldn't be.
+# TODO Try to remove this as we don't really need it.
+gem 'webrick'
+
 gem 'activerecord'
 gem 'colorize'
 gem 'parallel'
