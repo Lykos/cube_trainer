@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '~> 2.7.2'
+ruby '~> 3.0.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
@@ -28,6 +28,10 @@ gem 'bcrypt', '~> 3.1.13'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 
+# This is required as a dependency somewhere, but it shouldn't be.
+# TODO Try to remove this as we don't really need it.
+gem 'webrick'
+
 gem 'activerecord'
 gem 'colorize'
 gem 'parallel'
@@ -35,7 +39,7 @@ gem 'pg'
 gem 'ruby-filemagic'
 gem 'ruby-progressbar'
 gem 'rubyzip'
-gem 'twisty_puzzles', '>= 0.0.6'
+gem 'twisty_puzzles', '>= 0.0.7'
 gem 'wombat'
 gem 'xdg'
 
