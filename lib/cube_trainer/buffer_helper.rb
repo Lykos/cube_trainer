@@ -17,11 +17,11 @@ module CubeTrainer
         if info.has_buffer? && info.generator_class.const_defined?(:PART_TYPE)
           part_type = info.generator_class::PART_TYPE
           buffer = determine_buffer(part_type, options)
-          (buffer.to_s.downcase + '_' + info.result_symbol.to_s).to_sym
+          "#{buffer.to_s.downcase}_#{info.result_symbol}".to_sym
         else
           info.result_symbol
         end
-      options.picture ? (buffer_result.to_s + '_pic').to_sym : buffer_result
+      options.picture ? "#{buffer_result}_pic".to_sym : buffer_result
     end
   end
 end

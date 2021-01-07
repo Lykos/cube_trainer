@@ -48,7 +48,7 @@ module CubeTrainer
     end
 
     def regexp
-      @regexp ||= Regexp.new('^' + @letters.join('.*'), Regexp::IGNORECASE)
+      @regexp ||= Regexp.new("^#{@letters.join('.*')}", Regexp::IGNORECASE)
     end
 
     def matches_word?(word)

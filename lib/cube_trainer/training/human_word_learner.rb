@@ -32,7 +32,6 @@ module CubeTrainer
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
       # rubocop:disable Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/PerceivedComplexity
       def execute(input)
         puts_and_say(input)
         time_s = nil
@@ -40,12 +39,12 @@ module CubeTrainer
         failed_attempts = 0
         start = Time.zone.now
         until !word.nil? && @hinter.good_word?(input, word)
-          if !word.nil? && !COMMANDS.include?(word)
+          if !word.nil? && COMMANDS.exclude?(word)
             failed_attempts += 1
-            if !input.matches_word?(word)
-              puts_and_say('Bad word!', 'en')
-            else
+            if input.matches_word?(word)
               puts_and_say('Incorrect!', 'en')
+            else
+              puts_and_say('Bad word!', 'en')
             end
           end
           word = gets.chomp.downcase
@@ -68,7 +67,6 @@ module CubeTrainer
         puts "Time: #{format_time(time_s)}; Failed attempts: #{failed_attempts}; Word: #{word}"
         PartialResult.new(time_s: time_s, failed_attempts: failed_attempts, word: word)
       end
-      # rubocop:enable Metrics/PerceivedComplexity
       # rubocop:enable Metrics/CyclomaticComplexity
       # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize

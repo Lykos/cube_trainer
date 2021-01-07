@@ -22,7 +22,7 @@ class Input < ApplicationRecord
   def to_simple_result
     {
       id: result.id,
-      mode: mode,
+      mode: mode.attributes,
       input_representation: input_representation.to_s,
       time_s: result.time_s,
       failed_attempts: result.failed_attempts,

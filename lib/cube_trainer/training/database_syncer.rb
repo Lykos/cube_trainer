@@ -55,6 +55,8 @@ module CubeTrainer
 
       private
 
+      NON_KEY_ATTRIBUTES = %w[hostname created_at id].freeze
+
       def save_downloaded(downloaded)
         puts "Inserting #{downloaded.length} downloaded records of type #{@model.name}."
         progress_bar = ProgressBar.create(title: 'Inserted', total: downloaded.length)
@@ -97,7 +99,7 @@ module CubeTrainer
 
       def copy_non_key_attributes(from:, to:)
         from.attributes.each do |k, v|
-          next if %w[hostname created_at id].include?(k)
+          next if non_key_attributes.include?(k)
 
           to.send("#{k}=", v)
         end

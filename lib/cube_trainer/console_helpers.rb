@@ -40,7 +40,7 @@ module CubeTrainer
       char = nil
       num_hints = 0
       loop do
-        char = STDIN.getch.downcase
+        char = $stdin.getch.downcase
         if char == 'h'
           if hints.length > num_hints
             puts hints[num_hints]

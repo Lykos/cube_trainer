@@ -31,6 +31,8 @@ module CubeTrainer
           raise ArgumentError unless s.weight > 0.0
           raise TypeError unless s.subsampler.is_a?(Sampler)
         end
+
+        super()
         @name = name
         @subsamplers = subsamplers
       end
@@ -59,6 +61,7 @@ module CubeTrainer
       def initialize(subsamplers)
         raise TypeError unless subsamplers.all? { |s| s.is_a?(Sampler) }
 
+        super()
         @subsamplers = subsamplers
       end
 
@@ -79,6 +82,7 @@ module CubeTrainer
       include Utils::SamplingHelper
 
       def initialize(name, items, &get_weight)
+        super()
         @name = name
         @items = items
         @get_weight_proc = get_weight
@@ -103,6 +107,7 @@ module CubeTrainer
     # A sampler that samples all items uniformly.
     class UniformSampler < Sampler
       def initialize(items)
+        super()
         @items = items
       end
 

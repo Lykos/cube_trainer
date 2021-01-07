@@ -7,7 +7,7 @@ require 'cube_trainer/wca/crawler'
 require 'cube_trainer/wca/export_parser'
 
 def count_filtered(results)
-  results.map { |c| c[:values].count { |r| r.time_centis && r.time_centis % 100 == 73 } }.reduce(:+)
+  results.sum { |c| c[:values].count { |r| r.time_centis && r.time_centis % 100 == 73 } }
 end
 
 crawler = CubeTrainer::WCA::Crawler.new

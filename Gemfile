@@ -3,10 +3,12 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
+ruby '~> 3.0.0'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
 # Use Puma as the app server
-gem 'puma', '~> 4.1'
+gem 'puma', '~> 4.3'
 # Use SCSS for stylesheets
 gem 'sass-rails', '>= 6'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
@@ -26,6 +28,10 @@ gem 'bcrypt', '~> 3.1.13'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 
+# This is required as a dependency somewhere, but it shouldn't be.
+# TODO Try to remove this as we don't really need it.
+gem 'webrick'
+
 gem 'activerecord'
 gem 'colorize'
 gem 'parallel'
@@ -33,7 +39,7 @@ gem 'pg'
 gem 'ruby-filemagic'
 gem 'ruby-progressbar'
 gem 'rubyzip'
-gem 'twisty_puzzles', '>= 0.0.5'
+gem 'twisty_puzzles', '>= 0.0.7'
 gem 'wombat'
 gem 'xdg'
 
@@ -55,7 +61,7 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 
   gem 'rake-compiler'
-  gem 'rubocop', '>=0.80'
+  gem 'rubocop', '~> 1.7'
   gem 'rubocop-performance'
   gem 'rubocop-rails'
   gem 'rubocop-rake'

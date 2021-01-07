@@ -79,7 +79,7 @@ module CubeTrainer
         end
 
         adjusted_num_items = [num_items, @last_items.length].min
-        @last_items[-adjusted_num_items..-1]
+        @last_items[-adjusted_num_items..]
       end
 
       def badness_averages

@@ -3,12 +3,10 @@
 require 'cube_trainer/commutator_reverse_engineer'
 require 'cube_trainer/training/commutator_hinter'
 require 'cube_trainer/commonality_finder'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/commutator_checker'
 require 'cube_trainer/training/hint_parser'
+require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 
 module CubeTrainer
@@ -65,9 +63,10 @@ module CubeTrainer
           raise ArgumentError, 'Having test_comms_mode == :warn, but !verbose is pointless.'
         end
 
+        super()
         @part_type = part_type
         @buffer = buffer
-        @name = buffer.to_s.downcase + '_' + snake_case_class_name(part_type)
+        @name = "#{buffer.to_s.downcase}_#{snake_case_class_name(part_type)}"
         @letter_scheme = letter_scheme
         @color_scheme = color_scheme
         @verbose = verbose
@@ -120,7 +119,8 @@ module CubeTrainer
 
       def add_nils_to_table(table)
         max_row_length = table.map(&:length).max
-        table.map { |row| row + [nil] * (max_row_length - row.length) }
+        nil_array = [nil]
+        table.map { |row| row + nil_array * (max_row_length - row.length) }
       end
 
       def parse_hints_internal(raw_hints)
@@ -153,7 +153,7 @@ module CubeTrainer
       def parse_hint_table_cell(cell)
         return EmptyEntry if cell.blank? || blacklisted?(cell)
 
-        alg = parse_commutator(cell, false)
+        alg = parse_commutator(cell, complete_parse: false)
         # Ignore very short algorithms. They are never valid and they can be things like piece
         # types.
         return EmptyEntry if alg.algorithm.length <= 3

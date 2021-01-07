@@ -2,10 +2,9 @@
 
 require 'csv'
 require 'cube_trainer/anki/skewb_layer_anki_generator'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'tempfile'
 require 'ostruct'
+require 'tempfile'
+require 'twisty_puzzles'
 
 BASE_DECK = [
   ['case description', 'main alg', 'center_transformations', 'top_corner_transformations', 'alternative algs', 'name', 'tags'],
@@ -47,10 +46,10 @@ RSpec::Matchers.define(:be_modified_deck) do |column, expected_elements, wildcar
     dupped_actual = actual.dup
     delete_columns(dupped_actual, wildcard_columns)
     actual_elements = dupped_actual.map { |row| row[column] }
-    if expected_elements != actual_elements
-      "expected that changed column #{column} with elements #{actual_elements.inspect} would equal #{expected_elements.inspect}"
-    else
+    if expected_elements == actual_elements
       "expected that #{dupped_actual.inspect} would equal #{expected.inspect}"
+    else
+      "expected that changed column #{column} with elements #{actual_elements.inspect} would equal #{expected_elements.inspect}"
     end
   end
 end
