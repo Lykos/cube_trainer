@@ -14,7 +14,7 @@ module CubeTrainer
       end
 
       def subdirectory
-        Pathname.new(super) + 'wca_exports'
+        Pathname.new(super) + 'wca_exports' # rubocop:disable Style/StringConcatenation
       end
 
       def wca_export_path(filename)

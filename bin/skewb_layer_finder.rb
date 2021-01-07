@@ -3,8 +3,6 @@
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 require 'cube_trainer/skewb_layer_finder_options'
 require 'cube_trainer/skewb_layer_finder'
 require 'twisty_puzzles'

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'twisty_puzzles'
 require 'cube_trainer/training/alg_hinter'
 require 'cube_trainer/training/alg_set_reverse_engineer'
 require 'cube_trainer/training/hint_parser'
+require 'twisty_puzzles'
 
 module CubeTrainer
   module Training
@@ -14,6 +14,7 @@ module CubeTrainer
       include TwistyPuzzles
 
       def initialize(name, input_items, options)
+        super()
         @name = name
         @input_items = input_items
         @options = options
@@ -42,7 +43,7 @@ module CubeTrainer
           row.each do |cell|
             next if cell.blank?
 
-            comm = parse_commutator(cell, false)
+            comm = parse_commutator(cell, complete_parse: false)
             # Ignore very short algorithms. They are never valid and they can be things like piece
             # types.
             comms.push(comm) unless comm.algorithm.length <= 3

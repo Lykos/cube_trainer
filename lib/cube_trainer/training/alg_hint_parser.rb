@@ -29,6 +29,7 @@ module CubeTrainer
         )
 
       def initialize(name, verbose)
+        super()
         @name = name
         @verbose = verbose
       end

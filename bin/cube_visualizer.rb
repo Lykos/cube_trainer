@@ -11,7 +11,7 @@ require 'net/http'
 
 options = CubeTrainer::Anki::CubeVisualizerOptions.parse(ARGV)
 
-fmt = File.extname(options.output)[1..-1].to_sym
+fmt = File.extname(options.output)[1..].to_sym
 cache = options.cache ? CubeTrainer::Anki::Cache.new('cube_visualizer') : nil
 visualizer = CubeTrainer::Anki::CubeVisualizer.new(
   fetcher: Net::HTTP, cache: cache, sch: options.color_scheme, fmt: fmt, stage: options.stage_mask

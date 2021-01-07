@@ -4,8 +4,6 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'twisty_puzzles'
-require 'twisty_puzzles'
-require 'twisty_puzzles'
 
 # rubocop:disable Style/MixinUsage
 include CubeTrainer::Core

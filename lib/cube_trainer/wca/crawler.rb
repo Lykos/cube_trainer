@@ -35,11 +35,11 @@ module CubeTrainer
       end
 
       def construct_wca_export_url(filename)
-        URI.parse((WCA_BASE_URL + '/results/misc/' + filename).to_s)
+        URI.parse("#{WCA_BASE_URL}/results/misc/#{filename}".to_s)
       end
 
       def extract_redirect_url(resp)
-        url = resp['location'] || resp.match(/<a href=\"([^>]+)\">/i)[1]
+        url = resp['location'] || resp.match(/<a href="([^>]+)">/i)[1]
         raise 'No redirect URL found.' unless url
         raise "Redirect to foreign page #{url}." unless url[0...WCA_BASE_URL.length] == WCA_BASE_URL
 

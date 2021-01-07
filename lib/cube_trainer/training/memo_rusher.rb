@@ -25,10 +25,10 @@ module CubeTrainer
       attr_reader :muted
 
       def timed_getch(timeout_s)
-        return STDIN.getch unless timeout_s
+        return $stdin.getch unless timeout_s
 
         begin
-          Timeout.timeout(timeout_s) { STDIN.getch }
+          Timeout.timeout(timeout_s) { $stdin.getch }
         rescue Timeout::Error
           nil
         end
@@ -53,7 +53,8 @@ module CubeTrainer
       def ask_success
         puts 'Success (y/n)?'
         answer = wait_for_any_char.downcase
-        until %w[y n].include?(answer)
+        valid_answers = %w[y n]
+        until valid_answers.include?(answer)
           puts 'y/n?'
           answer = wait_for_any_char.downcase
         end
