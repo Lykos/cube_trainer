@@ -23,16 +23,18 @@ describe WCA::ExportParser do
 
   it 'reads the scrambles of a WCA export' do
     expect(parser.scrambles).to eq(
-      [{
-        scrambleid: 657_918,
-        competitionid: 'BerlinKubusProjekt2017',
-        eventid: '222',
-        roundtypeid: :'1',
-        groupid: 'A',
-        isextra: false,
-        scramblenum: 1,
-        scramble: parse_algorithm("U2 R' U2 R U' R U F' U' R U")
-      }]
+      [
+        {
+          scrambleid: 657_918,
+          competitionid: 'BerlinKubusProjekt2017',
+          eventid: '222',
+          roundtypeid: :'1',
+          groupid: 'A',
+          isextra: false,
+          scramblenum: 1,
+          scramble: parse_algorithm("U2 R' U2 R U' R U F' U' R U")
+        }
+      ]
     )
   end
 

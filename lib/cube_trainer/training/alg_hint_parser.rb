@@ -63,11 +63,13 @@ module CubeTrainer
         diagonal_pll_hinter = RestrictedHinter.new([DIAGONAL_PLL_NAME], pll_hinter)
         one_adjacent_pll_hinter = RestrictedHinter.new([ADJACENT_PLL_NAME], pll_hinter)
         adjacent_pll_hinter = AlgSequenceHinter.new([AUF_HINTER, one_adjacent_pll_hinter])
-        DisjointUnionHinter.new([
-                                  diagonal_pll_hinter,
-                                  RestrictedHinter.trivially_restricted(adjacent_pll_hinter),
-                                  RestrictedHinter.trivially_restricted(SOLVED_HINTER)
-                                ])
+        DisjointUnionHinter.new(
+          [
+            diagonal_pll_hinter,
+            RestrictedHinter.trivially_restricted(adjacent_pll_hinter),
+            RestrictedHinter.trivially_restricted(SOLVED_HINTER)
+          ]
+        )
       end
 
       # TODO: Move this to alg sets once those are refactored to not include inputs and stuff

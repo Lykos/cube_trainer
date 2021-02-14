@@ -3,7 +3,7 @@ class CreateUsers < ActiveRecord::Migration[6.0]
     has_secure_password
   end
 
-  class Result < ApplicationRecord
+  class CubeTrainerTrainingResult < ApplicationRecord
   end
 
   def change
@@ -15,7 +15,7 @@ class CreateUsers < ActiveRecord::Migration[6.0]
     end
 
     user = nil
-    if Result.exists?
+    if CubeTrainerTrainingResult.exists?
       reversible do |dir|
         dir.up do
           User.reset_column_information
