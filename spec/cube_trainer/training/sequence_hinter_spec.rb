@@ -50,11 +50,13 @@ describe Training::HeterogenousSequenceHinter do
   let(:hinter) { FakeHeterogenousSequenceHinter.new(cube_size, [mode, mode], hinters) }
 
   it 'can give a prioritized list of hints' do
-    input = CombinedAlgName.new([
-                                  CombinedAlgName.new([algname_a, algname_d]),
-                                  CombinedAlgName.new([algname_b, algname_d]),
-                                  CombinedAlgName.new([algname_c, algname_d])
-                                ])
+    input = CombinedAlgName.new(
+      [
+        CombinedAlgName.new([algname_a, algname_d]),
+        CombinedAlgName.new([algname_b, algname_d]),
+        CombinedAlgName.new([algname_c, algname_d])
+      ]
+    )
     hints = hinter.hints(input)
     expect(hints.length).to be == 2
     first_lines = hints[0].split("\n")
