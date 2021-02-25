@@ -16,7 +16,7 @@ module CubeTrainer
         end
       end
 
-      NAMES = [:ll_edges_outside, :ll].freeze
+      NAMES = %i[ll_edges_outside ll].freeze
 
       def initialize(coordinates, color)
         @coordinates = coordinates

@@ -72,5 +72,9 @@ module CubeTrainer
         1.0
       end
     end
+
+    # F2L alg set
+    class F2lAllSlots
+    end
   end
 end
