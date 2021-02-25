@@ -89,22 +89,24 @@ describe Anki::CubeVisualizer do
   end
 
   it 'constructs a url for all settings' do
-    expect(described_class.new(
-      fetcher: fetcher,
-      cache: cache,
-      retries: retries,
-      checker: checker,
-      fmt: fmt,
-      size: 100,
-      view: :plain,
-      stage: Anki::StageMask.new(:coll, TwistyPuzzles::Algorithm.move(TwistyPuzzles::Rotation.new(TwistyPuzzles::Face::U, TwistyPuzzles::CubeDirection::FORWARD))),
-      sch: color_scheme,
-      bg: :black,
-      cc: :white,
-      co: 40,
-      fo: 50,
-      dist: 35
-    ).uri(cube_state).to_s).to eq('http://cube.crider.co.uk/visualcube.php?fmt=jpg&size=100&view=plain&stage=coll-y&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&bg=black&cc=white&co=40&fo=50&dist=35&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb')
+    expect(
+      described_class.new(
+        fetcher: fetcher,
+        cache: cache,
+        retries: retries,
+        checker: checker,
+        fmt: fmt,
+        size: 100,
+        view: :plain,
+        stage: Anki::StageMask.new(:coll, TwistyPuzzles::Algorithm.move(TwistyPuzzles::Rotation.new(TwistyPuzzles::Face::U, TwistyPuzzles::CubeDirection::FORWARD))),
+        sch: color_scheme,
+        bg: :black,
+        cc: :white,
+        co: 40,
+        fo: 50,
+        dist: 35
+      ).uri(cube_state).to_s
+    ).to eq('http://cube.crider.co.uk/visualcube.php?fmt=jpg&size=100&view=plain&stage=coll-y&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&bg=black&cc=white&co=40&fo=50&dist=35&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb')
   end
 
   it 'fetches an image' do
