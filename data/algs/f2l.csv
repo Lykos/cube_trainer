@@ -1,0 +1,22 @@
+free pair,R U' R'
+three mover,R U R'
+pseudo three mover,R U R' U R U R'
+friend,R U2 R' U' R U R'
+split,R U' R' U R U R'
+flipped,R U' R' U F' U2 F U2 F' U F
+flat on top,R U' R' U2 F' U' F
+flat on side,R' U' R U' R' U2 R2 U' R'
+checkerboard,R' U2 R2 U R2 U R
+flipped pair,R' F R F' R U' R'
+twisted corner,R U' R' U' R U R' U2 R U' R'
+ugly stuck,R U' R' Rw U' Rw' U2 Rw U Rw'
+short penis,R U R' U R U' R'
+long penis,R U2 R' U R U' R'
+short hide,R U R' U2 R U' R'
+long hide,R U2 R' U2 R U' R'
+triple sexy,R U R' U' R U R' U' R U R'
+solved edge,R U' R' U2 R U' R'
+solved corner,R' U' R' U' R' U R U R
+hockey stick,R U' R' U R U' R'
+broken hockey stick,R U R' U' R U R'
+curved watcher,R U R' U F' U' F
