@@ -74,7 +74,10 @@ module CubeTrainer
     end
 
     # F2L alg set
-    class F2lAllSlots
+    class F2lAllSlots < AlgSet
+      def goal_badness
+        0.5
+      end
     end
   end
 end
