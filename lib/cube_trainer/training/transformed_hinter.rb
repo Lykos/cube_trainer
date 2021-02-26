@@ -16,12 +16,22 @@ module CubeTrainer
                 "Invalid hinter type #{hinter.class}."
         end
 
-        transformations.values.each do |transformation|
+        check_transformations(transformations)
+        check_hinter(hinter)
+        @transformations = transformations
+        @hinter = hinter
+      end
+
+      def check_transformations(transformations)
+        transformations.each_value do |transformation|
           unless transformation.is_a?(AlgorithmTransformation)
             raise TypeError,
                   "Invalid transformation type #{transformation.class}."
           end
         end
+      end
+
+      def check_hinter(hinter)
         hinter.entries.each do |algs|
           raise TypeError, "Invalid hints type #{algs.class}." unless algorithms.is_a?(Array)
 
@@ -29,18 +39,15 @@ module CubeTrainer
             raise TypeError, "Invalid hints type #{alg.class}." unless algorithm.is_a?(Algorithm)
           end
         end
-
-        @transformations = transformations
-        @hinter = hinter
       end
 
       def entries
         @entries ||=
           @hinter.entries.collect_concat do |alg_name, algs|
-            @transformations.collect do |transformation_name, transformation|
+            @transformations.map do |transformation_name, transformation|
               name = transformation_name + alg_name
               transformed_algs = algs.map { |alg| transformation.transformed(alg) }
-              [name, algs]
+              [name, transformed_algs]
             end
           end
       end

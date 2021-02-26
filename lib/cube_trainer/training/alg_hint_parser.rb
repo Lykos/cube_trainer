@@ -16,6 +16,10 @@ module CubeTrainer
       include TwistyPuzzles::Utils::StringHelper
       include TwistyPuzzles
 
+      def self.transformation_name(transformation)
+        SimpleAlgName.new("#{transformation.rotation}#{transformation.mirror ? ' mirror' : ''}")
+      end
+
       ALG_SET_SEPARATOR = '_plus_'
       ALL_SLOTS_SUFFIX = '_all_slots'
       ADJACENT_PLL_NAME = SimpleAlgName.new('Ja')
@@ -30,11 +34,11 @@ module CubeTrainer
              [SimpleAlgName.new(alg.to_s), alg]
            end).to_h
         )
-      ALL_SLOT_TRANSFORMATIONS = (TwistyPuzzles::AlgorithmTransformation.around_face(TwistyPuzzles::Face::U).map do |t|
-                                    [
-                                      SimpleAlgName.new("#{t.rotation}#{t.mirror ? ' mirror' : ''}"), t
-                                    ]
-                                  end).to_h.freeze
+
+      ALL_SLOT_TRANSFORMATIONS = (
+        TwistyPuzzles::AlgorithmTransformation.around_face(TwistyPuzzles::Face::U).map do |t|
+          [transformation_name(t), t]
+        end).to_h.freeze
 
       def initialize(name, verbose)
         super()
