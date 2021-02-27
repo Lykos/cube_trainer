@@ -167,7 +167,7 @@ module CubeTrainer
       FACE_SYMBOL_ORDER = %i[U R F D L B].freeze
       MIN_N = 1
       MAX_N = 10
-      BASE_URI = URI('http://cube.crider.co.uk/visualcube.php')
+      BASE_URI = URI('http://cube.rider.biz/visualcube.php')
 
       def initialize(fetcher:, cache: nil, retries: 5, checker: nil, **params)
         check_param_keys(params.keys)
@@ -188,11 +188,7 @@ module CubeTrainer
 
       def fetch(cube_state)
         uri = uri(cube_state)
-        if (r = @cache[uri.to_s])
-          r
-        else
-          @cache[uri.to_s] = really_fetch_internal(uri)
-        end
+        @cache.fetch(uri.to_s) { really_fetch_internal(uri) }
       end
 
       def fetch_and_store(cube_state, output)
@@ -253,7 +249,7 @@ module CubeTrainer
       end
 
       def check_cache(cache)
-        raise TypeError unless cache.nil? || (cache.respond_to?(:[]) && cache.respond_to?(:[]=))
+        raise TypeError unless cache.nil? || cache.respond_to?(:fetch)
       end
 
       def check_checker(checker)

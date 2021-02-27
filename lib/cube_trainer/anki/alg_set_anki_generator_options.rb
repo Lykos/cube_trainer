@@ -3,11 +3,14 @@
 require 'twisty_puzzles'
 require 'ostruct'
 require 'cube_trainer/cube_trainer_options_parser'
+require 'cube_trainer/xdg_helper'
 
 module CubeTrainer
   module Anki
     # Command line optiona for the `alg_set_anki_generator` binary.
     class AlgSetAnkiGeneratorOptions
+      extend XdgHelper
+
       def self.default_options
         options = OpenStruct.new
         # Default options
@@ -15,6 +18,7 @@ module CubeTrainer
         options.cube_size = 3
         options.verbose = false
         options.cache = true
+        options.cache_dir = (cache_directory + 'anki_cache').to_s
         options
       end
 
@@ -27,7 +31,7 @@ module CubeTrainer
         CubeTrainerOptionsParser.new(options) do |opts|
           opts.on_cache
           opts.on_size
-          opts.on_output('anki deck & media output directory')
+          opts.on_output('anki deck')
           opts.on_stage_mask
           opts.on_solved_mask
 
@@ -36,6 +40,13 @@ module CubeTrainer
             'Output directory path for the media.'
           ) do |d|
             options.output_dir = d
+          end
+
+          opts.on(
+            '--cache_dir [DIRECTORY]', String,
+            'Cache directory path.'
+          ) do |d|
+            options.cache_dir = d
           end
 
           opts.on(

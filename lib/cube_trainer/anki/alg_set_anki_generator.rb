@@ -10,6 +10,7 @@ require 'twisty_puzzles/utils'
 require 'net/http'
 require 'parallel'
 require 'set'
+require 'fileutils'
 
 module CubeTrainer
   module Anki
@@ -38,13 +39,13 @@ module CubeTrainer
       # rubocop:enable Style/StringHashKeys
 
       def initialize(options, fetcher: Net::HTTP, checker: nil)
-        check_output_dir(options.output_dir)
-        check_output(options.output)
+        check_output_dir('output', options.output_dir)
+        check_output('output', options.output)
 
         @options = options
         @visualizer = CubeVisualizer.new(
           fetcher: fetcher,
-          cache: create_cache(options),
+          cache: create_cache,
           checker: checker,
           sch: options.color_scheme,
           fmt: FORMAT,
@@ -60,6 +61,8 @@ module CubeTrainer
       end
 
       def generate
+        FileUtils.mkpath(File.dirname(@options.output)) unless File.exist?(File.dirname(@options.output))
+        FileUtils.mkpath(@options.output_dir) unless File.exist?(@options.output_dir)
         CSV.open(@options.output, 'wb', col_sep: "\t") do |csv|
           generate_internal(csv)
         end
@@ -164,8 +167,8 @@ module CubeTrainer
         inputs = note_inputs
         Parallel.each(
           inputs,
-          progress: @options.verbose ? 'Fetching alg images' : nil,
-          in_threads: 50
+          progress: @options.verbose ? "Fetching #{inputs.length} alg images" : nil,
+          in_threads: 2
         ) { |note_input| process_note_input(note_input) }
         inputs.group_by(&:name).each do |_name, values|
           fields = values[0].fields
@@ -173,26 +176,36 @@ module CubeTrainer
         end
       end
 
-      def create_cache(options)
-        return unless options.cache
+      def create_cache
+        return StubCache.new unless @options.cache
 
-        throw NotImplementedError, 'The old Sqlite3 cache had to be removed, but no new rails ' \
-                                   'based one has been added yet.'
+        check_output_dir('cache', @options.cache_dir)
+        FileUtils.mkpath(@options.cache_dir) unless File.exist?(@options.cache_dir)
+        ActiveSupport::Cache::FileStore.new(@options.cache_dir)
       end
 
-      def check_output_dir(output_dir)
-        raise TypeError unless output_dir.is_a?(String)
-        raise ArgumentError unless File.exist?(output_dir)
-        raise ArgumentError unless File.directory?(output_dir)
-        raise ArgumentError unless File.writable?(output_dir)
+      def first_existing_ancestor(directory)
+        while !File.exists?(directory)
+          parent = File.dirname(directory)
+          raise if parent == directory
+          directory = parent
+        end
+        directory
       end
 
-      def check_output(output)
-        raise TypeError unless output.is_a?(String)
+      def check_output_dir(output_dir_name, output_dir)
+        raise TypeError, "#{output_dir_name} directory is not a string." unless output_dir.is_a?(String)
+        ancestor = first_existing_ancestor(output_dir)
+        raise ArgumentError unless File.directory?(ancestor)
+        raise ArgumentError unless File.writable?(ancestor)
+      end
 
-        check_output_dir(File.dirname(output))
-        raise ArgumentError if File.directory?(output)
-        raise ArgumentError if File.exist?(output) && !File.writable?(output)
+      def check_output(output_name, output)
+        raise TypeError, "#{output_name} is not a string." unless output.is_a?(String)
+
+        check_output_dir(output_name, File.dirname(output))
+        raise ArgumentError, "#{output_name} is a directory" if File.directory?(output)
+        raise ArgumentError, "#{output_name} is not writeable" if File.exist?(output) && !File.writable?(output)
       end
     end
   end
