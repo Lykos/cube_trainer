@@ -176,12 +176,29 @@ module CubeTrainer
         end
       end
 
+      # TODO Remove when the FileStore cache fixed their bug in .fetch
+      class CacheFetchWrapper
+        def initialize(cache)
+          @cache = cache
+        end
+
+        def fetch(key, &block)
+          if r = @cache.read(key)
+            r
+          else
+            r = yield
+            @cache.write(key, r)
+            r
+          end
+        end
+      end
+
       def create_cache
         return StubCache.new unless @options.cache
 
         check_output_dir('cache', @options.cache_dir)
         FileUtils.mkpath(@options.cache_dir) unless File.exist?(@options.cache_dir)
-        ActiveSupport::Cache::FileStore.new(@options.cache_dir)
+        CacheFetchWrapper.new(ActiveSupport::Cache::FileStore.new(@options.cache_dir))
       end
 
       def first_existing_ancestor(directory)
