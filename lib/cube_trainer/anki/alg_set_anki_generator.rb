@@ -178,20 +178,20 @@ module CubeTrainer
         end
       end
 
-      # TODO: Remove when the FileStore cache fixed their bug in .fetch
+      # Wrapper around a cache that emulates a simplified #fetch method.
+      # TODO: Remove when the FileStore cache fixed their bug in #fetch.
       class CacheFetchWrapper
         def initialize(cache)
           @cache = cache
         end
 
         def fetch(key)
-          if r = @cache.read(key)
-            r
-          else
-            r = yield
-            @cache.write(key, r)
-            r
-          end
+          r = @cache.read(key)
+          return r if r
+
+          r = yield
+          @cache.write(key, r)
+          r
         end
       end
 
@@ -230,10 +230,9 @@ module CubeTrainer
         check_output_dir(output_name, File.dirname(output))
         raise ArgumentError, "#{output_name} is a directory" if File.directory?(output)
 
-        if File.exist?(output) && !File.writable?(output)
-          raise ArgumentError,
-                "#{output_name} is not writeable"
-        end
+        return unless File.exist?(output) && !File.writable?(output)
+
+        raise ArgumentError, "#{output_name} is not writeable"
       end
     end
   end

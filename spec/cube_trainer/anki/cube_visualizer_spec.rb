@@ -36,13 +36,12 @@ class HashCache
   end
 
   def fetch(key)
-    if r = @hash[key]
-      r
-    else
-      r = yield
-      @hash[key] = r
-      r
-    end
+    r = @hash[key]
+    return r if r
+
+    r = yield
+    @hash[key] = r
+    r
   end
 end
 

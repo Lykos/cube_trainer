@@ -18,7 +18,7 @@ module CubeTrainer
         options.cube_size = 3
         options.verbose = false
         options.cache = true
-        options.cache_dir = (cache_directory + 'anki_cache').to_s
+        options.cache_dir = (cache_directory + 'anki_cache').to_s # rubocop:disable Style/StringConcatenation
         options
       end
 
