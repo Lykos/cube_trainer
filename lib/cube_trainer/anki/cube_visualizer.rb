@@ -129,11 +129,9 @@ module CubeTrainer
 
     # Stub cache that caches nothing.
     class StubCache
-      def self.[](_key)
-        nil
+      def self.fetch(*args, &block)
+        yield
       end
-
-      def self.[]=(key, value); end
     end
 
     # Class that fetches images from

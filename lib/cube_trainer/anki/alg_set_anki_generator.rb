@@ -194,7 +194,7 @@ module CubeTrainer
       end
 
       def create_cache
-        return StubCache.new unless @options.cache
+        return nil unless @options.cache
 
         check_output_dir('cache', @options.cache_dir)
         FileUtils.mkpath(@options.cache_dir) unless File.exist?(@options.cache_dir)
