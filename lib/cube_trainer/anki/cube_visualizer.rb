@@ -129,7 +129,7 @@ module CubeTrainer
 
     # Stub cache that caches nothing.
     class StubCache
-      def self.fetch(*args, &block)
+      def self.fetch(*_args)
         yield
       end
     end

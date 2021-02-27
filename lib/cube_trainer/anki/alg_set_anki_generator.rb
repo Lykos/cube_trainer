@@ -61,7 +61,9 @@ module CubeTrainer
       end
 
       def generate
-        FileUtils.mkpath(File.dirname(@options.output)) unless File.exist?(File.dirname(@options.output))
+        unless File.exist?(File.dirname(@options.output))
+          FileUtils.mkpath(File.dirname(@options.output))
+        end
         FileUtils.mkpath(@options.output_dir) unless File.exist?(@options.output_dir)
         CSV.open(@options.output, 'wb', col_sep: "\t") do |csv|
           generate_internal(csv)
@@ -176,13 +178,13 @@ module CubeTrainer
         end
       end
 
-      # TODO Remove when the FileStore cache fixed their bug in .fetch
+      # TODO: Remove when the FileStore cache fixed their bug in .fetch
       class CacheFetchWrapper
         def initialize(cache)
           @cache = cache
         end
 
-        def fetch(key, &block)
+        def fetch(key)
           if r = @cache.read(key)
             r
           else
@@ -194,7 +196,7 @@ module CubeTrainer
       end
 
       def create_cache
-        return nil unless @options.cache
+        return unless @options.cache
 
         check_output_dir('cache', @options.cache_dir)
         FileUtils.mkpath(@options.cache_dir) unless File.exist?(@options.cache_dir)
@@ -202,16 +204,21 @@ module CubeTrainer
       end
 
       def first_existing_ancestor(directory)
-        while !File.exists?(directory)
+        until File.exist?(directory)
           parent = File.dirname(directory)
           raise if parent == directory
+
           directory = parent
         end
         directory
       end
 
       def check_output_dir(output_dir_name, output_dir)
-        raise TypeError, "#{output_dir_name} directory is not a string." unless output_dir.is_a?(String)
+        unless output_dir.is_a?(String)
+          raise TypeError,
+                "#{output_dir_name} directory is not a string."
+        end
+
         ancestor = first_existing_ancestor(output_dir)
         raise ArgumentError unless File.directory?(ancestor)
         raise ArgumentError unless File.writable?(ancestor)
@@ -222,7 +229,11 @@ module CubeTrainer
 
         check_output_dir(output_name, File.dirname(output))
         raise ArgumentError, "#{output_name} is a directory" if File.directory?(output)
-        raise ArgumentError, "#{output_name} is not writeable" if File.exist?(output) && !File.writable?(output)
+
+        if File.exist?(output) && !File.writable?(output)
+          raise ArgumentError,
+                "#{output_name} is not writeable"
+        end
       end
     end
   end

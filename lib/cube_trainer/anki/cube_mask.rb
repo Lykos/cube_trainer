@@ -10,7 +10,9 @@ module CubeTrainer
     class CubeMask
       def self.from_name(example_name, cube_size, color)
         case example_name
-        when :ll_edges_outside then new(TwistyPuzzles::Coordinate.edges_outside(TwistyPuzzles::Face::U, cube_size), color)
+        when :ll_edges_outside then new(
+          TwistyPuzzles::Coordinate.edges_outside(TwistyPuzzles::Face::U, cube_size), color
+        )
         when :ll then new(TwistyPuzzles::Coordinate.layer(TwistyPuzzles::Face::U, cube_size), color)
         else raise ArgumentError
         end

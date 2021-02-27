@@ -35,7 +35,7 @@ class HashCache
     @hash = {}
   end
 
-  def fetch(key, &block)
+  def fetch(key)
     if r = @hash[key]
       r
     else
