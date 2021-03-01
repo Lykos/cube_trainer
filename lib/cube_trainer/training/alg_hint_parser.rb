@@ -21,7 +21,6 @@ module CubeTrainer
       end
 
       ALG_SET_SEPARATOR = '_plus_'
-      ALL_SLOTS_SUFFIX = '_all_slots'
       ADJACENT_PLL_NAME = SimpleAlgName.new('Ja')
       DIAGONAL_PLL_NAME = SimpleAlgName.new('Y')
       SOLVED_HINTER = AlgHinter.new(SimpleAlgName.new('solved') => TwistyPuzzles::Algorithm::EMPTY)
@@ -34,11 +33,6 @@ module CubeTrainer
              [SimpleAlgName.new(alg.to_s), alg]
            end).to_h
         )
-
-      ALL_SLOT_TRANSFORMATIONS = (
-        TwistyPuzzles::AlgorithmTransformation.around_face(TwistyPuzzles::Face::U).map do |t|
-          [transformation_name(t), t]
-        end).to_h.freeze
 
       def initialize(name, verbose)
         super()
@@ -92,10 +86,6 @@ module CubeTrainer
           AlgSequenceHinter.new(sub_hinters)
         elsif name == 'cp'
           construct_cp_hinter(verbose)
-        elsif name.end_with?(ALL_SLOTS_SUFFIX)
-          base_name = name[0..-ALL_SLOTS_SUFFIX - 1]
-          base_hinter = parse_hinter(base_name)
-          TransformedHinter.new(ALL_SLOTS_TRANSFORMATIONS, base_hinter)
         end
       end
 
