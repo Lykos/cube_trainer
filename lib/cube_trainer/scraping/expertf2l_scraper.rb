@@ -155,7 +155,7 @@ module CubeTrainer
 
       def extract_slot_algs(f2l_case_index, slot, slot_json)
         slot_json.collect_concat.with_index do |subcase, subcase_index|
-          maybe_subcase_index = (subcase_index if subcases.length > 1)
+          maybe_subcase_index = (subcase_index if slot_json.length > 1)
           aufcases = subcase['cases']
           aufcases.map.with_index do |aufcase, aufcase_index|
             maybe_aufcase_index = (aufcase_index if aufcases.length > 1)
