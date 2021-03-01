@@ -16,7 +16,7 @@ module CubeTrainer
         F2lCase.new('roof', 1, true),
         F2lCase.new('checkerboard', 1, true),
         F2lCase.new('triple sexy', 1, true),
-        F2lCase.new('', 1, true),
+        F2lCase.new('weird watcher', 1, true),
         F2lCase.new('solved edge', 1, true),
         F2lCase.new('free pair', 1, true),
         F2lCase.new('flipped pair', 1, true),

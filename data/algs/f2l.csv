@@ -110,38 +110,38 @@ triple sexy bl,U L U' L' U L U' L' U L U' L'
 triple sexy bl,L U' L' U L U' L' U L U' L'
 triple sexy bl,L U' L' U L U L' U L U' L'
 triple sexy bl,L U' L' U L U2 L' U' L U L'
- fr,U M' U R U' Rw' R U' R'
- fr,R U R' Dw R' U' R
- fr,U' M' U R U' Rw' R U' R'
- fr,M' U R U' Rw' R U' R'
- fr misoriented,U F' U' F U' R U R'
- fr misoriented,U' F' U' F U R U' R'
- fr misoriented,F' U' F U R U' R'
- fr misoriented,F' U' F U' R U R'
- fl,U' M' U' L' U Lw L' U L
- fl,U L' U' L Dw R U' R'
- fl,L' U' L Dw R U' R'
- fl,M' U' L' U Lw L' U L
- fl misoriented,U L' U' L Lw' U L U' L' U' Lw
- fl misoriented,L' U' L Lw' U L U' L' U' Lw
- fl misoriented,F U F' U' L' U L
- fl misoriented,R' F R U R' F' R U L' U' L
- br,R' F R' F' R U R U' R' U' R
- br,U R' F R' F' R U R U' R' U' R
- br,U' R' U' R Rw' U R U' R' U' Rw
- br,U' R' F R' F' R U R U' R' U' R
- br misoriented,U R' F R' F' R U' R
- br misoriented,U2 R' F R' F' R U' R
- br misoriented,U' R' F R' F' R U' R
- br misoriented,R' F R' F' R U' R
- bl,L F' L F L' U' L' U L U L'
- bl,y R' F R' F' R U' R
- bl,y U' R' F R' F' R U' R
- bl,U L F' L F L' U' L' U L U L'
- bl misoriented,U' L F' L F L' U L'
- bl misoriented,U2 L F' L F L' U L'
- bl misoriented,U L F' L F L' U L'
- bl misoriented,L F' L F L' U L'
+weird watcher fr,U M' U R U' Rw' R U' R'
+weird watcher fr,R U R' Dw R' U' R
+weird watcher fr,U' M' U R U' Rw' R U' R'
+weird watcher fr,M' U R U' Rw' R U' R'
+weird watcher fr misoriented,U F' U' F U' R U R'
+weird watcher fr misoriented,U' F' U' F U R U' R'
+weird watcher fr misoriented,F' U' F U R U' R'
+weird watcher fr misoriented,F' U' F U' R U R'
+weird watcher fl,U' M' U' L' U Lw L' U L
+weird watcher fl,U L' U' L Dw R U' R'
+weird watcher fl,L' U' L Dw R U' R'
+weird watcher fl,M' U' L' U Lw L' U L
+weird watcher fl misoriented,U L' U' L Lw' U L U' L' U' Lw
+weird watcher fl misoriented,L' U' L Lw' U L U' L' U' Lw
+weird watcher fl misoriented,F U F' U' L' U L
+weird watcher fl misoriented,R' F R U R' F' R U L' U' L
+weird watcher br,R' F R' F' R U R U' R' U' R
+weird watcher br,U R' F R' F' R U R U' R' U' R
+weird watcher br,U' R' U' R Rw' U R U' R' U' Rw
+weird watcher br,U' R' F R' F' R U R U' R' U' R
+weird watcher br misoriented,U R' F R' F' R U' R
+weird watcher br misoriented,U2 R' F R' F' R U' R
+weird watcher br misoriented,U' R' F R' F' R U' R
+weird watcher br misoriented,R' F R' F' R U' R
+weird watcher bl,L F' L F L' U' L' U L U L'
+weird watcher bl,y R' F R' F' R U' R
+weird watcher bl,y U' R' F R' F' R U' R
+weird watcher bl,U L F' L F L' U' L' U L U L'
+weird watcher bl misoriented,U' L F' L F L' U L'
+weird watcher bl misoriented,U2 L F' L F L' U L'
+weird watcher bl misoriented,U L F' L F L' U L'
+weird watcher bl misoriented,L F' L F L' U L'
 solved edge fr,U' R U' R' U2 R U' R'
 solved edge fr,R U' R' U2 R U' R'
 solved edge fr,U R U' R' U2 R U' R'
