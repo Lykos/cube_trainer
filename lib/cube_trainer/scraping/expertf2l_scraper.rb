@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'net/http'
 require 'twisty_puzzles'
@@ -7,7 +9,7 @@ module CubeTrainer
   module Scraping
     # Scraper for the expertf2l page.
     class ExpertF2lScraper
-      DOMAIN = "http://algs.expertcuber.by"
+      DOMAIN = 'http://algs.expertcuber.by'
       F2lCase = Struct.new(:name, :misoriented_subcase_index, :has_auf)
       F2L_CASES = [
         F2lCase.new('wall', 1, true),
@@ -34,42 +36,48 @@ module CubeTrainer
         F2lCase.new('flipped edge', 0, false)
       ].freeze
 
-      CaseDescription = Struct.new(:f2l_case_index, :slot, :subcase_index, :aufcase_index) do
-        def aufcase_suffix
-          case aufcase_index
-          when 1 then ' + U\''
-          when 2 then ' + U2'
-          when 3 then ' + U'
-          else ''
+      CaseDescription =
+        Struct.new(:f2l_case_index, :slot, :subcase_index, :aufcase_index) do
+          def aufcase_suffix
+            case aufcase_index
+            when 1 then ' + U\''
+            when 2 then ' + U2'
+            when 3 then ' + U'
+            else ''
+            end
+          end
+
+          def corner_suffix
+            case aufcase_index
+            when 0 then ' corner in front/back'
+            when 1 then ' corner on side'
+            when nil then ''
+            else raise
+            end
+          end
+
+          def name
+            f2l_case = F2L_CASES[f2l_case_index]
+            subcase_suffix =
+              if subcase_index == f2l_case.misoriented_subcase_index
+                ' misoriented'
+              else
+                ''
+              end
+            aufcase_suffix = f2l_case.has_auf ? aufcase_suffix : corner_suffix
+            "#{f2l_case.name} #{slot}#{subcase_suffix}#{aufcase_suffix}"
           end
         end
-
-        def corner_suffix
-          case aufcase_index
-          when 0 then ' corner in front/back'
-          when 1 then ' corner on side'
-          when nil then ''
-          else raise
-          end
-        end
-
-        def name
-          f2l_case = F2L_CASES[f2l_case_index]
-          subcase_suffix = if subcase_index == f2l_case.misoriented_subcase_index then ' misoriented' else '' end
-          aufcase_suffix = if f2l_case.has_auf then aufcase_suffix else corner_suffix end
-          "#{f2l_case.name} #{slot}#{subcase_suffix}#{aufcase_suffix}"
-        end
-      end
 
       def scrape_f2l_algs
         base_uri = URI(DOMAIN)
-        Net::HTTP.start(base_uri.host, base_uri.port) do |http| 
-            (0..21).collect_concat do |f2l_case_index|
+        Net::HTTP.start(base_uri.host, base_uri.port) do |http|
+          (0..21).collect_concat do |f2l_case_index|
             path = "data/f2l_#{f2l_case_index + 1}.json"
             uri = URI.join(DOMAIN, path)
             request = Net::HTTP::Get.new(uri)
             response = http.request(request)
-            raise "Unsuccessful crawl." unless response.is_a?(Net::HTTPSuccess)
+            raise 'Unsuccessful crawl.' unless response.is_a?(Net::HTTPSuccess)
 
             json = JSON.parse(response.body)
             extract_algs(f2l_case_index, json)
@@ -79,14 +87,16 @@ module CubeTrainer
 
       private
 
-      SLOTS = %w(fr fl br bl)
+      SLOTS = %w[fr fl br bl].freeze
 
+      # Intermediate representation of something that can be resolved to an alg
+      # given the intermediate representations of the entire alg set.
       class ResolvableAlg
         extend TwistyPuzzles
 
         def self.parse(alg_string)
           parts = alg_string.split('+')
-          alg = parse_algorithm(parts[0].gsub('(', '').gsub(')', ''))
+          alg = parse_algorithm(parts[0].delete('(').delete(')'))
           case parts.length
           when 1 then AlgWithoutReference.new(alg)
           when 2
@@ -105,10 +115,11 @@ module CubeTrainer
       # Represents a setup and then a reference to another alg in the same set.
       class AlgWithReference < ResolvableAlg
         def initialize(setup, reference)
+          super()
           @setup = setup
           @reference = reference
         end
- 
+
         # Resolve references based on the given alg set.
         def resolve(alg_set)
           @setup + alg_set[@reference].resolve(alg_set)
@@ -118,10 +129,11 @@ module CubeTrainer
       # Adapter for alg to the ResolvableAlg interface.
       class AlgWithoutReference < ResolvableAlg
         def initialize(alg)
+          super()
           @alg = alg
         end
 
-        def resolve(alg_set)
+        def resolve(_alg_set)
           @alg
         end
       end
@@ -132,29 +144,36 @@ module CubeTrainer
       }.freeze
 
       def pick_best_alg(case_description, aufcase_json)
-        algs = aufcase_json["algs"]
+        algs = aufcase_json['algs']
         alg_index = BROKEN_CASE_DESCRIPTION_ALG_INDICES[case_description]
-        return algs[alg_index]["alg"] if alg_index
+        return algs[alg_index]['alg'] if alg_index
 
-        good_algs = algs.filter { |alg| alg["isGood"] }
+        good_algs = algs.filter { |alg| alg['isGood'] }
         alg = good_algs.empty? ? algs.first : good_algs.first
-        alg["alg"]
+        alg['alg']
+      end
+
+      def extract_slot_algs(f2l_case_index, slot, slot_json)
+        slot_json.collect_concat.with_index do |subcase, subcase_index|
+          maybe_subcase_index = (subcase_index if subcases.length > 1)
+          aufcases = subcase['cases']
+          aufcases.map.with_index do |aufcase, aufcase_index|
+            maybe_aufcase_index = (aufcase_index if aufcases.length > 1)
+            case_description = CaseDescription.new(
+              f2l_case_index, slot, maybe_subcase_index,
+              maybe_aufcase_index
+            )
+            alg = pick_best_alg(case_description, aufcase)
+            [case_description, ResolvableAlg.parse(alg)]
+          end
+        end
       end
 
       def extract_algs(f2l_case_index, json)
-        algs = SLOTS.collect_concat do |slot|
-          subcases = json[slot]
-          subcases.collect_concat.with_index do |subcase, subcase_index|
-            maybe_subcase_index = if subcases.length > 1 then subcase_index end
-            aufcases = subcase["cases"]
-            aufcases.map.with_index do |aufcase, aufcase_index|
-              maybe_aufcase_index = if aufcases.length > 1 then aufcase_index end
-              case_description = CaseDescription.new(f2l_case_index, slot, maybe_subcase_index, maybe_aufcase_index)
-              alg = pick_best_alg(case_description, aufcase)
-              [case_description, ResolvableAlg.parse(alg)]
-            end
+        algs =
+          SLOTS.collect_concat do |slot|
+            extract_slot_algs(f2l_case_index, slot, json[slot])
           end
-        end
         alg_set = algs.map(&:second)
         algs.map { |desc, alg| [desc, alg.resolve(alg_set)] }
       end

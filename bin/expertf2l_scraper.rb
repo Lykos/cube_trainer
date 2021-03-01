@@ -4,10 +4,11 @@
 require 'cube_trainer/scraping/expertf2l_scraper'
 require 'csv'
 
-csv = CSV.generate do |csv|
-  CubeTrainer::Scraping::ExpertF2lScraper.new.scrape_f2l_algs.each do |desc, alg|
-    csv << [desc.name, alg]
+csv_string =
+  CSV.generate do |csv|
+    CubeTrainer::Scraping::ExpertF2lScraper.new.scrape_f2l_algs.each do |desc, alg|
+      csv << [desc.name, alg]
+    end
   end
-end
 
-puts csv
+puts csv_string
