@@ -29,6 +29,7 @@ module CubeTrainer
           end
         end
 
+      CUBE_SIZE = 3
       DOMAIN = 'http://algs.expertcuber.by'
       F2L_CASES = [
         F2lCase.new('wall', true, false, :default_is_oriented),
@@ -232,12 +233,13 @@ module CubeTrainer
           end
         alg_set = notes.pluck(:best_alg)
         notes.map! do |note|
+          best_alg = note[:best_alg].resolve(alg_set),
+          alternate_algs = note[:alternate_algs].map do |a|
+            a.resolve(alg_set)
+          end
           {
             case_description: note[:case_description],
-            best_alg: note[:best_alg].resolve(alg_set),
-            alternate_algs: note[:alternate_algs].map do |a|
-                              a.resolve(alg_set)
-                            end.join(AlgHintParser::ALTERNATIVE_ALG_SEPARATOR)
+            case_solution: CaseSolution.new(alg, CUBE_SIZE, alternative_algs)
           }
         end
       end
