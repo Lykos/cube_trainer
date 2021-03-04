@@ -39,6 +39,7 @@ module CubeTrainer
       def initialize(name, cube_size, verbose)
         super()
         @name = name
+        @cube_size = cube_size
         @verbose = verbose
       end
 
@@ -60,12 +61,16 @@ module CubeTrainer
           raw_alg_name, raw_best_alg, maybe_raw_alternative_algs = row
           best_alg = maybe_parse_alg('best_alg', raw_best_alg)
           next unless best_alg
+
           raw_alternative_algs = (maybe_raw_alternative_algs || '').split(ALTERNATIVE_ALG_SEPARATOR)
           alternative_algs = raw_alternative_algs.map! do |raw_alg|
             maybe_parse_alg('alternative_alg', raw_alg)
           end.compact
           alternative_algs.compact!
-          [SimpleAlgName.new(raw_alg_name), CaseSolution.new(best_alg, @cube_size, alternative_algs)]
+          [
+            SimpleAlgName.new(raw_alg_name),
+            CaseSolution.new(best_alg, @cube_size, alternative_algs)
+          ]
         end.compact.to_h
       end
 
@@ -99,7 +104,13 @@ module CubeTrainer
       end
 
       def self.parse_hints(name, cube_size, verbose)
-        maybe_parse_special_hints(name, cube_size, verbose) || AlgHintParser.new(name, cube_size, verbose).parse_hints
+        maybe_parse_special_hints(
+          name, cube_size,
+          verbose
+        ) || AlgHintParser.new(
+          name, cube_size,
+          verbose
+        ).parse_hints
       end
     end
   end

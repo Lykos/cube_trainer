@@ -9,7 +9,8 @@ module CubeTrainer
     class AlgHinter
       def initialize(hints)
         raise TypeError unless hints.is_a?(Hash)
-        hints.each do |input, hint|
+
+        hints.each do |_input, hint|
           raise TypeError unless hint.is_a?(CaseSolution)
         end
 

@@ -235,7 +235,9 @@ module CubeTrainer
           {
             case_description: note[:case_description],
             best_alg: note[:best_alg].resolve(alg_set),
-            alternate_algs: note[:alternate_algs].map { |a| a.resolve(alg_set) }.join(AlgHintParser::ALTERNATIVE_ALG_SEPARATOR)
+            alternate_algs: note[:alternate_algs].map do |a|
+                              a.resolve(alg_set)
+                            end.join(AlgHintParser::ALTERNATIVE_ALG_SEPARATOR)
           }
         end
       end

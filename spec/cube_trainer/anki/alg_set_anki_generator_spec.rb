@@ -112,12 +112,12 @@ describe Anki::AlgSetAnkiGenerator do
       generator.generate
 
       expect(deck).to contain_exactly(
-        ['Y', "F R U' R' U' R U R' F' R U R' U' R' F R F'", "", "<img src='alg_Y.jpg'/>"],
-        ['auf skip + Ja', "R' U L' U2 R U' R' U2 R L", "", "<img src='alg_auf_skip_+_Ja.jpg'/>"],
-        ['U + Ja', "U R' U L' U2 R U' R' U2 R L", "", "<img src='alg_U_+_Ja.jpg'/>"],
-        ['U2 + Ja', "U2 R' U L' U2 R U' R' U2 R L", "", "<img src='alg_U2_+_Ja.jpg'/>"],
-        ["U' + Ja", "U' R' U L' U2 R U' R' U2 R L", "", "<img src='alg_U-_+_Ja.jpg'/>"],
-        ['solved', '', "", "<img src='alg_solved.jpg'/>"]
+        ['Y', "F R U' R' U' R U R' F' R U R' U' R' F R F'", '', "<img src='alg_Y.jpg'/>"],
+        ['auf skip + Ja', "R' U L' U2 R U' R' U2 R L", '', "<img src='alg_auf_skip_+_Ja.jpg'/>"],
+        ['U + Ja', "U R' U L' U2 R U' R' U2 R L", '', "<img src='alg_U_+_Ja.jpg'/>"],
+        ['U2 + Ja', "U2 R' U L' U2 R U' R' U2 R L", '', "<img src='alg_U2_+_Ja.jpg'/>"],
+        ["U' + Ja", "U' R' U L' U2 R U' R' U2 R L", '', "<img src='alg_U-_+_Ja.jpg'/>"],
+        ['solved', '', '', "<img src='alg_solved.jpg'/>"]
       )
     end
 
