@@ -1,0 +1,596 @@
+wall fr oriented,U R U' R' U' R U' R' U R U' R',R U' R' U R U2 R' U R U R'
+wall fr oriented + U',U' R U R' U' R U' R' U2 R U' R',R' U' R U' R' U2 R2 U' R'
+wall fr oriented + U2,R U R' U' R U' R' U2 R U' R',"R U2 R' U' R U' R' U R U' R',R2 U2 R' U' R U' R2"
+wall fr oriented + U,R U' R' U' R U' R' U R U' R',""
+wall fr misoriented,R U' R' U Rw U' R' U R U Rw',""
+wall fr misoriented + U',R U R2 F R F' R U' R',""
+wall fr misoriented + U2,U R U R2 F R F' R U' R',Rw U' Rw' U Rw U Rw' F' U' F
+wall fr misoriented + U,U2 R U R2 F R F' R U' R',"M' U R U' Rw' R U2 R' U R U' R',F R' F' R2 U2 R' U R U R',F' L' U L F R U R'"
+wall fl oriented,U' L' U L U L' U L U' L' U L,L' U L U' L' U2 L U' L' U' L
+wall fl oriented + U',U L' U' L U L' U L U2 L' U L,L U L' U L U2 L2 U L
+wall fl oriented + U2,L' U' L U L' U L U2 L' U L,"L' U2 L U L' U L U' L' U L,L2 U2 L U L' U L2"
+wall fl oriented + U,L' U L U L' U L U' L' U L,""
+wall fl misoriented,U L' U' L2 F' L' F L' U L,L' U L U' Lw' U L U' L' U' Lw
+wall fl misoriented + U',L' U' L2 F' L' F L' U L,""
+wall fl misoriented + U2,U' L' U' L2 F' L' F L' U L,R' F R U' R' F' R F U F'
+wall fl misoriented + U,F R U' R' F' L' U' L,""
+wall br oriented,R' U R U' R' U2 R U' R' U' R,""
+wall br oriented + U',R' U R U R' U R U' R' U R,""
+wall br oriented + U2,R' U' R U R' U R U2 R' U R,R2 U2 R U R' U R2
+wall br oriented + U,U' R' U R U' R' U2 R U' R' U' R,R U R' U R U2 R2 U R
+wall br misoriented,U R' F R' F' R2 U' R' U R,R' U R U' Rw' U R U' R' U' Rw
+wall br misoriented + U',U2 R' F R' F' R2 U' R' U R,F R U R' U' F' R' U' R
+wall br misoriented + U2,U' R' F R' F' R2 U' R' U R,""
+wall br misoriented + U,R' F R' F' R2 U' R' U R,""
+wall bl oriented,L U' L' U L U2 L' U L U L',""
+wall bl oriented + U',L U' L' U' L U' L' U L U' L',""
+wall bl oriented + U2,L U L' U' L U' L' U2 L U' L',L2 U2 L' U' L U' L2
+wall bl oriented + U,U L U' L' U L U2 L' U L U L',L' U' L U' L' U2 L2 U' L'
+wall bl misoriented,U' L F' L F L2 U L U' L',L U' L' U Lw U' L' U L U Lw'
+wall bl misoriented + U',U2 L F' L F L2 U L U' L',F' L' U' L U F L U L'
+wall bl misoriented + U2,U L F' L F L2 U L U' L',""
+wall bl misoriented + U,L F' L F L2 U L U' L',""
+roof fr oriented,M U L F' L' U' M',R U R' U2 R U' R' U R U' R'
+roof fr oriented + U',U M U L F' L' U' M',Rw U' Rw' U' Rw U Rw' R U R'
+roof fr oriented + U2,M' U R U' Rw' U2 R U' R',"R U R' U' R U2 R' U R U R',R U2 R' U' R' F' R U R U' R' F"
+roof fr oriented + U,U' M U L F' L' U' M',"R' F R U R U' R2 F' R2 U2 R',R U' R' U' R' F' R U R U' R' F"
+roof fr misoriented,U M' U R U' Rw' U' R U R',"Lw2 F' Lw' U Lw' U2 R U' R',R U' R' U2 F' U' F"
+roof fr misoriented + U',U R U' R' U2 F' U' F,"M U Rw U' Rw' U' Rw U' R',Rw' R2 U R' U R U R' U2 M',Lw U' R U Lw' U2 R' U' R U R',R U2 R' Rw U' R' U R U Rw',R U R' U2 F' U' F U' R U R'"
+roof fr misoriented + U2,U' M' U R U' Rw' U' R U R',R U R' Rw U' Rw' U2 Rw U Rw'
+roof fr misoriented + U,M' U R U' Rw' U' R U R',"F R' F' R2 U' R' U2 R U' R',Rw U' Rw' U2 Rw U Rw' U' R U R'"
+roof fl oriented,M U' R' F R U M',L' U' L U2 L' U L U' L' U L
+roof fl oriented + U',U' M U' R' F R U M',R' F R U R' F' R L' U' L
+roof fl oriented + U2,U' U' M U' R' F R U M',"M' U' L' U Lw U2 L' U L,L' U' L U L' U2 L U' L' U' L,L' U2 L U L F L' U' L' U L F'"
+roof fl oriented + U,U M U' R' F R U M',"L F' L' U' L' U L2 F L2 U2 L,L' U L U L F L' U' L' U L F'"
+roof fl misoriented,U M U' Lw' U Lw U Lw' U L,"Rw2 F Rw U' Rw U2 L' U L,L' U L U2 F U F'"
+roof fl misoriented + U',M U' Lw' U Lw U Lw' U L,"Lw L2 U' L U' L' U' L U2 M',Rw' U L' U' Rw U2 L U L' U' L,L' U2 L Lw' U L U' L' U' Lw,L' U' L U2 F U F' U L' U' L"
+roof fl misoriented + U2,U' M U' Lw' U Lw U Lw' U L,L' U' L Lw' U Lw U2 Lw' U' Lw
+roof fl misoriented + U,M' U' L' U Lw U L' U' L,"F' L F L2 U L U2 L' U L,Lw' U Lw U2 Lw' U' Lw U L' U' L"
+roof br oriented,R' U2 R U' R' U' R U' R' U R,R' U' R U2 R' U R U' R' U R
+roof br oriented + U',U' R' U' R U R' U2 R U' R' U' R,"R' U2 R U R' U2 R U' R' U' R,U R' U2 R U' R' U' R U' R' U R"
+roof br oriented + U2,R' U' R U R' U2 R U' R' U' R,M U' R' U Rw U2 R' U R
+roof br oriented + U,U' R' U2 R U' R' U' R U' R' U R,U R' U' R U R' U2 R U' R' U' R
+roof br misoriented,R2 F R F' R U2 R' U R,""
+roof br misoriented + U',M U' R' U Rw U R' U' R,R' U2 R Rw' U Rw U2 Rw' U' Rw
+roof br misoriented + U2,U' M' U' Rw' U Rw U Rw' U R,R' U' R Rw' U Rw U2 Rw' U' Rw
+roof br misoriented + U,M' U' Rw' U Rw U Rw' U R,"R' U2 R Rw' U R U' R' U' Rw,R' F R' F' R U2 R U R' U' R"
+roof bl oriented,L U L' U2 L U' L' U L U' L',L U2 L' U L U L' U L U' L'
+roof bl oriented + U',U L U L' U' L U2 L' U L U L',"L U2 L' U' L U2 L' U L U L',U' L U L' U2 L U' L' U L U' L'"
+roof bl oriented + U2,L U L' U' L U2 L' U L U L',M U L U' Lw' U2 L U' L'
+roof bl oriented + U,U' L U L' U' L U2 L' U L U L',""
+roof bl misoriented,L2 F' L' F L' U2 L U' L',""
+roof bl misoriented + U',M U L U' Lw' U' L U L',L U2 L' Lw U' Lw' U2 Lw U Lw'
+roof bl misoriented + U2,U M' U Lw U' Lw' U' Lw U' L',L U L' Lw U' Lw' U2 Lw U Lw'
+roof bl misoriented + U,M' U Lw U' Lw' U' Lw U' L',"L U2 L' Lw U' L' U L U Lw',L F' L F L' U2 L' U' L U L'"
+checkerboard fr oriented,R U' R' U R U' R' U2 R U' R',""
+checkerboard fr oriented + U',U R U' R' U R U' R' U2 R U' R',""
+checkerboard fr oriented + U2,U2 R U' R' U R U' R' U2 R U' R',R U2 R' U' R U R' U' R U R'
+checkerboard fr oriented + U,R U' R' U' R U R' U' R U R',""
+checkerboard fr misoriented,U' R U2 R' Dw R' U' R,"R U' R' U R U' R2 F R F' R U' R',F R' F' R U' R U' R' U R U' R',R U R' U M' U R U' Rw' U R U' R'"
+checkerboard fr misoriented + U',R U2 R' Dw R' U' R,"R U2 R2 F R U R U' R2 F' R,R U B' R B R' U R'"
+checkerboard fr misoriented + U2,U R U2 R' Dw R' U' R,""
+checkerboard fr misoriented + U,U2 R U2 R' Dw R' U' R,""
+checkerboard fl oriented,L' U L U' L' U L U2 L' U L,""
+checkerboard fl oriented + U',U' L' U L U' L' U L U2 L' U L,""
+checkerboard fl oriented + U2,L' U2 L U L' U' L U L' U' L,U2 L' U L U' L' U L U2 L' U L
+checkerboard fl oriented + U,L' U L U L' U' L U L' U' L,""
+checkerboard fl misoriented,U L' U2 L Dw' L U L',"L' U L U' L' U L2 F' L' F L' U L,F' L F L' U L' U L U' L' U L,L' U' L U' M' U' L' U Lw U' L' U L"
+checkerboard fl misoriented + U',L' U2 L Dw' L U L',"L' U2 L2 F' L' U' L' U L2 F L',L' U' B L' B' L U' L"
+checkerboard fl misoriented + U2,U' L' U2 L Dw' L U L',""
+checkerboard fl misoriented + U,U2 L' U2 L Dw' L U L',""
+checkerboard br oriented,R U2 R2 U' R R U' R',R' U R U' R' U R U2 R' U R
+checkerboard br oriented + U',U R U2 R2 U' R R U' R',R' U R U R' U' R U R' U' R
+checkerboard br oriented + U2,U2 R U2 R2 U' R R U' R',"R' U2 R U R' U' R U R' U' R,M U' R' U M' U R U' R' U' R"
+checkerboard br oriented + U,U' R U2 R2 U' R R U' R',""
+checkerboard br misoriented,U R' U' F R' F' R U' R,"R2 F R F' R U' R' U2 R U R' U' R,R' U R U' R' U R U' R' U R' F R F' R"
+checkerboard br misoriented + U',U2 R' U' F R' F' R U' R,""
+checkerboard br misoriented + U2,U' R' U' F R' F' R U' R,R' U' R' F R F' U R U2 R' U R
+checkerboard br misoriented + U,R' U' F R' F' R U' R,""
+checkerboard bl oriented,L' U2 L2 U L' L' U L,L U' L' U L U' L' U2 L U' L'
+checkerboard bl oriented + U',U' L' U2 L2 U L' L' U L,L U' L' U' L U L' U' L U L'
+checkerboard bl oriented + U2,U2 L' U2 L2 U L' L' U L,"L U2 L' U' L U L' U' L U L',M U L U' M' U' L' U L U L'"
+checkerboard bl oriented + U,U L' U2 L2 U L' L' U L,""
+checkerboard bl misoriented,U' L U F' L F L' U L',"L2 F' L' F L' U L U2 L' U' L U L',L U' L' U L U' L' U L U' L F' L' F L',L U2 L' U' Lw U' Lw' U2 Lw U Lw'"
+checkerboard bl misoriented + U',Dw' R U2 R2 U' R R U' R',U2 L U F' L F L' U L'
+checkerboard bl misoriented + U2,U L U F' L F L' U L',L U L F' L' F U' L' U2 L U' L'
+checkerboard bl misoriented + U,L U F' L F L' U L',""
+triple sexy fr,U R U' R' U R U' R' U R U' R',""
+triple sexy fr + U',U' R U' R' U R U R' U R U' R',""
+triple sexy fr + U2,R U' R' U R U R' U R U' R',R U Rw' U Rw U' Rw' U' M'
+triple sexy fr + U,R U' R' U R U' R' U R U' R',""
+triple sexy fl,U' L' U L U' L' U L U' L' U L,""
+triple sexy fl + U',U L' U L U' L' U' L U' L' U L,""
+triple sexy fl + U2,L' U L U' L' U' L U' L' U L,L' U' Lw U' Lw' U Lw U M'
+triple sexy fl + U,L' U L U' L' U L U' L' U L,""
+triple sexy br,U' R' U R U' R' U R U' R' U R,""
+triple sexy br + U',R' U R U' R' U R U' R' U R,""
+triple sexy br + U2,R' U R U' R' U' R U' R' U R,""
+triple sexy br + U,R' U R U' R' U2 R U R' U' R,U R' U R U' R' U' R U' R' U R
+triple sexy bl,U L U' L' U L U' L' U L U' L',""
+triple sexy bl + U',L U' L' U L U' L' U L U' L',""
+triple sexy bl + U2,L U' L' U L U L' U L U' L',""
+triple sexy bl + U,L U' L' U L U2 L' U' L U L',U' L U' L' U L U L' U L U' L'
+weird watcher fr corner in front,U M' U R U' Rw' R U' R',""
+weird watcher fr corner in front + U',R U R' Dw R' U' R,""
+weird watcher fr corner in front + U2,U' M' U R U' Rw' R U' R',"R U R' F R' F' R,R U R' Dw' L' U L"
+weird watcher fr corner in front + U,M' U R U' Rw' R U' R',"R' F R F' R U R' U R U R',M U Rw U' Rw' U' M' U R U' R'"
+weird watcher fr corner on side,U F' U' F U' R U R',""
+weird watcher fr corner on side + U',U' F' U' F U R U' R',""
+weird watcher fr corner on side + U2,F' U' F U R U' R',"U' F' U' F U' R U R',R U R2 F R F' R U' R' U R U' R'"
+weird watcher fr corner on side + U,F' U' F U' R U R',"R' F R F' U' R U R' U R U' R',L F' L' U' Rw U Rw' U' R U R'"
+weird watcher fl corner in front,U' M' U' L' U Lw L' U L,U U L' U' L Dw R U' R'
+weird watcher fl corner in front + U',U L' U' L Dw R U' R',L' U' L Dw' L U L'
+weird watcher fl corner in front + U2,L' U' L Dw R U' R',"L' U' L F' L F L',L' U' L U Lw' U Lw U' Lw' U' Lw"
+weird watcher fl corner in front + U,M' U' L' U Lw L' U L,"U' L' U' L Dw R U' R',L F' L' F L' U' L U' L' U' L"
+weird watcher fl corner on side,U L' U' L Lw' U L U' L' U' Lw,"U' R' F R U R' F' R U L' U' L,L' U L Dw R U' R' U R U R'"
+weird watcher fl corner on side + U',L' U' L Lw' U L U' L' U' Lw,"U' U L' U' L Lw' U L U' L' U' Lw,L F' L' F U L' U2 L U L' U' L"
+weird watcher fl corner on side + U2,F U F' U' L' U L,U' L' U' L Lw' U L U' L' U' Lw
+weird watcher fl corner on side + U,R' F R U R' F' R U L' U' L,""
+weird watcher br corner in back,R' F R' F' R U R U' R' U' R,"R' U R Dw L U' L' U L U L',Dw' R U R' Dw R' U' R"
+weird watcher br corner in back + U',U R' F R' F' R U R U' R' U' R,"Rw' U Rw U Rw' U' Rw U R' U' R,R' U R U2 R' U2 R' F R F' R"
+weird watcher br corner in back + U2,U' R' U' R Rw' U R U' R' U' Rw,"y R U R' Dw' L' U L,M U' R' U M' U' R U' R' U' R,U2 R' F R' F' R U R U' R' U' R"
+weird watcher br corner in back + U,U' R' F R' F' R U R U' R' U' R,R' U' R Rw' U R U' R' U' Rw
+weird watcher br corner on side,U R' F R' F' R U' R,""
+weird watcher br corner on side + U',U2 R' F R' F' R U' R,M U' R' U M' U R
+weird watcher br corner on side + U2,U' R' F R' F' R U' R,"R' U' R Dw L U' L',R' U' R U Rw' U Rw U' Rw' U' Rw"
+weird watcher br corner on side + U,R' F R' F' R U' R,R' U' R Dw' R U R'
+weird watcher bl corner in back,L F' L F L' U' L' U L U L',"L U' L' Dw' R' U R U' R' U' R,Dw L' U' L Dw' L U L',y U R' F R' F' R U' R"
+weird watcher bl corner in back + U',y R' F R' F' R U' R,"Lw U' Lw' U' Lw U Lw' U' L U L',L U' L' U2 L U2 L F' L' F L'"
+weird watcher bl corner in back + U2,y U' R' F R' F' R U' R,"U L U L' Lw U' L' U L U Lw',M U L U' M' U L' U L U L',y' L' U' L Dw R U' R'"
+weird watcher bl corner in back + U,U L F' L F L' U' L' U L U L',L U L' Lw U' L' U L U Lw'
+weird watcher bl corner on side,U' L F' L F L' U L',""
+weird watcher bl corner on side + U',U2 L F' L F L' U L',"M U L U' M' U' L',U L U L' U' Lw U' Lw' U Lw U Lw'"
+weird watcher bl corner on side + U2,U L F' L F L' U L',"L U L' Dw' R' U R,L U L' U' Lw U' Lw' U Lw U Lw'"
+weird watcher bl corner on side + U,L F' L F L' U L',L U L' Dw L' U' L
+solved edge fr corner in front,U' R U' R' U2 R U' R',""
+solved edge fr corner in front + U',R U' R' U2 R U' R',""
+solved edge fr corner in front + U2,U R U' R' U2 R U' R',""
+solved edge fr corner in front + U,U2 R U' R' U2 R U' R',""
+solved edge fr corner on side,U R U R' U2 R U R',U' R U2 R' U R U R'
+solved edge fr corner on side + U',R U2 R' U R U R',""
+solved edge fr corner on side + U2,U' R U R' U2 R U R',U R U2 R' U R U R'
+solved edge fr corner on side + U,R U R' U2 R U R',U2 R U2 R' U R U R'
+solved edge fl corner in front,U L' U L U2 L' U L,""
+solved edge fl corner in front + U',L' U L U2 L' U L,""
+solved edge fl corner in front + U2,U' L' U L U2 L' U L,""
+solved edge fl corner in front + U,U2 L' U L U2 L' U L,""
+solved edge fl corner on side,U L' U2 L U' L' U' L,""
+solved edge fl corner on side + U',L' U2 L U' L' U' L,""
+solved edge fl corner on side + U2,U' L' U2 L U' L' U' L,""
+solved edge fl corner on side + U,L' U' L U2 L' U' L,U2 L' U2 L U' L' U' L
+solved edge br corner in back,U R' U2 R U' R' U' R,""
+solved edge br corner in back + U',R' U' R U2 R' U' R,U2 R' U2 R U' R' U' R
+solved edge br corner in back + U2,U' R' U2 R U' R' U' R,""
+solved edge br corner in back + U,R' U2 R U' R' U' R,""
+solved edge br corner on side,U R' U R U2 R' U R,""
+solved edge br corner on side + U',U2 R' U R U2 R' U R,""
+solved edge br corner on side + U2,U' R' U R U2 R' U R,""
+solved edge br corner on side + U,R' U R U2 R' U R,""
+solved edge bl corner in back,U' L U2 L' U L U L',""
+solved edge bl corner in back + U',U2 L U2 L' U L U L',L U L' U2 L U L'
+solved edge bl corner in back + U2,U L U2 L' U L U L',""
+solved edge bl corner in back + U,L U2 L' U L U L',""
+solved edge bl corner on side,U' L U' L' U2 L U' L',""
+solved edge bl corner on side + U',U2 L U' L' U2 L U' L',""
+solved edge bl corner on side + U2,U L U' L' U2 L U' L',""
+solved edge bl corner on side + U,L U' L' U2 L U' L',""
+free pair fr misoriented,U' y L' U L,"U' y L' U L,y' U' R' U R,F R' F' R,Rw U R' U' M"
+free pair fr misoriented + U',y L' U L,"Rw U' Rw' U Rw U Rw',y' R' U R"
+free pair fr misoriented + U2,U y L' U L,Lw R U' R' U Lw'
+free pair fr misoriented + U,U Lw R U' R' U Lw',U2 y L' U L
+free pair fr oriented,U R U' R',""
+free pair fr oriented + U',U2 R U' R',""
+free pair fr oriented + U2,R U2 R',U' R U' R'
+free pair fr oriented + U,R U' R',""
+free pair fl misoriented,U Lw' U Lw U' Lw' U' Lw,Dw R U' R'
+free pair fl misoriented + U',Lw' U Lw U' Lw' U' Lw,y' R U' R'
+free pair fl misoriented + U2,U' Lw' U Lw U' Lw' U' Lw,Rw' L' U L U' Rw
+free pair fl misoriented + U,U2 Lw' U Lw U' Lw' U' Lw,""
+free pair fl oriented,U' L' U L,""
+free pair fl oriented + U',U2 L' U L,""
+free pair fl oriented + U2,L' U2 L,U L' U L
+free pair fl oriented + U,L' U L,""
+free pair br misoriented,y U R U' R',"Rw' U' R U M',Dw L U' L',U y R U' R'"
+free pair br misoriented + U',y U2 R U' R',"Dw' R U2 R',U' R2 F R F' R"
+free pair br misoriented + U2,y U' R U' R',"U' y R U' R',R2 F R F' R"
+free pair br misoriented + U,y R U' R',Rw' U Rw U' Rw' U' Rw
+free pair br oriented,U' R' U R,""
+free pair br oriented + U',R' U R,""
+free pair br oriented + U2,R' U2 R,U R' U R
+free pair br oriented + U,U2 R' U R,""
+free pair bl misoriented,y' U' L' U L,"y U' R' U R,U' Lw U' Lw' U Lw U Lw',Lw U L' U' M'"
+free pair bl misoriented + U',y' U2 L' U L,"U2 Lw U' Lw' U Lw U Lw',y U2 R' U R"
+free pair bl misoriented + U2,Dw L' U L,U Lw U' Lw' U Lw U Lw'
+free pair bl misoriented + U,Lw U' Lw' U Lw U Lw',""
+free pair bl oriented,U L U' L',""
+free pair bl oriented + U',L U' L',""
+free pair bl oriented + U2,L U2 L',""
+free pair bl oriented + U,U' L U2 L',""
+flipped pair fr,U' R' F R F' R U' R',""
+flipped pair fr + U',R' F R F' R U' R',""
+flipped pair fr + U2,U R' F R F' R U' R',""
+flipped pair fr + U,U2 R' F R F' R U' R',R U2 R' F' U' F
+flipped pair fl,U L F' L' F L' U L,""
+flipped pair fl + U',L F' L' F L' U L,""
+flipped pair fl + U2,U' L F' L' F L' U L,""
+flipped pair fl + U,U2 L F' L' F L' U L,""
+flipped pair br,R' U R' F R F' R,"R' U R Dw' R U' R',R' U R U' Rw' U Rw U' Rw' U' Rw"
+flipped pair br + U',y R' F R F' R U' R',U R' U R' F R F' R
+flipped pair br + U2,U2 R' U R' F R F' R,""
+flipped pair br + U,U' R' U R' F R F' R,""
+flipped pair bl,L U' L F' L' F L',"L U' L' Dw L' U L,L U' L' U Lw U' Lw' U Lw U Lw'"
+flipped pair bl + U',y' L F' L' F L' U L,U' L U' L' Dw L' U L
+flipped pair bl + U2,U2 L U' L' Dw L' U L,""
+flipped pair bl + U,U L U' L' Dw L' U L,""
+friend fr misoriented,R' F R F' R U' R' U R U' R',"M' U R U' Rw' R U' R' U R U' R',y' R' U2 R U R' U' R,y L' U2 L U L' U' L"
+friend fr misoriented + U',U R' F R F' R U' R' U R U' R',Dw R' U2 R U R' U' R
+friend fr misoriented + U2,U2 R' F R F' R U' R' U R U' R',""
+friend fr misoriented + U,U' R' F R F' R U' R' U R U' R',y' U' R' U2 R U R' U' R
+friend fr oriented,R U2 R' U' R U R',""
+friend fr oriented + U',U R U2 R' U' R U R',""
+friend fr oriented + U2,U2 R U2 R' U' R U R',R U R' U' R U R' U2 R U' R'
+friend fr oriented + U,U' R U2 R' U' R U R',""
+friend fl misoriented,L F' L' F L' U L U' L' U L,"y L U2 L' U' L U L',y' R U2 R' U' R U R'"
+friend fl misoriented + U',U' L F' L' F L' U L U' L' U L,"Dw' L U2 L' U' L U L',y' U' R U2 R' U' R U R'"
+friend fl misoriented + U2,U2 L F' L' F L' U L U' L' U L,"Dw U R U2 R' U' R U R',L' U' L U L' U' L Dw' L U L'"
+friend fl misoriented + U,U L F' L' F L' U L U' L' U L,L' U L M' U' L' U L U' L' U Lw
+friend fl oriented,L' U2 L U L' U' L,""
+friend fl oriented + U',U' L' U2 L U L' U' L,""
+friend fl oriented + U2,L' U' L U L' U' L U2 L' U L,U2 L' U2 L U L' U' L
+friend fl oriented + U,U L' U2 L U L' U' L,""
+friend br misoriented,y R U2 R' U' R U R',y' L U2 L' U' L U L'
+friend br misoriented + U',y U R U2 R' U' R U R',""
+friend br misoriented + U2,R' U' R U R' F R' F' R U' R,y U2 R U2 R' U' R U R'
+friend br misoriented + U,U R' U' R U R' F R' F' R U' R,y U' R U2 R' U' R U R'
+friend br oriented,R' U2 R U R' U' R,""
+friend br oriented + U',U R' U2 R U R' U' R,""
+friend br oriented + U2,U2 R' U2 R U R' U' R,""
+friend br oriented + U,U' R' U2 R U R' U' R,""
+friend bl misoriented,y R' U2 R U R' U' R,""
+friend bl misoriented + U',y U' R' U2 R U R' U' R,""
+friend bl misoriented + U2,Dw' U' R' U2 R U R' U' R,L U L' U' L F' L F L' U L'
+friend bl misoriented + U,y U' R' U2 R U R' U' R,""
+friend bl oriented,L U2 L' U' L U L',""
+friend bl oriented + U',U' L U2 L' U' L U L',""
+friend bl oriented + U2,U2 L U2 L' U' L U L',""
+friend bl oriented + U,U L U2 L' U' L U L',""
+split fr misoriented,Dw R' U R U' R' U' R,R U' R' U R' F R F' R U' R'
+split fr misoriented + U',Dw U R' U R U' R' U' R,Dw' U' L' U L U' L' U' L
+split fr misoriented + U2,U' Dw R' U R U' R' U' R,""
+split fr misoriented + U,y' R' U R U' R' U' R,""
+split fr oriented,U' R U' R' U R U R',""
+split fr oriented + U',R U' R' U R U R',""
+split fr oriented + U2,U R U' R' U R U R',""
+split fr oriented + U,U2 R U' R' U R U R',""
+split fl misoriented,Dw' L U' L' U L U L',y' U' R U' R' U R U R'
+split fl misoriented + U',Dw U R U' R' U R U R',""
+split fl misoriented + U2,Dw R U' R' U R U R',""
+split fl misoriented + U,y L U' L' U L U L',y' R U' R' U R U R'
+split fl oriented,U L' U L U' L' U' L,""
+split fl oriented + U',L' U L U' L' U' L,""
+split fl oriented + U2,U' L' U L U' L' U' L,""
+split fl oriented + U,U2 L' U L U' L' U' L,""
+split br misoriented,Dw' R U' R' U R U R',""
+split br misoriented + U',y R U' R' U R U R',""
+split br misoriented + U2,Dw L U' L' U L U L',y U R U' R' U R U R'
+split br misoriented + U,Dw U L U' L' U L U L',Dw' U' R U' R' U R U R'
+split br oriented,U R' U R U' R' U' R,""
+split br oriented + U',U2 R' U R U' R' U' R,""
+split br oriented + U2,U' R' U R U' R' U' R,""
+split br oriented + U,R' U R U' R' U' R,""
+split bl misoriented,Dw L' U L U' L' U' L,""
+split bl misoriented + U',y' L' U L U' L' U' L,""
+split bl misoriented + U2,y' U' L' U L U' L' U' L,y U' R' U R U' R' U' R
+split bl misoriented + U,Dw U L' U L U' L' U' L,""
+split bl oriented,U' L U' L U L U L',""
+split bl oriented + U',U2 L U' L U L U L',""
+split bl oriented + U2,U L U' L U L U L',""
+split bl oriented + U,L U' L U L U L',""
+short hide fr oriented,U' R U R' U2 R U' R',""
+short hide fr oriented + U',R U R' U2 R U' R',""
+short hide fr oriented + U2,U R U R' U2 R U' R',""
+short hide fr oriented + U,U2 R U R' U2 R U' R',""
+short hide fr misoriented,U' Rw U' R' U R U Rw',""
+short hide fr misoriented + U',Rw U' R' U R U Rw',""
+short hide fr misoriented + U2,U Rw U' R' U R U Rw',""
+short hide fr misoriented + U,U2 Rw U' R' U R U Rw',""
+short hide fl oriented,U L' U' L U2 L' U L,""
+short hide fl oriented + U',L' U' L U2 L' U L,""
+short hide fl oriented + U2,U' L' U' L U2 L' U L,""
+short hide fl oriented + U,U2 L' U' L U2 L' U L,""
+short hide fl misoriented,U Lw' U L U' L' U' Lw,""
+short hide fl misoriented + U',Lw' U L U' L' U' Lw,""
+short hide fl misoriented + U2,U' Lw' U L U' L' U' Lw,""
+short hide fl misoriented + U,U2 Lw' U L U' L' U' Lw,""
+short hide br oriented,U R' U' R U R' U2 R,""
+short hide br oriented + U',U2 R' U' R U R' U2 R,y Rw U' R' U R U Rw'
+short hide br oriented + U2,U' R' U' R U R' U2 R,""
+short hide br oriented + U,R' U' R U R' U2 R,R' U' R U2 R' U R
+short hide br misoriented,U Rw' U R U' R' U' Rw,""
+short hide br misoriented + U',U2 Rw' U R U' R' U' Rw,R' F R' F' R2 U R' U' R
+short hide br misoriented + U2,U' Rw' U R U' R' U' Rw,""
+short hide br misoriented + U,Rw' U R U' R' U' Rw,""
+short hide bl oriented,U' L U L' U2 L U' L',""
+short hide bl oriented + U',U2 L U L' U2 L U' L',""
+short hide bl oriented + U2,U L U L' U2 L U' L',""
+short hide bl oriented + U,L U L' U2 L U' L',""
+short hide bl misoriented,U' Lw U' L' U L U Lw',""
+short hide bl misoriented + U',U2 Lw U' L' U L U Lw',""
+short hide bl misoriented + U2,U Lw U' L' U L U Lw',""
+short hide bl misoriented + U,Lw U' L' U L U Lw',""
+long hide fr oriented,R U R' U R U' R' U R U' R',""
+long hide fr oriented + U',R U2 R' U2 R U' R',""
+long hide fr oriented + U2,U R U2 R' U2 R U' R',""
+long hide fr oriented + U,U2 R U2 R' U2 R U' R',R U R' U R U' R' U2 R U' R'
+long hide fr misoriented,Dw R' U2 R U2 R' U R,U' R U' R' Rw U' R' U R U Rw'
+long hide fr misoriented + U',R U' R' Rw U' R' U R U Rw',""
+long hide fr misoriented + U2,U R U' R' Rw U' R' U R U Rw',""
+long hide fr misoriented + U,R U R' U Rw U' R' U R U Rw',y' R' U2 R U2 R' U R
+long hide fl oriented,L' U' L U' L' U L U' L' U L,""
+long hide fl oriented + U',L' U2 L U2 L' U L,""
+long hide fl oriented + U2,U' L' U2 L U2 L' U L,""
+long hide fl oriented + U,L' U' L U' L' U L U2 L' U L,""
+long hide fl misoriented,U L' U L Lw' U L U' L' U' Lw,U' L' U' L U' Lw' U L U' L' U' Lw
+long hide fl misoriented + U',L' U L Lw' U L U' L' U' Lw,""
+long hide fl misoriented + U2,U' L' U L Lw' U L U' L' U' Lw,""
+long hide fl misoriented + U,L' U' L U' Lw' U L U' L' U' Lw,y' R U2 R' U2 R U' R'
+long hide br oriented,U R' U2 R U2 R' U R,""
+long hide br oriented + U',U2 R' U2 R U2 R' U R,""
+long hide br oriented + U2,U' R' U2 R U2 R' U R,""
+long hide br oriented + U,R' U2 R U2 R' U R,""
+long hide br misoriented,U R' U R Rw' U R U' R' U' Rw,"Rw U2 R2 U' R2 U' Rw',y R U R' U R U' R' U R U' R'"
+long hide br misoriented + U',y R U2 R' U2 R U' R',R' U' R U' Rw' U R U' R' U' Rw
+long hide br misoriented + U2,U' R' U R Rw' U R U' R' U' Rw,""
+long hide br misoriented + U,R' U R Rw' U R U' R' U' Rw,""
+long hide bl oriented,L U L' U L U' L' U L U' L',""
+long hide bl oriented + U',L U L' U L U' L' U2 L U' L',""
+long hide bl oriented + U2,L U L' U' L U' L' U L U L',U L U2 L' U2 L U' L'
+long hide bl oriented + U,L U2 L' U2 L U' L',""
+long hide bl misoriented,Dw L' U2 L U2 L' U L,""
+long hide bl misoriented + U',y R' U2 R U2 R' U R,y' L' U2 L U2 L' U L
+long hide bl misoriented + U2,y U' R' U2 R U2 R' U R,""
+long hide bl misoriented + U,L U' L' Lw U' L' U L U Lw',""
+three mover fr misoriented,y' R' U' R,F' U' F
+three mover fr misoriented + U',Dw R' U' R,""
+three mover fr misoriented + U2,Dw U R' U' R,U R' F R U R U' R2 F' R
+three mover fr misoriented + U,U' F' U' F,Rw' R2 U' R' U M'
+three mover fr oriented,R U R',""
+three mover fr oriented + U',U R U R',""
+three mover fr oriented + U2,U2 R U R',""
+three mover fr oriented + U,U' R U R',""
+three mover fl misoriented,y L U L',y' R U R'
+three mover fl misoriented + U',y U' L U L',Dw' L U L'
+three mover fl misoriented + U2,Dw' U' L U L',Dw U R U R'
+three mover fl misoriented + U,y U L U L',Dw R U R'
+three mover fl oriented,L' U' L,""
+three mover fl oriented + U',U' L' U' L,""
+three mover fl oriented + U2,U2 L' U' L,R' F R U R' F' R
+three mover fl oriented + U,U L' U' L,""
+three mover br misoriented,y' L U L',Fw R Fw'
+three mover br misoriented + U',Dw L U L',""
+three mover br misoriented + U2,Dw U L U L',Dw' U' R U R'
+three mover br misoriented + U,y' U' L U L',"y U' R U R',U' Fw R Fw'"
+three mover br oriented,R' U' R,""
+three mover br oriented + U',U R' U' R,""
+three mover br oriented + U2,U2 R' U' R,""
+three mover br oriented + U,U' R' U' R,""
+three mover bl misoriented,y R' U' R,""
+three mover bl misoriented + U',y U' R' U' R,""
+three mover bl misoriented + U2,Dw' U' R' U' R,Dw U L' U' L
+three mover bl misoriented + U,y U R' U' R,""
+three mover bl oriented,L U L',""
+three mover bl oriented + U',U' L U L',""
+three mover bl oriented + U2,U2 L U L',""
+three mover bl oriented + U,U L U L',""
+pseudo three mover fr misoriented,U' R U' R' Dw R' U' R,""
+pseudo three mover fr misoriented + U',R U' R' Dw R' U' R,""
+pseudo three mover fr misoriented + U2,U R U' R' Dw R' U' R,""
+pseudo three mover fr misoriented + U,U2 R U' R' Dw R' U' R,""
+pseudo three mover fr oriented,U' R U R' U R U R',U2 R U' R' U' R U R'
+pseudo three mover fr oriented + U',R U R' U R U R',""
+pseudo three mover fr oriented + U2,R U' R' U' R U R',""
+pseudo three mover fr oriented + U,U R U' R' U' R U R',""
+pseudo three mover fl misoriented,U L' U L Dw' L U L',""
+pseudo three mover fl misoriented + U',L' U L Dw' L U L',""
+pseudo three mover fl misoriented + U2,U' L' U L Dw' L U L',""
+pseudo three mover fl misoriented + U,y L U L' U L U L',""
+pseudo three mover fl oriented,U L' U' L U' L' U' L,""
+pseudo three mover fl oriented + U',L' U' L U' L' U' L,""
+pseudo three mover fl oriented + U2,L' U L U L' U' L,""
+pseudo three mover fl oriented + U,U' L' U L U L' U' L,""
+pseudo three mover br misoriented,y U' R U R' U R U R',""
+pseudo three mover br misoriented + U',y R U R' U R U R',Dw' R U' R' U' R U R'
+pseudo three mover br misoriented + U2,y R U' R' U' R U R',""
+pseudo three mover br misoriented + U,y U R U' R' U' R U R',""
+pseudo three mover br oriented,U R' U' R U' R' U' R,""
+pseudo three mover br oriented + U',U' R' U R U R' U' R,""
+pseudo three mover br oriented + U2,R' U R U R' U' R,""
+pseudo three mover br oriented + U,R' U' R U' R' U' R,""
+pseudo three mover bl misoriented,y' U L' U' L U' L' U' L,y U R' U' R U' R' U' R
+pseudo three mover bl misoriented + U',y R' U' R U' R' U' R,Dw L' U L U L' U' L
+pseudo three mover bl misoriented + U2,y R' U R U R' U' R,y' L' U L U L' U' L
+pseudo three mover bl misoriented + U,y U' R' U R U R' U' R',""
+pseudo three mover bl oriented,U' L U L' U L U L',""
+pseudo three mover bl oriented + U',U L U' L' U' L U L',""
+pseudo three mover bl oriented + U2,L U' L' U' L U L',""
+pseudo three mover bl oriented + U,L U L' U L U L',""
+long penis fr oriented,U R U2 R' U R U' R',""
+long penis fr oriented + U',U2 R U2 R' U R U' R',""
+long penis fr oriented + U2,U' R U2 R' U R U' R',""
+long penis fr oriented + U,R U2 R' U R U' R',""
+long penis fr misoriented,U' R U' R2 F R F' R U' R',""
+long penis fr misoriented + U',R U' R2 F R F' R U' R',y L' U2 L U' L' U L
+long penis fr misoriented + U2,U R U' R2 F R F' R U' R',Dw R' U2 R U' R' U R
+long penis fr misoriented + U,U2 R U' R2 F R F' R U' R',R U R' U R' F R F' R U' R'
+long penis fl oriented,U' L' U2 L U' L' U L,""
+long penis fl oriented + U',U2 L' U2 L U' L' U L,U' L' U L U' L' U L U' L' U' L
+long penis fl oriented + U2,U L' U2 L U' L' U L,""
+long penis fl oriented + U,L' U2 L U' L' U L,""
+long penis fl misoriented,Dw R U2 R' U R U' R',U L' U L2 F' L' F L' U L
+long penis fl misoriented + U',L' U L2 F' L' F L' U L,"y' R U2 R' U R U' R',y L U2 L' U L U' L'"
+long penis fl misoriented + U2,U' L' U L2 F' L' F L' U L,""
+long penis fl misoriented + U,U2 L' U L2 F' L' F L' U L,Dw U R U2 R' U R U' R'
+long penis br oriented,U' R' U2 R U' R' U R,""
+long penis br oriented + U',R' U2 R U' R' U R,""
+long penis br oriented + U2,U R' U2 R U' R' U R,""
+long penis br oriented + U,U2 R' U2 R U' R' U R,R' U' R U' R' U2 R U R' U' R
+long penis br misoriented,y U R U2 R' U R U' R',""
+long penis br misoriented + U',y U2 R U2 R' U R U' R',Dw' U' R U2 R' U R U' R'
+long penis br misoriented + U2,y U' R U2 R' U R U' R',Dw' R U2 R' U R U' R'
+long penis br misoriented + U,y R U2 R' U R U' R',""
+long penis bl oriented,U L U2 L' U L U' L',""
+long penis bl oriented + U',L U2 L' U L U' L',""
+long penis bl oriented + U2,U' L U2 L' U L U' L',""
+long penis bl oriented + U,U2 L U2 L' U L U' L',U L U' L' U L U' L' U L U L'
+long penis bl misoriented,y' U' L' U2 L U' L' U L,y U' R' U2 R U' R' U R
+long penis bl misoriented + U',Dw U L' U2 L U' L' U L,""
+long penis bl misoriented + U2,Dw L' U2 L U' L' U L,""
+long penis bl misoriented + U,y' L' U2 L U' L' U L,""
+short penis fr oriented,U2 R U R' U R U' R',R U' R' U2 R U R'
+short penis fr oriented + U',U' R U R' U R U' R',""
+short penis fr oriented + U2,R U R' U R U' R',""
+short penis fr oriented + U,U R U R' U R U' R',""
+short penis fr misoriented,Rw U' Rw' U2 Rw U Rw',"Dw U R' U' R U' R' U R,F' L' U2 L F"
+short penis fr misoriented + U',U Rw U' Rw' U2 Rw U Rw',"y' U' R' U' R U' R' U R,R U2 R2 F R F' R U' R'"
+short penis fr misoriented + U2,y' R' U' R U' R' U R,"y L' U' L U' L' U L,U2 Rw U' Rw' U2 Rw U Rw',R' F R F' R U R' U R U' R'"
+short penis fr misoriented + U,Dw R' U' R U' R' U R,U' Rw U' Rw' U2 Rw U Rw'
+short penis fl oriented,L' U L U2 L' U' L,U2 L' U' L U' L' U L
+short penis fl oriented + U',U L' U' L U' L' U L,""
+short penis fl oriented + U2,L' U' L U' L' U L,""
+short penis fl oriented + U,U' L' U' L U' L' U L,""
+short penis fl misoriented,Lw' U Lw U2 Lw' U' Lw,""
+short penis fl misoriented + U',U' Lw' U Lw U2 Lw' U' Lw,""
+short penis fl misoriented + U2,y' R U R' U R U' R',"y L U L' U L U' L',U2 Lw' U Lw U2 Lw' U' Lw"
+short penis fl misoriented + U,U Lw' U Lw U2 Lw' U' Lw,""
+short penis br oriented,U2 R' U' R U' R' U R,R' U R U2 R' U' R
+short penis br oriented + U',U' R' U' R U' R' U R,""
+short penis br oriented + U2,R' U' R U' R' U R,""
+short penis br oriented + U,U R' U' R U' R' U R,""
+short penis br misoriented,Rw' U Rw U2 Rw' U' Rw,"Dw' U' R U R' U R U' R',Dw U L U L' U L U' L'"
+short penis br misoriented + U',y U' R U R' U R U' R',y' U' L U L' U L U' L'
+short penis br misoriented + U2,y R U R' U R U' R',y' L U L' U L U' L'
+short penis br misoriented + U,U' Rw' U Rw U2 Rw' U' Rw,Dw L U L' U L U' L'
+short penis bl oriented,L U' L' U2 L U L',U2 L U L' U L U' L'
+short penis bl oriented + U',U L U L' U L U' L',""
+short penis bl oriented + U2,L U L' U L U' L',""
+short penis bl oriented + U,U' L U L' U L U' L',""
+short penis bl misoriented,Lw U' Lw' U2 Lw U Lw',Dw U L' U' L U' L' U L
+short penis bl misoriented + U',U' Lw U' Lw' U2 Lw U Lw',"y' U L' U' L U' L' U L,y U R' U' R U' R' U R"
+short penis bl misoriented + U2,y R' U' R U' R' U R,y' L' U' L U' L' U L
+short penis bl misoriented + U,U Lw U' Lw' U2 Lw U Lw',y U' R' U' R U' R' U R
+solved corner fr oriented,U' F' R U R' U' R' F R,"R' F' R U R U' R' F,R U' R' U' R U' R' U R U R'"
+solved corner fr oriented + U',F' R U R' U' R' F R,"R' F R F' R U R',U U' F' R U R' U' R' F R"
+solved corner fr oriented + U2,U F' R U R' U' R' F R,""
+solved corner fr oriented + U,U' U' F' R U R' U' R' F R,""
+solved corner fr misoriented,U R U' R' F R' F' R,""
+solved corner fr misoriented + U',U2 R U' R' F R' F' R,""
+solved corner fr misoriented + U2,U' R U' R' F R' F' R,""
+solved corner fr misoriented + U,R U' R' F R' F' R,""
+solved corner fl oriented,Rw U Rw' U' L' U L F',L' U L U L' U L U' L' U' L
+solved corner fl oriented + U',U' Rw U Rw' U' L' U L F',x U Rw' U' L U Rw U' Rw'
+solved corner fl oriented + U2,U2 Rw U Rw' U' L' U L F',""
+solved corner fl oriented + U,U Rw U Rw' U' L' U L F',""
+solved corner fl misoriented,U' L' U L F' L F L',""
+solved corner fl misoriented + U',L' U2 L Dw' U' L U L',""
+solved corner fl misoriented + U2,U L' U L F' L F L',""
+solved corner fl misoriented + U,L' U L F' L F L',L' U L U Lw' U Lw U' Lw' U' Lw
+solved corner br oriented,R' U R U R' U R U' R' U' R,""
+solved corner br oriented + U',R' U R U R' U2 R U' R' U' R,""
+solved corner br oriented + U2,U2 R' U R U R' U R U' R' U' R,""
+solved corner br oriented + U,U' R' U R U R' U R U' R' U' R,""
+solved corner br misoriented,U' R' U R U Rw' U Rw U' Rw' U' Rw,"y R' F' R U R U' R' F,R' U F R' F' R U R U' R' U' R"
+solved corner br misoriented + U',R' U R U Rw' U Rw U' Rw' U' Rw,"y U R' F' R U R U' R' F,R' U R U2 R2 F R F' R"
+solved corner br misoriented + U2,U' y U' R' F' R U R U' R' F,R' U R U Rw' U R U' R' U' Rw
+solved corner br misoriented + U,y U' R' F' R U R U' R' F,R' U R' F R F' R U2 R' U R
+solved corner bl oriented,L U' L' U' L U' L' U L U L',""
+solved corner bl oriented + U',L U' L' U' L U2 L' U L U L',""
+solved corner bl oriented + U2,U2 L U' L' U' L U' L' U L U L',""
+solved corner bl oriented + U,U L U' L' U' L U' L' U L U L',""
+solved corner bl misoriented,U L U' L' U' Lw U' Lw' U Lw U Lw',""
+solved corner bl misoriented + U',L U' L' U' Lw U' Lw' U Lw U Lw',""
+solved corner bl misoriented + U2,L U' L' U' Lw U' L' U L U Lw',""
+solved corner bl misoriented + U,Dw Rw U Rw' U' L' U L F',"U' L U' L' U' Lw U' L' U L U Lw',L U' L F' L' F L' U2 L U' L'"
+hockey stick fr oriented,R U' R' U R U' R',""
+hockey stick fr oriented + U',U R U' R' U R U' R',""
+hockey stick fr oriented + U2,U2 R U' R' U R U' R',""
+hockey stick fr oriented + U,U' R U' R' U R U' R',""
+hockey stick fr misoriented,y L' U L U' L' U L,"y' R' U R U' R' U R,R U R' U Lw2 F' Lw' U Lw',R U' R' U' R' F R F' R U' R'"
+hockey stick fr misoriented + U',Dw R' U R U' R' U R,""
+hockey stick fr misoriented + U2,Dw' U' L' U L U' L' U L,Dw U R' U R U' R' U R
+hockey stick fr misoriented + U,y' U' R' U R U' R' U R,Dw' L' U L U' L' U L
+hockey stick fl oriented,L' U L U' L' U L,""
+hockey stick fl oriented + U',U' L' U L U' L' U L,""
+hockey stick fl oriented + U2,U2 L' U L U' L' U L,""
+hockey stick fl oriented + U,U L' U L U' L' U L,""
+hockey stick fl misoriented,y' R U' R' U R U' R',"y L U' L' U L U' L',L' U' L U F' L F L'"
+hockey stick fl misoriented + U',y' U' R U' R' U R U' R',Dw' L U' L' U L U' L'
+hockey stick fl misoriented + U2,Dw U R U' R' U R U' R',""
+hockey stick fl misoriented + U,Dw R U' R' U R U' R',""
+hockey stick br oriented,R' U R U' R' U R,""
+hockey stick br oriented + U',U R' U R U' R' U R,""
+hockey stick br oriented + U2,U2 R' U R U' R' U R,""
+hockey stick br oriented + U,U' R' U R U' R' U R,""
+hockey stick br misoriented,y R U' R' U R U' R',"R' U2 R' F R F' R,y' L U' L' U L U' L'"
+hockey stick br misoriented + U',y U R U' R' U R U' R',""
+hockey stick br misoriented + U2,Dw' U' R U' R' U R U' R',""
+hockey stick br misoriented + U,Dw' R U' R' U R U' R',""
+hockey stick bl oriented,L U' L' U L U' L',""
+hockey stick bl oriented + U',U' L U' L' U L U' L',""
+hockey stick bl oriented + U2,U2 L U' L' U L U' L',""
+hockey stick bl oriented + U,U L U' L' U L U' L',""
+hockey stick bl misoriented,y' L' U L U' L' U L,""
+hockey stick bl misoriented + U',y' U' L' U L U' L' U L,""
+hockey stick bl misoriented + U2,Dw U L' U L U' L' U L,""
+hockey stick bl misoriented + U,Dw L' U L U' L' U L,""
+broken hockey stick fr misoriented,y' R' U' R U R' U' R,M' U R U' Rw' U R U' R'
+broken hockey stick fr misoriented + U',Dw R' U' R U R' U' R,U' R U' R' F' U' F
+broken hockey stick fr misoriented + U2,R U' R' F' U' F,""
+broken hockey stick fr misoriented + U,U R U' R' F' U' F,""
+broken hockey stick fr oriented,R U R' U' R U R',""
+broken hockey stick fr oriented + U',U R U R' U' R U R',""
+broken hockey stick fr oriented + U2,U2 R U R' U' R U R',""
+broken hockey stick fr oriented + U,U' R U R' U' R U R',""
+broken hockey stick fl misoriented,y L U L' U' L U L',M' U' L' U Lw U' L' U L
+broken hockey stick fl misoriented + U',Dw' L U L' U' L U L',""
+broken hockey stick fl misoriented + U2,Dw' U' L U L' U' L U L',""
+broken hockey stick fl misoriented + U,y U L U L' U' L U L',Dw R U R' U' R U R'
+broken hockey stick fl oriented,L' U' L U L' U' L,""
+broken hockey stick fl oriented + U',U' L' U' L U L' U' L,""
+broken hockey stick fl oriented + U2,U2 L' U' L U L' U' L,""
+broken hockey stick fl oriented + U,U L' U' L U L' U' L,""
+broken hockey stick br misoriented,y' L U L' U' L U L',""
+broken hockey stick br misoriented + U',Dw L U L' U' L U L',""
+broken hockey stick br misoriented + U2,Dw' U' R U R' U' R U R',""
+broken hockey stick br misoriented + U,Dw' R U R' U' R U R',""
+broken hockey stick br oriented,R' U' R U R' U' R,""
+broken hockey stick br oriented + U',U R' U' R U R' U' R,""
+broken hockey stick br oriented + U2,U2 R' U' R U R' U' R,""
+broken hockey stick br oriented + U,U' R' U' R U R' U' R,""
+broken hockey stick bl misoriented,y R' U' R U R' U' R,""
+broken hockey stick bl misoriented + U',Dw' R' U' R U R' U' R,""
+broken hockey stick bl misoriented + U2,Dw' U' R' U' R U R' U' R,""
+broken hockey stick bl misoriented + U,y U R' U' R U R' U' R,""
+broken hockey stick bl oriented,L U L' U' L U L',""
+broken hockey stick bl oriented + U',U' L U L' U' L U L',""
+broken hockey stick bl oriented + U2,U2 L U L' U' L U L',""
+broken hockey stick bl oriented + U,U L U L' U' L U L',""
+twisted corner fr corner in front,R U' R' U' R U R' U2 R U' R',""
+twisted corner fr corner on side + U',R U' R' U R U2 R' U R U' R',R U R' U2 R U' R' U R U R'
+twisted corner fl corner in front,L' U L U L' U' L U2 L' U L,""
+twisted corner fl corner on side + U',L' U L U' L' U2 L U' L' U L,""
+twisted corner br corner in back,R' U' R U R' U2 R U R' U' R,R' U R U R' U' R U2 R' U R
+twisted corner br corner on side + U',R' U2 R U' R' U R U' R' U' R,"R' U R U' R' U2 R U' R' U R,R' U' R U2 R' U R U' R' U' R"
+twisted corner bl corner in back,L U' L' U' L U L' U2 L U' L',L U L' U' L U2 L' U' L U L'
+twisted corner bl corner on side + U',L U2 L' U L U' L' U L U L',L U' L' U L U2 L' U L U' L'
+ugly stuck pieces fr corner in front,R U' R' U' R U' R' Dw R' U' R,""
+ugly stuck pieces fr corner on side + U',R U' R' Rw U' Rw' U2 Rw U Rw',R U' R' Dw U R' U' R U' R' U R
+ugly stuck pieces fl corner in front,L' U L U L' U L Dw' L U L',""
+ugly stuck pieces fl corner on side + U',L' U L Lw' U Lw U2 Lw' U' Lw,L' U L Dw' U' L U L' U L U' L'
+ugly stuck pieces br corner in back,y R U' R' Rw U' Rw' U2 Rw U Rw',R' U2 R U' R' F R' F' R2 U' R' U R
+ugly stuck pieces br corner on side + U',R' U R Rw' U Rw U2 Rw' U' Rw,""
+ugly stuck pieces bl corner in back,y' L' U L Lw' U Lw U2 Lw' U' Lw,""
+ugly stuck pieces bl corner on side + U',L U' L' Lw U' Lw' U2 Lw U Lw',""
+flipped edge fr,R' F R F' R U' R' U R U' R' U2 R U' R',R U' R' Dw R' U2 R U2 R' U R
+flipped edge fl,L F' L' F L' U L U' L' U L U2 L' U L,L' U L Dw' L U2 L' U2 L U' L'
+flipped edge br,R' U R' F R F' U R U2 R' U R,R' U R Dw' R U2 R' U2 R U' R'
+flipped edge bl,L U' L F' L' F U' L' U2 L U' L',L U' L' Dw L' U2 L U2 L' U L
