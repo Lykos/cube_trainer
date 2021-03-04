@@ -9,31 +9,49 @@ module CubeTrainer
   module Scraping
     # Scraper for the expertf2l page.
     class ExpertF2lScraper
+      F2lCase =
+        Struct.new(:name, :has_auf, :has_corner_direction, :orientation_mode) do
+          def orientation?
+            orientation_mode == :default_is_oriented || orientation_mode == :default_is_misoriented
+          end
+
+          def oriented_index
+            case orientation_mode
+            when :default_is_oriented then 0
+            when :default_is_misoriented then 1
+            else raise
+            end
+          end
+
+          def misoriented_index
+            1 - oriented_index
+          end
+        end
+
       DOMAIN = 'http://algs.expertcuber.by'
-      F2lCase = Struct.new(:name, :misoriented_subcase_index, :has_auf)
       F2L_CASES = [
-        F2lCase.new('wall', 1, true),
-        F2lCase.new('roof', 1, true),
-        F2lCase.new('checkerboard', 1, true),
-        F2lCase.new('triple sexy', 1, true),
-        F2lCase.new('weird watcher', 1, true),
-        F2lCase.new('solved edge', 1, true),
-        F2lCase.new('free pair', 1, true),
-        F2lCase.new('flipped pair', 1, true),
-        F2lCase.new('friend', 0, true),
-        F2lCase.new('split', 0, true),
-        F2lCase.new('short hide', 1, true),
-        F2lCase.new('long hide', 1, true),
-        F2lCase.new('three mover', 0, true),
-        F2lCase.new('pseudo three mover', 0, true),
-        F2lCase.new('long penis', 1, true),
-        F2lCase.new('short penis', 1, true),
-        F2lCase.new('solved corner', 1, true),
-        F2lCase.new('hockey stick', 1, true),
-        F2lCase.new('broken hockey stick', 0, true),
-        F2lCase.new('twisted corner', 1, false),
-        F2lCase.new('ugly stuck pieces', 0, false),
-        F2lCase.new('flipped edge', 0, false)
+        F2lCase.new('wall', true, false, :default_is_oriented),
+        F2lCase.new('roof', true, false, :default_is_oriented),
+        F2lCase.new('checkerboard', true, false, :default_is_oriented),
+        F2lCase.new('triple sexy', true, false, :only_oriented),
+        F2lCase.new('weird watcher', true, true, :only_misoriented),
+        F2lCase.new('solved edge', true, true, :only_oriented),
+        F2lCase.new('free pair', true, false, :default_is_misoriented),
+        F2lCase.new('flipped pair', true, false, :only_misoriented),
+        F2lCase.new('friend', true, false, :default_is_misoriented),
+        F2lCase.new('split', true, false, :default_is_misoriented),
+        F2lCase.new('short hide', true, false, :default_is_oriented),
+        F2lCase.new('long hide', true, false, :default_is_oriented),
+        F2lCase.new('three mover', true, false, :default_is_misoriented),
+        F2lCase.new('pseudo three mover', true, false, :default_is_misoriented),
+        F2lCase.new('long penis', true, false, :default_is_oriented),
+        F2lCase.new('short penis', true, false, :default_is_oriented),
+        F2lCase.new('solved corner', true, false, :default_is_oriented),
+        F2lCase.new('hockey stick', true, false, :default_is_oriented),
+        F2lCase.new('broken hockey stick', true, false, :default_is_misoriented),
+        F2lCase.new('twisted corner', false, true, :only_oriented),
+        F2lCase.new('ugly stuck pieces', false, true, :only_misoriented),
+        F2lCase.new('flipped edge', false, false, :only_misoriented)
       ].freeze
 
       CaseDescription =
@@ -47,25 +65,46 @@ module CubeTrainer
             end
           end
 
+          def back_front
+            slot[0] == 'f' ? 'front' : 'back'
+          end
+
           def corner_suffix
-            case aufcase_index
-            when 0 then ' corner in front/back'
+            return '' unless f2l_case.has_corner_direction
+
+            case corner_index
+            when 0 then " corner in #{back_front}"
             when 1 then ' corner on side'
-            when nil then ''
+            else raise
+            end
+          end
+
+          def corner_index
+            if !f2l_case.has_auf
+              aufcase_index
+            elsif !f2l_case.orientation?
+              subcase_index
+            else
+              raise
+            end
+          end
+
+          def f2l_case
+            @f2l_case ||= F2L_CASES[f2l_case_index]
+          end
+
+          def orientation_suffix
+            return '' unless f2l_case.orientation?
+
+            case subcase_index
+            when f2l_case.oriented_index then ' oriented'
+            when f2l_case.misoriented_index then ' misoriented'
             else raise
             end
           end
 
           def name
-            f2l_case = F2L_CASES[f2l_case_index]
-            subcase_suffix =
-              if subcase_index == f2l_case.misoriented_subcase_index
-                ' misoriented'
-              else
-                ''
-              end
-            aufcase_suffix = f2l_case.has_auf ? aufcase_suffix : corner_suffix
-            "#{f2l_case.name} #{slot}#{subcase_suffix}#{aufcase_suffix}"
+            "#{f2l_case.name} #{slot}#{orientation_suffix}#{corner_suffix}#{aufcase_suffix}"
           end
         end
 
@@ -94,9 +133,13 @@ module CubeTrainer
       class ResolvableAlg
         extend TwistyPuzzles
 
-        def self.parse(alg_string)
+        def self.parse_from_json(alg_json)
+          parse_from_string(alg_json['alg'])
+        end
+
+        def self.parse_from_string(alg_string)
           parts = alg_string.split('+')
-          alg = parse_algorithm(parts[0].delete('(').delete(')'))
+          alg = parse_algorithm(parts[0].delete('(').delete(')').gsub("'2", '2'))
           case parts.length
           when 1 then AlgWithoutReference.new(alg)
           when 2
@@ -143,14 +186,27 @@ module CubeTrainer
         CaseDescription.new(16, 'fr', 0, 1).freeze => 1
       }.freeze
 
-      def pick_best_alg(case_description, aufcase_json)
-        algs = aufcase_json['algs']
+      def pick_best_alg_json(case_description, algs_json)
         alg_index = BROKEN_CASE_DESCRIPTION_ALG_INDICES[case_description]
-        return algs[alg_index]['alg'] if alg_index
+        return algs_json[alg_index] if alg_index
 
-        good_algs = algs.filter { |alg| alg['isGood'] }
-        alg = good_algs.empty? ? algs.first : good_algs.first
-        alg['alg']
+        good_algs_json = algs_json.filter { |alg| alg['isGood'] }
+        good_algs_json.empty? ? algs_json.first : good_algs_json.first
+      end
+
+      def create_unfinished_note(case_description, aufcase_json)
+        algs_json = aufcase_json['algs']
+
+        best_alg_json = pick_best_alg_json(case_description, algs_json)
+        alternate_algs_json =
+          algs_json.select do |a|
+            a != best_alg_json && !a['alg'].start_with?('Free')
+          end
+        {
+          case_description: case_description,
+          best_alg: ResolvableAlg.parse_from_json(best_alg_json),
+          alternate_algs: alternate_algs_json.map { |a| ResolvableAlg.parse_from_json(a) }
+        }
       end
 
       def extract_slot_algs(f2l_case_index, slot, slot_json)
@@ -163,19 +219,24 @@ module CubeTrainer
               f2l_case_index, slot, maybe_subcase_index,
               maybe_aufcase_index
             )
-            alg = pick_best_alg(case_description, aufcase)
-            [case_description, ResolvableAlg.parse(alg)]
+            create_unfinished_note(case_description, aufcase)
           end
         end
       end
 
       def extract_algs(f2l_case_index, json)
-        algs =
+        notes =
           SLOTS.collect_concat do |slot|
             extract_slot_algs(f2l_case_index, slot, json[slot])
           end
-        alg_set = algs.map(&:second)
-        algs.map { |desc, alg| [desc, alg.resolve(alg_set)] }
+        alg_set = notes.pluck(:best_alg)
+        notes.map! do |note|
+          {
+            case_description: note[:case_description],
+            best_alg: note[:best_alg].resolve(alg_set),
+            alternate_algs: note[:alternate_algs].map { |a| a.resolve(alg_set) }.join(',')
+          }
+        end
       end
     end
   end

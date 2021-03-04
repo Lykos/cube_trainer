@@ -6,8 +6,8 @@ require 'csv'
 
 csv_string =
   CSV.generate do |csv|
-    CubeTrainer::Scraping::ExpertF2lScraper.new.scrape_f2l_algs.each do |desc, alg|
-      csv << [desc.name, alg]
+    CubeTrainer::Scraping::ExpertF2lScraper.new.scrape_f2l_algs.each do |note|
+      csv << [note[:case_description].name, note[:best_alg], note[:alternate_algs]]
     end
   end
 
