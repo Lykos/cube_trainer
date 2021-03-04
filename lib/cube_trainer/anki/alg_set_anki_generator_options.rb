@@ -75,13 +75,6 @@ module CubeTrainer
           end
 
           opts.on(
-            '--alternative_algs_column [INTEGER]', Integer,
-            "Column index at which '#{AlgHintParser::ALTERNATIVE_ALGORITHM_SEPARATOR}' separated alternative algorithms are positioned for an external alg set. Starts at 0."
-          ) do |c|
-            options.alternative_algs_column = c
-          end
-
-          opts.on(
             '-n', '--name_column [INTEGER]', Integer,
             'Column index at which the names are positioned for an external alg set. ' \
             'Starts at 0.'

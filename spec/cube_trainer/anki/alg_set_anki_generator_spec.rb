@@ -39,7 +39,7 @@ describe Anki::AlgSetAnkiGenerator do
     options.alg_column = 1
     options
   end
-  let(:external_options) do
+  let(:external_options_with_alternative_algs) do
     options = base_options
     options.input = 'testdata/alg_set_with_alternative_algs.tsv'
     options.name_column = 0
@@ -91,7 +91,7 @@ describe Anki::AlgSetAnkiGenerator do
   end
 
   context 'when using an external alg set with alternative algs' do
-    let(:options) { external_alternative_algs_options }
+    let(:options) { external_options_with_alternative_algs }
 
     it 'generates an alg set anki deck' do
       generator.generate

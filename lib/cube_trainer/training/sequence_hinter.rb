@@ -243,8 +243,8 @@ module CubeTrainer
       def entries
         entries_components = @hinters.map(&:entries)
         entries_components[0].product(*entries_components[1..]).map do |entry_combination|
-          name = entry_combination.map(&:first).reduce(:+)
-          alg = entry_combination.map(&:second).reduce(:+)
+          name = entry_combination.map { |e| e[0] }.reduce(:+)
+          alg = entry_combination.map { |e| e[1] }.reduce(:+)
           [name, alg]
         end
       end

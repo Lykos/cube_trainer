@@ -2,7 +2,7 @@
 
 require 'csv'
 require 'cube_trainer/training/alg_hint_parser'
-require 'cube_trainer/anki/alg_set_parser'
+require 'cube_trainer/anki/external_alg_set_parser'
 require 'cube_trainer/anki/cube_visualizer'
 require 'cube_trainer/anki/note_input'
 require 'twisty_puzzles'
@@ -86,23 +86,22 @@ module CubeTrainer
         hints = Training::AlgHintParser.parse_hints(@options.alg_set, @options.cube_size, @options.verbose)
         hints.entries.map do |name, case_solution|
           alternative_algs = case_solution.alternative_algs.join(Training::AlgHintParser::ALTERNATIVE_ALG_SEPARATOR)
-          NoteInput.new([name, case_solution.best_alg, alternative_algs], name, case_solution)
+          NoteInput.new([name, case_solution.best_alg, alternative_algs], name, case_solution.best_alg)
         end
       end
 
       def external_note_inputs
         raise ArgumentError unless @options.input && @options.alg_column && @options.name_column
 
-        AlgSetParser.new(@options.cube_size).parse(@options.input, @options.alg_column, @options.name_column, @options.alternative_algs_column)
+        ExternalAlgSetParser.parse(@options.input, @options.alg_column, @options.name_column)
       end
 
       def input_variations_with_auf(basic_note_inputs)
         basic_note_inputs.collect_concat do |input|
           AUFS.map.with_index do |auf, index|
             filename = new_image_filename(input.name, index)
-            modified_case_solution = input.case_solution.prepend_alg(auf)
             NoteInputVariation.new(
-              input.fields, input.name, modified_case_solution,
+              input.fields, input.name, auf + input.alg,
               filename, img(filename)
             )
           end
@@ -112,7 +111,7 @@ module CubeTrainer
       def input_variations_without_auf(basic_note_inputs)
         basic_note_inputs.map do |input|
           filename = new_image_filename(input.name)
-          NoteInputVariation.new(input.fields, input.name, input.case_solution, filename, img(filename))
+          NoteInputVariation.new(input.fields, input.name, input.alg, filename, img(filename))
         end
       end
 
@@ -163,7 +162,7 @@ module CubeTrainer
       def process_note_input(note_input)
         state = @options.color_scheme.solved_cube_state(@options.cube_size)
         @solved_mask&.apply_to(state)
-        note_input.modified_case_solution.best_alg.inverse.apply_to(state)
+        note_input.modified_alg.inverse.apply_to(state)
         @visualizer.fetch_and_store(state, absolute_output_path(note_input.image_filename))
       end
 
