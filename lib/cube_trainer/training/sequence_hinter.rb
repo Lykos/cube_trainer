@@ -167,7 +167,7 @@ module CubeTrainer
 
       def binary_cancellation_score(left, right)
         if left && right
-          ActualScore.new(left.cancellations(right, @cube_size, @metric))
+          ActualScore.new(left.best_alg.cancellations(right.best_alg, @cube_size, @metric))
         else
           UNKNOWN_SCORE
         end
@@ -243,8 +243,8 @@ module CubeTrainer
       def entries
         entries_components = @hinters.map(&:entries)
         entries_components[0].product(*entries_components[1..]).map do |entry_combination|
-          name = entry_combination.sum { |e| e[0] }
-          alg = entry_combination.sum { |e| e[1] }
+          name = entry_combination.map(&:first).reduce(:+)
+          alg = entry_combination.map(&:second).reduce(:+)
           [name, alg]
         end
       end
