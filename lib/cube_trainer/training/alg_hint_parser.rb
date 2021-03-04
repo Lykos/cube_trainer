@@ -76,7 +76,7 @@ module CubeTrainer
           alternative_algs = parse_alternative_algs(maybe_raw_alternative_algs)
           [
             SimpleAlgName.new(raw_alg_name),
-            CaseSolution.new(best_alg, @cube_size, alternative_algs)
+            CaseSolution.new(best_alg, alternative_algs)
           ]
         end.compact.to_h
       end

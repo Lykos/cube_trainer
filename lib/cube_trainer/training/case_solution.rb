@@ -7,15 +7,12 @@ module CubeTrainer
     # Represents the solution of a particular case (i.e. a situation on the cube).
     # There is always a best alg and there might be alternative algs.
     class CaseSolution
-      def initialize(best_alg, cube_size = nil, alternative_algs = [])
-        check_equivalent_algs(cube_size, best_alg, alternative_algs)
-
-        @cube_size = cube_size
+      def initialize(best_alg, alternative_algs = [])
         @best_alg = best_alg
         @alternative_algs = alternative_algs
       end
 
-      attr_reader :cube_size, :best_alg, :alternative_algs
+      attr_reader :best_alg, :alternative_algs
 
       def to_s
         case alternative_algs.length
@@ -30,28 +27,26 @@ module CubeTrainer
 
       def +(other)
         raise TypeError unless other.is_a?(CaseSolution)
-        raise ArgumentError if @cube_size && other.cube_size && @cube_size != other.cube_size
 
         # We avoid alternative algs to avoid combinatorial explosion.
-        CaseSolution.new(
-          @best_alg + other.best_alg, @cube_size || other.cube_size,
-          alternative_algs
-        )
+        CaseSolution.new(@best_alg + other.best_alg, alternative_algs)
       end
 
-      private
-
-      def check_equivalent_algs(cube_size, best_alg, alternative_algs)
+      # `solved_cube_state` should have an appropriate mask applied s.t. different valid algorithms
+      # don't are equivalent except for the masked stickers.
+      def check_alg_equivalence(case_description, solved_cube_state)
         return if alternative_algs.empty?
 
-        solved = TwistyPuzzles::ColorScheme::WCA.solved_cube_state(cube_size)
-        case_state = best_alg.inverse.apply_to_dupped(solved)
+        case_state = best_alg.inverse.apply_to_dupped(solved_cube_state)
+        alternative_alg_state = case_state.dup
 
-        alternative_algs.each do |alg|
-          alg.apply_temporarily_to(case_state) do |state|
-            unless state == solved
+        alternative_algs.each_with_index do |alg, index|
+          alg.apply_temporarily_to(alternative_alg_state) do |state|
+            unless state.equal_modulo_rotations?(solved_cube_state)
+              puts "Cube looks like this wen case is set up (by applying inverse of best alg):\n#{case_state.colored_to_s}"
+              puts "Cube looks like this after applying alternative alg:\n#{state.colored_to_s}"
               raise ArgumentError,
-                    "Alternative alg #{alg} is not equivalent to best alg #{best_alg}"
+                    "Alternative alg for case \"#{case_description}\" #{alg} is not equivalent to best alg #{best_alg}."
             end
           end
         end
