@@ -40,14 +40,17 @@ module CubeTrainer
         case_state = best_alg.inverse.apply_to_dupped(solved_cube_state)
         alternative_alg_state = case_state.dup
 
-        alternative_algs.each_with_index do |alg, index|
+        alternative_algs.each_with_index do |alg, _index|
           alg.apply_temporarily_to(alternative_alg_state) do |state|
-            unless state.equal_modulo_rotations?(solved_cube_state)
-              puts "Cube looks like this wen case is set up (by applying inverse of best alg):\n#{case_state.colored_to_s}"
-              puts "Cube looks like this after applying alternative alg:\n#{state.colored_to_s}"
-              raise ArgumentError,
-                    "Alternative alg for case \"#{case_description}\" #{alg} is not equivalent to best alg #{best_alg}."
-            end
+            next if state.equal_modulo_rotations?(solved_cube_state)
+
+            puts 'Cube looks like this wen case is set up (by applying inverse of best alg):'
+            puts case_state.colored_to_s
+            puts 'Cube looks like this after applying alternative alg:'
+            puts state.colored_to_s
+            raise ArgumentError,
+                  "Alternative alg for case \"#{case_description}\" #{alg} is not equivalent " \
+                  "to best alg #{best_alg}."
           end
         end
       end
