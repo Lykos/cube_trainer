@@ -39,6 +39,14 @@ describe Anki::AlgSetAnkiGenerator do
     options.alg_column = 1
     options
   end
+  let(:external_options) do
+    options = base_options
+    options.input = 'testdata/alg_set_with_alternative_algs.tsv'
+    options.name_column = 0
+    options.alg_column = 1
+    options.alternative_algs_column = 2
+    options
+  end
   let(:internal_options) do
     options = base_options
     options.alg_set = 'cp'
@@ -76,6 +84,21 @@ describe Anki::AlgSetAnkiGenerator do
       expect(deck).to contain_exactly(
         ['asdf', 'U', "<img src='alg_asdf.jpg'/>"],
         ['uio', 'F', "<img src='alg_uio.jpg'/>"]
+      )
+    end
+
+    it_behaves_like 'an image storer', ['alg_asdf.jpg', 'alg_uio.jpg']
+  end
+
+  context 'when using an external alg set with alternative algs' do
+    let(:options) { external_alternative_algs_options }
+
+    it 'generates an alg set anki deck' do
+      generator.generate
+
+      expect(deck).to contain_exactly(
+        ['asdf', 'U', 'U2 U2 U,U U U U U', "<img src='alg_asdf.jpg'/>"],
+        ['uio', 'F', 'F2 F2 F', "<img src='alg_uio.jpg'/>"]
       )
     end
 

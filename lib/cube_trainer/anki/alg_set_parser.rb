@@ -2,6 +2,8 @@
 
 require 'twisty_puzzles'
 require 'cube_trainer/anki/note_input'
+require 'cube_trainer/training/alg_hint_parser'
+require 'cube_trainer/training/case_solution'
 
 module CubeTrainer
   module Anki
@@ -18,9 +20,13 @@ module CubeTrainer
           name = row[name_column]
           raw_best_alg = row[alg_column]
           best_alg = parse_algorithm(raw_best_alg)
-          raw_alternative_algs = if maybe_alternative_algs_column then row[maybe_alternative_algs_column] end
+          raw_alternative_algs = if maybe_alternative_algs_column
+                                   row[maybe_alternative_algs_column].split(Training::AlgHintParser::ALTERNATIVE_ALG_SEPARATOR)
+                                 else
+                                   []
+                                 end
           alternative_algs = raw_alternative_algs.map { |raw_alg| parse_algorithm(raw_alg) }
-          case_solution = CaseSolution.new(best_alg, alternative_algs)
+          case_solution = Training::CaseSolution.new(best_alg, @cube_size, alternative_algs)
           NoteInput.new(row, name, case_solution)
         end
       end
