@@ -88,7 +88,7 @@ module CubeTrainer
           @options.verbose
         )
         hints.entries.map do |name, case_solution|
-          alternative_algs = case_solution.alternative_algs.join("<br>")
+          alternative_algs = case_solution.alternative_algs.join('<br>')
           NoteInput.new(
             [name, case_solution.best_alg, alternative_algs], name,
             case_solution.best_alg
