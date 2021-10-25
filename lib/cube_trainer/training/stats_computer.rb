@@ -88,7 +88,7 @@ module CubeTrainer
       end
 
       def recently
-        @now - 24 * 60 * 60
+        @now - (24 * 60 * 60)
       end
 
       def num_recent_results
@@ -127,7 +127,7 @@ module CubeTrainer
         some_bad_result = averages[9][1]
         step = floor_to_nice(some_bad_result / 10)
         start = floor_to_step(some_bad_result, step)
-        finish = start + step * 5
+        finish = start + (step * 5)
         start.step(finish, step).to_a
       end
     end

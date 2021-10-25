@@ -92,9 +92,7 @@ module CubeTrainer
       #        of options.
       def initialize(items, mode, logger = Rails.logger)
         raise ArgumentError unless items.is_a?(Array)
-        unless items.all? { |e| e.is_a?(InputItem) }
-          raise ArgumentError, "Invalid items #{items.inspect}."
-        end
+        raise ArgumentError, "Invalid items #{items.inspect}." unless items.all?(InputItem)
 
         @items = items
         @mode = mode

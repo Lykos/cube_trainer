@@ -114,7 +114,7 @@ module CubeTrainer
 
       def initialize(cube_size, modes, hinters)
         TwistyPuzzles::CubeState.check_cube_size(cube_size)
-        raise TypeError unless modes.all? { |m| m.is_a?(Mode) }
+        raise TypeError unless modes.all?(Mode)
         raise ArgumentError if modes.length != hinters.length || modes.empty?
 
         hinters.each do |h|

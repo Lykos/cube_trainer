@@ -59,7 +59,7 @@ module CubeTrainer
     # use in order.
     class PrioritizedSampler < Sampler
       def initialize(subsamplers)
-        raise TypeError unless subsamplers.all? { |s| s.is_a?(Sampler) }
+        raise TypeError unless subsamplers.all?(Sampler)
 
         super()
         @subsamplers = subsamplers

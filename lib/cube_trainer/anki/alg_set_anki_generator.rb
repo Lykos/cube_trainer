@@ -181,7 +181,7 @@ module CubeTrainer
         ) { |note_input| process_note_input(note_input) }
         inputs.group_by(&:name).each do |_name, values|
           fields = values[0].fields
-          csv << fields + values.map(&:img)
+          csv << (fields + values.map(&:img))
         end
       end
 

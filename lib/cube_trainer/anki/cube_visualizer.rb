@@ -45,7 +45,7 @@ module CubeTrainer
       def initialize(base_mask, rotations = TwistyPuzzles::Algorithm::EMPTY)
         raise ArgumentError unless BASE_MASKS.include?(base_mask)
         raise TypeError unless rotations.is_a?(TwistyPuzzles::Algorithm)
-        raise TypeError unless rotations.moves.all? { |r| r.is_a?(TwistyPuzzles::Rotation) }
+        raise TypeError unless rotations.moves.all?(TwistyPuzzles::Rotation)
 
         @base_mask = base_mask
         @rotations = rotations
@@ -255,7 +255,7 @@ module CubeTrainer
       end
 
       def extract_url_params(params)
-        URL_PARAMETER_TYPES.map { |p| p.extract(params) }.compact
+        URL_PARAMETER_TYPES.filter_map { |p| p.extract(params) }
       end
 
       def extract_color_scheme(params)

@@ -5,7 +5,7 @@ require 'twisty_puzzles'
 
 CYCLE_REGEXP = Regexp.new(
   "#{SkewbTransformationDescriber::DOUBLE_ARROW}|" \
-                            "#{SkewbTransformationDescriber::ARROW}| <-> | -> "
+  "#{SkewbTransformationDescriber::ARROW}| <-> | -> "
 )
 
 def canonicalize_transformation_descriptions(transformation_descriptions)

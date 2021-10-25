@@ -29,7 +29,7 @@ module CubeTrainer
             # If we reach this branch, something went wrong and we didn't manage to repeat
             # this item in time. Probably we have too many items that we are trying to repeat,
             # so we better give up on this one s.t. we can handle the others better.
-            2 + 1.0 / index
+            2 + (1.0 / index)
           end
         else
           0

@@ -64,7 +64,7 @@ module CubeTrainer
       end
 
       def parse_hints_internal(raw_hints)
-        raw_hints.map do |row|
+        raw_hints.filter_map do |row|
           if row.length != 2 && row.length != 3
             puts "Invalid alg row #{row} that doesn't have 2 or 3 entries."
             next
@@ -78,7 +78,7 @@ module CubeTrainer
             AlgName.from_raw_data(raw_alg_name),
             CaseSolution.new(best_alg, alternative_algs)
           ]
-        end.compact.to_h
+        end.to_h
       end
 
       def hinter_class
