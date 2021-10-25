@@ -167,7 +167,7 @@ module CubeTrainer
 
       def binary_cancellation_score(left, right)
         if left && right
-          ActualScore.new(left.cancellations(right, @cube_size, @metric))
+          ActualScore.new(left.best_alg.cancellations(right.best_alg, @cube_size, @metric))
         else
           UNKNOWN_SCORE
         end

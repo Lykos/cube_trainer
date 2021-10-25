@@ -39,6 +39,14 @@ describe Anki::AlgSetAnkiGenerator do
     options.alg_column = 1
     options
   end
+  let(:external_options_with_alternative_algs) do
+    options = base_options
+    options.input = 'testdata/alg_set_with_alternative_algs.tsv'
+    options.name_column = 0
+    options.alg_column = 1
+    options.alternative_algs_column = 2
+    options
+  end
   let(:internal_options) do
     options = base_options
     options.alg_set = 'cp'
@@ -82,6 +90,21 @@ describe Anki::AlgSetAnkiGenerator do
     it_behaves_like 'an image storer', ['alg_asdf.jpg', 'alg_uio.jpg']
   end
 
+  context 'when using an external alg set with alternative algs' do
+    let(:options) { external_options_with_alternative_algs }
+
+    it 'generates an alg set anki deck' do
+      generator.generate
+
+      expect(deck).to contain_exactly(
+        ['asdf', 'U', 'U2 U2 U,U U U U U', "<img src='alg_asdf.jpg'/>"],
+        ['uio', 'F', 'F2 F2 F', "<img src='alg_uio.jpg'/>"]
+      )
+    end
+
+    it_behaves_like 'an image storer', ['alg_asdf.jpg', 'alg_uio.jpg']
+  end
+
   context 'when using an internal alg set' do
     let(:options) { internal_options }
 
@@ -89,12 +112,12 @@ describe Anki::AlgSetAnkiGenerator do
       generator.generate
 
       expect(deck).to contain_exactly(
-        ['Y', "F R U' R' U' R U R' F' R U R' U' R' F R F'", "<img src='alg_Y.jpg'/>"],
-        ['auf skip + Ja', "R' U L' U2 R U' R' U2 R L", "<img src='alg_auf_skip_+_Ja.jpg'/>"],
-        ['U + Ja', "U R' U L' U2 R U' R' U2 R L", "<img src='alg_U_+_Ja.jpg'/>"],
-        ['U2 + Ja', "U2 R' U L' U2 R U' R' U2 R L", "<img src='alg_U2_+_Ja.jpg'/>"],
-        ["U' + Ja", "U' R' U L' U2 R U' R' U2 R L", "<img src='alg_U-_+_Ja.jpg'/>"],
-        ['solved', '', "<img src='alg_solved.jpg'/>"]
+        ['Y', "F R U' R' U' R U R' F' R U R' U' R' F R F'", '', "<img src='alg_Y.jpg'/>"],
+        ['auf skip + Ja', "R' U L' U2 R U' R' U2 R L", '', "<img src='alg_auf_skip_+_Ja.jpg'/>"],
+        ['U + Ja', "U R' U L' U2 R U' R' U2 R L", '', "<img src='alg_U_+_Ja.jpg'/>"],
+        ['U2 + Ja', "U2 R' U L' U2 R U' R' U2 R L", '', "<img src='alg_U2_+_Ja.jpg'/>"],
+        ["U' + Ja", "U' R' U L' U2 R U' R' U2 R L", '', "<img src='alg_U-_+_Ja.jpg'/>"],
+        ['solved', '', '', "<img src='alg_solved.jpg'/>"]
       )
     end
 

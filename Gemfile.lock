@@ -346,7 +346,7 @@ DEPENDENCIES
   spring
   spring-watcher-listen (~> 2.0.0)
   turbolinks (~> 5)
-  twisty_puzzles (>= 0.0.9)
+  twisty_puzzles (>= 0.0.11)
   tzinfo-data
   web-console (>= 3.3.0)
   webdrivers

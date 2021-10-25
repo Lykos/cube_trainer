@@ -31,7 +31,7 @@ module CubeTrainer
       end
 
       def hinter
-        @hinter ||= AlgHintParser.parse_hints(name, @mode.verbose)
+        @hinter ||= AlgHintParser.parse_hints(name, @mode.cube_size, @mode.verbose)
       end
 
       def input_items
@@ -41,7 +41,7 @@ module CubeTrainer
       def generate_input_items
         state = @mode.color_scheme.solved_cube_state(@mode.cube_size)
         hinter.entries.map do |name, alg|
-          alg.inverse.apply_temporarily_to(state) do |s|
+          alg.best_alg.inverse.apply_temporarily_to(state) do |s|
             InputItem.new(name, s.dup)
           end
         end
@@ -74,7 +74,7 @@ module CubeTrainer
     end
 
     # F2L alg set
-    class F2lAllSlots < AlgSet
+    class F2l < AlgSet
       def goal_badness
         0.5
       end

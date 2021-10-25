@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/alg_hinter'
+require 'cube_trainer/training/case_solution'
 require 'cube_trainer/alg_name'
 require 'twisty_puzzles'
 require 'cube_trainer/training/input_item'
@@ -23,10 +24,10 @@ describe Training::HeterogenousSequenceHinter do
   let(:algname_b) { SimpleAlgName.new('b') }
   let(:algname_c) { SimpleAlgName.new('c') }
   let(:algname_d) { SimpleAlgName.new('d') }
-  let(:algorithm_a) { parse_algorithm("R'") }
-  let(:algorithm_b) { parse_algorithm('R') }
-  let(:algorithm_c) { parse_algorithm('U') }
-  let(:algorithm_d) { parse_algorithm('U2') }
+  let(:case_solution_a) { Training::CaseSolution.new(parse_algorithm("R'")) }
+  let(:case_solution_b) { Training::CaseSolution.new(parse_algorithm('R')) }
+  let(:case_solution_c) { Training::CaseSolution.new(parse_algorithm('U')) }
+  let(:case_solution_d) { Training::CaseSolution.new(parse_algorithm('U2')) }
   before(:each) do
     Result.destroy_all
     5.times do |i|
@@ -44,8 +45,8 @@ describe Training::HeterogenousSequenceHinter do
       )
     end
   end
-  let(:hinter_left) { Training::AlgHinter.new(algname_a => algorithm_a, algname_b => algorithm_b, algname_c => algorithm_c) }
-  let(:hinter_right) { Training::AlgHinter.new(algname_d => algorithm_d) }
+  let(:hinter_left) { Training::AlgHinter.new(algname_a => case_solution_a, algname_b => case_solution_b, algname_c => case_solution_c) }
+  let(:hinter_right) { Training::AlgHinter.new(algname_d => case_solution_d) }
   let(:hinters) { [hinter_left, hinter_right] }
   let(:hinter) { FakeHeterogenousSequenceHinter.new(cube_size, [mode, mode], hinters) }
 

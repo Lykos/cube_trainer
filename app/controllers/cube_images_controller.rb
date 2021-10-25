@@ -53,22 +53,11 @@ class CubeImagesController < ApplicationController
     head(:unprocessable_entity) unless (@cube_state = @input_item.cube_state)
   end
 
-  # Wrapper around the rails cache to use the interface the CubeVisualizer needs.
-  class CacheWrapper
-    def [](key)
-      Rails.cache.read(key)
-    end
-
-    def []=(key, value)
-      Rails.cache.write(key, value)
-    end
-  end
-
   def cube_visualizer
     CubeTrainer::Anki::CubeVisualizer.new(
       fetcher: Net::HTTP,
       sch: @mode.color_scheme,
-      cache: CacheWrapper.new,
+      cache: Rails.cache,
       fmt: FORMAT,
       checker: checker
     )
