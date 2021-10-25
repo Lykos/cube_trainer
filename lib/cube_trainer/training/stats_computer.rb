@@ -51,10 +51,8 @@ module CubeTrainer
 
       def bad_results
         @bad_results ||=
-          begin
-            cutoffs.map do |cutoff|
-              [cutoff, @averages.count { |v| v[1] > cutoff }]
-            end
+          cutoffs.map do |cutoff|
+            [cutoff, @averages.count { |v| v[1] > cutoff }]
           end
       end
 
