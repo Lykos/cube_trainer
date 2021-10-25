@@ -10,7 +10,7 @@ module CubeTrainer
     raise if SEPARATOR == LetterPair::SEPARATOR
 
     def initialize(letter_pairs)
-      raise ArgumentError unless letter_pairs.all? { |ls| ls.is_a?(LetterPair) }
+      raise ArgumentError unless letter_pairs.all?(LetterPair)
       if letter_pairs.any? { |ls| ls.letters.include?(SEPARATOR) }
         raise ArgumentError, "Invalid letter '#{SEPARATOR}' in letter pair #{letters.join(' ')}."
       end

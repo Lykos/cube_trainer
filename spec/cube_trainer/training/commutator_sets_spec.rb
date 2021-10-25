@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/training/commutator_sets'
 require 'twisty_puzzles'
 require 'rails_helper'
 require 'fixtures'

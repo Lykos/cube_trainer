@@ -77,7 +77,7 @@ module CubeTrainer
     end
 
     def self.find_row_interpretation(row, axis_interpretation)
-      letters = row.map(&:maybe_letter_pair).compact.map { |e| e.letters[axis_interpretation] }
+      letters = row.filter_map(&:maybe_letter_pair).map { |e| e.letters[axis_interpretation] }
       counts = new_counter_hash
       letters.each { |l| counts[l] += 1 }
       max_count = counts.values.max

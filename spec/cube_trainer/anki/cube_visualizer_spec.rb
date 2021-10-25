@@ -3,7 +3,7 @@
 require 'cube_trainer/anki/cube_visualizer'
 require 'twisty_puzzles'
 
-URL = 'http://cube.crider.co.uk/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
+URL = 'http://cube.rider.biz/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb'
 IMAGE = 'some image'
 
 class FakeFetcher
@@ -30,6 +30,21 @@ class FakeChecker
   end
 end
 
+class HashCache
+  def initialize
+    @hash = {}
+  end
+
+  def fetch(key)
+    r = @hash[key]
+    return r if r
+
+    r = yield
+    @hash[key] = r
+    r
+  end
+end
+
 describe Anki::CubeVisualizer do
   include TwistyPuzzles
 
@@ -37,7 +52,7 @@ describe Anki::CubeVisualizer do
   let(:cube_size) { 3 }
   let(:cube_state) { color_scheme.solved_cube_state(cube_size) }
   let(:fetcher) { FakeFetcher.new(IMAGE) }
-  let(:cache) { {} }
+  let(:cache) { HashCache.new }
   let(:retries) { 0 }
   let(:checker) { FakeChecker.new }
   let(:fmt) { :jpg }
@@ -55,7 +70,7 @@ describe Anki::CubeVisualizer do
   end
 
   it 'constructs a url for minimal settings' do
-    expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.crider.co.uk/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb')
+    expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.rider.biz/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb')
   end
 
   it 'constructs a url for a cube with transparent parts' do
@@ -65,7 +80,7 @@ describe Anki::CubeVisualizer do
     cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::L, 3, 1, 0)] = :transparent
     cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::B, 3, 1, 1)] = :transparent
     cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::D, 3, 1, 2)] = :transparent
-    expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.crider.co.uk/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuutrrtrrrrrrftfffffffdddtdddddllllltlllbbbbtbbbb')
+    expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.rider.biz/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuutrrtrrrrrrftfffffffdddtdddddllllltlllbbbbtbbbb')
   end
 
   it 'constructs a url for a cube with unknown parts' do
@@ -75,7 +90,7 @@ describe Anki::CubeVisualizer do
     cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::L, 3, 1, 0)] = :unknown
     cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::B, 3, 1, 1)] = :unknown
     cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::D, 3, 1, 2)] = :unknown
-    expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.crider.co.uk/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuunrrnrrrrrrfnfffffffdddndddddlllllnlllbbbbnbbbb')
+    expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.rider.biz/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuunrrnrrrrrrfnfffffffdddndddddlllllnlllbbbbnbbbb')
   end
 
   it 'constructs a url for a cube with oriented parts' do
@@ -85,26 +100,28 @@ describe Anki::CubeVisualizer do
     cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::L, 3, 1, 0)] = :oriented
     cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::B, 3, 1, 1)] = :oriented
     cube_state[TwistyPuzzles::Coordinate.from_indices(TwistyPuzzles::Face::D, 3, 1, 2)] = :oriented
-    expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.crider.co.uk/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuorrorrrrrrfofffffffdddodddddlllllolllbbbbobbbb')
+    expect(described_class.new(fetcher: fetcher, cache: cache, retries: retries, checker: checker, fmt: fmt, sch: color_scheme).uri(cube_state).to_s).to eq('http://cube.rider.biz/visualcube.php?fmt=jpg&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&pzl=3&fd=uuuuuuuuorrorrrrrrfofffffffdddodddddlllllolllbbbbobbbb')
   end
 
   it 'constructs a url for all settings' do
-    expect(described_class.new(
-      fetcher: fetcher,
-      cache: cache,
-      retries: retries,
-      checker: checker,
-      fmt: fmt,
-      size: 100,
-      view: :plain,
-      stage: Anki::StageMask.new(:coll, TwistyPuzzles::Algorithm.move(TwistyPuzzles::Rotation.new(TwistyPuzzles::Face::U, TwistyPuzzles::CubeDirection::FORWARD))),
-      sch: color_scheme,
-      bg: :black,
-      cc: :white,
-      co: 40,
-      fo: 50,
-      dist: 35
-    ).uri(cube_state).to_s).to eq('http://cube.crider.co.uk/visualcube.php?fmt=jpg&size=100&view=plain&stage=coll-y&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&bg=black&cc=white&co=40&fo=50&dist=35&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb')
+    expect(
+      described_class.new(
+        fetcher: fetcher,
+        cache: cache,
+        retries: retries,
+        checker: checker,
+        fmt: fmt,
+        size: 100,
+        view: :plain,
+        stage: Anki::StageMask.new(:coll, TwistyPuzzles::Algorithm.move(TwistyPuzzles::Rotation.new(TwistyPuzzles::Face::U, TwistyPuzzles::CubeDirection::FORWARD))),
+        sch: color_scheme,
+        bg: :black,
+        cc: :white,
+        co: 40,
+        fo: 50,
+        dist: 35
+      ).uri(cube_state).to_s
+    ).to eq('http://cube.rider.biz/visualcube.php?fmt=jpg&size=100&view=plain&stage=coll-y&sch=yellow%2Cgreen%2Cred%2Cwhite%2Cblue%2Corange&bg=black&cc=white&co=40&fo=50&dist=35&pzl=3&fd=uuuuuuuuurrrrrrrrrfffffffffdddddddddlllllllllbbbbbbbbb')
   end
 
   it 'fetches an image' do

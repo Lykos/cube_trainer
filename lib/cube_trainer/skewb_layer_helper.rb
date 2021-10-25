@@ -17,7 +17,7 @@ module CubeTrainer
 
     def check_on_outside_internal(skewb_state, coordinates)
       raise ArgumentError unless coordinates.length == 2
-      raise ArgumentError unless coordinates.all? { |c| c.is_a?(TwistyPuzzles::SkewbCoordinate) }
+      raise ArgumentError unless coordinates.all?(TwistyPuzzles::SkewbCoordinate)
 
       friends = MATCHING_CORNERS_HASH[coordinates.sort]
       return :not_adjacent unless friends
@@ -52,7 +52,7 @@ module CubeTrainer
       matching_coordinates = matching_corner_coordinates(skewb_state, face)
       naive_score = matching_coordinates.length
       has_mismatch = mismatch_on_outside?(skewb_state, matching_coordinates)
-      has_mismatch ? naive_score - naive_score / 2 : naive_score
+      has_mismatch ? naive_score - (naive_score / 2) : naive_score
     end
   end
 end

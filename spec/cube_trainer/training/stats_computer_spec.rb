@@ -25,8 +25,8 @@ xdescribe Training::StatsComputer do
 
   let(:now) { Time.zone.at(0) }
   let(:t_10_minutes_ago) { now - 600 }
-  let(:t_2_hours_ago) { now - 2 * 3600 }
-  let(:t_2_days_ago) { now - 2 * 24 * 3600 }
+  let(:t_2_hours_ago) { now - (2 * 3600) }
+  let(:t_2_days_ago) { now - (2 * 24 * 3600) }
   let(:mode) { construct_mode(:corner_commutators) }
   let(:letter_pair_a) { LetterPair.new(%w[a a]) }
   let(:letter_pair_b) { LetterPair.new(%w[a b]) }
@@ -75,8 +75,8 @@ xdescribe Training::StatsComputer do
   end
 
   it 'computes how many results we had now and 24 hours ago' do
-    expect(computer.total_average).to be_within(0.1).of((26 * 1.0 + 10.0 + 3.0) / 28)
-    expect(computer.old_total_average).to be_within(0.1).of((26 * 1.0 + 12.0) / 27)
+    expect(computer.total_average).to be_within(0.1).of(((26 * 1.0) + 10.0 + 3.0) / 28)
+    expect(computer.old_total_average).to be_within(0.1).of(((26 * 1.0) + 12.0) / 27)
   end
 
   it 'computes how long each part of the solve takes' do
@@ -89,7 +89,7 @@ xdescribe Training::StatsComputer do
       expect(s[:total_time]).to be_a(Float)
       expect(s[:weight]).to be_a(Float)
       if s[:name] == :corner_commutators
-        expect(s[:average]).to be_within(0.1).of((26 * 1.0 + 10.0 + 3.0) / 28)
+        expect(s[:average]).to be_within(0.1).of(((26 * 1.0) + 10.0 + 3.0) / 28)
       else
         expect(s[:average]).to be_within(0.1).of(1.0)
       end

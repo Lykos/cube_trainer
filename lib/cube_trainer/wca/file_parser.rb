@@ -85,7 +85,7 @@ module CubeTrainer
 
       # Returns a number that can be used to order the given month/day combination.
       def self.date_order_proxy(month, day)
-        month * 32 + day
+        (month * 32) + day
       end
 
       def self.parse_result(result_string, format)

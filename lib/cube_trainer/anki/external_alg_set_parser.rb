@@ -2,11 +2,13 @@
 
 require 'twisty_puzzles'
 require 'cube_trainer/anki/note_input'
+require 'cube_trainer/training/alg_hint_parser'
+require 'cube_trainer/training/case_solution'
 
 module CubeTrainer
   module Anki
     # Class that parses an external alg set from a TSV coming from Anki.
-    class AlgSetParser
+    class ExternalAlgSetParser
       extend TwistyPuzzles
 
       def self.parse(file, alg_column, name_column)

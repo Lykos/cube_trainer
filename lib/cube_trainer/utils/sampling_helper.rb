@@ -21,7 +21,7 @@ module CubeTrainer
       # rubocop:disable Metrics/PerceivedComplexity
       def extract_weights(array, &block)
         weights = array.map(&block)
-        unless weights.all? { |w| w.is_a?(Numeric) }
+        unless weights.all?(Numeric)
           raise TypeError, 'Negative weights are not allowed for sampling.'
         end
         if weights.any?(&:negative?)

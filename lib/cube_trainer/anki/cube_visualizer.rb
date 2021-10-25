@@ -45,7 +45,7 @@ module CubeTrainer
       def initialize(base_mask, rotations = TwistyPuzzles::Algorithm::EMPTY)
         raise ArgumentError unless BASE_MASKS.include?(base_mask)
         raise TypeError unless rotations.is_a?(TwistyPuzzles::Algorithm)
-        raise TypeError unless rotations.moves.all? { |r| r.is_a?(TwistyPuzzles::Rotation) }
+        raise TypeError unless rotations.moves.all?(TwistyPuzzles::Rotation)
 
         @base_mask = base_mask
         @rotations = rotations
@@ -129,11 +129,9 @@ module CubeTrainer
 
     # Stub cache that caches nothing.
     class StubCache
-      def self.[](_key)
-        nil
+      def self.fetch(*_args)
+        yield
       end
-
-      def self.[]=(key, value); end
     end
 
     # Class that fetches images from
@@ -167,7 +165,7 @@ module CubeTrainer
       FACE_SYMBOL_ORDER = %i[U R F D L B].freeze
       MIN_N = 1
       MAX_N = 10
-      BASE_URI = URI('http://cube.crider.co.uk/visualcube.php')
+      BASE_URI = URI('http://cube.rider.biz/visualcube.php')
 
       def initialize(fetcher:, cache: nil, retries: 5, checker: nil, **params)
         check_param_keys(params.keys)
@@ -188,11 +186,7 @@ module CubeTrainer
 
       def fetch(cube_state)
         uri = uri(cube_state)
-        if (r = @cache[uri.to_s])
-          r
-        else
-          @cache[uri.to_s] = really_fetch_internal(uri)
-        end
+        @cache.fetch(uri.to_s) { really_fetch_internal(uri) }
       end
 
       def fetch_and_store(cube_state, output)
@@ -253,7 +247,7 @@ module CubeTrainer
       end
 
       def check_cache(cache)
-        raise TypeError unless cache.nil? || (cache.respond_to?(:[]) && cache.respond_to?(:[]=))
+        raise TypeError unless cache.nil? || cache.respond_to?(:fetch)
       end
 
       def check_checker(checker)
@@ -261,7 +255,7 @@ module CubeTrainer
       end
 
       def extract_url_params(params)
-        URL_PARAMETER_TYPES.map { |p| p.extract(params) }.compact
+        URL_PARAMETER_TYPES.filter_map { |p| p.extract(params) }
       end
 
       def extract_color_scheme(params)

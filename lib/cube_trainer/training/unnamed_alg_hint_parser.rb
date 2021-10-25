@@ -32,7 +32,7 @@ module CubeTrainer
         keyed_algs = {}
         extract_commutators(raw_hints).each do |comm|
           key = engineer.find_stuff(comm.algorithm)
-          keyed_algs[key] = comm if key
+          keyed_algs[key] = CaseSolution.new(comm) if key
         end
         keyed_algs
       end

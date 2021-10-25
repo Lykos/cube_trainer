@@ -39,6 +39,7 @@ bundle install && yarn install
 sudo su - postgres
 createuser cube_trainer -d -E -P
 cube_trainer
+exit
 ```
 
 ### Initialize the database

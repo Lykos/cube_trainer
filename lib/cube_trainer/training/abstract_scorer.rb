@@ -25,7 +25,7 @@ module CubeTrainer
         extra = extra_info(input_item)
         extra_separator = extra.blank? ? '' : '; '
         "sampling component: #{tag}; score: #{score(input_item).round(2)}" \
-        "#{extra_separator}#{extra}"
+          "#{extra_separator}#{extra}"
       end
 
       def tag

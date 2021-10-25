@@ -6,19 +6,17 @@ require 'fileutils'
 
 module CubeTrainer
   # Helper class to access the files in the XDG directories.
-  module XDGHelper
-    include XDG::BaseDir::Mixin
-
+  module XdgHelper
     def subdirectory
       'cube_trainer'
     end
 
     def data_directory
-      Pathname.new(data.home.to_s)
+      XDG::Data.new.home + subdirectory
     end
 
     def cache_directory
-      Pathname.new(cache.home.to_s)
+      XDG::Cache.new.home + subdirectory
     end
 
     def data_file(filename)

@@ -21,9 +21,9 @@ module CubeTrainer
             else raise
             end
           else
-            3 - c.piece_index % 4
+            3 - (c.piece_index % 4)
           end
-        face_index * 4 + within_face_index
+        (face_index * 4) + within_face_index
       end
     CORNER_COORDINATES_ORDERED_BY_PRIORITY =
       CORNERS_ORDERED_BY_PRIORITY.map { |c| TwistyPuzzles::SkewbCoordinate.for_corner(c) }
@@ -54,7 +54,7 @@ module CubeTrainer
     def layer_score
       CORNER_COORDINATES_ORDERED_BY_PRIORITY.reduce(0) do |sum, c|
         corner_present = @state[c] == @solved_color
-        2 * sum + (corner_present ? 1 : 0)
+        (2 * sum) + (corner_present ? 1 : 0)
       end
     end
   end
