@@ -42,7 +42,7 @@
     "url": "https://github.com/Lykos/cube_trainer.git"
   },
   "scripts": {
-    "test": "mocha -r ts-node/register jstests/**/*.spec.ts"
+    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register jstests/**/*.spec.ts"
   },
   "version": "0.1.0",
   "devDependencies": {
