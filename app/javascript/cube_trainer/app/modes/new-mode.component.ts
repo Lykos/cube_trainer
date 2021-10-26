@@ -325,7 +325,7 @@ export class NewModeComponent implements OnInit {
       showInputMode: this.selectedShowInputMode,
       buffer: this.buffer.value,
       goalBadness: this.goalBadness.value,
-      cubeSize: this.selectedCubeSize,
+      cubeSize: this.cubeSize.value,
       statTypes: this.pickedStatTypes.map(s => s.key),
     };
   }
