@@ -309,7 +309,7 @@ export class NewModeComponent implements OnInit {
     }
   }
 
-  get selectedCubeSize() {
+  get selectedCubeSize(): number | undefined {
     if (this.hasMultipleCubeSizes) {
       return this.cubeSize.value;
     } else {
@@ -325,7 +325,7 @@ export class NewModeComponent implements OnInit {
       showInputMode: this.selectedShowInputMode,
       buffer: this.buffer.value,
       goalBadness: this.goalBadness.value,
-      cubeSize: this.cubeSize.value,
+      cubeSize: this.selectedCubeSize,
       statTypes: this.pickedStatTypes.map(s => s.key),
     };
   }
