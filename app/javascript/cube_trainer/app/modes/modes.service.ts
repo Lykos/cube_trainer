@@ -4,6 +4,7 @@ import { HttpVerb } from '../rails/http-verb';
 import { Mode } from './mode';
 import { CubeSizeSpec } from './cube-size-spec';
 import { NewMode } from './new-mode';
+import { ModeUpdate } from './mode-update.model';
 import { ModeType } from './mode-type';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -61,15 +62,18 @@ export class ModesService {
   }
 
   list(): Observable<Mode[]> {
-    return this.rails.ajax<Mode[]>(HttpVerb.Get, '/modes', {}).pipe(
+    return this.rails.ajax<Mode[]>(HttpVerb.Patch, '/modes', {}).pipe(
       map(modeTypes => modeTypes.map(parseMode)));
   }
 
   show(modeId: number): Observable<Mode> {
-    console.log('show', modeId);
     return this.rails.ajax<Mode>(HttpVerb.Get, `/modes/${modeId}`, {}).pipe(map(parseMode));
   }
 
+  update(modeId: number, modeUpdate: ModeUpdate): Observable<Mode> {
+    return this.rails.ajax<Mode>(HttpVerb.Post, `/modes/${modeId}`, {modeUpdate}).pipe(map(parseMode));
+  }
+  
   destroy(modeId: number): Observable<void> {
     return this.rails.ajax<void>(HttpVerb.Delete, `/modes/${modeId}`, {});
   }

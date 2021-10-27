@@ -361,7 +361,7 @@ export class NewModeComponent implements OnInit {
       modeType: ['', Validators.required],
     });
     this.setupGroup = this.formBuilder.group({
-      cubeSize: ['', RxwebValidators.compose({
+      cubeSize: [this.defaultCubeSize || '', RxwebValidators.compose({
 	conditionalExpression: () => this.hasMultipleCubeSizes,
 	validators: [
 	  RxwebValidators.required(),
