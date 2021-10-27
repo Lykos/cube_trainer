@@ -54,6 +54,7 @@ bundle exec rails db:create db:migrate
 
 ```shell
 bundle exec rails spec
+yarn test
 ```
 
 ### Run server
