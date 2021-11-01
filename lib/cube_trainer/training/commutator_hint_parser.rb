@@ -29,6 +29,7 @@ module CubeTrainer
       end
 
       def count_error_alg; end
+
       def parse_report; end
     end
 

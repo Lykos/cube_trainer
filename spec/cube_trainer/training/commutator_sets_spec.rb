@@ -27,7 +27,7 @@ shared_examples 'commutator_set' do |mode_type, buffer|
   let(:input_items) { mode.input_items }
   let(:hinter) { mode.hinter }
 
-  it "parses all comms correctly and give a hint on a random one" do
+  it 'parses all comms correctly and give a hint on a random one' do
     if input_items
       input_item = input_items.sample
       hinter.hints(input_item.representation)

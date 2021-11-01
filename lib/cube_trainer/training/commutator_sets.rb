@@ -130,7 +130,7 @@ module CubeTrainer
       PARITY_PART_TYPE = TwistyPuzzles::Edge
 
       def self.buffers_with_hints
-        # TODO support direct algs
+        # TODO: support direct algs
         CornerParities.buffers_with_hints
       end
 
@@ -151,8 +151,9 @@ module CubeTrainer
       end
 
       def generate_letter_pairs
+        unfiltered_targets = non_buffer_corners.product(non_buffer_incorrectly_oriented_corners)
         parity_twist_combinations =
-          non_buffer_corners.product(non_buffer_incorrectly_oriented_corners).reject do |parity, twist|
+          unfiltered_targets.reject do |parity, twist|
             parity.turned_equals?(twist)
           end
         parity_twist_combinations.map do |targets|
@@ -440,7 +441,9 @@ module CubeTrainer
       end
 
       def hinter
-        @hinter ||= self.class.hint_parser_class.maybe_parse_hints("#{buffer.to_s.downcase}_corner_parities", input_items, @mode)
+        @hinter ||= self.class.hint_parser_class.maybe_parse_hints(
+          "#{buffer.to_s.downcase}_corner_parities", input_items, @mode
+        )
       end
 
       def goal_badness
