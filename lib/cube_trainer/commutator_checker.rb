@@ -141,7 +141,8 @@ module CubeTrainer
     private
 
     def move_modifications(move)
-      [move, move.inverse].uniq
+      mirror = move.mirror(move.axis_face)
+      [move, move.inverse, mirror, mirror.inverse].uniq
     end
 
     def permutation_modifications(alg)
