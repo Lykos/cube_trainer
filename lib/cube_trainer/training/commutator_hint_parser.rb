@@ -110,6 +110,7 @@ module CubeTrainer
         BLACKLIST.include?(value.downcase)
       end
 
+      # Represents one location in a spreadsheet with all kind of indexing metadata.
       class CellDescription
         def initialize(name, row_index, column_index, letter_pair)
           @name = name
@@ -127,7 +128,7 @@ module CubeTrainer
         end
 
         def to_s
-          letter_pair_suffix = if @letter_pair then " #{@letter_pair}" else '' end
+          letter_pair_suffix = @letter_pair ? " #{@letter_pair}" : ''
           "#{@name}#{letter_pair_suffix} at #{spreadsheet_index}"
         end
       end
@@ -285,18 +286,18 @@ module CubeTrainer
       end
 
       def maybe_write_fixes(raw_hints)
-        if @write_fixes && !checker.fixes.empty?
-          checker.fixes.each do |fix|
-            desc = fix.cell_description
-            raw_hints[desc.row_index][desc.column_index] = fix.fixed_algorithm.to_s
-          end
-          write_hints(raw_hints)
+        return unless @write_fixes && !checker.fixes.empty?
+
+        checker.fixes.each do |fix|
+          desc = fix.cell_description
+          raw_hints[desc.row_index][desc.column_index] = fix.fixed_algorithm.to_s
         end
+        write_hints(raw_hints)
       end
 
       def output_final_report
         if checker.found_problems?
-          puts checker.failure_report if warn_comms? 
+          puts checker.failure_report if warn_comms?
           raise checker.failure_report if fail_comms?
         elsif @verbose
           puts checker.parse_report

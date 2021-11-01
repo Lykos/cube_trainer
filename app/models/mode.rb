@@ -12,7 +12,8 @@ class Mode < ApplicationRecord
 
   attribute :mode_type, :mode_type
   attribute :show_input_mode, :symbol
-  attr_accessor :stat_types
+  attr_accessor :stat_types, :verbose, :write_fixes
+  attr_writer :test_comms_mode
 
   before_validation :set_stats
   validates :user_id, presence: true
@@ -65,8 +66,6 @@ class Mode < ApplicationRecord
   delegate :input_items, to: :generator
 
   delegate :random_item, to: :input_sampler
-
-  attr_accessor :verbose, :test_comms_mode, :write_fixes
 
   def restrict_colors
     color_scheme.colors

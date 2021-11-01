@@ -8,6 +8,7 @@ module CubeTrainer
   class CommutatorChecker
     include TwistyPuzzles::CubePrintHelper
 
+    # Represents one case where we found a fixed algorithm.
     class Fix
       def initialize(cell_description, fixed_algorithm)
         @cell_description = cell_description
@@ -134,7 +135,10 @@ module CubeTrainer
     end
 
     def check_alg(cell_description, commutator)
-      parts = cell_description.letter_pair.letters.map { |l| @letter_scheme.for_letter(@part_type, l) }
+      parts =
+        cell_description.letter_pair.letters.map do |l|
+          @letter_scheme.for_letter(@part_type, l)
+        end
       # Apply alg and cycle
       cycle = construct_cycle(parts)
       cycle.apply_temporarily_to(@cycle_cube_state) do |cycle_state|
