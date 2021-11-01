@@ -28,6 +28,7 @@ module CubeTrainer
         false
       end
 
+      def count_error_alg; end
       def parse_report; end
     end
 
@@ -66,7 +67,7 @@ module CubeTrainer
         super()
         @part_type = part_type
         @buffer = buffer
-        @name = "#{buffer.to_s.downcase}_#{snake_case_class_name(part_type)}"
+        @name = self.class.name_with_buffer_name(part_type, buffer.to_s.downcase)
         @letter_scheme = letter_scheme
         @color_scheme = color_scheme
         @verbose = verbose
@@ -77,6 +78,17 @@ module CubeTrainer
       # rubocop:enable Metrics/MethodLength
 
       attr_reader :name, :part_type, :buffer, :verbose, :cube_size, :test_comms_mode
+
+      def self.name_with_buffer_name(part_type, buffer_name)
+        "#{buffer_name}_#{snake_case_class_name(part_type)}"
+      end
+
+      def self.buffers_with_hints(part_type)
+        buffer_extraction_regexp = csv_file(name_with_buffer_name(part_type, '(.*)'))
+        Dir.glob(csv_file(name_with_buffer_name(part_type, '*'))).map do |file|
+          part_type.parse(file.match(buffer_extraction_regexp)[1])
+        end
+      end
 
       def letter_pair(part0, part1)
         LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) })
@@ -251,7 +263,7 @@ module CubeTrainer
 
       def self.maybe_parse_hints(part_type, options)
         buffer = BufferHelper.determine_buffer(part_type, options)
-        hint_parser = CommutatorHintParser.new(
+        hint_parser = new(
           part_type: part_type,
           buffer: buffer,
           letter_scheme: options.letter_scheme,

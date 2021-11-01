@@ -2,6 +2,7 @@
 
 require 'cube_trainer/training/alg_hinter'
 require 'cube_trainer/training/alg_set_reverse_engineer'
+require 'cube_trainer/training/case_solution'
 require 'cube_trainer/training/hint_parser'
 require 'twisty_puzzles'
 

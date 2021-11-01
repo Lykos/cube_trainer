@@ -4,7 +4,7 @@ require 'twisty_puzzles'
 require 'rails_helper'
 require 'fixtures'
 
-shared_examples 'commutator_set' do |mode_type|
+shared_examples 'commutator_set' do |mode_type, buffer|
   include_context :user
 
   let(:letter_scheme) { TwistyPuzzles::BernhardLetterScheme.new }
@@ -13,9 +13,9 @@ shared_examples 'commutator_set' do |mode_type|
       name: mode_type,
       show_input_mode: :name,
       mode_type: mode_type,
-      cube_size: mode_type.default_cube_size
+      cube_size: mode_type.default_cube_size,
+      buffer: buffer
     )
-    mode.buffer = mode.letter_scheme.default_buffer(mode.part_type) if mode_type.has_buffer?
     if mode_type.has_parity_parts?
       mode.first_parity_part = TwistyPuzzles::Edge.for_face_symbols(%i[U B])
       mode.second_parity_part = TwistyPuzzles::Edge.for_face_symbols(%i[U R])
@@ -27,7 +27,7 @@ shared_examples 'commutator_set' do |mode_type|
   let(:input_items) { mode.input_items }
   let(:hinter) { mode.hinter }
 
-  it 'parses all comms correctly and give a hint on a random one' do
+  it "parses all comms correctly and give a hint on a random one" do
     if input_items
       input_item = input_items.sample
       hinter.hints(input_item.representation)
@@ -40,7 +40,16 @@ describe 'CommutatorSets' do
     next unless mode_type.default_cube_size
 
     describe mode_type.generator_class do
-      it_behaves_like 'commutator_set', mode_type
+      if mode_type.has_buffer?
+        buffers = mode_type.generator_class.buffers_with_hints
+        buffers.each do |buffer|
+          describe "for buffer #{buffer}" do
+            it_behaves_like 'commutator_set', mode_type, buffer
+          end
+        end
+      else
+        it_behaves_like 'commutator_set', mode_type, nil
+      end
     end
   end
 end

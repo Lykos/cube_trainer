@@ -36,12 +36,18 @@ module CubeTrainer
       end
 
       def correctly_oriented_corners
+        self.class::PART_TYPE::ELEMENTS.select do |c|
+          ORIENTATION_FACES.include?(c.solved_face)
+        end
+      end
+
+      def non_buffer_correctly_oriented_corners
         non_buffer_corners.select do |c|
           ORIENTATION_FACES.include?(c.solved_face)
         end
       end
 
-      def incorrectly_oriented_corners
+      def non_buffer_incorrectly_oriented_corners
         non_buffer_corners.reject do |c|
           ORIENTATION_FACES.include?(c.solved_face)
         end
@@ -71,38 +77,12 @@ module CubeTrainer
       end
 
       def generate_input_items
-        two_twists = generate_two_twists
-        buffer_twist.apply_to(cube_state)
-        ccw_twists = generate_one_twists(cube_state, true)
-        buffer_twist.apply_to(cube_state)
-        cw_twists = generate_one_twists(cube_state, false)
-        two_twists + ccw_twists + cw_twists
-      end
-
-      def generate_two_twists
         correctly_oriented_corners.permutation(2).map do |c1, c2|
           twisted_corner_pair = [c1.rotate_by(1), c2.rotate_by(2)]
           letter_pair =
             LetterPair.new(twisted_corner_pair.map { |c| letter(c) }.sort)
           twist_sticker_cycles = part_cycle_factory.multi_twist([c1]) +
                                  part_cycle_factory.multi_twist([c2]).inverse
-          twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
-          InputItem.new(letter_pair, twisted_cube_state)
-        end
-      end
-
-      def buffer_twist
-        @buffer_twist ||= part_cycle_factory.multi_twist([@mode.parsed_buffer])
-      end
-
-      # The buffer of cube_state is expected to already be twisted accordingly.
-      def generate_one_twists(cube_state, invert_twist)
-        twist_number = invert_twist ? 2 : 1
-        correctly_oriented_corners.map do |c|
-          twisted_corner = c.rotate_by(twist_number)
-          letter_pair = LetterPair.new([letter(twisted_corner)])
-          twist_sticker_cycles = part_cycle_factory.multi_twist([c])
-          twist_sticker_cycles = twist_sticker_cycles.inverse if invert_twist
           twisted_cube_state = twist_sticker_cycles.apply_to_dupped(cube_state)
           InputItem.new(letter_pair, twisted_cube_state)
         end
@@ -119,6 +99,10 @@ module CubeTrainer
           FloatingCorner2Twists.new(mode),
           Corner3Twists.new(mode)
         )
+      end
+
+      def self.buffers_with_hints
+        Corner3Twists.buffers_with_hints
       end
 
       def buffer_coordinates
@@ -145,6 +129,11 @@ module CubeTrainer
       PART_TYPE = TwistyPuzzles::Corner
       PARITY_PART_TYPE = TwistyPuzzles::Edge
 
+      def self.buffers_with_hints
+        # TODO support direct algs
+        CornerParities.buffers_with_hints
+      end
+
       def hinter
         corner_mode = @mode.used_mode(:corner_commutators)
         parity_mode = @mode.used_mode(:corner_parities)
@@ -163,7 +152,7 @@ module CubeTrainer
 
       def generate_letter_pairs
         parity_twist_combinations =
-          non_buffer_corners.product(incorrectly_oriented_corners).reject do |parity, twist|
+          non_buffer_corners.product(non_buffer_incorrectly_oriented_corners).reject do |parity, twist|
             parity.turned_equals?(twist)
           end
         parity_twist_combinations.map do |targets|
@@ -209,6 +198,10 @@ module CubeTrainer
 
       PART_TYPE = TwistyPuzzles::Corner
 
+      def self.buffers_with_hints
+        CornerCommutators.buffers_with_hints
+      end
+
       def hinter
         return NoHinter.new(input_items) unless (corner_mode = @mode.used_mode(:corner_commutators))
 
@@ -227,7 +220,7 @@ module CubeTrainer
         buffer_twist = part_cycle_factory.multi_twist([@mode.parsed_buffer])
         1.upto(2).collect_concat do |twist_number|
           buffer_twist.apply_to(cube_state)
-          correctly_oriented_corners.combination(2).collect_concat do |c1, c2|
+          non_buffer_correctly_oriented_corners.combination(2).collect_concat do |c1, c2|
             twisted_corner_pair = [c1.rotate_by(twist_number), c2.rotate_by(twist_number)]
             letter_pair =
               LetterPair.new(twisted_corner_pair.map { |c| letter(c) }.sort)
@@ -356,6 +349,10 @@ module CubeTrainer
 
     # Class that generates input items for commutators.
     class CommutatorSet < LetterPairAlgSet
+      def self.buffers_with_hints
+        CommutatorHintParser.buffers_with_hints(self::PART_TYPE)
+      end
+
       def hinter
         @hinter ||= CommutatorHintParser.maybe_parse_hints(self.class::PART_TYPE, @mode)
       end
@@ -433,8 +430,17 @@ module CubeTrainer
       PART_TYPE = TwistyPuzzles::Corner
       PARITY_PART_TYPE = TwistyPuzzles::Edge
 
+      def self.buffers_with_hints
+        # TODO: Implement parity buffers properly
+        []
+      end
+
+      def self.hint_parser_class
+        CornerParitiesHintParser
+      end
+
       def hinter
-        @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('parities', input_items, @mode)
+        @hinter ||= self.class.hint_parser_class.maybe_parse_hints("#{buffer.to_s.downcase}_corner_parities", input_items, @mode)
       end
 
       def goal_badness

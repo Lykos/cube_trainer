@@ -193,7 +193,7 @@ class ModeType
       generator_class: FloatingCorner2Twists,
       learner_type: :case_time,
       default_cube_size: 3,
-      has_buffer: true,
+      has_buffer: false,
       has_goal_badness: true,
       show_input_modes: SHOW_INPUT_MODES
     ),

@@ -7,14 +7,18 @@ module CubeTrainer
   module Training
     # Class that parses hints from an algorithm or commutator file.
     class HintParser
-      include TwistyPuzzles::Utils::StringHelper
+      extend TwistyPuzzles::Utils::StringHelper
 
       def csv_file
+        self.class.csv_file(name)
+      end
+
+      def self.csv_file(name)
         "data/#{hint_type}/#{name}.csv"
       end
 
-      def hint_type
-        class_name = snake_case_class_name(self.class)
+      def self.hint_type
+        class_name = snake_case_class_name(self)
         raise unless class_name.end_with?('_hint_parser')
 
         class_name.gsub(/_hint_parser$/, 's')
