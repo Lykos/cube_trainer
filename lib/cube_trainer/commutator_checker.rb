@@ -62,8 +62,8 @@ module CubeTrainer
       @error_algs = 0
     end
 
-    def fix_list
-      @fix_list ||= []
+    def fixes
+      @fixes ||= []
     end
 
     def found_problems?
@@ -102,7 +102,7 @@ module CubeTrainer
       # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
       if @find_fixes
         if (fix = find_fix(commutator, desired_state))
-          fix_list.push(Fix.new(cell_description, fix))
+          fixes.push(Fix.new(cell_description, fix))
           puts "Found fix #{fix}." if @verbose
           return CheckAlgResult.new(:fix_found, fix)
         else

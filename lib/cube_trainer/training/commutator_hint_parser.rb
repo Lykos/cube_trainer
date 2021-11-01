@@ -278,14 +278,14 @@ module CubeTrainer
 
         # Now check everything and construct the hint table.
         hints = process_alg_table(alg_table, interpretation)
-        output_final_report
         maybe_write_fixes(raw_hints)
+        output_final_report
 
         hints
       end
 
       def maybe_write_fixes(raw_hints)
-        if checker.found_problems? && @write_fixes
+        if @write_fixes && !checker.fixes.empty?
           checker.fixes.each do |fix|
             desc = fix.cell_description
             raw_hints[desc.row_index][desc.column_index] = fix.fixed_algorithm.to_s

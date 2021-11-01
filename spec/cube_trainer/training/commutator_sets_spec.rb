@@ -22,6 +22,7 @@ shared_examples 'commutator_set' do |mode_type, buffer|
     end
     mode.test_comms_mode = :fail
     mode.verbose = true
+    mode.write_fixes = true
     mode.validate!
     mode
   end
