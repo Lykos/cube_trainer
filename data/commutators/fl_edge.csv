@@ -1,0 +1,9 @@
+,RB,RD,BL,BR,LD,LB,DR,DL
+RB,,"R2 U': R U R', E",L' E': L'/E',,R S': R'/E,"L' S' L, B2",L S: L/E,"L' u' L: L E' L', U"
+RD,"R2 u': R U R', E'",,S': L'/S',"R' u R: U', R E' R'",S: R'/E,R' F R U': R/E',,"U' L U, S"
+BL,L' E': L/E',S': L'/S',,"L2, E",S': L/S,,L/S,u2: R/S'
+BR,,"R' u R: R E' R', U'","E, L2",,"L' u L: U', L E' L'","E L: S, L F2 L'",R' U R U': R'/E,L' U' L U: L/E
+LD,R S': R/E,S': R/E,S': L'/S,"L' u L: L E' L', U'",,"L': S', U L U'","R F2 R', S'",
+LB,"B2, L' S' L",R' F R U': R'/E',,"E L: L F2 L', S","L': U L U', S'",,R B' R' U: R'/E,"L2 u: L U' L', E"
+DR,L S: L'/E,,L'/S,R' U R U': R/E,"S', R F2 R'",R B' R' U: R/E,,R' F2: R'/S'
+DR,"L' u' L: U, L E' L'","S, U' L U",u2: R'/S',L' U' L U: L'/E,,"L2 U: L U' L', E'",R' F2: R/S',
