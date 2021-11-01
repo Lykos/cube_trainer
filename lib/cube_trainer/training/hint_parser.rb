@@ -36,6 +36,14 @@ module CubeTrainer
         CSV.read(csv_file)
       end
 
+      def write_hints(raw_hints)
+        CSV.open(csv_file, 'wb') do |csv|
+          raw_hints.each do |row|
+            csv << row
+          end
+        end
+      end
+
       def hints_exist?
         File.exist?(csv_file)
       end

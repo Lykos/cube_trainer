@@ -66,16 +66,14 @@ class Mode < ApplicationRecord
 
   delegate :random_item, to: :input_sampler
 
-  def verbose
-    false
-  end
+  attr_accessor :verbose, :test_comms_mode, :write_fixes
 
   def restrict_colors
     color_scheme.colors
   end
 
   def test_comms_mode
-    :ignore
+    @test_comms_mode ||= :ignore
   end
 
   def restrict_letters; end

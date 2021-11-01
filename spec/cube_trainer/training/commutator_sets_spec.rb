@@ -20,6 +20,8 @@ shared_examples 'commutator_set' do |mode_type, buffer|
       mode.first_parity_part = TwistyPuzzles::Edge.for_face_symbols(%i[U B])
       mode.second_parity_part = TwistyPuzzles::Edge.for_face_symbols(%i[U R])
     end
+    mode.test_comms_mode = :fail
+    mode.verbose = true
     mode.validate!
     mode
   end

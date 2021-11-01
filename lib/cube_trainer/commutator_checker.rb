@@ -8,11 +8,19 @@ module CubeTrainer
   class CommutatorChecker
     include TwistyPuzzles::CubePrintHelper
 
+    class Fix
+      def initialize(cell_description, fixed_algorithm)
+        @cell_description = cell_description
+        @fixed_algorithm = fixed_algorithm
+      end
+
+      attr_reader :cell_description, :fixed_algorithm
+    end
+
     # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
     def initialize(
       part_type:,
       buffer:,
-      piece_name:,
       color_scheme:,
       letter_scheme:,
       cube_size:,
@@ -29,7 +37,6 @@ module CubeTrainer
 
       @part_type = part_type
       @buffer = buffer
-      @piece_name = piece_name
       @color_scheme = color_scheme
       @letter_scheme = letter_scheme
       @cube_size = cube_size
@@ -53,6 +60,10 @@ module CubeTrainer
       # Unknown by default. Only relevant if we actually search for fixes.
       @unfixable_algs = nil
       @error_algs = 0
+    end
+
+    def fix_list
+      @fix_list ||= []
     end
 
     def found_problems?
@@ -81,9 +92,9 @@ module CubeTrainer
       "Parsed #{@total_algs} algs."
     end
 
-    def handle_incorrect(row_description, letter_pair, commutator, alg, desired_state)
+    def handle_incorrect(cell_description, commutator, alg, desired_state)
       if @verbose
-        puts "Algorithm for #{@piece_name} #{letter_pair} at #{row_description} #{commutator} " \
+        puts "Algorithm for #{cell_description} #{commutator} " \
              "doesn't do what it's expected to do."
       end
       @broken_algs += 1
@@ -91,6 +102,7 @@ module CubeTrainer
       # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
       if @find_fixes
         if (fix = find_fix(commutator, desired_state))
+          fix_list.push(Fix.new(cell_description, fix))
           puts "Found fix #{fix}." if @verbose
           return CheckAlgResult.new(:fix_found, fix)
         else
@@ -121,8 +133,8 @@ module CubeTrainer
       alg.apply_temporarily_to(@alg_cube_state) { |s| s == desired_state }
     end
 
-    def check_alg(row_description, letter_pair, commutator)
-      parts = letter_pair.letters.map { |l| @letter_scheme.for_letter(@part_type, l) }
+    def check_alg(cell_description, commutator)
+      parts = cell_description.letter_pair.letters.map { |l| @letter_scheme.for_letter(@part_type, l) }
       # Apply alg and cycle
       cycle = construct_cycle(parts)
       cycle.apply_temporarily_to(@cycle_cube_state) do |cycle_state|
@@ -133,7 +145,7 @@ module CubeTrainer
         if alg_reaches_state(alg, cycle_state)
           CheckAlgResult::CORRECT
         else
-          handle_incorrect(row_description, letter_pair, commutator, alg, cycle_state)
+          handle_incorrect(cell_description, commutator, alg, cycle_state)
         end
       end
     end
