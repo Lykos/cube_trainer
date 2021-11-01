@@ -53,7 +53,7 @@ module CubeTrainer
           if hints_exist?
             parse_hints_internal(read_hints)
           else
-            puts "Failed to find hint CSV file #{hint_parser.csv_file}." if verbose
+            raise "Failed to find hint CSV file #{csv_file}." if verbose
             {}
           end
         hinter_class.new(hints)

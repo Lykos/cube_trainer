@@ -54,6 +54,7 @@ module CubeTrainer
         color_scheme:,
         write_fixes:,
         verbose:,
+        show_cube_states:,
         cube_size:,
         test_comms_mode:
       )
@@ -74,6 +75,7 @@ module CubeTrainer
         @color_scheme = color_scheme
         @write_fixes = write_fixes
         @verbose = verbose
+        @show_cube_states = show_cube_states
         @cube_size = cube_size
         @test_comms_mode = test_comms_mode
       end
@@ -87,9 +89,12 @@ module CubeTrainer
       end
 
       def self.buffers_with_hints(part_type)
-        buffer_extraction_regexp = csv_file(name_with_buffer_name(part_type, '(.*)'))
-        Dir.glob(csv_file(name_with_buffer_name(part_type, '*'))).map do |file|
-          part_type.parse(file.match(buffer_extraction_regexp)[1])
+        part_type.min_parseable_face_symbols.upto(part_type.max_parseable_face_symbols).flat_map do |n|
+          wildcard = '?' * n
+          buffer_extraction_regexp = csv_file(name_with_buffer_name(part_type, "(#{'.' * n})"))
+          Dir.glob(csv_file(name_with_buffer_name(part_type, wildcard))).map do |file|
+            part_type.parse(file.match(buffer_extraction_regexp)[1])
+          end
         end
       end
 
@@ -177,6 +182,7 @@ module CubeTrainer
               letter_scheme: @letter_scheme,
               cube_size: @cube_size,
               verbose: @verbose,
+              show_cube_states: @show_cube_states,
               find_fixes: @verbose
             )
           end
@@ -316,6 +322,7 @@ module CubeTrainer
           letter_scheme: options.letter_scheme,
           color_scheme: options.color_scheme,
           verbose: options.verbose,
+          show_cube_states: options.show_cube_states,
           write_fixes: options.write_fixes,
           cube_size: options.cube_size,
           test_comms_mode: options.test_comms_mode

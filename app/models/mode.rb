@@ -12,7 +12,7 @@ class Mode < ApplicationRecord
 
   attribute :mode_type, :mode_type
   attribute :show_input_mode, :symbol
-  attr_accessor :stat_types, :verbose, :write_fixes
+  attr_accessor :stat_types, :verbose, :show_cube_states, :write_fixes
   attr_writer :test_comms_mode
 
   before_validation :set_stats

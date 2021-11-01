@@ -26,6 +26,7 @@ module CubeTrainer
       letter_scheme:,
       cube_size:,
       verbose: false,
+      show_cube_states: false,
       find_fixes: false,
       incarnation_index: 0
     )
@@ -42,6 +43,7 @@ module CubeTrainer
       @letter_scheme = letter_scheme
       @cube_size = cube_size
       @verbose = verbose
+      @show_cube_states = show_cube_states
       @find_fixes = find_fixes
       @incarnation_index = incarnation_index
       init_helpers
@@ -175,6 +177,23 @@ module CubeTrainer
       perms + a.product(*as).map { |ms| TwistyPuzzles::Algorithm.new(ms) }
     end
 
+    def comm_sexy_insert_modifications(algorithm)
+      raise ArgumentError unless algorithm.length == 4
+
+      a = algorithm.moves[0]
+      b = algorithm.moves[1]
+      [
+        TwistyPuzzles::Algorithm.new([a, b, a.inverse, b.inverse]),
+        TwistyPuzzles::Algorithm.new([a.inverse, b.inverse, a, b]),
+        TwistyPuzzles::Algorithm.new([a, b.inverse, a.inverse, b]),
+        TwistyPuzzles::Algorithm.new([a.inverse, b, b, a.inverse]),
+        TwistyPuzzles::Algorithm.new([b, a, b.inverse, a.inverse]),
+        TwistyPuzzles::Algorithm.new([b.inverse, a.inverse, b, a]),
+        TwistyPuzzles::Algorithm.new([b, a.inverse, b.inverse, a]),
+        TwistyPuzzles::Algorithm.new([b.inverse, a, b, a.inverse]),
+      ].uniq
+    end
+
     def comm_insert_modifications(algorithm)
       raise ArgumentError unless algorithm.length == 3
 
@@ -194,6 +213,7 @@ module CubeTrainer
       case algorithm.moves.length
       when 1 then alg_modifications(algorithm)
       when 3 then comm_insert_modifications(algorithm)
+      when 4 then comm_sexy_insert_modifications(algorithm)
       else [algorithm]
       end
     end
@@ -216,6 +236,15 @@ module CubeTrainer
       end.uniq
     end
 
+    def slash_commutator_modifications(commutator)
+      left_modifications = comm_part_modifications(commutator.first_part)
+      right_modifications = comm_part_modifications(commutator.second_part)
+      modification_combinations = left_modifications.product(right_modifications)
+      modification_combinations.flat_map do |a, b|
+        [TwistyPuzzles::SlashCommutator.new(a, b), TwistyPuzzles::SlashCommutator.new(b, a)]
+      end.uniq
+    end
+
     def fake_commutator_modifications(commutator)
       alg_modifications(commutator.algorithm).map { |a| TwistyPuzzles::FakeCommutator.new(a) }
     end
@@ -224,6 +253,8 @@ module CubeTrainer
       case commutator
       when TwistyPuzzles::SetupCommutator
         setup_commutator_modifications(commutator)
+      when TwistyPuzzles::SlashCommutator
+        slash_commutator_modifications(commutator)
       when TwistyPuzzles::PureCommutator
         pure_commutator_modifications(commutator)
       when TwistyPuzzles::FakeCommutator
@@ -246,6 +277,7 @@ module CubeTrainer
       return unless @verbose
 
       puts "Couldn't find a fix for this alg."
+      return unless @show_cube_states
       puts 'actual'
       puts alg.apply_temporarily_to(@alg_cube_state) { |s| cube_string(s, :color) }
       puts 'expected'
