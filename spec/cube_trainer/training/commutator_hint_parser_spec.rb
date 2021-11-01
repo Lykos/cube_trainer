@@ -17,7 +17,8 @@ describe Training::HintParser do
       color_scheme: TwistyPuzzles::ColorScheme::BERNHARD,
       verbose: false,
       cube_size: 3,
-      test_comms_mode: :ignore
+      test_comms_mode: :ignore,
+      write_fixes: false
     )
   end
 
@@ -27,7 +28,7 @@ describe Training::HintParser do
       ['', "[U R U', L']", "[D U R U' : [R' U R, D']]"],
       ["[D U R U' : [D', R' U R]]", "[U R' U', L']", '']
     ]
-    expect(hint_parser.parse_hint_table(table)).to eq(
+    expect(hint_parser.parse_hint_table(table, table)).to eq(
       {
         LetterPair.new(%w[i g]) => parse_commutator("[L', U R U']"),
         LetterPair.new(%w[g i]) => parse_commutator("[U R U', L']"),
@@ -44,7 +45,7 @@ describe Training::HintParser do
       ["[L', U R U']", ''],
       ['', "[U R U', L']"]
     ]
-    expect(hint_parser.parse_hint_table(table)).to eq(
+    expect(hint_parser.parse_hint_table(table, table)).to eq(
       {
         LetterPair.new(%w[i g]) => parse_commutator("[L', U R U']"),
         LetterPair.new(%w[g i]) => parse_commutator("[U R U', L']")

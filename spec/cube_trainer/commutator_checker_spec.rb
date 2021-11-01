@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/commutator_checker'
+require 'cube_trainer/training/commutator_hint_parser'
 require 'cube_trainer/letter_pair'
 require 'twisty_puzzles'
 
@@ -17,7 +18,6 @@ describe CommutatorChecker do
     described_class.new(
       part_type: part_type,
       buffer: buffer,
-      piece_name: piece_name,
       color_scheme: color_scheme,
       letter_scheme: letter_scheme,
       cube_size: cube_size,
@@ -25,40 +25,39 @@ describe CommutatorChecker do
       find_fixes: true
     )
   end
-  let(:row_description) { 'some row' }
 
   it 'deems a correct algorithm correct' do
-    result = checker.check_alg(row_description, LetterPair.new(%w[i g]), parse_commutator("[L', U R U']"))
+    result = checker.check_alg(CommutatorHintParser::CellDescription.new(0, 0, LetterPair.new(%w[i g])), parse_commutator("[L', U R U']"))
     expect(result.result).to be == :correct
     expect(result.fix).to be_nil
   end
 
   it 'fixes an algorithm that has to be inverted' do
-    result = checker.check_alg(row_description, LetterPair.new(%w[i g]), parse_commutator("[U R U', L']"))
+    result = checker.check_alg(CommutatorHintParser::CellDescription.new(0, 0, LetterPair.new(%w[i g])), parse_commutator("[U R U', L']"))
     expect(result.result).to be == :fix_found
     expect(result.fix).to eq_commutator("[L', U R U']")
   end
 
   it 'fixes an algorithm where one move in the insert has to be inverted' do
-    result = checker.check_alg(row_description, LetterPair.new(%w[i g]), parse_commutator("[L', U' R U']"))
+    result = checker.check_alg(CommutatorHintParser::CellDescription.new(0, 0, LetterPair.new(%w[i g])), parse_commutator("[L', U' R U']"))
     expect(result.result).to be == :fix_found
     expect(result.fix).to eq_commutator("[L', U R U']")
   end
 
   it 'fixes an algorithm where the interchange has to be inverted' do
-    result = checker.check_alg(row_description, LetterPair.new(%w[i g]), parse_commutator("[L, U R U']"))
+    result = checker.check_alg(CommutatorHintParser::CellDescription.new(0, 0, LetterPair.new(%w[i g])), parse_commutator("[L, U R U']"))
     expect(result.result).to be == :fix_found
     expect(result.fix).to eq_commutator("[L', U R U']")
   end
 
   it 'fixes an algorithm where the setup has to be inverted' do
-    result = checker.check_alg(row_description, LetterPair.new(%w[i e]), parse_commutator("[F : [L', U R U']]"))
+    result = checker.check_alg(CommutatorHintParser::CellDescription.new(0, 0, LetterPair.new(%w[i e])), parse_commutator("[F : [L', U R U']]"))
     expect(result.result).to be == :fix_found
     expect(result.fix).to eq_commutator("[F' : [L', U R U']]")
   end
 
   it 'says unfixable if no fix is in sight' do
-    result = checker.check_alg(row_description, LetterPair.new(%w[j g]), parse_commutator('[M, U]'))
+    result = checker.check_alg(CommutatorHintParser::CellDescription.new(0, 0, LetterPair.new(%w[j g])), parse_commutator('[M, U]'))
     expect(result.result).to be == :unfixable
     expect(result.fix).to be_nil
   end
