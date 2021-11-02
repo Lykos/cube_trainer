@@ -16,6 +16,7 @@ describe Training::HintParser do
       letter_scheme: letter_scheme,
       color_scheme: TwistyPuzzles::ColorScheme::BERNHARD,
       verbose: false,
+      show_cube_states: false,
       cube_size: 3,
       test_comms_mode: :ignore,
       write_fixes: false

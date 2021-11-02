@@ -89,7 +89,9 @@ module CubeTrainer
       end
 
       def self.buffers_with_hints(part_type)
-        part_type.min_parseable_face_symbols.upto(part_type.max_parseable_face_symbols).flat_map do |n|
+        min_symbols = part_type.min_parseable_face_symbols
+        max_symbols = part_type.max_parseable_face_symbols
+        min_symbols.upto(max_symbols).flat_map do |n|
           wildcard = '?' * n
           buffer_extraction_regexp = csv_file(name_with_buffer_name(part_type, "(#{'.' * n})"))
           Dir.glob(csv_file(name_with_buffer_name(part_type, wildcard))).map do |file|

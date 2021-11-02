@@ -273,3 +273,5 @@ Rails/TimeZoneAssignment: # new in 2.10
   Enabled: true
 Rails/UnusedIgnoredColumns: # new in 2.11
   Enabled: true
+Performance/ConcurrentMonotonicTime: # new in 1.12
+  Enabled: true
