@@ -41,22 +41,22 @@ describe SkewbLayerFinder do
       expect(layer_finder.state_score(skewb_state)).to eq(2)
     end
 
-    it 'finds the score after three moves' do
+    it 'finds the score for R U R after three moves' do
       parse_skewb_algorithm('R U R', fixed_corner).apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to eq(2)
     end
 
-    it 'finds the score after three moves' do
+    it "finds the score for B' L' U' after three moves" do
       parse_skewb_algorithm("B' L' U'", fixed_corner).apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to eq(2)
     end
 
-    it 'finds the score after three destructive moves' do
+    it 'finds the score for R U B after three destructive moves' do
       parse_skewb_algorithm('R U B', fixed_corner).apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to eq(1)
     end
 
-    it 'finds the score after three destructive moves' do
+    it 'finds the score for R U L after three destructive moves' do
       parse_skewb_algorithm('R U L', fixed_corner).apply_to(skewb_state)
       expect(layer_finder.state_score(skewb_state)).to eq(1)
     end

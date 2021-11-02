@@ -10,7 +10,7 @@ describe CommutatorReverseEngineer do
   let(:cube_size) { 3 }
   let(:engineer) { described_class.new(part_type, buffer, letter_scheme, cube_size) }
 
-  context 'for corners' do
+  describe 'for corners' do
     let(:part_type) { TwistyPuzzles::Corner }
     let(:buffer) { TwistyPuzzles::Corner.for_face_symbols(%i[U L B]) }
 
@@ -45,7 +45,7 @@ describe CommutatorReverseEngineer do
     end
   end
 
-  context 'for edges' do
+  describe 'for edges' do
     let(:part_type) { TwistyPuzzles::Edge }
     let(:buffer) { TwistyPuzzles::Edge.for_face_symbols(%i[U F]) }
 

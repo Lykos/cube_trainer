@@ -5,7 +5,7 @@ require 'rails_helper'
 require 'fixtures'
 
 shared_examples 'commutator_set' do |mode_type, buffer|
-  include_context :user
+  include_context 'with user abc'
 
   let(:letter_scheme) { TwistyPuzzles::BernhardLetterScheme.new }
   let(:mode) do

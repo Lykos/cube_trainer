@@ -5,8 +5,8 @@ require 'system/system_spec_helper'
 require 'fixtures'
 
 describe 'messages', type: :system do
-  include_context :user
-  include_context :achievement_grant
+  include_context 'with user abc'
+  include_context 'with achievement grant'
 
   before do
     driven_by(:selenium_chrome_headless)

@@ -4,12 +4,12 @@ require 'rails_helper'
 require 'requests/requests_spec_helper'
 
 RSpec.describe 'Messages', type: :request do
-  include_context :user
-  include_context :eve
-  include_context :user_message
-  include_context :headers
+  include_context 'with user abc'
+  include_context 'with user eve'
+  include_context 'with message'
+  include_context 'with headers'
 
-  before(:each) do
+  before do
     post_login(user)
   end
 

@@ -5,10 +5,10 @@ require 'fixtures'
 require 'requests/requests_spec_helper'
 
 RSpec.describe 'Achievements', type: :request do
-  include_context :user
-  include_context :headers
+  include_context 'with user abc'
+  include_context 'with headers'
 
-  before(:each) do
+  before do
     post_login(user)
   end
 

@@ -4,12 +4,12 @@ require 'rails_helper'
 require 'fixtures'
 
 RSpec.describe 'Stats', type: :request do
-  include_context :user
-  include_context :eve
-  include_context :stat
-  include_context :headers
+  include_context 'with user abc'
+  include_context 'with user eve'
+  include_context 'with stat'
+  include_context 'with headers'
 
-  before(:each) do
+  before do
     post_login(user)
   end
 

@@ -7,7 +7,7 @@ require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
 describe SkewbScrambler do
-  let(:scrambler) { SkewbScrambler.new }
+  let(:scrambler) { described_class.new }
 
   it 'generates scrambles of the right size' do
     property_of do
@@ -21,9 +21,7 @@ describe SkewbScrambler do
     property_of do
       Rantly { range(0, 5) }
     end.check do |length|
-      scrambler.random_algorithm(length).moves.each do |move|
-        expect(move).to be_a(TwistyPuzzles::SkewbMove)
-      end
+      expect(scrambler.random_algorithm(length).moves).to all(be_a(TwistyPuzzles::SkewbMove))
     end
   end
 
@@ -34,7 +32,7 @@ describe SkewbScrambler do
       alg = scrambler.random_algorithm(length)
       move_pairs = alg.moves[0..-2].zip(alg.moves[1..])
       move_pairs.each do |first, second|
-        expect(first.axis_corner).to_not eq(second.axis_corner)
+        expect(first.axis_corner).not_to eq(second.axis_corner)
       end
     end
   end

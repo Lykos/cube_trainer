@@ -5,8 +5,8 @@ require 'system/system_spec_helper'
 require 'fixtures'
 
 describe 'messages', type: :system do
-  include_context :user
-  include_context :user_message
+  include_context 'with user abc'
+  include_context 'with message'
 
   before do
     driven_by(:selenium_chrome_headless)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_context :headers do
+shared_context 'with headers' do
   let(:headers) { { ACCEPT: 'application/json' } }
 end
 

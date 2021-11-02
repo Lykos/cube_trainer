@@ -2,6 +2,7 @@ require:
 - rubocop-performance
 - rubocop-rake
 - rubocop-rails
+- rubocop-rspec
 AllCops:
   Exclude:
   - 'lib/**/*_ui.rb'
@@ -275,3 +276,20 @@ Rails/UnusedIgnoredColumns: # new in 2.11
   Enabled: true
 Performance/ConcurrentMonotonicTime: # new in 1.12
   Enabled: true
+RSpec/ExcessiveDocstringSpacing: # new in 2.5
+  Enabled: true
+RSpec/IdenticalEqualityAssertion: # new in 2.4
+  Enabled: true
+RSpec/SubjectDeclaration: # new in 2.5
+  Enabled: true
+RSpec/Rails/AvoidSetupHook: # new in 2.4
+  Enabled: true
+RSpec/MultipleMemoizedHelpers:
+  # TODO: Enable
+  Enabled: false
+RSpec/ExampleLength:
+  # TODO: Enable
+  Enabled: false
+RSpec/MultipleExpectations:
+  # TODO: Enable
+  Enabled: false

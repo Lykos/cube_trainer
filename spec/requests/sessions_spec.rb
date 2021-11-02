@@ -4,8 +4,8 @@ require 'rails_helper'
 require 'requests/requests_spec_helper'
 
 RSpec.describe 'Sessions', type: :request do
-  include_context :user
-  include_context :headers
+  include_context 'with user abc'
+  include_context 'with headers'
 
   describe 'GET #login' do
     it 'returns http success' do

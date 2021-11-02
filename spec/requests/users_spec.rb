@@ -5,10 +5,10 @@ require 'requests/requests_spec_helper'
 require 'fixtures'
 
 RSpec.describe 'Users', type: :request do
-  include_context :user
-  include_context :eve
-  include_context :admin
-  include_context :headers
+  include_context 'with user abc'
+  include_context 'with user eve'
+  include_context 'with user admin'
+  include_context 'with headers'
 
   describe 'GET #username_or_email_exists?' do
     it 'returns true if a user exists' do
@@ -53,7 +53,7 @@ RSpec.describe 'Users', type: :request do
   end
 
   describe 'GET #show' do
-    before(:each) { post_login(user) }
+    before { post_login(user) }
 
     it 'returns http success' do
       get "/users/#{user.id}", headers: headers
@@ -90,7 +90,7 @@ RSpec.describe 'Users', type: :request do
   end
 
   describe 'GET #edit' do
-    before(:each) { post_login(user) }
+    before { post_login(user) }
 
     it 'returns http success' do
       get "/users/#{user.id}/edit"
@@ -184,7 +184,7 @@ RSpec.describe 'Users', type: :request do
   end
 
   describe 'PUT #update' do
-    before(:each) do
+    before do
       post_login(user)
     end
 
@@ -230,7 +230,7 @@ RSpec.describe 'Users', type: :request do
   end
 
   describe 'DELETE #destroy' do
-    before(:each) do
+    before do
       post_login(user)
     end
 
