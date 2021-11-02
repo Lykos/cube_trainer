@@ -77,6 +77,16 @@ ActiveRecord::Schema.define(version: 2020_04_19_221211) do
     t.index ["user_id"], name: "index_modes_on_user_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.text "message"
+    t.boolean "read"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "results", force: :cascade do |t|
     t.text "old_mode"
     t.float "time_s", null: false
@@ -122,6 +132,7 @@ ActiveRecord::Schema.define(version: 2020_04_19_221211) do
   add_foreign_key "mode_usages", "modes"
   add_foreign_key "mode_usages", "modes", column: "used_mode_id"
   add_foreign_key "modes", "users"
+  add_foreign_key "notifications", "users"
   add_foreign_key "results", "inputs"
   add_foreign_key "stats", "modes"
 end
