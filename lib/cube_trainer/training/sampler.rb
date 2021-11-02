@@ -81,6 +81,7 @@ module CubeTrainer
     class AdaptiveSampler < Sampler
       include Utils::SamplingHelper
 
+      # An item with its score attached.
       class ScoredItem
         def initialize(item, score)
           @item = item
@@ -100,7 +101,7 @@ module CubeTrainer
       def random_item
         raise SamplingError, "No ready item for adaptive sampler #{@name}." if ready_items.empty?
 
-        sample_by(ready_items) { |ready_item| ready_item.score }.item
+        sample_by(ready_items, &:score).item
       end
 
       def ready_items
