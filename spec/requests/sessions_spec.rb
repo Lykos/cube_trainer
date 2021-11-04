@@ -7,13 +7,6 @@ RSpec.describe 'Sessions', type: :request do
   include_context 'with user abc'
   include_context 'with headers'
 
-  describe 'GET #login' do
-    it 'returns http success' do
-      get '/login'
-      expect(response).to have_http_status(:success)
-    end
-  end
-
   describe 'GET #welcome' do
     it 'returns unauthorized if not logged in' do
       get '/welcome'

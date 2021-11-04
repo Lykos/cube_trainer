@@ -58,7 +58,7 @@ RSpec.describe 'Modes', type: :request do
     end
 
     it 'returns not found for unknown modes' do
-      get '/modes/143432332'
+      get '/modes/143432332', headers: headers
       expect(response).to have_http_status(:not_found)
     end
 
@@ -71,21 +71,14 @@ RSpec.describe 'Modes', type: :request do
 
   describe 'GET #new' do
     it 'returns http success' do
-      get "/modes/#{mode.id}new"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
-  describe 'GET #edit' do
-    it 'returns http success' do
-      get "/modes/#{mode.id}/edit"
+      get "/modes/#{mode.id}new", headers: headers
       expect(response).to have_http_status(:success)
     end
   end
 
   describe 'POST #create' do
     it 'returns http success' do
-      post '/modes', params: {
+      post '/modes', headers: headers, params: {
         mode: {
           name: 'test_mode2',
           show_input_mode: :name,
@@ -116,7 +109,7 @@ RSpec.describe 'Modes', type: :request do
 
   describe 'PUT #update' do
     it 'returns http success' do
-      put "/modes/#{mode.id}", params: { mode: { goal_badness: 2 } }
+      put "/modes/#{mode.id}", headers: headers, params: { mode: { goal_badness: 2 } }
       expect(response).to have_http_status(:success)
       mode.reload
       expect(mode.goal_badness).to eq(2)
@@ -124,19 +117,19 @@ RSpec.describe 'Modes', type: :request do
     end
 
     it 'returns unprocessable entity for invalid updates' do
-      put "/modes/#{mode.id}", params: { mode: { name: nil } }
+      put "/modes/#{mode.id}", headers: headers, params: { mode: { name: nil } }
       expect(response).to have_http_status(:unprocessable_entity)
       expect(Mode.find(mode.id).goal_badness).to eq(1)
     end
 
     it 'returns not found for unknown modes' do
-      put '/modes/143432332', params: { mode: { goal_badness: 2 } }
+      put '/modes/143432332', headers: headers, params: { mode: { goal_badness: 2 } }
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for other users' do
       post_login(eve.name, eve.password)
-      put "/modes/#{mode.id}", params: { mode: { goal_badness: 2 } }
+      put "/modes/#{mode.id}", headers: headers, params: { mode: { goal_badness: 2 } }
       expect(response).to have_http_status(:not_found)
       expect(Mode.find(mode.id).goal_badness).to eq(1)
     end
@@ -144,19 +137,19 @@ RSpec.describe 'Modes', type: :request do
 
   describe 'DELETE #destroy' do
     it 'returns http success' do
-      delete "/modes/#{mode.id}"
+      delete "/modes/#{mode.id}", headers: headers
       expect(response).to have_http_status(:success)
       expect(Mode.exists?(mode.id)).to be(false)
     end
 
     it 'returns not found for unknown modes' do
-      delete '/modes/143432332'
+      delete '/modes/143432332', headers: headers
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for other users' do
       post_login(eve.name, eve.password)
-      delete "/modes/#{mode.id}"
+      delete "/modes/#{mode.id}", headers: headers
       expect(response).to have_http_status(:not_found)
       expect(Mode.exists?(mode.id)).to be(true)
     end
