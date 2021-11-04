@@ -45,7 +45,7 @@ const appRoutes: Routes = [
     ModesModule,
     RouterModule.forRoot(
       appRoutes,
-      { enableTracing: true } // <-- debugging purposes only
+      { enableTracing: true } // <-- debugging purposes only TODO: Remove
     )
   ],
   bootstrap: [
