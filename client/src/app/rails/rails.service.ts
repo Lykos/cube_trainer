@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import Rails from '@rails/ujs';
 import { HttpVerb } from './http-verb';
 
+const API_PREFIX = '/api';
+
 class UrlParameterPath {
   path: string[];
 
@@ -37,7 +39,8 @@ class UrlParameterPath {
   providedIn: 'root',
 })
 export class RailsService {
-  ajax<X>(type: HttpVerb, url: string, data: object): Observable<X> {
+  ajax<X>(type: HttpVerb, relativeUrl: string, data: object): Observable<X> {
+    const url = API_PREFIX + relativeUrl;
     return new Observable<X>((observer) => {
       let subscribed = true;
       const params = this.serializeUrlParams(data);

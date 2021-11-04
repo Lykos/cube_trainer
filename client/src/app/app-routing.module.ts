@@ -11,6 +11,7 @@ import { ModesComponent } from './modes/modes.component';
 import { NewModeComponent } from './modes/new-mode.component';
 import { TrainerComponent } from './trainer/trainer.component';
 import { RouterModule, Routes } from '@angular/router';
+import { environment } from './../environments/environment';
 
 const routes: Routes = [
   { path: 'signup', component: SignupComponent },
@@ -27,7 +28,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],  // for debugging, use `forRoot(appRoutes, { enableTracing: true })`
+  imports: [RouterModule.forRoot(routes, { enableTracing: !environment.production })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

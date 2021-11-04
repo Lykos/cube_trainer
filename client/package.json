@@ -33,7 +33,7 @@
 
     "@rxweb/reactive-form-validators": "^2.1.6",
     "snake-case-typescript": "^0.0.2",
-    "http-methods-enum": "^0.1.1"
+    "@rails/ujs": "^6.1.4"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.0.1",
