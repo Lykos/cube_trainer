@@ -53,7 +53,7 @@ yarn-debug.log*
 .yarn-integrity
 
 # compiled output
-/client/dist
+/public
 /client/tmp
 /client/out-tsc
 # Only exists if Bazel was run

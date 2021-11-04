@@ -14,9 +14,6 @@ describe 'messages', type: :system do
 
   it 'allows to read messages' do
     user_message
-    puts "Visiting login"
-    visit '/login'
-    puts "Logging in"
     login(user)
     click_button user.name
 

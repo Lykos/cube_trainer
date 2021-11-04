@@ -10,8 +10,8 @@ import { ImgSide } from './img-side';
   template: `
 <ng-container *ngIf="showImage">
 <div layout="row" layout-sm="column">
-  <img flex [src]="imgLeftSrc">
-  <img flex [src]="imgRightSrc">
+  <img id="trainerInputLeftImage" flex [src]="imgLeftSrc">
+  <img id="trainerInputRightImage" flex [src]="imgRightSrc">
 </div>
 </ng-container>
 <span class="trainer-input mat-elevation-z4" *ngIf="showName">{{input.representation}}</span>

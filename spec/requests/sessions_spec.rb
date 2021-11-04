@@ -9,7 +9,7 @@ RSpec.describe 'Sessions', type: :request do
 
   describe 'GET #welcome' do
     it 'returns unauthorized if not logged in' do
-      get '/welcome'
+      get '/api/welcome'
       expect(response).to have_http_status(:unauthorized)
     end
   end
@@ -34,12 +34,12 @@ RSpec.describe 'Sessions', type: :request do
   describe 'POST #logout' do
     it 'returns http success' do
       post_login(user)
-      post '/logout', headers: headers
+      post '/api/logout', headers: headers
       expect(response).to have_http_status(:success)
     end
 
     it 'returns unauthorized if not logged in' do
-      post '/logout', headers: headers
+      post '/api/logout', headers: headers
       expect(response).to have_http_status(:unauthorized)
     end
   end

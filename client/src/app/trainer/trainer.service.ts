@@ -7,6 +7,7 @@ import { Mode } from '../modes/mode';
 import { ImgSide } from './img-side';
 import { Observable } from 'rxjs';
 import { QueueCache } from '../utils/queue-cache';
+import { environment } from '../../environments/environment';
 
 function constructPath(modeId: number, input?: InputItem) {
   const suffix = input ? `/${input.id}` : '';
@@ -31,7 +32,7 @@ export class TrainerService {
   private readonly inputItemsCacheMap = new Map<number, QueueCache<InputItem>>();
 
   inputImgSrc(mode: Mode, input: InputItem, imgSide: ImgSide) {
-    return `${constructPath(mode.id, input)}/image/${imgSide}.jpg`
+    return `${environment.apiPrefix}${constructPath(mode.id, input)}/image/${imgSide}.jpg`
   }
 
   private inputItemsCache(modeId: number) {

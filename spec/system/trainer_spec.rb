@@ -13,7 +13,6 @@ describe 'trainer', type: :system do
   end
 
   it 'allows to train' do
-    visit '/login'
     login(user)
     sleep(0.5)
 
