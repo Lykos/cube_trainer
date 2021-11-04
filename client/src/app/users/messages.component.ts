@@ -70,14 +70,14 @@ export class MessagesComponent implements OnInit {
   userId$: Observable<number>;
   messages: Message[] = [];
   columnsToDisplay = ['select', 'title', 'timestamp'];
-  private selection = new SelectionModel<Message>(true, []);
+  selection = new SelectionModel<Message>(true, []);
 
   constructor(private readonly messagesService: MessagesService,
 	      @Inject(LOCALE_ID) private readonly locale: string,
 	      private readonly router: Router,
 	      private readonly snackBar: MatSnackBar,
 	      private readonly activatedRoute: ActivatedRoute) {
-    this.userId$ = this.activatedRoute.params.pipe(map(p => p.userId));
+    this.userId$ = this.activatedRoute.params.pipe(map(p => p['userId']));
   }
 
   onClick(message: Message) {

@@ -47,7 +47,7 @@ enum StopWatchState {
 })
 export class StopwatchComponent implements OnDestroy {
   @Input()
-  private mode!: Mode;
+  mode!: Mode;
 
   @Output()
   private inputItem: EventEmitter<InputItem> = new EventEmitter();
@@ -61,7 +61,7 @@ export class StopwatchComponent implements OnDestroy {
   private input: InputItem | undefined = undefined;
   private numHints_ = 0;
   private maxHints = 0;
-  private duration: Duration = zeroDuration;
+  duration: Duration = zeroDuration;
   private intervalSubscription: any = undefined;
   private state: StopWatchState = StopWatchState.NotStarted;
 

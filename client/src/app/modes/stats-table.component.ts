@@ -16,7 +16,7 @@ import { StatsDataSource } from './stats.data-source';
     <div class="spinner-container" *ngIf="dataSource.loading$ | async">
       <mat-spinner></mat-spinner>
     </div>
-    <table mat-table class="mat-elevation-z2" [dataSource]="dataSource" matRipple [matRippleTrigger]="deleteButton">
+    <table mat-table class="mat-elevation-z2" [dataSource]="dataSource">
       <mat-text-column name="name"></mat-text-column>
       <ng-container matColumnDef="time">
         <th mat-header-cell *matHeaderCellDef> Time </th>
@@ -43,7 +43,7 @@ export class StatsTableComponent implements OnInit, OnDestroy {
 
   constructor(private readonly statsService: StatsService,
 	      activatedRoute: ActivatedRoute) {
-    this.modeId$ = activatedRoute.params.pipe(map(p => p.modeId));
+    this.modeId$ = activatedRoute.params.pipe(map(p => p['modeId']));
   }
 
   ngOnInit() {

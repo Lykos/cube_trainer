@@ -77,13 +77,13 @@ export class ResultsTableComponent implements OnInit, OnDestroy {
   columnsToDisplay = ['select', 'input', 'time', 'numHints', 'timestamp'];
   @Input() resultEvents$!: Observable<void>;
   private eventsSubscription!: Subscription;
-  private selection = new SelectionModel<Result>(true, []);
+  selection = new SelectionModel<Result>(true, []);
 
   constructor(private readonly resultsService: ResultsService,
 	      private readonly snackBar: MatSnackBar,
 	      @Inject(LOCALE_ID) private readonly locale: string,
 	      activatedRoute: ActivatedRoute) {
-    this.modeId$ = activatedRoute.params.pipe(map(p => p.modeId));
+    this.modeId$ = activatedRoute.params.pipe(map(p => p['modeId']));
   }
 
   ngOnInit() {

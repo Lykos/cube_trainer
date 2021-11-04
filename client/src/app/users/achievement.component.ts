@@ -26,7 +26,7 @@ export class AchievementComponent implements OnInit {
   constructor(private readonly achievementsService: AchievementsService,
 	      private readonly router: Router,
 	      private readonly activatedRoute: ActivatedRoute) {
-    this.achievementKey$ = this.activatedRoute.params.pipe(map(p => p.achievementKey));
+    this.achievementKey$ = this.activatedRoute.params.pipe(map(p => p['achievementKey']));
   }
 
   get name() {

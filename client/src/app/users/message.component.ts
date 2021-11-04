@@ -31,8 +31,8 @@ export class MessageComponent implements OnInit {
 	      private readonly router: Router,
 	      private readonly snackBar: MatSnackBar,
 	      private readonly activatedRoute: ActivatedRoute) {
-    this.userId$ = this.activatedRoute.params.pipe(map(p => p.userId));
-    this.messageId$ = this.activatedRoute.params.pipe(map(p => p.messageId));
+    this.userId$ = this.activatedRoute.params.pipe(map(p => p['userId']));
+    this.messageId$ = this.activatedRoute.params.pipe(map(p => p['messageId']));
   }
 
   get timestamp() {

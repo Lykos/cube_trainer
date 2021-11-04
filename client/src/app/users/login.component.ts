@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
       <mat-form-field appearance="fill">
         <mat-label>Username or Email</mat-label>
         <input matInput type="text" formControlName="usernameOrEmail">
-        <mat-error *ngIf="relevantInvalid(usernameOrEmail) && usernameOrEmail.errors.required">
+        <mat-error *ngIf="relevantInvalid(usernameOrEmail) && usernameOrEmail.errors && usernameOrEmail.errors['required']">
           You must provide a <strong>username</strong> or <strong>email</strong>.
         </mat-error>
       </mat-form-field>
@@ -21,7 +21,7 @@ import { Router } from '@angular/router';
       <mat-form-field appearance="fill">
         <mat-label>Password</mat-label>
         <input matInput type="password" formControlName="password">
-        <mat-error *ngIf="relevantInvalid(password) && password.errors.required">
+        <mat-error *ngIf="relevantInvalid(password) && password.errors && password.errors['required']">
           You must provide a <strong>password</strong>.
         </mat-error>
       </mat-form-field>

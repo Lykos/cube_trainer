@@ -21,10 +21,10 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
       <mat-form-field>
         <mat-label>Name</mat-label>
         <input matInput formControlName="name" type="text">
-        <mat-error *ngIf="relevantInvalid(name) && name.errors.required">
+        <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['required']">
           You must provide a <strong>name</strong>.
         </mat-error>
-        <mat-error *ngIf="relevantInvalid(name) && name.errors.uniqueModeName">
+        <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['uniqueModeName']">
           You already have a mode with the same <strong>name</strong>.
         </mat-error>
       </mat-form-field>
@@ -33,7 +33,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
         <mat-select formControlName="modeType">
           <mat-option *ngFor="let modeType of modeTypes" [value]="modeType"> {{modeType.name}} </mat-option>
         </mat-select>
-        <mat-error *ngIf="relevantInvalid(modeType) && modeType.errors.required">
+        <mat-error *ngIf="relevantInvalid(modeType) && modeType.errors && modeType.errors['required']">
           You must provide a <strong>mode type</strong>.
         </mat-error>
       </mat-form-field>
@@ -48,19 +48,19 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
       <mat-form-field *ngIf="hasMultipleCubeSizes">
         <mat-label>Cube Size</mat-label>
         <input matInput formControlName="cubeSize" type="number" [value]="defaultCubeSize">
-        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.required">
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['required']">
           You must provide a <strong>cube size</strong> for this mode type.
         </mat-error>
-        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.minNumber">
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['minNumber']">
           The <strong>cube size</strong> has to be at least {{minCubeSize}} for this mode type.
         </mat-error>
-        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.maxNumber">
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['maxNumber']">
           The <strong>cube size</strong> can be at most {{maxCubeSize}} for this mode type.
         </mat-error>
-        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.odd">
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['odd']">
           The <strong>cube size</strong> has to be odd for this cube size.
         </mat-error>
-        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors.even">
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['even']">
           The <strong>cube size</strong> has to be even for this cube size.
         </mat-error>
       </mat-form-field>
@@ -69,7 +69,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
         <mat-select formControlName="buffer">
           <mat-option *ngFor="let buffer of modeType.value.buffers" [value]="buffer"> {{buffer}} </mat-option>
         </mat-select>
-        <mat-error *ngIf="relevantInvalid(buffer) && buffer.errors.required">
+        <mat-error *ngIf="relevantInvalid(buffer) && buffer.errors && buffer.errors['required']">
           You must provide a <strong>buffer</strong> for this mode type.
         </mat-error>
       </mat-form-field>
@@ -87,17 +87,17 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
         <mat-select formControlName="showInputMode">
           <mat-option *ngFor="let showInputMode of modeType.value.showInputModes" [value]="showInputMode"> {{showInputMode}} </mat-option>
         </mat-select>
-        <mat-error *ngIf="relevantInvalid(showInputMode) && showInputMode.errors.required">
+        <mat-error *ngIf="relevantInvalid(showInputMode) && showInputMode.errors && showInputMode.errors['required']">
           You must select a <strong>show input mode</strong> for this mode type.
         </mat-error>
       </mat-form-field>
       <mat-form-field *ngIf="hasGoalBadness">
         <mat-label>Goal Time per Element</mat-label>
         <input matInput formControlName="goalBadness" type="number">
-        <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors.required">
+        <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors && goalBadness.errors['required']">
           You must provide a <strong>goal badness</strong> for this mode type.
         </mat-error>
-        <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors.numeric">
+        <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors && goalBadness.errors['numeric']">
           The <strong>goal badness</strong> has to be a positive number.
         </mat-error>
       </mat-form-field>

@@ -42,7 +42,7 @@ export class AchievementGrantsComponent implements OnInit {
   constructor(private readonly achievementGrantsService: AchievementGrantsService,
 	      private readonly router: Router,
 	      private readonly activatedRoute: ActivatedRoute) {
-    this.userId$ = this.activatedRoute.params.pipe(map(p => p.userId));
+    this.userId$ = this.activatedRoute.params.pipe(map(p => p['userId']));
   }
 
   onClick(achievementGrant: AchievementGrant) {

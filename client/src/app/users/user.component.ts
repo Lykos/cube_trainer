@@ -18,10 +18,10 @@ import { UserFormCreator } from './user-form-creator.service';
     <mat-form-field appearance="fill">
       <mat-label>Username</mat-label>
       <input type="text" matInput formControlName="name">
-      <mat-error *ngIf="relevantInvalid(name) && name.errors.required">
+      <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['required']">
         You must provide a <strong>username</strong>.
       </mat-error>
-      <mat-error *ngIf="relevantInvalid(name) && name.errors.uniqueUsernameOrEmail">
+      <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['uniqueUsernameOrEmail']">
         This <strong>username</strong> is already taken.
       </mat-error>
     </mat-form-field>
@@ -29,13 +29,13 @@ import { UserFormCreator } from './user-form-creator.service';
     <mat-form-field appearance="fill">
       <mat-label>Email</mat-label>
       <input type="email" matInput formControlName="email">
-      <mat-error *ngIf="relevantInvalid(email) && email.errors.required">
+      <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['required']">
         You must provide an <strong>email</strong>.
       </mat-error>
-      <mat-error *ngIf="relevantInvalid(email) && email.errors.email">
+      <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['email']">
         You must provide a valid <strong>email</strong>.
       </mat-error>
-      <mat-error *ngIf="relevantInvalid(email) && email.errors.uniqueUsernameOrEmail">
+      <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['uniqueUsernameOrEmail']">
         This <strong>email</strong> is already taken.
       </mat-error>
     </mat-form-field>
@@ -43,7 +43,7 @@ import { UserFormCreator } from './user-form-creator.service';
     <mat-form-field appearance="fill">
       <mat-label>Password</mat-label>
       <input type="password" matInput formControlName="password">
-      <mat-error *ngIf="relevantInvalid(password) && password.errors.required">
+      <mat-error *ngIf="relevantInvalid(password) && password.errors && password.errors['required']">
         You must provide a <strong>password</strong>.
       </mat-error>
     </mat-form-field>
@@ -51,10 +51,10 @@ import { UserFormCreator } from './user-form-creator.service';
     <mat-form-field appearance="fill">
       <mat-label>Confirm Password</mat-label>
       <input type="password" matInput formControlName="passwordConfirmation">
-      <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors.required">
+      <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors && passwordConfirmation.errors['required']">
         You must provide a <strong>password confirmation</strong>.
       </mat-error>
-      <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors.compare">
+      <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors && passwordConfirmation.errors['compare']">
         <strong>Password</strong> must match <strong>password confirmation</strong>.
       </mat-error>
     </mat-form-field>
@@ -76,7 +76,7 @@ export class UserComponent implements OnInit {
 	      private readonly activatedRoute: ActivatedRoute,
 	      private readonly userFormCreator: UserFormCreator,
 	      private readonly snackBar: MatSnackBar) {
-    this.userId$ = this.activatedRoute.params.pipe(map(p => p.userId));
+    this.userId$ = this.activatedRoute.params.pipe(map(p => p['userId']));
   }
 
   get userUpdate(): UserUpdate {

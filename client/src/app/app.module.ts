@@ -1,9 +1,13 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { UsersModule } from './users/users.module';
+import { ModesModule } from './modes/modes.module';
+import { TrainerModule } from './trainer/trainer.module';
+import { ToolbarModule } from './toolbar/toolbar.module';
+import { APP_BASE_HREF } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -11,10 +15,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   ],
   imports: [
     BrowserModule,
+    ToolbarModule,
+    TrainerModule,
+    UsersModule,
+    ModesModule,
     AppRoutingModule,
     BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [
+    {provide: APP_BASE_HREF, useValue: '/'},
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

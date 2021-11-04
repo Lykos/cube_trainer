@@ -28,11 +28,11 @@ export class TrainerComponent implements OnInit {
   numHints = 0;
   private modeId$: Observable<number>;
   mode: Mode | undefined = undefined;
-  private resultEventsSubject = new Subject<void>();
+  resultEventsSubject = new Subject<void>();
 
   constructor(private readonly modesService: ModesService,
 	      activatedRoute: ActivatedRoute) {
-    this.modeId$ = activatedRoute.params.pipe(map(p => p.modeId));
+    this.modeId$ = activatedRoute.params.pipe(map(p => p['modeId']));
   }
 
   ngOnInit() {
