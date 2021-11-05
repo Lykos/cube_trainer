@@ -8,11 +8,7 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'cube-trainer-achievement-grants',
   templateUrl: './achievement-grants.component.html',
-  styles: [`
-table {
-  width: 100%;
-}
-`]
+  styleUrls: ['./achievement-grants.component.css']
 })
 export class AchievementGrantsComponent implements OnInit {
   userId$: Observable<number>;

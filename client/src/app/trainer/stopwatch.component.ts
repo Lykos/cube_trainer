@@ -16,11 +16,7 @@ enum StopWatchState {
 @Component({
   selector: 'cube-trainer-stopwatch',
   templateUrl: './stopwatch.component.html',
-  styles: [`
-.stopwatch-time {
-  font-size: xxx-large;
-}
-`]
+  styleUrls: ['./stopwatch.component.css']
 })
 export class StopwatchComponent implements OnDestroy {
   @Input()

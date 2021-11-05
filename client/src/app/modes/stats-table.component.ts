@@ -10,11 +10,7 @@ import { StatsDataSource } from './stats.data-source';
 @Component({
   selector: 'cube-trainer-stats-table',
   templateUrl: './stats-table.component.html',
-  styles: [`
-table {
-  width: 100%;
-}
-`]
+  styleUrls: ['./stats-table.component.css']
 })
 export class StatsTableComponent implements OnInit, OnDestroy {
   modeId$: Observable<number>;

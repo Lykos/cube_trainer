@@ -8,11 +8,7 @@ import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional
 @Component({
   selector: 'cube-trainer-toolbar',
   templateUrl: './toolbar.component.html',
-  styles: [`
-.horizontal-spacer {
-  flex: 1 1 auto;
-}
-`]
+  styleUrls: ['./toolbar.component.css']
 })
 export class ToolbarComponent implements OnInit {
   user: Optional<User> = none;

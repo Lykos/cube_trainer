@@ -8,11 +8,7 @@ import { ImgSide } from './img-side';
 @Component({
   selector: 'cube-trainer-trainer-input',
   templateUrl: './trainer-input.component.html',
-  styles: [`
-.trainer-input {
-  font-size: xxx-large;
-}
-`]
+  styleUrls: ['./trainer-input.component.css']
 })
 export class TrainerInputComponent {
   @Input()

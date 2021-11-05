@@ -1,0 +1,9 @@
+table {
+  width: 100%;
+}
+.mat-column-select {
+  overflow: initial;
+}
+.unread-message {
+  font-weight: bold;
+}

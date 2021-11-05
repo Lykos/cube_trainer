@@ -6,11 +6,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'cube-trainer-achievements',
   templateUrl: './achievements.component.html',
-  styles: [`
-table {
-  width: 100%;
-}
-`]
+  styleUrls: ['./achievements.component.css']
 })
 export class AchievementsComponent implements OnInit {
   achievements: Achievement[] = [];

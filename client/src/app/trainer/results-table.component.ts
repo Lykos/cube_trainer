@@ -14,14 +14,7 @@ import { ResultsDataSource } from './results.data-source';
 @Component({
   selector: 'cube-trainer-results-table',
   templateUrl: './results-table.component.html',
-  styles: [`
-table {
-  width: 100%;
-}
-.mat-column-select {
-  overflow: initial;
-}
-`]
+  styleUrls: ['./results-table.component.css']
 })
 export class ResultsTableComponent implements OnInit, OnDestroy {
   modeId$: Observable<number>;

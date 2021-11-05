@@ -11,17 +11,7 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'cube-trainer-messages',
   templateUrl: './messages.component.html',
-  styles: [`
-table {
-  width: 100%;
-}
-.mat-column-select {
-  overflow: initial;
-}
-.unread-message {
-  font-weight: bold;
-}
-`]
+  styleUrls: ['./messages.component.css']
 })
 export class MessagesComponent implements OnInit {
   userId$: Observable<number>;

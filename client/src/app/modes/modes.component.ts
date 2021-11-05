@@ -9,11 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'cube-trainer-modes',
   templateUrl: './modes.component.html',
-  styles: [`
-table {
-  width: 100%;
-}
-`]
+  styleUrls: ['./modes.component.css']
 })
 export class ModesComponent implements OnInit {
   modes: Mode[] = [];
