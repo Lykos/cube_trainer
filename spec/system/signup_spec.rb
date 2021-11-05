@@ -8,7 +8,8 @@ describe 'signup', type: :system do
   end
 
   it 'enables users to sign up and then login' do
-    visit '/signup'
+    visit ''
+    click_button 'Sign Up'
 
     fill_in 'Username', with: 'system test user'
     fill_in 'Email', with: 'system_test@example.org'
