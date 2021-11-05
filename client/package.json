@@ -45,6 +45,7 @@
     "@types/chai": "^4.2.22",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
+    "@types/rails__ujs": "^6.0.1",
     "@typescript-eslint/eslint-plugin": "4.28.2",
     "@typescript-eslint/parser": "4.28.2",
     "angular-http-server": "^1.10.0",

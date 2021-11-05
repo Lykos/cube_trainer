@@ -1,12 +1,11 @@
-// @ts-ignore
-import Rails from '@rails/ujs';
+import * as Rails from '@rails/ujs';
 import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RawRailsService {
-  ajax<X>(request: any) {
-    Rails.ajax(request);
+  ajax(options: Rails.AjaxOptions) {
+    Rails.ajax(options);
   }
 }
