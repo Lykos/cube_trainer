@@ -21,14 +21,11 @@ jobs:
     - name: Install Bundler
       run: |
         gem install bundler
+
     - name: Bundle install
       run: |
         bundle config set without 'default development test production'
         bundle install --jobs 4 --retry 3
 
-    - name: Run RSpec
-      run: bundle exec rake spec
-      env:
-        RAILS_ENV: test
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
+    - name: Run Rubocop
+      run: bundle exec rake rubocop --parallel
