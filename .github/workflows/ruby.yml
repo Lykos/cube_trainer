@@ -21,17 +21,22 @@ jobs:
     - name: Update packages
       run: sudo apt update
 
-    - name: Install Package Dependencies
+    - name: Install OS Package Dependencies
       uses: mstksg/get-package@v1
       with:
-        apt-get: libpq-dev yarn
+        apt-get: libpq-dev
+
+    - name: Install OS Package Dependencies
+      uses: mstksg/get-package@v1
+      with:
+        apt-get: libpq-dev
 
     - name: Install Bundler
       run: gem install bundler
 
     - name: Bundle install
       run: |
-        bundle config set without 'development rubocop production'
+        bundle config set without 'rubocop production'
         bundle install --jobs 4 --retry 3
 
     - name: Setup Database
