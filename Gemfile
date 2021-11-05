@@ -42,10 +42,8 @@ group :development, :test do
   gem 'rspec-rails'
 end
 
-# These ones we need in order to use Rake.
-group :development, :client, :test, :production do
+group :development, :client, :test do
   gem 'rake'
-  gem 'bootsnap', '>= 1.4.2', require: false
 end
 
 group :development do
