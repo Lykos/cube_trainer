@@ -1,13 +1,34 @@
 name: Rubocop
-
 on: [push, pull_request]
-
 jobs:
   lint:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:11
+        ports:
+        - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-    - uses: actions/checkout@v1
-    - name: Rubocop Linter Action
-      uses: andrewmcodes/rubocop-linter-action@master
+    - uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+
+    - name: Install Bundler
+      run: |
+        gem install bundler
+    - name: Bundle install
+      run: |
+        bundle config set without 'default development test production'
+        bundle install --jobs 4 --retry 3
+
+    - name: Run RSpec
+      run: bundle exec rake spec
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        RAILS_ENV: test
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
