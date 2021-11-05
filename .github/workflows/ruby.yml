@@ -26,9 +26,12 @@ jobs:
       with:
         apt-get: libpq-dev yarn
 
+    - name: Install Bundler
+      run: gem install bundler
+
     - name: Bundle install
       run: |
-        gem install bundler
+        bundle config set without 'development rubocop production'
         bundle install --jobs 4 --retry 3
 
     - name: Setup Database
@@ -41,8 +44,11 @@ jobs:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
 
-    - name: Run yarn
-      run: yarn install
+    - name: Run npm install
+      run: bundle exec rake npm_install
+
+    - name: Run ng build
+      run: bundle exec rake ng_build
 
     - name: Run RSpec
       run: bundle exec rake spec
