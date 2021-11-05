@@ -19,11 +19,10 @@ cd cube_trainer
 ### Install OS dependencies
 
 This example is what I did on Ubuntu, but I'm sure you can figure out how to install
-Ruby, PostgreSQL, npm and Angular on your OS, too.
+Ruby, PostgreSQL and npm on your OS, too.
 
 ```shell
-sudo apt install ruby postgresql libpq-dev
-sudo npm install -g @angular/cli
+sudo apt install ruby postgresql libpq-dev npm
 ```
 
 ### Install Ruby & JS dependencies
@@ -31,7 +30,7 @@ sudo npm install -g @angular/cli
 Using [Bundler](https://github.com/bundler/bundler) and [Yarn](https://github.com/yarnpkg/yarn):
 
 ```shell
-bundle install && bundle exec npm_install
+bundle install && bundle exec rake npm:install
 ```
 
 ### Setup DB User
@@ -52,7 +51,7 @@ bundle exec rails db:create db:migrate
 ### Build the frontend
 
 ```shell
-bundle exec ng_build
+bundle exec rake ng:build
 ```
 
 ### Run tests
@@ -64,7 +63,7 @@ bundle exec rails spec
 ### Run server
 
 ```shell
-bundle exec ng_serve
+bundle exec rake ng:serve
 bundle exec rails server
 ```
 
