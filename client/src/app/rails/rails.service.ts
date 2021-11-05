@@ -1,8 +1,7 @@
 import snakeCase from 'snake-case-typescript';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-// @ts-ignore
-import Rails from '@rails/ujs';
+import { RawRailsService } from './raw-rails.service';
 import { HttpVerb } from './http-verb';
 import { environment } from './../../environments/environment';
 
@@ -38,12 +37,14 @@ class UrlParameterPath {
   providedIn: 'root',
 })
 export class RailsService {
+  constructor(private readonly rails: RawRailsService) {}
+
   ajax<X>(type: HttpVerb, relativeUrl: string, data: object): Observable<X> {
     const url = environment.apiPrefix + relativeUrl;
     return new Observable<X>((observer) => {
       let subscribed = true;
       const params = this.serializeUrlParams(data);
-      Rails.ajax({
+      this.rails.ajax({
 	type,
 	url,
 	dataType: 'json',
