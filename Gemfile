@@ -57,11 +57,11 @@ group :development do
 end
 
 group :development, :rubocop do
-  gem 'rubocop', '~> 1.7'
-  gem 'rubocop-performance'
-  gem 'rubocop-rails'
-  gem 'rubocop-rake'
-  gem 'rubocop-rspec'
+  gem 'rubocop', '~> 1.7', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rake', require: false
+  gem 'rubocop-rspec', require: false
 end
 
 group :test do
