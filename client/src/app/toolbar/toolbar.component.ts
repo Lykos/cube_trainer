@@ -6,7 +6,7 @@ import { User } from '../users/user';
 import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional';
 
 @Component({
-  selector: 'toolbar',
+  selector: 'cube-trainer-toolbar',
   template: `
 <mat-toolbar color="primary">
   <ng-container *ngIf="loggedIn">

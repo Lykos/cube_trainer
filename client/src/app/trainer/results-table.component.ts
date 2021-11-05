@@ -12,7 +12,7 @@ import { Observable, Subscription, zip } from 'rxjs';
 import { ResultsDataSource } from './results.data-source';
 
 @Component({
-  selector: 'results-table',
+  selector: 'cube-trainer-results-table',
   template: `
 <div>
   <h2>Results</h2>

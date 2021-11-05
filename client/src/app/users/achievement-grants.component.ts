@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'achievement-grants',
+  selector: 'cube-trainer-achievement-grants',
   template: `
 <div>
   <h2>Your Achievements</h2>

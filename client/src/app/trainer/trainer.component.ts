@@ -7,18 +7,18 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 
 @Component({
-  selector: 'trainer',
+  selector: 'cube-trainer-trainer',
   template: `
 <div layout="row" layout-sm="column">
   <div flex>
-    <trainer-input [input]="input" [mode]="mode" [numHints]="numHints" *ngIf="mode && input"></trainer-input>
-    <stopwatch [mode]="mode" (inputItem)="onInputItem($event)" (resultSaved)="onResultSaved()" (numHints)="onNumHints($event)" *ngIf="mode"></stopwatch>
+    <cube-trainer-trainer-input [input]="input" [mode]="mode" [numHints]="numHints" *ngIf="mode && input"></cube-trainer-trainer-input>
+    <cube-trainer-stopwatch [mode]="mode" (inputItem)="onInputItem($event)" (resultSaved)="onResultSaved()" (numHints)="onNumHints($event)" *ngIf="mode"></cube-trainer-stopwatch>
   </div>
   <div flex>
-    <results-table [resultEvents$]="resultEventsSubject.asObservable()"></results-table>
+    <cube-trainer-results-table [resultEvents$]="resultEventsSubject.asObservable()"></cube-trainer-results-table>
   </div>
   <div flex>
-    <stats-table [statEvents$]="resultEventsSubject.asObservable()"></stats-table>
+    <cube-trainer-stats-table [statEvents$]="resultEventsSubject.asObservable()"></cube-trainer-stats-table>
   </div>
 </div>
 `

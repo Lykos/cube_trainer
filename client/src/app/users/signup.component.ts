@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'signup',
+  selector: 'cube-trainer-signup',
   template: `
 <mat-card>
   <mat-card-title>Sign Up</mat-card-title>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Mode } from '../modes/mode';
 import { ShowInputMode } from '../modes/show-input-mode';
 import { TrainerService } from './trainer.service';
@@ -6,7 +6,7 @@ import { InputItem } from './input-item';
 import { ImgSide } from './img-side';
 
 @Component({
-  selector: 'trainer-input',
+  selector: 'cube-trainer-trainer-input',
   template: `
 <ng-container *ngIf="showImage">
 <div layout="row" layout-sm="column">
@@ -27,7 +27,7 @@ import { ImgSide } from './img-side';
 }
 `]
 })
-export class TrainerInputComponent implements OnInit {
+export class TrainerInputComponent {
   @Input()
   input!: InputItem;
 
@@ -61,8 +61,5 @@ export class TrainerInputComponent implements OnInit {
 
   imgSrc(imgSide: ImgSide) {
     return this.mode && this.input && this.showImage ? this.trainerService.inputImgSrc(this.mode, this.input, imgSide) : undefined;
-  }
-
-  ngOnInit() {
   }
 }

@@ -8,7 +8,7 @@ import { Observable, Subscription } from 'rxjs';
 import { StatsDataSource } from './stats.data-source';
 
 @Component({
-  selector: 'stats-table',
+  selector: 'cube-trainer-stats-table',
   template: `
 <div *ngIf="dataSource.data.length > 0">
   <h2>Stats</h2>

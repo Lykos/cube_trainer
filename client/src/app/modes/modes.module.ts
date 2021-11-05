@@ -5,7 +5,7 @@ import { UsersModule } from '../users/users.module';
 import { UniqueModeNameValidator } from './unique-mode-name.validator';
 import { ModesService } from './modes.service';
 import { StatsService } from './stats.service';
-import { DeleteModeConfirmationDialog } from './delete-mode-confirmation-dialog.component';
+import { DeleteModeConfirmationDialogComponent } from './delete-mode-confirmation-dialog.component';
 import { RxReactiveFormsModule } from "@rxweb/reactive-form-validators"
 import { StatsTableComponent } from './stats-table.component';
 import { ModesComponent } from './modes.component';
@@ -35,7 +35,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     StatsTableComponent,
     ModesComponent,
     NewModeComponent,
-    DeleteModeConfirmationDialog,
+    DeleteModeConfirmationDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -75,7 +75,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     NewModeComponent,
   ],
   entryComponents: [
-    DeleteModeConfirmationDialog,
+    DeleteModeConfirmationDialogComponent,
   ],
 })
 export class ModesModule {}

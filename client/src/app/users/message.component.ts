@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'message',
+  selector: 'cube-trainer-message',
   template: `
 <mat-card>
   <mat-card-title>{{title}}</mat-card-title>

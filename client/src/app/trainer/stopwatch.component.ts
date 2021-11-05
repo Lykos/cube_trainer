@@ -14,7 +14,7 @@ enum StopWatchState {
 };
 
 @Component({
-  selector: 'stopwatch',
+  selector: 'cube-trainer-stopwatch',
   template: `
 <div class="stopwatch">
   <h2>Time</h2>

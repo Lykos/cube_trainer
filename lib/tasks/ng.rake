@@ -20,4 +20,9 @@ namespace :ng do
   task test: :environment do
     run_ng('ng test')
   end
+
+  desc 'Run ng lint.'
+  task lint: :environment do
+    run_ng('ng lint')
+  end
 end

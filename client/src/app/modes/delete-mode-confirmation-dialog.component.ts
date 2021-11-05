@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Mode } from './mode';
 
 @Component({
-  selector: 'delete-mode-confirmation-dialog',
+  selector: 'cube-trainer-delete-mode-confirmation-dialog',
   template: `
 <h1 mat-dialog-title>Do you really want to delete mode {{mode.name}}?</h1>
 <div mat-dialog-actions>
@@ -12,6 +12,6 @@ import { Mode } from './mode';
 </div>
 `
 })
-export class DeleteModeConfirmationDialog {
+export class DeleteModeConfirmationDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public mode: Mode) {}
 }

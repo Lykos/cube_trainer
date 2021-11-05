@@ -4,7 +4,7 @@ import { Achievement } from './achievement';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'achievements',
+  selector: 'cube-trainer-achievements',
   template: `
 <div>
   <h2>All Achievements</h2>

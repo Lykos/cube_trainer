@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'login',
+  selector: 'cube-trainer-login',
   template: `
 <mat-card>
   <mat-card-title>Login</mat-card-title>

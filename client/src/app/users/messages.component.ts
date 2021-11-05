@@ -9,7 +9,7 @@ import { Observable, zip } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'messages',
+  selector: 'cube-trainer-messages',
   template: `
 <div>
   <h2>Messages</h2>

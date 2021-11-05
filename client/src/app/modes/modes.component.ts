@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ModesService } from './modes.service';
 import { Mode } from './mode';
 import { Router } from '@angular/router';
-import { DeleteModeConfirmationDialog } from './delete-mode-confirmation-dialog.component';
+import { DeleteModeConfirmationDialogComponent } from './delete-mode-confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'modes',
+  selector: 'cube-trainer-modes',
   template: `
 <div>
   <h2>Modes</h2>
@@ -77,7 +77,7 @@ export class ModesComponent implements OnInit {
   }
 
   onDelete(mode: Mode) {
-    const dialogRef = this.dialog.open(DeleteModeConfirmationDialog, { data: mode });
+    const dialogRef = this.dialog.open(DeleteModeConfirmationDialogComponent, { data: mode });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {

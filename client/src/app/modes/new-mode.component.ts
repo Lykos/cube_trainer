@@ -12,7 +12,7 @@ import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validato
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
-  selector: 'edit-mode',
+  selector: 'cube-trainer-edit-mode',
   template: `
 <mat-horizontal-stepper linear #stepper>
   <mat-step [stepControl]="modeTypeGroup">

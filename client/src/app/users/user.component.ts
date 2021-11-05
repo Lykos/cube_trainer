@@ -10,7 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import { UserFormCreator } from './user-form-creator.service';
 
 @Component({
-  selector: 'user',
+  selector: 'cube-trainer-user',
   template: `
 <div *ngIf="user">
   <h1>{{user.name}}</h1>
@@ -61,8 +61,8 @@ import { UserFormCreator } from './user-form-creator.service';
     <br>
     <button mat-raised-button color="primary" type="submit" [disabled]="editUserForm.pristine || !editUserForm.valid">Save</button>
   </form>
-  <messages></messages>
-  <achievement-grants></achievement-grants>
+  <cube-trainer-messages></cube-trainer-messages>
+  <cube-trainer-achievement-grants></cube-trainer-achievement-grants>
 </div>
 `
 })
