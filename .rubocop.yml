@@ -5,21 +5,22 @@ require:
 - rubocop-rspec
 AllCops:
   Exclude:
-  - 'lib/**/*_ui.rb'
-  - 'node_modules/**/*'
+  - 'bin/*'
+  - 'client/**/*'
+  - 'coverage/**/*'
+  - 'data/**/*'
   - 'db/schema.rb'
   - 'db/global_schema.rb'
+  - 'lib/**/*_ui.rb'
+  - 'log/**/*'
+  - 'public/**/*'
+  - 'testdata/**/*'
+  - 'tmp/**/*'
+  - 'vendor/**/*'
+  - '.git/**/*'
   # TODO: Clean up and remove some of the folowing
   - 'config/**/*'
   - 'db/migrate/*'
-  - 'bin/rails'
-  - 'bin/bundle'
-  - 'bin/rake'
-  - 'bin/setup'
-  - 'bin/spring'
-  - 'bin/webpack'
-  - 'bin/webpack-dev-server'
-  - 'bin/yarn'
 Layout/LineLength:
   Max: 100
   # TODO: This is temporary
