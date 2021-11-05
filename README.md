@@ -27,7 +27,7 @@ sudo apt install ruby postgresql libpq-dev npm
 
 ### Install Ruby & JS dependencies
 
-Using [Bundler](https://github.com/bundler/bundler) and [Yarn](https://github.com/yarnpkg/yarn):
+Using [Bundler](https://github.com/bundler/bundler) and [npm](https://github.com/npm/cli):
 
 ```shell
 bundle install && bundle exec rake npm:install
@@ -57,14 +57,22 @@ bundle exec rake ng:build
 ### Run tests
 
 ```shell
-bundle exec rails spec
+bundle exec rake spec
+```
+
+### Run frontend tests
+
+```shell
+bundle exec rake ng:test
 ```
 
 ### Run server
+
+In two separate terminals, run these two commands:
 
 ```shell
 bundle exec rake ng:serve
 bundle exec rails server
 ```
 
-Now you can access the site at http://localhost:4200.
+Now you can access the site at http://localhost:4200. Note that accessing it via http://localhost:3000 might also work, but you won't get automatic refreshes on TypeScript changes, so it's not recommended.
