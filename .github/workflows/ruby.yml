@@ -51,7 +51,8 @@ jobs:
       with:
         node-version: '12'
         cache: 'npm'
-    
+        cache-dependency-path: client/package-lock.json
+
     - name: Run npm install
       run: bundle exec rake npm:install
 
