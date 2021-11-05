@@ -18,21 +18,20 @@ cd cube_trainer
 
 ### Install OS dependencies
 
-This example is for Linux, but I'm sure you can figure out how to install
-Ruby, PostgreSQL and Yarn on your OS, too.
+This example is what I did on Ubuntu, but I'm sure you can figure out how to install
+Ruby, PostgreSQL, npm and Angular on your OS, too.
 
 ```shell
 sudo apt install ruby postgresql libpq-dev
+sudo npm install -g @angular/cli
 ```
-
-Install yarn as described here (you have to add a package source and then install via apt): https://classic.yarnpkg.com/en/docs/install/#debian-stable
 
 ### Install Ruby & JS dependencies
 
 Using [Bundler](https://github.com/bundler/bundler) and [Yarn](https://github.com/yarnpkg/yarn):
 
 ```shell
-bundle install && yarn install
+bundle install && bundle exec npm_install
 ```
 
 ### Setup DB User
@@ -50,17 +49,23 @@ exit
 bundle exec rails db:create db:migrate
 ```
 
+### Build the frontend
+
+```shell
+bundle exec ng_build
+```
+
 ### Run tests
 
 ```shell
 bundle exec rails spec
-yarn test
 ```
 
 ### Run server
+
 ```shell
-bin/webpack-dev-server
+bundle exec ng_serve
 bundle exec rails server
 ```
 
-Now you can access the site at http://localhost:3000/signup
+Now you can access the site at http://localhost:4200.
