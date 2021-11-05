@@ -23,7 +23,7 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '12'
-	cache: 'npm'
+        cache: 'npm'
     
     - name: Run npm install
       run: bundle exec rake npm:install
