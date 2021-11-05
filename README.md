@@ -1,7 +1,7 @@
 ![CodeQL](https://github.com/Lykos/cube_trainer/workflows/CodeQL/badge.svg)
 ![Rubocop](https://github.com/Lykos/cube_trainer/workflows/Rubocop/badge.svg)
 ![Ruby](https://github.com/Lykos/cube_trainer/workflows/Ruby/badge.svg)
-![Yarn](https://github.com/Lykos/cube_trainer/workflows/Yarn%20Test/badge.svg)
+![Ruby](https://github.com/Lykos/cube_trainer/workflows/Typescript/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # CubeTrainer
