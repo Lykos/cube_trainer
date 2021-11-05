@@ -19,12 +19,11 @@ jobs:
       uses: ruby/setup-ruby@v1
 
     - name: Install Bundler
-      run: |
-        gem install bundler
+      run: gem install bundler
 
     - name: Bundle install
       run: |
-        bundle config set without 'default development test production'
+        bundle config set without 'development test production'
         bundle install --jobs 4 --retry 3
 
     - name: Run Rubocop
