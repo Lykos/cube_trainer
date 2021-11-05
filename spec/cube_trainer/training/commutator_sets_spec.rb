@@ -4,8 +4,8 @@ require 'twisty_puzzles'
 require 'rails_helper'
 require 'fixtures'
 
-shared_examples 'commutator_set' do |mode_type|
-  include_context :user
+shared_examples 'commutator_set' do |mode_type, buffer|
+  include_context 'with user abc'
 
   let(:letter_scheme) { TwistyPuzzles::BernhardLetterScheme.new }
   let(:mode) do
@@ -13,13 +13,14 @@ shared_examples 'commutator_set' do |mode_type|
       name: mode_type,
       show_input_mode: :name,
       mode_type: mode_type,
-      cube_size: mode_type.default_cube_size
+      cube_size: mode_type.default_cube_size,
+      buffer: buffer
     )
-    mode.buffer = mode.letter_scheme.default_buffer(mode.part_type) if mode_type.has_buffer?
     if mode_type.has_parity_parts?
       mode.first_parity_part = TwistyPuzzles::Edge.for_face_symbols(%i[U B])
       mode.second_parity_part = TwistyPuzzles::Edge.for_face_symbols(%i[U R])
     end
+    mode.test_comms_mode = :fail
     mode.validate!
     mode
   end
@@ -40,7 +41,16 @@ describe 'CommutatorSets' do
     next unless mode_type.default_cube_size
 
     describe mode_type.generator_class do
-      it_behaves_like 'commutator_set', mode_type
+      if mode_type.has_buffer?
+        buffers = mode_type.generator_class.buffers_with_hints
+        buffers.each do |buffer|
+          describe "for buffer #{buffer}" do
+            it_behaves_like 'commutator_set', mode_type, buffer
+          end
+        end
+      else
+        it_behaves_like 'commutator_set', mode_type, nil
+      end
     end
   end
 end

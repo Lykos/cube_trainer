@@ -109,6 +109,8 @@ module CubeTrainer
       end
 
       def fetch_last_items(num_items)
+        return [] unless num_items.positive?
+
         # We ignore the cached inputs here because they are handled at a different level.
         @mode
           .inputs

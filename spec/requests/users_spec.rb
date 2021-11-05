@@ -5,26 +5,26 @@ require 'requests/requests_spec_helper'
 require 'fixtures'
 
 RSpec.describe 'Users', type: :request do
-  include_context :user
-  include_context :eve
-  include_context :admin
-  include_context :headers
+  include_context 'with user abc'
+  include_context 'with user eve'
+  include_context 'with user admin'
+  include_context 'with headers'
 
   describe 'GET #username_or_email_exists?' do
     it 'returns true if a user exists' do
-      get '/username_or_email_exists', params: { username_or_email: user.name }, headers: headers
+      get '/api/username_or_email_exists', params: { username_or_email: user.name }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
     end
 
     it 'returns true if an email exists' do
-      get '/username_or_email_exists', params: { username_or_email: user.email }, headers: headers
+      get '/api/username_or_email_exists', params: { username_or_email: user.email }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
     end
 
     it "returns false if an username/email doesn't exist" do
-      get '/username_or_email_exists', params: { username_or_email: 'grmlefex' }, headers: headers
+      get '/api/username_or_email_exists', params: { username_or_email: 'grmlefex' }, headers: headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(false)
     end
@@ -36,7 +36,7 @@ RSpec.describe 'Users', type: :request do
       eve
       user
       post_login(admin.name, admin.password)
-      get '/users', headers: headers
+      get '/api/users', headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       users = parsed_body.map { |u| User.new(u) }
@@ -47,16 +47,16 @@ RSpec.describe 'Users', type: :request do
 
     it 'returns unauthorized for non-admins' do
       post_login(user)
-      get '/users', headers: headers
+      get '/api/users', headers: headers
       expect(response).to have_http_status(:unauthorized)
     end
   end
 
   describe 'GET #show' do
-    before(:each) { post_login(user) }
+    before { post_login(user) }
 
     it 'returns http success' do
-      get "/users/#{user.id}", headers: headers
+      get "/api/users/#{user.id}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(User.new(parsed_body)).to eq(user)
@@ -64,43 +64,27 @@ RSpec.describe 'Users', type: :request do
 
     it 'returns http success for admin' do
       post_login(admin.name, admin.password)
-      get "/users/#{user.id}", headers: headers
+      get "/api/users/#{user.id}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(User.new(parsed_body)).to eq(user)
     end
 
     it 'returns not found for unknown users' do
-      get '/users/143432332'
+      get '/api/users/143432332', headers: headers
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for another user' do
       post_login(eve.name, eve.password)
-      get "/users/#{user.id}", headers: headers
+      get "/api/users/#{user.id}", headers: headers
       expect(response).to have_http_status(:not_found)
-    end
-  end
-
-  describe 'GET #new' do
-    it 'returns http success' do
-      get '/users/new'
-      expect(response).to have_http_status(:success)
-    end
-  end
-
-  describe 'GET #edit' do
-    before(:each) { post_login(user) }
-
-    it 'returns http success' do
-      get "/users/#{user.id}/edit"
-      expect(response).to have_http_status(:success)
     end
   end
 
   describe 'POST #create' do
     it 'returns http success' do
-      post '/users', params: {
+      post '/api/users', headers: headers, params: {
         user: {
           name: 'new_user',
           email: 'new_user@example.org',
@@ -117,7 +101,7 @@ RSpec.describe 'Users', type: :request do
 
     it 'returns http success for admin' do
       post_login(admin.name, admin.password)
-      post '/users', params: {
+      post '/api/users', headers: headers, params: {
         user: {
           name: 'new_user',
           email: 'new_user@example.org',
@@ -134,7 +118,7 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns bad request for users with existing name' do
-      post '/users', params: {
+      post '/api/users', headers: headers, params: {
         user: {
           name: user.name,
           email: 'new_user@example.org',
@@ -146,7 +130,7 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns bad request for users with existing email' do
-      post '/users', params: {
+      post '/api/users', headers: headers, params: {
         user: {
           name: 'new_user',
           email: user.email,
@@ -158,7 +142,7 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns bad request for invalid users' do
-      post '/users', params: {
+      post '/api/users', headers: headers, params: {
         user: {
           name: 'new_user',
           email: 'new_user@example.org',
@@ -170,7 +154,7 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns unauthorized if setting admin while not admin' do
-      post '/users', params: {
+      post '/api/users', headers: headers, params: {
         user: {
           name: 'new_user',
           email: 'new_user@example.org',
@@ -184,13 +168,13 @@ RSpec.describe 'Users', type: :request do
   end
 
   describe 'PUT #update' do
-    before(:each) do
+    before do
       post_login(user)
     end
 
     it 'returns http success' do
       post_login(admin.name, admin.password)
-      put "/users/#{admin.id}", params: { user: { name: 'dodo' } }
+      put "/api/users/#{admin.id}", headers: headers, params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:success)
       admin.reload
       expect(admin.name).to eq('dodo')
@@ -198,56 +182,56 @@ RSpec.describe 'Users', type: :request do
     end
 
     it 'returns unprocessable entity for invalid updates' do
-      put "/users/#{user.id}", params: { user: { name: nil } }
+      put "/api/users/#{user.id}", headers: headers, params: { user: { name: nil } }
       expect(response).to have_http_status(:unprocessable_entity)
       expect(User.find(user.id).name).to eq('abc')
     end
 
     it 'returns unauthorized if setting admin' do
-      put "/users/#{user.id}", params: { user: { admin: true } }
+      put "/api/users/#{user.id}", headers: headers, params: { user: { admin: true } }
       expect(response).to have_http_status(:unauthorized)
       expect(User.find(user.id).admin).to eq(false)
     end
 
     it 'returns success for admin' do
       post_login(admin.name, admin.password)
-      put "/users/#{user.id}", params: { user: { admin: true } }
+      put "/api/users/#{user.id}", headers: headers, params: { user: { admin: true } }
       expect(response).to have_http_status(:success)
       expect(User.find(user.id).admin).to eq(true)
     end
 
     it 'returns not found for unknown users' do
-      put '/users/143432332', params: { user: { name: 'dodo' } }
+      put '/api/users/143432332', headers: headers, params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for other users' do
       post_login(eve.name, eve.password)
-      put "/users/#{user.id}", params: { user: { name: 'dodo' } }
+      put "/api/users/#{user.id}", headers: headers, params: { user: { name: 'dodo' } }
       expect(response).to have_http_status(:not_found)
       expect(User.find(user.id).name).to eq('abc')
     end
   end
 
   describe 'DELETE #destroy' do
-    before(:each) do
+    before do
       post_login(user)
     end
 
     it 'returns http success' do
-      delete "/users/#{user.id}"
+      delete "/api/users/#{user.id}"
       expect(response).to have_http_status(:success)
       expect(User.exists?(user.id)).to be(false)
     end
 
     it 'returns not found for unknown users' do
-      delete '/users/143432332'
+      delete '/api/users/143432332'
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for other users' do
       post_login(eve.name, eve.password)
-      delete "/users/#{user.id}"
+      delete "/api/users/#{user.id}"
       expect(response).to have_http_status(:not_found)
       expect(User.exists?(user.id)).to be(true)
     end

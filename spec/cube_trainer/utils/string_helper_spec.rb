@@ -2,7 +2,8 @@
 
 require 'twisty_puzzles/utils'
 
-describe TwistyPuzzles::Utils::StringHelper do
+# TODO: Move to twisty puzzles gem or move string helper here.
+describe TwistyPuzzles::Utils::StringHelper do # rubocop:disable RSpec/FilePath
   include described_class
 
   it 'transforms to camel case correctly' do

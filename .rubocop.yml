@@ -2,23 +2,25 @@ require:
 - rubocop-performance
 - rubocop-rake
 - rubocop-rails
+- rubocop-rspec
 AllCops:
   Exclude:
-  - 'lib/**/*_ui.rb'
-  - 'node_modules/**/*'
+  - 'bin/*'
+  - 'client/**/*'
+  - 'coverage/**/*'
+  - 'data/**/*'
   - 'db/schema.rb'
   - 'db/global_schema.rb'
+  - 'lib/**/*_ui.rb'
+  - 'log/**/*'
+  - 'public/**/*'
+  - 'testdata/**/*'
+  - 'tmp/**/*'
+  - 'vendor/**/*'
+  - '.git/**/*'
   # TODO: Clean up and remove some of the folowing
   - 'config/**/*'
   - 'db/migrate/*'
-  - 'bin/rails'
-  - 'bin/bundle'
-  - 'bin/rake'
-  - 'bin/setup'
-  - 'bin/spring'
-  - 'bin/webpack'
-  - 'bin/webpack-dev-server'
-  - 'bin/yarn'
 Layout/LineLength:
   Max: 100
   # TODO: This is temporary
@@ -273,3 +275,22 @@ Rails/TimeZoneAssignment: # new in 2.10
   Enabled: true
 Rails/UnusedIgnoredColumns: # new in 2.11
   Enabled: true
+Performance/ConcurrentMonotonicTime: # new in 1.12
+  Enabled: true
+RSpec/ExcessiveDocstringSpacing: # new in 2.5
+  Enabled: true
+RSpec/IdenticalEqualityAssertion: # new in 2.4
+  Enabled: true
+RSpec/SubjectDeclaration: # new in 2.5
+  Enabled: true
+RSpec/Rails/AvoidSetupHook: # new in 2.4
+  Enabled: true
+RSpec/MultipleMemoizedHelpers:
+  # TODO: Enable
+  Enabled: false
+RSpec/ExampleLength:
+  # TODO: Enable
+  Enabled: false
+RSpec/MultipleExpectations:
+  # TODO: Enable
+  Enabled: false

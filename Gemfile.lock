@@ -93,8 +93,6 @@ GEM
       domain_name (~> 0.5)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
-    jbuilder (2.11.2)
-      activesupport (>= 5.0.0)
     listen (3.0.8)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -144,8 +142,6 @@ GEM
       nio4r (~> 2.0)
     racc (1.6.0)
     rack (2.2.3)
-    rack-proxy (0.7.0)
-      rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (6.0.4.1)
@@ -176,8 +172,6 @@ GEM
       thor (>= 0.20.3, < 2.0)
     rainbow (3.0.0)
     rake (13.0.6)
-    rake-compiler (1.1.1)
-      rake
     rantly (2.0.0)
     rb-fsevent (0.11.0)
     rb-inotify (0.10.1)
@@ -213,7 +207,7 @@ GEM
       rspec-mocks (~> 3.10)
       rspec-support (~> 3.10)
     rspec-support (3.10.2)
-    rubocop (1.22.2)
+    rubocop (1.22.3)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
@@ -224,7 +218,7 @@ GEM
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.12.0)
       parser (>= 3.0.1.1)
-    rubocop-performance (1.11.5)
+    rubocop-performance (1.12.0)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
     rubocop-rails (2.12.4)
@@ -233,21 +227,13 @@ GEM
       rubocop (>= 1.7.0, < 2.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
+    rubocop-rspec (2.5.0)
+      rubocop (~> 1.19)
     ruby-filemagic (0.7.2)
     ruby-prof (1.4.3)
     ruby-progressbar (1.11.0)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
-    sass-rails (6.0.0)
-      sassc-rails (~> 2.1, >= 2.1.1)
-    sassc (2.4.0)
-      ffi (~> 1.9)
-    sassc-rails (2.1.2)
-      railties (>= 4.0.0)
-      sassc (>= 2.0)
-      sprockets (> 3.0)
-      sprockets-rails
-      tilt
     selenium-webdriver (4.0.3)
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
@@ -271,11 +257,7 @@ GEM
       sprockets (>= 3.0.0)
     thor (1.1.0)
     thread_safe (0.3.6)
-    tilt (2.0.10)
-    turbolinks (5.2.1)
-      turbolinks-source (~> 5.2)
-    turbolinks-source (5.2.0)
-    twisty_puzzles (0.0.11)
+    twisty_puzzles (0.0.16)
       colorize
     tzinfo (1.2.9)
       thread_safe (~> 0.1)
@@ -292,10 +274,6 @@ GEM
       nokogiri (~> 1.6)
       rubyzip (>= 1.3.0)
       selenium-webdriver (~> 4.0)
-    webpacker (4.3.0)
-      activesupport (>= 4.2)
-      rack-proxy (>= 0.6.1)
-      railties (>= 4.2)
     webrick (1.7.0)
     webrobots (0.1.2)
     websocket-driver (0.7.5)
@@ -320,7 +298,6 @@ DEPENDENCIES
   byebug
   capybara (>= 2.15)
   colorize
-  jbuilder (~> 2.7)
   listen (>= 3.0.5, < 3.2)
   parallel
   pg
@@ -328,7 +305,6 @@ DEPENDENCIES
   puma (~> 4.3)
   rails (~> 6.0.2, >= 6.0.2.2)
   rake
-  rake-compiler
   rantly
   rspec
   rspec-prof
@@ -337,20 +313,18 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails
   rubocop-rake
+  rubocop-rspec
   ruby-filemagic
   ruby-progressbar
   rubyzip
-  sass-rails (>= 6)
   selenium-webdriver
   simplecov
   spring
   spring-watcher-listen (~> 2.0.0)
-  turbolinks (~> 5)
-  twisty_puzzles (>= 0.0.11)
+  twisty_puzzles (>= 0.0.16)
   tzinfo-data
   web-console (>= 3.3.0)
   webdrivers
-  webpacker (~> 4.0)
   webrick
   wombat
   xdg

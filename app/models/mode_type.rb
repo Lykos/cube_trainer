@@ -153,7 +153,7 @@ class ModeType
       default_cube_size: 3,
       has_buffer: false,
       has_goal_badness: false,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: [:name]
     ),
     ModeType.new(
       key: :corner_commutators,
@@ -193,7 +193,7 @@ class ModeType
       generator_class: FloatingCorner2Twists,
       learner_type: :case_time,
       default_cube_size: 3,
-      has_buffer: true,
+      has_buffer: false,
       has_goal_badness: true,
       show_input_modes: SHOW_INPUT_MODES
     ),

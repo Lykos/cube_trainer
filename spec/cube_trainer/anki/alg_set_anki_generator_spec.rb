@@ -21,7 +21,8 @@ class TrueChecker
 end
 
 describe Anki::AlgSetAnkiGenerator do
-  after(:each) { FileUtils.remove_entry(output_dir) }
+  after { FileUtils.remove_entry(output_dir) }
+
   let(:output_dir) { Dir.mktmpdir('images') }
   let(:output) { Tempfile.new(['deck', '.tsv']) }
   let(:base_options) do

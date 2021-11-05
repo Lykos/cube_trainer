@@ -19,6 +19,10 @@ module CubeTrainer
 
     attr_reader :letters
 
+    def pair_of_equal_letters?
+      letters.length == 2 && letters.first == letters.last
+    end
+
     def contains_any_letter?(letters)
       !(@letters & letters).empty?
     end

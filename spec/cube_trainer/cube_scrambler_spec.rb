@@ -7,7 +7,7 @@ require 'rantly/rspec_extensions'
 require 'rantly/shrinks'
 
 describe CubeScrambler do
-  let(:scrambler) { CubeScrambler.new }
+  let(:scrambler) { described_class.new }
 
   it 'generates scrambles of the right size' do
     property_of do
@@ -21,9 +21,7 @@ describe CubeScrambler do
     property_of do
       Rantly { range(0, 5) }
     end.check do |length|
-      scrambler.random_algorithm(length).moves.each do |move|
-        expect(move).to be_a(TwistyPuzzles::CubeMove)
-      end
+      expect(scrambler.random_algorithm(length).moves).to all(be_a(TwistyPuzzles::CubeMove))
     end
   end
 

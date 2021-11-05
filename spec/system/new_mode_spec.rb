@@ -5,7 +5,7 @@ require 'system/system_spec_helper'
 require 'fixtures'
 
 describe 'modes', type: :system do
-  include_context :user
+  include_context 'with user abc'
 
   before do
     driven_by(:selenium_chrome_headless)

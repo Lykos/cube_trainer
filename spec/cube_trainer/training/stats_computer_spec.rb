@@ -21,7 +21,7 @@ def construct_mode(mode_type)
 end
 
 xdescribe Training::StatsComputer do
-  include_context :user
+  include_context 'with user abc'
 
   let(:now) { Time.zone.at(0) }
   let(:t_10_minutes_ago) { now - 600 }

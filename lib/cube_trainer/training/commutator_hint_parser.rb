@@ -28,6 +28,8 @@ module CubeTrainer
         false
       end
 
+      def count_error_alg; end
+
       def parse_report; end
     end
 
@@ -50,7 +52,9 @@ module CubeTrainer
         buffer:,
         letter_scheme:,
         color_scheme:,
+        write_fixes:,
         verbose:,
+        show_cube_states:,
         cube_size:,
         test_comms_mode:
       )
@@ -66,10 +70,12 @@ module CubeTrainer
         super()
         @part_type = part_type
         @buffer = buffer
-        @name = "#{buffer.to_s.downcase}_#{snake_case_class_name(part_type)}"
+        @name = self.class.name_with_buffer_name(part_type, buffer.to_s.downcase)
         @letter_scheme = letter_scheme
         @color_scheme = color_scheme
+        @write_fixes = write_fixes
         @verbose = verbose
+        @show_cube_states = show_cube_states
         @cube_size = cube_size
         @test_comms_mode = test_comms_mode
       end
@@ -77,6 +83,22 @@ module CubeTrainer
       # rubocop:enable Metrics/MethodLength
 
       attr_reader :name, :part_type, :buffer, :verbose, :cube_size, :test_comms_mode
+
+      def self.name_with_buffer_name(part_type, buffer_name)
+        "#{buffer_name}_#{snake_case_class_name(part_type)}"
+      end
+
+      def self.buffers_with_hints(part_type)
+        min_symbols = part_type.min_parseable_face_symbols
+        max_symbols = part_type.max_parseable_face_symbols
+        min_symbols.upto(max_symbols).flat_map do |n|
+          wildcard = '?' * n
+          buffer_extraction_regexp = csv_file(name_with_buffer_name(part_type, "(#{'.' * n})"))
+          Dir.glob(csv_file(name_with_buffer_name(part_type, wildcard))).map do |file|
+            part_type.parse(file.match(buffer_extraction_regexp)[1])
+          end
+        end
+      end
 
       def letter_pair(part0, part1)
         LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) })
@@ -93,6 +115,29 @@ module CubeTrainer
       # Recognizes special cell values that are blacklisted because they are not commutators
       def blacklisted?(value)
         BLACKLIST.include?(value.downcase)
+      end
+
+      # Represents one location in a spreadsheet with all kind of indexing metadata.
+      class CellDescription
+        def initialize(name, row_index, column_index, letter_pair)
+          @name = name
+          @row_index = row_index
+          @column_index = column_index
+          @letter_pair = letter_pair
+        end
+
+        attr_reader :name, :row_index, :column_index, :letter_pair
+
+        COLUMN_NAMES = ('A'..'Z').to_a
+
+        def spreadsheet_index
+          "#{@name} #{COLUMN_NAMES[@column_index]}#{@row_index + 1}"
+        end
+
+        def to_s
+          letter_pair_suffix = @letter_pair ? " #{@letter_pair}" : ''
+          "#{@name}#{letter_pair_suffix} at #{spreadsheet_index}"
+        end
       end
 
       # Represents an entry with an alg in a commutator table.
@@ -124,7 +169,7 @@ module CubeTrainer
       end
 
       def parse_hints_internal(raw_hints)
-        parse_hint_table(add_nils_to_table(raw_hints))
+        parse_hint_table(raw_hints, add_nils_to_table(raw_hints))
       end
 
       def checker
@@ -135,11 +180,11 @@ module CubeTrainer
             CommutatorChecker.new(
               part_type: @part_type,
               buffer: @buffer,
-              piece_name: name,
               color_scheme: @color_scheme,
               letter_scheme: @letter_scheme,
               cube_size: @cube_size,
               verbose: @verbose,
+              show_cube_states: @show_cube_states,
               find_fixes: @verbose
             )
           end
@@ -175,37 +220,49 @@ module CubeTrainer
       end
 
       # Process a cell of an alg table that is outside the range where we expect algorithms.
-      def process_outside_cell(row_description, cell)
+      def process_outside_cell(cell_description, cell)
         # Ignore this if it's not an alg entry. Any invalid stuff can be outside the
         # interesting part of the table.
         return unless cell.is_a?(AlgEntry)
         return unless warn_comms?
 
-        puts "Algorithm #{cell.algorithm} at #{row_description} is outside of the valid " \
+        puts "Algorithm for #{cell_description} #{cell.algorithm} is outside of the valid " \
              'part of the table.'
       end
 
-      def process_error_cell(letter_pair, row_description, cell)
+      # Process a cell in the diagonal of an alg table where we don't expect algorithms.
+      def process_diagonal_cell(cell_description, cell)
+        # Ignore this if it's not an alg entry. Any invalid stuff can be outside the
+        # interesting part of the table.
+        return unless cell.is_a?(AlgEntry)
+        return unless warn_comms?
+
+        puts "Algorithm for #{cell_description} #{cell.algorithm} is in the diagonal of table."
+      end
+
+      def process_error_cell(cell_description, cell)
         checker.count_error_alg
         return unless warn_comms?
 
-        puts "Algorithm for #{letter_pair} at #{row_description} has a problem: " \
+        puts "Algorithm for #{cell_description} has a problem: " \
              "#{cell.error_message}."
       end
 
-      def process_algorithm_cell(hints, letter_pair, row_description, cell)
+      def process_algorithm_cell(hints, cell_description, cell)
         commutator = cell.algorithm
-        check_result = checker.check_alg(row_description, letter_pair, commutator).result
-        hints[letter_pair] = commutator if check_result == :correct
+        check_result = checker.check_alg(cell_description, commutator)
+        hints[cell_description.letter_pair] = commutator if check_result.result == :correct
       end
 
-      def process_alg_table_cell(hints, letter_pair, row_description, cell)
-        if letter_pair.nil?
-          process_outside_cell(row_description, cell)
+      def process_alg_table_cell(hints, cell_description, cell)
+        if cell_description.letter_pair.nil?
+          process_outside_cell(cell_description, cell)
+        elsif cell_description.letter_pair.pair_of_equal_letters?
+          process_diagonal_cell(cell_description, cell)
         elsif cell.is_a?(ErrorEntry)
-          process_error_cell(letter_pair, row_description, cell)
+          process_error_cell(cell_description, cell)
         elsif cell.is_a?(AlgEntry)
-          process_algorithm_cell(hints, letter_pair, row_description, cell)
+          process_algorithm_cell(hints, cell_description, cell)
         end
       end
 
@@ -214,14 +271,14 @@ module CubeTrainer
         alg_table.each_with_index do |row, row_index|
           row.each_with_index do |cell, col_index|
             letter_pair = interpretation.letter_pair(row_index, col_index)
-            row_description = "#{('A'..'Z').to_a[col_index]}#{row_index}"
-            process_alg_table_cell(hints, letter_pair, row_description, cell)
+            cell_description = CellDescription.new(name, row_index, col_index, letter_pair)
+            process_alg_table_cell(hints, cell_description, cell)
           end
         end
         hints
       end
 
-      def parse_hint_table(hint_table)
+      def parse_hint_table(raw_hints, hint_table)
         # First parse whatever we can out of the hint table
         alg_table = parse_alg_table(hint_table)
 
@@ -230,16 +287,26 @@ module CubeTrainer
 
         # Now check everything and construct the hint table.
         hints = process_alg_table(alg_table, interpretation)
+        maybe_write_fixes(raw_hints)
         output_final_report
 
         hints
       end
 
+      def maybe_write_fixes(raw_hints)
+        return unless @write_fixes && !checker.fixes.empty?
+
+        checker.fixes.each do |fix|
+          desc = fix.cell_description
+          raw_hints[desc.row_index][desc.column_index] = fix.fixed_algorithm.to_s
+        end
+        write_hints(raw_hints)
+      end
+
       def output_final_report
         if checker.found_problems?
-          raise checker.failure_report if fail_comms?
-
           puts checker.failure_report if warn_comms?
+          raise checker.failure_report if fail_comms?
         elsif @verbose
           puts checker.parse_report
         end
@@ -251,12 +318,14 @@ module CubeTrainer
 
       def self.maybe_parse_hints(part_type, options)
         buffer = BufferHelper.determine_buffer(part_type, options)
-        hint_parser = CommutatorHintParser.new(
+        hint_parser = new(
           part_type: part_type,
           buffer: buffer,
           letter_scheme: options.letter_scheme,
           color_scheme: options.color_scheme,
           verbose: options.verbose,
+          show_cube_states: options.show_cube_states,
+          write_fixes: options.write_fixes,
           cube_size: options.cube_size,
           test_comms_mode: options.test_comms_mode
         )

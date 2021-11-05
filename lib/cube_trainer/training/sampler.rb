@@ -81,6 +81,16 @@ module CubeTrainer
     class AdaptiveSampler < Sampler
       include Utils::SamplingHelper
 
+      # An item with its score attached.
+      class ScoredItem
+        def initialize(item, score)
+          @item = item
+          @score = score
+        end
+
+        attr_reader :item, :score
+      end
+
       def initialize(name, items, &get_weight)
         super()
         @name = name
@@ -89,18 +99,21 @@ module CubeTrainer
       end
 
       def random_item
-        ready_items = items
         raise SamplingError, "No ready item for adaptive sampler #{@name}." if ready_items.empty?
 
-        sample_by(ready_items, &@get_weight_proc)
+        sample_by(ready_items, &:score).item
       end
 
-      def items
-        @items.select { |e| @get_weight_proc.call(e).positive? }
+      def ready_items
+        @ready_items ||=
+          begin
+            scored_items = @items.map { |item| ScoredItem.new(item, @get_weight_proc.call(item)) }
+            scored_items.filter { |scored_item| scored_item.score.positive? }
+          end
       end
 
       def ready?
-        !items.empty?
+        !ready_items.empty?
       end
     end
 

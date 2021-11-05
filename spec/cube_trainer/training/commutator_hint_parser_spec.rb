@@ -3,21 +3,23 @@
 require 'cube_trainer/training/commutator_hint_parser'
 require 'twisty_puzzles'
 
-describe Training::HintParser do
+describe Training::CommutatorHintParser do
   include TwistyPuzzles
 
   let(:part_type) { TwistyPuzzles::Corner }
   let(:letter_scheme) { TwistyPuzzles::BernhardLetterScheme.new }
   let(:buffer) { letter_scheme.default_buffer(part_type) }
   let(:hint_parser) do
-    Training::CommutatorHintParser.new(
+    described_class.new(
       part_type: part_type,
       buffer: buffer,
       letter_scheme: letter_scheme,
       color_scheme: TwistyPuzzles::ColorScheme::BERNHARD,
       verbose: false,
+      show_cube_states: false,
       cube_size: 3,
-      test_comms_mode: :ignore
+      test_comms_mode: :ignore,
+      write_fixes: false
     )
   end
 
@@ -27,7 +29,7 @@ describe Training::HintParser do
       ['', "[U R U', L']", "[D U R U' : [R' U R, D']]"],
       ["[D U R U' : [D', R' U R]]", "[U R' U', L']", '']
     ]
-    expect(hint_parser.parse_hint_table(table)).to eq(
+    expect(hint_parser.parse_hint_table(table, table)).to eq(
       {
         LetterPair.new(%w[i g]) => parse_commutator("[L', U R U']"),
         LetterPair.new(%w[g i]) => parse_commutator("[U R U', L']"),
@@ -44,7 +46,7 @@ describe Training::HintParser do
       ["[L', U R U']", ''],
       ['', "[U R U', L']"]
     ]
-    expect(hint_parser.parse_hint_table(table)).to eq(
+    expect(hint_parser.parse_hint_table(table, table)).to eq(
       {
         LetterPair.new(%w[i g]) => parse_commutator("[L', U R U']"),
         LetterPair.new(%w[g i]) => parse_commutator("[U R U', L']")

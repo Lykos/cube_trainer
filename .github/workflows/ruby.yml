@@ -17,18 +17,23 @@ jobs:
 
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
 
     - name: Update packages
       run: sudo apt update
 
-    - name: Install Package Dependencies
+    - name: Install OS Package Dependencies
       uses: mstksg/get-package@v1
       with:
-        apt-get: libpq-dev yarn
+        apt-get: libpq-dev
+
+    - name: Install Bundler
+      run: gem install bundler
 
     - name: Bundle install
       run: |
-        gem install bundler
+        bundle config set without 'rubocop production'
         bundle install --jobs 4 --retry 3
 
     - name: Setup Database
@@ -41,8 +46,18 @@ jobs:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
 
-    - name: Run yarn
-      run: yarn install
+    - name: Setup node
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+        cache: 'npm'
+        cache-dependency-path: client/package-lock.json
+
+    - name: Run npm install
+      run: bundle exec rake npm:install
+
+    - name: Run ng build
+      run: bundle exec rake ng:build
 
     - name: Run RSpec
       run: bundle exec rake spec
