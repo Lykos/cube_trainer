@@ -28,11 +28,6 @@ jobs:
       with:
         apt-get: libpq-dev
 
-    - name: Install OS Package Dependencies
-      uses: mstksg/get-package@v1
-      with:
-        apt-get: libpq-dev
-
     - name: Install Bundler
       run: gem install bundler
 
@@ -51,11 +46,17 @@ jobs:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
 
+    - name: Setup node
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+	cache: 'npm'
+    
     - name: Run npm install
-      run: bundle exec rake npm_install
+      run: bundle exec rake npm:install
 
     - name: Run ng build
-      run: bundle exec rake ng_build
+      run: bundle exec rake ng:build
 
     - name: Run RSpec
       run: bundle exec rake spec

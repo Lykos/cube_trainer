@@ -17,7 +17,7 @@ describe 'messages', type: :system do
     login(user)
     click_button user.name
 
-    find('messages td', text: user_message.title).click
+    find('cube-trainer-messages td', text: user_message.title).click
     expect(page).to have_text(user_message.body)
   end
 end

@@ -18,7 +18,7 @@ describe 'messages', type: :system do
     login(user)
     click_button user.name
 
-    find('achievement-grants td', text: achievement_grant.achievement.name).click
+    find('cube-trainer-achievement-grants td', text: achievement_grant.achievement.name).click
     expect(page).to have_text('Fake achievement for tests.')
     click_button 'All Achievements'
 
