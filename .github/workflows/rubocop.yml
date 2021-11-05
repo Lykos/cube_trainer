@@ -23,8 +23,8 @@ jobs:
 
     - name: Bundle install
       run: |
-        bundle config set without 'development test production'
+        bundle config set without 'default development test production'
         bundle install --jobs 4 --retry 3
 
     - name: Run Rubocop
-      run: bundle exec rake rubocop
+      run: bundle exec rubocop
