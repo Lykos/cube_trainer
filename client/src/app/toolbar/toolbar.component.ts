@@ -10,16 +10,16 @@ import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional
   template: `
 <mat-toolbar color="primary">
   <ng-container *ngIf="loggedIn">
-    <button mat-button (click)="onCubeTrainer()">
+    <button id="toolbar-title" mat-button (click)="onCubeTrainer()">
       Cube Trainer
     </button>
   </ng-container>
   <div class="horizontal-spacer"></div>
   <ng-container *ngIf="!loggedIn; else loggedInBlock">
-    <button mat-button (click)="onLogin()">
+    <button id="toolbar-login" mat-button (click)="onLogin()">
       Login
     </button>
-    <button mat-button (click)="onSignup()">
+    <button id="toolbar-signup" mat-button (click)="onSignup()">
       Sign Up
     </button>
   </ng-container>

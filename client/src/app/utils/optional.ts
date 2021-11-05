@@ -32,13 +32,13 @@ export function orElse<X>(optional: Optional<X>, x: X): X {
 export function forceValue<X>(optional: Optional<X>): X {
   switch (optional.tag) {
     case "some": return optional.value;
-    case "none": throw "Tried to force value for None.";
+    case "none": throw new Error("Tried to force value for None.");
   }
 }
 
 export function checkNone<X>(optional: Optional<X>): void {
   if (optional.tag == "some") {
-    throw `Checked None for ${optional}.`;
+    throw new Error(`Checked None for ${optional}.`);
   }
 }
 

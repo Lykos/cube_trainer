@@ -15,4 +15,9 @@ namespace :ng do
   task serve: :environment do
     run_ng('ng serve')
   end
+
+  desc 'Run ng test to run all angular tests.'
+  task test: :environment do
+    run_ng('ng test')
+  end
 end

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'cube-trainer',
   template: `
-<toolbar>Loading toolbar...</toolbar>
+<toolbar id="toolbar">Loading toolbar...</toolbar>
 <div class="cube-trainer-container mat-elevation-z2">
 <router-outlet></router-outlet>
 </div>
