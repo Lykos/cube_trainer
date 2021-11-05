@@ -11,60 +11,7 @@ import { UserFormCreator } from './user-form-creator.service';
 
 @Component({
   selector: 'cube-trainer-user',
-  template: `
-<div *ngIf="user">
-  <h1>{{user.name}}</h1>
-  <form [formGroup]="editUserForm" (ngSubmit)="onSubmit()">
-    <mat-form-field appearance="fill">
-      <mat-label>Username</mat-label>
-      <input type="text" matInput formControlName="name">
-      <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['required']">
-        You must provide a <strong>username</strong>.
-      </mat-error>
-      <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['uniqueUsernameOrEmail']">
-        This <strong>username</strong> is already taken.
-      </mat-error>
-    </mat-form-field>
-    <br>
-    <mat-form-field appearance="fill">
-      <mat-label>Email</mat-label>
-      <input type="email" matInput formControlName="email">
-      <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['required']">
-        You must provide an <strong>email</strong>.
-      </mat-error>
-      <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['email']">
-        You must provide a valid <strong>email</strong>.
-      </mat-error>
-      <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['uniqueUsernameOrEmail']">
-        This <strong>email</strong> is already taken.
-      </mat-error>
-    </mat-form-field>
-    <br>
-    <mat-form-field appearance="fill">
-      <mat-label>Password</mat-label>
-      <input type="password" matInput formControlName="password">
-      <mat-error *ngIf="relevantInvalid(password) && password.errors && password.errors['required']">
-        You must provide a <strong>password</strong>.
-      </mat-error>
-    </mat-form-field>
-    <br>
-    <mat-form-field appearance="fill">
-      <mat-label>Confirm Password</mat-label>
-      <input type="password" matInput formControlName="passwordConfirmation">
-      <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors && passwordConfirmation.errors['required']">
-        You must provide a <strong>password confirmation</strong>.
-      </mat-error>
-      <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors && passwordConfirmation.errors['compare']">
-        <strong>Password</strong> must match <strong>password confirmation</strong>.
-      </mat-error>
-    </mat-form-field>
-    <br>
-    <button mat-raised-button color="primary" type="submit" [disabled]="editUserForm.pristine || !editUserForm.valid">Save</button>
-  </form>
-  <cube-trainer-messages></cube-trainer-messages>
-  <cube-trainer-achievement-grants></cube-trainer-achievement-grants>
-</div>
-`
+  templateUrl: './user.component.html'
 })
 export class UserComponent implements OnInit {
   userId$: Observable<number>;

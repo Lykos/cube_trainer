@@ -2,12 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'cube-trainer',
-  template: `
-<cube-trainer-toolbar id="toolbar">Loading toolbar...</cube-trainer-toolbar>
-<div class="cube-trainer-container mat-elevation-z2">
-<router-outlet></router-outlet>
-</div>
-`,
+  templateUrl: './app.component.html',
   styles: [`
 .cube-trainer-container {
   margin-top: 20px;

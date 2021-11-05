@@ -8,63 +8,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'cube-trainer-signup',
-  template: `
-<mat-card>
-  <mat-card-title>Sign Up</mat-card-title>
-  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-    <mat-card-content>
-      <mat-form-field appearance="fill">
-        <mat-label>Username</mat-label>
-        <input type="text" matInput formControlName="name">
-        <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['required']">
-          You must provide a <strong>username</strong>.
-        </mat-error>
-        <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['uniqueUsernameOrEmail']">
-          This <strong>username</strong> is already taken.
-        </mat-error>
-      </mat-form-field>
-      <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Email</mat-label>
-        <input type="email" matInput formControlName="email">
-        <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['required']">
-          You must provide an <strong>email</strong>.
-        </mat-error>
-        <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['email']">
-          You must provide a valid <strong>email</strong>.
-        </mat-error>
-        <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['uniqueUsernameOrEmail']">
-          This <strong>email</strong> is already taken.
-        </mat-error>
-      </mat-form-field>
-      <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Password</mat-label>
-        <input type="password" matInput formControlName="password">
-        <mat-error *ngIf="relevantInvalid(password) && password.errors && password.errors['required']">
-          You must provide a <strong>password</strong>.
-        </mat-error>
-      </mat-form-field>
-      <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Confirm Password</mat-label>
-        <input type="password" matInput formControlName="passwordConfirmation">
-        <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors && passwordConfirmation.errors['required']">
-          You must provide a <strong>password confirmation</strong>.
-        </mat-error>
-        <mat-error *ngIf="relevantInvalid(passwordConfirmation) && passwordConfirmation.errors && passwordConfirmation.errors['compare']">
-          <strong>Password</strong> must match <strong>password confirmation</strong>.
-        </mat-error>
-      </mat-form-field>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" type="submit" [disabled]="!signupForm.valid">
-          Submit
-        </button>
-      </mat-card-actions>
-    </mat-card-content>
-  </form>
-</mat-card>
-`
+  templateUrl: './signup.component.html'
 })
 export class SignupComponent implements OnInit {
   signupForm!: FormGroup;

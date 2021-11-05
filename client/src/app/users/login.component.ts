@@ -5,39 +5,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'cube-trainer-login',
-  template: `
-<mat-card>
-  <mat-card-title>Login</mat-card-title>
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <mat-card-content>
-      <mat-form-field appearance="fill">
-        <mat-label>Username or Email</mat-label>
-        <input matInput type="text" formControlName="usernameOrEmail">
-        <mat-error *ngIf="relevantInvalid(usernameOrEmail) && usernameOrEmail.errors && usernameOrEmail.errors['required']">
-          You must provide a <strong>username</strong> or <strong>email</strong>.
-        </mat-error>
-      </mat-form-field>
-      <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Password</mat-label>
-        <input matInput type="password" formControlName="password">
-        <mat-error *ngIf="relevantInvalid(password) && password.errors && password.errors['required']">
-          You must provide a <strong>password</strong>.
-        </mat-error>
-      </mat-form-field>
-      <br>
-      <mat-error *ngIf="loginFailed">
-        User name or password incorrect.
-      </mat-error>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary" [disabled]="!loginForm.valid">
-        Submit
-      </button>
-    </mat-card-actions>
-  </form>
-</mat-card>
-`
+  templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;

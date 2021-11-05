@@ -7,17 +7,7 @@ import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-achievement',
-  template: `
-<mat-card>
-  <mat-card-title>{{name}}</mat-card-title>
-  <mat-card-content>
-    {{description}}
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="onAll()">All Achievements</button>
-  </mat-card-actions>
-</mat-card>
-`
+  templateUrl: './achievement.component.html'
 })
 export class AchievementComponent implements OnInit {
   achievementKey$: Observable<string>;

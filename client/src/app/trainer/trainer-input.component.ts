@@ -7,20 +7,7 @@ import { ImgSide } from './img-side';
 
 @Component({
   selector: 'cube-trainer-trainer-input',
-  template: `
-<ng-container *ngIf="showImage">
-<div layout="row" layout-sm="column">
-  <img id="trainerInputLeftImage" flex [src]="imgLeftSrc">
-  <img id="trainerInputRightImage" flex [src]="imgRightSrc">
-</div>
-</ng-container>
-<span class="trainer-input mat-elevation-z4" *ngIf="showName">{{input.representation}}</span>
-<div class="hints" *ngIf="numHints > 0">
-  <div class="hint" *ngFor="let hint of hints">
-    {{hint}}
-  </div>
-</div>
-`,
+  templateUrl: './trainer-input.component.html',
   styles: [`
 .trainer-input {
   font-size: xxx-large;

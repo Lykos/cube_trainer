@@ -8,20 +8,7 @@ import { Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'cube-trainer-trainer',
-  template: `
-<div layout="row" layout-sm="column">
-  <div flex>
-    <cube-trainer-trainer-input [input]="input" [mode]="mode" [numHints]="numHints" *ngIf="mode && input"></cube-trainer-trainer-input>
-    <cube-trainer-stopwatch [mode]="mode" (inputItem)="onInputItem($event)" (resultSaved)="onResultSaved()" (numHints)="onNumHints($event)" *ngIf="mode"></cube-trainer-stopwatch>
-  </div>
-  <div flex>
-    <cube-trainer-results-table [resultEvents$]="resultEventsSubject.asObservable()"></cube-trainer-results-table>
-  </div>
-  <div flex>
-    <cube-trainer-stats-table [statEvents$]="resultEventsSubject.asObservable()"></cube-trainer-stats-table>
-  </div>
-</div>
-`
+  templateUrl: './trainer.component.html'
 })
 export class TrainerComponent implements OnInit {
   input: InputItem | undefined = undefined;

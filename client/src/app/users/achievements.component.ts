@@ -5,23 +5,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'cube-trainer-achievements',
-  template: `
-<div>
-  <h2>All Achievements</h2>
-  <div>
-    <table mat-table class="mat-elevation-z2" [dataSource]="achievements">
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let achievement" matTooltip="{{achievement.description}}">
-          {{achievement.name}}
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-      <tr mat-row *matRowDef="let achievement; columns: columnsToDisplay" (click)="onClick(achievement)"></tr>
-    </table>
-  </div>
-</div>
-`,
+  templateUrl: './achievements.component.html',
   styles: [`
 table {
   width: 100%;

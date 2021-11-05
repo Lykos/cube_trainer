@@ -7,27 +7,7 @@ import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-achievement-grants',
-  template: `
-<div>
-  <h2>Your Achievements</h2>
-  <div>
-    <table mat-table class="mat-elevation-z2" [dataSource]="achievementGrants">
-      <ng-container matColumnDef="timestamp">
-        <th mat-header-cell *matHeaderCellDef> Timestamp </th>
-        <td mat-cell *matCellDef="let achievementGrant"> {{achievementGrant.timestamp | instant}} </td>
-      </ng-container>
-      <ng-container matColumnDef="achievement">
-        <th mat-header-cell *matHeaderCellDef> Achievement </th>
-        <td mat-cell *matCellDef="let achievementGrant" matTooltip="{{achievementGrant.achievement.description}}">
-          {{achievementGrant.achievement.name}}
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-      <tr mat-row *matRowDef="let achievementGrant; columns: columnsToDisplay" (click)="onClick(achievementGrant)"></tr>
-    </table>
-  </div>
-</div>
-`,
+  templateUrl: './achievement-grants.component.html',
   styles: [`
 table {
   width: 100%;

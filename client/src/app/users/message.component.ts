@@ -8,19 +8,7 @@ import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-message',
-  template: `
-<mat-card>
-  <mat-card-title>{{title}}</mat-card-title>
-  <mat-card-subtitle>Received {{timestamp ? (timestamp | instant) : undefined}}</mat-card-subtitle>
-  <mat-card-content>
-    {{body}}
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="onDelete()">Delete</button>
-    <button mat-raised-button color="primary" (click)="onAll()">All Messages</button>
-  </mat-card-actions>
-</mat-card>
-`
+  templateUrl: './message.component.html'
 })
 export class MessageComponent implements OnInit {
   userId$: Observable<number>;

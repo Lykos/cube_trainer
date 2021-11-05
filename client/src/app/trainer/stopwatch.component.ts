@@ -15,30 +15,7 @@ enum StopWatchState {
 
 @Component({
   selector: 'cube-trainer-stopwatch',
-  template: `
-<div class="stopwatch">
-  <h2>Time</h2>
-  <div class="stopwatch-time"> {{duration}} </div>
-  <div>
-    <ng-container *ngIf="running; else notRunning">
-      <button mat-raised-button color="primary" (click)="onStopAndStart()">
-        Stop and Start
-      </button>
-      <button mat-raised-button color="primary" (click)="onStopAndPause()">
-        Stop and Pause
-      </button>
-      <button mat-raised-button color="primary" *ngIf="hintsAvailable" (click)="onHint()">
-        Hint
-      </button>
-    </ng-container>
-    <ng-template #notRunning>
-      <button mat-raised-button color="primary" (click)="onStart()">
-        Start
-      </button>
-    </ng-template>
-  </div>
-</div>
-`,
+  templateUrl: './stopwatch.component.html',
   styles: [`
 .stopwatch-time {
   font-size: xxx-large;

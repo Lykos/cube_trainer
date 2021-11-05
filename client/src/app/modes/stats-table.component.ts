@@ -9,25 +9,7 @@ import { StatsDataSource } from './stats.data-source';
 
 @Component({
   selector: 'cube-trainer-stats-table',
-  template: `
-<div *ngIf="dataSource.data.length > 0">
-  <h2>Stats</h2>
-  <div>
-    <div class="spinner-container" *ngIf="dataSource.loading$ | async">
-      <mat-spinner></mat-spinner>
-    </div>
-    <table mat-table class="mat-elevation-z2" [dataSource]="dataSource">
-      <mat-text-column name="name"></mat-text-column>
-      <ng-container matColumnDef="time">
-        <th mat-header-cell *matHeaderCellDef> Time </th>
-        <td mat-cell *matCellDef="let stat"> {{stat.success ? (stat.duration | duration) : 'DNF'}} </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-      <tr mat-row *matRowDef="let stat; columns: columnsToDisplay"></tr>
-    </table>
-  </div>
-</div>
-`,
+  templateUrl: './stats-table.component.html',
   styles: [`
 table {
   width: 100%;
