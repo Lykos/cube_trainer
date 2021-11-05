@@ -1,4 +1,4 @@
-import snakeCase from 'snake-case-typescript';
+import { camelCaseToSnakeCase } from '../utils/case';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { RawRailsService } from './raw-rails.service';
@@ -20,12 +20,12 @@ class UrlParameterPath {
 
   withArraySegment() {
     const extendedPath: string[] = Object.assign([], this.path);
-    extendedPath.push('[]');
+    extendedPath.push('');
     return new UrlParameterPath(this.root, extendedPath);
   }
 
   key() {
-    return snakeCase(this.root) + this.path.map(s => `[${snakeCase(s)}]`).join('');
+    return camelCaseToSnakeCase(this.root) + this.path.map(s => `[${camelCaseToSnakeCase(s)}]`).join('');
   }
 
   serializeWithValue(value: any) {

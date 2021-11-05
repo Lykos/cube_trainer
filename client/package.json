@@ -30,7 +30,6 @@
     "@rails/ujs": "^6.1.4",
     "@rxweb/reactive-form-validators": "^2.1.6",
     "rxjs": "~7.4.0",
-    "snake-case-typescript": "^0.0.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
