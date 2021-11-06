@@ -12,6 +12,7 @@
     "ng": "cd client; ng",
     "start": "ng serve",
     "build": "ng build --configuration production",
+    "build_development": "ng build --configuration development",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"

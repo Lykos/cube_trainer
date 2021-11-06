@@ -14,7 +14,7 @@ namespace :npm do
   # TODO: forward configuration from environment.
   desc 'Run ng build to populate the public/ directory.'
   task build_development: :environment do
-    system('npm run build --configuration development')
+    system('npm run build_development')
   end
 end
 
