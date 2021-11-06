@@ -9,12 +9,12 @@
   },
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "lint": "ng lint"
+    "ng": "cd client; ng",
+    "start": "cd client; ng serve",
+    "build": "cd client; ng build --configuration production",
+    "watch": "cd client; ng build --watch --configuration development",
+    "test": "cd client; ng test",
+    "lint": "cd client; ng lint"
   },
   "dependencies": {
     "@angular/animations": "~13.0.0",
