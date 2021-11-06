@@ -11,7 +11,7 @@ jobs:
       with:
         node-version: '12'
         cache: 'npm'
-        cache-dependency-path: client/package-lock.json
+        cache-dependency-path: package-lock.json
     
     - name: Run npm install
       run: npm install
