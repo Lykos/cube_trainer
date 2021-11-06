@@ -8,7 +8,7 @@ end
 namespace :ng do
   desc 'Run ng build to populate the public/ directory.'
   task build: :environment do
-    typescript_env = if Rails.env.production? then 'production' else 'development' end
+    typescript_env = Rails.env.production? ? 'production' : 'development'
     run_ng("ng build --configuration #{typescript_env}")
   end
 
