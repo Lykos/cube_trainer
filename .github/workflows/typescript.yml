@@ -21,6 +21,3 @@ jobs:
 
     - name: Run Angular Test
       run: npm run test
-
-    - name: Run Angular Lint
-      run: npm run lint
