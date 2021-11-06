@@ -8,7 +8,8 @@ end
 namespace :ng do
   desc 'Run ng build to populate the public/ directory.'
   task build: :environment do
-    run_ng('ng build --configuration development')
+    typescript_env = if Rails.env.production? then 'production' else 'development' end
+    run_ng("ng build --configuration #{typescript_env}")
   end
 
   desc 'Run ng serve to continuosly recompile and serve the frontend.'
@@ -24,5 +25,14 @@ namespace :ng do
   desc 'Run ng lint.'
   task lint: :environment do
     run_ng('ng lint')
+  end
+end
+
+Rake::Task['assets:precompile'].clear
+
+# Hack to not use the assets pipeline but our custom ng build instead.
+namespace :assets do
+  task precompile: ['npm:install', 'ng:build'] do
+    # Don't do anything, the ng:build task does what we want.
   end
 end
