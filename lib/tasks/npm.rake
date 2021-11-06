@@ -10,6 +10,12 @@ namespace :npm do
   task build: :environment do
     system("npm run build")
   end
+
+  # TODO forward configuration from environment.
+  desc 'Run ng build to populate the public/ directory.'
+  task build_development: :environment do
+    system("npm run build --configuration development")
+  end
 end
 
 # Hack to not use the assets pipeline but our custom ng build instead.
