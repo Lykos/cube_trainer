@@ -19,7 +19,7 @@ module CubeTrainer
       end
 
       def words_for_regexp(start_letter, regexp)
-        words_by_letter[start_letter].select { |w| w =~ regexp }
+        words_by_letter[start_letter].grep(regexp)
       end
 
       # Returns all words that containt the given part somewhere inside.

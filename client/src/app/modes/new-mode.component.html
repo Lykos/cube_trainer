@@ -1,0 +1,142 @@
+<mat-horizontal-stepper linear #stepper>
+  <mat-step [stepControl]="modeTypeGroup">
+    <ng-template matStepLabel>Choose mode type</ng-template>
+    <form [formGroup]="modeTypeGroup">
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" type="text">
+        <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['required']">
+          You must provide a <strong>name</strong>.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['uniqueModeName']">
+          You already have a mode with the same <strong>name</strong>.
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Mode Type</mat-label>
+        <mat-select formControlName="modeType">
+          <mat-option *ngFor="let modeType of modeTypes" [value]="modeType"> {{modeType.name}} </mat-option>
+        </mat-select>
+        <mat-error *ngIf="relevantInvalid(modeType) && modeType.errors && modeType.errors['required']">
+          You must provide a <strong>mode type</strong>.
+        </mat-error>
+      </mat-form-field>
+      <div>
+        <button mat-raised-button color="primary" matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="setupGroup">
+    <ng-template matStepLabel>Setup basics</ng-template>
+    <form [formGroup]="setupGroup">
+      <mat-form-field *ngIf="hasMultipleCubeSizes">
+        <mat-label>Cube Size</mat-label>
+        <input matInput formControlName="cubeSize" type="number" [value]="defaultCubeSize">
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['required']">
+          You must provide a <strong>cube size</strong> for this mode type.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['minNumber']">
+          The <strong>cube size</strong> has to be at least {{minCubeSize}} for this mode type.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['maxNumber']">
+          The <strong>cube size</strong> can be at most {{maxCubeSize}} for this mode type.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['odd']">
+          The <strong>cube size</strong> has to be odd for this cube size.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['even']">
+          The <strong>cube size</strong> has to be even for this cube size.
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field *ngIf="hasBuffer">
+        <mat-label>Buffer</mat-label>
+        <mat-select formControlName="buffer">
+          <mat-option *ngFor="let buffer of modeType.value.buffers" [value]="buffer"> {{buffer}} </mat-option>
+        </mat-select>
+        <mat-error *ngIf="relevantInvalid(buffer) && buffer.errors && buffer.errors['required']">
+          You must provide a <strong>buffer</strong> for this mode type.
+        </mat-error>
+      </mat-form-field>
+      <div>
+        <button mat-raised-button color="primary" matStepperPrevious>Back</button>
+        <button mat-raised-button color="primary" matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="trainingGroup">
+    <ng-template matStepLabel>Set training information</ng-template>
+    <form [formGroup]="trainingGroup">
+      <mat-form-field *ngIf="hasMultipleShowInputModes">
+        <mat-label>show input mode</mat-label>
+        <mat-select formControlName="showInputMode">
+          <mat-option *ngFor="let showInputMode of modeType.value.showInputModes" [value]="showInputMode"> {{showInputMode}} </mat-option>
+        </mat-select>
+        <mat-error *ngIf="relevantInvalid(showInputMode) && showInputMode.errors && showInputMode.errors['required']">
+          You must select a <strong>show input mode</strong> for this mode type.
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field *ngIf="hasGoalBadness">
+        <mat-label>Goal Time per Element</mat-label>
+        <input matInput formControlName="goalBadness" type="number">
+        <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors && goalBadness.errors['required']">
+          You must provide a <strong>goal badness</strong> for this mode type.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors && goalBadness.errors['numeric']">
+          The <strong>goal badness</strong> has to be a positive number.
+        </mat-error>
+      </mat-form-field>
+      <mat-checkbox formControlName="known">Known</mat-checkbox>
+      <div>
+        <button mat-raised-button color="primary" matStepperPrevious>Back</button>
+        <button mat-raised-button color="primary" matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Setup Stats</ng-template>
+    <div cdkDropListGroup>
+      <div class="stats-container">
+        <h2>Available stats</h2>
+      
+        <div
+          cdkDropList
+          [cdkDropListData]="statTypes"
+          class="stats-list"
+          id="stats-list"
+          cdkDropListSortingDisabled
+          (cdkDropListDropped)="drop($event)">
+          <div
+            class="stats-box"
+            *ngFor="let statType of statTypes"
+            cdkDrag
+            matTooltip="{{statType.description}}">
+            {{statType.name}}
+          </div>
+        </div>
+      </div>
+      
+      <div class="stats-container">
+        <h2>Picked Stats</h2>
+      
+        <div
+          cdkDropList
+          [cdkDropListData]="pickedStatTypes"
+          class="stats-list"
+          id="picked-stats-list"
+          (cdkDropListDropped)="drop($event)">
+          <div
+            class="stats-box"
+            *ngFor="let statType of pickedStatTypes"
+            cdkDrag
+            matTooltip="{{statType.description}}">
+            {{statType.name}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <button mat-raised-button color="primary" matStepperPrevious>Back</button>
+      <button mat-raised-button color="primary" (click)="onSubmit()">Submit</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>

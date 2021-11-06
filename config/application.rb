@@ -11,7 +11,9 @@ module CubeTrainer
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
 
-    config.hosts << 'jaguar'
+    # TODO enable
+    # config.api_only = true
+
     config.hosts << 'localhost'
 
     console do

@@ -2,23 +2,25 @@ require:
 - rubocop-performance
 - rubocop-rake
 - rubocop-rails
+- rubocop-rspec
 AllCops:
   Exclude:
-  - 'lib/**/*_ui.rb'
-  - 'node_modules/**/*'
+  - 'bin/*'
+  - 'client/**/*'
+  - 'coverage/**/*'
+  - 'data/**/*'
   - 'db/schema.rb'
   - 'db/global_schema.rb'
+  - 'lib/**/*_ui.rb'
+  - 'log/**/*'
+  - 'public/**/*'
+  - 'testdata/**/*'
+  - 'tmp/**/*'
+  - 'vendor/**/*'
+  - '.git/**/*'
   # TODO: Clean up and remove some of the folowing
   - 'config/**/*'
   - 'db/migrate/*'
-  - 'bin/rails'
-  - 'bin/bundle'
-  - 'bin/rake'
-  - 'bin/setup'
-  - 'bin/spring'
-  - 'bin/webpack'
-  - 'bin/webpack-dev-server'
-  - 'bin/yarn'
 Layout/LineLength:
   Max: 100
   # TODO: This is temporary
@@ -219,3 +221,76 @@ Lint/TripleQuotes: # (new in 1.9)
   Enabled: true
 Style/IfWithBooleanLiteralBranches: # (new in 1.9)
   Enabled: true
+Gemspec/DateAssignment: # (new in 1.10)
+  Enabled: true
+Style/HashConversion: # (new in 1.10)
+  Enabled: true
+Layout/LineEndStringConcatenationIndentation: # new in 1.18
+  Enabled: true
+Lint/AmbiguousOperatorPrecedence: # new in 1.21
+  Enabled: true
+Lint/AmbiguousRange: # new in 1.19
+  Enabled: true
+Lint/EmptyInPattern: # new in 1.16
+  Enabled: true
+Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
+  Enabled: true
+Lint/RequireRelativeSelfPath: # new in 1.22
+  Enabled: true
+Security/IoMethods: # new in 1.22
+  Enabled: true
+Style/InPatternThen: # new in 1.16
+  Enabled: true
+Style/MultilineInPatternThen: # new in 1.16
+  Enabled: true
+Style/NumberedParameters: # new in 1.22
+  Enabled: true
+Style/NumberedParametersLimit: # new in 1.22
+  Enabled: true
+Style/QuotedSymbols: # new in 1.16
+  Enabled: true
+Style/RedundantSelfAssignmentBranch: # new in 1.19
+  Enabled: true
+Style/SelectByRegexp: # new in 1.22
+  Enabled: true
+Style/StringChars: # new in 1.12
+  Enabled: true
+Performance/MapCompact: # new in 1.11
+  Enabled: true
+Performance/RedundantEqualityComparisonBlock: # new in 1.10
+  Enabled: true
+Performance/RedundantSplitRegexpArgument: # new in 1.10
+  Enabled: true
+Rails/AddColumnIndex: # new in 2.11
+  Enabled: true
+Rails/EagerEvaluationLogMessage: # new in 2.11
+  Enabled: true
+Rails/ExpandedDateRange: # new in 2.11
+  Enabled: true
+Rails/I18nLocaleAssignment: # new in 2.11
+  Enabled: true
+Rails/RedundantTravelBack: # new in 2.12
+  Enabled: true
+Rails/TimeZoneAssignment: # new in 2.10
+  Enabled: true
+Rails/UnusedIgnoredColumns: # new in 2.11
+  Enabled: true
+Performance/ConcurrentMonotonicTime: # new in 1.12
+  Enabled: true
+RSpec/ExcessiveDocstringSpacing: # new in 2.5
+  Enabled: true
+RSpec/IdenticalEqualityAssertion: # new in 2.4
+  Enabled: true
+RSpec/SubjectDeclaration: # new in 2.5
+  Enabled: true
+RSpec/Rails/AvoidSetupHook: # new in 2.4
+  Enabled: true
+RSpec/MultipleMemoizedHelpers:
+  # TODO: Enable
+  Enabled: false
+RSpec/ExampleLength:
+  # TODO: Enable
+  Enabled: false
+RSpec/MultipleExpectations:
+  # TODO: Enable
+  Enabled: false

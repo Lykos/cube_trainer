@@ -1,0 +1,24 @@
+<mat-toolbar color="primary">
+  <ng-container *ngIf="loggedIn">
+    <button id="toolbar-title" mat-button (click)="onCubeTrainer()">
+      Cube Trainer
+    </button>
+  </ng-container>
+  <div class="horizontal-spacer"></div>
+  <ng-container *ngIf="!loggedIn; else loggedInBlock">
+    <button id="toolbar-login" mat-button (click)="onLogin()">
+      Login
+    </button>
+    <button id="toolbar-signup" mat-button (click)="onSignup()">
+      Sign Up
+    </button>
+  </ng-container>
+  <ng-template #loggedInBlock>
+    <button mat-button (click)="onUser()" [matBadge]="unreadMessagesBadge" matBadgeColor="accent">
+      {{userName}}
+    </button>
+    <button mat-button (click)="onLogout()">
+      Logout
+    </button>
+  </ng-template>
+</mat-toolbar>

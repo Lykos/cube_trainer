@@ -2,7 +2,7 @@
 
 require 'csv'
 require 'cube_trainer/training/alg_hint_parser'
-require 'cube_trainer/anki/alg_set_parser'
+require 'cube_trainer/anki/external_alg_set_parser'
 require 'cube_trainer/anki/cube_visualizer'
 require 'cube_trainer/anki/note_input'
 require 'twisty_puzzles'
@@ -10,6 +10,7 @@ require 'twisty_puzzles/utils'
 require 'net/http'
 require 'parallel'
 require 'set'
+require 'fileutils'
 
 module CubeTrainer
   module Anki
@@ -38,13 +39,13 @@ module CubeTrainer
       # rubocop:enable Style/StringHashKeys
 
       def initialize(options, fetcher: Net::HTTP, checker: nil)
-        check_output_dir(options.output_dir)
-        check_output(options.output)
+        check_output_dir('output', options.output_dir)
+        check_output('output', options.output)
 
         @options = options
         @visualizer = CubeVisualizer.new(
           fetcher: fetcher,
-          cache: create_cache(options),
+          cache: create_cache,
           checker: checker,
           sch: options.color_scheme,
           fmt: FORMAT,
@@ -60,6 +61,10 @@ module CubeTrainer
       end
 
       def generate
+        unless File.exist?(File.dirname(@options.output))
+          FileUtils.mkpath(File.dirname(@options.output))
+        end
+        FileUtils.mkpath(@options.output_dir) unless File.exist?(@options.output_dir)
         CSV.open(@options.output, 'wb', col_sep: "\t") do |csv|
           generate_internal(csv)
         end
@@ -78,16 +83,23 @@ module CubeTrainer
       def internal_note_inputs
         raise ArgumentError unless @options.alg_set
 
-        hints = Training::AlgHintParser.parse_hints(@options.alg_set, @options.verbose)
-        hints.entries.map do |name, alg|
-          NoteInput.new([name, alg], name, alg)
+        hints = Training::AlgHintParser.parse_hints(
+          @options.alg_set, @options.cube_size,
+          @options.verbose
+        )
+        hints.entries.map do |name, case_solution|
+          alternative_algs = case_solution.alternative_algs.join('<br>')
+          NoteInput.new(
+            [name, case_solution.best_alg, alternative_algs], name,
+            case_solution.best_alg
+          )
         end
       end
 
       def external_note_inputs
         raise ArgumentError unless @options.input && @options.alg_column && @options.name_column
 
-        AlgSetParser.parse(@options.input, @options.alg_column, @options.name_column)
+        ExternalAlgSetParser.parse(@options.input, @options.alg_column, @options.name_column)
       end
 
       def input_variations_with_auf(basic_note_inputs)
@@ -164,35 +176,70 @@ module CubeTrainer
         inputs = note_inputs
         Parallel.each(
           inputs,
-          progress: @options.verbose ? 'Fetching alg images' : nil,
+          progress: @options.verbose ? "Fetching #{inputs.length} alg images" : nil,
           in_threads: 50
         ) { |note_input| process_note_input(note_input) }
         inputs.group_by(&:name).each do |_name, values|
           fields = values[0].fields
-          csv << fields + values.map(&:img)
+          csv << (fields + values.map(&:img))
         end
       end
 
-      def create_cache(options)
-        return unless options.cache
+      # Wrapper around a cache that emulates a simplified #fetch method.
+      # TODO: Remove when the FileStore cache fixed their bug in #fetch.
+      class CacheFetchWrapper
+        def initialize(cache)
+          @cache = cache
+        end
 
-        throw NotImplementedError, 'The old Sqlite3 cache had to be removed, but no new rails ' \
-                                   'based one has been added yet.'
+        def fetch(key)
+          r = @cache.read(key)
+          return r if r
+
+          r = yield
+          @cache.write(key, r)
+          r
+        end
       end
 
-      def check_output_dir(output_dir)
-        raise TypeError unless output_dir.is_a?(String)
-        raise ArgumentError unless File.exist?(output_dir)
-        raise ArgumentError unless File.directory?(output_dir)
-        raise ArgumentError unless File.writable?(output_dir)
+      def create_cache
+        return unless @options.cache
+
+        check_output_dir('cache', @options.cache_dir)
+        FileUtils.mkpath(@options.cache_dir) unless File.exist?(@options.cache_dir)
+        CacheFetchWrapper.new(ActiveSupport::Cache::FileStore.new(@options.cache_dir))
       end
 
-      def check_output(output)
-        raise TypeError unless output.is_a?(String)
+      def first_existing_ancestor(directory)
+        until File.exist?(directory)
+          parent = File.dirname(directory)
+          raise if parent == directory
 
-        check_output_dir(File.dirname(output))
-        raise ArgumentError if File.directory?(output)
-        raise ArgumentError if File.exist?(output) && !File.writable?(output)
+          directory = parent
+        end
+        directory
+      end
+
+      def check_output_dir(output_dir_name, output_dir)
+        unless output_dir.is_a?(String)
+          raise TypeError,
+                "#{output_dir_name} directory is not a string."
+        end
+
+        ancestor = first_existing_ancestor(output_dir)
+        raise ArgumentError unless File.directory?(ancestor)
+        raise ArgumentError unless File.writable?(ancestor)
+      end
+
+      def check_output(output_name, output)
+        raise TypeError, "#{output_name} is not a string." unless output.is_a?(String)
+
+        check_output_dir(output_name, File.dirname(output))
+        raise ArgumentError, "#{output_name} is a directory" if File.directory?(output)
+
+        return unless File.exist?(output) && !File.writable?(output)
+
+        raise ArgumentError, "#{output_name} is not writeable"
       end
     end
   end

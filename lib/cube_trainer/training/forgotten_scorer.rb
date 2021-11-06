@@ -10,7 +10,7 @@ module CubeTrainer
         last_hint_days_ago = @result_history.last_hint_days_ago(input_item)
         occ_days_since_last_hint = relevant_occurrence_days(input_item)
         "days since last hint: #{last_hint_days_ago}; occurrence days since last hint: " \
-        "#{occ_days_since_last_hint}"
+          "#{occ_days_since_last_hint}"
       end
 
       def relevant_occurrence_days(input_item)

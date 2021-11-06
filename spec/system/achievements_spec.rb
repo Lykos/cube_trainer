@@ -5,8 +5,8 @@ require 'system/system_spec_helper'
 require 'fixtures'
 
 describe 'messages', type: :system do
-  include_context :user
-  include_context :achievement_grant
+  include_context 'with user abc'
+  include_context 'with achievement grant'
 
   before do
     driven_by(:selenium_chrome_headless)
@@ -18,7 +18,7 @@ describe 'messages', type: :system do
     login(user)
     click_button user.name
 
-    find('achievement-grants td', text: achievement_grant.achievement.name).click
+    find('cube-trainer-achievement-grants td', text: achievement_grant.achievement.name).click
     expect(page).to have_text('Fake achievement for tests.')
     click_button 'All Achievements'
 

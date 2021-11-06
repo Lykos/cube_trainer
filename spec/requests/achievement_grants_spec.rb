@@ -5,13 +5,13 @@ require 'fixtures'
 require 'requests/requests_spec_helper'
 
 RSpec.describe 'AchievementGrants', type: :request do
-  include_context :user
-  include_context :admin
-  include_context :eve
-  include_context :achievement_grant
-  include_context :headers
+  include_context 'with user abc'
+  include_context 'with user admin'
+  include_context 'with user eve'
+  include_context 'with achievement grant'
+  include_context 'with headers'
 
-  before(:each) do
+  before do
     post_login(user)
   end
 
@@ -25,7 +25,7 @@ RSpec.describe 'AchievementGrants', type: :request do
   describe 'GET #index' do
     it 'returns http success' do
       achievement_grant
-      get "/users/#{user.id}/achievement_grants", headers: headers
+      get "/api/users/#{user.id}/achievement_grants", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be >= 1
@@ -39,7 +39,7 @@ RSpec.describe 'AchievementGrants', type: :request do
     it 'returns http success for admin' do
       achievement_grant
       post_login(admin.name, admin.password)
-      get "/users/#{user.id}/achievement_grants", headers: headers
+      get "/api/users/#{user.id}/achievement_grants", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be >= 1
@@ -53,14 +53,14 @@ RSpec.describe 'AchievementGrants', type: :request do
     it 'returns nothing for another user' do
       achievement_grant
       post_login(eve.name, eve.password)
-      get "/users/#{user.id}/achievement_grants", headers: headers
+      get "/api/users/#{user.id}/achievement_grants", headers: headers
       expect(response).to have_http_status(:not_found)
     end
   end
 
   describe 'GET #show' do
     it 'returns http success' do
-      get "/users/#{user.id}/achievement_grants/#{achievement_grant.id}", headers: headers
+      get "/api/users/#{user.id}/achievement_grants/#{achievement_grant.id}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).to eq(achievement_grant.id)
@@ -69,7 +69,7 @@ RSpec.describe 'AchievementGrants', type: :request do
 
     it 'returns http success for admin' do
       post_login(admin.name, admin.password)
-      get "/users/#{user.id}/achievement_grants/#{achievement_grant.id}", headers: headers
+      get "/api/users/#{user.id}/achievement_grants/#{achievement_grant.id}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).to eq(achievement_grant.id)
@@ -77,13 +77,13 @@ RSpec.describe 'AchievementGrants', type: :request do
     end
 
     it 'returns not found for unknown achievement_grants' do
-      get "/users/#{user.id}/achievement_grants/143432332"
+      get "/api/users/#{user.id}/achievement_grants/143432332"
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for another user' do
       post_login(eve.name, eve.password)
-      get "/users/#{user.id}/achievement_grants/#{achievement_grant.id}", headers: headers
+      get "/api/users/#{user.id}/achievement_grants/#{achievement_grant.id}", headers: headers
       expect(response).to have_http_status(:not_found)
     end
   end

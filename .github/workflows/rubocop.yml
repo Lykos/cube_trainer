@@ -1,13 +1,22 @@
 name: Rubocop
-
 on: [push, pull_request]
-
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Rubocop Linter Action
-      uses: andrewmcodes/rubocop-linter-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+
+    - name: Install Bundler
+      run: gem install bundler
+
+    - name: Bundle install
+      run: |
+        bundle config path vendor/bundle
+        bundle config set without 'default development test production client'
+        bundle install --jobs 4 --retry 3
+
+    - name: Run Rubocop
+      run: bundle exec rubocop

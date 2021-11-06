@@ -2,6 +2,7 @@
 
 require 'cube_trainer/training/alg_hinter'
 require 'cube_trainer/training/alg_set_reverse_engineer'
+require 'cube_trainer/training/case_solution'
 require 'cube_trainer/training/hint_parser'
 require 'twisty_puzzles'
 
@@ -32,7 +33,7 @@ module CubeTrainer
         keyed_algs = {}
         extract_commutators(raw_hints).each do |comm|
           key = engineer.find_stuff(comm.algorithm)
-          keyed_algs[key] = comm if key
+          keyed_algs[key] = CaseSolution.new(comm) if key
         end
         keyed_algs
       end
