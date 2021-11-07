@@ -7,6 +7,7 @@ import { NewMode } from './new-mode';
 import { ModeType } from './mode-type';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { seconds } from '../utils/duration';
 
 function parseCubeSizeSpec(rawCubeSizeSpec: any): CubeSizeSpec {
   return {
@@ -42,7 +43,7 @@ function parseMode(rawMode: any): Mode {
     showInputMode: rawMode.show_input_mode,
     buffer: rawMode.buffer,
     goalBadness: rawMode.goal_badness,
-    memoTime: rawMode.memo_time,
+    memoTime: seconds(rawMode.memo_time_s),
     cubeSize: rawMode.cube_size,
     numResults: rawMode.num_results,
   };

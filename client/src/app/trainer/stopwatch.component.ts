@@ -61,11 +61,11 @@ export class StopwatchComponent implements OnDestroy {
   }
 
   get memoTime() {
-    return mode.memoTime;
+    return this.mode.memoTime;
   }
 
   get isPostMemoTime() {
-    return this.running && this.memoTime && duration.greaterThan(this.memoTime);
+    return this.running && this.memoTime && this.duration.greaterThan(this.memoTime);
   }
 
   onStart() {

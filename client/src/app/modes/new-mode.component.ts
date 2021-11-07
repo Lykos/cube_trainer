@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { seconds } from '../utils/duration';
 
 @Component({
   selector: 'cube-trainer-edit-mode',
@@ -63,8 +64,8 @@ export class NewModeComponent implements OnInit {
     return this.trainingGroup.get('goalBadness')!;
   }
 
-  get memoTime() {
-    return this.trainingGroup.get('memoTime')!;
+  get memoTimeS() {
+    return this.trainingGroup.get('memoTimeS')!;
   }
 
   get showInputMode() {
@@ -141,7 +142,7 @@ export class NewModeComponent implements OnInit {
       showInputMode: this.selectedShowInputMode,
       buffer: this.buffer.value,
       goalBadness: this.goalBadness.value,
-      memoTime: this.memoTime.value,
+      memoTime: this.memoTimeS.value ? seconds(this.memoTimeS.value) : undefined,
       cubeSize: this.selectedCubeSize,
       statTypes: this.pickedStatTypes.map(s => s.key),
     };
@@ -196,7 +197,7 @@ export class NewModeComponent implements OnInit {
 	  RxwebValidators.numeric({ acceptValue: NumericValueType.PositiveNumber, allowDecimal: true })
 	],
       })],
-      memoTime: ['', RxwebValidators.compose({
+      memoTimeS: ['', RxwebValidators.compose({
 	conditionalExpression: () => this.hasMemoTime,
 	validators: [
 	  RxwebValidators.required(),

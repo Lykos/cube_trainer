@@ -30,7 +30,7 @@ class Mode < ApplicationRecord
             if: -> { mode_type.has_parity_parts? }
   validate :parity_parts_valid, if: -> { mode_type.has_parity_parts? }
   validates :memo_time_s, presence: true, if: -> { mode_type.has_memo_time? }
-  validates :memo_time_s, :memo_time_valid, if: -> { mode_type.has_memo_time? }
+  validate :memo_time_valid, if: -> { mode_type.has_memo_time? }
   has_many :stats, dependent: :destroy
 
   # rubocop:disable Rails/HasAndBelongsToMany
