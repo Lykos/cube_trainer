@@ -18,7 +18,7 @@ describe 'signup', type: :system do
     click_button 'Submit'
     expect(page).to have_text('Signup successful!')
 
-    user = User.find_by_name('system test user')
+    user = User.find_by(name: 'system test user')
     user.update(admin_confirmed: true)
     user.save!
 
