@@ -6,11 +6,22 @@ require 'twisty_puzzles'
 # Note that it does NOT include which modes have them.
 class StatType
   include ActiveModel::Model
-  attr_accessor :key, :name, :description, :parts
+  attr_accessor :key, :name, :description, :parts, :needs_bounded_inputs
+
+  STAT_PART_TYPES = %i[time fraction count].freeze
 
   validates :key, presence: true
   validates :name, presence: true
   validates :parts, presence: true
+  validate :part_types_valid
+
+  alias needs_bounded_inputs? needs_bounded_inputs
+
+  def part_types_valid
+    return if (parts.map(&:type) - STAT_PART_TYPES).empty?
+
+    errors.add(:parts, "has to be a subset of all stat part types #{STAT_PART_TYPES.inspect}")
+  end
 
   def to_simple
     {
@@ -21,14 +32,7 @@ class StatType
   end
 
   def stat_parts(mode)
-    parts.map do |part|
-      value = part.calculate(mode)
-      {
-        name: part.name,
-        time_s: value&.finite? ? value : nil,
-        success: value&.finite?
-      }
-    end
+    parts.map { |part| part.calculate(mode) }
   end
 
   def self.time_s_expression
@@ -39,13 +43,47 @@ class StatType
       .else(Arel::Nodes::Quoted.new('Infinity'))
   end
 
+  # Stat part that computes a value like an ao5 or the number of successes.
+  class StatPart
+    def calculate(mode)
+      {
+        name: name,
+        stat_part_type: type,
+        time_s: calculate_time_s(mode),
+        success: calculate_success(mode),
+        count: calculate_count(mode),
+        fraction: calculate_fraction(mode)
+      }.compact
+    end
+
+    def calculate_success(mode)
+      calculate_time_s_internal(mode)&.finite?
+    end
+
+    def calculate_time_s(mode)
+      value = calculate_time_s_internal(mode)
+      value&.finite? ? value : nil
+    end
+
+    def calculate_time_s_internal(mode); end
+
+    def calculate_fraction(mode); end
+
+    def calculate_count(mode); end
+  end
+
   # Stat part that computes an average like ao5.
-  class Average
+  class Average < StatPart
     def initialize(size)
+      super()
       @size = size
     end
 
-    def calculate(mode)
+    def type
+      :time
+    end
+
+    def calculate_time_s_internal(mode)
       times =
         mode
         .inputs
@@ -61,12 +99,17 @@ class StatType
   end
 
   # Stat part that computes a mean like mo5.
-  class Mean
+  class Mean < StatPart
     def initialize(size)
+      super()
       @size = size
     end
 
-    def calculate(mode)
+    def type
+      :time
+    end
+
+    def calculate_time_s_internal(mode)
       mode
         .inputs
         .joins(:result)
@@ -79,17 +122,55 @@ class StatType
     end
   end
 
+  # Stat part that computes the number of inputs that have already been seen.
+  class InputsDone < StatPart
+    def type
+      :count
+    end
+
+    def calculate_count(mode)
+      mode.inputs.joins(:result).pluck(:input_representation).uniq.length
+    end
+
+    def name
+      'items seen'
+    end
+  end
+
+  # Stat part that computes the total number of inputs.
+  class TotalInputs < StatPart
+    def type
+      :count
+    end
+
+    def calculate_count(mode)
+      mode.input_items.length
+    end
+
+    def name
+      'total items'
+    end
+  end
+
   ALL = [
     StatType.new(
       key: :averages,
       name: 'Averages',
       description: 'Averages like ao5, ao12, ao50, etc..',
+      needs_bounded_inputs: false,
       parts: [5, 12, 50, 100, 1000, 1000].map { |i| Average.new(i) }
     ),
     StatType.new(
       key: :mo3,
       name: 'Mean of 3',
+      needs_bounded_inputs: false,
       parts: [Mean.new(3)]
+    ),
+    StatType.new(
+      key: :progress,
+      name: 'Progress',
+      needs_bounded_inputs: true,
+      parts: [InputsDone.new, TotalInputs.new]
     )
   ].freeze
   ALL.each(&:validate!)

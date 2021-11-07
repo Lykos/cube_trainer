@@ -87,6 +87,8 @@ class Mode < ApplicationRecord
 
   delegate :part_type, to: :mode_type
 
+  delegate :has_bounded_inputs?, to: :mode_type
+
   delegate :parity_part_type, to: :mode_type
 
   delegate :hinter, to: :generator

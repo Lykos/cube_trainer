@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import Rails from '@rails/ujs';
 import { Observable, Subscription } from 'rxjs';
 import { StatsDataSource } from './stats.data-source';
+import { StatPartType } from './stat-part-type';
 
 @Component({
   selector: 'cube-trainer-stats-table',
@@ -15,9 +16,13 @@ import { StatsDataSource } from './stats.data-source';
 export class StatsTableComponent implements OnInit, OnDestroy {
   modeId$: Observable<number>;
   dataSource!: StatsDataSource;
-  columnsToDisplay = ['name', 'time'];
+  columnsToDisplay = ['name', 'value'];
   @Input() statEvents$!: Observable<void>;
   private eventsSubscription!: Subscription;
+
+  public get statPartType(): typeof StatPartType {
+    return StatPartType; 
+  }
 
   constructor(private readonly statsService: StatsService,
 	      activatedRoute: ActivatedRoute) {
