@@ -9,7 +9,7 @@
   },
   "version": "0.0.0",
   "scripts": {
-    "ng": "cd client; ng",
+    "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration production",
     "build_development": "ng build --configuration development",

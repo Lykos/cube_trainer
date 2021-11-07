@@ -8,7 +8,17 @@ namespace :npm do
 
   desc 'Run npm start.'
   task start: :environment do
-    system('npm start')
+    system('npm run start')
+  end
+
+  desc 'Run npm test.'
+  task test: :environment do
+    system('npm run test')
+  end
+
+  desc 'Run npm lint.'
+  task lint: :environment do
+    system('npm run lint')
   end
 
   desc 'Run ng build to populate the public/ directory.'
