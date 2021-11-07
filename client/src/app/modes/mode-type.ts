@@ -9,6 +9,7 @@ export interface ModeType {
   readonly hasBoundedInputs: boolean;
   readonly cubeSizeSpec?: CubeSizeSpec;
   readonly hasGoalBadness: boolean;
+  readonly hasMemoTime: boolean;
   readonly buffers: string[];
   readonly statsTypes: StatType[];
 }

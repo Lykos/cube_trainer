@@ -27,6 +27,7 @@ function parseModeType(rawModeType: any): ModeType {
     hasBoundedInputs: rawModeType.has_bounded_inputs,
     cubeSizeSpec,
     hasGoalBadness: rawModeType.has_goal_badness,
+    hasMemoTime: rawModeType.has_memo_time,
     buffers: rawModeType.buffers,
     statsTypes: rawModeType.stats_types,
   };
@@ -40,8 +41,9 @@ function parseMode(rawMode: any): Mode {
     known: rawMode.known,
     showInputMode: rawMode.show_input_mode,
     buffer: rawMode.buffer,
-    goalBadness: rawMode.goalBadness,
-    cubeSize: rawMode.cubeSize,
+    goalBadness: rawMode.goal_badness,
+    memoTime: rawMode.memo_time,
+    cubeSize: rawMode.cube_size,
     numResults: rawMode.num_results,
   };
 }

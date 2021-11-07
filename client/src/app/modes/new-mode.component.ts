@@ -63,6 +63,10 @@ export class NewModeComponent implements OnInit {
     return this.trainingGroup.get('goalBadness')!;
   }
 
+  get memoTime() {
+    return this.trainingGroup.get('memoTime')!;
+  }
+
   get showInputMode() {
     return this.trainingGroup.get('showInputMode')!;
   }
@@ -77,6 +81,10 @@ export class NewModeComponent implements OnInit {
 
   get hasGoalBadness() {
     return this.modeType.value?.hasGoalBadness;
+  }
+
+  get hasMemoTime() {
+    return this.modeType.value?.hasMemoTime;
   }
 
   get hasBoundedInputs() {
@@ -133,6 +141,7 @@ export class NewModeComponent implements OnInit {
       showInputMode: this.selectedShowInputMode,
       buffer: this.buffer.value,
       goalBadness: this.goalBadness.value,
+      memoTime: this.memoTime.value,
       cubeSize: this.selectedCubeSize,
       statTypes: this.pickedStatTypes.map(s => s.key),
     };
@@ -182,6 +191,13 @@ export class NewModeComponent implements OnInit {
       showInputMode: ['', RxwebValidators.required({ conditionalExpression: () => this.hasMultipleShowInputModes })],
       goalBadness: ['', RxwebValidators.compose({
 	conditionalExpression: () => this.hasGoalBadness,
+	validators: [
+	  RxwebValidators.required(),
+	  RxwebValidators.numeric({ acceptValue: NumericValueType.PositiveNumber, allowDecimal: true })
+	],
+      })],
+      memoTime: ['', RxwebValidators.compose({
+	conditionalExpression: () => this.hasMemoTime,
 	validators: [
 	  RxwebValidators.required(),
 	  RxwebValidators.numeric({ acceptValue: NumericValueType.PositiveNumber, allowDecimal: true })

@@ -7,5 +7,6 @@ export interface ModeBase {
   readonly showInputMode: ShowInputMode;
   readonly buffer?: string;
   readonly goalBadness?: number;
+  readonly memoTime?: number;
   readonly cubeSize?: number;
 }

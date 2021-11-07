@@ -1,3 +1,7 @@
 .stopwatch-time {
   font-size: xxx-large;
 }
+.stopwatch-time {
+  background-color: red;
+  color: white;  
+}

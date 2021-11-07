@@ -141,8 +141,8 @@ class Mode < ApplicationRecord
   end
 
   def memo_time_s_valid
-    errors.add(:memo_time_s, 'has to be positive') unless memo_time_s > 0
-    errors.add(:memo_time_s, 'has to be below one day') unless memo_time_s < 1.days
+    errors.add(:memo_time_s, 'has to be positive') unless memo_time_s.positive?
+    errors.add(:memo_time_s, 'has to be below one day') unless memo_time_s < 1.day
   end
 
   # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity

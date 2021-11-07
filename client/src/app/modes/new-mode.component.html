@@ -85,6 +85,16 @@
           The <strong>goal badness</strong> has to be a positive number.
         </mat-error>
       </mat-form-field>
+      <mat-form-field *ngIf="hasMemoTime">
+        <mat-label>Memo Time</mat-label>
+        <input matInput formControlName="memoTime" type="number">
+        <mat-error *ngIf="relevantInvalid(memoTime) && memoTime.errors && memoTime.errors['required']">
+          You must provide a <strong>memo time</strong> for this mode type.
+        </mat-error>
+        <mat-error *ngIf="relevantInvalid(memoTime) && memoTime.errors && memoTime.errors['numeric']">
+          The <strong>memo time</strong> has to be a positive number.
+        </mat-error>
+      </mat-form-field>
       <mat-checkbox formControlName="known" *ngIf=hasBoundedInputs>Known</mat-checkbox>
       <div>
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>

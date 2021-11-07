@@ -60,6 +60,14 @@ export class StopwatchComponent implements OnDestroy {
     }
   }
 
+  get memoTime() {
+    return mode.memoTime;
+  }
+
+  get isPostMemoTime() {
+    return this.running && this.memoTime && duration.greaterThan(this.memoTime);
+  }
+
   onStart() {
     this.trainerService.nextInputItemWithCache(this.mode.id).subscribe(input => this.startFor(input));
   }
