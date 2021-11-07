@@ -23,7 +23,7 @@ export class MessagesService {
   }
 
   countUnread(userId: number): Observable<number> {
-    return this.rails.ajax<number>(HttpVerb.Get, `/users/${userId}/unread_messages_count`, {})
+    return this.rails.ajax<number>(HttpVerb.Get, `/users/${userId}/messages/count_unread`, {})
   }
 
   markAsRead(userId: number, messageId: number): Observable<void> {
