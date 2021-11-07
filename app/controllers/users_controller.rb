@@ -15,11 +15,6 @@ class UsersController < ApplicationController
     render json: exists, status: :ok
   end
 
-  # GET /api/unread_messages_count
-  def unread_messages_count
-    @user.messages.count(&:unread)
-  end
-
   # GET /api/users.json
   def index
     respond_to do |format|
