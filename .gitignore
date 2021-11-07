@@ -54,13 +54,13 @@ yarn-debug.log*
 
 # compiled output
 /public
-/client/tmp
-/client/out-tsc
+/tmp
+/out-tsc
 # Only exists if Bazel was run
-/client/bazel-out
+/bazel-out
 
 # dependencies
-/client/node_modules
+/node_modules
 
 # profiling files
 chrome-profiler-events*.json
@@ -83,15 +83,15 @@ chrome-profiler-events*.json
 .history/*
 
 # misc
-/client/.angular/cache
-/client/.sass-cache
-/client/connect.lock
-/client/coverage
-/client/libpeerconnection.log
+/.angular/cache
+/sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
 npm-debug.log
 yarn-error.log
 testem.log
-/client/typings
+/typings
 
 # System Files
 .DS_Store

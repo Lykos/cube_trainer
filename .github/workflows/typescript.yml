@@ -11,20 +11,16 @@ jobs:
       with:
         node-version: '12'
         cache: 'npm'
-        cache-dependency-path: client/package-lock.json
+        cache-dependency-path: package-lock.json
     
     - name: Run npm install
-      working-directory: client
       run: npm install
 
     - name: Run Angular Build
-      working-directory: client
-      run: PATH=$(npm bin):$PATH ng build
+      run: npm run build
 
     - name: Run Angular Test
-      working-directory: client
-      run: PATH=$(npm bin):$PATH ng test
+      run: npm run test
 
     - name: Run Angular Lint
-      working-directory: client
-      run: PATH=$(npm bin):$PATH ng lint
+      run: npm run lint
