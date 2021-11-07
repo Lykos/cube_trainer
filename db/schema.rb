@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_19_221211) do
+ActiveRecord::Schema.define(version: 2021_11_07_130046) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -77,6 +77,16 @@ ActiveRecord::Schema.define(version: 2020_04_19_221211) do
     t.index ["user_id"], name: "index_modes_on_user_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.text "message"
+    t.boolean "read"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "results", force: :cascade do |t|
     t.text "old_mode"
     t.float "time_s", null: false
@@ -112,6 +122,7 @@ ActiveRecord::Schema.define(version: 2020_04_19_221211) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "admin", default: false, null: false
     t.string "email", null: false
+    t.boolean "admin_confirmed", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["name"], name: "index_users_on_name", unique: true
   end
@@ -122,6 +133,7 @@ ActiveRecord::Schema.define(version: 2020_04_19_221211) do
   add_foreign_key "mode_usages", "modes"
   add_foreign_key "mode_usages", "modes", column: "used_mode_id"
   add_foreign_key "modes", "users"
+  add_foreign_key "notifications", "users"
   add_foreign_key "results", "inputs"
   add_foreign_key "stats", "modes"
 end
