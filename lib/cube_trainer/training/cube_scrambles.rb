@@ -32,8 +32,8 @@ module CubeTrainer
         @hinter ||= NoHinter.new({})
       end
 
-      def input_sampler(results_model)
-        InputSampler.new(@options.color_scheme, results_model, options)
+      def input_sampler
+        InputSampler.new(@options.color_scheme)
       end
 
       def input_items
