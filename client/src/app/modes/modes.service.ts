@@ -27,6 +27,7 @@ function parseModeType(rawModeType: any): ModeType {
     cubeSizeSpec,
     hasGoalBadness: rawModeType.has_goal_badness,
     buffers: rawModeType.buffers,
+    statsTypes: rawModeType.stats_types,
   };
 }
 

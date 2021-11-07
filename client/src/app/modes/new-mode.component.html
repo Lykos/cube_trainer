@@ -100,14 +100,14 @@
       
         <div
           cdkDropList
-          [cdkDropListData]="statTypes"
+          [cdkDropListData]="modeType.value.statTypes"
           class="stats-list"
           id="stats-list"
           cdkDropListSortingDisabled
           (cdkDropListDropped)="drop($event)">
           <div
             class="stats-box"
-            *ngFor="let statType of statTypes"
+            *ngFor="let statType of modeType.value.statsTypes"
             cdkDrag
             matTooltip="{{statType.description}}">
             {{statType.name}}

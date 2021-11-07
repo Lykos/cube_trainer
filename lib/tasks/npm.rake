@@ -8,13 +8,12 @@ namespace :npm do
 
   desc 'Run ng build to populate the public/ directory.'
   task build: :environment do
-    system('npm run build')
-  end
-
-  # TODO: forward configuration from environment.
-  desc 'Run ng build to populate the public/ directory.'
-  task build_development: :environment do
-    system('npm run build_development')
+    # TODO: forward development vs production better.
+    if Rails.env.production?
+      system('npm run build')
+    else
+      system('npm run build_development')
+    end
   end
 end
 

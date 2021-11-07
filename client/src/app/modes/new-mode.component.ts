@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { UniqueModeNameValidator } from './unique-mode-name.validator';
 import { ModeType } from './mode-type';
 import { ModesService } from './modes.service';
-import { StatsService } from './stats.service';
 import { NewMode } from './new-mode';
 import { StatType } from './stat-type';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -21,12 +20,10 @@ export class NewModeComponent implements OnInit {
   setupGroup!: FormGroup;
   trainingGroup!: FormGroup;
   modeTypes!: ModeType[];
-  statTypes: StatType[] = [];
   pickedStatTypes: StatType[] = [];
   
   constructor(private readonly formBuilder: FormBuilder,
 	      private readonly modesService: ModesService,
-	      private readonly statsService: StatsService,
 	      private readonly router: Router,
 	      private readonly snackBar: MatSnackBar,
 	      private readonly uniqueModeNameValidator: UniqueModeNameValidator) {}
@@ -150,7 +147,6 @@ export class NewModeComponent implements OnInit {
 
   ngOnInit() {
     this.modesService.listTypes().subscribe((modeTypes: ModeType[]) => this.modeTypes = modeTypes);
-    this.statsService.listTypes().subscribe((statTypes: StatType[]) => this.statTypes = statTypes);
     this.modeTypeGroup = this.formBuilder.group({
       name: ['', { validators: Validators.required, asyncValidators: this.uniqueModeNameValidator.validate, updateOn: 'blur' }],
       modeType: ['', Validators.required],
