@@ -76,6 +76,7 @@ class ModeType
       show_input_modes: show_input_modes,
       buffers: buffers&.map(&:to_s),
       has_bounded_inputs: has_bounded_inputs?,
+      has_memo_time: has_memo_time?,
       stats_types: stats_types.map(&:to_simple)
     }.tap { |r| r[:useable_modes] = useable_modes(user) if user }
   end
