@@ -27,7 +27,8 @@ class ModeType
                 :has_goal_badness,
                 :show_input_modes,
                 :used_mode_types,
-                :has_parity_parts
+                :has_parity_parts,
+                :has_memo_time
 
   validates :key, presence: true
   validates :name, presence: true
@@ -42,6 +43,7 @@ class ModeType
   alias has_goal_badness? has_goal_badness
   alias has_buffer? has_buffer
   alias has_parity_parts? has_parity_parts
+  alias has_memo_time? has_memo_time
 
   def default_cube_size_valid
     validate_cube_size(default_cube_size, errors, :default_cube_size)
@@ -179,7 +181,8 @@ class ModeType
       has_buffer: false,
       has_goal_badness: false,
       show_input_modes: [:name],
-      has_bounded_inputs: false
+      has_bounded_inputs: false,
+      has_memo_time: true
     ),
     ModeType.new(
       key: :corner_commutators,

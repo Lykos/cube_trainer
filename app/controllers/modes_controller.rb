@@ -72,6 +72,6 @@ class ModesController < ApplicationController
     params
       .require(:mode)
       .permit(:name, :known, :mode_type, :show_input_mode, :buffer, :goal_badness, :cube_size,
-              stat_types: [])
+              :memo_time_s, stat_types: [])
   end
 end
