@@ -9,10 +9,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { seconds } from '../utils/duration';
 
 @Component({
-  selector: 'cube-trainer-edit-mode',
+  selector: 'cube-trainer-new-mode',
   templateUrl: './new-mode.component.html',
   styleUrls: ['./new-mode.component.css']
 })
@@ -142,7 +141,7 @@ export class NewModeComponent implements OnInit {
       showInputMode: this.selectedShowInputMode,
       buffer: this.buffer.value,
       goalBadness: this.goalBadness.value,
-      memoTime: this.memoTimeS.value ? seconds(this.memoTimeS.value) : undefined,
+      memoTimeS: this.memoTimeS.value,
       cubeSize: this.selectedCubeSize,
       statTypes: this.pickedStatTypes.map(s => s.key),
     };

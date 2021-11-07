@@ -1,5 +1,4 @@
 import { ShowInputMode } from './show-input-mode';
-import { Duration } from '../utils/duration';
 
 export interface ModeBase {
   readonly modeType: string;
@@ -8,6 +7,6 @@ export interface ModeBase {
   readonly showInputMode: ShowInputMode;
   readonly buffer?: string;
   readonly goalBadness?: number;
-  readonly memoTime?: Duration;
+  readonly memoTimeS?: number;
   readonly cubeSize?: number;
 }
