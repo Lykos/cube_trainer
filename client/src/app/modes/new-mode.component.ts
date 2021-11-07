@@ -21,6 +21,9 @@ export class NewModeComponent implements OnInit {
   trainingGroup!: FormGroup;
   modeTypes!: ModeType[];
   pickedStatTypes: StatType[] = [];
+
+  lastModeTypeForStatsTypes: ModeType | undefined
+  statTypesForLastModeType: StatType[] = [];
   
   constructor(private readonly formBuilder: FormBuilder,
 	      private readonly modesService: ModesService,
@@ -34,6 +37,14 @@ export class NewModeComponent implements OnInit {
 
   get name() {
     return this.modeTypeGroup.get('name')!;
+  }
+
+  get statTypesForCurrentModeType() {
+    if (this.lastModeTypeForStatsTypes !== this.modeType.value) {
+      this.statTypesForLastModeType = Object.assign([], this.modeType.value!.statsTypes);
+      this.lastModeTypeForStatsTypes = this.modeType.value;
+    }
+    return this.statTypesForLastModeType;
   }
 
   get hasMultipleShowInputModes() {

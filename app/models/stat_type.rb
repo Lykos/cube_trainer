@@ -129,7 +129,7 @@ class StatType
     end
 
     def calculate_count(mode)
-      mode.inputs.pluck(:input_representation).uniq
+      mode.inputs.joins(:result).pluck(:input_representation).uniq.length
     end
 
     def name

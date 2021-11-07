@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
 namespace :npm do
-  desc 'Run npm install in the client directory.'
+  desc 'Run npm install.'
   task install: :environment do
     system('npm install')
+  end
+
+  desc 'Run npm start.'
+  task start: :environment do
+    system('npm start')
   end
 
   desc 'Run ng build to populate the public/ directory.'
