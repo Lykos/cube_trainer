@@ -24,6 +24,7 @@ function parseModeType(rawModeType: any): ModeType {
     key: rawModeType.key,
     name: rawModeType.name,
     showInputModes: rawModeType.show_input_modes,
+    hasBoundedInputs: rawModeType.has_bounded_inputs,
     cubeSizeSpec,
     hasGoalBadness: rawModeType.has_goal_badness,
     buffers: rawModeType.buffers,

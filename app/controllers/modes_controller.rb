@@ -14,7 +14,6 @@ class ModesController < ApplicationController
   # GET /api/modes.json
   def index
     respond_to do |format|
-      format.html { render 'application/cube_trainer' }
       format.json { render json: current_user.modes }
     end
   end
@@ -23,19 +22,8 @@ class ModesController < ApplicationController
   # GET /api/modes/1.json
   def show
     respond_to do |format|
-      format.html { render 'application/cube_trainer' }
       format.json { render json: @mode }
     end
-  end
-
-  # GET /api/modes/new
-  def new
-    render 'application/cube_trainer'
-  end
-
-  # GET /api/modes/1/edit
-  def edit
-    render 'application/cube_trainer'
   end
 
   # POST /api/modes.json

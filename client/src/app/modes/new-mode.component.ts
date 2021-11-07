@@ -79,6 +79,10 @@ export class NewModeComponent implements OnInit {
     return this.modeType.value?.hasGoalBadness;
   }
 
+  get hasBoundedInputs() {
+    return this.modeType.value?.hasBoundedInputs;
+  }
+
   get defaultCubeSize() {
     return this.modeType.value?.cubeSizeSpec?.default;
   }
@@ -125,7 +129,7 @@ export class NewModeComponent implements OnInit {
     return {
       modeType: this.modeType.value!.key,
       name: this.name.value,
-      known: !!this.trainingGroup.get('known')!.value,
+      known: !!this.trainingGroup.get('known')?.value,
       showInputMode: this.selectedShowInputMode,
       buffer: this.buffer.value,
       goalBadness: this.goalBadness.value,
