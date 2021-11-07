@@ -4,4 +4,8 @@
 class Message < ApplicationRecord
   belongs_to :user
   validates :title, presence: true
+
+  def unread
+    !read
+  end
 end
