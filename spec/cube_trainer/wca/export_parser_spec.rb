@@ -8,7 +8,7 @@ require 'tempfile'
 describe WCA::ExportParser do
   include TwistyPuzzles
 
-  before(:all) do
+  before(:all) do # rubocop:disable RSpec/BeforeAfterAll
     filename = Tempfile.new(['WCA_export_example', '.tsv.zip'])
     Zip::File.open(filename, Zip::File::CREATE) do |zipfile|
       Dir['testdata/WCA_export_example/*'].each do |input_file|
@@ -18,21 +18,23 @@ describe WCA::ExportParser do
     @parser = described_class.parse(filename)
   end
 
-  let(:parser) { @parser }
+  let(:parser) { @parser } # rubocop:disable RSpec/InstanceVariable
   let(:extractor) { WCA::StatsExtractor.new(parser) }
 
   it 'reads the scrambles of a WCA export' do
     expect(parser.scrambles).to eq(
-      [{
-        scrambleid: 657_918,
-        competitionid: 'BerlinKubusProjekt2017',
-        eventid: '222',
-        roundtypeid: :'1',
-        groupid: 'A',
-        isextra: false,
-        scramblenum: 1,
-        scramble: parse_algorithm("U2 R' U2 R U' R U F' U' R U")
-      }]
+      [
+        {
+          scrambleid: 657_918,
+          competitionid: 'BerlinKubusProjekt2017',
+          eventid: '222',
+          roundtypeid: :'1',
+          groupid: 'A',
+          isextra: false,
+          scramblenum: 1,
+          scramble: parse_algorithm("U2 R' U2 R U' R U F' U' R U")
+        }
+      ]
     )
   end
 

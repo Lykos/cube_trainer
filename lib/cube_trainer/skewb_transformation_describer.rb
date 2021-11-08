@@ -19,7 +19,7 @@ module CubeTrainer
         unless letter_scheme.nil? || letter_scheme.is_a?(TwistyPuzzles::LetterScheme)
           raise ArgumentError
         end
-        raise ArgumentError unless parts.all? { |p| p.is_a?(TwistyPuzzles::Part) }
+        raise ArgumentError unless parts.all?(TwistyPuzzles::Part)
 
         @letter_scheme = letter_scheme
         @parts = parts
@@ -152,14 +152,14 @@ module CubeTrainer
     # Finds permutation cycles of parts.
     def find_part_target_cycles(interesting_parts, state, &make_coordinate)
       used_parts = []
-      interesting_parts.map do |part|
+      interesting_parts.filter_map do |part|
         next unless (used_parts & part.rotations).empty?
 
         cycle = find_complete_source_cycle(state, part, &make_coordinate)
                 .simplify(interesting_parts).reverse
         used_parts += cycle.parts
         @show_staying || !cycle.trivial? ? cycle : nil
-      end.compact
+      end
     end
 
     # Finds where each part comes from.

@@ -12,7 +12,8 @@ class Mode < ApplicationRecord
 
   attribute :mode_type, :mode_type
   attribute :show_input_mode, :symbol
-  attr_accessor :stat_types
+  attr_accessor :stat_types, :verbose, :show_cube_states, :write_fixes
+  attr_writer :test_comms_mode
 
   before_validation :set_stats
   validates :user_id, presence: true
@@ -28,6 +29,8 @@ class Mode < ApplicationRecord
             presence: true,
             if: -> { mode_type.has_parity_parts? }
   validate :parity_parts_valid, if: -> { mode_type.has_parity_parts? }
+  validates :memo_time_s, presence: true, if: -> { mode_type.has_memo_time? }
+  validate :memo_time_s_valid, if: -> { mode_type.has_memo_time? }
   has_many :stats, dependent: :destroy
 
   # rubocop:disable Rails/HasAndBelongsToMany
@@ -66,16 +69,12 @@ class Mode < ApplicationRecord
 
   delegate :random_item, to: :input_sampler
 
-  def verbose
-    false
-  end
-
   def restrict_colors
     color_scheme.colors
   end
 
   def test_comms_mode
-    :ignore
+    @test_comms_mode ||= :ignore
   end
 
   def restrict_letters; end
@@ -89,6 +88,8 @@ class Mode < ApplicationRecord
   end
 
   delegate :part_type, to: :mode_type
+
+  delegate :has_bounded_inputs?, to: :mode_type
 
   delegate :parity_part_type, to: :mode_type
 
@@ -137,6 +138,11 @@ class Mode < ApplicationRecord
 
   def cube_size_valid
     mode_type.validate_cube_size(cube_size, errors, :cube_size)
+  end
+
+  def memo_time_s_valid
+    errors.add(:memo_time_s, 'has to be positive') unless memo_time_s.positive?
+    errors.add(:memo_time_s, 'has to be below one day') unless memo_time_s < 1.day
   end
 
   # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity

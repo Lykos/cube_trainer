@@ -1,0 +1,123 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "cube-trainer": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "root": "",
+      "sourceRoot": "client/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "./public",
+            "index": "client/src/index.html",
+            "main": "client/src/main.ts",
+            "polyfills": "client/src/polyfills.ts",
+            "tsConfig": "client/tsconfig.app.json",
+            "assets": [
+              "client/src/favicon.ico",
+              "client/src/assets"
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "client/src/styles.css"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "client/src/environments/environment.ts",
+                  "with": "client/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "client/src/proxy.conf.json"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "cube-trainer:build:production"
+            },
+            "development": {
+              "browserTarget": "cube-trainer:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "cube-trainer:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "client/src/test.ts",
+            "polyfills": "client/src/polyfills.ts",
+            "tsConfig": "client/tsconfig.spec.json",
+            "karmaConfig": "client/karma.conf.js",
+            "assets": [
+              "client/src/favicon.ico",
+              "client/src/assets"
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+              "client/src/styles.css"
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "client/src/**/*.ts",
+              "client/src/**/*.html"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "cube-trainer",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
+}

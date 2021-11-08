@@ -1,0 +1,26 @@
+name: Typescript
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup node
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+        cache: 'npm'
+        cache-dependency-path: package-lock.json
+    
+    - name: Run npm install
+      run: npm install
+
+    - name: Run Angular Build
+      run: npm run build
+
+    - name: Run Angular Test
+      run: npm run test
+
+    - name: Run Angular Lint
+      run: npm run lint

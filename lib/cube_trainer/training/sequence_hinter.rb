@@ -114,7 +114,7 @@ module CubeTrainer
 
       def initialize(cube_size, modes, hinters)
         TwistyPuzzles::CubeState.check_cube_size(cube_size)
-        raise TypeError unless modes.all? { |m| m.is_a?(Mode) }
+        raise TypeError unless modes.all?(Mode)
         raise ArgumentError if modes.length != hinters.length || modes.empty?
 
         hinters.each do |h|
@@ -167,7 +167,7 @@ module CubeTrainer
 
       def binary_cancellation_score(left, right)
         if left && right
-          ActualScore.new(left.cancellations(right, @cube_size, @metric))
+          ActualScore.new(left.best_alg.cancellations(right.best_alg, @cube_size, @metric))
         else
           UNKNOWN_SCORE
         end

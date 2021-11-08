@@ -8,7 +8,7 @@ module CubeTrainer
       def distort(value, factor)
         raise ArgumentError unless factor.positive? && factor < 1
 
-        value * (1 - factor) + (factor * 2 * value * rand)
+        (value * (1 - factor)) + (factor * 2 * value * rand)
       end
     end
   end

@@ -18,7 +18,7 @@ module CubeTrainer
           @cube_state = color_scheme.solved_cube_state(3)
         end
 
-        def random_item
+        def random_item(_cached_inputs = [])
           scramble = @scrambler.random_algorithm(SCRAMBLE_LENGTH)
           InputItem.new(Scramble.new(scramble), scramble.apply_to_dupped(@cube_state))
         end
@@ -32,8 +32,8 @@ module CubeTrainer
         @hinter ||= NoHinter.new({})
       end
 
-      def input_sampler(results_model)
-        InputSampler.new(@options.color_scheme, results_model, options)
+      def input_sampler
+        InputSampler.new(@options.color_scheme)
       end
 
       def input_items

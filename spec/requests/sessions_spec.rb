@@ -4,19 +4,12 @@ require 'rails_helper'
 require 'requests/requests_spec_helper'
 
 RSpec.describe 'Sessions', type: :request do
-  include_context :user
-  include_context :headers
-
-  describe 'GET #login' do
-    it 'returns http success' do
-      get '/login'
-      expect(response).to have_http_status(:success)
-    end
-  end
+  include_context 'with user abc'
+  include_context 'with headers'
 
   describe 'GET #welcome' do
     it 'returns unauthorized if not logged in' do
-      get '/welcome'
+      get '/api/welcome'
       expect(response).to have_http_status(:unauthorized)
     end
   end
@@ -41,12 +34,12 @@ RSpec.describe 'Sessions', type: :request do
   describe 'POST #logout' do
     it 'returns http success' do
       post_login(user)
-      post '/logout', headers: headers
+      post '/api/logout', headers: headers
       expect(response).to have_http_status(:success)
     end
 
     it 'returns unauthorized if not logged in' do
-      post '/logout', headers: headers
+      post '/api/logout', headers: headers
       expect(response).to have_http_status(:unauthorized)
     end
   end

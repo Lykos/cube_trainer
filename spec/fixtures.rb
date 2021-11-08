@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
-shared_context :user do
+shared_context 'with user abc' do
   let(:user) do
     user = User.find_or_initialize_by(
       name: 'abc'
     )
     user.update(
       email: 'abc@example.org',
+      admin_confirmed: true,
       password: 'password',
       password_confirmation: 'password'
     )
@@ -15,13 +16,14 @@ shared_context :user do
   end
 end
 
-shared_context :eve do
+shared_context 'with user eve' do
   let(:eve) do
     user = User.find_or_initialize_by(
       name: 'eve'
     )
     user.update(
       email: 'eve@example.org',
+      admin_confirmed: true,
       password: 'password',
       password_confirmation: 'password'
     )
@@ -30,13 +32,14 @@ shared_context :eve do
   end
 end
 
-shared_context :admin do
+shared_context 'with user admin' do
   let(:admin) do
     user = User.find_or_initialize_by(
       name: 'admin'
     )
     user.update(
       email: 'admin@example.org',
+      admin_confirmed: true,
       password: 'password',
       password_confirmation: 'password',
       admin: true
@@ -46,16 +49,16 @@ shared_context :admin do
   end
 end
 
-shared_context :achievement_grant do
-  include_context :user
+shared_context 'with achievement grant' do
+  include_context 'with user abc'
 
   let(:achievement_grant) do
     AchievementGrant.find_or_create_by!(user: user, achievement: :fake)
   end
 end
 
-shared_context :stat do
-  include_context :mode
+shared_context 'with stat' do
+  include_context 'with mode'
 
   let(:stat) do
     stat = Stat.find_or_initialize_by(mode: mode, stat_type: :averages)
@@ -65,8 +68,8 @@ shared_context :stat do
   end
 end
 
-shared_context :user_message do
-  include_context :user
+shared_context 'with message' do
+  include_context 'with user abc'
 
   let(:user_message) do
     message = Message.find_or_initialize_by(user: user, title: 'message_title')
@@ -76,8 +79,8 @@ shared_context :user_message do
   end
 end
 
-shared_context :mode do
-  include_context :user
+shared_context 'with mode' do
+  include_context 'with user abc'
 
   let(:mode) do
     mode = user.modes.find_or_initialize_by(
@@ -96,16 +99,16 @@ shared_context :mode do
   end
 end
 
-shared_context :input do
-  include_context :mode
+shared_context 'with input' do
+  include_context 'with mode'
 
   let(:input) do
     mode.inputs.find_or_create_by!(input_representation: CubeTrainer::LetterPair.new(%w[a b]))
   end
 end
 
-shared_context :result do
-  include_context :input
+shared_context 'with result' do
+  include_context 'with input'
 
   let(:result) do
     input.result&.destroy!

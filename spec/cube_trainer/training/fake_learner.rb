@@ -11,7 +11,7 @@ class FakeLearner
       @optimal_time = @rng.rand + 1
       @initial_time = 50 + @rng.rand(50)
       @current_time = @initial_time
-      @learning_rate = @rng.rand * 0.05 + 0.05
+      @learning_rate = (@rng.rand * 0.05) + 0.05
       @practiced = 0
     end
 
@@ -25,18 +25,18 @@ class FakeLearner
       return unless number
 
       remembered_stuff = (1 - forget_rate)**number
-      @current_time * remembered_stuff + @initial_time * (1 - remembered_stuff)
+      (@current_time * remembered_stuff) + (@initial_time * (1 - remembered_stuff))
     end
 
     def execution_time
-      @current_time * 0.9 + rand * @current_time * 0.2
+      (@current_time * 0.9) + (rand * @current_time * 0.2)
     end
 
     # Each practice gets you by learn rate closer to the optimum.
     def execute
       time = execution_time
       @practiced += 1
-      @current_time = @current_time * (1 - @learning_rate) + @optimal_time * @learning_rate
+      @current_time = (@current_time * (1 - @learning_rate)) + (@optimal_time * @learning_rate)
       time
     end
   end

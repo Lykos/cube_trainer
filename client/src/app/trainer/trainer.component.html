@@ -1,0 +1,12 @@
+<div layout="row" layout-sm="column">
+  <div flex>
+    <cube-trainer-trainer-input [input]="input" [mode]="mode" [numHints]="numHints" *ngIf="mode && input"></cube-trainer-trainer-input>
+    <cube-trainer-stopwatch [mode]="mode" (inputItem)="onInputItem($event)" (resultSaved)="onResultsModified()" (numHints)="onNumHints($event)" *ngIf="mode"></cube-trainer-stopwatch>
+  </div>
+  <div flex>
+    <cube-trainer-results-table [resultEvents$]="resultEventsSubject.asObservable()" (resultsModified)="onResultsModified()"></cube-trainer-results-table>
+  </div>
+  <div flex>
+    <cube-trainer-stats-table [statEvents$]="resultEventsSubject.asObservable()"></cube-trainer-stats-table>
+  </div>
+</div>

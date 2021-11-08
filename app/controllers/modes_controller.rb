@@ -10,35 +10,23 @@ class ModesController < ApplicationController
     render json: current_user.modes.exists?(name: params[:mode_name]), status: :ok
   end
 
-  # GET /modes
-  # GET /modes.json
+  # GET /api/modes
+  # GET /api/modes.json
   def index
     respond_to do |format|
-      format.html { render 'application/cube_trainer' }
       format.json { render json: current_user.modes }
     end
   end
 
-  # GET /modes/1
-  # GET /modes/1.json
+  # GET /api/modes/1
+  # GET /api/modes/1.json
   def show
     respond_to do |format|
-      format.html { render 'application/cube_trainer' }
       format.json { render json: @mode }
     end
   end
 
-  # GET /modes/new
-  def new
-    render 'application/cube_trainer'
-  end
-
-  # GET /modes/1/edit
-  def edit
-    render 'application/cube_trainer'
-  end
-
-  # POST /modes.json
+  # POST /api/modes.json
   def create
     @mode = current_user.modes.new(mode_params)
 
@@ -51,7 +39,7 @@ class ModesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /modes/1.json
+  # PATCH/PUT /api/modes/1.json
   def update
     if @mode.update(mode_params)
       render json: @mode, status: :ok
@@ -60,7 +48,7 @@ class ModesController < ApplicationController
     end
   end
 
-  # DELETE /modes/1.json
+  # DELETE /api/modes/1.json
   def destroy
     if @mode.destroy
       head :no_content
@@ -84,6 +72,6 @@ class ModesController < ApplicationController
     params
       .require(:mode)
       .permit(:name, :known, :mode_type, :show_input_mode, :buffer, :goal_badness, :cube_size,
-              stat_types: [])
+              :memo_time_s, stat_types: [])
   end
 end

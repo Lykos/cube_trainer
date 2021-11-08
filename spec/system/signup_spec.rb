@@ -8,7 +8,8 @@ describe 'signup', type: :system do
   end
 
   it 'enables users to sign up and then login' do
-    visit '/signup'
+    visit ''
+    click_button 'Sign Up'
 
     fill_in 'Username', with: 'system test user'
     fill_in 'Email', with: 'system_test@example.org'
@@ -16,6 +17,10 @@ describe 'signup', type: :system do
     fill_in 'Confirm Password', with: 'password'
     click_button 'Submit'
     expect(page).to have_text('Signup successful!')
+
+    user = User.find_by(name: 'system test user')
+    user.update(admin_confirmed: true)
+    user.save!
 
     fill_in 'Username', with: 'system test user'
     fill_in 'Password', with: 'password'

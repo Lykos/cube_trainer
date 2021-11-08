@@ -23,22 +23,29 @@ class ModeType
                 :learner_type,
                 :default_cube_size,
                 :has_buffer,
+                :has_bounded_inputs,
                 :has_goal_badness,
                 :show_input_modes,
                 :used_mode_types,
-                :has_parity_parts
+                :has_parity_parts,
+                :has_memo_time,
+                :has_setup
 
   validates :key, presence: true
   validates :name, presence: true
   validates :generator_class, presence: true
   validates :learner_type, presence: true
   validates :show_input_modes, presence: true
+  validate :show_input_modes_valid
   validates :default_cube_size, presence: true, if: :cube_size?
   validate :default_cube_size_valid, if: :cube_size?
 
+  alias has_bounded_inputs? has_bounded_inputs
   alias has_goal_badness? has_goal_badness
   alias has_buffer? has_buffer
   alias has_parity_parts? has_parity_parts
+  alias has_memo_time? has_memo_time
+  alias has_setup? has_setup
 
   def default_cube_size_valid
     validate_cube_size(default_cube_size, errors, :default_cube_size)
@@ -69,7 +76,11 @@ class ModeType
       cube_size_spec: cube_size_spec,
       has_goal_badness: has_goal_badness?,
       show_input_modes: show_input_modes,
-      buffers: buffers
+      buffers: buffers&.map(&:to_s),
+      has_bounded_inputs: has_bounded_inputs?,
+      has_memo_time: has_memo_time?,
+      has_setup: has_setup?,
+      stats_types: stats_types.map(&:to_simple)
     }.tap { |r| r[:useable_modes] = useable_modes(user) if user }
   end
 
@@ -141,7 +152,27 @@ class ModeType
   def buffers
     return unless has_buffer?
 
-    part_type::ELEMENTS.map(&:to_s)
+    part_type::ELEMENTS
+  end
+
+  def show_input_modes_valid
+    return if (show_input_modes - SHOW_INPUT_MODES).empty?
+
+    errors.add(
+      :show_input_modes,
+      "has to be a subset of all show input modes #{SHOW_INPUT_MODES.inspect}"
+    )
+  end
+
+  # TODO: Remove once we don't rely on heavy caching for pictures.
+  def show_input_mode_picture_for_bounded_input
+    return unless show_input_modes.include?(:picture) && has_bounded_inputs?
+
+    errors.add(:show_input_modes, 'cannot be :picture for unbounded inputs')
+  end
+
+  def stats_types
+    StatType::ALL.select { |s| has_bounded_inputs? || !s.needs_bounded_inputs? }
   end
 
   ALL = [
@@ -153,7 +184,10 @@ class ModeType
       default_cube_size: 3,
       has_buffer: false,
       has_goal_badness: false,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: [:name],
+      has_bounded_inputs: false,
+      has_memo_time: true,
+      has_setup: true
     ),
     ModeType.new(
       key: :corner_commutators,
@@ -174,6 +208,7 @@ class ModeType
       has_buffer: true,
       has_goal_badness: true,
       show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true,
       has_parity_parts: true
     ),
     ModeType.new(
@@ -185,6 +220,7 @@ class ModeType
       has_buffer: true,
       has_goal_badness: true,
       show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true,
       has_parity_parts: true
     ),
     ModeType.new(
@@ -193,9 +229,10 @@ class ModeType
       generator_class: FloatingCorner2Twists,
       learner_type: :case_time,
       default_cube_size: 3,
-      has_buffer: true,
+      has_buffer: false,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :corner_3twists,
@@ -205,7 +242,8 @@ class ModeType
       default_cube_size: 3,
       has_buffer: true,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :floating_2twists_and_corner_3twists,
@@ -215,7 +253,8 @@ class ModeType
       default_cube_size: 3,
       has_buffer: true,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :floating_2flips,
@@ -225,7 +264,8 @@ class ModeType
       default_cube_size: 3,
       has_buffer: false,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :edge_commutators,
@@ -235,7 +275,8 @@ class ModeType
       default_cube_size: 3,
       has_buffer: true,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :wing_commutators,
@@ -245,7 +286,8 @@ class ModeType
       default_cube_size: 4,
       has_buffer: true,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :xcenter_commutators,
@@ -255,7 +297,8 @@ class ModeType
       default_cube_size: 4,
       has_buffer: true,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :tcenter_commutators,
@@ -265,7 +308,8 @@ class ModeType
       default_cube_size: 5,
       has_buffer: true,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :letters_to_word,
@@ -274,7 +318,8 @@ class ModeType
       learner_type: :word,
       has_buffer: false,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :plls,
@@ -284,7 +329,8 @@ class ModeType
       default_cube_size: 3,
       has_buffer: false,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :colls,
@@ -294,7 +340,8 @@ class ModeType
       default_cube_size: 3,
       has_buffer: false,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     ),
     ModeType.new(
       key: :olls_plus_cp,
@@ -304,7 +351,19 @@ class ModeType
       default_cube_size: 3,
       has_buffer: false,
       has_goal_badness: true,
-      show_input_modes: SHOW_INPUT_MODES
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
+    ),
+    ModeType.new(
+      key: :f2l,
+      name: 'F2l',
+      generator_class: F2l,
+      learner_type: :case_time,
+      default_cube_size: 3,
+      has_buffer: false,
+      has_goal_badness: true,
+      show_input_modes: SHOW_INPUT_MODES,
+      has_bounded_inputs: true
     )
   ].freeze
   ALL.each(&:validate!)

@@ -3,37 +3,38 @@
 # Controller for results that a user had for one training mode.
 class ResultsController < ApplicationController
   before_action :set_mode
-  before_action :set_input, only: %i[show destroy]
+  before_action :set_input, only: %i[show update destroy]
   before_action :check_current_user_owns
 
-  # GET /modes/1/results
-  # GET /modes/1/results.json
+  # GET /api/modes/1/results
+  # GET /api/modes/1/results.json
   def index
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json do
-        results = @mode.inputs
-                       .joins(:result)
-                       .includes(:result)
-                       .order(created_at: :desc)
-                       .limit(params[:limit])
-                       .offset(params[:offset])
-                       .map(&:to_simple_result)
-        render json: results, status: :ok
-      end
-    end
+    results = @mode.inputs
+                   .joins(:result)
+                   .includes(:result)
+                   .order(created_at: :desc)
+                   .limit(params[:limit])
+                   .offset(params[:offset])
+                   .map(&:to_simple_result)
+    render json: results, status: :ok
   end
 
-  # GET /modes/1/results/1
-  # GET /modes/1/results/1.json
+  # GET /api/modes/1/results/1
+  # GET /api/modes/1/results/1.json
   def show
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json { render json: @input.to_simple_result, status: :ok }
+    render json: @input.to_simple_result, status: :ok
+  end
+
+  # PATCH/PUT /api/modes/1/results/1.json
+  def update
+    if @input.result.update(result_params)
+      render json: @input.to_simple_result, status: :ok
+    else
+      render json: @input.result.errors, status: :unprocessable_entity
     end
   end
 
-  # DELETE /modes/1/results/1.json
+  # DELETE /api/modes/1/results/1.json
   def destroy
     if @input.destroy
       head :no_content
@@ -50,6 +51,10 @@ class ResultsController < ApplicationController
 
   def set_mode
     head :not_found unless (@mode = Mode.find_by(id: params[:mode_id]))
+  end
+
+  def result_params
+    params.require(:result).permit(:time_s, :failed_attempts, :word, :success, :num_hints)
   end
 
   def owner

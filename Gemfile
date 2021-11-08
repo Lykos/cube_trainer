@@ -9,14 +9,6 @@ ruby '~> 3.0.0'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
 # Use Puma as the app server
 gem 'puma', '~> 4.3'
-# Use SCSS for stylesheets
-gem 'sass-rails', '>= 6'
-# Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker', '~> 4.0'
-# Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.7'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use Active Model has_secure_password
@@ -39,7 +31,7 @@ gem 'pg'
 gem 'ruby-filemagic'
 gem 'ruby-progressbar'
 gem 'rubyzip'
-gem 'twisty_puzzles', '>= 0.0.7'
+gem 'twisty_puzzles', '>= 0.0.16'
 gem 'wombat'
 gem 'xdg'
 
@@ -47,24 +39,33 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
 
-  gem 'rake'
   gem 'rspec-rails'
+end
+
+group :development, :client, :test do
+  gem 'rake'
+end
+
+group :development, :production do
+  # Pry is needed to inspect the production state via rails console.
+  gem 'pry'
 end
 
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'listen', '>= 3.0.5', '< 3.2'
-  gem 'pry'
   gem 'web-console', '>= 3.3.0'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+end
 
-  gem 'rake-compiler'
-  gem 'rubocop', '~> 1.7'
-  gem 'rubocop-performance'
-  gem 'rubocop-rails'
-  gem 'rubocop-rake'
+group :development, :rubocop do
+  gem 'rubocop', '~> 1.7', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rake', require: false
+  gem 'rubocop-rspec', require: false
 end
 
 group :test do

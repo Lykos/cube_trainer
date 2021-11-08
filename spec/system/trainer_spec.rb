@@ -5,15 +5,14 @@ require 'system/system_spec_helper'
 require 'fixtures'
 
 describe 'trainer', type: :system do
-  include_context :user
-  include_context :mode
+  include_context 'with user abc'
+  include_context 'with mode'
 
   before do
     driven_by(:selenium_chrome_headless)
   end
 
   it 'allows to train' do
-    visit '/login'
     login(user)
     sleep(0.5)
 

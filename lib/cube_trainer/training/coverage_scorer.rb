@@ -8,7 +8,7 @@ module CubeTrainer
     class AbstractCoverageScorer < AbstractScorer
       def extra_info(input_item)
         'last occurrence age: ' \
-        "#{@result_history.last_occurrence_age(input_item)}"
+          "#{@result_history.last_occurrence_age(input_item)}"
       end
 
       def score(input_item)

@@ -102,13 +102,15 @@ module CubeTrainer
       def badness_array_exp
         badness_exp =
           results_table[:time_s] +
-          results_table[:failed_attempts] * @failed_seconds +
-          results_table[:num_hints] * @hint_seconds
+          (results_table[:failed_attempts] * @failed_seconds) +
+          (results_table[:num_hints] * @hint_seconds)
         created_at = results_table[:created_at]
         array_agg(badness_exp, order: created_at.desc)
       end
 
       def fetch_last_items(num_items)
+        return [] unless num_items.positive?
+
         # We ignore the cached inputs here because they are handled at a different level.
         @mode
           .inputs

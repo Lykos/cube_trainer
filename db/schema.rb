@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_19_221211) do
+ActiveRecord::Schema.define(version: 2021_11_07_232610) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -73,6 +73,7 @@ ActiveRecord::Schema.define(version: 2020_04_19_221211) do
     t.integer "cube_size"
     t.string "first_parity_part"
     t.string "second_parity_part"
+    t.float "memo_time_s"
     t.index ["user_id", "name"], name: "index_modes_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_modes_on_user_id"
   end
@@ -122,6 +123,7 @@ ActiveRecord::Schema.define(version: 2020_04_19_221211) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "admin", default: false, null: false
     t.string "email", null: false
+    t.boolean "admin_confirmed", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["name"], name: "index_users_on_name", unique: true
   end

@@ -3,8 +3,10 @@
 require 'cube_trainer/skewb_transformation_describer'
 require 'twisty_puzzles'
 
-CYCLE_REGEXP = Regexp.new("#{SkewbTransformationDescriber::DOUBLE_ARROW}|" \
-                          "#{SkewbTransformationDescriber::ARROW}| <-> | -> ")
+CYCLE_REGEXP = Regexp.new(
+  "#{SkewbTransformationDescriber::DOUBLE_ARROW}|" \
+  "#{SkewbTransformationDescriber::ARROW}| <-> | -> "
+)
 
 def canonicalize_transformation_descriptions(transformation_descriptions)
   transformation_descriptions.map do |s|
