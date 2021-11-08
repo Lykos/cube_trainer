@@ -11,7 +11,7 @@ import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validato
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
-  selector: 'cube-trainer-edit-mode',
+  selector: 'cube-trainer-new-mode',
   templateUrl: './new-mode.component.html',
   styleUrls: ['./new-mode.component.css']
 })
@@ -63,6 +63,10 @@ export class NewModeComponent implements OnInit {
     return this.trainingGroup.get('goalBadness')!;
   }
 
+  get memoTimeS() {
+    return this.trainingGroup.get('memoTimeS')!;
+  }
+
   get showInputMode() {
     return this.trainingGroup.get('showInputMode')!;
   }
@@ -77,6 +81,14 @@ export class NewModeComponent implements OnInit {
 
   get hasGoalBadness() {
     return this.modeType.value?.hasGoalBadness;
+  }
+
+  get hasMemoTime() {
+    return this.modeType.value?.hasMemoTime;
+  }
+
+  get hasBoundedInputs() {
+    return this.modeType.value?.hasBoundedInputs;
   }
 
   get defaultCubeSize() {
@@ -125,10 +137,11 @@ export class NewModeComponent implements OnInit {
     return {
       modeType: this.modeType.value!.key,
       name: this.name.value,
-      known: !!this.trainingGroup.get('known')!.value,
+      known: !!this.trainingGroup.get('known')?.value,
       showInputMode: this.selectedShowInputMode,
       buffer: this.buffer.value,
       goalBadness: this.goalBadness.value,
+      memoTimeS: this.memoTimeS.value,
       cubeSize: this.selectedCubeSize,
       statTypes: this.pickedStatTypes.map(s => s.key),
     };
@@ -178,6 +191,13 @@ export class NewModeComponent implements OnInit {
       showInputMode: ['', RxwebValidators.required({ conditionalExpression: () => this.hasMultipleShowInputModes })],
       goalBadness: ['', RxwebValidators.compose({
 	conditionalExpression: () => this.hasGoalBadness,
+	validators: [
+	  RxwebValidators.required(),
+	  RxwebValidators.numeric({ acceptValue: NumericValueType.PositiveNumber, allowDecimal: true })
+	],
+      })],
+      memoTimeS: ['', RxwebValidators.compose({
+	conditionalExpression: () => this.hasMemoTime,
 	validators: [
 	  RxwebValidators.required(),
 	  RxwebValidators.numeric({ acceptValue: NumericValueType.PositiveNumber, allowDecimal: true })

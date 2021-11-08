@@ -55,7 +55,7 @@ jobs:
     - name: Run npm install
       run: bundle exec rake npm:install
 
-    - name: Run ng build
+    - name: Run npm build
       run: bundle exec rake npm:build
 
     - name: Run RSpec

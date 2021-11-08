@@ -59,6 +59,18 @@ export class ResultsTableComponent implements OnInit, OnDestroy {
     });
   }
 
+  onMarkSelectedDnf() {
+    this.modeId$.subscribe(modeId => {
+      const observables = this.selection.selected.map(result =>
+	this.resultsService.markDnf(modeId, result.id));
+      zip(...observables).subscribe((voids) => {
+	this.selection.clear();
+	this.snackBar.open(`Marked ${observables.length} results as DNF!`, 'Close');
+	this.update();
+      });
+    });
+  }
+
   /** Whether the number of selected elements matches the total number of rows. */
   get allSelected() {
     const numSelected = this.selection.selected.length;

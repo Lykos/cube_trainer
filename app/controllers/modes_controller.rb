@@ -14,7 +14,6 @@ class ModesController < ApplicationController
   # GET /api/modes.json
   def index
     respond_to do |format|
-      format.html { render 'application/cube_trainer' }
       format.json { render json: current_user.modes }
     end
   end
@@ -23,19 +22,8 @@ class ModesController < ApplicationController
   # GET /api/modes/1.json
   def show
     respond_to do |format|
-      format.html { render 'application/cube_trainer' }
       format.json { render json: @mode }
     end
-  end
-
-  # GET /api/modes/new
-  def new
-    render 'application/cube_trainer'
-  end
-
-  # GET /api/modes/1/edit
-  def edit
-    render 'application/cube_trainer'
   end
 
   # POST /api/modes.json
@@ -84,6 +72,6 @@ class ModesController < ApplicationController
     params
       .require(:mode)
       .permit(:name, :known, :mode_type, :show_input_mode, :buffer, :goal_badness, :cube_size,
-              stat_types: [])
+              :memo_time_s, stat_types: [])
   end
 end

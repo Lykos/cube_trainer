@@ -14,7 +14,7 @@ class Result < ApplicationRecord
 
   validates :time_s, presence: true, numericality: { greater_than: 0 }
   validates :failed_attempts, numericality: POSITIVE_INTEGER
-  validates :success, presence: true, inclusion: [true, false]
+  validates :success, inclusion: [true, false]
   validates :num_hints, numericality: POSITIVE_INTEGER
   validates :input_id, presence: true, uniqueness: true
 

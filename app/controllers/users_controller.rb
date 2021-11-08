@@ -6,45 +6,32 @@ class UsersController < ApplicationController
   before_action :check_authorized_as_admin, only: [:index]
   before_action :check_authorized_as_admin_if_setting_admin, only: %i[create update]
   before_action :check_current_user_owns, only: %i[show update destroy]
-  skip_before_action :check_authorized, only: %i[new create name_or_email_exists?]
+  skip_before_action :check_authorized, only: %i[create name_or_email_exists?]
 
-  # GET /username_or_email_exists
+  # GET /api/username_or_email_exists
   def name_or_email_exists?
     username_or_email = params[:username_or_email]
     exists = User.exists?(name: username_or_email) || User.exists?(email: username_or_email)
     render json: exists, status: :ok
   end
 
-  # GET /users
-  # GET /users.json
+  # GET /api/users.json
   def index
     respond_to do |format|
-      format.html { render 'application/cube_trainer' }
       format.json { render json: User.all, status: :ok }
     end
   end
 
-  # GET /users/1
-  # GET /users/1.json
+  # GET /api/users/1
+  # GET /api/users/1.json
   def show
     respond_to do |format|
-      format.html { render 'application/cube_trainer' }
       format.json { render json: @user, status: :ok }
     end
   end
 
-  # GET /users/new
-  def new
-    render 'application/cube_trainer'
-  end
-
-  # GET /users/1/edit
-  def edit
-    render 'application/cube_trainer'
-  end
-
-  # POST /users
-  # POST /users.json
+  # POST /api/users
+  # POST /api/users.json
   def create
     @user = User.new(user_params)
 
@@ -57,8 +44,8 @@ class UsersController < ApplicationController
     end
   end
 
-  # PATCH/PUT /users/1
-  # PATCH/PUT /users/1.json
+  # PATCH/PUT /api/users/1
+  # PATCH/PUT /api/users/1.json
   def update
     if @user.update(user_params)
       render json: @user, status: :ok
@@ -67,8 +54,8 @@ class UsersController < ApplicationController
     end
   end
 
-  # DELETE /users/1
-  # DELETE /users/1.json
+  # DELETE /api/users/1
+  # DELETE /api/users/1.json
   def destroy
     if @user.destroy
       head :no_content

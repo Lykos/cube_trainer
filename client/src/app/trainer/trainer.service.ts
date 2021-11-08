@@ -55,7 +55,7 @@ export class TrainerService {
 
   create(modeId: number, cachedItems: InputItem[] = []): Observable<InputItem> {
     const cachedItemIds = cachedItems.map(i => i.id);
-    return this.rails.ajax<InputItem>(HttpVerb.Post,constructPath(modeId), {cachedInputIds: cachedItemIds});
+    return this.rails.ajax<InputItem>(HttpVerb.Post, constructPath(modeId), {cachedInputIds: cachedItemIds});
   }
 
   destroy(modeId: number, input: InputItem): Observable<void> {

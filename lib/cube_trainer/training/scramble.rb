@@ -22,6 +22,16 @@ module CubeTrainer
       def self.from_raw_data(raw_algorithm)
         new(parse_cube_algorithm(raw_algorithm))
       end
+
+      def eql?(other)
+        self.class.equal?(other.class) && @letters == other.letters
+      end
+
+      alias == eql?
+
+      def hash
+        @hash ||= ([self.class] + @letters).hash
+      end
     end
   end
 end

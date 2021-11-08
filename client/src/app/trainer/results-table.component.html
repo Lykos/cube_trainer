@@ -43,5 +43,8 @@
     <button mat-fab (click)="onDeleteSelected()" *ngIf="selection.hasValue()">
       <span class="material-icons">delete</span>
     </button>
+    <button mat-fab (click)="onMarkSelectedDnf()" *ngIf="selection.hasValue()">
+      <span class="material-icons">unpublished</span>
+    </button>
   </div>
 </div>

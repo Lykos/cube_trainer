@@ -3,9 +3,9 @@ import { Duration, zeroDuration } from '../utils/duration';
 import { InputItem } from './input-item';
 import { Mode } from '../modes/mode';
 import { TrainerService } from './trainer.service';
-import { HostListener, Component, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { HostListener, Component, OnDestroy, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { PartialResult } from './partial-result';
-import { interval } from 'rxjs';
+import { interval, timer } from 'rxjs';
 
 enum StopWatchState {
   NotStarted,
@@ -18,7 +18,7 @@ enum StopWatchState {
   templateUrl: './stopwatch.component.html',
   styleUrls: ['./stopwatch.component.css']
 })
-export class StopwatchComponent implements OnDestroy {
+export class StopwatchComponent implements OnDestroy, OnInit {
   @Input()
   mode!: Mode;
 
@@ -36,7 +36,9 @@ export class StopwatchComponent implements OnDestroy {
   private maxHints = 0;
   duration: Duration = zeroDuration;
   private intervalSubscription: any = undefined;
+  private memoTimeSubscription: any = undefined;
   private state: StopWatchState = StopWatchState.NotStarted;
+  private goAudio: HTMLAudioElement | undefined = undefined;
 
   constructor(private readonly trainerService: TrainerService) {}
 
@@ -60,8 +62,25 @@ export class StopwatchComponent implements OnDestroy {
     }
   }
 
+  get hasSetup() {
+    return this.mode.modeType.hasSetup;
+  }
+
+  get memoTime() {
+    return this.mode.memoTime;
+  }
+
+  get isPostMemoTime() {
+    return this.running && this.memoTime && this.duration.greaterThan(this.memoTime);
+  }
+
   onStart() {
-    this.trainerService.nextInputItemWithCache(this.mode.id).subscribe(input => this.startFor(input));
+    if (this.hasSetup) {
+      // TODO: Handle the (unlikely) situation that the input hasn't been received yet.
+      this.startFor(this.input!);
+    } else {
+      this.trainerService.nextInputItemWithCache(this.mode.id).subscribe(input => this.startFor(input));
+    }
   }
 
   startFor(input: InputItem) {
@@ -69,7 +88,10 @@ export class StopwatchComponent implements OnDestroy {
     this.numHints.emit(this.numHints_);
     this.maxHints = input.hints ? input.hints.length : 0;
     this.input = input;
-    this.inputItem.emit(input);
+    // TODO: Make the emit location depending on hasSetup nicer.
+    if (!this.hasSetup) {
+      this.inputItem.emit(input);
+    }
     this.state = StopWatchState.Running;
     const start = now();
     if (this.intervalSubscription) {
@@ -78,6 +100,11 @@ export class StopwatchComponent implements OnDestroy {
     this.intervalSubscription = interval(10).subscribe(() => {
       this.duration = start.durationUntil(now());
     });
+    if (this.memoTime) {
+      this.memoTimeSubscription = timer(this.memoTime.toMillis()).subscribe(() => {
+        this.goAudio!.play();
+      });
+    }
   }
 
   stopAnd(onSuccess: () => void) {
@@ -85,7 +112,7 @@ export class StopwatchComponent implements OnDestroy {
     this.state = StopWatchState.Paused;
     this.trainerService.stop(this.mode.id, this.input!, this.partialResult).subscribe(() => {
       this.resultSaved.emit();
-      onSuccess();
+      this.maybePrefetchInputAnd(onSuccess);
     });
   }
 
@@ -110,10 +137,32 @@ export class StopwatchComponent implements OnDestroy {
     }
     this.intervalSubscription.unsubscribe();
     this.intervalSubscription = undefined;
+    this.memoTimeSubscription.unsubscribe();
+    this.memoTimeSubscription = undefined;
   }
 
   ngOnDestroy() {
     this.stopInterval();
+  }
+
+  maybePrefetchInputAnd(onSuccess: () => void) {
+    if (this.hasSetup) {
+      this.trainerService.nextInputItemWithCache(this.mode.id).subscribe(input => {
+        this.input = input;
+        // TODO: Make the emit location depending on hasSetup nicer.
+        this.inputItem.emit(input);
+        onSuccess();
+      });
+    } else {
+      onSuccess();
+    }
+  }
+
+  ngOnInit() {
+    this.maybePrefetchInputAnd(() => {});
+    if (this.memoTime) {
+      this.goAudio = new Audio('../../assets/audio/go.wav');
+    }
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -123,7 +172,11 @@ export class StopwatchComponent implements OnDestroy {
       return;
     }
     if (this.running) {
-      this.onStopAndStart();
+      if (this.hasSetup) {
+        this.onStopAndPause();
+      } else {
+        this.onStopAndStart();
+      }
     } else if (this.notStarted) {
       this.onStart();
     }
