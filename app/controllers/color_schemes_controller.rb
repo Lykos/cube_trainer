@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'twisty_puzzles'
 
 class ColorSchemesController < ApplicationController
@@ -65,7 +67,10 @@ class ColorSchemesController < ApplicationController
     @color_scheme.user
   end
 
-  PERMITTED_FACE_PARAMS = TwistyPuzzles::CubeConstants::FACE_SYMBOLS.map { |f| f.to_s.downcase.to_sym }
+  PERMITTED_FACE_PARAMS =
+    TwistyPuzzles::CubeConstants::FACE_SYMBOLS.map do |f|
+      f.to_s.downcase.to_sym
+    end
 
   # Only allow a list of trusted parameters through.
   def color_scheme_params

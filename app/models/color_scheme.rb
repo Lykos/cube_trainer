@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'twisty_puzzles'
 
 class ColorScheme < ApplicationRecord
@@ -14,13 +16,17 @@ class ColorScheme < ApplicationRecord
   def to_twisty_puzzles_color_scheme
     @to_twisty_puzzles_color_scheme ||=
       begin
-        hash = TwistyPuzzles::CubeConstants::FACE_SYMBOLS.map { |f| [f, color(f)] }.to_h
-        TwistyPuzzles::ColorScheme.new(hash)
+        color_mappings = TwistyPuzzles::CubeConstants::FACE_SYMBOLS.map(&:downcase).index_with { |f| color(f) }
+        TwistyPuzzles::ColorScheme.new(color_mappings.to_h)
       end
   end
 
   def self.from_twisty_puzzles_color_scheme(name, color_scheme)
-    color_mappings = TwistyPuzzles::CubeConstants::FACE_SYMBOLS.map { |f| [f, color_scheme.color(f)] }
+    color_mappings = TwistyPuzzles::CubeConstants::FACE_SYMBOLS.map(&:downcase).index_with { |f| color(f) }
+    color_mappings =
+      TwistyPuzzles::CubeConstants::FACE_SYMBOLS.map do |f|
+        [f.downcase, color_scheme.color(f)]
+      end
     hash = (color_mappings + [[:name, name]]).to_h
     new(**hash)
   end

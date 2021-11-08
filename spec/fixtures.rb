@@ -107,12 +107,12 @@ shared_context 'with color scheme' do
       name: 'test_color_scheme'
     )
     color_scheme.update(
-      U: :yellow,
-      F: :red,
-      R: :green,
-      L: :blue,
-      B: :orange,
-      D: :white,
+      u: :yellow,
+      f: :red,
+      r: :green,
+      l: :blue,
+      b: :orange,
+      d: :white
     )
     color_scheme.save!
     color_scheme

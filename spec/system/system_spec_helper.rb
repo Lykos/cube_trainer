@@ -16,6 +16,7 @@ end
 def mat_select(name, from: nil, id: nil)
   raise ArgumentError if from && id
   raise ArgumentError unless from || id
+
   find("mat-select[formControlName='#{from}']").click if from
   find("##{id}").click if id
   find('mat-option', text: name).click

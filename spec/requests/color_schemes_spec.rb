@@ -80,13 +80,13 @@ RSpec.describe 'ColorSchemes', type: :request do
     it 'returns http success' do
       post '/api/color_schemes', headers: headers, params: {
         color_scheme: {
-          U: :yellow,
-          F: :green,
-          R: :orange,
-          L: :red,
-          B: :blue,
-          D: :white,
-          name: 'idk',
+          u: :yellow,
+          f: :green,
+          r: :orange,
+          l: :red,
+          b: :blue,
+          d: :white,
+          name: 'idk'
         }
       }
       expect(response).to have_http_status(:success)
@@ -98,7 +98,7 @@ RSpec.describe 'ColorSchemes', type: :request do
     it 'returns bad request for invalid color_schemes' do
       post '/api/color_schemes', params: {
         color_scheme: {
-          U: :red
+          u: :red
         }
       }
       expect(response).to have_http_status(:bad_request)
@@ -111,7 +111,7 @@ RSpec.describe 'ColorSchemes', type: :request do
       expect(response).to have_http_status(:success)
       color_scheme.reload
       expect(color_scheme.name).to eq('new name')
-      expect(color_scheme.U).to eq(:yellow)
+      expect(color_scheme.u).to eq(:yellow)
     end
 
     it 'returns unprocessable entity for invalid updates' do
