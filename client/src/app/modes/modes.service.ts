@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
 import { Mode } from './mode.model';
 import { CubeSizeSpec } from './cube-size-spec.model';
-import { NewMode } from './new-mode.model';
+import { NewMode } from './new-mode.model';i
+import { ModeUpdate } from './mode-update.model';
 import { ModeType } from './mode-type.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -36,6 +37,7 @@ function parseModeType(rawModeType: any): ModeType {
 }
 
 function parseMode(rawMode: any): Mode {
+  console.log(rawMode);
   return {
     id: rawMode.id,
     modeType: parseModeType(rawMode.mode_type),
@@ -66,7 +68,7 @@ export class ModesService {
   }
 
   list(): Observable<Mode[]> {
-    return this.rails.ajax<Mode[]>(HttpVerb.Get, '/modes', {}).pipe(
+    return this.rails.ajax<Mode[]>(HttpVerb.Patch, '/modes', {}).pipe(
       map(modeTypes => modeTypes.map(parseMode)));
   }
 
@@ -74,6 +76,10 @@ export class ModesService {
     return this.rails.ajax<Mode>(HttpVerb.Get, `/modes/${modeId}`, {}).pipe(map(parseMode));
   }
 
+  update(modeId: number, modeUpdate: ModeUpdate): Observable<Mode> {
+    return this.rails.ajax<Mode>(HttpVerb.Post, `/modes/${modeId}`, {modeUpdate}).pipe(map(parseMode));
+  }
+  
   destroy(modeId: number): Observable<void> {
     return this.rails.ajax<void>(HttpVerb.Delete, `/modes/${modeId}`, {});
   }

@@ -9,6 +9,7 @@ import { DeleteModeConfirmationDialogComponent } from './delete-mode-confirmatio
 import { RxReactiveFormsModule } from "@rxweb/reactive-form-validators"
 import { StatsTableComponent } from './stats-table.component';
 import { ModesComponent } from './modes.component';
+import { ModeComponent } from './mode.component';
 import { NewModeComponent } from './new-mode.component';
 import { NgModule } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
@@ -34,6 +35,7 @@ import { MatDialogModule } from '@angular/material/dialog';
   declarations: [
     StatsTableComponent,
     ModesComponent,
+    ModeComponent,
     NewModeComponent,
     DeleteModeConfirmationDialogComponent,
   ],
@@ -72,6 +74,7 @@ import { MatDialogModule } from '@angular/material/dialog';
   exports: [
     StatsTableComponent,
     ModesComponent,
+    ModeComponent,
     NewModeComponent,
   ],
   entryComponents: [
