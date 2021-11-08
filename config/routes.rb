@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :achievement_grants, only: [:index, :show]
     end
     resources :modes do
-      resources :results, only: [:index, :show, :destroy]
+      resources :results, only: [:index, :show, :destroy, :update]
       resources :stats, only: [:index, :show, :destroy]
     end
     resources :stat_types, only: [:index, :show]

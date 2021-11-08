@@ -32,4 +32,8 @@ export class ResultsService {
   destroy(modeId: number, resultId: number): Observable<void> {
     return this.rails.ajax<void>(HttpVerb.Delete, `/modes/${modeId}/results/${resultId}`, {});
   }
+
+  markDnf(modeId: number, resultId: number): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Patch, `/modes/${modeId}/results/${resultId}`, {result: {success: false}});
+ }
 }
