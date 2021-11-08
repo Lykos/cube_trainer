@@ -110,12 +110,18 @@ class StatType
     end
 
     def calculate_fraction(mode)
-      times =
-        mode
+      num_successes_expression =
+        Arel::Nodes::Case.new(Result.arel_table[:success])
+                         .when(Arel::Nodes::True.new)
+                         .then(1.0)
+                         .else(0.0)
+                         .sum
+      total_expression = Result.arel_table[:success].count
+      mode
         .inputs
         .joins(:result)
         .limit(@size)
-        .pick(Arel::Nodes::Case.new(Result.arel_table[:success]).when(Arel::Nodes::True.new).then(1.0).else(0.0).sum / Result.arel_table[:success].count)
+        .pick(num_successes_expression / total_expression)
     end
 
     def name

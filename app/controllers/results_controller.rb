@@ -10,12 +10,12 @@ class ResultsController < ApplicationController
   # GET /api/modes/1/results.json
   def index
     results = @mode.inputs
-                .joins(:result)
-                .includes(:result)
-                .order(created_at: :desc)
-                .limit(params[:limit])
-                .offset(params[:offset])
-                .map(&:to_simple_result)
+                   .joins(:result)
+                   .includes(:result)
+                   .order(created_at: :desc)
+                   .limit(params[:limit])
+                   .offset(params[:offset])
+                   .map(&:to_simple_result)
     render json: results, status: :ok
   end
 
