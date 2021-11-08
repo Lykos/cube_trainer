@@ -27,7 +27,7 @@ export class TrainerComponent implements OnInit {
       this.modesService.show(modeId).subscribe(mode => this.mode = mode));
   }
 
-  onResultSaved() {
+  onResultsModified() {
     this.resultEventsSubject.next();
   }
 

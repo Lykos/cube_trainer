@@ -14,7 +14,7 @@
               {{stat.count}}
             </ng-container>
             <ng-container *ngSwitchCase="statPartType.Fraction">
-              {{stat.fraction}}
+              {{stat.fraction | percent:'1.2-2'}}
             </ng-container>
             <ng-container *ngSwitchCase="statPartType.Time">
               {{stat.success ? (stat.duration | duration) : 'DNF'}}

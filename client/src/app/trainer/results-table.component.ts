@@ -1,7 +1,7 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { ResultsService } from './results.service';
 import { Result } from './result';
-import { Component, OnInit, OnDestroy, Input, LOCALE_ID, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, LOCALE_ID, Inject } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -20,7 +20,12 @@ export class ResultsTableComponent implements OnInit, OnDestroy {
   modeId$: Observable<number>;
   dataSource!: ResultsDataSource;
   columnsToDisplay = ['select', 'input', 'time', 'numHints', 'timestamp'];
+
   @Input() resultEvents$!: Observable<void>;
+
+  @Output()
+  private resultsModified: EventEmitter<void> = new EventEmitter();
+
   private eventsSubscription!: Subscription;
   selection = new SelectionModel<Result>(true, []);
 
@@ -54,7 +59,7 @@ export class ResultsTableComponent implements OnInit, OnDestroy {
       zip(...observables).subscribe((voids) => {
 	this.selection.clear();
 	this.snackBar.open(`Deleted ${observables.length} results!`, 'Close');
-	this.update();
+        this.resultsModified.emit();
       });
     });
   }
@@ -66,7 +71,7 @@ export class ResultsTableComponent implements OnInit, OnDestroy {
       zip(...observables).subscribe((voids) => {
 	this.selection.clear();
 	this.snackBar.open(`Marked ${observables.length} results as DNF!`, 'Close');
-	this.update();
+        this.resultsModified.emit();
       });
     });
   }
