@@ -29,6 +29,7 @@ function parseModeType(rawModeType: any): ModeType {
     cubeSizeSpec,
     hasGoalBadness: rawModeType.has_goal_badness,
     hasMemoTime: rawModeType.has_memo_time,
+    hasSetup: rawModeType.has_setup,
     buffers: rawModeType.buffers,
     statsTypes: rawModeType.stats_types,
   };
@@ -37,7 +38,7 @@ function parseModeType(rawModeType: any): ModeType {
 function parseMode(rawMode: any): Mode {
   return {
     id: rawMode.id,
-    modeType: rawMode.mode_type,
+    modeType: parseModeType(rawMode.mode_type),
     name: rawMode.name,
     known: rawMode.known,
     showInputMode: rawMode.show_input_mode,

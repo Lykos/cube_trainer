@@ -10,6 +10,7 @@ export interface ModeType {
   readonly cubeSizeSpec?: CubeSizeSpec;
   readonly hasGoalBadness: boolean;
   readonly hasMemoTime: boolean;
+  readonly hasSetup: boolean;
   readonly buffers: string[];
   readonly statsTypes: StatType[];
 }

@@ -28,7 +28,8 @@ class ModeType
                 :show_input_modes,
                 :used_mode_types,
                 :has_parity_parts,
-                :has_memo_time
+                :has_memo_time,
+                :has_setup
 
   validates :key, presence: true
   validates :name, presence: true
@@ -44,6 +45,7 @@ class ModeType
   alias has_buffer? has_buffer
   alias has_parity_parts? has_parity_parts
   alias has_memo_time? has_memo_time
+  alias has_setup? has_setup
 
   def default_cube_size_valid
     validate_cube_size(default_cube_size, errors, :default_cube_size)
@@ -77,6 +79,7 @@ class ModeType
       buffers: buffers&.map(&:to_s),
       has_bounded_inputs: has_bounded_inputs?,
       has_memo_time: has_memo_time?,
+      has_setup: has_setup?,
       stats_types: stats_types.map(&:to_simple)
     }.tap { |r| r[:useable_modes] = useable_modes(user) if user }
   end
@@ -183,7 +186,8 @@ class ModeType
       has_goal_badness: false,
       show_input_modes: [:name],
       has_bounded_inputs: false,
-      has_memo_time: true
+      has_memo_time: true,
+      has_setup: true
     ),
     ModeType.new(
       key: :corner_commutators,

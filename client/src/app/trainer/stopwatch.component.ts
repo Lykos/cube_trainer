@@ -3,7 +3,7 @@ import { Duration, zeroDuration } from '../utils/duration';
 import { InputItem } from './input-item';
 import { Mode } from '../modes/mode';
 import { TrainerService } from './trainer.service';
-import { HostListener, Component, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { HostListener, Component, OnDestroy, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { PartialResult } from './partial-result';
 import { interval } from 'rxjs';
 
@@ -18,7 +18,7 @@ enum StopWatchState {
   templateUrl: './stopwatch.component.html',
   styleUrls: ['./stopwatch.component.css']
 })
-export class StopwatchComponent implements OnDestroy {
+export class StopwatchComponent implements OnDestroy, OnInit {
   @Input()
   mode!: Mode;
 
@@ -60,6 +60,10 @@ export class StopwatchComponent implements OnDestroy {
     }
   }
 
+  get hasSetup() {
+    return this.mode.modeType.hasSetup;
+  }
+
   get memoTime() {
     return this.mode.memoTime;
   }
@@ -69,7 +73,12 @@ export class StopwatchComponent implements OnDestroy {
   }
 
   onStart() {
-    this.trainerService.nextInputItemWithCache(this.mode.id).subscribe(input => this.startFor(input));
+    if (this.hasSetup) {
+      // TODO: Handle the (unlikely) situation that the input hasn't been received yet.
+      this.startFor(this.input!);
+    } else {
+      this.trainerService.nextInputItemWithCache(this.mode.id).subscribe(input => this.startFor(input));
+    }
   }
 
   startFor(input: InputItem) {
@@ -77,7 +86,10 @@ export class StopwatchComponent implements OnDestroy {
     this.numHints.emit(this.numHints_);
     this.maxHints = input.hints ? input.hints.length : 0;
     this.input = input;
-    this.inputItem.emit(input);
+    // TODO: Make the emit location depending on hasSetup nicer.
+    if (!this.hasSetup) {
+      this.inputItem.emit(input);
+    }
     this.state = StopWatchState.Running;
     const start = now();
     if (this.intervalSubscription) {
@@ -93,7 +105,7 @@ export class StopwatchComponent implements OnDestroy {
     this.state = StopWatchState.Paused;
     this.trainerService.stop(this.mode.id, this.input!, this.partialResult).subscribe(() => {
       this.resultSaved.emit();
-      onSuccess();
+      this.maybePrefetchInputAnd(onSuccess);
     });
   }
 
@@ -124,6 +136,23 @@ export class StopwatchComponent implements OnDestroy {
     this.stopInterval();
   }
 
+  maybePrefetchInputAnd(onSuccess: () => void) {
+    if (this.hasSetup) {
+      this.trainerService.nextInputItemWithCache(this.mode.id).subscribe(input => {
+        this.input = input;
+        // TODO: Make the emit location depending on hasSetup nicer.
+        this.inputItem.emit(input);
+        onSuccess();
+      });
+    } else {
+      onSuccess();
+    }
+  }
+
+  ngOnInit() {
+    this.maybePrefetchInputAnd(() => {});
+  }
+
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'h') {
@@ -131,7 +160,11 @@ export class StopwatchComponent implements OnDestroy {
       return;
     }
     if (this.running) {
-      this.onStopAndStart();
+      if (this.hasSetup) {
+        this.onStopAndPause();
+      } else {
+        this.onStopAndStart();
+      }
     } else if (this.notStarted) {
       this.onStart();
     }
