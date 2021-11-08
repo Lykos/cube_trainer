@@ -2,11 +2,11 @@
 
 # Controller for users.
 class UsersController < ApplicationController
-  before_action :set_user, only: %i[show update destroy unread_messages_count]
+  before_action :set_user, only: %i[show update destroy]
   before_action :check_authorized_as_admin, only: [:index]
   before_action :check_authorized_as_admin_if_setting_admin, only: %i[create update]
   before_action :check_current_user_owns, only: %i[show update destroy]
-  skip_before_action :check_authorized, only: %i[new create name_or_email_exists?]
+  skip_before_action :check_authorized, only: %i[create name_or_email_exists?]
 
   # GET /api/username_or_email_exists
   def name_or_email_exists?

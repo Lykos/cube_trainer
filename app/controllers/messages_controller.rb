@@ -3,7 +3,7 @@
 # Controller for messages that the user received.
 class MessagesController < ApplicationController
   before_action :set_user
-  before_action :set_message, only: %i[show edit update destroy]
+  before_action :set_message, only: %i[show update destroy]
   before_action :check_current_user_owns
 
   # GET /api/users/1/messages/count_unread.json
