@@ -98,6 +98,33 @@ class StatType
     end
   end
 
+  # Stat part that computes an average like ao5.
+  class SuccessAverage < StatPart
+    def initialize(size)
+      super()
+      @size = size
+    end
+
+    def type
+      :time
+    end
+
+    def calculate_time_s_internal(mode)
+      times =
+        mode
+        .inputs
+        .joins(:result)
+        .where(Result.arel_table[:success])
+        .limit(@size)
+        .pluck(Result.arel_table[:time_s])
+      TwistyPuzzles::Native::CubeAverage.new(@size, Float::NAN).push_all(times)
+    end
+
+    def name
+      "ao#{@size} of successes"
+    end
+  end
+
   # Stat part that computes the success rate of the last k solves.
   class SuccessRate < StatPart
     def initialize(size)
@@ -190,6 +217,13 @@ class StatType
       description: 'Averages like ao5, ao12, ao50, etc..',
       needs_bounded_inputs: false,
       parts: [5, 12, 50, 100, 1000, 1000].map { |i| Average.new(i) }
+    ),
+    StatType.new(
+      key: :success_averages,
+      name: 'Averages of Successes',
+      description: 'Averages like ao5, ao12, ao50, etc..',
+      needs_bounded_inputs: false,
+      parts: [5, 12, 50, 100, 1000, 1000].map { |i| SuccessAverage.new(i) }
     ),
     StatType.new(
       key: :success_rates,
