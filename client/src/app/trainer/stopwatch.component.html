@@ -1,6 +1,6 @@
 <div class="stopwatch">
   <h2>Time</h2>
-  <div class="stopwatch-time" [ngClass]="{'postMemoTime': 'isPostMemoTime'}"> {{duration}} </div>
+  <div class="stopwatch-time" [ngClass]="{'post-memo-time': isPostMemoTime}"> {{duration}} </div>
   <div>
     <ng-container *ngIf="running; else notRunning">
       <button mat-raised-button *ngIf="!hasSetup" color="primary" (click)="onStopAndStart()">
