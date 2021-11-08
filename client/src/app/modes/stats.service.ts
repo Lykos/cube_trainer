@@ -1,9 +1,9 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
-import { Stat } from './stat';
-import { StatPart } from './stat-part';
-import { StatType } from './stat-type';
+import { Stat } from './stat.model';
+import { StatPart } from './stat-part.model';
+import { StatType } from './stat-type.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { seconds } from '../utils/duration'

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModesService } from './modes.service';
-import { Mode } from './mode';
+import { Mode } from './mode.model';
 import { Router } from '@angular/router';
 import { DeleteModeConfirmationDialogComponent } from './delete-mode-confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';

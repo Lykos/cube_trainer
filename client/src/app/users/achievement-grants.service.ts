@@ -1,7 +1,7 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
-import { AchievementGrant } from './achievement-grant';
+import { AchievementGrant } from './achievement-grant.model';
 import { map } from 'rxjs/operators';
 import { fromDateString } from '../utils/instant'
 import { Observable } from 'rxjs';

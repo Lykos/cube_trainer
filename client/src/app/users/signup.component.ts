@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UsersService } from './users.service';
 import { FormGroup, AbstractControl } from '@angular/forms';
 import { UserFormCreator } from './user-form-creator.service';
-import { NewUser } from './new-user';
+import { NewUser } from './new-user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 

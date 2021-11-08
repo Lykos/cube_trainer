@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AchievementGrantsService } from './achievement-grants.service';
-import { AchievementGrant } from './achievement-grant';
+import { AchievementGrant } from './achievement-grant.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';

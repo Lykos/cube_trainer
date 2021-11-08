@@ -1,7 +1,7 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
-import { Result } from './result';
+import { Result } from './result.model';
 import { ResultsService } from './results.service';
 
 export class ResultsDataSource implements DataSource<Result> {

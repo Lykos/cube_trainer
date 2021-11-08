@@ -2,7 +2,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { MessagesService } from './messages.service';
 import { formatDate } from '@angular/common';
-import { Message } from './message';
+import { Message } from './message.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, zip } from 'rxjs';

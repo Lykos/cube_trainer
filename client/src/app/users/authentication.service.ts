@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { User } from './user';
+import { User } from './user.model';
 import { some, none, ofNull, mapOptional, Optional, hasValue } from '../utils/optional';
 
 const LOCAL_STORAGE_USER_KEY = 'currentUser';

@@ -1,10 +1,10 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
-import { Mode } from './mode';
-import { CubeSizeSpec } from './cube-size-spec';
-import { NewMode } from './new-mode';
-import { ModeType } from './mode-type';
+import { Mode } from './mode.model';
+import { CubeSizeSpec } from './cube-size-spec.model';
+import { NewMode } from './new-mode.model';
+import { ModeType } from './mode-type.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { seconds } from '../utils/duration';

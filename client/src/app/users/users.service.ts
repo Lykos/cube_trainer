@@ -1,9 +1,9 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
-import { NewUser } from './new-user';
+import { NewUser } from './new-user.model';
 import { UserUpdate } from './user-update.model';
-import { User } from './user';
+import { User } from './user.model';
 import { Observable } from 'rxjs';
 
 @Injectable({

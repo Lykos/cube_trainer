@@ -1,6 +1,6 @@
-import { ShowInputMode } from './show-input-mode';
-import { CubeSizeSpec } from './cube-size-spec';
-import { StatType } from './stat-type';
+import { ShowInputMode } from './show-input-mode.model';
+import { CubeSizeSpec } from './cube-size-spec.model';
+import { StatType } from './stat-type.model';
 
 export interface ModeType {
   readonly key: string;

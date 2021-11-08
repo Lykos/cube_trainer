@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import Rails from '@rails/ujs';
 import { Observable, Subscription } from 'rxjs';
 import { StatsDataSource } from './stats.data-source';
-import { StatPartType } from './stat-part-type';
+import { StatPartType } from './stat-part-type.model';
 
 @Component({
   selector: 'cube-trainer-stats-table',

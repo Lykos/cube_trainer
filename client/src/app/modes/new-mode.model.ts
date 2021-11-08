@@ -1,4 +1,4 @@
-import { ModeBase } from './mode-base';
+import { ModeBase } from './mode-base.model';
 
 export interface NewMode extends ModeBase {
   readonly modeType: string;

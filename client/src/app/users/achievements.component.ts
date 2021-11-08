@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AchievementsService } from './achievements.service';
-import { Achievement } from './achievement';
+import { Achievement } from './achievement.model';
 import { Router } from '@angular/router';
 
 @Component({

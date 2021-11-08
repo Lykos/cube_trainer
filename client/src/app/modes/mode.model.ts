@@ -1,5 +1,5 @@
-import { ModeBase } from './mode-base';
-import { ModeType } from './mode-type';
+import { ModeBase } from './mode-base.model';
+import { ModeType } from './mode-type.model';
 import { Duration } from '../utils/duration';
 
 export interface Mode extends ModeBase {

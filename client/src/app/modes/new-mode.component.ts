@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { UniqueModeNameValidator } from './unique-mode-name.validator';
-import { ModeType } from './mode-type';
+import { ModeType } from './mode-type.model';
 import { ModesService } from './modes.service';
-import { NewMode } from './new-mode';
-import { StatType } from './stat-type';
+import { NewMode } from './new-mode.model';
+import { StatType } from './stat-type.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";

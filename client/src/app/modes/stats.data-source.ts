@@ -1,8 +1,8 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, catchError, finalize } from 'rxjs/operators';
-import { Stat } from './stat';
-import { StatPart } from './stat-part';
+import { Stat } from './stat.model';
+import { StatPart } from './stat-part.model';
 import { StatsService } from './stats.service';
 
 export class StatsDataSource implements DataSource<StatPart> {

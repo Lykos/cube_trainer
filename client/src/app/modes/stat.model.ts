@@ -1,6 +1,6 @@
 import { Instant } from '../utils/instant';
-import { StatType } from './stat-type';
-import { StatPart } from './stat-part';
+import { StatType } from './stat-type.model';
+import { StatPart } from './stat-part.model';
 
 export interface Stat {
   readonly id: number;

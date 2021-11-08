@@ -1,5 +1,5 @@
 import { Instant } from '../utils/instant';
-import { PartialResult } from './partial-result';
+import { PartialResult } from './partial-result.model';
 
 export interface Result extends PartialResult {
   readonly id: number;

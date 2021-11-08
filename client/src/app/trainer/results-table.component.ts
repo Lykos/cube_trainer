@@ -1,6 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { ResultsService } from './results.service';
-import { Result } from './result';
+import { Result } from './result.model';
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, LOCALE_ID, Inject } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';

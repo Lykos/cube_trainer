@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { Mode } from '../modes/mode';
-import { ShowInputMode } from '../modes/show-input-mode';
+import { Mode } from '../modes/mode.model';
+import { ShowInputMode } from '../modes/show-input-mode.model';
 import { TrainerService } from './trainer.service';
-import { InputItem } from './input-item';
-import { ImgSide } from './img-side';
+import { InputItem } from './input-item.model';
+import { ImgSide } from './img-side.model';
 
 @Component({
   selector: 'cube-trainer-trainer-input',

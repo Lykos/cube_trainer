@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AchievementsService } from './achievements.service';
-import { Achievement } from './achievement';
+import { Achievement } from './achievement.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';

@@ -1,12 +1,11 @@
-import { ShowInputMode } from './show-input-mode';
+import { ShowInputMode } from './show-input-mode.model';
 
-export interface ModeCommon {
-  readonly modeType: string;
+export interface ModeBase {
   readonly name: string;
   readonly known: boolean;
   readonly showInputMode: ShowInputMode;
   readonly buffer?: string;
   readonly goalBadness?: number;
+  readonly memoTimeS?: number;
   readonly cubeSize?: number;
-  readonly statTypes: string[];
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RxwebValidators } from "@rxweb/reactive-form-validators";
 import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
-import { User } from './user';
+import { User } from './user.model';
 
 @Injectable({
   providedIn: 'root',

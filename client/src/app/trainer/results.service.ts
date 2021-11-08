@@ -1,7 +1,7 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
-import { Result } from './result';
+import { Result } from './result.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { seconds } from '../utils/duration'

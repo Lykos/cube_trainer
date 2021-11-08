@@ -1,5 +1,5 @@
 import { Duration } from '../utils/duration';
-import { StatPartType } from './stat-part-type';
+import { StatPartType } from './stat-part-type.model';
 
 export interface StatPart {
   readonly statPartType: StatPartType;

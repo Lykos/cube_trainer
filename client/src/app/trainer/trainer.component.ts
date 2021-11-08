@@ -1,7 +1,7 @@
-import { InputItem } from './input-item';
+import { InputItem } from './input-item.model';
 import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { Mode } from '../modes/mode';
+import { Mode } from '../modes/mode.model';
 import { ModesService } from '../modes/modes.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject } from 'rxjs';

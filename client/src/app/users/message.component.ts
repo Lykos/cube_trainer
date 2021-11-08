@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MessagesService } from './messages.service';
-import { Message } from './message';
+import { Message } from './message.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';

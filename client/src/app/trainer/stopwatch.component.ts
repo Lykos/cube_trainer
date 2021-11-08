@@ -1,10 +1,10 @@
 import { now } from '../utils/instant';
 import { Duration, zeroDuration } from '../utils/duration';
-import { InputItem } from './input-item';
-import { Mode } from '../modes/mode';
+import { InputItem } from './input-item.model';
+import { Mode } from '../modes/mode.model';
 import { TrainerService } from './trainer.service';
 import { HostListener, Component, OnDestroy, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { PartialResult } from './partial-result';
+import { PartialResult } from './partial-result.model';
 import { interval, timer } from 'rxjs';
 
 enum StopWatchState {

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../users/authentication.service';
 import { MessagesService } from '../users/messages.service';
 import { Router } from '@angular/router';
-import { User } from '../users/user';
+import { User } from '../users/user.model';
 import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional';
 
 @Component({
