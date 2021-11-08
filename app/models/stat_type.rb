@@ -98,6 +98,31 @@ class StatType
     end
   end
 
+  # Stat part that computes the success rate of the last k solves.
+  class SuccessRate < StatPart
+    def initialize(size)
+      super()
+      @size = size
+    end
+
+    def type
+      :fraction
+    end
+
+    def calculate_fraction(mode)
+      times =
+        mode
+        .inputs
+        .joins(:result)
+        .limit(@size)
+        .pick(Arel::Nodes::Case.new(Result.arel_table[:success]).when(Arel::Nodes::True.new).then(1.0).else(0.0).sum / Result.arel_table[:success].count)
+    end
+
+    def name
+      "Success rate of #{@size}"
+    end
+  end
+
   # Stat part that computes a mean like mo5.
   class Mean < StatPart
     def initialize(size)
@@ -159,6 +184,13 @@ class StatType
       description: 'Averages like ao5, ao12, ao50, etc..',
       needs_bounded_inputs: false,
       parts: [5, 12, 50, 100, 1000, 1000].map { |i| Average.new(i) }
+    ),
+    StatType.new(
+      key: :success_rates,
+      name: 'Success Rates',
+      description: 'Success Rates in the last 5, 12 50, etc. solves.',
+      needs_bounded_inputs: false,
+      parts: [5, 12, 50, 100, 1000, 1000].map { |i| SuccessRate.new(i) }
     ),
     StatType.new(
       key: :mo3,
