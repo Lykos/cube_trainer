@@ -5,7 +5,7 @@ import { AchievementGrantsComponent } from './users/achievement-grants.component
 import { AchievementComponent } from './users/achievement.component';
 import { MessageComponent } from './users/message.component';
 import { MessagesComponent } from './users/messages.component';
-import { ColorSchemeComponent } from './users/color-scheme.component';
+import { NewColorSchemeComponent } from './users/new-color-scheme.component';
 import { SignupComponent } from './users/signup.component';
 import { LoginComponent } from './users/login.component';
 import { ModesComponent } from './modes/modes.component';
@@ -24,7 +24,7 @@ const routes: Routes = [
   { path: 'users/:userId/achievement_grants', component: AchievementGrantsComponent },
   { path: 'users/:userId/messages', component: MessagesComponent },
   { path: 'users/:userId/messages/:messageId', component: MessageComponent },
-  { path: 'users/:userId/color_scheme', component: ColorSchemeComponent },
+  { path: 'color_scheme', component: NewColorSchemeComponent },
   { path: 'modes/new', component: NewModeComponent },
   { path: 'trainer/:modeId', component: TrainerComponent },
 ];

@@ -14,6 +14,7 @@ import { MessagesService } from './messages.service';
 import { AchievementsService } from './achievements.service';
 import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
 import { AchievementGrantsService } from './achievement-grants.service';
+import { ColorSchemesService } from './color-schemes.service';
 import { NgModule } from '@angular/core';
 import { SignupComponent } from './signup.component';
 import { LoginComponent } from './login.component';
@@ -28,7 +29,7 @@ import { UtilsModule } from '../utils/utils.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
-import { ColorSchemeComponent } from './color-scheme.component.ts'
+import { NewColorSchemeComponent } from './new-color-scheme.component'
 
 
 @NgModule({
@@ -41,7 +42,7 @@ import { ColorSchemeComponent } from './color-scheme.component.ts'
     MessageComponent,
     AchievementGrantsComponent,
     UserComponent,
-    ColorSchemeComponent,
+    NewColorSchemeComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,6 +68,7 @@ import { ColorSchemeComponent } from './color-scheme.component.ts'
     AchievementsService,
     UserFormCreator,
     AchievementGrantsService,
+    ColorSchemesService,
     UniqueUsernameOrEmailValidator,
   ],
   exports: [
@@ -75,7 +77,7 @@ import { ColorSchemeComponent } from './color-scheme.component.ts'
     LoginComponent,
     AchievementsComponent,
     AchievementGrantsComponent,
-    ColorSchemeComponent,
+    NewColorSchemeComponent,
     UserComponent,
     MessagesComponent,
     MessageComponent,
