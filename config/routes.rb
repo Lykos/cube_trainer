@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     get 'mode_name_exists_for_user', to: 'modes#name_exists_for_user?'
     resources :mode_types, only: [:index, :show]
     resources :achievements
+    get 'users/:user_id/messages/count_unread', to: 'messages#count_unread'
     resources :users do
       resources :messages
       resources :achievement_grants, only: [:index, :show]
@@ -19,7 +20,6 @@ Rails.application.routes.draw do
       resources :stats, only: [:index, :show, :destroy]
     end
     resources :stat_types, only: [:index, :show]
-    get 'users/:user_id/messages/count_unread', to: 'messages#count_unread'
     get 'trainer/:mode_id', to: 'trainer#index'
     post 'trainer/:mode_id/inputs', to: 'trainer#create'
     delete 'trainer/:mode_id/inputs/:id', to: 'trainer#destroy'
