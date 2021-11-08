@@ -137,8 +137,10 @@ export class StopwatchComponent implements OnDestroy, OnInit {
     }
     this.intervalSubscription.unsubscribe();
     this.intervalSubscription = undefined;
-    this.memoTimeSubscription.unsubscribe();
-    this.memoTimeSubscription = undefined;
+    if (this.memoTimeSubscription) {
+      this.memoTimeSubscription.unsubscribe();
+      this.memoTimeSubscription = undefined;
+    }
   }
 
   ngOnDestroy() {
