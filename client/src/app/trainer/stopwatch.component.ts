@@ -5,7 +5,7 @@ import { Mode } from '../modes/mode';
 import { TrainerService } from './trainer.service';
 import { HostListener, Component, OnDestroy, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { PartialResult } from './partial-result';
-import { interval } from 'rxjs';
+import { interval, timer } from 'rxjs';
 
 enum StopWatchState {
   NotStarted,
@@ -36,7 +36,9 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   private maxHints = 0;
   duration: Duration = zeroDuration;
   private intervalSubscription: any = undefined;
+  private memoTimeSubscription: any = undefined;
   private state: StopWatchState = StopWatchState.NotStarted;
+  private goAudio: HTMLAudioElement | undefined = undefined;
 
   constructor(private readonly trainerService: TrainerService) {}
 
@@ -98,6 +100,11 @@ export class StopwatchComponent implements OnDestroy, OnInit {
     this.intervalSubscription = interval(10).subscribe(() => {
       this.duration = start.durationUntil(now());
     });
+    if (this.memoTime) {
+      this.memoTimeSubscription = timer(this.memoTime.toMillis()).subscribe(() => {
+        this.goAudio!.play();
+      });
+    }
   }
 
   stopAnd(onSuccess: () => void) {
@@ -130,6 +137,8 @@ export class StopwatchComponent implements OnDestroy, OnInit {
     }
     this.intervalSubscription.unsubscribe();
     this.intervalSubscription = undefined;
+    this.memoTimeSubscription.unsubscribe();
+    this.memoTimeSubscription = undefined;
   }
 
   ngOnDestroy() {
@@ -151,6 +160,9 @@ export class StopwatchComponent implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.maybePrefetchInputAnd(() => {});
+    if (this.memoTime) {
+      this.goAudio = new Audio('../../assets/audio/go.wav');
+    }
   }
 
   @HostListener('window:keydown', ['$event'])
