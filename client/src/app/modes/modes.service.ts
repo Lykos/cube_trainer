@@ -44,7 +44,7 @@ function parseMode(rawMode: any): Mode {
     showInputMode: rawMode.show_input_mode,
     buffer: rawMode.buffer,
     goalBadness: rawMode.goal_badness,
-    memoTime: seconds(rawMode.memo_time_s),
+    memoTime: rawMode.memo_time_s ? seconds(rawMode.memo_time_s) : undefined,
     cubeSize: rawMode.cube_size,
     numResults: rawMode.num_results,
   };
