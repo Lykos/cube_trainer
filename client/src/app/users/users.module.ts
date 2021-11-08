@@ -13,6 +13,7 @@ import { AuthenticationService } from './authentication.service';
 import { MessagesService } from './messages.service';
 import { AchievementsService } from './achievements.service';
 import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
+import { UniqueColorSchemeNameValidator } from './unique-color-scheme-name.validator';
 import { AchievementGrantsService } from './achievement-grants.service';
 import { ColorSchemesService } from './color-schemes.service';
 import { NgModule } from '@angular/core';
@@ -70,6 +71,7 @@ import { NewColorSchemeComponent } from './new-color-scheme.component'
     AchievementGrantsService,
     ColorSchemesService,
     UniqueUsernameOrEmailValidator,
+    UniqueColorSchemeNameValidator,
   ],
   exports: [
     AchievementComponent,

@@ -11,6 +11,10 @@ import { Observable } from 'rxjs';
 export class ColorSchemesService {
   constructor(private readonly rails: RailsService) {}
 
+  isColorSchemeNameTaken(colorSchemeName: string): Observable<boolean> {
+    return this.rails.ajax<boolean>(HttpVerb.Get, '/color_scheme_name_exists_for_user', {colorSchemeName});
+  }
+
   list(): Observable<ColorScheme[]> {
     return this.rails.ajax<ColorScheme[]>(HttpVerb.Get, '/color_schemes', {});
   }

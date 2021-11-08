@@ -99,6 +99,26 @@ shared_context 'with mode' do
   end
 end
 
+shared_context 'with color scheme' do
+  include_context 'with user abc'
+
+  let(:color_scheme) do
+    color_scheme = user.color_schemes.find_or_initialize_by(
+      name: 'test_color_scheme'
+    )
+    color_scheme.update(
+      U: :yellow,
+      F: :red,
+      R: :green,
+      L: :blue,
+      B: :orange,
+      D: :white,
+    )
+    color_scheme.save!
+    color_scheme
+  end
+end
+
 shared_context 'with input' do
   include_context 'with mode'
 

@@ -14,7 +14,6 @@ describe 'messages', type: :system do
 
   it 'allows to view achievements' do
     achievement_grant
-    visit '/login'
     login(user)
     click_button user.name
 

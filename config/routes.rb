@@ -8,8 +8,10 @@ Rails.application.routes.draw do
     root 'sessions#welcome'
     get 'username_or_email_exists', to: 'users#name_or_email_exists?'
     get 'mode_name_exists_for_user', to: 'modes#name_exists_for_user?'
+    get 'color_scheme_name_exists_for_user', to: 'color_schemes#name_exists_for_user?'
     resources :mode_types, only: [:index, :show]
     resources :achievements
+    resources :color_schemes
     get 'users/:user_id/messages/count_unread', to: 'messages#count_unread'
     resources :users do
       resources :messages
