@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'pry'
 require 'cube_trainer/buffer_helper'
 require 'twisty_puzzles'
 require 'cube_trainer/training/probabilities'
@@ -107,15 +108,15 @@ module CubeTrainer
       end
 
       def results
-        @results ||= @mode.inputs.joins(:result).pluck(&:result)
+        @results ||= @mode.inputs.joins(:result).map(&:result)
       end
 
       def grouped_results
-        @grouped_results ||= group_results(results)
+        @grouped_results ||= group_results(results).freeze
       end
 
       def group_results(results)
-        results.group_by(&:input_representation).freeze
+        results.group_by { |r| r.input.representation }
       end
 
       # Interesting time boundaries to see the number of bad results above that boundary.

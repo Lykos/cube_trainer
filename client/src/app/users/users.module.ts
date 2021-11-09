@@ -13,7 +13,9 @@ import { AuthenticationService } from './authentication.service';
 import { MessagesService } from './messages.service';
 import { AchievementsService } from './achievements.service';
 import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
+import { UniqueColorSchemeNameValidator } from './unique-color-scheme-name.validator';
 import { AchievementGrantsService } from './achievement-grants.service';
+import { ColorSchemesService } from './color-schemes.service';
 import { NgModule } from '@angular/core';
 import { SignupComponent } from './signup.component';
 import { LoginComponent } from './login.component';
@@ -26,7 +28,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { UtilsModule } from '../utils/utils.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { NewColorSchemeComponent } from './new-color-scheme.component'
 
 
 @NgModule({
@@ -39,6 +43,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MessageComponent,
     AchievementGrantsComponent,
     UserComponent,
+    NewColorSchemeComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,6 +51,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     RailsModule,
     MatButtonModule,
     MatCardModule,
+    MatSelectModule,
     MatCheckboxModule,
     MatInputModule,
     MatTableModule,
@@ -63,7 +69,9 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     AchievementsService,
     UserFormCreator,
     AchievementGrantsService,
+    ColorSchemesService,
     UniqueUsernameOrEmailValidator,
+    UniqueColorSchemeNameValidator,
   ],
   exports: [
     AchievementComponent,
@@ -71,6 +79,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     LoginComponent,
     AchievementsComponent,
     AchievementGrantsComponent,
+    NewColorSchemeComponent,
     UserComponent,
     MessagesComponent,
     MessageComponent,

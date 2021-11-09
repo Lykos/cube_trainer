@@ -47,6 +47,7 @@
     <br>
     <button mat-raised-button color="primary" type="submit" [disabled]="editUserForm.pristine || !editUserForm.valid">Save</button>
   </form>
+  <button mat-raised-button color="primary" (click)="onChangeColorScheme()">Change Color Scheme</button>
   <cube-trainer-messages></cube-trainer-messages>
   <cube-trainer-achievement-grants></cube-trainer-achievement-grants>
 </div>

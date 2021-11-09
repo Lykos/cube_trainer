@@ -67,7 +67,7 @@ export class ModesService {
 
   list(): Observable<Mode[]> {
     return this.rails.ajax<Mode[]>(HttpVerb.Get, '/modes', {}).pipe(
-      map(modeTypes => modeTypes.map(parseMode)));
+      map(modes => modes.map(parseMode)));
   }
 
   show(modeId: number): Observable<Mode> {
@@ -79,6 +79,6 @@ export class ModesService {
   }
 
   create(mode: NewMode): Observable<Mode> {
-    return this.rails.ajax<Mode>(HttpVerb.Post, '/modes', {mode});
+    return this.rails.ajax<Mode>(HttpVerb.Post, '/modes', {mode}).pipe(map(parseMode));
   }
 }

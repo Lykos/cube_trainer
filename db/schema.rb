@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_07_232610) do
+ActiveRecord::Schema.define(version: 2021_11_08_233952) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,21 @@ ActiveRecord::Schema.define(version: 2021_11_07_232610) do
     t.string "achievement", null: false
     t.index ["user_id", "achievement"], name: "index_achievement_grants_on_user_id_and_achievement", unique: true
     t.index ["user_id"], name: "index_achievement_grants_on_user_id"
+  end
+
+  create_table "color_schemes", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "u", null: false
+    t.string "f", null: false
+    t.string "r", null: false
+    t.string "b", null: false
+    t.string "l", null: false
+    t.string "d", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "name", null: false
+    t.index ["user_id", "name"], name: "index_color_schemes_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_color_schemes_on_user_id"
   end
 
   create_table "download_states", force: :cascade do |t|
@@ -129,6 +144,7 @@ ActiveRecord::Schema.define(version: 2021_11_07_232610) do
   end
 
   add_foreign_key "achievement_grants", "users"
+  add_foreign_key "color_schemes", "users"
   add_foreign_key "inputs", "modes"
   add_foreign_key "messages", "users"
   add_foreign_key "mode_usages", "modes"

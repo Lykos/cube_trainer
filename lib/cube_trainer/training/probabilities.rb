@@ -165,9 +165,9 @@ module CubeTrainer
 
       def per_mode_stats(mode)
         average = StatsComputer.new(@now, mode).total_average
-        expected_algs = expected_algs(mode.mode_type)
+        expected_algs = expected_algs(mode.mode_type.key)
         {
-          name: mode.mode_type,
+          name: mode.mode_type.key,
           expected_algs: expected_algs,
           average: average,
           total_time: expected_algs * average
@@ -177,7 +177,7 @@ module CubeTrainer
       def compute_expected_time_per_type_stats
         relevant_modes =
           @mode.user.modes.select do |m|
-            EXPECTED_ALGS_COMPUTER_CLASSES.key?(m.mode_type)
+            EXPECTED_ALGS_COMPUTER_CLASSES.key?(m.mode_type.key)
           end
         per_type_stats = relevant_modes.map { |m| per_mode_stats(m) }
         total_time = per_type_stats.pluck(:total_time).sum
