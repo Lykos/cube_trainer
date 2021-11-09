@@ -2,6 +2,7 @@
 
 require 'twisty_puzzles'
 
+# Model for color schemes that the user created.
 class ColorScheme < ApplicationRecord
   belongs_to :user
 
@@ -16,19 +17,21 @@ class ColorScheme < ApplicationRecord
   def to_twisty_puzzles_color_scheme
     @to_twisty_puzzles_color_scheme ||=
       begin
-        color_mappings = TwistyPuzzles::CubeConstants::FACE_SYMBOLS.map(&:downcase).index_with { |f| color(f) }
-        TwistyPuzzles::ColorScheme.new(color_mappings.to_h)
+        color_mappings =
+          TwistyPuzzles::CubeConstants::FACE_SYMBOLS.index_with do |f|
+            color(f)
+          end
+        TwistyPuzzles::ColorScheme.new(color_mappings)
       end
   end
 
-  def self.from_twisty_puzzles_color_scheme(name, color_scheme)
-    color_mappings = TwistyPuzzles::CubeConstants::FACE_SYMBOLS.map(&:downcase).index_with { |f| color(f) }
+  def self.from_twisty_puzzles_color_scheme(color_scheme)
     color_mappings =
-      TwistyPuzzles::CubeConstants::FACE_SYMBOLS.map do |f|
-        [f.downcase, color_scheme.color(f)]
+      TwistyPuzzles::CubeConstants::FACE_SYMBOLS.index_with do |f|
+        color_scheme.color(f)
       end
-    hash = (color_mappings + [[:name, name]]).to_h
-    new(**hash)
+    color_mappings.transform_keys!(&:downcase)
+    new(**color_mappings)
   end
 
   def colors_valid
@@ -36,7 +39,7 @@ class ColorScheme < ApplicationRecord
   end
 
   def color(face_symbol)
-    method(face_symbol).call
+    method(face_symbol.downcase).call
   end
 
   def color_valid(face_symbol)

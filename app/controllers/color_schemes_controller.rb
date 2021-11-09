@@ -2,6 +2,7 @@
 
 require 'twisty_puzzles'
 
+# Controller for color schemes the user created.
 class ColorSchemesController < ApplicationController
   before_action :set_color_scheme, only: %i[show update destroy]
   before_action :check_current_user_owns, only: %i[show update destroy]
