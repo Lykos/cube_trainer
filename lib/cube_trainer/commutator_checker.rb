@@ -22,9 +22,6 @@ module CubeTrainer
     # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
     def initialize(
       part_type:,
-      buffer:,
-      color_scheme:,
-      letter_scheme:,
       cube_size:,
       verbose: false,
       show_cube_states: false,
@@ -35,13 +32,8 @@ module CubeTrainer
       unless part_type.is_a?(Class) && part_type.ancestors.include?(TwistyPuzzles::Part)
         raise TypeError
       end
-      raise TypeError unless buffer.instance_of?(part_type)
-      raise TwistyPuzzles::ColorScheme unless color_scheme.is_a?(TwistyPuzzles::ColorScheme)
 
       @part_type = part_type
-      @buffer = buffer
-      @color_scheme = color_scheme
-      @letter_scheme = letter_scheme
       @cube_size = cube_size
       @verbose = verbose
       @show_cube_states = show_cube_states
@@ -53,9 +45,9 @@ module CubeTrainer
     # rubocop:enable Metrics/ParameterLists, Metrics/MethodLength
 
     def init_helpers
-      @alg_cube_state = @color_scheme.solved_cube_state(@cube_size)
-      @cycle_cube_state = @color_scheme.solved_cube_state(@cube_size)
-      @part_cycle_factory = TwistyPuzzles::PartCycleFactory.new(@cube_size, @incarnation_index)
+      @alg_cube_state = TwistyPuzzles::ColorScheme::WCA.solved_cube_state(@cube_size)
+      @cycle_cube_state = TwistyPuzzles::ColorScheme::WCA.solved_cube_state(@cube_size)
+      @part_cycle_factory = TwistyPuzzles::StickerCycleFactory.new(@cube_size, @incarnation_index)
     end
 
     def reset
@@ -75,7 +67,7 @@ module CubeTrainer
     end
 
     def construct_cycle(parts)
-      @part_cycle_factory.construct([@buffer] + parts)
+      @part_cycle_factory.construct(parts)
     end
 
     # Count an alg with a parse error or something like that that is broken before the checker gets
@@ -138,10 +130,7 @@ module CubeTrainer
     end
 
     def check_alg(cell_description, commutator)
-      parts =
-        cell_description.letter_pair.letters.map do |l|
-          @letter_scheme.for_letter(@part_type, l)
-        end
+      parts = cell_description.part_cycle.parts
       # Apply alg and cycle
       cycle = construct_cycle(parts)
       cycle.apply_temporarily_to(@cycle_cube_state) do |cycle_state|

@@ -255,7 +255,7 @@ GEM
       sprockets (>= 3.0.0)
     thor (1.1.0)
     thread_safe (0.3.6)
-    twisty_puzzles (0.0.19)
+    twisty_puzzles (0.0.21)
       colorize
     tzinfo (1.2.9)
       thread_safe (~> 0.1)
@@ -319,7 +319,7 @@ DEPENDENCIES
   simplecov
   spring
   spring-watcher-listen (~> 2.0.0)
-  twisty_puzzles (>= 0.0.19)
+  twisty_puzzles (>= 0.0.21)
   tzinfo-data
   web-console (>= 3.3.0)
   webdrivers

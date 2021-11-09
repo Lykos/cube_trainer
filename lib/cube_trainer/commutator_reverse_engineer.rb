@@ -6,15 +6,13 @@ require 'twisty_puzzles'
 module CubeTrainer
   # Class that figures out what cycle a given commutator alg performs.
   class CommutatorReverseEngineer
-    def initialize(part_type, buffer, letter_scheme, cube_size)
+    def initialize(part_type, buffer, cube_size)
       raise TypeError unless part_type.is_a?(Class)
       raise TypeError unless buffer.is_a?(TwistyPuzzles::Part) && buffer.is_a?(part_type)
-      raise TypeError unless letter_scheme.is_a?(TwistyPuzzles::LetterScheme)
       raise TypeError unless cube_size.is_a?(Integer)
 
       @part_type = part_type
       @buffer = buffer
-      @letter_scheme = letter_scheme
       @solved_positions = {}
       @state = initial_cube_state(part_type, cube_size)
       @buffer_coordinate = solved_position(@buffer, cube_size)
@@ -54,10 +52,10 @@ module CubeTrainer
       return if part1 == @buffer
 
       part2 = state[solved_position(part1, @state.n)]
-      LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) }) if part2 == @buffer
+      TwistyPuzzles::PartCycle.new([@buffer, part0, part1]) if part2 == @buffer
     end
 
-    def find_letter_pair(alg)
+    def find_part_cycle(alg)
       raise TypeError unless alg.is_a?(TwistyPuzzles::Algorithm)
 
       alg.inverse.apply_temporarily_to(@state) { |s| find_stuff(s) }

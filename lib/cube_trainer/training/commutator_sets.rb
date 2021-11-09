@@ -69,7 +69,7 @@ module CubeTrainer
       end
 
       def part_cycle_factory
-        @part_cycle_factory ||= TwistyPuzzles::PartCycleFactory.new(@mode.cube_size, 0)
+        @part_cycle_factory ||= TwistyPuzzles::StickerCycleFactory.new(@mode.cube_size, 0)
       end
 
       def cube_state
@@ -217,7 +217,7 @@ module CubeTrainer
       # rubocop:disable Metrics/AbcSize
       def generate_input_items
         cube_state = @mode.solved_cube_state
-        part_cycle_factory = TwistyPuzzles::PartCycleFactory.new(@mode.cube_size, 0)
+        part_cycle_factory = TwistyPuzzles::StickerCycleFactory.new(@mode.cube_size, 0)
         buffer_twist = part_cycle_factory.multi_twist([@mode.parsed_buffer])
         1.upto(2).collect_concat do |twist_number|
           buffer_twist.apply_to(cube_state)
@@ -338,7 +338,7 @@ module CubeTrainer
 
       def generate_input_items
         cube_state = @mode.solved_cube_state
-        part_cycle_factory = TwistyPuzzles::PartCycleFactory.new(@mode.cube_size, 0)
+        part_cycle_factory = TwistyPuzzles::StickerCycleFactory.new(@mode.cube_size, 0)
         edge_combinations.map do |edge_pair|
           letter_pair = LetterPair.new(edge_pair.map { |e| letter(e) })
           flip_sticker_cycles = part_cycle_factory.multi_twist(edge_pair)
