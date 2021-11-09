@@ -41,9 +41,9 @@ describe Training::StatsComputer do
   let(:other_mode_results) do
     other_modes.map.with_index do |mode, i|
       Result.create!(
-          input: mode.inputs.create!(created_at: t_2_days_ago + 100 + i, input_representation: letter_pair_b),
-          time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
-        )
+        input: mode.inputs.create!(created_at: t_2_days_ago + 100 + i, input_representation: letter_pair_b),
+        time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
+      )
     end
   end
   let(:fill_results) do
@@ -51,32 +51,58 @@ describe Training::StatsComputer do
   end
   let(:relevant_results) do
     [
-      Result.create!(input: mode.inputs.create!(created_at: t_10_minutes_ago, input_representation: letter_pair_a),
-                     time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 1),
-      Result.create!(input: mode.inputs.create!(created_at: t_10_minutes_ago + 2, input_representation: letter_pair_a),
-                     time_s: 2.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 3),
-      Result.create!(input: mode.inputs.create!(created_at: t_10_minutes_ago + 4, input_representation: letter_pair_a),
-                     time_s: 3.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 5),
-      Result.create!(input: mode.inputs.create!(created_at: t_10_minutes_ago + 6, input_representation: letter_pair_a),
-                     time_s: 4.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 7),
-      Result.create!(input: mode.inputs.create!(created_at: t_10_minutes_ago + 8, input_representation: letter_pair_a),
-                     time_s: 5.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 9),
-      Result.create!(input: mode.inputs.create!(created_at: t_10_minutes_ago - 2, input_representation: letter_pair_a),
-                     time_s: 6.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago - 1),
-      Result.create!(input: mode.inputs.create!(created_at: t_2_hours_ago, input_representation: letter_pair_a),
-                     time_s: 7.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_hours_ago + 1),
-      Result.create!(input: mode.inputs.create!(created_at: t_2_days_ago, input_representation: letter_pair_a),
-                     time_s: 10.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 1),
-      Result.create!(input: mode.inputs.create!(created_at: t_2_days_ago + 2, input_representation: letter_pair_a),
-                     time_s: 11.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 3),
-      Result.create!(input: mode.inputs.create!(created_at: t_2_days_ago + 4, input_representation: letter_pair_a),
-                     time_s: 12.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 5),
-      Result.create!(input: mode.inputs.create!(created_at: t_2_days_ago + 6, input_representation: letter_pair_a),
-                     time_s: 13.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 7),
-      Result.create!(input: mode.inputs.create!(created_at: t_2_days_ago + 8, input_representation: letter_pair_a),
-                     time_s: 14.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 9),
-      Result.create!(input: mode.inputs.create!(created_at: t_2_hours_ago + 2, input_representation: letter_pair_b),
-                     time_s: 10.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_hours_ago + 3)
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_10_minutes_ago, input_representation: letter_pair_a),
+        time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 1
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_10_minutes_ago + 2, input_representation: letter_pair_a),
+        time_s: 2.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 3
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_10_minutes_ago + 4, input_representation: letter_pair_a),
+        time_s: 3.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 5
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_10_minutes_ago + 6, input_representation: letter_pair_a),
+        time_s: 4.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 7
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_10_minutes_ago + 8, input_representation: letter_pair_a),
+        time_s: 5.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 9
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_10_minutes_ago - 2, input_representation: letter_pair_a),
+        time_s: 6.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago - 1
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_2_hours_ago, input_representation: letter_pair_a),
+        time_s: 7.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_hours_ago + 1
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_2_days_ago, input_representation: letter_pair_a),
+        time_s: 10.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 1
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_2_days_ago + 2, input_representation: letter_pair_a),
+        time_s: 11.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 3
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_2_days_ago + 4, input_representation: letter_pair_a),
+        time_s: 12.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 5
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_2_days_ago + 6, input_representation: letter_pair_a),
+        time_s: 13.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 7
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_2_days_ago + 8, input_representation: letter_pair_a),
+        time_s: 14.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 9
+      ),
+      Result.create!(
+        input: mode.inputs.create!(created_at: t_2_hours_ago + 2, input_representation: letter_pair_b),
+        time_s: 10.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_hours_ago + 3
+      )
     ]
   end
   let(:results) do
