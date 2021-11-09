@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { UserFormCreator } from './user-form-creator.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'cube-trainer-user',
@@ -22,7 +23,8 @@ export class UserComponent implements OnInit {
   constructor(private readonly usersService: UsersService,
 	      private readonly activatedRoute: ActivatedRoute,
 	      private readonly userFormCreator: UserFormCreator,
-	      private readonly snackBar: MatSnackBar) {
+	      private readonly snackBar: MatSnackBar,
+	      private readonly router: Router) {
     this.userId$ = this.activatedRoute.params.pipe(map(p => p['userId']));
   }
 
@@ -59,6 +61,10 @@ export class UserComponent implements OnInit {
       this.userId = userId;
       this.updateUser();
     });
+  }
+
+  onChangeColorScheme() {
+    this.router.navigate([`/color_scheme`]);
   }
 
   updateUser() {
