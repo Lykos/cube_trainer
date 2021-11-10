@@ -19,7 +19,7 @@ module CubeTrainer
       attr_reader :cell_description, :fixed_algorithm
     end
 
-    # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
+    # rubocop:disable Metrics/ParameterLists
     def initialize(
       part_type:,
       cube_size:,
@@ -42,7 +42,7 @@ module CubeTrainer
       init_helpers
       reset
     end
-    # rubocop:enable Metrics/ParameterLists, Metrics/MethodLength
+    # rubocop:enable Metrics/ParameterLists
 
     def init_helpers
       @alg_cube_state = TwistyPuzzles::ColorScheme::WCA.solved_cube_state(@cube_size)

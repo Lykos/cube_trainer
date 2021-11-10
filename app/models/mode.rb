@@ -69,18 +69,20 @@ class Mode < ApplicationRecord
 
   delegate :random_item, to: :input_sampler
 
-  def restrict_colors
-    color_scheme.colors
+  def restrict_parts
+    part_type::ELEMENTS
   end
 
   def test_comms_mode
     @test_comms_mode ||= :ignore
   end
 
-  def restrict_letters; end
-
-  def exclude_letters
+  def exclude_parts
     []
+  end
+
+  def maybe_apply_letter_scheme(input_representation)
+    mode_type.maybe_apply_letter_scheme(letter_scheme, input_representation)
   end
 
   def picture

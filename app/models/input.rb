@@ -23,7 +23,7 @@ class Input < ApplicationRecord
     {
       id: result.id,
       mode: mode.attributes,
-      input_representation: input_representation.to_s,
+      input_representation: mode.maybe_apply_letter_scheme(input_representation).to_s,
       time_s: result.time_s,
       failed_attempts: result.failed_attempts,
       success: result.success,

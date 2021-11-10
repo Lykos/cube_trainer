@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'requests/requests_spec_helper'
 require 'fixtures'
 
 RSpec.describe 'Trainer', type: :request do

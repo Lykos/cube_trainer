@@ -38,7 +38,7 @@ shared_examples 'commutator_set' do |mode_type, buffer|
 end
 
 describe 'CommutatorSets' do
-  ModeType::ALL.each do |mode_type|
+  ModeType.all.each do |mode_type|
     next unless mode_type.default_cube_size
 
     describe mode_type.generator_class do

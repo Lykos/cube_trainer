@@ -10,7 +10,7 @@ class ModeTypesController < ApplicationController
   def index
     respond_to do |format|
       format.html { render 'application/cube_trainer' }
-      format.json { render json: ModeType::ALL.map(&:to_simple) }
+      format.json { render json: ModeType.all.map(&:to_simple) }
     end
   end
 

@@ -50,8 +50,6 @@ module CubeTrainer
       def initialize(
         part_type:,
         buffer:,
-        letter_scheme:,
-        color_scheme:,
         write_fixes:,
         verbose:,
         show_cube_states:,
@@ -71,8 +69,6 @@ module CubeTrainer
         @part_type = part_type
         @buffer = buffer
         @name = self.class.name_with_buffer_name(part_type, buffer.to_s.downcase)
-        @letter_scheme = letter_scheme
-        @color_scheme = color_scheme
         @write_fixes = write_fixes
         @verbose = verbose
         @show_cube_states = show_cube_states
@@ -98,10 +94,6 @@ module CubeTrainer
             part_type.parse(file.match(buffer_extraction_regexp)[1])
           end
         end
-      end
-
-      def letter_pair(part0, part1)
-        LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) })
       end
 
       def warn_comms?
@@ -256,7 +248,8 @@ module CubeTrainer
       def process_alg_table_cell(hints, cell_description, cell)
         if cell_description.part_cycle.nil?
           process_outside_cell(cell_description, cell)
-        elsif cell_description.part_cycle.length == 2 && cell_description.part_cycle[0] == cell_description.part_cycle[1]
+        elsif cell_description.part_cycle.length == 2 &&
+              cell_description.part_cycle[0] == cell_description.part_cycle[1]
           process_diagonal_cell(cell_description, cell)
         elsif cell.is_a?(ErrorEntry)
           process_error_cell(cell_description, cell)
@@ -320,8 +313,6 @@ module CubeTrainer
         hint_parser = new(
           part_type: part_type,
           buffer: buffer,
-          letter_scheme: options.letter_scheme,
-          color_scheme: options.color_scheme,
           verbose: options.verbose,
           show_cube_states: options.show_cube_states,
           write_fixes: options.write_fixes,

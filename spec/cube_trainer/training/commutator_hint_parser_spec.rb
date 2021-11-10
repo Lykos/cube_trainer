@@ -13,8 +13,6 @@ describe Training::CommutatorHintParser do
     described_class.new(
       part_type: part_type,
       buffer: buffer,
-      letter_scheme: letter_scheme,
-      color_scheme: TwistyPuzzles::ColorScheme::BERNHARD,
       verbose: false,
       show_cube_states: false,
       cube_size: 3,

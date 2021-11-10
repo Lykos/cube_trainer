@@ -28,9 +28,13 @@ module CubeTrainer
         column_interpretation = @column_interpretations[col_index]
         return unless row_interpretation && column_interpretation
 
-        parts = [row_interpretation, column_interpretation]
-        parts.reverse! if @flip_parts
-        TwistyPuzzles::PartCycle.new([@buffer] + parts)
+        part_cycle = TwistyPuzzles::PartCycle.new(
+          [
+            @buffer, row_interpretation,
+            column_interpretation
+          ]
+        )
+        @flip_parts ? part_cycle.inverse : part_cycle
       end
     end
 
@@ -70,7 +74,10 @@ module CubeTrainer
     end
 
     def self.find_row_interpretations(rows, buffer, axis_interpretation)
-      row_interpretations = rows.map { |row| find_row_interpretation(row, buffer, axis_interpretation) }
+      row_interpretations =
+        rows.map do |row|
+          find_row_interpretation(row, buffer, axis_interpretation)
+        end
       # Only allow row interpretations that appear exactly once.
       counts = new_counter_hash
       row_interpretations.each { |i| counts[i] += 1 }
@@ -83,9 +90,12 @@ module CubeTrainer
       counts
     end
 
+    def self.relevant_part_cycles(row, buffer)
+      row.filter_map(&:maybe_part_cycle).filter { |e| e.parts[0] == buffer }
+    end
+
     def self.find_row_interpretation(row, buffer, axis_interpretation)
-      relevant_part_cycles = row.filter_map(&:maybe_part_cycle).filter { |e| e.parts[0] == buffer }
-      parts = relevant_part_cycles.map { |e| e.parts[axis_interpretation + 1] }
+      parts = relevant_part_cycles(row, buffer).map { |e| e.parts[axis_interpretation + 1] }
       counts = new_counter_hash
       parts.each { |l| counts[l] += 1 }
       max_count = counts.values.max
