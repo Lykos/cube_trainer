@@ -5,7 +5,8 @@ module CubeTrainer
     # Helper methods to construct SQL queries using Arel.
     module SqlHelper
       def check_exp(exp, optional: false)
-        return if (optional && exp.nil?) || exp.is_a?(Arel::Node) || exp.is_a?(Arel::Attribute)
+        return if (optional && exp.nil?) || exp.is_a?(Arel::Node) || exp.is_a?(Arel::Attribute) ||
+                  exp.is_a?(Arel::Nodes::SqlLiteral)
 
         raise TypeError
       end
@@ -53,6 +54,10 @@ module CubeTrainer
         raise ArgumentError unless FIELDS.include?(field)
 
         Arel::Nodes::Extract.new(timestamp_or_interval, Arel::Nodes::SqlLiteral.new(field.to_s))
+      end
+
+      def current_timestamp
+        Arel::Nodes::SqlLiteral.new('current_timestamp')
       end
 
       # Can be used as `age(newer, older)` or `age(timestamp)`.
