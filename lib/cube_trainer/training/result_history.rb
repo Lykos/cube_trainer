@@ -19,6 +19,8 @@ module CubeTrainer
         failed_seconds:,
         cached_inputs: []
       )
+        raise unless cached_inputs.all?(Input)
+
         @mode = mode
         @badness_memory = badness_memory
         @hint_seconds = hint_seconds
@@ -72,14 +74,17 @@ module CubeTrainer
           calculate_occurrence_days_since_last_hint(item)
       end
 
-      def last_items(num_items)
+      # Returns the input representations of the last `num_items` inputs (including cached inputs).
+      def last_input_representations(num_items)
         if @max_num_items.nil? || num_items > @max_num_items
           @max_num_items = num_items
-          @last_items = @cached_inputs + fetch_last_items(num_items - @cached_inputs.length)
+          @last_input_representations =
+            @cached_inputs.map(&:representation) +
+            fetch_last_input_representations(num_items - @cached_inputs.length)
         end
 
-        adjusted_num_items = [num_items, @last_items.length].min
-        @last_items[-adjusted_num_items..]
+        adjusted_num_items = [num_items, @last_input_representations.length].min
+        @last_input_representations[...adjusted_num_items]
       end
 
       def badness_averages
@@ -108,7 +113,7 @@ module CubeTrainer
         array_agg(badness_exp, order: created_at.desc)
       end
 
-      def fetch_last_items(num_items)
+      def fetch_last_input_representations(num_items)
         return [] unless num_items.positive?
 
         # We ignore the cached inputs here because they are handled at a different level.
@@ -117,7 +122,7 @@ module CubeTrainer
           .joins(:result)
           .order(created_at: :desc)
           .limit(num_items)
-          .pluck(:input_representation).reverse
+          .pluck(:input_representation)
       end
 
       # On how many different days the item appeared since the user last used a hint for it.
@@ -187,7 +192,7 @@ module CubeTrainer
       end
 
       def age_exp
-        extract(:epoch, age(inputs_table[:created_at]))
+        extract(:epoch, age(current_timestamp, inputs_table[:created_at]))
       end
 
       def days_old_exp

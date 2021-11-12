@@ -36,6 +36,7 @@ class StatType
   end
 
   def self.time_s_expression
+    # TODO: Use SqlHelper
     Arel::Nodes::Case
       .new(Result.arel_table[:success])
       .when(Arel::Nodes::True.new)

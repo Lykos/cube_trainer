@@ -47,7 +47,8 @@ module CubeTrainer
         # adjust to the total number of items.
         rep_index = repetition_index(input_item.representation, occ)
 
-        @result_history.last_items(rep_index).include?(input_item.representation) ? 0 : 1
+        last_representations = @result_history.last_input_representations(rep_index)
+        last_representations.include?(input_item.representation) ? 0 : 1
       end
 
       # After how many other items should this item be repeated.

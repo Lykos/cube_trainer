@@ -52,7 +52,7 @@ class TrainerController < ApplicationController
   private
 
   def cached_inputs
-    @cached_inputs ||= @mode.inputs.where(id: cached_input_ids)
+    @cached_inputs ||= @mode.inputs.where(id: cached_input_ids).to_a
   end
 
   def cached_input_ids

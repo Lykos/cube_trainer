@@ -24,7 +24,7 @@ def construct_mode(mode_type)
   mode
 end
 
-describe Training::StatsComputer do
+xdescribe Training::StatsComputer do
   include_context 'with user abc'
 
   let(:now) { Time.zone.at(0) }
