@@ -74,7 +74,10 @@ class ModeType
 
   # TODO: Refactor
   # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/CyclomaticComplexity
   def maybe_apply_letter_scheme(letter_scheme, input_representation)
+    # TODO: Remove this backwards compatibility logic if possible.
     return input_representation if input_representation.is_a?(LetterPair)
 
     case letter_scheme_mode
@@ -97,6 +100,8 @@ class ModeType
     end
   end
   # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   # Returns a simple version for the current user that can be returned to the frontend.
   def to_simple(user = nil)

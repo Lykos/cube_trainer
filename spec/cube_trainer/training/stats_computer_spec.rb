@@ -114,7 +114,7 @@ describe Training::StatsComputer do
     described_class.new(now, mode)
   end
 
-  it 'computes detailed averages for all our results' do
+  xit 'computes detailed averages for all our results' do
     fill_letter_averages = fill_letter_pairs.map { |ls| [ls, 1.0] }
     expected = [[letter_pair_b, 10.0], [letter_pair_a, 3.0]] + fill_letter_averages
     expect(computer.averages).to be == expected
@@ -130,7 +130,7 @@ describe Training::StatsComputer do
     expect(computer.old_total_average).to be_within(0.1).of(((26 * 1.0) + 12.0) / 27)
   end
 
-  it 'computes how long each part of the solve takes' do
+  xit 'computes how long each part of the solve takes' do
     stats = computer.expected_time_per_type_stats
     names = %i[corner_3twists corner_commutators edge_commutators floating_2flips floating_2twists]
     expect(stats.pluck(:name).sort).to be == names
