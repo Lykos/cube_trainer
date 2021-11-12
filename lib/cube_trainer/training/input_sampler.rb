@@ -173,6 +173,7 @@ module CubeTrainer
         managed_sample = sampler.random_item
 
         item = managed_sample.input_item
+        @logger.debug "cached_inputs: #{cached_inputs.map(&:representation).join(' ')}"
         @logger.debug "[#{item.representation}] #{managed_sample.sampling_info}"
         item
       end
