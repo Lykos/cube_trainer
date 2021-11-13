@@ -1,0 +1,32 @@
+<div>
+  <h1>Pick Letter Scheme</h1>
+  <ng-container *ngIf="letterSchemeForm">
+    <form [formGroup]="letterSchemeForm" (ngSubmit)="onSubmit()">
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" type="text">
+        <mat-error *ngIf="nameModel && relevantInvalid(nameModel) && nameModel.errors && nameModel.errors['required']">
+          You must provide a <strong>name</strong>.
+        </mat-error>
+        <mat-error *ngIf="nameModel && relevantInvalid(nameModel) && nameModel.errors && nameModel.errors['uniqueModeName']">
+          You already have a mode with the same <strong>name</strong>.
+        </mat-error>
+      </mat-form-field>
+      <ng-container *ngFor="let partType of partTypes">
+        <div [formControlName]="partType.name">
+          <mat-label>{{partType.name}}</mat-label>
+          <ng-container *ngFor="let part of partType.parts">
+            <mat-form-field>
+              <mat-label>{{part}}</mat-label>
+              <input matInput formControlName="name" type="text">
+              <!-- TODO: Validation -->
+            </mat-form-field>
+          </ng-container>
+        </div>
+      </ng-container>
+      <div>
+        <button mat-raised-button letter="primary" type="Submit">Submit</button>
+      </div>
+    </form>
+  </ng-container>
+</div>

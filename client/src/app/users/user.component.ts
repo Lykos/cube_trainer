@@ -63,8 +63,12 @@ export class UserComponent implements OnInit {
     });
   }
 
-  onChangeColorScheme() {
-    this.router.navigate([`/color_scheme`]);
+  onCreateColorScheme() {
+    this.router.navigate(['/color_schemes/new']);
+  }
+
+  onCreateLetterScheme() {
+    this.router.navigate(['/letter_schemes/new']);
   }
 
   updateUser() {

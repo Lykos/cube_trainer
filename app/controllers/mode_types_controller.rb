@@ -5,20 +5,16 @@
 class ModeTypesController < ApplicationController
   before_action :set_mode_type, only: [:show]
 
-  # GET /mode_types
-  # GET /mode_types.json
+  # GET /api/mode_types.json
   def index
     respond_to do |format|
-      format.html { render 'application/cube_trainer' }
       format.json { render json: ModeType.all.map(&:to_simple) }
     end
   end
 
-  # GET /mode_types/mode_created
-  # GET /mode_types/mode_created.json
+  # GET /api/mode_types/1.json
   def show
     respond_to do |format|
-      format.html { render 'application/cube_trainer' }
       format.json { render json: @mode_type.to_simple }
     end
   end

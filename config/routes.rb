@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     get 'color_scheme_name_exists_for_user', to: 'color_schemes#name_exists_for_user?'
     get 'letter_scheme_name_exists_for_user', to: 'letter_schemes#name_exists_for_user?'
     resources :mode_types, only: [:index, :show]
+    resources :part_types, only: [:index]
     resources :achievements
     resources :color_schemes
     resources :letter_schemes
