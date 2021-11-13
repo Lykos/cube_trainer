@@ -31,8 +31,8 @@ class InputRepresentationType < ActiveRecord::Type::String
     return value if INPUT_REPRESENTATION_CLASSES.any? { |c| value.is_a?(c) }
     raise TypeError unless value.is_a?(String)
 
-    type, raw_data = value.split(SEPARATOR, 2)
-    clazz = INPUT_REPRESENTATION_NAME_TO_CLASS[type]
+    raw_clazz, raw_data = value.split(SEPARATOR, 2)
+    clazz = INPUT_REPRESENTATION_NAME_TO_CLASS[raw_clazz]
     raise ArgumentError, "Unknown input representation class #{type}." unless clazz
 
     clazz.from_raw_data(raw_data)

@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :messages, dependent: :destroy
   has_many :achievement_grants, dependent: :destroy
   has_many :color_schemes, dependent: :destroy
+  has_many :letter_schemes, dependent: :destroy
   after_create :send_welcome_message
 
   def to_simple

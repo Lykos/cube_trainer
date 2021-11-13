@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_08_233952) do
+ActiveRecord::Schema.define(version: 2021_11_12_235602) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -56,6 +56,25 @@ ActiveRecord::Schema.define(version: 2021_11_08_233952) do
     t.string "hostname", null: false
     t.bigint "mode_id", null: false
     t.index ["mode_id"], name: "index_inputs_on_mode_id"
+  end
+
+  create_table "letter_scheme_mappings", force: :cascade do |t|
+    t.integer "letter_scheme_id", null: false
+    t.string "part", null: false
+    t.string "letter", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["letter_scheme_id", "part"], name: "index_letter_scheme_mappings_on_letter_scheme_id_and_part", unique: true
+    t.index ["letter_scheme_id"], name: "index_letter_scheme_mappings_on_letter_scheme_id"
+  end
+
+  create_table "letter_schemes", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id", "name"], name: "index_letter_schemes_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_letter_schemes_on_user_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -146,6 +165,8 @@ ActiveRecord::Schema.define(version: 2021_11_08_233952) do
   add_foreign_key "achievement_grants", "users"
   add_foreign_key "color_schemes", "users"
   add_foreign_key "inputs", "modes"
+  add_foreign_key "letter_scheme_mappings", "letter_schemes"
+  add_foreign_key "letter_schemes", "users"
   add_foreign_key "messages", "users"
   add_foreign_key "mode_usages", "modes"
   add_foreign_key "mode_usages", "modes", column: "used_mode_id"
