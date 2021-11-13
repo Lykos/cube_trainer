@@ -4,7 +4,7 @@ require 'rails_helper'
 require 'system/system_spec_helper'
 require 'fixtures'
 
-xdescribe 'new letter scheme', type: :system do
+describe 'new letter scheme', type: :system do
   include_context 'with user abc'
 
   before do
@@ -17,8 +17,8 @@ xdescribe 'new letter scheme', type: :system do
     click_button 'Create Letter Scheme'
 
     sleep(0.5)
-    fill_in 'Name', with: 'system test letter scheme'
     fill_in 'ULB', with: 'A'
+    fill_in 'letterSchemeName', with: 'system test letter scheme'
 
     sleep(0.5)
     click_button 'Submit'
