@@ -27,6 +27,6 @@ class PartType < ActiveRecord::Type::String
     return if value.nil?
 
     value = cast(value) unless TwistyPuzzles::PART_TYPES.include?(value)
-    "#{simple_class_name(value.class)}#{SEPARATOR}#{value.to_s}"
+    "#{simple_class_name(value.class)}#{SEPARATOR}#{value}"
   end
 end

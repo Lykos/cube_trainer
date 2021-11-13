@@ -4,7 +4,7 @@
     <form [formGroup]="letterSchemeForm" (ngSubmit)="onSubmit()">
       <mat-form-field>
         <mat-label>Name</mat-label>
-        <input matInput formControlName="name" type="text">
+        <input matInput id="letterSchemeName" formControlName="name" type="text">
         <mat-error *ngIf="nameModel && relevantInvalid(nameModel) && nameModel.errors && nameModel.errors['required']">
           You must provide a <strong>name</strong>.
         </mat-error>

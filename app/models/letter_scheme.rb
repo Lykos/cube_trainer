@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Model for letter schemes that the user created.
 class LetterScheme < ApplicationRecord
   belongs_to :user
 

@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Model for letter scheme mappings that form a letter scheme together.
 class LetterSchemeMapping < ApplicationRecord
   belongs_to :letter_scheme
   attribute :part, :part

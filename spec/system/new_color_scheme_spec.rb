@@ -4,7 +4,7 @@ require 'rails_helper'
 require 'system/system_spec_helper'
 require 'fixtures'
 
-describe 'modes', type: :system do
+describe 'new color scheme', type: :system do
   include_context 'with user abc'
 
   before do
@@ -14,7 +14,7 @@ describe 'modes', type: :system do
   it 'allows to create a new color scheme' do
     login(user)
     click_button user.name
-    click_button 'Change Color Scheme'
+    click_button 'Create Color Scheme'
 
     sleep(0.5)
     fill_in 'Name', with: 'system test color scheme'
