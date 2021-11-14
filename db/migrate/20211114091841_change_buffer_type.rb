@@ -1,4 +1,7 @@
 class ChangeBufferType < ActiveRecord::Migration[6.0]
+  class Mode < ApplicationRecord
+  end
+
   def change
     rename_column :modes, :buffer, :old_buffer
     add_column :modes, :buffer, :string

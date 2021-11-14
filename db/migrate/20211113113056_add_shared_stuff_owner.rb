@@ -167,6 +167,15 @@ SPEFFZ_MAPPINGS = {
 }
 
 class AddSharedStuffOwner < ActiveRecord::Migration[6.0]
+  class User < ApplicationRecord
+  end
+
+  class ColorScheme < ApplicationRecord
+  end
+
+  class LetterScheme < ApplicationRecord
+  end
+
   def change
     reversible do |change|
       change.up do

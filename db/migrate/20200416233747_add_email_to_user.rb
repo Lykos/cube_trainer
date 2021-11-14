@@ -1,4 +1,7 @@
 class AddEmailToUser < ActiveRecord::Migration[6.0]
+  class User < ApplicationRecord
+  end
+
   def change
     add_column :users, :email, :string, index: { unique: true }
     reversible do |dir|
