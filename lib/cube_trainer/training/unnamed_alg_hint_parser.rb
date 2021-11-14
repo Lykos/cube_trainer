@@ -14,19 +14,18 @@ module CubeTrainer
     class UnnamedAlgHintParser < HintParser
       include TwistyPuzzles
 
-      def initialize(name, input_items, options)
+      def initialize(name, input_items, mode)
         super()
         @name = name
         @input_items = input_items
-        @options = options
-        @verbose = options.verbose
+        @mode = mode
+        @verbose = mode.verbose
       end
 
       attr_reader :name, :verbose
 
       def engineer
-        @engineer ||=
-          AlgSetReverseEngineer.new(@input_items, @options.color_scheme, @options.cube_size)
+        @engineer ||= AlgSetReverseEngineer.new(@input_items, @mode)
       end
 
       def parse_hints_internal(raw_hints)

@@ -47,11 +47,6 @@ class Mode < ApplicationRecord
     @letter_scheme ||= TwistyPuzzles::BernhardLetterScheme.new
   end
 
-  # TODO: Make it configurable
-  def color_scheme
-    TwistyPuzzles::ColorScheme::BERNHARD
-  end
-
   # TODO: deprecate
   def test_comm_modes
     :fail
@@ -106,7 +101,7 @@ class Mode < ApplicationRecord
   end
 
   def solved_cube_state
-    color_scheme.solved_cube_state(cube_size)
+    user.color_scheme_or_wca.solved_cube_state(cube_size)
   end
 
   def parsed_buffer

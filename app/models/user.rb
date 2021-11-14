@@ -32,6 +32,10 @@ class User < ApplicationRecord
     User.find_by!(name: 'shared_stuff_owner')
   end
 
+  def color_scheme_or_wca
+    color_scheme || ColorScheme.wca
+  end
+
   private
 
   def send_welcome_message

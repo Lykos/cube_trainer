@@ -33,6 +33,8 @@ class ColorScheme < ApplicationRecord
     new(**color_mappings)
   end
 
+  delegate :solved_cube_state, to: :to_twisty_puzzles_color_scheme
+
   def colors_valid
     TwistyPuzzles::CubeConstants::FACE_SYMBOLS.each { |f| color_valid(f.downcase) }
   end
@@ -46,5 +48,9 @@ class ColorScheme < ApplicationRecord
     return unless TwistyPuzzles::ColorScheme::RESERVED_COLORS.include?(c)
 
     errors.add(face_symbol, "has reserved color #{c}")
+  end
+
+  def self.wca
+    @wca ||= ColorScheme.from_twisty_puzzles_color_scheme(TwistyPuzzles::ColorScheme::WCA)
   end
 end
