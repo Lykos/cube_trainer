@@ -1,6 +1,6 @@
 class DropDownloadStates < ActiveRecord::Migration[6.0]
   def change
-    drop_table :download_states do |t|
+    drop_table :download_states, if_exists: true do |t|
       t.text :model, null: false
       t.datetime :downloaded_at
       t.datetime :created_at, precision: 6, null: false
