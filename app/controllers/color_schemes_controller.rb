@@ -65,6 +65,6 @@ class ColorSchemesController < ApplicationController
   def color_scheme_params
     params
       .require(:color_scheme)
-      .permit(:name, *PERMITTED_FACE_PARAMS)
+      .permit(*PERMITTED_FACE_PARAMS)
   end
 end

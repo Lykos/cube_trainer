@@ -48,6 +48,21 @@ RSpec.describe 'ColorSchemes', type: :request do
       expect(ColorScheme.find(parsed_body['id']).u).to eq(:yellow)
     end
 
+    xit 'returns bad request if the user already has a color scheme' do
+      color_scheme
+      post '/api/color_scheme', params: {
+        color_scheme: {
+          u: :yellow,
+          f: :green,
+          r: :orange,
+          l: :red,
+          b: :blue,
+          d: :white
+        }
+      }
+      expect(response).to have_http_status(:bad_request)
+    end
+
     it 'returns bad request for invalid color_schemes' do
       post_login(eve)
       post '/api/color_scheme', params: {

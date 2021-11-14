@@ -5,10 +5,14 @@ require 'twisty_puzzles'
 # Model for letter schemes that the user created.
 class LetterScheme < ApplicationRecord
   belongs_to :user
-  has_many :letter_scheme_mappings, dependent: :destroy
+  has_many :letter_scheme_mappings, dependent: :destroy, autosave: true
   validates :user_id, presence: true
+  accepts_nested_attributes_for :letter_scheme_mappings
+
   alias mappings letter_scheme_mappings
   alias mappings= letter_scheme_mappings=
+  alias mapping_ids letter_scheme_mapping_ids
+  alias mapping_ids= letter_scheme_mapping_ids=
 
   def letter(part)
     mappings.find { |e| e.part == part }&.letter

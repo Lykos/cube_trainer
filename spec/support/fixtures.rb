@@ -121,6 +121,20 @@ shared_context 'with color scheme' do
   end
 end
 
+shared_context 'with letter scheme' do
+  include_context 'with user abc'
+
+  let(:letter_scheme) do
+    color_scheme = LetterScheme.find_or_initialize_by(
+      user: user
+    )
+    part = TwistyPuzzles::Edge.for_face_symbols(%i[U F])
+    color_scheme.mappings.new(part: part, letter: 'a')
+    color_scheme.save!
+    color_scheme
+  end
+end
+
 shared_context 'with input' do
   include_context 'with mode'
 
