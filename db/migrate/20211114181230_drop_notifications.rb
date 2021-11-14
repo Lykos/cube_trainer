@@ -1,6 +1,6 @@
 class DropNotifications < ActiveRecord::Migration[6.0]
   def change
-    drop_table :notifications do |t|
+    drop_table :notifications, if_exists: true do |t|
       t.bigint :user_id, null: false
       t.string :title
       t.text :message
