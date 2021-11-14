@@ -20,6 +20,7 @@ import { PartTypesService } from './part-types.service';
 import { NgModule } from '@angular/core';
 import { SignupComponent } from './signup.component';
 import { LoginComponent } from './login.component';
+import { LogoutComponent } from './logout.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
@@ -39,6 +40,7 @@ import { NewLetterSchemeComponent } from './new-letter-scheme.component'
   declarations: [
     SignupComponent,
     LoginComponent,
+    LogoutComponent,
     AchievementsComponent,
     AchievementComponent,
     MessagesComponent,
@@ -81,6 +83,7 @@ import { NewLetterSchemeComponent } from './new-letter-scheme.component'
     AchievementComponent,
     SignupComponent,
     LoginComponent,
+    LogoutComponent,
     AchievementsComponent,
     AchievementGrantsComponent,
     NewColorSchemeComponent,

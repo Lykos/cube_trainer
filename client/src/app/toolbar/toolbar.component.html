@@ -1,24 +1,24 @@
 <mat-toolbar color="primary">
   <ng-container *ngIf="loggedIn">
-    <button id="toolbar-title" mat-button (click)="onCubeTrainer()">
+    <a id="toolbar-title" mat-button routerLink="/modes">
       Cube Trainer
-    </button>
+    </a>
   </ng-container>
   <div class="horizontal-spacer"></div>
   <ng-container *ngIf="!loggedIn; else loggedInBlock">
-    <button id="toolbar-login" mat-button (click)="onLogin()">
+    <a id="toolbar-login" mat-button routerLink="/login">
       Login
-    </button>
-    <button id="toolbar-signup" mat-button (click)="onSignup()">
+    </a>
+    <a id="toolbar-signup" mat-button routerLink="/signup">
       Sign Up
-    </button>
+    </a>
   </ng-container>
   <ng-template #loggedInBlock>
-    <button mat-button (click)="onUser()" [matBadge]="unreadMessagesBadge" matBadgeColor="accent">
+    <a mat-button [routerLink]="userPath" [matBadge]="unreadMessagesBadge" matBadgeColor="accent">
       {{userName}}
-    </button>
-    <button mat-button (click)="onLogout()">
+    </a>
+    <a mat-button routerLink="/logout">
       Logout
-    </button>
+    </a>
   </ng-template>
 </mat-toolbar>

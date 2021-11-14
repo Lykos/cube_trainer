@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../users/authentication.service';
 import { MessagesService } from '../users/messages.service';
-import { Router } from '@angular/router';
 import { User } from '../users/user.model';
 import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional';
 
@@ -15,8 +14,7 @@ export class ToolbarComponent implements OnInit {
   unreadMessagesCount: number | undefined = undefined;
 
   constructor(private readonly authenticationService: AuthenticationService,
-	      private readonly messagesService: MessagesService,
-	      private readonly router: Router) {
+	      private readonly messagesService: MessagesService) {
   }
 
   get unreadMessagesBadge() {
@@ -29,6 +27,10 @@ export class ToolbarComponent implements OnInit {
 
   get userId() {
     return orElse(mapOptional(this.user, u => u.id), 0);
+  }
+
+  get userPath() {
+    return `/users/${this.userId}`;
   }
 
   get loggedIn() {
@@ -47,25 +49,5 @@ export class ToolbarComponent implements OnInit {
 	  this.messagesService.countUnread(u.id).subscribe(count => this.unreadMessagesCount = count);
 	});
       });
-  }
-
-  onCubeTrainer() {
-    this.router.navigate(['/modes']);
-  }
-
-  onUser() {
-    this.router.navigate([`/users/${this.userId}`]);
-  }
-
-  onLogin() {
-    this.router.navigate(['/login']);
-  }
-
-  onSignup() {
-    this.router.navigate(['/signup']);
-  }
-
-  onLogout() {
-    this.authenticationService.logout();
   }
 }
