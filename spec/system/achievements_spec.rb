@@ -14,7 +14,7 @@ describe 'achievements', type: :system do
   it 'allows to view achievements' do
     achievement_grant
     login(user)
-    click_button user.name
+    click_link user.name
 
     find('cube-trainer-achievement-grants td', text: achievement_grant.achievement.name).click
     expect(page).to have_text('Fake achievement for tests.')

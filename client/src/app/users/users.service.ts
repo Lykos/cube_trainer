@@ -27,4 +27,8 @@ export class UsersService {
   show(userId: number): Observable<User> {
     return this.rails.ajax<User>(HttpVerb.Get, `/users/${userId}`, {});
   }
+
+  destroy(userId: number): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Delete, `/users/${userId}`, {});
+  }
 }

@@ -10,6 +10,7 @@ import { NewLetterSchemeComponent } from './users/new-letter-scheme.component';
 import { SignupComponent } from './users/signup.component';
 import { LoginComponent } from './users/login.component';
 import { LogoutComponent } from './users/logout.component';
+import { AccountDeletedComponent } from './users/account-deleted.component';
 import { ModesComponent } from './modes/modes.component';
 import { NewModeComponent } from './modes/new-mode.component';
 import { TrainerComponent } from './trainer/trainer.component';
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },
+  { path: 'account_deleted', component: AccountDeletedComponent },
   { path: 'modes', component: ModesComponent },
   { path: 'achievements', component: AchievementsComponent },
   { path: 'achievements/:achievementKey', component: AchievementComponent },

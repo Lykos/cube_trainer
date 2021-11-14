@@ -10,11 +10,10 @@ describe 'logout', type: :system do
     driven_by(:selenium_chrome_headless)
   end
 
-  it 'allows to train' do
-    visit '/login'
+  it 'allows to log out' do
     login(user)
 
-    click_button 'Logout'
-    expect(page).to have_text('Login')
+    click_link 'Logout'
+    expect(page).to have_text('Logged Out')
   end
 end

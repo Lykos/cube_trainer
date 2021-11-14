@@ -12,7 +12,7 @@ describe 'new letter scheme', type: :system do
 
   it 'allows to create a new letter scheme' do
     login(user)
-    click_button user.name
+    click_link user.name
     click_button 'Create Letter Scheme'
 
     sleep(0.5)
