@@ -100,8 +100,12 @@ class Mode < ApplicationRecord
     [first_parity_part, second_parity_part]
   end
 
+  def color_scheme
+    @color_scheme ||= user.color_scheme || ColorScheme.wca
+  end
+
   def solved_cube_state
-    user.color_scheme_or_wca.solved_cube_state(cube_size)
+    color_scheme.solved_cube_state(cube_size)
   end
 
   def parsed_buffer
