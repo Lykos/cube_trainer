@@ -18,12 +18,11 @@ describe 'new letter scheme', type: :system do
 
     sleep(0.5)
     fill_in 'ULB', with: 'A'
-    fill_in 'letterSchemeName', with: 'system test letter scheme'
 
     sleep(0.5)
     click_button 'Submit'
 
     sleep(1)
-    expect(page).to have_text('Letter scheme system test letter scheme created!')
+    expect(page).to have_text('Letter scheme created!')
   end
 end

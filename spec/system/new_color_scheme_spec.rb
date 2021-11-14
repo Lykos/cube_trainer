@@ -17,7 +17,6 @@ describe 'new color scheme', type: :system do
     click_button 'Create Color Scheme'
 
     sleep(0.5)
-    fill_in 'Name', with: 'system test color scheme'
     mat_select 'Yellow', id: 'colorSelectU'
     mat_select 'Red', id: 'colorSelectF'
     mat_select 'Green', id: 'colorSelectR'
@@ -29,6 +28,6 @@ describe 'new color scheme', type: :system do
     click_button 'Submit'
 
     sleep(1)
-    expect(page).to have_text('Color scheme system test color scheme created!')
+    expect(page).to have_text('Color scheme created!')
   end
 end
