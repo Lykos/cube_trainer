@@ -294,3 +294,5 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   # TODO: Enable
   Enabled: false
+Rails/LexicallyScopedActionFilter:
+  Exclude: ['app/controllers/application_controller.rb']
