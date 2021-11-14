@@ -1,24 +1,3 @@
-=begin
-Simple models to make this migration work:
-
-class User < ActiveRecord::Base
-  has_one :color_scheme
-  has_one :letter_scheme_scheme
-end
-
-class ColorScheme < ActiveRecord::Base
-  belongs_to :user
-end
-
-class LetterSchemeMapping < ActiveRecord::Base
-end
-
-class LetterScheme < ActiveRecord::Base
-  belongs_to :user
-  has_many :letter_scheme_mapping
-end
-=end
-
 SPEFFZ_MAPPINGS = {
   'Corner:UFL' => 'd',
   'Corner:URF' => 'c',
@@ -168,12 +147,21 @@ SPEFFZ_MAPPINGS = {
 
 class AddSharedStuffOwner < ActiveRecord::Migration[6.0]
   class User < ApplicationRecord
+    has_secure_password
+    has_many :modes, dependent: :destroy
+    has_many :messages, dependent: :destroy
+    has_many :achievement_grants, dependent: :destroy
+    has_one :color_scheme, dependent: :destroy
+    has_one :letter_scheme, dependent: :destroy
   end
 
   class ColorScheme < ApplicationRecord
+    belongs_to :user
   end
 
   class LetterScheme < ApplicationRecord
+    belongs_to :user
+    has_many :letter_scheme_mappings, dependent: :destroy
   end
 
   def change
@@ -198,11 +186,12 @@ class AddSharedStuffOwner < ActiveRecord::Migration[6.0]
         )
 
         speffz_scheme = LetterScheme.create!(user: user)
-        SPEFFZ_MAPPINGS.each { |part, letter| speffz_scheme.mappings.create!(part: part, letter: letter) }
+        SPEFFZ_MAPPINGS.each { |part, letter| speffz_scheme.letter_scheme_mappings.create!(part: part, letter: letter) }
       end
 
       change.down do
-        User.find_by!(name: 'shared_stuff_owner').destroy
+        user = User.find_by!(name: 'shared_stuff_owner')
+        user.destroy
       end
     end
   end
