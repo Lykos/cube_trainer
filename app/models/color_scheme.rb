@@ -7,7 +7,6 @@ class ColorScheme < ApplicationRecord
   belongs_to :user
 
   validates :user_id, presence: true
-  validates :name, presence: true, uniqueness: { scope: :user }
   TwistyPuzzles::CubeConstants::FACE_SYMBOLS.each do |f|
     attribute f.downcase, :symbol
     validates f.downcase, presence: true

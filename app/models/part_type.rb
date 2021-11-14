@@ -13,7 +13,7 @@ class PartType < ActiveRecord::Type::String
 
   def cast(value)
     return if value.nil?
-    return value if value.is_a?(Part)
+    return value if value.is_a?(TwistyPuzzles::Part)
     raise TypeError unless value.is_a?(String) || value.is_a?(Symbol)
 
     raw_clazz, raw_data = value.split(SEPARATOR, 2)

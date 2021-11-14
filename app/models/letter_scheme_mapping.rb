@@ -12,4 +12,13 @@ class LetterSchemeMapping < ApplicationRecord
   def part_type
     part.class
   end
+
+  def to_simple=(part_type)
+    {
+      part_type: part_type,
+      part_name: part.to_s,
+      part: PartType.new.cast(part),
+      letter: letter
+    }
+  end
 end

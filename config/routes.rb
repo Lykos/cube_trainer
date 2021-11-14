@@ -1,23 +1,17 @@
 Rails.application.routes.draw do
   scope '/api' do
-    get 'signup', to: 'users#new'
-    get 'login', to: 'sessions#new'
     post 'login', to: 'sessions#create'
     post 'logout', to: 'sessions#logout'
-    get 'welcome', to: 'sessions#welcome'
     root 'sessions#welcome'
     get 'username_or_email_exists', to: 'users#name_or_email_exists?'
     get 'mode_name_exists_for_user', to: 'modes#name_exists_for_user?'
-    get 'color_scheme_name_exists_for_user', to: 'color_schemes#name_exists_for_user?'
-    get 'letter_scheme_name_exists_for_user', to: 'letter_schemes#name_exists_for_user?'
     resources :mode_types, only: [:index, :show]
-    resources :part_types, only: [:index]
-    resources :achievements
-    resources :color_schemes
-    resources :letter_schemes
+    resources :achievements, only: [:create, :show, :update, :destroy]
+    resource :color_scheme, only: [:create, :show, :update, :destroy]
+    resource :letter_scheme, only: [:create, :show, :update, :destroy]
     get 'users/:user_id/messages/count_unread', to: 'messages#count_unread'
     resources :users do
-      resources :messages
+      resources :messages, only: [:index, :create, :show, :update, :destroy]
       resources :achievement_grants, only: [:index, :show]
     end
     resources :modes do

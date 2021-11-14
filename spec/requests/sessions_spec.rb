@@ -7,13 +7,6 @@ RSpec.describe 'Sessions', type: :request do
   include_context 'with user abc'
   include_context 'with headers'
 
-  describe 'GET #welcome' do
-    it 'returns unauthorized if not logged in' do
-      get '/api/welcome'
-      expect(response).to have_http_status(:unauthorized)
-    end
-  end
-
   describe 'POST #login' do
     it 'returns http success with name' do
       post_login(user)

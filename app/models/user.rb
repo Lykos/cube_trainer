@@ -8,8 +8,8 @@ class User < ApplicationRecord
   has_many :modes, dependent: :destroy
   has_many :messages, dependent: :destroy
   has_many :achievement_grants, dependent: :destroy
-  has_many :color_schemes, dependent: :destroy
-  has_many :letter_schemes, dependent: :destroy
+  has_one :color_scheme, dependent: :destroy
+  has_one :letter_scheme, dependent: :destroy
   after_create :send_welcome_message
 
   def to_simple
@@ -26,6 +26,10 @@ class User < ApplicationRecord
     return if achievement_grants.exists?(achievement: achievement_key)
 
     achievement_grants.create(achievement: achievement_key)
+  end
+
+  def self.shared_stuff_owner
+    User.find_by!(name: 'shared_stuff_owner')
   end
 
   private

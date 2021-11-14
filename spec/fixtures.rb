@@ -103,8 +103,8 @@ shared_context 'with color scheme' do
   include_context 'with user abc'
 
   let(:color_scheme) do
-    color_scheme = user.color_schemes.find_or_initialize_by(
-      name: 'test_color_scheme'
+    color_scheme = ColorScheme.find_or_initialize_by(
+      user: user
     )
     color_scheme.update(
       u: :yellow,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_12_235602) do
+ActiveRecord::Schema.define(version: 2021_11_13_234252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,7 +25,6 @@ ActiveRecord::Schema.define(version: 2021_11_12_235602) do
   end
 
   create_table "color_schemes", force: :cascade do |t|
-    t.integer "user_id", null: false
     t.string "u", null: false
     t.string "f", null: false
     t.string "r", null: false
@@ -34,9 +33,8 @@ ActiveRecord::Schema.define(version: 2021_11_12_235602) do
     t.string "d", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "name", null: false
-    t.index ["user_id", "name"], name: "index_color_schemes_on_user_id_and_name", unique: true
-    t.index ["user_id"], name: "index_color_schemes_on_user_id"
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_color_schemes_on_user_id", unique: true
   end
 
   create_table "download_states", force: :cascade do |t|
@@ -69,12 +67,10 @@ ActiveRecord::Schema.define(version: 2021_11_12_235602) do
   end
 
   create_table "letter_schemes", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id", "name"], name: "index_letter_schemes_on_user_id_and_name", unique: true
-    t.index ["user_id"], name: "index_letter_schemes_on_user_id"
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_letter_schemes_on_user_id", unique: true
   end
 
   create_table "messages", force: :cascade do |t|
