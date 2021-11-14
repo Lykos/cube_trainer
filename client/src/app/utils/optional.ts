@@ -22,6 +22,12 @@ export function mapOptional<X, Y>(optional: Optional<X>, f: (x: X) => Y): Option
   }
 }
 
+export function ifPresent<X>(optional: Optional<X>, f: (x: X) => void): void {
+  if (optional.tag == "some") {
+    f(optional.value);
+  }
+}
+
 export function orElse<X>(optional: Optional<X>, x: X): X {
   switch (optional.tag) {
     case "some": return optional.value;

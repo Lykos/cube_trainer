@@ -1,16 +1,6 @@
 <div>
   <h1>Pick Color Scheme</h1>
   <form [formGroup]="colorSchemeForm" (ngSubmit)="onSubmit()">
-    <mat-form-field>
-      <mat-label>Name</mat-label>
-      <input matInput formControlName="name" type="text">
-      <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['required']">
-        You must provide a <strong>name</strong>.
-      </mat-error>
-      <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['uniqueModeName']">
-        You already have a mode with the same <strong>name</strong>.
-      </mat-error>
-    </mat-form-field>
     <ng-container *ngFor="let face of faceEnum | keyvalue">
       <mat-form-field>
         <mat-label>{{face.key}}</mat-label>

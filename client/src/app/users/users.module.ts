@@ -13,8 +13,6 @@ import { AuthenticationService } from './authentication.service';
 import { MessagesService } from './messages.service';
 import { AchievementsService } from './achievements.service';
 import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
-import { UniqueColorSchemeNameValidator } from './unique-color-scheme-name.validator';
-import { UniqueLetterSchemeNameValidator } from './unique-letter-scheme-name.validator';
 import { AchievementGrantsService } from './achievement-grants.service';
 import { ColorSchemesService } from './color-schemes.service';
 import { LetterSchemesService } from './letter-schemes.service';
@@ -78,8 +76,6 @@ import { NewLetterSchemeComponent } from './new-letter-scheme.component'
     LetterSchemesService,
     PartTypesService,
     UniqueUsernameOrEmailValidator,
-    UniqueColorSchemeNameValidator,
-    UniqueLetterSchemeNameValidator,
   ],
   exports: [
     AchievementComponent,

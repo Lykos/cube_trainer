@@ -1,12 +1,16 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { UniqueLetterSchemeNameValidator } from './unique-letter-scheme-name.validator';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
 import { NewLetterScheme } from './new-letter-scheme.model';
+import { LetterSchemeMapping } from './letter-scheme-base.model';
 import { LetterSchemesService } from './letter-schemes.service';
+import { AuthenticationService } from './authentication.service';
 import { PartTypesService } from './part-types.service';
 import { PartType } from './part-type.model';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { forceValue } from '../utils/optional';
 
 @Component({
   selector: 'cube-trainer-letter-scheme',
@@ -16,57 +20,66 @@ export class NewLetterSchemeComponent implements OnInit {
   letterSchemeForm?: FormGroup;
   partTypes!: PartType[];
 
-  constructor(private readonly formBuilder: FormBuilder,
+  constructor(private readonly authenticationService: AuthenticationService,
+	      private readonly formBuilder: FormBuilder,
               private readonly partTypesService: PartTypesService,
               private readonly letterSchemesService: LetterSchemesService,
 	      private readonly snackBar: MatSnackBar,
-	      private readonly router: Router,
-              private readonly uniqueLetterSchemeNameValidator: UniqueLetterSchemeNameValidator) {}
+	      private readonly router: Router) {}
 
   relevantInvalid(control: AbstractControl) {
     return control.invalid && (control.dirty || control.touched);
   }
 
-  get nameModel() {
-    return this.letterSchemeForm?.get('name');
+  get separator() {
+    return ':';
+  }
+
+  partKey(partType: PartType, part: string) {
+    return `#{partType}#{this.separator}#{part}`;
   }
 
   ngOnInit() {
+    this.letterSchemesService.destroy();
     this.partTypesService.list().subscribe((partTypes: PartType[]) => {
       this.partTypes = partTypes
-      const formGroup: { [key: string]: any; } = {
-        name: ['', { validators: Validators.required, asyncValidators: this.uniqueLetterSchemeNameValidator.validate, updateOn: 'blur' }],
-      };
+      const formGroup: { [key: string]: any; } = {};
       partTypes.forEach(partType => {
-        const partGroup: { [key: string]: any[]; } = {};
         partType.parts.forEach(part => {
-          partGroup[part] = [''];
+          formGroup[part.key] = [''];
         });
-        formGroup[partType.name] = this.formBuilder.group(partGroup);
       });
       this.letterSchemeForm = this.formBuilder.group(formGroup);
     });
   }
 
   get newLetterScheme(): NewLetterScheme {
-    return {
-      name: this.nameModel!.value!,
-      mappings: this.partTypes.flatMap(partType => {
-        return partType.parts.map(part => {
-          return {
-            partType: partType.name,
-            part: part,
-            letter: this.letterSchemeForm!.get(partType.name)!.get(part)!.value,
-          };
-        });
-      }),
-    };
+    const mappings: LetterSchemeMapping[] = [];
+    this.partTypes.forEach(partType => {
+      return partType.parts.forEach(part => {
+        const letter = this.letterSchemeForm!.get(part.key)!.value;
+        if (letter) {
+          mappings.push({part, letter});
+        }
+      });
+    });
+    return { mappings };
   }
 
   onSubmit() {
-    this.letterSchemesService.create(this.newLetterScheme).subscribe(r => {
-      this.snackBar.open(`Letter scheme ${this.newLetterScheme.name} created!`, 'Close');
-      this.router.navigate(['/letter_schemes']);
-    });
+    let message = 'Letter scheme overwritten!'
+    this.letterSchemesService.destroy()
+      .pipe(catchError((e: any) => {
+        message = 'Letter scheme created!';
+        return of(undefined);
+      }))
+      .subscribe(r => {
+        this.letterSchemesService.create(this.newLetterScheme).subscribe(r => {
+          this.snackBar.open(message, 'Close');
+          this.authenticationService.currentUser$.subscribe(user => {
+            this.router.navigate([`/users/${forceValue(user).id}`]);
+          });
+        });
+      });
   }
 }

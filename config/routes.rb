@@ -6,7 +6,7 @@ Rails.application.routes.draw do
     get 'username_or_email_exists', to: 'users#name_or_email_exists?'
     get 'mode_name_exists_for_user', to: 'modes#name_exists_for_user?'
     resources :mode_types, only: [:index, :show]
-    resources :achievements, only: [:create, :show, :update, :destroy]
+    resources :achievements, only: [:index, :create, :show, :update, :destroy]
     resource :color_scheme, only: [:create, :show, :update, :destroy]
     resource :letter_scheme, only: [:create, :show, :update, :destroy]
     get 'users/:user_id/messages/count_unread', to: 'messages#count_unread'
@@ -24,6 +24,7 @@ Rails.application.routes.draw do
     delete 'trainer/:mode_id/inputs/:id', to: 'trainer#destroy'
     post 'trainer/:mode_id/inputs/:id', to: 'trainer#stop'
     get 'trainer/:mode_id/inputs/:input_id/image/:img_side', to: 'cube_images#show'
+    resources :part_types, only: [:index]
   end
   get '*other', to: 'index#index'
 end

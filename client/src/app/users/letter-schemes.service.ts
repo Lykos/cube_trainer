@@ -11,23 +11,15 @@ import { Observable } from 'rxjs';
 export class LetterSchemesService {
   constructor(private readonly rails: RailsService) {}
 
-  isLetterSchemeNameTaken(letterSchemeName: string): Observable<boolean> {
-    return this.rails.ajax<boolean>(HttpVerb.Get, '/letter_scheme_name_exists_for_user', {letterSchemeName});
+  show(): Observable<LetterScheme> {
+    return this.rails.ajax<LetterScheme>(HttpVerb.Get, '/letter_scheme', {});
   }
 
-  list(): Observable<LetterScheme[]> {
-    return this.rails.ajax<LetterScheme[]>(HttpVerb.Get, '/letter_schemes', {});
-  }
-
-  show(modeId: number): Observable<LetterScheme> {
-    return this.rails.ajax<LetterScheme>(HttpVerb.Get, `/letter_schemes/${modeId}`, {});
-  }
-
-  destroy(modeId: number): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Delete, `/letter_schemes/${modeId}`, {});
+  destroy(): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Delete, '/letter_scheme', {});
   }
 
   create(letterScheme: NewLetterScheme): Observable<LetterScheme> {
-    return this.rails.ajax<LetterScheme>(HttpVerb.Post, '/letter_schemes', {letterScheme});
+    return this.rails.ajax<LetterScheme>(HttpVerb.Post, '/letter_scheme', {letterScheme});
   }
 }
