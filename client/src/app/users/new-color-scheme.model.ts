@@ -1,5 +1,3 @@
 import { ColorSchemeBase } from './color-scheme-base.model'
 
-export interface NewColorScheme extends ColorSchemeBase {
-  readonly name: string;
-}
+export interface NewColorScheme extends ColorSchemeBase {}

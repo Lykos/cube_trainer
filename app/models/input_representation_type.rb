@@ -3,7 +3,7 @@
 require 'cube_trainer/alg_name'
 require 'twisty_puzzles'
 require 'cube_trainer/letter_pair'
-require 'cube_trainer/letter_pair_sequence'
+require 'cube_trainer/part_cycle_sequence'
 require 'cube_trainer/pao_letter_pair'
 require 'cube_trainer/training/scramble'
 require 'twisty_puzzles/utils'
@@ -18,8 +18,9 @@ class InputRepresentationType < ActiveRecord::Type::String
     CubeTrainer::PaoLetterPair,
     CubeTrainer::SimpleAlgName,
     CubeTrainer::CombinedAlgName,
-    CubeTrainer::LetterPairSequence,
-    CubeTrainer::Training::Scramble
+    CubeTrainer::PartCycleSequence,
+    CubeTrainer::Training::Scramble,
+    TwistyPuzzles::PartCycle
   ].freeze
   INPUT_REPRESENTATION_NAME_TO_CLASS =
     INPUT_REPRESENTATION_CLASSES.index_by { |e| simple_class_name(e) }.freeze
@@ -30,9 +31,9 @@ class InputRepresentationType < ActiveRecord::Type::String
     return value if INPUT_REPRESENTATION_CLASSES.any? { |c| value.is_a?(c) }
     raise TypeError unless value.is_a?(String)
 
-    type, raw_data = value.split(SEPARATOR, 2)
-    clazz = INPUT_REPRESENTATION_NAME_TO_CLASS[type]
-    raise ArgumentError, "Unknown input representation class #{type}." unless clazz
+    raw_clazz, raw_data = value.split(SEPARATOR, 2)
+    clazz = INPUT_REPRESENTATION_NAME_TO_CLASS[raw_clazz]
+    raise ArgumentError, "Unknown input representation class #{raw_clazz}." unless clazz
 
     clazz.from_raw_data(raw_data)
   end

@@ -2,32 +2,21 @@
 
 # Controller for stats that a user had for one training mode.
 class StatsController < ApplicationController
-  before_action :set_mode
-  before_action :set_stat, only: %i[show destroy]
-  before_action :check_current_user_owns
+  prepend_before_action :set_mode
+  prepend_before_action :set_stat, only: %i[show destroy]
 
-  # GET /modes/1/stats
-  # GET /modes/1/stats.json
+  # GET /api/modes/1/stats
   def index
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json do
-        stats = @mode.stats.map(&:to_simple)
-        render json: stats, status: :ok
-      end
-    end
+    stats = @mode.stats.map(&:to_simple)
+    render json: stats, status: :ok
   end
 
-  # GET /modes/1/stats/1
-  # GET /modes/1/stats/1.json
+  # GET /api/modes/1/stats/1
   def show
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json { render json: @stat.to_simple, status: :ok }
-    end
+    render json: @stat.to_simple, status: :ok
   end
 
-  # DELETE /modes/1/stats/1.json
+  # DELETE /api/modes/1/stats/1
   def destroy
     if @stat.destroy
       head :no_content

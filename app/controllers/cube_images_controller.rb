@@ -6,7 +6,7 @@ require 'cube_trainer/anki/cube_visualizer'
 
 # Controller that generates and serves cube images.
 class CubeImagesController < ApplicationController
-  before_action :set_mode
+  prepend_before_action :set_mode
   before_action :set_input
   before_action :set_transformation
   before_action :set_input_item
@@ -14,9 +14,8 @@ class CubeImagesController < ApplicationController
 
   # Get /trainer/1/cube_images/1/left.jpg
   def show
-    @transformation.apply_temporarily_to(@cube_state) do |cube_state|
-      send_data cube_visualizer.fetch(cube_state), type: 'image/jpg', disposition: 'inline'
-    end
+    @transformation.apply_to(@cube_state)
+    send_data cube_visualizer.fetch(@cube_state), type: 'image/jpg', disposition: 'inline'
   end
 
   private
@@ -44,6 +43,10 @@ class CubeImagesController < ApplicationController
     head :not_found unless (@input_item = fetch_input_item)
   end
 
+  def owner
+    @mode.user
+  end
+
   def fetch_input_item
     # TODO: Make this efficient
     @mode.generator.input_items.find { |i| i.representation == @input.input_representation }
@@ -56,7 +59,7 @@ class CubeImagesController < ApplicationController
   def cube_visualizer
     CubeTrainer::Anki::CubeVisualizer.new(
       fetcher: Net::HTTP,
-      sch: @mode.color_scheme,
+      sch: @mode.color_scheme.to_twisty_puzzles_color_scheme,
       cache: Rails.cache,
       fmt: FORMAT,
       checker: checker

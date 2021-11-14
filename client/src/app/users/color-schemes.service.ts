@@ -11,23 +11,15 @@ import { Observable } from 'rxjs';
 export class ColorSchemesService {
   constructor(private readonly rails: RailsService) {}
 
-  isColorSchemeNameTaken(colorSchemeName: string): Observable<boolean> {
-    return this.rails.ajax<boolean>(HttpVerb.Get, '/color_scheme_name_exists_for_user', {colorSchemeName});
+  show(): Observable<ColorScheme> {
+    return this.rails.ajax<ColorScheme>(HttpVerb.Get, '/color_scheme', {});
   }
 
-  list(): Observable<ColorScheme[]> {
-    return this.rails.ajax<ColorScheme[]>(HttpVerb.Get, '/color_schemes', {});
-  }
-
-  show(modeId: number): Observable<ColorScheme> {
-    return this.rails.ajax<ColorScheme>(HttpVerb.Get, `/color_schemes/${modeId}`, {});
-  }
-
-  destroy(modeId: number): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Delete, `/color_schemes/${modeId}`, {});
+  destroy(): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Delete, '/color_scheme', {});
   }
 
   create(colorScheme: NewColorScheme): Observable<ColorScheme> {
-    return this.rails.ajax<ColorScheme>(HttpVerb.Post, '/color_schemes', {colorScheme});
+    return this.rails.ajax<ColorScheme>(HttpVerb.Post, '/color_scheme', {colorScheme});
   }
 }

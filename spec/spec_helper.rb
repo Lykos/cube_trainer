@@ -109,6 +109,5 @@ SimpleCov.start do
 end
 
 require 'cube_trainer'
-require 'matchers'
 
 include CubeTrainer # rubocop:disable Style/MixinUsage

@@ -9,9 +9,9 @@ module CubeTrainer
     class AlgSetReverseEngineer
       include TwistyPuzzles::Utils::ArrayHelper
 
-      def initialize(input_items, color_scheme, cube_size)
+      def initialize(input_items, mode)
         @input_items = input_items
-        @state = color_scheme.solved_cube_state(cube_size)
+        @state = mode.solved_cube_state
       end
 
       def find_stuff(alg)

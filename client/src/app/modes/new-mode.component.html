@@ -51,7 +51,7 @@
       <mat-form-field *ngIf="hasBuffer">
         <mat-label>Buffer</mat-label>
         <mat-select formControlName="buffer">
-          <mat-option *ngFor="let buffer of modeType.value.buffers" [value]="buffer"> {{buffer}} </mat-option>
+          <mat-option *ngFor="let buffer of modeType.value.buffers" [value]="buffer"> {{buffer.name}} </mat-option>
         </mat-select>
         <mat-error *ngIf="relevantInvalid(buffer) && buffer.errors && buffer.errors['required']">
           You must provide a <strong>buffer</strong> for this mode type.

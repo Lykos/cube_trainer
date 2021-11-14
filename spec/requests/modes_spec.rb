@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'fixtures'
 require 'requests/requests_spec_helper'
 
 RSpec.describe 'Modes', type: :request do
@@ -34,9 +33,9 @@ RSpec.describe 'Modes', type: :request do
       get '/api/modes', headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body.length).to be >= 1
-      contains_mode = parsed_body.any? { |p| Mode.new(p) == mode }
-      expect(contains_mode).to be(true)
+      expect(parsed_body.length).to be(1)
+      parsed_mode = parsed_body.find { |p| p['id'] == mode.id }
+      expect(parsed_mode).to eq_modulo_symbol_vs_string(mode.to_simple)
     end
 
     it 'returns nothing for another user' do
@@ -54,7 +53,7 @@ RSpec.describe 'Modes', type: :request do
       get "/api/modes/#{mode.id}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(Mode.new(parsed_body)).to eq(mode)
+      expect(parsed_body).to eq_modulo_symbol_vs_string(mode.to_simple)
     end
 
     it 'returns not found for unknown modes' do
@@ -82,7 +81,7 @@ RSpec.describe 'Modes', type: :request do
         mode: {
           name: 'test_mode2',
           show_input_mode: :name,
-          mode_type: :floating_2flips,
+          mode_type: { key: :floating_2flips },
           goal_badness: 1,
           cube_size: 3
         }
@@ -98,7 +97,7 @@ RSpec.describe 'Modes', type: :request do
         mode: {
           name: 'test_mode2',
           show_input_mode: :lol,
-          mode_type: :floating_2flips,
+          mode_type: { key: :floating_2flips },
           goal_badness: 1,
           cube_size: 3
         }

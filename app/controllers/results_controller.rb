@@ -2,9 +2,8 @@
 
 # Controller for results that a user had for one training mode.
 class ResultsController < ApplicationController
-  before_action :set_mode
-  before_action :set_input, only: %i[show update destroy]
-  before_action :check_current_user_owns
+  prepend_before_action :set_input, only: %i[show update destroy]
+  prepend_before_action :set_mode
 
   # GET /api/modes/1/results
   # GET /api/modes/1/results.json
@@ -57,7 +56,11 @@ class ResultsController < ApplicationController
     params.require(:result).permit(:time_s, :failed_attempts, :word, :success, :num_hints)
   end
 
+  def mode
+    @mode || @input&.mode
+  end
+
   def owner
-    @mode.user
+    mode&.user
   end
 end

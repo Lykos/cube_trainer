@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_08_233952) do
+ActiveRecord::Schema.define(version: 2021_11_14_131121) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,7 +25,6 @@ ActiveRecord::Schema.define(version: 2021_11_08_233952) do
   end
 
   create_table "color_schemes", force: :cascade do |t|
-    t.integer "user_id", null: false
     t.string "u", null: false
     t.string "f", null: false
     t.string "r", null: false
@@ -34,9 +33,8 @@ ActiveRecord::Schema.define(version: 2021_11_08_233952) do
     t.string "d", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "name", null: false
-    t.index ["user_id", "name"], name: "index_color_schemes_on_user_id_and_name", unique: true
-    t.index ["user_id"], name: "index_color_schemes_on_user_id"
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_color_schemes_on_user_id", unique: true
   end
 
   create_table "download_states", force: :cascade do |t|
@@ -56,6 +54,23 @@ ActiveRecord::Schema.define(version: 2021_11_08_233952) do
     t.string "hostname", null: false
     t.bigint "mode_id", null: false
     t.index ["mode_id"], name: "index_inputs_on_mode_id"
+  end
+
+  create_table "letter_scheme_mappings", force: :cascade do |t|
+    t.integer "letter_scheme_id", null: false
+    t.string "part", null: false
+    t.string "letter", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["letter_scheme_id", "part"], name: "index_letter_scheme_mappings_on_letter_scheme_id_and_part", unique: true
+    t.index ["letter_scheme_id"], name: "index_letter_scheme_mappings_on_letter_scheme_id"
+  end
+
+  create_table "letter_schemes", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_letter_schemes_on_user_id", unique: true
   end
 
   create_table "messages", force: :cascade do |t|
@@ -81,7 +96,6 @@ ActiveRecord::Schema.define(version: 2021_11_08_233952) do
     t.boolean "known", default: false, null: false
     t.string "mode_type", null: false
     t.string "show_input_mode", null: false
-    t.string "buffer"
     t.float "goal_badness"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -89,6 +103,7 @@ ActiveRecord::Schema.define(version: 2021_11_08_233952) do
     t.string "first_parity_part"
     t.string "second_parity_part"
     t.float "memo_time_s"
+    t.string "buffer"
     t.index ["user_id", "name"], name: "index_modes_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_modes_on_user_id"
   end
@@ -146,6 +161,8 @@ ActiveRecord::Schema.define(version: 2021_11_08_233952) do
   add_foreign_key "achievement_grants", "users"
   add_foreign_key "color_schemes", "users"
   add_foreign_key "inputs", "modes"
+  add_foreign_key "letter_scheme_mappings", "letter_schemes"
+  add_foreign_key "letter_schemes", "users"
   add_foreign_key "messages", "users"
   add_foreign_key "mode_usages", "modes"
   add_foreign_key "mode_usages", "modes", column: "used_mode_id"

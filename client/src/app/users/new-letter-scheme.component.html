@@ -1,0 +1,20 @@
+<div>
+  <h1>Pick Letter Scheme</h1>
+  <ng-container *ngIf="letterSchemeForm">
+    <form [formGroup]="letterSchemeForm" (ngSubmit)="onSubmit()">
+      <ng-container *ngFor="let partType of partTypes">
+        <mat-label>{{partType.name}}</mat-label>
+        <ng-container *ngFor="let part of partType.parts">
+          <mat-form-field>
+            <mat-label>{{part.name}}</mat-label>
+            <input matInput [formControlName]="part.key" type="text">
+            <!-- TODO: Validation -->
+          </mat-form-field>
+        </ng-container>
+      </ng-container>
+      <div>
+        <button mat-raised-button letter="primary" type="Submit">Submit</button>
+      </div>
+    </form>
+  </ng-container>
+</div>

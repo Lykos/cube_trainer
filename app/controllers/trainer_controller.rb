@@ -2,23 +2,19 @@
 
 # Controller for showing inputs to the human and getting results.
 class TrainerController < ApplicationController
-  before_action :set_mode
-  before_action :set_input, only: %i[destroy stop]
+  prepend_before_action :set_input, only: %i[destroy stop]
+  prepend_before_action :set_mode
   before_action :check_partial_result_param, only: [:stop]
   before_action :set_partial_result, only: [:stop]
 
-  def index
-    render 'application/cube_trainer'
-  end
-
-  # POST /trainer/1/inputs
+  # POST /api/trainer/1/inputs
   def create
     input_item = @mode.random_item(cached_inputs)
     input = @mode.inputs.new(input_representation: input_item.representation)
     if input.save
       response = {
         id: input.id,
-        representation: input_item.representation.to_s,
+        representation: @mode.maybe_apply_letter_scheme(input_item.representation).to_s,
         hints: @mode.hints(input).map(&:to_s)
       }
       render json: response, status: :created
@@ -27,7 +23,7 @@ class TrainerController < ApplicationController
     end
   end
 
-  # DELETE /trainer/1/inputs/1
+  # DELETE /api/trainer/1/inputs/1
   def destroy
     if @input.destroy
       head :no_content
@@ -36,7 +32,7 @@ class TrainerController < ApplicationController
     end
   end
 
-  # POST /trainer/1/inputs/1
+  # POST /api/trainer/1/inputs/1
   def stop
     # TODO: What if a result already exists?
     result = Result.from_input_and_partial(@input, @partial_result)
@@ -65,6 +61,14 @@ class TrainerController < ApplicationController
 
   def set_mode
     head :not_found unless (@mode = current_user.modes.find_by(id: params[:mode_id]))
+  end
+
+  def mode
+    @mode || @input&.mode
+  end
+
+  def owner
+    mode&.user
   end
 
   def partial_result_params

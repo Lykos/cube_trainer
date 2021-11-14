@@ -5,22 +5,21 @@
 class ModeTypesController < ApplicationController
   before_action :set_mode_type, only: [:show]
 
-  # GET /mode_types
-  # GET /mode_types.json
+  # The mode types that exist are constant and public, so no authorization is required.
+  # Note that the assignment of the modes is not public, but this is not handled by
+  # this controller.
+  skip_before_action :check_authorized, only: %i[index show]
+  skip_before_action :check_current_user_can_read, only: %i[index show]
+  skip_before_action :check_current_user_can_write, only: %i[index show]
+
+  # GET /api/mode_types
   def index
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json { render json: ModeType::ALL.map(&:to_simple) }
-    end
+    render json: ModeType.all.map(&:to_simple)
   end
 
-  # GET /mode_types/mode_created
-  # GET /mode_types/mode_created.json
+  # GET /api/mode_types/1
   def show
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json { render json: @mode_type.to_simple }
-    end
+    render json: @mode_type.to_simple
   end
 
   private

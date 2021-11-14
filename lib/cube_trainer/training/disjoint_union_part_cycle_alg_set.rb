@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/disjoint_union_hinter'
-require 'cube_trainer/training/letter_pair_alg_set'
+require 'cube_trainer/training/part_cycle_alg_set'
 
 module CubeTrainer
   module Training
     # Class that generates input items for alg sets that are the disjoint union of two alg sets.
-    class DisjointUnionLetterPairAlgSet < LetterPairAlgSet
+    class DisjointUnionPartCycleAlgSet < PartCycleAlgSet
       def initialize(mode, *alg_sets)
         super(mode)
         @alg_sets = alg_sets

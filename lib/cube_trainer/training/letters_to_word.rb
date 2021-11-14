@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/letter_pair_helper'
 require 'cube_trainer/training/input_sampler'
-require 'cube_trainer/training/letter_pair_alg_set'
+require 'cube_trainer/training/part_cycle_alg_set'
 require 'cube_trainer/pao_letter_pair'
 require 'cube_trainer/training/dict'
 
 module CubeTrainer
   module Training
     # Class that generates input items for mapping letter pairs to words.
-    class LettersToWord < LetterPairAlgSet
+    # TODO: The dependency on PartCycleAlgSet is weird and doesn't make sense any more.
+    class LettersToWord < PartCycleAlgSet
       def initialize(results_model, options)
         super
         @results_model = results_model
@@ -20,11 +20,15 @@ module CubeTrainer
         5.0
       end
 
+      def letter_pairs(letterss)
+        letterss.map { |ls| LetterPair.new(ls) }
+      end
+
       def generate_letter_pairs
         alphabet = letter_scheme.alphabet
-        pairs = LetterPairHelper.letter_pairs(alphabet.permutation(2))
-        duplicates = LetterPairHelper.letter_pairs(alphabet.map { |c| [c, c] })
-        singles = LetterPairHelper.letter_pairs(alphabet.permutation(1))
+        pairs = letter_pairs(alphabet.permutation(2))
+        duplicates = letter_pairs(alphabet.map { |c| [c, c] })
+        singles = letter_pairs(alphabet.permutation(1))
         valid_pairs = pairs - duplicates + singles
         PaoLetterPair::PAO_TYPES.product(valid_pairs).map { |c| PaoLetterPair.new(*c) }
       end

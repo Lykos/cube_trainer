@@ -4,33 +4,16 @@ require 'twisty_puzzles'
 
 # Controller for color schemes the user created.
 class ColorSchemesController < ApplicationController
-  before_action :set_color_scheme, only: %i[show update destroy]
-  before_action :check_current_user_owns, only: %i[show update destroy]
+  prepend_before_action :set_new_color_scheme, only: %i[create]
+  prepend_before_action :set_color_scheme, only: %i[show update destroy]
 
-  def name_exists_for_user?
-    render json: current_user.color_schemes.exists?(name: params[:color_scheme_name]), status: :ok
-  end
-
-  # GET /api/color_schemes
-  # GET /api/color_schemes.json
-  def index
-    respond_to do |format|
-      format.json { render json: current_user.color_schemes }
-    end
-  end
-
-  # GET /api/color_schemes/1
   # GET /api/color_schemes/1.json
   def show
-    respond_to do |format|
-      format.json { render json: @color_scheme }
-    end
+    render json: @color_scheme
   end
 
   # POST /api/color_schemes.json
   def create
-    @color_scheme = current_user.color_schemes.new(color_scheme_params)
-
     if !@color_scheme.valid?
       render json: @color_scheme, status: :bad_request
     elsif @color_scheme.save
@@ -61,7 +44,12 @@ class ColorSchemesController < ApplicationController
   private
 
   def set_color_scheme
-    head :not_found unless (@color_scheme = ColorScheme.find_by(id: params[:id]))
+    head :not_found unless (@color_scheme = current_user.color_scheme)
+  end
+
+  def set_new_color_scheme
+    @color_scheme = ColorScheme.new(color_scheme_params)
+    @color_scheme.user = current_user
   end
 
   def owner

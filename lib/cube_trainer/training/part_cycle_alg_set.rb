@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/letter_pair_helper'
+require 'cube_trainer/part_cycle_helper'
 require 'cube_trainer/buffer_helper'
 require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/training/input_item'
 
 module CubeTrainer
   module Training
-    # Class that generates input items for items that can be represented by letter pairs.
-    class LetterPairAlgSet
-      include LetterPairHelper
+    # Class that generates input items for items that can be represented by a sequence of parts.
+    class PartCycleAlgSet
+      include PartCycleHelper
 
       def initialize(mode)
         @mode = mode
@@ -28,15 +28,15 @@ module CubeTrainer
       end
 
       def generate_input_items
-        generate_letter_pairs.map { |e| InputItem.new(e) }
+        generate_part_cycles.map { |e| InputItem.new(e) }
       end
 
-      # If restrict_letters is not nil, only commutators for those letters are used.
+      # If restrict_parts is not nil, only commutators for those parts are used.
       # TODO: Move this to somewhere else
       def restricted_input_items
-        if @mode.restrict_letters.present?
+        if @mode.restrict_parts.present?
           generate_input_items.select do |p|
-            p.representation.contains_any_letter?(@mode.restrict_letters)
+            p.representation.contains_any_part?(@mode.restrict_parts)
           end
         else
           generate_input_items
@@ -46,11 +46,11 @@ module CubeTrainer
       def input_items
         @input_items ||=
           restricted_input_items.reject do |p|
-            p.representation.contains_any_letter?(@mode.exclude_letters)
+            p.representation.contains_any_part?(@mode.exclude_parts)
           end
       end
 
-      def generate_letter_pairs
+      def generate_part_cycles
         raise NotImplementedError
       end
 

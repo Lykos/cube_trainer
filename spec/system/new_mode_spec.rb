@@ -2,9 +2,8 @@
 
 require 'rails_helper'
 require 'system/system_spec_helper'
-require 'fixtures'
 
-describe 'modes', type: :system do
+describe 'new mode', type: :system do
   include_context 'with user abc'
 
   before do

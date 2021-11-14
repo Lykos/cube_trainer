@@ -3,7 +3,6 @@
 require 'cube_trainer/commutator_reverse_engineer'
 require 'cube_trainer/training/commutator_hinter'
 require 'cube_trainer/commonality_finder'
-require 'cube_trainer/buffer_helper'
 require 'cube_trainer/commutator_checker'
 require 'cube_trainer/training/hint_parser'
 require 'twisty_puzzles'
@@ -35,7 +34,7 @@ module CubeTrainer
 
     # Represents an empty entry in a commutator table.
     class EmptyEntry
-      def self.maybe_letter_pair; end
+      def self.maybe_part_cycle; end
     end
 
     # Class that parses a commutator file.
@@ -50,8 +49,6 @@ module CubeTrainer
       def initialize(
         part_type:,
         buffer:,
-        letter_scheme:,
-        color_scheme:,
         write_fixes:,
         verbose:,
         show_cube_states:,
@@ -71,8 +68,6 @@ module CubeTrainer
         @part_type = part_type
         @buffer = buffer
         @name = self.class.name_with_buffer_name(part_type, buffer.to_s.downcase)
-        @letter_scheme = letter_scheme
-        @color_scheme = color_scheme
         @write_fixes = write_fixes
         @verbose = verbose
         @show_cube_states = show_cube_states
@@ -100,10 +95,6 @@ module CubeTrainer
         end
       end
 
-      def letter_pair(part0, part1)
-        LetterPair.new([part0, part1].map { |p| @letter_scheme.letter(p) })
-      end
-
       def warn_comms?
         @test_comms_mode != :ignore && @verbose
       end
@@ -119,14 +110,16 @@ module CubeTrainer
 
       # Represents one location in a spreadsheet with all kind of indexing metadata.
       class CellDescription
-        def initialize(name, row_index, column_index, letter_pair)
+        def initialize(name, row_index, column_index, part_cycle)
+          raise TypeError unless part_cycle.nil? || part_cycle.is_a?(TwistyPuzzles::PartCycle)
+
           @name = name
           @row_index = row_index
           @column_index = column_index
-          @letter_pair = letter_pair
+          @part_cycle = part_cycle
         end
 
-        attr_reader :name, :row_index, :column_index, :letter_pair
+        attr_reader :name, :row_index, :column_index, :part_cycle
 
         COLUMN_NAMES = ('A'..'Z').to_a
 
@@ -135,31 +128,31 @@ module CubeTrainer
         end
 
         def to_s
-          letter_pair_suffix = @letter_pair ? " #{@letter_pair}" : ''
-          "#{@name}#{letter_pair_suffix} at #{spreadsheet_index}"
+          part_cycle_suffix = @part_cycle ? " #{@part_cycle}" : ''
+          "#{@name}#{part_cycle_suffix} at #{spreadsheet_index}"
         end
       end
 
       # Represents an entry with an alg in a commutator table.
       class AlgEntry
-        def initialize(letter_pair, algorithm)
-          @maybe_letter_pair = letter_pair
+        def initialize(part_cycle, algorithm)
+          @maybe_part_cycle = part_cycle
           @algorithm = algorithm
         end
 
-        attr_reader :letter_pair, :algorithm
-        attr_accessor :maybe_letter_pair
+        attr_reader :algorithm
+        attr_accessor :maybe_part_cycle
       end
 
       # Represents an erroneous entry in a commutator table.
       class ErrorEntry
         def initialize(error_message)
           @error_message = error_message
-          @maybe_letter_pair = nil
+          @maybe_part_cycle = nil
         end
 
         attr_reader :error_message
-        attr_accessor :maybe_letter_pair
+        attr_accessor :maybe_part_cycle
       end
 
       def add_nils_to_table(table)
@@ -179,9 +172,6 @@ module CubeTrainer
           else
             CommutatorChecker.new(
               part_type: @part_type,
-              buffer: @buffer,
-              color_scheme: @color_scheme,
-              letter_scheme: @letter_scheme,
               cube_size: @cube_size,
               verbose: @verbose,
               show_cube_states: @show_cube_states,
@@ -192,7 +182,7 @@ module CubeTrainer
 
       def reverse_engineer
         @reverse_engineer ||=
-          CommutatorReverseEngineer.new(@part_type, @buffer, @letter_scheme, @cube_size)
+          CommutatorReverseEngineer.new(@part_type, @buffer, @cube_size)
       end
 
       def parse_hint_table_cell(cell)
@@ -203,8 +193,8 @@ module CubeTrainer
         # types.
         return EmptyEntry if alg.algorithm.length <= 3
 
-        maybe_letter_pair = reverse_engineer.find_letter_pair(alg.algorithm)
-        AlgEntry.new(maybe_letter_pair, alg)
+        maybe_part_cycle = reverse_engineer.find_part_cycle(alg.algorithm)
+        AlgEntry.new(maybe_part_cycle, alg)
       rescue TwistyPuzzles::CommutatorParseError => e
         ErrorEntry.new("Couldn't parse commutator: #{e}")
       end
@@ -251,13 +241,14 @@ module CubeTrainer
       def process_algorithm_cell(hints, cell_description, cell)
         commutator = cell.algorithm
         check_result = checker.check_alg(cell_description, commutator)
-        hints[cell_description.letter_pair] = commutator if check_result.result == :correct
+        hints[cell_description.part_cycle] = commutator if check_result.result == :correct
       end
 
       def process_alg_table_cell(hints, cell_description, cell)
-        if cell_description.letter_pair.nil?
+        if cell_description.part_cycle.nil?
           process_outside_cell(cell_description, cell)
-        elsif cell_description.letter_pair.pair_of_equal_letters?
+        elsif cell_description.part_cycle.length == 2 &&
+              cell_description.part_cycle[0] == cell_description.part_cycle[1]
           process_diagonal_cell(cell_description, cell)
         elsif cell.is_a?(ErrorEntry)
           process_error_cell(cell_description, cell)
@@ -270,8 +261,8 @@ module CubeTrainer
         hints = {}
         alg_table.each_with_index do |row, row_index|
           row.each_with_index do |cell, col_index|
-            letter_pair = interpretation.letter_pair(row_index, col_index)
-            cell_description = CellDescription.new(name, row_index, col_index, letter_pair)
+            part_cycle = interpretation.part_cycle(row_index, col_index)
+            cell_description = CellDescription.new(name, row_index, col_index, part_cycle)
             process_alg_table_cell(hints, cell_description, cell)
           end
         end
@@ -283,7 +274,7 @@ module CubeTrainer
         alg_table = parse_alg_table(hint_table)
 
         # Now figure out whether rows are the first piece or the second piece.
-        interpretation = CommonalityFinder.interpret_table(alg_table)
+        interpretation = CommonalityFinder.interpret_table(alg_table, @buffer)
 
         # Now check everything and construct the hint table.
         hints = process_alg_table(alg_table, interpretation)
@@ -317,12 +308,9 @@ module CubeTrainer
       end
 
       def self.maybe_parse_hints(part_type, options)
-        buffer = BufferHelper.determine_buffer(part_type, options)
         hint_parser = new(
           part_type: part_type,
-          buffer: buffer,
-          letter_scheme: options.letter_scheme,
-          color_scheme: options.color_scheme,
+          buffer: options.buffer,
           verbose: options.verbose,
           show_cube_states: options.show_cube_states,
           write_fixes: options.write_fixes,

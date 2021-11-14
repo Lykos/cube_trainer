@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'fixtures'
 require 'requests/requests_spec_helper'
 
 RSpec.describe 'StatTypes', type: :request do

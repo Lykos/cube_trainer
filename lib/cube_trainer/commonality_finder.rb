@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'twisty_puzzles'
+
 module CubeTrainer
   # Helper class that figures out what rows and columns of a commutator table have in common and
   # what the interpretation of the table is.
@@ -7,6 +9,7 @@ module CubeTrainer
     # Represents the chosen way to interpret a table of commutators.
     class TableInterpretation
       def initialize(
+        buffer,
         row_axis_interpretation, column_axis_interpretation,
         row_interpretations, column_interpretations
       )
@@ -14,33 +17,41 @@ module CubeTrainer
           raise ArgumentError
         end
 
-        @flip_letters = [row_axis_interpretation, column_axis_interpretation] == [1, 0]
+        @buffer = buffer
+        @flip_parts = [row_axis_interpretation, column_axis_interpretation] == [1, 0]
         @row_interpretations = row_interpretations
         @column_interpretations = column_interpretations
       end
 
-      def letter_pair(row_index, col_index)
+      def part_cycle(row_index, col_index)
         row_interpretation = @row_interpretations[row_index]
         column_interpretation = @column_interpretations[col_index]
         return unless row_interpretation && column_interpretation
 
-        letters = [row_interpretation, column_interpretation]
-        letters.reverse! if @flip_letters
-        LetterPair.new(letters)
+        part_cycle = TwistyPuzzles::PartCycle.new(
+          [
+            @buffer, row_interpretation,
+            column_interpretation
+          ]
+        )
+        @flip_parts ? part_cycle.inverse : part_cycle
       end
     end
 
     AXIS_INTERPRETATIONS = [0, 1].permutation.to_a
 
-    # Table should be a 2D array where the entries have a method called maybe_letter_pair that
-    # returns a letter pair of length 2 or nil.
-    def self.interpret_table(table)
+    # Table should be a 2D array where the entries have a method called maybe_part_cycle that
+    # returns a part pair of length 2 or nil.
+    # TODO: Automatically figure out buffer.
+    def self.interpret_table(table, buffer)
+      transposed_table = table.transpose
       table_interpretations =
         AXIS_INTERPRETATIONS.map do |row_axis_interpretation, column_axis_interpretation|
-          row_interpretations = find_row_interpretations(table, row_axis_interpretation)
+          row_interpretations = find_row_interpretations(table, buffer, row_axis_interpretation)
           column_interpretations =
-            find_row_interpretations(table.transpose, column_axis_interpretation)
+            find_row_interpretations(transposed_table, buffer, column_axis_interpretation)
           TableInterpretation.new(
+            buffer,
             row_axis_interpretation, column_axis_interpretation,
             row_interpretations, column_interpretations
           )
@@ -55,15 +66,18 @@ module CubeTrainer
     def self.interpretation_score(table_interpretation, table)
       table.map.with_index do |row, row_index|
         row.map.with_index do |cell, col_index|
-          cell_letter_pair = cell.maybe_letter_pair
-          interpretation_letter_pair = table_interpretation.letter_pair(row_index, col_index)
-          cell_letter_pair && cell_letter_pair == interpretation_letter_pair ? 1 : 0
+          cell_part_cycle = cell.maybe_part_cycle
+          interpretation_part_cycle = table_interpretation.part_cycle(row_index, col_index)
+          cell_part_cycle && cell_part_cycle == interpretation_part_cycle ? 1 : 0
         end.sum
       end.sum
     end
 
-    def self.find_row_interpretations(rows, axis_interpretation)
-      row_interpretations = rows.map { |row| find_row_interpretation(row, axis_interpretation) }
+    def self.find_row_interpretations(rows, buffer, axis_interpretation)
+      row_interpretations =
+        rows.map do |row|
+          find_row_interpretation(row, buffer, axis_interpretation)
+        end
       # Only allow row interpretations that appear exactly once.
       counts = new_counter_hash
       row_interpretations.each { |i| counts[i] += 1 }
@@ -76,10 +90,14 @@ module CubeTrainer
       counts
     end
 
-    def self.find_row_interpretation(row, axis_interpretation)
-      letters = row.filter_map(&:maybe_letter_pair).map { |e| e.letters[axis_interpretation] }
+    def self.relevant_part_cycles(row, buffer)
+      row.filter_map(&:maybe_part_cycle).filter { |e| e.parts[0] == buffer }
+    end
+
+    def self.find_row_interpretation(row, buffer, axis_interpretation)
+      parts = relevant_part_cycles(row, buffer).map { |e| e.parts[axis_interpretation + 1] }
       counts = new_counter_hash
-      letters.each { |l| counts[l] += 1 }
+      parts.each { |l| counts[l] += 1 }
       max_count = counts.values.max
       keys = counts.select { |_k, v| v == max_count }.keys
       keys.length == 1 ? keys.first : nil

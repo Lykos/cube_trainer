@@ -13,9 +13,11 @@ module CubeTrainer
       class InputSampler
         SCRAMBLE_LENGTH = 25
 
-        def initialize(color_scheme)
+        def initialize(mode)
+          raise ArgumentError unless mode.cube_size == 3
+
           @scrambler = CubeScrambler.new
-          @cube_state = color_scheme.solved_cube_state(3)
+          @cube_state = mode.solved_cube_state
         end
 
         def random_item(_cached_inputs = [])
@@ -24,8 +26,8 @@ module CubeTrainer
         end
       end
 
-      def initialize(options)
-        @options = options
+      def initialize(mode)
+        @mode = mode
       end
 
       def hinter(*)
@@ -33,7 +35,7 @@ module CubeTrainer
       end
 
       def input_sampler
-        InputSampler.new(@options.color_scheme)
+        InputSampler.new(@mode)
       end
 
       def input_items

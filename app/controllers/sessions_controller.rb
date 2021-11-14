@@ -2,17 +2,10 @@
 
 # Controller that handles sessions and login.
 class SessionsController < ApplicationController
-  skip_before_action :check_authorized, only: %i[new create]
-
-  # GET /login
-  def new
-    render 'application/cube_trainer'
-  end
-
-  # GET /welcome
-  def welcome
-    render 'application/cube_trainer'
-  end
+  # For logging in, we don't check whether the user is already logged in.
+  skip_before_action :check_authorized, only: %i[create]
+  skip_before_action :check_current_user_can_read, only: %i[create]
+  skip_before_action :check_current_user_can_write, only: %i[create]
 
   # POST /login
   def create
@@ -30,5 +23,9 @@ class SessionsController < ApplicationController
   def logout
     session.delete(:user_id)
     head :no_content
+  end
+
+  def owner
+    current_user
   end
 end

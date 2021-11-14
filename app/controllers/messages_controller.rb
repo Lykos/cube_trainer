@@ -2,33 +2,25 @@
 
 # Controller for messages that the user received.
 class MessagesController < ApplicationController
-  before_action :set_user
-  before_action :set_message, only: %i[show update destroy]
-  before_action :check_current_user_owns
+  prepend_before_action :set_message, only: %i[show update destroy]
+  prepend_before_action :set_user
 
-  # GET /api/users/1/messages/count_unread.json
+  # GET /api/users/1/messages/count_unread
   def count_unread
     render json: @user.messages.where(read: false).count
   end
 
   # GET /api/users/1/messages
-  # GET /api/users/1/messages.json
   def index
-    respond_to do |format|
-      format.json { render json: @user.messages }
-    end
+    render json: @user.messages
   end
 
   # GET /api/users/1/messages/1
-  # GET /api/users/1/messages/1.json
   def show
-    respond_to do |format|
-      format.json { render json: @message }
-    end
+    render json: @message
   end
 
   # PATCH/PUT /api/users/1/messages/1
-  # PATCH/PUT /api/users/1/messages/1.json
   def update
     if @message.update(message_params)
       render json: @message, status: :ok
@@ -38,7 +30,6 @@ class MessagesController < ApplicationController
   end
 
   # DELETE /api/users/1/messages/1
-  # DELETE /api/users/1/messages/1.json
   def destroy
     if @message.destroy
       head :no_content
@@ -65,7 +56,14 @@ class MessagesController < ApplicationController
   # Checks that the user is the current user.
   # Note that this is different from other controllers because not even admin can see the messages.
   # In order to not allow reverse engineering, we have to return not_found in all such cases.
-  def check_current_user_owns
+  def check_current_user_can_read
+    head :not_found unless @user == current_user
+  end
+
+  # Checks that the user is the current user.
+  # Note that this is different from other controllers because not even admin can see the messages.
+  # In order to not allow reverse engineering, we have to return not_found in all such cases.
+  def check_current_user_can_write
     head :not_found unless @user == current_user
   end
 end
