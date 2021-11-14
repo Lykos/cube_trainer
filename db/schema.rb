@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_14_131121) do
+ActiveRecord::Schema.define(version: 2021_11_14_181350) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,21 +37,10 @@ ActiveRecord::Schema.define(version: 2021_11_14_131121) do
     t.index ["user_id"], name: "index_color_schemes_on_user_id", unique: true
   end
 
-  create_table "download_states", force: :cascade do |t|
-    t.text "model", null: false
-    t.datetime "downloaded_at"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["model"], name: "index_download_states_on_model", unique: true
-  end
-
   create_table "inputs", force: :cascade do |t|
-    t.text "old_mode"
     t.text "input_representation", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "old_user_id"
-    t.string "hostname", null: false
     t.bigint "mode_id", null: false
     t.index ["mode_id"], name: "index_inputs_on_mode_id"
   end
@@ -108,29 +97,15 @@ ActiveRecord::Schema.define(version: 2021_11_14_131121) do
     t.index ["user_id"], name: "index_modes_on_user_id"
   end
 
-  create_table "notifications", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.string "title"
-    t.text "message"
-    t.boolean "read"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_notifications_on_user_id"
-  end
-
   create_table "results", force: :cascade do |t|
-    t.text "old_mode"
     t.float "time_s", null: false
-    t.text "old_input_representation"
     t.integer "failed_attempts", default: 0, null: false
     t.text "word"
     t.boolean "success", default: true, null: false
     t.integer "num_hints", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.text "old_hostname"
     t.datetime "uploaded_at", precision: 6
-    t.integer "old_user_id"
     t.bigint "input_id", null: false
     t.index ["input_id"], name: "index_results_on_input_id", unique: true
   end
@@ -167,7 +142,6 @@ ActiveRecord::Schema.define(version: 2021_11_14_131121) do
   add_foreign_key "mode_usages", "modes"
   add_foreign_key "mode_usages", "modes", column: "used_mode_id"
   add_foreign_key "modes", "users"
-  add_foreign_key "notifications", "users"
   add_foreign_key "results", "inputs"
   add_foreign_key "stats", "modes"
 end

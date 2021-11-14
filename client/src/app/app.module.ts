@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { UsersModule } from './users/users.module';
 import { ModesModule } from './modes/modes.module';
+import { FooterModule } from './footer/footer.module';
 import { TrainerModule } from './trainer/trainer.module';
 import { ToolbarModule } from './toolbar/toolbar.module';
 import { APP_BASE_HREF } from '@angular/common';
@@ -19,6 +20,7 @@ import { APP_BASE_HREF } from '@angular/common';
     TrainerModule,
     UsersModule,
     ModesModule,
+    FooterModule,
     AppRoutingModule,
     BrowserAnimationsModule
   ],

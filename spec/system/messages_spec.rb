@@ -14,7 +14,7 @@ describe 'messages', type: :system do
   it 'allows to read messages' do
     user_message
     login(user)
-    click_button user.name
+    click_link user.name
 
     find('cube-trainer-messages td', text: user_message.title).click
     expect(page).to have_text(user_message.body)

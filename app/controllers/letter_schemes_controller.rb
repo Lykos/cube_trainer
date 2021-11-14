@@ -6,6 +6,7 @@ require 'twisty_puzzles'
 class LetterSchemesController < ApplicationController
   prepend_before_action :set_new_letter_scheme, only: %i[create]
   prepend_before_action :set_letter_scheme, only: %i[show update destroy]
+  prepend_before_action :check_no_existing_letter_scheme, only: %i[create]
 
   # GET /api/letter_scheme.json
   def show
@@ -15,7 +16,7 @@ class LetterSchemesController < ApplicationController
   # POST /api/letter_scheme.json
   def create
     if !@letter_scheme.valid?
-      render json: @letter_scheme, status: :bad_request
+      render json: @letter_scheme.errors, status: :bad_request
     elsif @letter_scheme.save
       render json: @letter_scheme, status: :created
     else
@@ -42,6 +43,10 @@ class LetterSchemesController < ApplicationController
   end
 
   private
+
+  def check_no_existing_letter_scheme
+    head :unprocessable_entity if current_user.letter_scheme
+  end
 
   def set_new_letter_scheme
     @letter_scheme = LetterScheme.new(letter_scheme_params)

@@ -6,6 +6,7 @@ require 'twisty_puzzles'
 class ColorSchemesController < ApplicationController
   prepend_before_action :set_new_color_scheme, only: %i[create]
   prepend_before_action :set_color_scheme, only: %i[show update destroy]
+  prepend_before_action :check_no_existing_color_scheme, only: %i[create]
 
   # GET /api/color_schemes/1.json
   def show
@@ -15,7 +16,7 @@ class ColorSchemesController < ApplicationController
   # POST /api/color_schemes.json
   def create
     if !@color_scheme.valid?
-      render json: @color_scheme, status: :bad_request
+      render json: @color_scheme.errors, status: :bad_request
     elsif @color_scheme.save
       render json: @color_scheme, status: :created
     else
@@ -42,6 +43,10 @@ class ColorSchemesController < ApplicationController
   end
 
   private
+
+  def check_no_existing_color_scheme
+    head :unprocessable_entity if current_user.color_scheme
+  end
 
   def set_color_scheme
     head :not_found unless (@color_scheme = current_user.color_scheme)

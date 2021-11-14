@@ -48,7 +48,7 @@ RSpec.describe 'ColorSchemes', type: :request do
       expect(ColorScheme.find(parsed_body['id']).u).to eq(:yellow)
     end
 
-    xit 'returns bad request if the user already has a color scheme' do
+    it 'returns unprocessable entity if the user already has a color scheme' do
       color_scheme
       post '/api/color_scheme', params: {
         color_scheme: {
@@ -60,7 +60,7 @@ RSpec.describe 'ColorSchemes', type: :request do
           d: :white
         }
       }
-      expect(response).to have_http_status(:bad_request)
+      expect(response).to have_http_status(:unprocessable_entity)
     end
 
     it 'returns bad request for invalid color_schemes' do

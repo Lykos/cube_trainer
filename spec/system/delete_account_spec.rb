@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'signup', type: :system do
+describe 'account deletion', type: :system do
   before do
     driven_by(:selenium_chrome_headless)
   end
@@ -16,7 +16,6 @@ describe 'signup', type: :system do
     fill_in 'Password', with: 'password'
     fill_in 'Confirm Password', with: 'password'
     click_button 'Submit'
-    expect(page).to have_text('Signup successful!')
 
     user = User.find_by(name: 'system test user')
     user.update(admin_confirmed: true)
@@ -25,7 +24,12 @@ describe 'signup', type: :system do
     fill_in 'Username', with: 'system test user'
     fill_in 'Password', with: 'password'
     click_button 'Submit'
-    expect(page).to have_text('system test user')
-    expect(page).to have_text('Logout')
+
+    click_link user.name
+    click_button 'Delete Account'
+    click_button 'Ok'
+
+    expect(page).to have_text('Account Deleted')
+    expect(User.find_by(name: 'system test user')).to be_nil
   end
 end

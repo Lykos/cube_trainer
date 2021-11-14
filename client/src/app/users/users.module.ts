@@ -5,6 +5,8 @@ import { UsersService } from './users.service';
 import { UserFormCreator } from './user-form-creator.service';
 import { UserComponent } from './user.component';
 import { MessagesComponent } from './messages.component';
+import { DeleteAccountButtonComponent } from './delete-account-button.component';
+import { DeleteAccountConfirmationDialogComponent } from './delete-account-confirmation-dialog.component';
 import { MessageComponent } from './message.component';
 import { AchievementsComponent } from './achievements.component';
 import { AchievementComponent } from './achievement.component';
@@ -20,6 +22,8 @@ import { PartTypesService } from './part-types.service';
 import { NgModule } from '@angular/core';
 import { SignupComponent } from './signup.component';
 import { LoginComponent } from './login.component';
+import { LogoutComponent } from './logout.component';
+import { AccountDeletedComponent } from './account-deleted.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
@@ -33,12 +37,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { NewColorSchemeComponent } from './new-color-scheme.component'
 import { NewLetterSchemeComponent } from './new-letter-scheme.component'
-
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
     SignupComponent,
     LoginComponent,
+    LogoutComponent,
+    AccountDeletedComponent,
     AchievementsComponent,
     AchievementComponent,
     MessagesComponent,
@@ -47,6 +53,8 @@ import { NewLetterSchemeComponent } from './new-letter-scheme.component'
     UserComponent,
     NewColorSchemeComponent,
     NewLetterSchemeComponent,
+    DeleteAccountButtonComponent,
+    DeleteAccountConfirmationDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,6 +68,7 @@ import { NewLetterSchemeComponent } from './new-letter-scheme.component'
     MatTableModule,
     MatSnackBarModule,
     MatFormFieldModule,
+    MatDialogModule,
     ReactiveFormsModule,
     FormsModule,
     MatTooltipModule,
@@ -81,6 +90,8 @@ import { NewLetterSchemeComponent } from './new-letter-scheme.component'
     AchievementComponent,
     SignupComponent,
     LoginComponent,
+    LogoutComponent,
+    AccountDeletedComponent,
     AchievementsComponent,
     AchievementGrantsComponent,
     NewColorSchemeComponent,

@@ -13,7 +13,7 @@ describe 'new mode', type: :system do
   it 'allows to create a new commutator mode' do
     login(user)
 
-    click_button 'Cube Trainer'
+    click_link 'Cube Trainer'
     click_button 'New'
 
     sleep(0.5)
@@ -42,7 +42,7 @@ describe 'new mode', type: :system do
   it 'allows to create a new memo rush mode' do
     login(user)
 
-    click_button 'Cube Trainer'
+    click_link 'Cube Trainer'
     click_button 'New'
 
     sleep(0.5)

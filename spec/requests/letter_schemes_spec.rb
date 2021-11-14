@@ -43,14 +43,14 @@ RSpec.describe 'LetterSchemes', type: :request do
       expect(LetterScheme.find(parsed_body['id']).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U B]))).to eq('d')
     end
 
-    xit 'returns bad request if the user already has a letter scheme' do
+    it 'returns unprocessable entity if the user already has a letter scheme' do
       letter_scheme
       post '/api/letter_scheme', params: {
         letter_scheme: {
           mappings: [{ part: { key: 'Edge:UB' }, letter: 'a' }]
         }
       }
-      expect(response).to have_http_status(:bad_request)
+      expect(response).to have_http_status(:unprocessable_entity)
     end
 
     it 'returns bad request for invalid letter_schemes' do

@@ -2,7 +2,7 @@
 
 def login(user)
   visit ''
-  click_button 'Login'
+  click_link 'Login'
   fill_in 'Username or Email', with: user.name
   fill_in 'Password', with: user.password
   click_button 'Submit'
