@@ -1,25 +1,25 @@
 class ChangeBufferType < ActiveRecord::Migration[6.0]
   class Mode < ApplicationRecord
+    attribute :mode_type, :mode_type
   end
 
   def change
     rename_column :modes, :buffer, :old_buffer
     add_column :modes, :buffer, :string
+    serializer = PartType.new
     reversible do |change|
       change.up do
-        serializer = PartType.new
         Mode.all.each do |mode|
           next if mode.old_buffer.blank?
 
-          mode.update(buffer: serializer.serialize(mode.part_type.parse(mode.old_buffer)))
+          mode.update(buffer: serializer.serialize(mode.mode_type.part_type.parse(mode.old_buffer)))
         end
       end
       change.down do
         Mode.all.each do |mode|
           next unless mode.buffer
 
-          puts mode.buffer
-          mode.update(old_buffer: mode.buffer.to_s)
+          mode.update(old_buffer: serializer.cast(mode.buffer).to_s)
         end
       end
     end
