@@ -2,6 +2,8 @@
 
 # Model for letter scheme mappings that form a letter scheme together.
 class LetterSchemeMapping < ApplicationRecord
+  include PartHelper
+
   belongs_to :letter_scheme
   attribute :part, :part
 
@@ -13,11 +15,9 @@ class LetterSchemeMapping < ApplicationRecord
     part.class
   end
 
-  def to_simple=(part_type)
+  def to_simple
     {
-      part_type: part_type,
-      part_name: part.to_s,
-      part: PartType.new.cast(part),
+      part: part_to_simple(part),
       letter: letter
     }
   end
