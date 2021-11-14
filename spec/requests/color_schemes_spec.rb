@@ -16,6 +16,7 @@ RSpec.describe 'ColorSchemes', type: :request do
 
   describe 'GET #show' do
     it 'returns http success' do
+      color_scheme
       get '/api/color_scheme', headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
@@ -39,13 +40,13 @@ RSpec.describe 'ColorSchemes', type: :request do
           r: :orange,
           l: :red,
           b: :blue,
-          d: :white,
+          d: :white
         }
       }
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).not_to eq(color_scheme.id)
-      expect(ColorScheme.find(parsed_body['u']).name).to eq('yellow')
+      expect(ColorScheme.find(parsed_body['id']).u).to eq(:yellow)
     end
 
     it 'returns bad request for invalid color_schemes' do
@@ -61,6 +62,7 @@ RSpec.describe 'ColorSchemes', type: :request do
 
   describe 'PUT #update' do
     it 'returns http success' do
+      color_scheme
       put '/api/color_scheme', headers: headers, params: { color_scheme: { d: 'black' } }
       expect(response).to have_http_status(:success)
       color_scheme.reload
@@ -69,21 +71,23 @@ RSpec.describe 'ColorSchemes', type: :request do
     end
 
     it 'returns unprocessable entity for invalid updates' do
+      color_scheme
       put '/api/color_scheme', headers: headers, params: { color_scheme: { u: nil } }
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(ColorScheme.find(color_scheme.u).name).to eq(:yellow)
+      expect(ColorScheme.find(color_scheme.id).u).to eq(:yellow)
     end
 
     it 'returns not found for user with no color scheme' do
       post_login(eve)
       put '/api/color_scheme', headers: headers, params: { color_scheme: { d: 'black' } }
       expect(response).to have_http_status(:not_found)
-      expect(ColorScheme.find(color_scheme.id).name).to eq(:yellow)
+      expect(ColorScheme.find(color_scheme.id).u).to eq(:yellow)
     end
   end
 
   describe 'DELETE #destroy' do
     it 'returns http success' do
+      color_scheme
       delete '/api/color_scheme', headers: headers
       expect(response).to have_http_status(:success)
       expect(ColorScheme.exists?(color_scheme.id)).to be(false)

@@ -2,26 +2,17 @@
 
 # Controller that allows retrieval of achievement grants (i.e. which user has which achievements).
 class AchievementGrantsController < ApplicationController
-  before_action :set_user
-  before_action :check_current_user_owns
+  prepend_before_action :set_user
   before_action :set_achievement_grant, only: [:show]
 
-  # GET /user/1/achievement_grants
-  # GET /user/1/achievement_grants.json
+  # GET /api/user/1/achievement_grants
   def index
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json { render json: @user.achievement_grants.map(&:to_simple) }
-    end
+    render json: @user.achievement_grants.map(&:to_simple)
   end
 
-  # GET /user/1/achievement_grants/1
-  # GET /user/1/achievement_grants/1.json
+  # GET /api/user/1/achievement_grants/1
   def show
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json { render json: @achievement_grant.to_simple }
-    end
+    render json: @achievement_grant.to_simple
   end
 
   private

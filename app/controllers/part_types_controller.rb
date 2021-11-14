@@ -9,16 +9,22 @@ require 'twisty_puzzles'
 class PartTypesController < ApplicationController
   include TwistyPuzzles::Utils::StringHelper
 
-  # GET /api/parts.json
+  # The part types that exist are constant and public, so no authorization is required.
+  skip_before_action :check_authorized, only: %i[index]
+  skip_before_action :check_current_user_can_read, only: %i[index]
+  skip_before_action :check_current_user_can_write, only: %i[index]
+
+  # GET /api/parts
   def index
-    respond_to do |format|
-      format.json do
-        part_types =
-          (TwistyPuzzles::PART_TYPES - [TwistyPuzzles::Face]).map do |p|
-            { name: simple_class_name(p), parts: p::ELEMENTS.map(&:to_s) }
+    serializer = PartType.new
+    part_types =
+      (TwistyPuzzles::PART_TYPES - [TwistyPuzzles::Face]).map do |p|
+        parts =
+          p::ELEMENTS.map do |e|
+            { key: serializer.serialize(e), name: e.to_s }
           end
-        render json: part_types
+        { name: simple_class_name(p), parts: parts }
       end
-    end
+    render json: part_types
   end
 end

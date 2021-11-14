@@ -2,10 +2,16 @@
 
 # Controller for users.
 class UsersController < ApplicationController
-  before_action :set_user, only: %i[show update destroy]
+  prepend_before_action :set_user, only: %i[show update destroy]
   before_action :check_authorized_as_admin, only: [:index]
   before_action :check_authorized_as_admin_if_setting_admin, only: %i[create update]
-  before_action :check_current_user_owns, only: %i[show update destroy]
+
+  # The actions `create` and `name_or_email_exists?` are needed for signup and
+  # hence we can't require the user to already be signed in.
+  # For index, we have the `check_authorized_as_admin` check instead and because these ones
+  # wouldn't work, we turn them off.
+  skip_before_action :check_current_user_can_read, only: %i[create name_or_email_exists? index]
+  skip_before_action :check_current_user_can_write, only: %i[create name_or_email_exists? index]
   skip_before_action :check_authorized, only: %i[create name_or_email_exists?]
 
   # GET /api/username_or_email_exists

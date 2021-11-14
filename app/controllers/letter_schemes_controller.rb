@@ -4,33 +4,16 @@ require 'twisty_puzzles'
 
 # Controller for letter schemes the user created.
 class LetterSchemesController < ApplicationController
-  before_action :set_letter_scheme, only: %i[show update destroy]
-  before_action :check_current_user_owns, only: %i[show update destroy]
+  prepend_before_action :set_new_letter_scheme, only: %i[create]
+  prepend_before_action :set_letter_scheme, only: %i[show update destroy]
 
-  def name_exists_for_user?
-    render json: current_user.letter_schemes.exists?(name: params[:letter_scheme_name]), status: :ok
-  end
-
-  # GET /api/letter_schemes
-  # GET /api/letter_schemes.json
-  def index
-    respond_to do |format|
-      format.json { render json: current_user.letter_schemes }
-    end
-  end
-
-  # GET /api/letter_schemes/1
-  # GET /api/letter_schemes/1.json
+  # GET /api/letter_scheme.json
   def show
-    respond_to do |format|
-      format.json { render json: @letter_scheme }
-    end
+    render json: @letter_scheme.to_simple
   end
 
-  # POST /api/letter_schemes.json
+  # POST /api/letter_scheme.json
   def create
-    @letter_scheme = current_user.letter_schemes.new(letter_scheme_params)
-
     if !@letter_scheme.valid?
       render json: @letter_scheme, status: :bad_request
     elsif @letter_scheme.save
@@ -40,7 +23,7 @@ class LetterSchemesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /api/letter_schemes/1.json
+  # PATCH/PUT /api/letter_scheme.json
   def update
     if @letter_scheme.update(letter_scheme_params)
       render json: @letter_scheme, status: :ok
@@ -49,7 +32,7 @@ class LetterSchemesController < ApplicationController
     end
   end
 
-  # DELETE /api/letter_schemes/1.json
+  # DELETE /api/letter_scheme.json
   def destroy
     if @letter_scheme.destroy
       head :no_content
@@ -60,8 +43,13 @@ class LetterSchemesController < ApplicationController
 
   private
 
+  def set_new_letter_scheme
+    @letter_scheme = LetterScheme.new(letter_scheme_params)
+    @letter_scheme.user = current_user
+  end
+
   def set_letter_scheme
-    head :not_found unless (@letter_scheme = LetterScheme.find_by(id: params[:id]))
+    head :not_found unless (@letter_scheme = current_user.letter_scheme)
   end
 
   def owner

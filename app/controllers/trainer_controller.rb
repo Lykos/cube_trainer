@@ -2,8 +2,8 @@
 
 # Controller for showing inputs to the human and getting results.
 class TrainerController < ApplicationController
-  before_action :set_mode
-  before_action :set_input, only: %i[destroy stop]
+  prepend_before_action :set_input, only: %i[destroy stop]
+  prepend_before_action :set_mode
   before_action :check_partial_result_param, only: [:stop]
   before_action :set_partial_result, only: [:stop]
 
@@ -61,6 +61,14 @@ class TrainerController < ApplicationController
 
   def set_mode
     head :not_found unless (@mode = current_user.modes.find_by(id: params[:mode_id]))
+  end
+
+  def mode
+    @mode || @input&.mode
+  end
+
+  def owner
+    mode&.user
   end
 
   def partial_result_params

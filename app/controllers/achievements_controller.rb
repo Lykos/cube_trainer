@@ -5,22 +5,21 @@
 class AchievementsController < ApplicationController
   before_action :set_achievement, only: [:show]
 
-  # GET /achievements
-  # GET /achievements.json
+  # The achievements that exist are constant and public, so no authorization is required.
+  # Note that the assignment of the achievements to users is not public, but this is not
+  # handled by this controller.
+  skip_before_action :check_authorized, only: %i[index show]
+  skip_before_action :check_current_user_can_read, only: %i[index show]
+  skip_before_action :check_current_user_can_write, only: %i[index show]
+
+  # GET /api/achievements
   def index
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json { render json: Achievement::ALL.map(&:to_simple) }
-    end
+    render json: Achievement::ALL.map(&:to_simple)
   end
 
-  # GET /achievements/mode_created
-  # GET /achievements/mode_created.json
+  # GET /api/achievements/mode_created
   def show
-    respond_to do |format|
-      format.html { render 'application/cube_trainer' }
-      format.json { render json: @achievement.to_simple }
-    end
+    render json: @achievement.to_simple
   end
 
   private

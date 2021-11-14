@@ -5,6 +5,13 @@
 class StatTypesController < ApplicationController
   before_action :set_stat_type, only: [:show]
 
+  # The stats types that exist are constant and public, so no authorization is required.
+  # Note that the assignment of the stats is not public, but this is not handled by
+  # this controller.
+  skip_before_action :check_authorized, only: %i[index show]
+  skip_before_action :check_current_user_can_read, only: %i[index show]
+  skip_before_action :check_current_user_can_write, only: %i[index show]
+
   # GET /stat_types
   # GET /stat_types.json
   def index
