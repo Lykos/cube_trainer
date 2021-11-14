@@ -13,11 +13,8 @@ class Input < ApplicationRecord
     input_representation
   end
 
-  validates :hostname, presence: true
   validates :input_representation, presence: true
   validates :mode_id, presence: true
-
-  before_validation { self.hostname ||= OsHelper.hostname }
 
   def to_simple_result
     {
