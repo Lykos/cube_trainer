@@ -32,7 +32,7 @@ module CubeTrainer
       end
 
       def non_buffer_corners
-        self.class::PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(@mode.parsed_buffer) }
+        self.class::PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(@mode.buffer) }
       end
 
       def correctly_oriented_corners
@@ -106,7 +106,7 @@ module CubeTrainer
 
       def buffer_coordinates
         @buffer_coordinates ||=
-          TwistyPuzzles::Coordinate.solved_positions(@mode.parsed_buffer, @mode.cube_size, 0)
+          TwistyPuzzles::Coordinate.solved_positions(@mode.buffer, @mode.cube_size, 0)
       end
 
       def generate_input_items
@@ -215,7 +215,7 @@ module CubeTrainer
       def generate_input_items
         cube_state = @mode.solved_cube_state
         part_cycle_factory = TwistyPuzzles::StickerCycleFactory.new(@mode.cube_size, 0)
-        buffer_twist = part_cycle_factory.multi_twist([@mode.parsed_buffer])
+        buffer_twist = part_cycle_factory.multi_twist([@mode.buffer])
         1.upto(2).collect_concat do |twist_number|
           buffer_twist.apply_to(cube_state)
           non_buffer_correctly_oriented_corners.combination(2).collect_concat do |c1, c2|

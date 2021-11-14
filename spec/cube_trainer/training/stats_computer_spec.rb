@@ -4,7 +4,6 @@ require 'cube_trainer/training/stats_computer'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/letter_pair'
 require 'pry'
-require 'fixtures'
 require 'ostruct'
 
 def construct_mode(mode_type)

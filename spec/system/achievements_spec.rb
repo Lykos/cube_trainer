@@ -2,9 +2,8 @@
 
 require 'rails_helper'
 require 'system/system_spec_helper'
-require 'fixtures'
 
-describe 'messages', type: :system do
+describe 'achievements', type: :system do
   include_context 'with user abc'
   include_context 'with achievement grant'
 

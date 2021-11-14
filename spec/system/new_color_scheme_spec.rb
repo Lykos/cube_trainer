@@ -2,7 +2,6 @@
 
 require 'rails_helper'
 require 'system/system_spec_helper'
-require 'fixtures'
 
 describe 'new color scheme', type: :system do
   include_context 'with user abc'

@@ -3,7 +3,6 @@
 require 'cube_trainer/commutator_reverse_engineer'
 require 'cube_trainer/training/commutator_hinter'
 require 'cube_trainer/commonality_finder'
-require 'cube_trainer/buffer_helper'
 require 'cube_trainer/commutator_checker'
 require 'cube_trainer/training/hint_parser'
 require 'twisty_puzzles'
@@ -309,10 +308,9 @@ module CubeTrainer
       end
 
       def self.maybe_parse_hints(part_type, options)
-        buffer = BufferHelper.determine_buffer(part_type, options)
         hint_parser = new(
           part_type: part_type,
-          buffer: buffer,
+          buffer: options.buffer,
           verbose: options.verbose,
           show_cube_states: options.show_cube_states,
           write_fixes: options.write_fixes,

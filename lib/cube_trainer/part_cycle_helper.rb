@@ -22,11 +22,11 @@ module CubeTrainer
     end
 
     def buffer
-      @mode.parsed_buffer
+      @mode.buffer
     end
 
     def part_cycles_for_part_type
-      buffer_parts = @mode.parsed_buffer.rotations
+      buffer_parts = buffer.rotations
       valid_parts = self.class::PART_TYPE::ELEMENTS - buffer_parts
       valid_parts.permutation(2).map { |ps| TwistyPuzzles::PartCycle.new([buffer] + ps) }
     end

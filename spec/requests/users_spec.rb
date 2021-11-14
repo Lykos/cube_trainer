@@ -2,7 +2,6 @@
 
 require 'rails_helper'
 require 'requests/requests_spec_helper'
-require 'fixtures'
 
 RSpec.describe 'Users', type: :request do
   include_context 'with user abc'

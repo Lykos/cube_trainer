@@ -15,6 +15,7 @@ class ModeType
   include ActiveModel::Model
   include CubeTrainer
   include CubeTrainer::Training
+  include PartHelper
 
   SHOW_INPUT_MODES = %i[picture name].freeze
   MAX_SUPPORTED_CUBE_SIZE = 7
@@ -73,35 +74,34 @@ class ModeType
   end
 
   # TODO: Refactor
-  # rubocop:disable Metrics/MethodLength
-  # rubocop:disable Metrics/AbcSize
-  # rubocop:disable Metrics/CyclomaticComplexity
   def maybe_apply_letter_scheme(letter_scheme, input_representation)
     # TODO: Remove this backwards compatibility logic if possible.
     return input_representation if input_representation.is_a?(LetterPair)
 
+    letters = letters_internal(letter_scheme, input_representation)
+    return input_representation if letters.any?(&:nil?)
+
+    LetterPair.new(letters)
+  end
+
+  def letters_internal(letter_scheme, input_representation)
     case letter_scheme_mode
     when :buffer_plus_2_parts
       raise TypeError unless input_representation.is_a?(TwistyPuzzles::PartCycle)
       raise ArgumentError unless input_representation.length == 3
 
-      LetterPair.new(
-        [
-          letter_scheme.letter(input_representation.parts[1]),
-          letter_scheme.letter(input_representation.parts[2])
-        ]
-      )
+      [
+        letter_scheme.letter(input_representation.parts[1]),
+        letter_scheme.letter(input_representation.parts[2])
+      ]
     when :simple
       raise TypeError unless input_representation.is_a?(TwistyPuzzles::PartCycle)
 
-      LetterPair.new(input_representation.parts.map { |p| letter_scheme.letter(p) })
+      input_representation.parts.map { |p| letter_scheme.letter(p) }
     else
-      input_representation
+      [nil]
     end
   end
-  # rubocop:enable Metrics/MethodLength
-  # rubocop:enable Metrics/AbcSize
-  # rubocop:enable Metrics/CyclomaticComplexity
 
   # Returns a simple version for the current user that can be returned to the frontend.
   def to_simple(user = nil)
@@ -112,7 +112,7 @@ class ModeType
       cube_size_spec: cube_size_spec,
       has_goal_badness: has_goal_badness?,
       show_input_modes: show_input_modes,
-      buffers: buffers&.map(&:to_s),
+      buffers: buffers&.map { |p| part_to_simple(p) },
       has_bounded_inputs: has_bounded_inputs?,
       has_memo_time: has_memo_time?,
       has_setup: has_setup?,

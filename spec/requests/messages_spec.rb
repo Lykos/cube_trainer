@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'requests/requests_spec_helper'
 
 RSpec.describe 'Messages', type: :request do
   include_context 'with user abc'

@@ -74,7 +74,9 @@ export class RailsService {
   }
 
   private serializeUrlParamsPart(value: any, path: UrlParameterPath, partsAccumulator: string[]) {
-    if (typeof value === "object") {
+    if (value === undefined || value === null) {
+      return;
+    } else if (typeof value === "object") {
       if (value instanceof Array) {
 	for (let subValue of value) {
 	  this.serializeUrlParamsPart(subValue, path.withArraySegment(), partsAccumulator);

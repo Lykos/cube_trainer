@@ -17,7 +17,7 @@ module CubeTrainer
     # Helper class to serialize a color scheme as a URL paramer by setting the list of colors.
     class ColorSchemeUrlParameterSerializer
       def self.serialize(value)
-        CubeVisualizer::FACE_SYMBOL_ORDER.map { |s| value.color(s) }.join(',')
+        CubeVisualizer::FACE_SYMBOL_ORDER.map { |s| value.color(s).downcase }.join(',')
       end
     end
 

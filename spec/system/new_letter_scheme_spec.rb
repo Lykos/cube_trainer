@@ -2,7 +2,6 @@
 
 require 'rails_helper'
 require 'system/system_spec_helper'
-require 'fixtures'
 
 describe 'new letter scheme', type: :system do
   include_context 'with user abc'

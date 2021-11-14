@@ -135,7 +135,7 @@ export class NewModeComponent implements OnInit {
 
   get newMode(): NewMode {
     return {
-      modeType: this.modeType.value!.key,
+      modeType: this.modeType.value!,
       name: this.name.value,
       known: !!this.trainingGroup.get('known')?.value,
       showInputMode: this.selectedShowInputMode,
@@ -208,6 +208,7 @@ export class NewModeComponent implements OnInit {
   }
 
   onSubmit() {
+    console.log(`Creating ${JSON.stringify(this.newMode)}`);
     this.modesService.create(this.newMode).subscribe(
       r => {
 	this.snackBar.open(`Mode ${this.newMode.name} Created!`, 'Close');

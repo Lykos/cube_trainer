@@ -3,10 +3,9 @@
 require 'cube_trainer/training/alg_hinter'
 require 'cube_trainer/training/case_solution'
 require 'cube_trainer/alg_name'
-require 'twisty_puzzles'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/sequence_hinter'
-require 'fixtures'
+require 'twisty_puzzles'
 
 class FakeHeterogenousSequenceHinter < Training::HeterogenousSequenceHinter
   def generate_combinations(input)

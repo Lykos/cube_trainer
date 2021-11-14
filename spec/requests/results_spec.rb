@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'fixtures'
 
 RSpec.describe 'Results', type: :request do
   include_context 'with user abc'
@@ -24,7 +23,7 @@ RSpec.describe 'Results', type: :request do
       expect(parsed_body.length).to eq(1)
       parsed_item = parsed_body[0]
       expect(parsed_item['id']).to eq(result.id)
-      expect(Mode.new(parsed_item['mode'])).to eq(mode)
+      expect(parsed_item['mode']).to eq_modulo_symbol_vs_string(mode.to_simple)
       expect(parsed_item['input_representation']).to eq(input.input_representation.to_s)
       expect(parsed_item['time_s']).to eq(10)
       expect(parsed_item['failed_attempts']).to eq(0)
@@ -45,7 +44,7 @@ RSpec.describe 'Results', type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).to eq(result.id)
-      expect(Mode.new(parsed_body['mode'])).to eq(mode)
+      expect(parsed_body['mode']).to eq_modulo_symbol_vs_string(mode.to_simple)
       expect(parsed_body['input_representation']).to eq(input.input_representation.to_s)
       expect(parsed_body['time_s']).to eq(10)
       expect(parsed_body['failed_attempts']).to eq(0)

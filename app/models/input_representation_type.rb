@@ -33,7 +33,7 @@ class InputRepresentationType < ActiveRecord::Type::String
 
     raw_clazz, raw_data = value.split(SEPARATOR, 2)
     clazz = INPUT_REPRESENTATION_NAME_TO_CLASS[raw_clazz]
-    raise ArgumentError, "Unknown input representation class #{type}." unless clazz
+    raise ArgumentError, "Unknown input representation class #{raw_clazz}." unless clazz
 
     clazz.from_raw_data(raw_data)
   end

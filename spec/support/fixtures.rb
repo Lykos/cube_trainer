@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'twisty_puzzles'
+
 shared_context 'with user abc' do
   let(:user) do
     user = User.find_or_initialize_by(
@@ -89,7 +91,7 @@ shared_context 'with mode' do
     mode.update(
       show_input_mode: :name,
       mode_type: :edge_commutators,
-      buffer: 'UF',
+      buffer: TwistyPuzzles::Edge.for_face_symbols(%i[U F]),
       goal_badness: 1.0,
       cube_size: 3,
       known: false

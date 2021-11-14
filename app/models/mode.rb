@@ -1,17 +1,19 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/buffer_helper'
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 require 'mode_type'
 
 # Model for training modes that the user created.
 class Mode < ApplicationRecord
+  include PartHelper
+
   has_many :inputs, dependent: :destroy
   belongs_to :user
 
   attribute :mode_type, :mode_type
   attribute :show_input_mode, :symbol
+  attribute :buffer, :part
   attr_accessor :stat_types, :verbose, :show_cube_states, :write_fixes
   attr_writer :test_comms_mode
 
@@ -21,16 +23,16 @@ class Mode < ApplicationRecord
   validates :mode_type, presence: true
   validates :show_input_mode, presence: true, inclusion: ModeType::SHOW_INPUT_MODES
   validate :show_input_mode_valid
-  validates :buffer, presence: true, if: -> { mode_type.has_buffer? }
-  validates :cube_size, presence: true, if: -> { mode_type.cube_size? }
-  validate :cube_size_valid, if: -> { mode_type.cube_size? }
-  validate :buffer_valid, if: -> { mode_type.has_buffer? }
+  validates :buffer, presence: true, if: -> { mode_type&.has_buffer? }
+  validates :cube_size, presence: true, if: -> { mode_type&.cube_size? }
+  validate :cube_size_valid, if: -> { mode_type&.cube_size? }
+  validate :buffer_valid, if: -> { mode_type&.has_buffer? }
   validates :first_parity_part, :second_parity_part,
             presence: true,
-            if: -> { mode_type.has_parity_parts? }
-  validate :parity_parts_valid, if: -> { mode_type.has_parity_parts? }
-  validates :memo_time_s, presence: true, if: -> { mode_type.has_memo_time? }
-  validate :memo_time_s_valid, if: -> { mode_type.has_memo_time? }
+            if: -> { mode_type&.has_parity_parts? }
+  validate :parity_parts_valid, if: -> { mode_type&.has_parity_parts? }
+  validates :memo_time_s, presence: true, if: -> { mode_type&.has_memo_time? }
+  validate :memo_time_s_valid, if: -> { mode_type&.has_memo_time? }
   has_many :stats, dependent: :destroy
 
   # rubocop:disable Rails/HasAndBelongsToMany
@@ -41,11 +43,6 @@ class Mode < ApplicationRecord
   # rubocop:enable Rails/HasAndBelongsToMany
 
   after_create :grant_mode_achievement
-
-  # TODO: Make it configurable
-  def letter_scheme
-    @letter_scheme ||= TwistyPuzzles::BernhardLetterScheme.new
-  end
 
   # TODO: deprecate
   def test_comm_modes
@@ -77,7 +74,9 @@ class Mode < ApplicationRecord
   end
 
   def maybe_apply_letter_scheme(input_representation)
-    mode_type.maybe_apply_letter_scheme(letter_scheme, input_representation)
+    return input_representation unless user.letter_scheme
+
+    mode_type.maybe_apply_letter_scheme(user.letter_scheme, input_representation)
   end
 
   def picture
@@ -108,12 +107,24 @@ class Mode < ApplicationRecord
     color_scheme.solved_cube_state(cube_size)
   end
 
-  def parsed_buffer
-    part_type.parse(buffer)
-  end
-
   def used_mode(mode_type)
     used_modes.find_by(mode_type: mode_type)
+  end
+
+  # Returns a simple version for the current user that can be returned to the frontend.
+  def to_simple
+    {
+      id: id,
+      mode_type: mode_type.to_simple,
+      name: name,
+      known: known,
+      show_input_mode: show_input_mode,
+      buffer: part_to_simple(buffer),
+      goal_badness: goal_badness,
+      memo_time_s: memo_time_s,
+      cube_size: cube_size,
+      num_results: inputs.joins(:result).count
+    }
   end
 
   private
@@ -123,18 +134,14 @@ class Mode < ApplicationRecord
   end
 
   def show_input_mode_valid
+    return unless mode_type
     return if mode_type.show_input_modes.include?(show_input_mode)
 
     errors.add(:show_input_mode, 'has to be in show input modes of the mode type')
   end
 
   def buffer_valid
-    errors.add(:buffer, "has to be a valid #{part_type}") unless buffer_valid?
-  end
-
-  def buffer_valid?
-    part_type.parse(buffer)
-  rescue ArgumentError # rubocop:disable Lint/SuppressedException
+    errors.add(:buffer, "has to be a #{part_type}") unless buffer.is_a?(part_type)
   end
 
   def cube_size_valid

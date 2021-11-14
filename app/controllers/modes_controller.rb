@@ -16,20 +16,20 @@ class ModesController < ApplicationController
 
   # GET /api/modes
   def index
-    render json: current_user.modes
+    render json: current_user.modes.map(&:to_simple)
   end
 
   # GET /api/modes/1
   def show
-    render json: @mode
+    render json: @mode.to_simple
   end
 
   # POST /api/modes.json
   def create
     if !@mode.valid?
-      render json: @mode, status: :bad_request
+      render json: @mode.to_simple, status: :bad_request
     elsif @mode.save
-      render json: @mode, status: :created
+      render json: @mode.to_simple, status: :created
     else
       render json: @mode.errors, status: :unprocessable_entity
     end
@@ -38,7 +38,7 @@ class ModesController < ApplicationController
   # PATCH/PUT /api/modes/1
   def update
     if @mode.update(mode_params)
-      render json: @mode, status: :ok
+      render json: @mode.to_simple, status: :ok
     else
       render json: @mode.errors, status: :unprocessable_entity
     end
@@ -69,9 +69,12 @@ class ModesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def mode_params
-    params
-      .require(:mode)
-      .permit(:name, :known, :mode_type, :show_input_mode, :buffer, :goal_badness, :cube_size,
-              :memo_time_s, stat_types: [])
+    fixed_params = params
+                   .require(:mode)
+                   .permit(:name, :known, :show_input_mode, :goal_badness, :cube_size,
+                           :memo_time_s, stat_types: [], buffer: [:key], mode_type: [:key])
+    fixed_params[:mode_type] = fixed_params[:mode_type][:key] if fixed_params[:mode_type]
+    fixed_params[:buffer] = fixed_params[:buffer][:key] if fixed_params[:buffer]
+    fixed_params
   end
 end

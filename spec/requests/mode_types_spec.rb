@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'fixtures'
 require 'requests/requests_spec_helper'
-require 'matchers'
 
 RSpec.describe 'ModeTypes', type: :request do
   include_context 'with user abc'

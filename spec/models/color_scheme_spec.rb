@@ -2,7 +2,6 @@
 
 require 'rails_helper'
 require 'twisty_puzzles'
-require 'fixtures'
 
 describe ColorScheme, type: :model do
   include_context 'with user abc'

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'fixtures'
 
 RSpec.describe 'Stats', type: :request do
   include_context 'with user abc'
