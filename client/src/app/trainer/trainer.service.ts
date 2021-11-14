@@ -15,7 +15,11 @@ function constructPath(modeId: number, input?: InputItem) {
 }
 
 function transformedPartialResult(partialResult: PartialResult) {
-  return {timeS: partialResult.duration.toSeconds()};
+  return {
+    timeS: partialResult.duration.toSeconds(),
+    numHints: partialResult.numHints,
+    success: partialResult.success,
+  };
 }
 
 // This is intentionally very small.
