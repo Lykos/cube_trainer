@@ -2,6 +2,14 @@
 
 # Mailer for this Rails app.
 class ApplicationMailer < ActionMailer::Base
-  default from: 'from@example.com'
+  default from: 'no-reply@cubetrainer.org'
   layout 'mailer'
+
+  def default_url_options
+    if Rails.env.production?
+      { host: 'cubetrainer.org' }
+    else
+      { host: 'localhost', port: 4200 }
+    end
+  end
 end

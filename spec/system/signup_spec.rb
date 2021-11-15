@@ -16,11 +16,16 @@ describe 'signup', type: :system do
     fill_in 'Password', with: 'password'
     fill_in 'Confirm Password', with: 'password'
     click_button 'Submit'
+
     expect(page).to have_text('Signup successful!')
 
     user = User.find_by(name: 'system test user')
     user.update(admin_confirmed: true)
     user.save!
+
+    visit "/confirm_email/#{user.confirm_token}"
+    expect(page).to have_text('Email Confirmed')
+    first(:link, 'Login').click
 
     fill_in 'Username', with: 'system test user'
     fill_in 'Password', with: 'password'

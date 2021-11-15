@@ -20,6 +20,10 @@ export class UsersService {
     return this.rails.ajax<void>(HttpVerb.Post, '/users', {user: newUser});
   }
 
+  confirmEmail(token: string): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Post, '/confirm_email', {token});
+  }
+
   update(user: User, userUpdate: UserUpdate): Observable<void> {
     return this.rails.ajax<void>(HttpVerb.Patch, `/users/${user.id}`, {user: userUpdate});
   }
