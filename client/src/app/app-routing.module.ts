@@ -11,6 +11,7 @@ import { SignupComponent } from './users/signup.component';
 import { LoginComponent } from './users/login.component';
 import { LogoutComponent } from './users/logout.component';
 import { AccountDeletedComponent } from './users/account-deleted.component';
+import { ConfirmEmailComponent } from './users/confirm-email.component';
 import { ModesComponent } from './modes/modes.component';
 import { NewModeComponent } from './modes/new-mode.component';
 import { TrainerComponent } from './trainer/trainer.component';
@@ -20,6 +21,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { environment } from './../environments/environment';
 
 const routes: Routes = [
+  { path: 'confirm_email/:token', component: ConfirmEmailComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },

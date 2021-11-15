@@ -17,8 +17,10 @@ describe 'account deletion', type: :system do
     fill_in 'Confirm Password', with: 'password'
     click_button 'Submit'
 
+    expect(page).to have_text('Signup successful!')
+
     user = User.find_by(name: 'system test user')
-    user.update(admin_confirmed: true)
+    user.update(admin_confirmed: true, email_confirmed: true)
     user.save!
 
     fill_in 'Username', with: 'system test user'
