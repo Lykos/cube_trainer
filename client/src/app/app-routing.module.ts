@@ -15,7 +15,11 @@ import { ConfirmEmailComponent } from './users/confirm-email.component';
 import { ModesComponent } from './modes/modes.component';
 import { NewModeComponent } from './modes/new-mode.component';
 import { TrainerComponent } from './trainer/trainer.component';
+import { AboutComponent } from './footer/about.component';
+import { CookiePolicyComponent } from './footer/cookie-policy.component';
 import { PrivacyPolicyComponent } from './footer/privacy-policy.component';
+import { ContactComponent } from './footer/contact.component';
+import { DisclaimerComponent } from './footer/disclaimer.component';
 import { TermsAndConditionsComponent } from './footer/terms-and-conditions.component';
 import { RouterModule, Routes } from '@angular/router';
 import { environment } from './../environments/environment';
@@ -37,8 +41,12 @@ const routes: Routes = [
   { path: 'letter_schemes/new', component: NewLetterSchemeComponent },
   { path: 'modes/new', component: NewModeComponent },
   { path: 'trainer/:modeId', component: TrainerComponent },
+  { path: 'about', component: AboutComponent },
   { path: 'privacy_policy', component: PrivacyPolicyComponent },
+  { path: 'contact', component: ContactComponent },
+  { path: 'cookie_policy', component: CookiePolicyComponent },
   { path: 'terms_and_conditions', component: TermsAndConditionsComponent },
+  { path: 'disclaimer', component: DisclaimerComponent },
 ];
 
 @NgModule({
