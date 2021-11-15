@@ -91,6 +91,7 @@ Rails.application.configure do
 
   config.hosts << 'cube-trainer.herokuapp.com'
   config.hosts << 'www.cubetrainer.org'
+  config.action_mailer.default_url_options = { host: 'cubetrainer.org' }
 
   # Inserts middleware to perform automatic connection switching.
   # The `database_selector` hash is used to pass options to the DatabaseSelector

@@ -5,6 +5,7 @@ class ApplicationMailer < ActionMailer::Base
   default from: 'no-reply@cubetrainer.org'
   layout 'mailer'
 
+  # TODO: Move to configs
   def default_url_options
     if Rails.env.production?
       { host: 'cubetrainer.org' }
