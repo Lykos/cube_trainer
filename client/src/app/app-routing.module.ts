@@ -19,7 +19,7 @@ import { AboutComponent } from './footer/about.component';
 import { CookiePolicyComponent } from './footer/cookie-policy.component';
 import { PrivacyPolicyComponent } from './footer/privacy-policy.component';
 import { ContactComponent } from './footer/contact.component';
-import { ImpressumComponent } from './footer/impressum.component';
+import { DisclaimerComponent } from './footer/disclaimer.component';
 import { TermsAndConditionsComponent } from './footer/terms-and-conditions.component';
 import { RouterModule, Routes } from '@angular/router';
 import { environment } from './../environments/environment';
@@ -46,7 +46,7 @@ const routes: Routes = [
   { path: 'contact', component: ContactComponent },
   { path: 'cookie_policy', component: CookiePolicyComponent },
   { path: 'terms_and_conditions', component: TermsAndConditionsComponent },
-  { path: 'impressum', component: ImpressumComponent },
+  { path: 'disclaimer', component: DisclaimerComponent },
 ];
 
 @NgModule({
