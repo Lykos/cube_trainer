@@ -2,6 +2,7 @@
 
 # Base class for all controllers. Handles things like checking for login.
 class ApplicationController < ActionController::Base
+        include DeviseTokenAuth::Concerns::SetUserByToken
   protect_from_forgery unless: -> { request.format.json? }
   before_action :check_authorized
   before_action :check_current_user_can_read

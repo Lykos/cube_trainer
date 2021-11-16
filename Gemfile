@@ -12,10 +12,12 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # This group contains all dependencies that are needed to run the Rails backend.
 # They are needed for the backend independent of the environment.
 group :development, :test, :production do
+  # For authentication
+  gem 'devise', '~>4.8.0', '>=4.8.0'
+  gem 'devise_token_auth', '~>1.2.0', '>=1.2.0'
+
   # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
   gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
-  # Use Active Model has_secure_password
-  gem 'bcrypt', '~> 3.1.13'
 
   # Core cubing related functionality.
   gem 'twisty_puzzles', '>= 0.0.25'
