@@ -23,8 +23,8 @@ group :development, :test, :production do
   # Database access. TODO: figure out whether this is still needed now that this project uses rails.
   gem 'activerecord'
 
-  # Postgresql support. TODO: figure out whether this is still needed now that this project uses rails.
-  gem 'pg'
+  # Postgresql support.
+  gem 'pg', '~> 1.2.3', '>= 1.2.3'
 end
 
 group :development, :test do
