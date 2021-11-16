@@ -6,9 +6,10 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :confirmable, :omniauthable, :lockable
   include DeviseTokenAuth::Concerns::User
-  validates :name, presence: true, uniqueness: true
-  validates :email, presence: true, uniqueness: true
+
   validate :validate_name_not_equal_to_email
+  validates :name, uniqueness: true
+  validates :email, uniqueness: true
 
   has_many :modes, dependent: :destroy
   has_many :messages, dependent: :destroy
@@ -49,9 +50,10 @@ class User < ApplicationRecord
   private
 
   def validate_name_not_equal_to_email
-    if User.where(email: name).exists?
-      errors.add(:name, 'equals the email of another user')
-    end
+    return unless name
+    return unless User.where(email: name).exists?
+
+    errors.add(:name, 'equals the email of another user')
   end
 
   def send_welcome_message
