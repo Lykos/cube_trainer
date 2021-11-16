@@ -40,6 +40,7 @@ import { NewColorSchemeComponent } from './new-color-scheme.component'
 import { NewLetterSchemeComponent } from './new-letter-scheme.component'
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
+import { AngularTokenModule } from 'angular-token';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { RouterModule } from '@angular/router';
     FormsModule,
     MatTooltipModule,
     UtilsModule,
+    AngularTokenModule.forRoot({}),
   ],
   providers: [
     AuthenticationService,

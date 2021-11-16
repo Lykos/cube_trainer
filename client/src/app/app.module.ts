@@ -22,7 +22,7 @@ import { APP_BASE_HREF } from '@angular/common';
     ModesModule,
     FooterModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
