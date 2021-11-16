@@ -2,6 +2,10 @@
 
 require 'rails_helper'
 
+def extract_first_link_path(email)
+  email.html_part.body.match(%r{(?:"https?://.*?)(/.*?)(?:")}).captures[0]
+end
+
 describe 'signup', type: :system do
   before do
     driven_by(:selenium_chrome_headless)
@@ -23,7 +27,10 @@ describe 'signup', type: :system do
     user.update(admin_confirmed: true)
     user.save!
 
-    visit "/confirm_email/#{user.confirm_token}"
+    confirmation_email = ActionMailer::Base.deliveries.last
+    confirm_path = extract_first_link_path(confirmation_email)
+
+    visit confirm_path
     expect(page).to have_text('Email Confirmed')
     first(:link, 'Login').click
 
