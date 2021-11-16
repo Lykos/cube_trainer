@@ -8,7 +8,7 @@ class ModeTypesController < ApplicationController
   # The mode types that exist are constant and public, so no authorization is required.
   # Note that the assignment of the modes is not public, but this is not handled by
   # this controller.
-  skip_before_action :check_authorized, only: %i[index show]
+  skip_before_action :authenticate_user!, only: %i[index show]
   skip_before_action :check_current_user_can_read, only: %i[index show]
   skip_before_action :check_current_user_can_write, only: %i[index show]
 

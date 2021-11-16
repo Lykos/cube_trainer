@@ -39,12 +39,12 @@ class User < ApplicationRecord
   end
 
   def self.find_for_database_authentication(warden_conditions)
-    username_or_email = warden_conditions[:username_or_email]
-    User.find_by(name: username_or_email) || User.find_by(email: username_or_email)
+    name_or_email = warden_conditions[:name_or_email]
+    User.find_by(name: name_or_email) || User.find_by(email: name_or_email)
   end
 
-  def username_or_email
-    @username_or_email || name || email
+  def name_or_email
+    @name_or_email || name || email
   end
 
   private

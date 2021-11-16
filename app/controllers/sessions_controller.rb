@@ -3,7 +3,7 @@
 # Controller that handles sessions and login.
 class SessionsController < ApplicationController
   # For logging in, we don't check whether the user is already logged in.
-  skip_before_action :check_authorized, only: %i[create]
+  skip_before_action :authenticate_user!, only: %i[create]
   skip_before_action :check_current_user_can_read, only: %i[create]
   skip_before_action :check_current_user_can_write, only: %i[create]
 

@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   scope '/api' do
-    mount_devise_token_auth_for 'User', at: 'auth'
+    mount_devise_token_auth_for 'User', at: 'auth', controllers: {
+                                  registrations: 'auth_overrides/registrations',
+                                  sessions: 'auth_overrides/sessions'
+                                }
     post 'login', to: 'sessions#create'
     post 'logout', to: 'sessions#logout'
     root 'sessions#welcome'

@@ -4,8 +4,10 @@
 class UsersController < ApplicationController
   prepend_before_action :set_user, only: %i[show update destroy]
   before_action :set_confirm_email_user, only: %i[confirm_email]
-  before_action :check_authorized_as_admin, only: [:index]
-  before_action :check_authorized_as_admin_if_setting_admin, only: %i[create update]
+  before_action :authenticate_admin!, only: [:index]
+  before_action :authenticate_admin!, only: %i[create update] if: -> do
+    params[:user] && params[:user][:admin]
+  end
 
   # The actions `create`, `confirm_email` and `name_or_email_exists?` are needed for signup and
   # hence we can't require the user to already be signed in.
@@ -15,7 +17,7 @@ class UsersController < ApplicationController
                      only: %i[create name_or_email_exists? index confirm_email]
   skip_before_action :check_current_user_can_write,
                      only: %i[create name_or_email_exists? index confirm_email]
-  skip_before_action :check_authorized, only: %i[create name_or_email_exists? confirm_email]
+  skip_before_action :authenticate_user!, only: %i[create name_or_email_exists? confirm_email]
 
   # GET /api/username_or_email_exists
   def name_or_email_exists?

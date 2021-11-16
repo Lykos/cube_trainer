@@ -2,30 +2,15 @@
 
 # Base class for all controllers. Handles things like checking for login.
 class ApplicationController < ActionController::Base
-        include DeviseTokenAuth::Concerns::SetUserByToken
+  include DeviseTokenAuth::Concerns::SetUserByToken
   protect_from_forgery unless: -> { request.format.json? }
-  before_action :check_authorized
+  before_action :authenticate_user!
   before_action :check_current_user_can_read
   before_action :check_current_user_can_write, except: %i[show index]
 
-  def current_user
-    User.find_by(id: session[:user_id])
-  end
-
-  def logged_in?
-    !current_user.nil?
-  end
-
-  def admin_logged_in?
-    current_user&.admin?
-  end
-
-  def check_authorized
-    render json: {}, status: :unauthorized unless logged_in?
-  end
-
-  def check_authorized_as_admin
-    render json: {}, status: :unauthorized unless admin_logged_in?
+  def authenticate_admin!
+    authenticate_user!
+    render json: {}, status: :unauthorized unless current_user&.admin?
   end
 
   # Checks that current user can write something.
