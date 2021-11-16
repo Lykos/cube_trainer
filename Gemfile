@@ -5,41 +5,41 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '~> 3.0.0'
 
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
-# Use Puma as the app server
-gem 'puma', '~> 4.3'
-# Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 4.0'
-# Use Active Model has_secure_password
-gem 'bcrypt', '~> 3.1.13'
-
-# Use Active Storage variant
-# gem 'image_processing', '~> 1.2'
-
 # Reduces boot times through caching; required in config/boot.rb
+# Without this, no commands work, so we need it everywhere.
 gem 'bootsnap', '>= 1.4.2', require: false
 
-# This is required as a dependency somewhere, but it shouldn't be.
-# TODO Try to remove this as we don't really need it.
-gem 'webrick'
+# This group contains all dependencies that are needed to run the Rails backend.
+# They are needed for the backend independent of the environment.
+group :development, :test, :production do
+  # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+  gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
+  # Use Active Model has_secure_password
+  gem 'bcrypt', '~> 3.1.13'
 
-gem 'activerecord'
-gem 'colorize'
-gem 'parallel'
-gem 'pg'
-gem 'ruby-filemagic'
-gem 'ruby-progressbar'
-gem 'rubyzip'
-gem 'twisty_puzzles', '>= 0.0.25'
-gem 'wombat'
-gem 'xdg'
+  # Core cubing related functionality.
+  gem 'twisty_puzzles', '>= 0.0.25'
+
+  # Database access. TODO: figure out whether this is still needed now that this project uses rails.
+  gem 'activerecord'
+
+  # Postgresql support. TODO: figure out whether this is still needed now that this project uses rails.
+  gem 'pg'
+end
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
 
   gem 'rspec-rails'
+
+  gem 'colorize'
+  gem 'parallel'
+  gem 'ruby-filemagic'
+  gem 'ruby-progressbar'
+  gem 'rubyzip'
+  gem 'wombat'
+  gem 'xdg'
 end
 
 group :development, :client, :test do
@@ -47,8 +47,16 @@ group :development, :client, :test do
 end
 
 group :development, :production do
+  # Use Puma as the app server
+  gem 'puma', '~> 4.3'
+
   # Pry is needed to inspect the production state via rails console.
   gem 'pry'
+end
+
+group :production do
+  # Use Redis adapter to run Action Cable in production
+  # gem 'redis', '~> 4.0'
 end
 
 group :development do
@@ -60,7 +68,7 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
-group :development, :rubocop do
+group :rubocop do
   gem 'rubocop', '~> 1.7', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
@@ -80,6 +88,3 @@ group :test do
   gem 'rspec-prof'
   gem 'simplecov', require: false
 end
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
