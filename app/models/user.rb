@@ -38,7 +38,7 @@ class User < ApplicationRecord
 
   def validate_name_not_equal_to_email
     return unless name
-    return unless User.where(email: name).exists?
+    return unless User.exists?(email: name)
 
     errors.add(:name, 'equals the email of another user')
   end

@@ -182,4 +182,3 @@ shared_context 'with eve auth headers' do
     eve.create_new_auth_token.merge!(headers)
   end
 end
-

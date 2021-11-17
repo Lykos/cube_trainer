@@ -17,6 +17,8 @@ class AchievementGrantsController < ApplicationController
   private
 
   def set_achievement_grant
-    head :not_found unless (@achievement_grant = current_user.achievement_grants.find_by(id: params[:id]))
+    unless (@achievement_grant = current_user.achievement_grants.find_by(id: params[:id]))
+      head :not_found
+    end
   end
 end

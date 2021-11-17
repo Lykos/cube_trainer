@@ -2,12 +2,25 @@ import { RailsService } from './rails.service';
 import { environment } from './../../environments/environment';
 // @ts-ignore
 import Rails from '@rails/ujs';
+import { HttpClient, HttpClientTestingModule } from '@angular/common/http';
 import { HttpVerb } from './http-verb';
 
 describe('RailsService', () => {
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
+
+  beforEach(() => {
+    TestBed.configureTestingModule({
+      imports: [ HttpClientTestingModule ]
+    });
+
+    // Inject the http service and test controller for each test
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+  });
+  // TODO Use angular tests.
   it('should make an ajax call for an empty object', async () => {
-    const rails = {ajax(param: any) {}};
-    spyOn(rails, 'ajax').and.callFake(function(param: any) {
+    spyOn(httpClient, 'ajax').and.callFake(function(param: any) {
       expect(param?.type).toEqual(HttpVerb.Get);
       expect(param?.url).toEqual(`${environment.apiPrefix}/stuff`);
       expect(param?.dataType).toEqual('json');
@@ -15,15 +28,14 @@ describe('RailsService', () => {
       param.success('successful');
     });
 
-    const result = await new RailsService(rails).ajax(HttpVerb.Get, '/stuff', {}).toPromise();
+    const result = await new RailsService(httpClient).ajax(HttpVerb.Get, '/stuff', {}).toPromise();
 
     expect(result).toEqual('successful');
-    expect(rails.ajax).toHaveBeenCalled();
+    expect(httpClient.ajax).toHaveBeenCalled();
   });
 
   it('should make an ajax call with snake caseified URL parameters', async () => {
-    const rails = {ajax(param: any) {}};
-    spyOn(rails, 'ajax').and.callFake(function(param: any) {
+    spyOn(httpClient, 'ajax').and.callFake(function(param: any) {
       expect(param?.type).toEqual(HttpVerb.Get);
       expect(param?.url).toEqual(`${environment.apiPrefix}/stuff`);
       expect(param?.dataType).toEqual('json');
@@ -35,15 +47,14 @@ describe('RailsService', () => {
       someString: 'abc',
     };
 
-    const result = await new RailsService(rails).ajax(HttpVerb.Get, '/stuff', params).toPromise();
+    const result = await new RailsService(httpClient).ajax(HttpVerb.Get, '/stuff', params).toPromise();
 
     expect(result).toEqual('successful');
-    expect(rails.ajax).toHaveBeenCalled();
+    expect(httpClient.ajax).toHaveBeenCalled();
   });
 
   it('should make an ajax call with snake escaped URL parameters', async () => {
-    const rails = {ajax(param: any) {}};
-    spyOn(rails, 'ajax').and.callFake(function(param: any) {
+    spyOn(httpClient, 'ajax').and.callFake(function(param: any) {
       expect(param?.type).toEqual(HttpVerb.Get);
       expect(param?.url).toEqual(`${environment.apiPrefix}/stuff`);
       expect(param?.dataType).toEqual('json');
@@ -54,15 +65,14 @@ describe('RailsService', () => {
       needsEscape: 'a b c',
     };
 
-    const result = await new RailsService(rails).ajax(HttpVerb.Get, '/stuff', params).toPromise();
+    const result = await new RailsService(httpClient).ajax(HttpVerb.Get, '/stuff', params).toPromise();
 
     expect(result).toEqual('successful');
-    expect(rails.ajax).toHaveBeenCalled();
+    expect(httpClient.ajax).toHaveBeenCalled();
   });
 
   it('should make an ajax call with inner object URL parameters', async () => {
-    const rails = {ajax(param: any) {}};
-    spyOn(rails, 'ajax').and.callFake(function(param: any) {
+    spyOn(httpClient, 'ajax').and.callFake(function(param: any) {
       expect(param?.type).toEqual(HttpVerb.Get);
       expect(param?.url).toEqual(`${environment.apiPrefix}/stuff`);
       expect(param?.dataType).toEqual('json');
@@ -78,15 +88,15 @@ describe('RailsService', () => {
       },
     };
 
-    const result = await new RailsService(rails).ajax(HttpVerb.Get, '/stuff', params).toPromise();
+    const result = await new RailsService(httpClient).ajax(HttpVerb.Get, '/stuff', params).toPromise();
 
     expect(result).toEqual('successful');
-    expect(rails.ajax).toHaveBeenCalled();
+    expect(httpClient.ajax).toHaveBeenCalled();
   });
 
   it('should make an ajax call with array URL parameters', async () => {
-    const rails = {ajax(param: any) {}};
-    spyOn(rails, 'ajax').and.callFake(function(param: any) {
+    const httpClient = {ajax(param: any) {}};
+    spyOn(httpClient, 'ajax').and.callFake(function(param: any) {
       expect(param?.type).toEqual(HttpVerb.Get);
       expect(param?.url).toEqual(`${environment.apiPrefix}/stuff`);
       expect(param?.dataType).toEqual('json');
@@ -97,15 +107,14 @@ describe('RailsService', () => {
       someArray: [1, 2, 3],
     };
 
-    const result = await new RailsService(rails).ajax(HttpVerb.Get, '/stuff', params).toPromise();
+    const result = await new RailsService(httpClient).ajax(HttpVerb.Get, '/stuff', params).toPromise();
 
     expect(result).toEqual('successful');
-    expect(rails.ajax).toHaveBeenCalled();
+    expect(httpClient.ajax).toHaveBeenCalled();
   });
 
   it('should make an ajax call with object array URL parameters', async () => {
-    const rails = {ajax(param: any) {}};
-    spyOn(rails, 'ajax').and.callFake(function(param: any) {
+    spyOn(httpClient, 'ajax').and.callFake(function(param: any) {
       expect(param?.type).toEqual(HttpVerb.Get);
       expect(param?.url).toEqual(`${environment.apiPrefix}/stuff`);
       expect(param?.dataType).toEqual('json');
@@ -116,9 +125,9 @@ describe('RailsService', () => {
       someObjectArray: [{c: 12}],
     };
 
-    const result = await new RailsService(rails).ajax(HttpVerb.Get, '/stuff', params).toPromise();
+    const result = await new RailsService(httpClient).ajax(HttpVerb.Get, '/stuff', params).toPromise();
 
     expect(result).toEqual('successful');
-    expect(rails.ajax).toHaveBeenCalled();
+    expect(httpClient.ajax).toHaveBeenCalled();
   });
 });

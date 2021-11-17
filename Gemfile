@@ -15,13 +15,13 @@ group :development, :test, :production do
   # For authentication
   gem 'devise', '~>4.8.0', '>=4.8.0'
   gem 'devise_token_auth', '~>1.2.0', '>=1.2.0'
-  gem 'omniauth-github'
-  gem 'omniauth-facebook'
-  gem 'omniauth-google-oauth2'
   gem 'omniauth-apple'
+  gem 'omniauth-facebook'
+  gem 'omniauth-github'
+  gem 'omniauth-google-oauth2'
   gem 'omniauth-twitter'
 
-  gem 'rack-cors', :require => 'rack/cors'
+  gem 'rack-cors', require: 'rack/cors'
 
   # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
   gem 'rails', '~> 6.0.2', '>= 6.0.2.2'

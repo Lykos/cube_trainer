@@ -19,7 +19,7 @@ RSpec.describe 'AchievementGrants', type: :request do
   describe 'GET #index' do
     it 'returns http success' do
       achievement_grant
-      get "/api/achievement_grants", headers: user_headers
+      get '/api/achievement_grants', headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be >= 1
@@ -41,7 +41,7 @@ RSpec.describe 'AchievementGrants', type: :request do
     end
 
     it 'returns not found for unknown achievement_grants' do
-      get "/api/achievement_grants/143432332", headers: user_headers
+      get '/api/achievement_grants/143432332', headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 

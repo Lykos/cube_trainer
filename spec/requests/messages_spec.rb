@@ -13,7 +13,7 @@ RSpec.describe 'Messages', type: :request do
   describe 'GET #index' do
     it 'returns http success' do
       user_message
-      get "/api/messages", headers: user_headers
+      get '/api/messages', headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be >= 1
@@ -31,7 +31,7 @@ RSpec.describe 'Messages', type: :request do
     end
 
     it 'returns not found for unknown messages' do
-      get "/api/messages/143432332", headers: user_headers
+      get '/api/messages/143432332', headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 
@@ -51,7 +51,7 @@ RSpec.describe 'Messages', type: :request do
     end
 
     it 'returns not found for unknown messages' do
-      put "/api/messages/143432332", params: { message: { read: true } }, headers: user_headers
+      put '/api/messages/143432332', params: { message: { read: true } }, headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 
@@ -70,7 +70,7 @@ RSpec.describe 'Messages', type: :request do
     end
 
     it 'returns not found for unknown messages' do
-      delete "/api/messages/143432332", headers: user_headers
+      delete '/api/messages/143432332', headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 

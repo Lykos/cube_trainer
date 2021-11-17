@@ -1,14 +1,16 @@
-class AuthOverrides::SessionsController < DeviseTokenAuth::SessionsController
-  before_action :configure_permitted_parameters
+# frozen_string_literal: true
 
-  # POST /api/auth/sign_in
-  def create
-    super
-  end
+module AuthOverrides
+  # Our controller for the sign-in flow of device-token-auth.
+  class SessionsController < DeviseTokenAuth::SessionsController
+    before_action :configure_permitted_parameters
 
-  private
+    # POST /api/auth/sign_in
 
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_in, keys: [:name_or_email, :password])
+    private
+
+    def configure_permitted_parameters
+      devise_parameter_sanitizer.permit(:sign_in, keys: %i[name_or_email password])
+    end
   end
 end

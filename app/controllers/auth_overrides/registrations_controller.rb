@@ -1,20 +1,28 @@
-class AuthOverrides::RegistrationsController < DeviseTokenAuth::RegistrationsController
-  before_action :configure_permitted_parameters
+# frozen_string_literal: true
 
-  # POST /api/auth
-  def create
-    super
-  end
+module AuthOverrides
+  # Our controller for the registration flow of device-token-auth.
+  class RegistrationsController < DeviseTokenAuth::RegistrationsController
+    before_action :configure_permitted_parameters
 
-  # PUT/PATCH /api/auth
-  def update
-    super
-  end
-  
-  private
+    # POST /api/auth
 
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: %i(name email password password_confirmation))
-    devise_parameter_sanitizer.permit(:account_update, keys: %i(name email password current_password password_confirmation))
+    # PUT/PATCH /api/auth
+
+    private
+
+    def configure_permitted_parameters
+      devise_parameter_sanitizer.permit(
+        :sign_up,
+        keys: %i[name email password password_confirmation]
+      )
+      devise_parameter_sanitizer.permit(
+        :account_update,
+        keys: %i[
+          name email password current_password
+          password_confirmation
+        ]
+      )
+    end
   end
 end

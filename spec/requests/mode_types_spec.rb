@@ -27,7 +27,7 @@ RSpec.describe 'ModeTypes', type: :request do
     end
 
     it 'returns not found for unknown mode types' do
-      get '/api/modes/non_existing'
+      get '/api/modes/non_existing', headers: headers
       expect(response).to have_http_status(:not_found)
     end
   end

@@ -10,21 +10,21 @@ RSpec.describe 'Users', type: :request do
   include_context 'with user auth headers'
   include_context 'with eve auth headers'
 
-  describe 'GET #username_or_email_exists?' do
+  describe 'GET #name_or_email_exists?' do
     it 'returns true if a user exists' do
-      get '/api/username_or_email_exists', params: { username_or_email: user.name }, headers: user_headers
+      get '/api/name_or_email_exists', params: { name_or_email: user.name }, headers: user_headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
     end
 
     it 'returns true if an email exists' do
-      get '/api/username_or_email_exists', params: { username_or_email: user.email }, headers: user_headers
+      get '/api/name_or_email_exists', params: { name_or_email: user.email }, headers: user_headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
     end
 
-    it "returns false if an username/email doesn't exist" do
-      get '/api/username_or_email_exists', params: { username_or_email: 'grmlefex' }, headers: user_headers
+    it "returns false if an name/email doesn't exist" do
+      get '/api/name_or_email_exists', params: { name_or_email: 'grmlefex' }, headers: user_headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(false)
     end
@@ -32,7 +32,7 @@ RSpec.describe 'Users', type: :request do
 
   describe 'GET #show' do
     it 'returns http success' do
-      get "/api/user", headers: user_headers
+      get '/api/user', headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(User.new(parsed_body)).to eq(user)
