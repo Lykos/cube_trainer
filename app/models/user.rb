@@ -34,19 +34,6 @@ class User < ApplicationRecord
     achievement_grants.create(achievement: achievement_key)
   end
 
-  def self.shared_stuff_owner
-    User.find_by!(name: 'shared_stuff_owner')
-  end
-
-  def self.find_for_database_authentication(warden_conditions)
-    name_or_email = warden_conditions[:name_or_email]
-    User.find_by(name: name_or_email) || User.find_by(email: name_or_email)
-  end
-
-  def name_or_email
-    @name_or_email || name || email
-  end
-
   private
 
   def validate_name_not_equal_to_email

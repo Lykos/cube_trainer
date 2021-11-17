@@ -11,7 +11,6 @@ import { MessageComponent } from './message.component';
 import { AchievementsComponent } from './achievements.component';
 import { AchievementComponent } from './achievement.component';
 import { AchievementGrantsComponent } from './achievement-grants.component';
-import { AuthenticationService } from './authentication.service';
 import { MessagesService } from './messages.service';
 import { AchievementsService } from './achievements.service';
 import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
@@ -40,7 +39,6 @@ import { NewColorSchemeComponent } from './new-color-scheme.component'
 import { NewLetterSchemeComponent } from './new-letter-scheme.component'
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
-import { AngularTokenModule } from 'angular-token';
 
 @NgModule({
   declarations: [
@@ -78,10 +76,8 @@ import { AngularTokenModule } from 'angular-token';
     FormsModule,
     MatTooltipModule,
     UtilsModule,
-    AngularTokenModule.forRoot({}),
   ],
   providers: [
-    AuthenticationService,
     UsersService,
     MessagesService,
     AchievementsService,

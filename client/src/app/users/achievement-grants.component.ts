@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AchievementGrantsService } from './achievement-grants.service';
 import { AchievementGrant } from './achievement-grant.model';
-import { Router, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-achievement-grants',
@@ -15,20 +13,12 @@ export class AchievementGrantsComponent implements OnInit {
   achievementGrants: AchievementGrant[] = [];
   columnsToDisplay = ['achievement', 'timestamp'];
 
-  constructor(private readonly achievementGrantsService: AchievementGrantsService,
-	      private readonly router: Router,
-	      private readonly activatedRoute: ActivatedRoute) {
-    this.userId$ = this.activatedRoute.params.pipe(map(p => p['userId']));
-  }
-
-  onClick(achievementGrant: AchievementGrant) {
-    this.router.navigate([`/achievements/${achievementGrant.achievement.key}`]);
-  }
+  constructor(private readonly achievementGrantsService: AchievementGrantsService) {}
 
   ngOnInit() {
-    this.userId$.subscribe(userId => {
-      this.achievementGrantsService.list(userId).subscribe((achievementGrants: AchievementGrant[]) =>
-	this.achievementGrants = achievementGrants);
-    });
+    this.achievementGrantsService.list()
+      .subscribe((achievementGrants: AchievementGrant[]) => {
+	this.achievementGrants = achievementGrants
+      });
   }
 }

@@ -27,7 +27,7 @@
       <tr
         mat-row
         *matRowDef="let message; columns: columnsToDisplay"
-        (click)="onClick(message)"
+        [routerLink]="'/messages/' + message.id"
         [class.read-message]="message.read"
         [class.unread-message]="!message.read">
       </tr>

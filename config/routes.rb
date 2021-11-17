@@ -14,11 +14,10 @@ Rails.application.routes.draw do
     resources :achievements, only: [:index, :create, :show, :update, :destroy]
     resource :color_scheme, only: [:create, :show, :update, :destroy]
     resource :letter_scheme, only: [:create, :show, :update, :destroy]
-    get 'users/:user_id/messages/count_unread', to: 'messages#count_unread'
-    resources :users do
-      resources :messages, only: [:index, :create, :show, :update, :destroy]
-      resources :achievement_grants, only: [:index, :show]
-    end
+    get 'messages/count_unread', to: 'messages#count_unread'
+    resources :messages, only: [:index, :create, :show, :update, :destroy]
+    resources :achievement_grants, only: [:index, :show]
+    resource :user
     resources :modes do
       resources :results, only: [:index, :show, :destroy, :update]
       resources :stats, only: [:index, :show, :destroy]

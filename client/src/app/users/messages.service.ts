@@ -22,25 +22,25 @@ export class MessagesService {
     }
   }
 
-  countUnread(userId: number): Observable<number> {
-    return this.rails.ajax<number>(HttpVerb.Get, `/users/${userId}/messages/count_unread`, {})
+  countUnread(): Observable<number> {
+    return this.rails.ajax<number>(HttpVerb.Get, '/messages/count_unread', {})
   }
 
-  markAsRead(userId: number, messageId: number): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Put, `/users/${userId}/messages/${messageId}`, {message: {read: true}})
+  markAsRead(messageId: number): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Put, `/messages/${messageId}`, {message: {read: true}})
   }
 
-  destroy(userId: number, messageId: number): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Delete, `/users/${userId}/messages/${messageId}`, {})
+  destroy(messageId: number): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Delete, `/messages/${messageId}`, {})
   }
 
-  list(userId: number): Observable<Message[]> {
-    return this.rails.ajax<any[]>(HttpVerb.Get, `/users/${userId}/messages`, {}).pipe(
+  list(): Observable<Message[]> {
+    return this.rails.ajax<any[]>(HttpVerb.Get, '/messages', {}).pipe(
       map(messages => messages.map(this.parseMessage)));
   }
 
-  show(userId: number, messageId: number): Observable<Message> {
-    return this.rails.ajax<any>(HttpVerb.Get, `/users/${userId}/messages/${messageId}`, {}).pipe(
+  show(messageId: number): Observable<Message> {
+    return this.rails.ajax<any>(HttpVerb.Get, `/messages/${messageId}`, {}).pipe(
       map(this.parseMessage));
   }
 }

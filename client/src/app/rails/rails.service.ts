@@ -1,7 +1,7 @@
 import { camelCaseToSnakeCase } from '../utils/case';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { RawRailsService } from './raw-rails.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { HttpVerb } from './http-verb';
 import { environment } from './../../environments/environment';
 
@@ -27,7 +27,7 @@ class UrlParameterPath {
   key() {
     return camelCaseToSnakeCase(this.root) + this.path.map(s => `[${camelCaseToSnakeCase(s)}]`).join('');
   }
-
+  
   serializeWithValue(value: any) {
     return `${encodeURIComponent(this.key())}=${encodeURIComponent(value)}`;
   }
@@ -37,40 +37,55 @@ class UrlParameterPath {
   providedIn: 'root',
 })
 export class RailsService {
-  constructor(private readonly rails: RawRailsService) {}
+  constructor(private readonly http: HttpClient) {}
 
   ajax<X>(type: HttpVerb, relativeUrl: string, data: object): Observable<X> {
     const url = environment.apiPrefix + relativeUrl;
-    return new Observable<X>((observer) => {
-      let subscribed = true;
-      const params = this.serializeUrlParams(data);
-      this.rails.ajax({
-	type,
-	url,
-	dataType: 'json',
-	data: params,
-	success: (response: X) => {
-	  if (subscribed) {
-	    observer.next(response);
-	    observer.complete();
-	  }
-	},
-	error: (response: any, statusText: string, xhr: any) => { if (subscribed) { observer.error(xhr); } }
-      });
-      return {
-	unsubscribe() {
-	  subscribed = false;
-	}
-      };
-    });
+    const params = this.serializeUrlParams(data);
+    // TODO clean this up, this is a relict from when we used railsujs where you needed to pass the method.
+    switch (type) {
+      case HttpVerb.Get:
+        return this.http.get<X>(url, {
+          observe: 'body',
+          responseType: 'json',
+          params,
+        });
+      case HttpVerb.Post:
+        return this.http.post<X>(url, params, {
+          observe: 'body',
+          responseType: 'json',
+        });
+      case HttpVerb.Put:
+        return this.http.put<X>(url, params, {
+          observe: 'body',
+          responseType: 'json',
+        });
+      case HttpVerb.Patch:
+        return this.http.patch<X>(url, params, {
+          observe: 'body',
+          responseType: 'json',
+        });
+      case HttpVerb.Delete:
+        return this.http.delete<X>(url, {
+          observe: 'body',
+          responseType: 'json',
+          params,
+        });
+      case HttpVerb.Head:
+        return this.http.head<X>(url, {
+          observe: 'body',
+          responseType: 'json',
+          params,
+        });
+    }
   }
 
-  private serializeUrlParams(data: object) {
-    const partsAccumulator: string[] = [];
+  private serializeUrlParams(data: object): HttpParams {
+    const partsAccumulator: string[] = []
     for (let [key, value] of Object.entries(data)) {
       this.serializeUrlParamsPart(value, new UrlParameterPath(key), partsAccumulator);
     }
-    return partsAccumulator.join('&');
+    return new HttpParams({fromString: partsAccumulator.join('&')});
   }
 
   private serializeUrlParamsPart(value: any, path: UrlParameterPath, partsAccumulator: string[]) {
@@ -79,7 +94,7 @@ export class RailsService {
     } else if (typeof value === "object") {
       if (value instanceof Array) {
 	for (let subValue of value) {
-	  this.serializeUrlParamsPart(subValue, path.withArraySegment(), partsAccumulator);
+          this.serializeUrlParamsPart(subValue, path.withArraySegment(), partsAccumulator);
 	}
       } else {
 	for (let [key, subValue] of Object.entries(value)) {

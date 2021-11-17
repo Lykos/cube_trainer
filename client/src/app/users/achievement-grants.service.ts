@@ -19,8 +19,8 @@ export class AchievementGrantsService {
     }
   }
 
-  list(userId: number): Observable<AchievementGrant[]> {
-    return this.rails.ajax<any[]>(HttpVerb.Get, `/users/${userId}/achievement_grants`, {}).pipe(
+  list(): Observable<AchievementGrant[]> {
+    return this.rails.ajax<any[]>(HttpVerb.Get, '/achievement_grants', {}).pipe(
       map(achievementGrants => achievementGrants.map(this.parseAchievementGrant)));
   }
 }

@@ -5,11 +5,9 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { NewColorScheme } from './new-color-scheme.model';
 import { ColorSchemesService } from './color-schemes.service';
 import { Color } from './color.model';
-import { AuthenticationService } from './authentication.service';
 import { Face } from './face.model';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { forceValue } from '../utils/optional';
 
 @Component({
   selector: 'cube-trainer-color-scheme',
@@ -27,8 +25,7 @@ export class NewColorSchemeComponent implements OnInit {
     D: Color.Yellow,
   }
 
-  constructor(private readonly authenticationService: AuthenticationService,
-	      private readonly formBuilder: FormBuilder,
+  constructor(private readonly formBuilder: FormBuilder,
               private readonly colorSchemesService: ColorSchemesService,
 	      private readonly snackBar: MatSnackBar,
 	      private readonly router: Router) {}
@@ -71,9 +68,7 @@ export class NewColorSchemeComponent implements OnInit {
       .subscribe(r => {
         this.colorSchemesService.create(this.newColorScheme).subscribe(r => {
           this.snackBar.open(message, 'Close');
-          this.authenticationService.currentUser$.subscribe(user => {
-            this.router.navigate([`/users/${forceValue(user).id}`]);
-          });
+          this.router.navigate(['/user']);
         });
       });
   }

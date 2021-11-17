@@ -1,31 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { DeleteAccountConfirmationDialogComponent } from './delete-account-confirmation-dialog.component';
-import { AuthenticationService } from './authentication.service';
 import { UsersService } from './users.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { User } from './user.model';
-import { Optional, ifPresent } from '../utils/optional';
+import { Optional, ifPresent, none, some } from '../utils/optional';
 
 @Component({
   selector: 'cube-trainer-delete-account-button',
   templateUrl: './delete-account-button.component.html',
 })
 export class DeleteAccountButtonComponent implements OnInit {
-  user!: Optional<User>;
+  user: Optional<User> = none;
 
   constructor(private readonly usersService: UsersService,
 	      private readonly dialog: MatDialog,
 	      private readonly snackBar: MatSnackBar,
-              private readonly router: Router,
-              private readonly authenticationService: AuthenticationService) {}  
+              private readonly router: Router) {}  
 
   ngOnInit() {
-    this.authenticationService.currentUser$.subscribe(
-      (user) => {
-	this.user = user;
-      });
+    this.usersService.show().subscribe(user => {
+      this.user = some(user);
+    });
   }
 
   onDeleteAccount() {
@@ -41,9 +38,9 @@ export class DeleteAccountButtonComponent implements OnInit {
   }
 
   private reallyDeleteAccount(user: User) {
-    this.usersService.destroy(user.id).subscribe(r => {
+    this.usersService.destroy().subscribe(r => {
       this.snackBar.open(`User ${user.name} with all its data deleted`, 'Close');
-      this.authenticationService.logout();
+      this.usersService.logout();
       this.router.navigate(['account_deleted']);
     });
   }

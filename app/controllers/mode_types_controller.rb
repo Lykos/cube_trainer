@@ -9,8 +9,6 @@ class ModeTypesController < ApplicationController
   # Note that the assignment of the modes is not public, but this is not handled by
   # this controller.
   skip_before_action :authenticate_user!, only: %i[index show]
-  skip_before_action :check_current_user_can_read, only: %i[index show]
-  skip_before_action :check_current_user_can_write, only: %i[index show]
 
   # GET /api/mode_types
   def index

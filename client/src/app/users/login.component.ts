@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from './authentication.service';
+import { UsersService } from './users.service';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -11,7 +11,7 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   loginFailed = false;
 
-  constructor(private readonly authenticationService: AuthenticationService,
+  constructor(private readonly usersService: UsersService,
 	      private readonly router: Router,
 	      private readonly formBuilder: FormBuilder) {}
 
@@ -21,13 +21,13 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      usernameOrEmail: ['', Validators.required],
+      email: ['', Validators.required],
       password: ['', Validators.required],
     });
   }
 
   onSubmit() {
-    this.authenticationService.login(this.usernameOrEmail.value, this.password.value)
+    this.usersService.login(this.email.value, this.password.value)
       .subscribe(
 	r => {
 	  this.router.navigate(['/modes']);
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
       );
   }
 
-  get usernameOrEmail() { return this.loginForm.get('usernameOrEmail')!; }
+  get email() { return this.loginForm.get('email')!; }
 
   get password() { return this.loginForm.get('password')!; }
 }

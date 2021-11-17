@@ -14,7 +14,7 @@
     </a>
   </ng-container>
   <ng-template #loggedInBlock>
-    <a mat-button [routerLink]="userPath" [matBadge]="unreadMessagesBadge" matBadgeColor="accent">
+    <a mat-button routerLink="/user" [matBadge]="unreadMessagesBadge" matBadgeColor="accent">
       {{userName}}
     </a>
     <a mat-button routerLink="/logout">

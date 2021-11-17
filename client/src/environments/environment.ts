@@ -5,6 +5,7 @@
 export const environment = {
   apiPrefix: '/api',
   production: false,
+  apiBase: 'http://localhost:3000/api',
 };
 
 /*

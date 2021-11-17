@@ -6,5 +6,4 @@ export interface NewUser {
   readonly email: string;
   readonly password: string;
   readonly passwordConfirmation: string;
-  readonly admin?: boolean;
 }

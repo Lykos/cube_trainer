@@ -25,7 +25,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { environment } from './../environments/environment';
 
 const routes: Routes = [
-  { path: 'confirm_email/:token', component: ConfirmEmailComponent },
+  { path: 'confirm_email', component: ConfirmEmailComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },
@@ -33,10 +33,10 @@ const routes: Routes = [
   { path: 'modes', component: ModesComponent },
   { path: 'achievements', component: AchievementsComponent },
   { path: 'achievements/:achievementKey', component: AchievementComponent },
-  { path: 'users/:userId', component: UserComponent },
-  { path: 'users/:userId/achievement_grants', component: AchievementGrantsComponent },
-  { path: 'users/:userId/messages', component: MessagesComponent },
-  { path: 'users/:userId/messages/:messageId', component: MessageComponent },
+  { path: 'user', component: UserComponent },
+  { path: 'achievement_grants', component: AchievementGrantsComponent },
+  { path: 'messages', component: MessagesComponent },
+  { path: 'messages/:messageId', component: MessageComponent },
   { path: 'color_schemes/new', component: NewColorSchemeComponent },
   { path: 'letter_schemes/new', component: NewLetterSchemeComponent },
   { path: 'modes/new', component: NewModeComponent },

@@ -11,7 +11,6 @@ import { map } from 'rxjs/operators';
   templateUrl: './message.component.html'
 })
 export class MessageComponent implements OnInit {
-  userId$: Observable<number>;
   messageId$: Observable<number>;
   message: Message | undefined = undefined;
 
@@ -19,7 +18,6 @@ export class MessageComponent implements OnInit {
 	      private readonly router: Router,
 	      private readonly snackBar: MatSnackBar,
 	      private readonly activatedRoute: ActivatedRoute) {
-    this.userId$ = this.activatedRoute.params.pipe(map(p => p['userId']));
     this.messageId$ = this.activatedRoute.params.pipe(map(p => p['messageId']));
   }
 
@@ -35,30 +33,21 @@ export class MessageComponent implements OnInit {
     return this.message?.body;
   }
 
-  onAll() {
-    this.userId$.subscribe(userId => {    
-      this.router.navigate([`/users/${userId}/messages`]);
-    });
-  }
-
   onDelete() {
-    this.userId$.subscribe(userId => {
-      this.messageId$.subscribe(messageId => {
-	this.messagesService.destroy(userId, messageId).subscribe(() => {
-	  this.snackBar.open(`Message ${this.message!.title} deleted!`, 'Close');
-	  this.router.navigate([`/users/${userId}/messages`]);
-	});
+    this.messageId$.subscribe(messageId => {
+      this.messagesService.destroy(messageId).subscribe(() => {
+	this.snackBar.open(`Message ${this.message!.title} deleted!`, 'Close');
+	this.router.navigate(['/messages']);
       });      
     });
   }
 
   ngOnInit() {
-    this.userId$.subscribe(userId => {
-      this.messageId$.subscribe(messageId => {
-	this.messagesService.show(userId, messageId).subscribe((message: Message) =>
-	  this.message = message);
-	this.messagesService.markAsRead(userId, messageId).subscribe(r => {});
+    this.messageId$.subscribe(messageId => {
+      this.messagesService.show(messageId).subscribe((message: Message) => {
+	this.message = message
       });
+      this.messagesService.markAsRead(messageId).subscribe(r => {});
     });
   }
 }

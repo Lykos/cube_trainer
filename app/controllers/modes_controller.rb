@@ -5,11 +5,6 @@ class ModesController < ApplicationController
   prepend_before_action :set_mode, only: %i[show update destroy]
   prepend_before_action :set_new_mode, only: %i[create]
 
-  # The owner is undefined for these actions, so the check wouldn't work.
-  # But we select only the modes for this user, so the check isn't necessary.
-  skip_before_action :check_current_user_can_read, only: %i[name_exists_for_user? index]
-  skip_before_action :check_current_user_can_write, only: %i[name_exists_for_user? index]
-
   def name_exists_for_user?
     render json: current_user.modes.exists?(name: params[:mode_name]), status: :ok
   end

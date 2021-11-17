@@ -12,8 +12,6 @@ class PartTypesController < ApplicationController
 
   # The part types that exist are constant and public, so no authorization is required.
   skip_before_action :authenticate_user!, only: %i[index]
-  skip_before_action :check_current_user_can_read, only: %i[index]
-  skip_before_action :check_current_user_can_write, only: %i[index]
 
   # GET /api/parts
   def index

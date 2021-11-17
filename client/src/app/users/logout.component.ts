@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from './authentication.service';
+import { UsersService } from './users.service';
 
 @Component({
   selector: 'cube-trainer-logout',
   templateUrl: './logout.component.html',
 })
 export class LogoutComponent implements OnInit {
-  constructor(private readonly authenticationService: AuthenticationService) {}  
+  constructor(private readonly usersService: UsersService) {}  
 
   ngOnInit() {
-    this.authenticationService.logout();
+    this.usersService.logout();
   }
 }

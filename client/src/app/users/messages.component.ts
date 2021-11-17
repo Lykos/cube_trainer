@@ -3,10 +3,8 @@ import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { MessagesService } from './messages.service';
 import { formatDate } from '@angular/common';
 import { Message } from './message.model';
-import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable, zip } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { zip } from 'rxjs';
 
 @Component({
   selector: 'cube-trainer-messages',
@@ -14,57 +12,41 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./messages.component.css']
 })
 export class MessagesComponent implements OnInit {
-  userId$: Observable<number>;
   messages: Message[] = [];
   columnsToDisplay = ['select', 'title', 'timestamp'];
   selection = new SelectionModel<Message>(true, []);
 
   constructor(private readonly messagesService: MessagesService,
 	      @Inject(LOCALE_ID) private readonly locale: string,
-	      private readonly router: Router,
-	      private readonly snackBar: MatSnackBar,
-	      private readonly activatedRoute: ActivatedRoute) {
-    this.userId$ = this.activatedRoute.params.pipe(map(p => p['userId']));
-  }
-
-  onClick(message: Message) {
-    this.userId$.subscribe(userId => {
-      this.router.navigate([`/users/${userId}/messages/${message.id}`]);
-    });
-  }
+	      private readonly snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.update();
   }
     
   update() {
-    this.userId$.subscribe(userId => {
-      this.messagesService.list(userId).subscribe((messages: Message[]) =>
-	this.messages = messages);
+    this.messagesService.list().subscribe((messages: Message[]) => {
+      this.messages = messages;
     });
   }
 
   onMarkAsReadSelected() {
-    this.userId$.subscribe(modeId => {
-      const observables = this.selection.selected.map(message =>
-	this.messagesService.markAsRead(modeId, message.id));
-      zip(...observables).subscribe((voids) => {
-	this.selection.clear();
-	this.snackBar.open(`Marked ${observables.length} messages as read!`, 'Close');
-	this.update();
-      });
+    const observables = this.selection.selected.map(
+      message => this.messagesService.markAsRead(message.id));
+    zip(...observables).subscribe((voids) => {
+      this.selection.clear();
+      this.snackBar.open(`Marked ${observables.length} messages as read!`, 'Close');
+      this.update();
     });
   }
 
   onDeleteSelected() {
-    this.userId$.subscribe(modeId => {
-      const observables = this.selection.selected.map(message =>
-	this.messagesService.destroy(modeId, message.id));
-      zip(...observables).subscribe((voids) => {
-	this.selection.clear();
-	this.snackBar.open(`Deleted ${observables.length} messages!`, 'Close');
-	this.update();
-      });
+    const observables = this.selection.selected.map(
+      message => this.messagesService.destroy(message.id));
+    zip(...observables).subscribe((voids) => {
+      this.selection.clear();
+      this.snackBar.open(`Deleted ${observables.length} messages!`, 'Close');
+      this.update();
     });
   }
 

@@ -3,9 +3,9 @@
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <mat-card-content>
       <mat-form-field appearance="fill">
-        <mat-label>Username or Email</mat-label>
-        <input matInput type="text" formControlName="usernameOrEmail">
-        <mat-error *ngIf="relevantInvalid(usernameOrEmail) && usernameOrEmail.errors && usernameOrEmail.errors['required']">
+        <mat-label>Email</mat-label>
+        <input matInput type="text" formControlName="email">
+        <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['required']">
           You must provide a <strong>username</strong> or <strong>email</strong>.
         </mat-error>
       </mat-form-field>

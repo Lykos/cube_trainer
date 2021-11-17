@@ -4,9 +4,6 @@ import { User } from './user.model';
 import { FormGroup, AbstractControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserUpdate } from './user-update.model';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router';
 import { UserFormCreator } from './user-form-creator.service';
 import { Router } from '@angular/router';
 
@@ -15,18 +12,13 @@ import { Router } from '@angular/router';
   templateUrl: './user.component.html'
 })
 export class UserComponent implements OnInit {
-  userId$: Observable<number>;
-  userId!: number;
   user!: User;
   editUserForm!: FormGroup;
 
   constructor(private readonly usersService: UsersService,
-	      private readonly activatedRoute: ActivatedRoute,
 	      private readonly userFormCreator: UserFormCreator,
 	      private readonly snackBar: MatSnackBar,
-	      private readonly router: Router) {
-    this.userId$ = this.activatedRoute.params.pipe(map(p => p['userId']));
-  }
+	      private readonly router: Router) {}
 
   get userUpdate(): UserUpdate {
     return {
@@ -50,17 +42,14 @@ export class UserComponent implements OnInit {
   }
 
   onSubmit() {
-    this.usersService.update(this.user!, this.userUpdate).subscribe(r => {
+    this.usersService.update(this.userUpdate).subscribe(r => {
       this.updateUser();
       this.snackBar.open('Update successful!', 'Close');
     });
   }
     
   ngOnInit() {
-    this.userId$.subscribe(userId => {
-      this.userId = userId;
-      this.updateUser();
-    });
+    this.updateUser();
   }
 
   onCreateColorScheme() {
@@ -72,7 +61,7 @@ export class UserComponent implements OnInit {
   }
 
   updateUser() {
-    this.usersService.show(this.userId).subscribe(user => {
+    this.usersService.show().subscribe(user => {
       this.user = user;
       this.editUserForm = this.userFormCreator.createUserForm(user);
     });

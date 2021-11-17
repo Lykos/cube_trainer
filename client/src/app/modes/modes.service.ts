@@ -66,6 +66,7 @@ export class ModesService {
   }
 
   list(): Observable<Mode[]> {
+    console.log('Initiating request');
     return this.rails.ajax<Mode[]>(HttpVerb.Get, '/modes', {}).pipe(
       map(modes => modes.map(parseMode)));
   }

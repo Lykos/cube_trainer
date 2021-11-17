@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../users/authentication.service';
+import { UsersService } from '../users/users.service';
 import { MessagesService } from '../users/messages.service';
 import { User } from '../users/user.model';
-import { Optional, none, hasValue, mapOptional, orElse } from '../utils/optional';
+import { Optional, some, none, hasValue, mapOptional, orElse } from '../utils/optional';
+import { map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'cube-trainer-toolbar',
@@ -13,7 +15,7 @@ export class ToolbarComponent implements OnInit {
   user: Optional<User> = none;
   unreadMessagesCount: number | undefined = undefined;
 
-  constructor(private readonly authenticationService: AuthenticationService,
+  constructor(private readonly usersService: UsersService,
 	      private readonly messagesService: MessagesService) {
   }
 
@@ -25,14 +27,6 @@ export class ToolbarComponent implements OnInit {
     return orElse(mapOptional(this.user, u => u.name), '');
   }
 
-  get userId() {
-    return orElse(mapOptional(this.user, u => u.id), 0);
-  }
-
-  get userPath() {
-    return `/users/${this.userId}`;
-  }
-
   get loggedIn() {
     return hasValue(this.user);
   }
@@ -42,11 +36,14 @@ export class ToolbarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.authenticationService.currentUser$.subscribe(
+    this.usersService.show().pipe(
+      map(user => some(user)),
+      catchError(err => of(none)),
+    ).subscribe(
       (user) => {
 	this.user = user;
 	mapOptional(user, u => {
-	  this.messagesService.countUnread(u.id).subscribe(count => this.unreadMessagesCount = count);
+	  this.messagesService.countUnread().subscribe(count => this.unreadMessagesCount = count);
 	});
       });
   }

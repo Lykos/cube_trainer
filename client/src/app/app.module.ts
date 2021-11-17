@@ -1,4 +1,7 @@
 import { AppRoutingModule } from './app-routing.module';
+import { HttpClientModule } from '@angular/common/http';
+import { AngularTokenModule } from 'angular-token';
+import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
@@ -23,9 +26,15 @@ import { APP_BASE_HREF } from '@angular/common';
     FooterModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    HttpClientModule,
+    AngularTokenModule.forRoot({
+      loginField: 'email',
+      apiBase: environment.apiPrefix,
+    }),
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},
+    AngularTokenModule,    
   ],
   bootstrap: [AppComponent]
 })

@@ -5,12 +5,10 @@ import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
 import { NewLetterScheme } from './new-letter-scheme.model';
 import { LetterSchemeMapping } from './letter-scheme-base.model';
 import { LetterSchemesService } from './letter-schemes.service';
-import { AuthenticationService } from './authentication.service';
 import { PartTypesService } from './part-types.service';
 import { PartType } from './part-type.model';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { forceValue } from '../utils/optional';
 
 @Component({
   selector: 'cube-trainer-letter-scheme',
@@ -20,8 +18,7 @@ export class NewLetterSchemeComponent implements OnInit {
   letterSchemeForm?: FormGroup;
   partTypes!: PartType[];
 
-  constructor(private readonly authenticationService: AuthenticationService,
-	      private readonly formBuilder: FormBuilder,
+  constructor(private readonly formBuilder: FormBuilder,
               private readonly partTypesService: PartTypesService,
               private readonly letterSchemesService: LetterSchemesService,
 	      private readonly snackBar: MatSnackBar,
@@ -76,9 +73,7 @@ export class NewLetterSchemeComponent implements OnInit {
       .subscribe(r => {
         this.letterSchemesService.create(this.newLetterScheme).subscribe(r => {
           this.snackBar.open(message, 'Close');
-          this.authenticationService.currentUser$.subscribe(user => {
-            this.router.navigate([`/users/${forceValue(user).id}`]);
-          });
+          this.router.navigate(['/user']);
         });
       });
   }
