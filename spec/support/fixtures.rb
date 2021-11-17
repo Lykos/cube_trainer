@@ -15,6 +15,7 @@ shared_context 'with user abc' do
       password_confirmation: 'password'
     )
     user.save!
+    user.confirm
     user
   end
 end
@@ -32,6 +33,7 @@ shared_context 'with user eve' do
       password_confirmation: 'password'
     )
     user.save!
+    user.confirm
     user
   end
 end
@@ -50,6 +52,7 @@ shared_context 'with user admin' do
       admin: true
     )
     user.save!
+    user.confirm
     user
   end
 end
@@ -157,3 +160,26 @@ shared_context 'with result' do
     result
   end
 end
+
+shared_context 'with headers' do
+  let(:headers) { { ACCEPT: 'application/json' } }
+end
+
+shared_context 'with user auth headers' do
+  include_context 'with headers'
+  include_context 'with user abc'
+
+  let(:user_headers) do
+    user.create_new_auth_token.merge!(headers)
+  end
+end
+
+shared_context 'with eve auth headers' do
+  include_context 'with headers'
+  include_context 'with user eve'
+
+  let(:eve_headers) do
+    eve.create_new_auth_token.merge!(headers)
+  end
+end
+

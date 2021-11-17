@@ -8,31 +8,27 @@ RSpec.describe 'LetterSchemes', type: :request do
   include_context 'with user eve'
   include_context 'with letter scheme'
   include_context 'with headers'
-
-  before do
-    post_login(user)
-  end
+  include_context 'with user auth headers'
+  include_context 'with eve auth headers'
 
   describe 'GET #show' do
     it 'returns http success' do
       letter_scheme
-      get '/api/letter_scheme', headers: headers
+      get '/api/letter_scheme', headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body).to eq_modulo_symbol_vs_string(letter_scheme.to_simple)
     end
 
     it 'returns not found for user with no letter scheme' do
-      post_login(eve)
-      get '/api/letter_scheme', headers: headers
+      get '/api/letter_scheme', headers: eve_headers
       expect(response).to have_http_status(:not_found)
     end
   end
 
   describe 'POST #create' do
     it 'returns http success' do
-      post_login(eve)
-      post '/api/letter_scheme', headers: headers, params: {
+      post '/api/letter_scheme', headers: eve_headers, params: {
         letter_scheme: {
           mappings: [{ part: { key: 'Edge:UB' }, letter: 'd' }]
         }
@@ -45,7 +41,7 @@ RSpec.describe 'LetterSchemes', type: :request do
 
     it 'returns unprocessable entity if the user already has a letter scheme' do
       letter_scheme
-      post '/api/letter_scheme', params: {
+      post '/api/letter_scheme', headers: user_headers, params: {
         letter_scheme: {
           mappings: [{ part: { key: 'Edge:UB' }, letter: 'a' }]
         }
@@ -54,8 +50,7 @@ RSpec.describe 'LetterSchemes', type: :request do
     end
 
     it 'returns bad request for invalid letter_schemes' do
-      post_login(eve)
-      post '/api/letter_scheme', params: {
+      post '/api/letter_scheme', headers: eve_headers, params: {
         letter_scheme: {
           mappings: [{ part: { key: 'Edge:UB' }, letter: 'long' }]
         }
@@ -67,7 +62,7 @@ RSpec.describe 'LetterSchemes', type: :request do
   describe 'PUT #update' do
     it 'returns http success' do
       letter_scheme
-      put '/api/letter_scheme', headers: headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UB' }, letter: 'd' }] } }
+      put '/api/letter_scheme', headers: user_headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UB' }, letter: 'd' }] } }
       expect(response).to have_http_status(:success)
       letter_scheme.reload
       expect(letter_scheme.letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('a')
@@ -76,14 +71,13 @@ RSpec.describe 'LetterSchemes', type: :request do
 
     it 'returns unprocessable entity for invalid updates' do
       letter_scheme
-      put '/api/letter_scheme', headers: headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UB' }, letter: 'long' }] } }
+      put '/api/letter_scheme', headers: user_headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UB' }, letter: 'long' }] } }
       expect(response).to have_http_status(:unprocessable_entity)
       expect(LetterScheme.find(letter_scheme.id).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('a')
     end
 
     it 'returns not found for user with no letter scheme' do
-      post_login(eve)
-      put '/api/letter_scheme', headers: headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UB' }, letter: 'd' }] } }
+      put '/api/letter_scheme', headers: eve_headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UB' }, letter: 'd' }] } }
       expect(response).to have_http_status(:not_found)
       expect(LetterScheme.find(letter_scheme.id).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('a')
     end
@@ -92,14 +86,13 @@ RSpec.describe 'LetterSchemes', type: :request do
   describe 'DELETE #destroy' do
     it 'returns http success' do
       letter_scheme
-      delete '/api/letter_scheme', headers: headers
+      delete '/api/letter_scheme', headers: user_headers
       expect(response).to have_http_status(:success)
       expect(LetterScheme.exists?(letter_scheme.id)).to be(false)
     end
 
     it 'returns not found for user with no letter scheme' do
-      post_login(eve)
-      delete '/api/letter_scheme', headers: headers
+      delete '/api/letter_scheme', headers: eve_headers
       expect(response).to have_http_status(:not_found)
     end
   end

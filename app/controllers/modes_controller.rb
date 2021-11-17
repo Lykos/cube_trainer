@@ -2,8 +2,8 @@
 
 # Controller for training modes that the user created.
 class ModesController < ApplicationController
-  prepend_before_action :set_mode, only: %i[show update destroy]
-  prepend_before_action :set_new_mode, only: %i[create]
+  before_action :set_mode, only: %i[show update destroy]
+  before_action :set_new_mode, only: %i[create]
 
   def name_exists_for_user?
     render json: current_user.modes.exists?(name: params[:mode_name]), status: :ok
@@ -51,7 +51,7 @@ class ModesController < ApplicationController
   private
 
   def set_mode
-    head :not_found unless (@mode = Mode.find_by(id: params[:id]))
+    head :not_found unless (@mode = current_user.modes.find_by(id: params[:id]))
   end
 
   def set_new_mode

@@ -8,16 +8,14 @@ RSpec.describe 'Results', type: :request do
   include_context 'with input'
   include_context 'with result'
   include_context 'with headers'
-
-  before do
-    post_login(user)
-  end
+  include_context 'with user auth headers'
+  include_context 'with eve auth headers'
 
   describe 'GET #index' do
     it 'returns http success' do
       Result.delete_all
       result
-      get "/api/modes/#{mode.id}/results", params: { offset: 0, limit: 100 }, headers: headers
+      get "/api/modes/#{mode.id}/results", params: { offset: 0, limit: 100 }, headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to eq(1)
@@ -32,15 +30,14 @@ RSpec.describe 'Results', type: :request do
     end
 
     it 'returns not found for another user' do
-      post_login(eve.name, eve.password)
-      get "/api/modes/#{mode.id}/results", headers: headers
+      get "/api/modes/#{mode.id}/results", headers: eve_headers
       expect(response).to have_http_status(:not_found)
     end
   end
 
   describe 'GET #show' do
     it 'returns http success' do
-      get "/api/modes/#{mode.id}/results/#{result.id}", headers: headers
+      get "/api/modes/#{mode.id}/results/#{result.id}", headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).to eq(result.id)
@@ -53,32 +50,30 @@ RSpec.describe 'Results', type: :request do
     end
 
     it 'returns not found for unknown results' do
-      get "/api/modes/#{mode.id}/results/143432332"
+      get "/api/modes/#{mode.id}/results/143432332", headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for another user' do
-      post_login(eve.name, eve.password)
-      get "/api/modes/#{mode.id}/results", headers: headers
+      get "/api/modes/#{mode.id}/results", headers: eve_headers
       expect(response).to have_http_status(:not_found)
     end
   end
 
   describe 'DELETE #destroy' do
     it 'returns http success' do
-      delete "/api/modes/#{mode.id}/results/#{result.id}"
+      delete "/api/modes/#{mode.id}/results/#{result.id}", headers: user_headers
       expect(response).to have_http_status(:success)
       expect(Result.exists?(result.id)).to be(false)
     end
 
     it 'returns not found for unknown results' do
-      delete "/api/modes/#{mode.id}/results/143432332"
+      delete "/api/modes/#{mode.id}/results/143432332", headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for other users' do
-      post_login(eve.name, eve.password)
-      delete "/api/modes/#{mode.id}/results/#{result.id}"
+      delete "/api/modes/#{mode.id}/results/#{result.id}", headers: eve_headers
       expect(response).to have_http_status(:not_found)
       expect(Result.exists?(result.id)).to be(true)
     end

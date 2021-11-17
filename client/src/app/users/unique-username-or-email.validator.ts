@@ -13,7 +13,7 @@ export class UniqueUsernameOrEmailValidator {
       if (previousValidValue && ctrl.value === previousValidValue) {
 	return of(null);
       }
-      return this.usersService.isUsernameOrEmailTaken(ctrl.value).pipe(
+      return this.usersService.isNameOrEmailTaken(ctrl.value).pipe(
 	map(isTaken => (isTaken ? { uniqueUsernameOrEmail: true } : null)),
 	catchError(() => of(null))
       );

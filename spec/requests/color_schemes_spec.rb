@@ -8,31 +8,27 @@ RSpec.describe 'ColorSchemes', type: :request do
   include_context 'with user eve'
   include_context 'with color scheme'
   include_context 'with headers'
-
-  before do
-    post_login(user)
-  end
+  include_context 'with user auth headers'
+  include_context 'with eve auth headers'
 
   describe 'GET #show' do
     it 'returns http success' do
       color_scheme
-      get '/api/color_scheme', headers: headers
+      get '/api/color_scheme', headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(ColorScheme.new(parsed_body)).to eq(color_scheme)
     end
 
     it 'returns not found for user with no color scheme' do
-      post_login(eve)
-      get '/api/color_scheme', headers: headers
+      get '/api/color_scheme', headers: eve_headers
       expect(response).to have_http_status(:not_found)
     end
   end
 
   describe 'POST #create' do
     it 'returns http success' do
-      post_login(eve)
-      post '/api/color_scheme', headers: headers, params: {
+      post '/api/color_scheme', headers: eve_headers, params: {
         color_scheme: {
           u: :yellow,
           f: :green,
@@ -50,7 +46,7 @@ RSpec.describe 'ColorSchemes', type: :request do
 
     it 'returns unprocessable entity if the user already has a color scheme' do
       color_scheme
-      post '/api/color_scheme', params: {
+      post '/api/color_scheme', headers: user_headers, params: {
         color_scheme: {
           u: :yellow,
           f: :green,
@@ -64,8 +60,7 @@ RSpec.describe 'ColorSchemes', type: :request do
     end
 
     it 'returns bad request for invalid color_schemes' do
-      post_login(eve)
-      post '/api/color_scheme', params: {
+      post '/api/color_scheme', headers: eve_headers, params: {
         color_scheme: {
           u: :red
         }
@@ -77,7 +72,7 @@ RSpec.describe 'ColorSchemes', type: :request do
   describe 'PUT #update' do
     it 'returns http success' do
       color_scheme
-      put '/api/color_scheme', headers: headers, params: { color_scheme: { d: 'black' } }
+      put '/api/color_scheme', headers: user_headers, params: { color_scheme: { d: 'black' } }
       expect(response).to have_http_status(:success)
       color_scheme.reload
       expect(color_scheme.d).to eq(:black)
@@ -86,14 +81,13 @@ RSpec.describe 'ColorSchemes', type: :request do
 
     it 'returns unprocessable entity for invalid updates' do
       color_scheme
-      put '/api/color_scheme', headers: headers, params: { color_scheme: { u: nil } }
+      put '/api/color_scheme', headers: user_headers, params: { color_scheme: { u: nil } }
       expect(response).to have_http_status(:unprocessable_entity)
       expect(ColorScheme.find(color_scheme.id).u).to eq(:yellow)
     end
 
     it 'returns not found for user with no color scheme' do
-      post_login(eve)
-      put '/api/color_scheme', headers: headers, params: { color_scheme: { d: 'black' } }
+      put '/api/color_scheme', headers: eve_headers, params: { color_scheme: { d: 'black' } }
       expect(response).to have_http_status(:not_found)
       expect(ColorScheme.find(color_scheme.id).u).to eq(:yellow)
     end
@@ -102,14 +96,13 @@ RSpec.describe 'ColorSchemes', type: :request do
   describe 'DELETE #destroy' do
     it 'returns http success' do
       color_scheme
-      delete '/api/color_scheme', headers: headers
+      delete '/api/color_scheme', headers: user_headers
       expect(response).to have_http_status(:success)
       expect(ColorScheme.exists?(color_scheme.id)).to be(false)
     end
 
     it 'returns not found for user with no color scheme' do
-      post_login(eve)
-      delete '/api/color_scheme', headers: headers
+      delete '/api/color_scheme', headers: eve_headers
       expect(response).to have_http_status(:not_found)
     end
   end

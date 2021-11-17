@@ -4,9 +4,9 @@ require 'twisty_puzzles'
 
 # Controller for color schemes the user created.
 class ColorSchemesController < ApplicationController
-  prepend_before_action :set_new_color_scheme, only: %i[create]
-  prepend_before_action :set_color_scheme, only: %i[show update destroy]
-  prepend_before_action :check_no_existing_color_scheme, only: %i[create]
+  before_action :check_no_existing_color_scheme, only: %i[create]
+  before_action :set_new_color_scheme, only: %i[create]
+  before_action :set_color_scheme, only: %i[show update destroy]
 
   # GET /api/color_schemes/1.json
   def show
@@ -55,10 +55,6 @@ class ColorSchemesController < ApplicationController
   def set_new_color_scheme
     @color_scheme = ColorScheme.new(color_scheme_params)
     @color_scheme.user = current_user
-  end
-
-  def owner
-    @color_scheme.user
   end
 
   PERMITTED_FACE_PARAMS =

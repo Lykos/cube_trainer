@@ -4,16 +4,16 @@ require 'twisty_puzzles'
 
 # Controller for letter schemes the user created.
 class LetterSchemesController < ApplicationController
-  prepend_before_action :set_new_letter_scheme, only: %i[create]
-  prepend_before_action :set_letter_scheme, only: %i[show update destroy]
-  prepend_before_action :check_no_existing_letter_scheme, only: %i[create]
+  before_action :check_no_existing_letter_scheme, only: %i[create]
+  before_action :set_new_letter_scheme, only: %i[create]
+  before_action :set_letter_scheme, only: %i[show update destroy]
 
-  # GET /api/letter_scheme.json
+  # GET /api/letter_scheme
   def show
     render json: @letter_scheme.to_simple
   end
 
-  # POST /api/letter_scheme.json
+  # POST /api/letter_scheme
   def create
     if !@letter_scheme.valid?
       render json: @letter_scheme.errors, status: :bad_request
@@ -24,7 +24,7 @@ class LetterSchemesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /api/letter_scheme.json
+  # PATCH/PUT /api/letter_scheme
   def update
     if @letter_scheme.update(letter_scheme_params)
       render json: @letter_scheme, status: :ok
@@ -33,7 +33,7 @@ class LetterSchemesController < ApplicationController
     end
   end
 
-  # DELETE /api/letter_scheme.json
+  # DELETE /api/letter_scheme
   def destroy
     if @letter_scheme.destroy
       head :no_content
@@ -55,10 +55,6 @@ class LetterSchemesController < ApplicationController
 
   def set_letter_scheme
     head :not_found unless (@letter_scheme = current_user.letter_scheme)
-  end
-
-  def owner
-    @letter_scheme.user
   end
 
   # Only allow a list of trusted parameters through.

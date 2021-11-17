@@ -14,8 +14,8 @@ export class UsersService {
   constructor(private readonly rails: RailsService,
               private readonly tokenService: AngularTokenService) {}
 
-  isUsernameOrEmailTaken(usernameOrEmail: string): Observable<boolean> {
-    return this.rails.ajax<boolean>(HttpVerb.Get, '/username_or_email_exists', {usernameOrEmail});
+  isNameOrEmailTaken(nameOrEmail: string): Observable<boolean> {
+    return this.rails.ajax<boolean>(HttpVerb.Get, '/name_or_email_exists', {nameOrEmail});
   }
 
   create(newUser: NewUser): Observable<void> {

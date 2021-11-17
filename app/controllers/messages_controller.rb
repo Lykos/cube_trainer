@@ -2,7 +2,7 @@
 
 # Controller for messages that the user received.
 class MessagesController < ApplicationController
-  prepend_before_action :set_message, only: %i[show update destroy]
+  before_action :set_message, only: %i[show update destroy]
 
   # GET /api/messages/count_unread
   def count_unread

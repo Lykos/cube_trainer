@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'system/system_spec_helper'
 
 describe 'account deletion', type: :system do
   before do
     driven_by(:selenium_chrome_headless)
   end
 
-  it 'enables users to sign up and then login' do
+  it 'enables users to sign up and then delete their account' do
     visit ''
     click_link 'Sign Up'
 
@@ -20,13 +21,12 @@ describe 'account deletion', type: :system do
     expect(page).to have_text('Signup successful!')
 
     user = User.find_by(name: 'system test user')
-    user.update(admin_confirmed: true, email_confirmed: true)
-    user.save!
+    user.update(admin_confirmed: true)
+    user.confirm
 
-    fill_in 'Username', with: 'system test user'
-    fill_in 'Password', with: 'password'
-    click_button 'Submit'
+    login(user)
 
+    visit '/modes'
     click_link user.name
     click_button 'Delete Account'
     click_button 'Ok'

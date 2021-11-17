@@ -4,10 +4,7 @@ Rails.application.routes.draw do
                                   registrations: 'auth_overrides/registrations',
                                   sessions: 'auth_overrides/sessions'
                                 }
-    post 'login', to: 'sessions#create'
-    post 'logout', to: 'sessions#logout'
-    root 'sessions#welcome'
-    get 'username_or_email_exists', to: 'users#name_or_email_exists?'
+    get 'name_or_email_exists', to: 'users#name_or_email_exists?'
     post 'confirm_email', to: 'users#confirm_email'
     get 'mode_name_exists_for_user', to: 'modes#name_exists_for_user?'
     resources :mode_types, only: [:index, :show]

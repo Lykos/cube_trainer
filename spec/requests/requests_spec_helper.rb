@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-shared_context 'with headers' do
-  let(:headers) { { ACCEPT: 'application/json' } }
-end
-
 # Can be used in the following ways:
 # * `login(username, password)`
 # * `login(email, password)`

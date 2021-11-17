@@ -12,6 +12,7 @@ describe 'new letter scheme', type: :system do
 
   it 'allows to create a new letter scheme' do
     login(user)
+    visit '/modes'
     click_link user.name
     click_button 'Create Letter Scheme'
 

@@ -7,10 +7,6 @@ RSpec.describe 'Achievements', type: :request do
   include_context 'with user abc'
   include_context 'with headers'
 
-  before do
-    post_login(user)
-  end
-
   describe 'GET #index' do
     it 'returns http success' do
       get '/api/achievements', headers: headers

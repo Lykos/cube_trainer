@@ -8,20 +8,18 @@ RSpec.describe 'Modes', type: :request do
   include_context 'with user eve'
   include_context 'with mode'
   include_context 'with headers'
-
-  before do
-    post_login(user)
-  end
+  include_context 'with user auth headers'
+  include_context 'with eve auth headers'
 
   describe 'GET #name_exists_for_user?' do
     it 'returns true if a user exists' do
-      get '/api/mode_name_exists_for_user', params: { mode_name: mode.name }, headers: headers
+      get '/api/mode_name_exists_for_user', params: { mode_name: mode.name }, headers: user_headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(true)
     end
 
     it "returns false if a name doesn't exist" do
-      get '/api/mode_name_exists_for_user', params: { mode_name: 'new_mode_name' }, headers: headers
+      get '/api/mode_name_exists_for_user', params: { mode_name: 'new_mode_name' }, headers: user_headers
       expect(response).to have_http_status(:success)
       expect(JSON.parse(response.body)).to eq(false)
     end
@@ -30,7 +28,7 @@ RSpec.describe 'Modes', type: :request do
   describe 'GET #index' do
     it 'returns http success' do
       mode
-      get '/api/modes', headers: headers
+      get '/api/modes', headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be(1)
@@ -40,8 +38,7 @@ RSpec.describe 'Modes', type: :request do
 
     it 'returns nothing for another user' do
       mode
-      post_login(eve.name, eve.password)
-      get '/api/modes', headers: headers
+      get '/api/modes', headers: eve_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body).to be_empty
@@ -50,34 +47,33 @@ RSpec.describe 'Modes', type: :request do
 
   describe 'GET #show' do
     it 'returns http success' do
-      get "/api/modes/#{mode.id}", headers: headers
+      get "/api/modes/#{mode.id}", headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body).to eq_modulo_symbol_vs_string(mode.to_simple)
     end
 
     it 'returns not found for unknown modes' do
-      get '/api/modes/143432332', headers: headers
+      get '/api/modes/143432332', headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for another user' do
-      post_login(eve.name, eve.password)
-      get "/api/modes/#{mode.id}", headers: headers
+      get "/api/modes/#{mode.id}", headers: eve_headers
       expect(response).to have_http_status(:not_found)
     end
   end
 
   describe 'GET #new' do
     it 'returns http success' do
-      get "/api/modes/#{mode.id}new", headers: headers
+      get "/api/modes/#{mode.id}new", headers: user_headers
       expect(response).to have_http_status(:success)
     end
   end
 
   describe 'POST #create' do
     it 'returns http success' do
-      post '/api/modes', headers: headers, params: {
+      post '/api/modes', headers: user_headers, params: {
         mode: {
           name: 'test_mode2',
           show_input_mode: :name,
@@ -93,7 +89,7 @@ RSpec.describe 'Modes', type: :request do
     end
 
     it 'returns bad request for invalid modes' do
-      post '/api/modes', params: {
+      post '/api/modes', headers: user_headers, params: {
         mode: {
           name: 'test_mode2',
           show_input_mode: :lol,
@@ -108,7 +104,7 @@ RSpec.describe 'Modes', type: :request do
 
   describe 'PUT #update' do
     it 'returns http success' do
-      put "/api/modes/#{mode.id}", headers: headers, params: { mode: { goal_badness: 2 } }
+      put "/api/modes/#{mode.id}", headers: user_headers, params: { mode: { goal_badness: 2 } }
       expect(response).to have_http_status(:success)
       mode.reload
       expect(mode.goal_badness).to eq(2)
@@ -116,19 +112,18 @@ RSpec.describe 'Modes', type: :request do
     end
 
     it 'returns unprocessable entity for invalid updates' do
-      put "/api/modes/#{mode.id}", headers: headers, params: { mode: { name: nil } }
+      put "/api/modes/#{mode.id}", headers: user_headers, params: { mode: { name: nil } }
       expect(response).to have_http_status(:unprocessable_entity)
       expect(Mode.find(mode.id).goal_badness).to eq(1)
     end
 
     it 'returns not found for unknown modes' do
-      put '/api/modes/143432332', headers: headers, params: { mode: { goal_badness: 2 } }
+      put '/api/modes/143432332', headers: user_headers, params: { mode: { goal_badness: 2 } }
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for other users' do
-      post_login(eve.name, eve.password)
-      put "/api/modes/#{mode.id}", headers: headers, params: { mode: { goal_badness: 2 } }
+      put "/api/modes/#{mode.id}", headers: eve_headers, params: { mode: { goal_badness: 2 } }
       expect(response).to have_http_status(:not_found)
       expect(Mode.find(mode.id).goal_badness).to eq(1)
     end
@@ -136,19 +131,18 @@ RSpec.describe 'Modes', type: :request do
 
   describe 'DELETE #destroy' do
     it 'returns http success' do
-      delete "/api/modes/#{mode.id}", headers: headers
+      delete "/api/modes/#{mode.id}", headers: user_headers
       expect(response).to have_http_status(:success)
       expect(Mode.exists?(mode.id)).to be(false)
     end
 
     it 'returns not found for unknown modes' do
-      delete '/api/modes/143432332', headers: headers
+      delete '/api/modes/143432332', headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for other users' do
-      post_login(eve.name, eve.password)
-      delete "/api/modes/#{mode.id}", headers: headers
+      delete "/api/modes/#{mode.id}", headers: eve_headers
       expect(response).to have_http_status(:not_found)
       expect(Mode.exists?(mode.id)).to be(true)
     end

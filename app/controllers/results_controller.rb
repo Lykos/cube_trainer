@@ -2,8 +2,8 @@
 
 # Controller for results that a user had for one training mode.
 class ResultsController < ApplicationController
-  prepend_before_action :set_input, only: %i[show update destroy]
-  prepend_before_action :set_mode
+  before_action :set_mode
+  before_action :set_input, only: %i[show update destroy]
 
   # GET /api/modes/1/results
   # GET /api/modes/1/results.json
@@ -45,11 +45,14 @@ class ResultsController < ApplicationController
   private
 
   def set_input
-    head :not_found unless (@input = Result.find_by(id: params[:id])&.input)
+    @input = Result.find_by(id: params[:id])&.input
+    # Note that we intentionally use :not_found rather than :unauthorized to
+    # disallow reverse engineering which modes exist.
+    head :not_found unless @input && @input.mode.user == current_user
   end
 
   def set_mode
-    head :not_found unless (@mode = Mode.find_by(id: params[:mode_id]))
+    head :not_found unless (@mode = current_user.modes.find_by(id: params[:mode_id]))
   end
 
   def result_params
@@ -58,9 +61,5 @@ class ResultsController < ApplicationController
 
   def mode
     @mode || @input&.mode
-  end
-
-  def owner
-    mode&.user
   end
 end

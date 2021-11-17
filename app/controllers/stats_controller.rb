@@ -2,8 +2,8 @@
 
 # Controller for stats that a user had for one training mode.
 class StatsController < ApplicationController
-  prepend_before_action :set_mode
-  prepend_before_action :set_stat, only: %i[show destroy]
+  before_action :set_mode
+  before_action :set_stat, only: %i[show destroy]
 
   # GET /api/modes/1/stats
   def index
@@ -28,11 +28,11 @@ class StatsController < ApplicationController
   private
 
   def set_stat
-    head :not_found unless (@stat = Stat.find_by(id: params[:id]))
+    head :not_found unless (@stat = @mode.stats.find_by(id: params[:id]))
   end
 
   def set_mode
-    head :not_found unless (@mode = Mode.find_by(id: params[:mode_id]))
+    head :not_found unless (@mode = current_user.modes.find_by(id: params[:mode_id]))
   end
 
   def owner

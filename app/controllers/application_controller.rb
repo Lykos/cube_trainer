@@ -8,6 +8,6 @@ class ApplicationController < ActionController::Base
 
   def authenticate_user!
     super
-    head :unauthorized unless current_user.admin_confirmed
+    head :unauthorized unless current_user&.admin_confirmed
   end
 end

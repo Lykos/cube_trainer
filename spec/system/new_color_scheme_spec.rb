@@ -12,6 +12,7 @@ describe 'new color scheme', type: :system do
 
   it 'allows to create a new color scheme' do
     login(user)
+    visit '/modes'
     click_link user.name
     click_button 'Create Color Scheme'
 

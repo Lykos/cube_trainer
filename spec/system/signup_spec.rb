@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 def extract_first_link_path(email)
+  puts email.html_part.body
   email.html_part.body.match(%r{(?:"https?://.*?)(/.*?)(?:")}).captures[0]
 end
 
@@ -25,7 +26,6 @@ describe 'signup', type: :system do
 
     user = User.find_by(name: 'system test user')
     user.update(admin_confirmed: true)
-    user.save!
 
     confirmation_email = ActionMailer::Base.deliveries.last
     confirm_path = extract_first_link_path(confirmation_email)
