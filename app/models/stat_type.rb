@@ -188,7 +188,11 @@ class StatType
     end
 
     def calculate_count(mode)
-      mode.inputs.joins(:result).pluck(:input_representation).uniq.length
+      input_representations_seen =
+        mode.inputs.joins(:result).pluck(:input_representation).uniq
+      valid_input_representations =
+        mode.input_items.map(&:input_representation)
+      (inputs_seen & valid_input_representations).length
     end
 
     def name
