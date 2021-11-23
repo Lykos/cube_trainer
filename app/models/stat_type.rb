@@ -192,7 +192,7 @@ class StatType
         mode.inputs.joins(:result).pluck(:input_representation).uniq
       valid_input_representations =
         mode.input_items.map(&:input_representation)
-      (inputs_seen & valid_input_representations).length
+      (input_representations_seen & valid_input_representations).length
     end
 
     def name
