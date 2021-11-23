@@ -33,6 +33,7 @@ module CubeTrainer
       end
       valid_parts.permutation(2).map do |ps|
         next if rotations.include?(ps)
+
         TwistyPuzzles::PartCycle.new([buffer] + ps)
       end
     end
