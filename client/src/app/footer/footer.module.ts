@@ -37,14 +37,6 @@ import { RouterModule } from '@angular/router';
   ],
   exports: [
     FooterComponent,
-    AboutComponent,
-    ContactComponent,
-    ContactContentComponent,
-    PrivacyPolicyComponent,
-    CookiePolicyComponent,
-    TermsAndConditionsComponent,
-    DisclaimerComponent,
-    MaintainerNameComponent,
   ],
   providers: [],
 })

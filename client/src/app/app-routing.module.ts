@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { UserComponent } from './users/user/user.component';
+import { EditUserComponent } from './users/edit-user/edit-user.component';
 import { AchievementsComponent } from './users/achievements/achievements.component';
 import { AchievementGrantsComponent } from './users/achievement-grants/achievement-grants.component';
 import { AchievementComponent } from './users/achievement/achievement.component';
@@ -34,6 +35,7 @@ const routes: Routes = [
   { path: 'achievements', component: AchievementsComponent },
   { path: 'achievements/:achievementKey', component: AchievementComponent },
   { path: 'user', component: UserComponent },
+  { path: 'edit-user', component: EditUserComponent },
   { path: 'achievement_grants', component: AchievementGrantsComponent },
   { path: 'messages', component: MessagesComponent },
   { path: 'messages/:messageId', component: MessageComponent },

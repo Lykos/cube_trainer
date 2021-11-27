@@ -39,6 +39,7 @@ import { NewColorSchemeComponent } from './new-color-scheme/new-color-scheme.com
 import { NewLetterSchemeComponent } from './new-letter-scheme/new-letter-scheme.component'
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
+import { EditUserComponent } from './edit-user/edit-user.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { RouterModule } from '@angular/router';
     DeleteAccountButtonComponent,
     DeleteAccountConfirmationDialogComponent,
     ConfirmEmailComponent,
+    EditUserComponent,
   ],
   imports: [
     BrowserModule,
@@ -90,6 +92,7 @@ import { RouterModule } from '@angular/router';
   ],
   exports: [
     AchievementComponent,
+    EditUserComponent,
     SignupComponent,
     LoginComponent,
     LogoutComponent,
