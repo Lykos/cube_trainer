@@ -1,3 +1,8 @@
 <div>
-  <h1>Logged Out</h1>
+  <ng-container *ngIf="success">
+    <h1>Logged Out</h1>
+  </ng-container>
+  <ng-container *ngIf="failure">
+    <h1>Failed to Log Out</h1>
+  </ng-container>
 </div>

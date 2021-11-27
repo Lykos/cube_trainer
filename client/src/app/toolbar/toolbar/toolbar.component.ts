@@ -41,7 +41,6 @@ export class ToolbarComponent implements OnInit {
       catchError(err => of(none)),
     ).subscribe(
       (user) => {
-        console.log(user);
 	this.user = user;
 	mapOptional(user, u => {
 	  this.messagesService.countUnread().subscribe(count => this.unreadMessagesCount = count);
