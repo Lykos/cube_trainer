@@ -33,6 +33,7 @@ export class LoginComponent implements OnInit {
 	  this.router.navigate(['/modes']);
 	},
 	err => {
+          // TODO: Get 401 from a constant.
 	  if (err.status == 401) {
 	    this.loginFailed = true;
 	  }

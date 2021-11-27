@@ -28,7 +28,7 @@ export class UsersService {
     return this.tokenService.registerAccount(data);
   }
 
-  login(email: string, password: string) {
+  login(email: string, password: string): Observable<User> {
     return this.tokenService.signIn({login: email, password});
   }
 
