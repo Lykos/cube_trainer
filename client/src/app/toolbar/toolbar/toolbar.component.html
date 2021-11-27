@@ -17,8 +17,8 @@
     <a mat-button routerLink="/user" [matBadge]="unreadMessagesBadge" matBadgeColor="accent">
       {{userName}}
     </a>
-    <a mat-button routerLink="/logout">
+    <button mat-button (click)="onLogout()">
       Logout
-    </a>
+    </button>
   </ng-template>
 </mat-toolbar>

@@ -32,10 +32,6 @@ export class ModesComponent implements OnInit {
     this.modesService.list().subscribe((modes: Mode[]) => this.modes = modes);
   }
 
-  onNew() {
-    this.router.navigate(['/modes/new']);
-  }
-
   onDelete(mode: Mode) {
     const dialogRef = this.dialog.open(DeleteModeConfirmationDialogComponent, { data: mode });
 

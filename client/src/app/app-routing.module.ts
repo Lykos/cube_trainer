@@ -10,7 +10,7 @@ import { NewColorSchemeComponent } from './users/new-color-scheme/new-color-sche
 import { NewLetterSchemeComponent } from './users/new-letter-scheme/new-letter-scheme.component';
 import { SignupComponent } from './users/signup/signup.component';
 import { LoginComponent } from './users/login/login.component';
-import { LogoutComponent } from './users/logout/logout.component';
+import { LoggedOutComponent } from './users/logged-out/logged-out.component';
 import { AccountDeletedComponent } from './users/account-deleted/account-deleted.component';
 import { ConfirmEmailComponent } from './users/confirm-email/confirm-email.component';
 import { ModesComponent } from './modes/modes/modes.component';
@@ -29,13 +29,13 @@ const routes: Routes = [
   { path: 'confirm_email', component: ConfirmEmailComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'logout', component: LogoutComponent },
+  { path: 'logged_out', component: LoggedOutComponent },
   { path: 'account_deleted', component: AccountDeletedComponent },
   { path: 'modes', component: ModesComponent },
   { path: 'achievements', component: AchievementsComponent },
   { path: 'achievements/:achievementKey', component: AchievementComponent },
   { path: 'user', component: UserComponent },
-  { path: 'edit-user', component: EditUserComponent },
+  { path: 'edit_user', component: EditUserComponent },
   { path: 'achievement_grants', component: AchievementGrantsComponent },
   { path: 'messages', component: MessagesComponent },
   { path: 'messages/:messageId', component: MessageComponent },

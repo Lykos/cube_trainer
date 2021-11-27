@@ -5,6 +5,7 @@ import { User } from '../../users/user.model';
 import { Optional, some, none, hasValue, mapOptional, orElse } from '../../utils/optional';
 import { map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'cube-trainer-toolbar',
@@ -16,7 +17,8 @@ export class ToolbarComponent implements OnInit {
   unreadMessagesCount: number | undefined = undefined;
 
   constructor(private readonly usersService: UsersService,
-	      private readonly messagesService: MessagesService) {
+	      private readonly messagesService: MessagesService,
+              private readonly router: Router) {
   }
 
   get unreadMessagesBadge() {
@@ -34,6 +36,13 @@ export class ToolbarComponent implements OnInit {
   get numBadges() {
     return this.unreadMessagesCount;
   }
+
+  onLogout() {
+    this.usersService.logout().subscribe(() => {
+      this.user = none;
+      this.router.navigate(['/logged_out']);
+    });
+  } 
 
   ngOnInit() {
     this.usersService.show().pipe(
