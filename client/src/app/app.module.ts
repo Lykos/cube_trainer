@@ -30,6 +30,7 @@ import { APP_BASE_HREF } from '@angular/common';
     AngularTokenModule.forRoot({
       loginField: 'email',
       apiBase: environment.apiPrefix,
+      registerAccountCallback: '/confirm_email',
     }),
   ],
   providers: [
