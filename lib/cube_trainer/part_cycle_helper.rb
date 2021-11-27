@@ -28,7 +28,12 @@ module CubeTrainer
     def part_cycles_for_part_type
       buffer_parts = buffer.rotations
       valid_parts = self.class::PART_TYPE::ELEMENTS - buffer_parts
-      valid_parts.permutation(2).map { |ps| TwistyPuzzles::PartCycle.new([buffer] + ps) }
+      rotation_parts = rotations.map(&:parts)
+      valid_parts.permutation(2).filter_map do |ps|
+        next if rotation_parts.include?(ps)
+
+        TwistyPuzzles::PartCycle.new([buffer] + ps)
+      end
     end
   end
 end
