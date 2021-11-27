@@ -3,14 +3,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RailsModule } from '../rails/rails.module';
 import { UsersService } from './users.service';
 import { UserFormCreator } from './user-form-creator.service';
-import { UserComponent } from './user.component';
-import { MessagesComponent } from './messages.component';
-import { DeleteAccountButtonComponent } from './delete-account-button.component';
-import { DeleteAccountConfirmationDialogComponent } from './delete-account-confirmation-dialog.component';
-import { MessageComponent } from './message.component';
-import { AchievementsComponent } from './achievements.component';
-import { AchievementComponent } from './achievement.component';
-import { AchievementGrantsComponent } from './achievement-grants.component';
+import { UserComponent } from './user/user.component';
+import { MessagesComponent } from './messages/messages.component';
+import { DeleteAccountButtonComponent } from './delete-account-button/delete-account-button.component';
+import { DeleteAccountConfirmationDialogComponent } from './delete-account-confirmation-dialog/delete-account-confirmation-dialog.component';
+import { MessageComponent } from './message/message.component';
+import { AchievementsComponent } from './achievements/achievements.component';
+import { AchievementComponent } from './achievement/achievement.component';
+import { AchievementGrantsComponent } from './achievement-grants/achievement-grants.component';
 import { MessagesService } from './messages.service';
 import { AchievementsService } from './achievements.service';
 import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
@@ -19,11 +19,11 @@ import { ColorSchemesService } from './color-schemes.service';
 import { LetterSchemesService } from './letter-schemes.service';
 import { PartTypesService } from './part-types.service';
 import { NgModule } from '@angular/core';
-import { SignupComponent } from './signup.component';
-import { LoginComponent } from './login.component';
-import { LogoutComponent } from './logout.component';
-import { ConfirmEmailComponent } from './confirm-email.component';
-import { AccountDeletedComponent } from './account-deleted.component';
+import { SignupComponent } from './signup/signup.component';
+import { LoginComponent } from './login/login.component';
+import { LogoutComponent } from './logout/logout.component';
+import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
+import { AccountDeletedComponent } from './account-deleted/account-deleted.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
@@ -35,8 +35,8 @@ import { UtilsModule } from '../utils/utils.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
-import { NewColorSchemeComponent } from './new-color-scheme.component'
-import { NewLetterSchemeComponent } from './new-letter-scheme.component'
+import { NewColorSchemeComponent } from './new-color-scheme/new-color-scheme.component'
+import { NewLetterSchemeComponent } from './new-letter-scheme/new-letter-scheme.component'
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 

@@ -5,11 +5,11 @@ import { UsersModule } from '../users/users.module';
 import { UniqueModeNameValidator } from './unique-mode-name.validator';
 import { ModesService } from './modes.service';
 import { StatsService } from './stats.service';
-import { DeleteModeConfirmationDialogComponent } from './delete-mode-confirmation-dialog.component';
+import { DeleteModeConfirmationDialogComponent } from './delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
 import { RxReactiveFormsModule } from "@rxweb/reactive-form-validators"
-import { StatsTableComponent } from './stats-table.component';
-import { ModesComponent } from './modes.component';
-import { NewModeComponent } from './new-mode.component';
+import { StatsTableComponent } from './stats-table/stats-table.component';
+import { ModesComponent } from './modes/modes.component';
+import { NewModeComponent } from './new-mode/new-mode.component';
 import { NgModule } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';

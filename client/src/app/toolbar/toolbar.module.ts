@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { ToolbarComponent } from './toolbar.component';
+import { ToolbarComponent } from './toolbar/toolbar.component';
 import { UsersModule } from '../users/users.module';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
