@@ -73,6 +73,7 @@ import { UpdatePasswordComponent } from './update-password/update-password.compo
     MatSelectModule,
     MatCheckboxModule,
     MatInputModule,
+    MatFormFieldModule,
     MatTableModule,
     MatSnackBarModule,
     MatFormFieldModule,

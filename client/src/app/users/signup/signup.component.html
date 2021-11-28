@@ -45,6 +45,19 @@
           <strong>Password</strong> must match <strong>password confirmation</strong>.
         </mat-error>
       </mat-form-field>
+      <br>
+      <mat-checkbox formControlName="termsAndConditionsAccepted">
+        I read and accept the <a routerLink="/terms_and_conditions">Terms & Conditions</a>.
+      </mat-checkbox>
+      <br>
+      <mat-checkbox formControlName="privacyPolicyAccepted">
+        I read and accept the <a routerLink="/privacy_policy">Privacy Policy</a>.
+      </mat-checkbox>
+      <br>
+      <mat-checkbox formControlName="cookiePolicyAccepted">
+        I accept that this website uses cookies and I read and accept the <a routerLink="/cookie_policy">Cookie Policy</a>.
+      </mat-checkbox>
+      <br>
       <mat-card-actions>
         <button mat-raised-button color="primary" type="submit" [disabled]="!signupForm.valid">
           Submit
