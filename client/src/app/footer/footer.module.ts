@@ -14,6 +14,7 @@ import { MatCardModule } from '@angular/material/card';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
+import { GoogleAnalyticsReferenceComponent } from './google-analytics-reference/google-analytics-reference.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { RouterModule } from '@angular/router';
     TermsAndConditionsComponent,
     DisclaimerComponent,
     MaintainerNameComponent,
+    GoogleAnalyticsReferenceComponent,
   ],
   imports: [
     BrowserModule,
