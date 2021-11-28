@@ -67,7 +67,7 @@ export class UsersService {
   }
 
   update(userUpdate: UserUpdate): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Patch, '/user', {user: userUpdate});
+    return this.rails.ajax<void>(HttpVerb.Patch, '/auth', userUpdate);
   }
 
   show(): Observable<User> {
