@@ -9,6 +9,8 @@ shared_context 'with user abc' do
     )
     user.update(
       email: 'abc@example.org',
+      provider: 'email',
+      uid: 'abc@example.org',
       admin_confirmed: true,
       email_confirmed: true,
       password: 'password',
@@ -27,6 +29,8 @@ shared_context 'with user eve' do
     )
     user.update(
       email: 'eve@example.org',
+      provider: 'email',
+      uid: 'eve@example.org',
       admin_confirmed: true,
       email_confirmed: true,
       password: 'password',
@@ -45,6 +49,8 @@ shared_context 'with user admin' do
     )
     user.update(
       email: 'admin@example.org',
+      provider: 'email',
+      uid: 'admin@example.org',
       admin_confirmed: true,
       email_confirmed: true,
       password: 'password',
