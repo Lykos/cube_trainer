@@ -1,6 +1,37 @@
 <div>
   <h1>About</h1>
-  <div>
-    TODO
+    <div>
+      This is a small website that contains some tools for practicing solving twisty puzzles, mostly for blindfolded solving. Various tools like alg trainers already existed before, but I think my tools do some things better than existing tools. Most notably, it focuses on the algs that you don't know very well and shows them much more often. This helped me a lot and I am missing this feature when using other alg trainers. Note that <em>better</em> often means better suited to my personal needs, your needs may be different and hence this website may or may not be useful for you.
+    </div>
+    <div>
+      <h2>Backstory</h2>
+      <div>
+        <h3>Begginnings</h3>
+        While practicing speedsolving twisty puzzles, I often wanted to have Software that helped me. I eventually started to create various Ruby scripts that helped me with tasks like
+        <ul>
+          <li>finding words for letter pairs quickly for blindfolded solving</li>
+          <li>practicing 3x3 algs</li>
+          <li>practicing algs for blindfolded solving based on their letter pair</li>
+          <li>finding good Skewb layers</li>
+          <li>generating Anki decks</li>
+          <li>Finding good Skewb layers.</li>
+        </ul>
+        It happened quite often that I spent more of my training time working on my scripts than actually training.
+      </div>
+      <div>
+        <h3>Evolution into a Website</h3>
+        <p>
+          Eventually my blind alg training scripts got more advanced and I needed a database to store my training progress such that the script can choose which algs I should train based on the stored progress. I started using some SQL queries in my scripts. Eventually I realized using databases in Ruby is cumbersome without using ActiveRecord, so I decided to migrate to that. Then I realized using ActiveRecord without Ruby on Rails is very cumbersome. So I turned my scripts into a Rails app. I didn't really use the website part, but it was useful for using ActiveRecord migrations and accessing my database in my scripts.
+        </p>
+        <p>
+          At some point, I realized that for some things, it's useful to have a website. For example, I memorize edge flips visually, so I wanted the tool to show me an image with flipped edges and then I was supposed to execute the alg. Since I hated the looks of the standard Rails pages, I created an Angular TypeScript frontend. At this point, I was annoyed that I could only access my tool from my home computer and not from my phone or other computers, so I decided to host the website somewhere s.t. I can access it anywhere. I decided to go with Heroku and got the domain cubetrainer.org.
+        </p>
+      </div>
+      <div>
+        <h3>Road to Publication</h3>
+        <p>
+          At some point, I thought that since the tools on my website were so useful to me, maybe they would be useful to other people, too. I had already invested a lot of my time into the website, so I wanted to make it useful for others. But there was a lot of work to be done. I wanted to take the privacy of my users seriously and I wanted to follow data protection laws. This meant I had to revamp my signup process, make lots of things customizable (e.g. the letter scheme) and write a privacy policy and a few other things. It took me a long time to figure out what I needed and for each of the pages I wrote, I spent a lot of time researching, so it was a major undertaking. See this <a [href]="">Github milestone</a> for the full list of things I did to publish the website.
+        </p>
+      </div>
   </div>
 </div>
