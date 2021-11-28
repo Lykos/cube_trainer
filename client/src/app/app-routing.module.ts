@@ -24,7 +24,7 @@ import { PrivacyPolicyComponent } from './footer/privacy-policy/privacy-policy.c
 import { ContactComponent } from './footer/contact/contact.component';
 import { DisclaimerComponent } from './footer/disclaimer/disclaimer.component';
 import { TermsAndConditionsComponent } from './footer/terms-and-conditions/terms-and-conditions.component';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, ExtraOptions } from '@angular/router';
 import { environment } from './../environments/environment';
 
 const routes: Routes = [
@@ -55,8 +55,14 @@ const routes: Routes = [
   { path: 'disclaimer', component: DisclaimerComponent },
 ];
 
+const routerOptions: ExtraOptions = {
+  useHash: false,
+  anchorScrolling: 'enabled',
+  enableTracing: !environment.production,
+};
+
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { enableTracing: !environment.production })],
+  imports: [RouterModule.forRoot(routes, routerOptions)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
