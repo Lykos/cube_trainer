@@ -23,7 +23,7 @@ export class SignupComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.signupForm = this.userFormCreator.createUserForm();
+    this.signupForm = this.userFormCreator.createSignupForm();
   }
 
   onSubmit() {
@@ -40,6 +40,8 @@ export class SignupComponent implements OnInit {
   get password() { return this.signupForm.get('password')!; }
 
   get passwordConfirmation() { return this.signupForm.get('passwordConfirmation')!; }
+
+  get termsAndConditionsAccepted() { return this.signupForm.get('termsAndConditionsAccepted')!; }
 
   get newUser(): NewUser {
     return {

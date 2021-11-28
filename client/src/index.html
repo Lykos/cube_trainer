@@ -9,6 +9,28 @@
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Turn Google Analytics off by default -->
+  <script>
+    // TODO: Find a nicer way to do this.
+    function hasCookie(name) {
+        let prefix = name + "=";
+        let ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(prefix) == 0) {
+                return true
+            }
+        }
+        return false;
+    }
+
+    if (!hasCookie('cookie-consent')) {
+        window['ga-disable-G-SP2ETHT13T'] = true;
+    }
+  </script>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-SP2ETHT13T"></script>
   <script>

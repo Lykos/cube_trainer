@@ -51,7 +51,7 @@ export class EditUserComponent implements OnInit {
     this.usersService.show().subscribe(user => {
       this.user = user;
       // TODO: The form should be created before the user exists, prefilling can happen later.
-      this.editUserForm = this.userFormCreator.createUserForm(user);
+      this.editUserForm = this.userFormCreator.createUpdateUserForm(user);
     });
   }
 

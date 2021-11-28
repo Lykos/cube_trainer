@@ -1,7 +1,7 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
-import { RxwebValidators } from "@rxweb/reactive-form-validators";
+import { FormGroup, AbstractControl } from '@angular/forms';
+import { UserFormCreator } from '../user-form-creator.service';
 import { UsersService } from '../users.service';
 import { PasswordUpdate } from '../password-update.model';
 
@@ -13,7 +13,7 @@ import { PasswordUpdate } from '../password-update.model';
 export class UpdatePasswordComponent implements OnInit {
   form!: FormGroup;
 
-  constructor(private readonly formBuilder: FormBuilder,
+  constructor(private readonly userFormCreator: UserFormCreator,
 	      private readonly snackBar: MatSnackBar,
               private readonly usersService: UsersService) {}
 
@@ -39,15 +39,6 @@ export class UpdatePasswordComponent implements OnInit {
   }
     
   ngOnInit() {
-    this.form = this.formBuilder.group({
-      password: [
-	'',
-	[Validators.required],
-      ],
-      passwordConfirmation: [
-	'',
-	([Validators.required]).concat([RxwebValidators.compare({ conditionalExpression: (x: any) => x.password || x.passwordConfirmation, fieldName: 'password' })]),
-      ],
-    });
+    this.form = this.userFormCreator.createUpdatePasswordForm();
   }
 }

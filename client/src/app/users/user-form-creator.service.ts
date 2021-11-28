@@ -10,11 +10,57 @@ import { User } from './user.model';
 export class UserFormCreator {
   constructor(private readonly formBuilder: FormBuilder,
 	      private readonly uniqueUsernameOrEmailValidator: UniqueUsernameOrEmailValidator) {}
-  
-  createUserForm(user?: User): FormGroup {
+  createSignupForm(): FormGroup {
     return this.formBuilder.group({
       name: [
-	user?.name || '',
+	'',
+	{
+	  validators: Validators.required,
+	  asyncValidators: this.uniqueUsernameOrEmailValidator.validate(),
+	  updateOn: 'blur',
+	}
+      ],
+      email: [
+	'', {
+	  validators: [
+	    Validators.email,
+	    Validators.required
+	  ],
+	  asyncValidators: this.uniqueUsernameOrEmailValidator.validate(),
+	  updateOn: 'blur'
+	}
+      ],
+      password: [
+	'',
+	[Validators.required],
+      ],
+      passwordConfirmation: [
+	'',
+	[Validators.required, RxwebValidators.compare({ conditionalExpression: (x: any) => x.password || x.passwordConfirmation, fieldName: 'password' })],
+      ],
+      termsAndConditionsAccepted: [false, Validators.requiredTrue],
+      privacyPolicyAccepted: [false, Validators.requiredTrue],
+      cookiePolicyAccepted: [false, Validators.requiredTrue],
+    });
+  }
+
+  createUpdatePasswordForm(): FormGroup {
+    return this.formBuilder.group({
+      password: [
+	'',
+	[Validators.required],
+      ],
+      passwordConfirmation: [
+	'',
+	([Validators.required]).concat([RxwebValidators.compare({ conditionalExpression: (x: any) => x.password || x.passwordConfirmation, fieldName: 'password' })]),
+      ],
+    });
+  }
+
+  createUpdateUserForm(user: User): FormGroup {
+    return this.formBuilder.group({
+      name: [
+	user.name,
 	{
 	  validators: Validators.required,
 	  asyncValidators: this.uniqueUsernameOrEmailValidator.validate(user?.name),
@@ -22,7 +68,7 @@ export class UserFormCreator {
 	}
       ],
       email: [
-	user?.email || '', {
+	user.email, {
 	  validators: [
 	    Validators.email,
 	    Validators.required
@@ -33,11 +79,11 @@ export class UserFormCreator {
       ],
       password: [
 	'',
-	user ? [] : [Validators.required],
+	[]
       ],
       passwordConfirmation: [
 	'',
-	(user ? [] : [Validators.required]).concat([RxwebValidators.compare({ conditionalExpression: (x: any) => x.password || x.passwordConfirmation, fieldName: 'password' })]),
+	[RxwebValidators.compare({ conditionalExpression: (x: any) => x.password || x.passwordConfirmation, fieldName: 'password' })],
       ],
     });
   }

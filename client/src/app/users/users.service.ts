@@ -7,13 +7,16 @@ import { UserUpdate } from './user-update.model';
 import { PasswordUpdate } from './password-update.model';
 import { User } from './user.model';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { CookieConsentService } from '../shared/cookie-consent.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
   constructor(private readonly rails: RailsService,
-              private readonly tokenService: AngularTokenService) {}
+              private readonly tokenService: AngularTokenService,
+              private readonly cookieConsentService: CookieConsentService) {}
 
   isNameOrEmailTaken(nameOrEmail: string): Observable<boolean> {
     return this.rails.ajax<boolean>(HttpVerb.Get, '/name_or_email_exists', {nameOrEmail});
@@ -26,11 +29,18 @@ export class UsersService {
       passwordConfirmation: newUser.passwordConfirmation,
       name: newUser.name,
     };
-    return this.tokenService.registerAccount(data);
+    // Users have to consent to cookies during registration.
+    return this.tokenService.registerAccount(data).pipe(
+      tap(() => { this.cookieConsentService.turnOnConsent(); })
+    );
   }
 
   login(email: string, password: string): Observable<User> {
-    return this.tokenService.signIn({login: email, password});
+    // Users have to consent to cookies during registration,
+    // so we know they consented in the past if they log in.
+    return this.tokenService.signIn({login: email, password}).pipe(
+      tap(() => { this.cookieConsentService.turnOnConsent(); })
+    );
   }
 
   logout() {

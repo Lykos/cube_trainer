@@ -40,13 +40,7 @@
         matching or cross-referencing information from our site with any other information. We have also opted not to have Google
         Analytics storability to see your full IP address (a feature known as "IP masking").
       </p>
-      <p>
-        Please review
-        <a href="https://support.google.com/analytics/answer/6004245?hl=en">Google Analytics' privacy policy</a>
-        for additional information. It is also possible
-        <a href="https://tools.google.com/dlpage/gaoptout/">opt-out of Google Analytics</a>
-        for those who wish to do so.
-      </p>
+      <cube-trainer-google-analytics-reference></cube-trainer-google-analytics-reference>
       CubeTrainer collects the following data via Google Analytics:
       <ul>
         <li>Internet Protocol (IP) address of computer being used <!-- TODO: But we mask it --></li>
@@ -59,9 +53,8 @@
     </div>
     <div>
       <h3>Cookies</h3>
-      Besides the cookies for Google Analytics, we only store one cookie.
-      A token is stored while the user is logged in to keep track that the user has logged in.
-      This is a token that is understood by our backend but that doesn't otherwise include personal information.
+      Besides the cookies for Google Analytics, CubeTrainer uses a cookie called <em>{{consentCookieKey}}</em> to remember that the user has consented to using cookies. The user has to consent to cookies when registering the account and CubeTrainer only sets these after account registration. Furthermore, CubeTrainer uses a cookie called <em>_cube_trainer_session</em>. It was originally used to track the login status. Nowadays it serves no purpose, and we are working on removing it.
+      CubeTrainer uses local storage to store login information.
       See our <a routerLink="/cookie_policy">Cookie policy</a> for more information.
     </div>
     <div>
@@ -108,14 +101,14 @@
     <div>
       <h2>Privacy Statement Revisions</h2>
       <div>
-        This Privacy Statement was last revised on {{'2021-11-15' | date}}. We may make smaller changes to this Privacy Statement at any time and for any reason.
+        This Privacy Statement was last revised on {{'2021-11-28' | date}}. We may make smaller changes to this Privacy Statement at any time and for any reason.
         We encourage you to review this Privacy Policy each time you visit the web site.
       </div>
       <div>
         If we make a significant change to our Privacy Policy, we will post a notice on the homepage of our web site for a period of time after the change is made.
       </div>
       <div>
-        If we make a major change to our Privacy Policy, we will additionally notify users 30 days in advance and give users a chance to delete or change their data.
+        If we make a major change to our Privacy Policy, we will additionally notify users 30 days in advance and give users a chance to delete or change their data. Major changes are changes in how the data is shared. For example if we decide to show personalized ads in the future (this is very likely to never happen) or using performance data of cubers for research.
       </div>
     </div>
     <div>
@@ -129,7 +122,18 @@
         Therefore, whenever you leave this web site we recommend that you review each web site's privacy practices and make your own conclusions regarding the adequacy of these practices.
       </p>
     </div>
-    <!-- TODO: Security -->
+    <div>
+      <h2>Security</h2>
+      <p>
+        All user data is encrypted during transit. The password is also encrypted at rest. However, the other user data (i.e. everything except for the password) is <em>not</em> encrypted at rest. This is due to technical limitations. Heroku is by far the most convenient way to host Rails apps and Heroku only supports database encryption at higher tiers and this would be too expensive for a small hobby project. Encrypting the data in the application before we write it to the database would not work well with the authentication framework <a href='https://github.com/heartcombo/devise'>devise</a> that we use that expects the data to be in a certain format. Writing our own authentication framework is risky and not feasible. Therefore we have to live with non-encrypted data at rest for now.
+      </p>
+      <p>
+        But note that Heroku utilizes ISO 27001 and FISMA certified data centers managed by Amazon. Amazon has many years of experience in designing, constructing, and operating large-scale data centers. This experience has been applied to the AWS platform and infrastructure. AWS data centers are housed in nondescript facilities, and critical facilities have extensive setback and military grade perimeter control berms as well as other natural boundary protection. Physical access is strictly controlled both at the perimeter and at building ingress points by professional security staff utilizing video surveillance, state-of-the-art intrusion detection systems, and other electronic means. Authorized staff must pass two-factor authentication no fewer than three times to access data center floors. All visitors and contractors are required to present identification and are signed in and continually escorted by authorized staff. See the <a href='https://www.heroku.com/policy/security'>security policy of Heroku</a> for more information.
+      </p>
+      <p>
+        CubeTrainer uses <a href='https://github.com/lynndylanhurley/devise_token_auth'>devise-token-auth</a> that is based on <a href='https://github.com/heartcombo/devise'>devise</a> for authentication. Almost all requests to our website require authentication and can only access the content belonging to the authenticated user. The exceptions are the ones that access public information. This is done via a whitelist so we don't introduce security bugs by forgetting to add the requirement to authenticate. CubeTrainer doesn't construct any HTML or SQL queries based on user supplied data. CubeTrainer has functional tests for all our access control.
+      </p>
+    </div>
     <div>
       <h2>How to contact us</h2>
       <cube-trainer-contact-content></cube-trainer-contact-content>
