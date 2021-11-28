@@ -2,14 +2,14 @@ class DeviseTokenAuthChangeUsers < ActiveRecord::Migration[6.0]
   class User < ApplicationRecord
   end
 
-  def change    
+  def change
     change_table :users do |t|
       ## Required
-      t.string :provider, null: false
-      t.string :uid, null: false
+      t.string :provider # We have to add `null: false` below
+      t.string :uid # We have to add `null: false` below
 
       ## Database authenticatable
-      t.string :encrypted_password, null: false
+      t.string :encrypted_password # We have to add `null: false` below
 
       ## Recoverable
       t.string   :reset_password_token
@@ -44,7 +44,7 @@ class DeviseTokenAuthChangeUsers < ActiveRecord::Migration[6.0]
     reversible do |change|
       change.up do
         User.reset_column_information
-        User.all do |user|
+        User.all.each do |user|
           user.update(provider: 'email', encrypted_password: '', uid: user.email)
         end
       end
