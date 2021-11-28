@@ -54,9 +54,13 @@ jobs:
 
     - name: Run npm install
       run: bundle exec rake npm:install
+      env:
+        RAILS_ENV: test
 
     - name: Run npm build
       run: bundle exec rake npm:build
+      env:
+        RAILS_ENV: test
 
     - name: Run RSpec
       run: bundle exec rake spec
