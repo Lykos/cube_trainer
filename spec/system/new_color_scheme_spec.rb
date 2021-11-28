@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'system/system_spec_helper'
 
 describe 'new color scheme', type: :system do
   include_context 'with user abc'
@@ -12,9 +11,8 @@ describe 'new color scheme', type: :system do
 
   it 'allows to create a new color scheme' do
     login(user)
-    visit '/modes'
     click_link user.name
-    click_button 'Create Color Scheme'
+    click_link 'Create Color Scheme'
 
     sleep(0.5)
     mat_select 'Yellow', id: 'colorSelectU'

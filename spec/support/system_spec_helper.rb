@@ -6,6 +6,7 @@ def login(user)
   fill_in 'Email', with: user.email
   fill_in 'Password', with: user.password
   click_button 'Submit'
+  sleep(0.1)
 end
 
 # Use a material design select.
@@ -18,4 +19,8 @@ def mat_select(name, from: nil, id: nil)
   find("mat-select[formControlName='#{from}']").click if from
   find("##{id}").click if id
   find('mat-option', text: name).click
+end
+
+def extract_first_link_path(email)
+  email.body.match(%r{(?:"https?://.*?)(/.*?)(?:")}).captures[0]
 end

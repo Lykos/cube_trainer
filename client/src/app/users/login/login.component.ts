@@ -30,7 +30,12 @@ export class LoginComponent implements OnInit {
     this.usersService.login(this.email.value, this.password.value)
       .subscribe(
 	r => {
-	  this.router.navigate(['/modes']);
+          // TODO: Remove the reload once the toolbar subscription to
+          // the logged in user works.
+	  this.router.navigate(['/modes'])
+            .then(() => {
+              window.location.reload();
+            });
 	},
 	err => {
           // TODO: Get 401 from a constant.

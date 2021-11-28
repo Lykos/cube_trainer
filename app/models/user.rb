@@ -34,6 +34,10 @@ class User < ApplicationRecord
     achievement_grants.create(achievement: achievement_key)
   end
 
+  def admin_confirm!
+    update(admin_confirmed: true)
+  end
+
   private
 
   def validate_name_not_equal_to_email

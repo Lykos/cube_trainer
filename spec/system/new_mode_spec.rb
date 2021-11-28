@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'system/system_spec_helper'
 
 describe 'new mode', type: :system do
   include_context 'with user abc'

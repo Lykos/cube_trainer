@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'system/system_spec_helper'
 
 describe 'account deletion', type: :system do
   before do
@@ -21,8 +20,9 @@ describe 'account deletion', type: :system do
     expect(page).to have_text('Signup successful!')
 
     user = User.find_by(name: 'system test user')
-    user.update(admin_confirmed: true)
+    user.admin_confirm!
     user.confirm
+    user.password = 'password'
 
     login(user)
 
