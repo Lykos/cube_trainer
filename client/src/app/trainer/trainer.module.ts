@@ -5,6 +5,7 @@ import { TrainerComponent } from './trainer/trainer.component';
 import { StopwatchComponent } from './stopwatch/stopwatch.component';
 import { TrainerService } from './trainer.service';
 import { UtilsModule } from '../utils/utils.module';
+import { SharedModule } from '../shared/shared.module';
 import { ModesModule } from '../modes/modes.module';
 import { ResultsService } from './results.service';
 import { MatTableModule } from '@angular/material/table';
@@ -38,6 +39,7 @@ import { MatRippleModule } from '@angular/material/core';
     BrowserAnimationsModule,
     RailsModule,
     UtilsModule,
+    SharedModule,
   ],
   exports: [
     TrainerComponent,
