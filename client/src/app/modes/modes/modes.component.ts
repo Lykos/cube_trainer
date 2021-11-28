@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { ModesService } from '../modes.service';
 import { Mode } from '../mode.model';
-import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { DeleteModeConfirmationDialogComponent } from '../delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,13 +17,8 @@ export class ModesComponent {
 
   constructor(private readonly modesService: ModesService,
 	      private readonly dialog: MatDialog,
-	      private readonly snackBar: MatSnackBar,
-	      private readonly router: Router) {
+	      private readonly snackBar: MatSnackBar) {
     this.modes$ = this.modesService.list();
-  }
-
-  onUse(mode: Mode) {
-    this.router.navigate([`/trainer/${mode.id}`]);
   }
 
   onDelete(mode: Mode) {

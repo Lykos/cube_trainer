@@ -25,6 +25,7 @@ import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 import { AccountDeletedComponent } from './account-deleted/account-deleted.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -80,6 +81,7 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
     MatTableModule,
     MatSnackBarModule,
     MatFormFieldModule,
+    MatProgressSpinnerModule,
     MatDialogModule,
     RouterModule,
     ReactiveFormsModule,

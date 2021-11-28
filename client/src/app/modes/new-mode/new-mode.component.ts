@@ -8,6 +8,7 @@ import { StatType } from '../stat-type.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";
+import { Observable } from 'rxjs';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
@@ -19,7 +20,7 @@ export class NewModeComponent implements OnInit {
   modeTypeGroup!: FormGroup;
   setupGroup!: FormGroup;
   trainingGroup!: FormGroup;
-  modeTypes!: ModeType[];
+  modeTypes$: Observable<ModeType[]>;
   pickedStatTypes: StatType[] = [];
 
   lastModeTypeForStatsTypes: ModeType | undefined
@@ -29,7 +30,9 @@ export class NewModeComponent implements OnInit {
 	      private readonly modesService: ModesService,
 	      private readonly router: Router,
 	      private readonly snackBar: MatSnackBar,
-	      private readonly uniqueModeNameValidator: UniqueModeNameValidator) {}
+	      private readonly uniqueModeNameValidator: UniqueModeNameValidator) {
+    this.modeTypes$ = this.modesService.listTypes();
+  }
 
   relevantInvalid(control: AbstractControl) {
     return control.invalid && (control.dirty || control.touched);
@@ -170,7 +173,6 @@ export class NewModeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.modesService.listTypes().subscribe((modeTypes: ModeType[]) => this.modeTypes = modeTypes);
     this.modeTypeGroup = this.formBuilder.group({
       name: ['', { validators: Validators.required, asyncValidators: this.uniqueModeNameValidator.validate, updateOn: 'blur' }],
       modeType: ['', Validators.required],

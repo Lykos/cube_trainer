@@ -12,7 +12,7 @@
           <ng-container matColumnDef="use">
             <th mat-header-cell *matHeaderCellDef> Use </th>
             <td mat-cell *matCellDef="let mode">
-              <button mat-icon-button (click)="onUse(mode)">
+              <button mat-icon-button [routerLink]="'/trainer/' + mode.id">
                 <span class="material-icons">play_arrow</span>
               </button>
             </td>
@@ -30,11 +30,11 @@
         </table>
       </ng-container>
       <ng-template #error>
-        Error loading modes...
+        Error loading modes.
       </ng-template>
     </ng-container>
     <ng-template #loading>
-      Loading modes...
+      <mat-spinner></mat-spinner>
     </ng-template>
   </div>
   <div>
