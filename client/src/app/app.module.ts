@@ -27,7 +27,7 @@ import { APP_BASE_HREF } from '@angular/common';
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    // TODO: Figure out whether we can move thit to the users module.
+    // TODO: Figure out whether we can move thit to the rails module.
     // TODO: Don't use the host, use Location and PathLocationStrategy.
     AngularTokenModule.forRoot({
       loginField: 'email',
