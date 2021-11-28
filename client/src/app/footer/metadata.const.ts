@@ -1,3 +1,5 @@
+// TODO: Move to shared module.
+
 export const METADATA = {
   maintainer: {
     name: 'Bernhard F. Brodowsky',
@@ -6,4 +8,6 @@ export const METADATA = {
     securityEmail: 'bernhard.brodowsky+cubetrainer-security@gmail.com',
   },
   newIssueLink: 'https://github.com/Lykos/cube_trainer/issues/new',
+  googleAnalyticsId: 'G-SP2ETHT13T',
+  consentCookieKey: 'cookie-consent',
 };

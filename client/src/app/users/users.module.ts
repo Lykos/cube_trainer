@@ -32,6 +32,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { UtilsModule } from '../utils/utils.module';
+import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
@@ -83,6 +84,7 @@ import { UpdatePasswordComponent } from './update-password/update-password.compo
     FormsModule,
     MatTooltipModule,
     UtilsModule,
+    SharedModule,
   ],
   providers: [
     UsersService,
