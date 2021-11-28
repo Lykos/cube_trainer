@@ -25,25 +25,6 @@
       </mat-error>
     </mat-form-field>
     <br>
-    <mat-form-field appearance="fill">
-      <mat-label>Password</mat-label>
-      <input type="password" matInput formControlName="password">
-      <mat-error *ngIf="relevantInvalid(passwordControl) && passwordControl.errors && passwordControl.errors['required']">
-        You must provide a <strong>password</strong>.
-      </mat-error>
-    </mat-form-field>
-    <br>
-    <mat-form-field appearance="fill">
-      <mat-label>Confirm Password</mat-label>
-      <input type="password" matInput formControlName="passwordConfirmation">
-      <mat-error *ngIf="relevantInvalid(passwordConfirmationControl) && passwordConfirmationControl.errors && passwordConfirmationControl.errors['required']">
-        You must provide a <strong>password confirmation</strong>.
-      </mat-error>
-      <mat-error *ngIf="relevantInvalid(passwordConfirmationControl) && passwordConfirmationControl.errors && passwordConfirmationControl.errors['compare']">
-        <strong>Password</strong> must match <strong>password confirmation</strong>.
-      </mat-error>
-    </mat-form-field>
-    <br>
     <button mat-raised-button color="primary" type="submit" [disabled]="editUserForm.pristine || !editUserForm.valid">Save</button>
   </form>
 </div>

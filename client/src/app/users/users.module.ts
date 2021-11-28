@@ -43,6 +43,7 @@ import { RouterModule } from '@angular/router';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { UpdatePasswordComponent } from './update-password/update-password.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { UpdatePasswordComponent } from './update-password/update-password.compo
     EditUserComponent,
     ResetPasswordComponent,
     UpdatePasswordComponent,
+    ChangePasswordComponent,
   ],
   imports: [
     BrowserModule,
@@ -114,6 +116,7 @@ import { UpdatePasswordComponent } from './update-password/update-password.compo
     ConfirmEmailComponent,
     ResetPasswordComponent,
     UpdatePasswordComponent,
+    ChangePasswordComponent,
   ],
 })
 export class UsersModule {}

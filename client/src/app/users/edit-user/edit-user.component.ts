@@ -23,18 +23,12 @@ export class EditUserComponent implements OnInit {
     return {
       name: this.nameControl.value,
       email: this.emailControl.value,
-      password: this.passwordControl.value,
-      passwordConfirmation: this.passwordConfirmationControl.value
     };
   }
 
   get nameControl() { return this.editUserForm.get('name')!; }
 
   get emailControl() { return this.editUserForm.get('email')!; }
-
-  get passwordControl() { return this.editUserForm.get('password')!; }
-
-  get passwordConfirmationControl() { return this.editUserForm.get('passwordConfirmation')!; }
 
   relevantInvalid(control: AbstractControl) {
     return control.invalid && (control.dirty || control.touched);

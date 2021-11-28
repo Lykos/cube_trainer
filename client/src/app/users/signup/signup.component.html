@@ -33,6 +33,9 @@
         <mat-error *ngIf="relevantInvalid(password) && password.errors && password.errors['required']">
           You must provide a <strong>password</strong>.
         </mat-error>
+        <mat-error *ngIf="relevantInvalid(password) && password.errors && password.errors['minlength']">
+          <strong>Password</strong> have at least <strong>6 characters</strong>.
+        </mat-error>
       </mat-form-field>
       <br>
       <mat-form-field appearance="fill">

@@ -5,6 +5,7 @@ import { HttpVerb } from '../rails/http-verb';
 import { NewUser } from './new-user.model';
 import { UserUpdate } from './user-update.model';
 import { PasswordUpdate } from './password-update.model';
+import { PasswordChange } from './password-change.model';
 import { User } from './user.model';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -51,8 +52,18 @@ export class UsersService {
     return this.tokenService.resetPassword({login: email});
   }
 
+  // This version is for password reset flows and it doesn't
+  // need the users current password. But the backend will only
+  // accept it if the user has previously clicked on a reset
+  // password link that he received by mail.
   updatePassword(passwordUpdate: PasswordUpdate) {
     return this.tokenService.updatePassword(passwordUpdate);
+  }
+
+  // This version always works for logged in users,
+  // but users have to supply their current password.
+  changePassword(passwordChange: PasswordChange) {
+    return this.tokenService.updatePassword(passwordChange);
   }
 
   update(userUpdate: UserUpdate): Observable<void> {
