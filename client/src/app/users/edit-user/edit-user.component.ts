@@ -7,7 +7,7 @@ import { UserUpdate } from '../user-update.model';
 import { UserFormCreator } from '../user-form-creator.service';
 
 @Component({
-  selector: 'app-edit-user',
+  selector: 'cube-trainer-edit-user',
   templateUrl: './edit-user.component.html',
   styleUrls: ['./edit-user.component.css']
 })
@@ -50,6 +50,7 @@ export class EditUserComponent implements OnInit {
   ngOnInit() {
     this.usersService.show().subscribe(user => {
       this.user = user;
+      // TODO: The form should be created before the user exists, prefilling can happen later.
       this.editUserForm = this.userFormCreator.createUserForm(user);
     });
   }

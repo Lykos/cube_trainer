@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
 import { NewUser } from './new-user.model';
 import { UserUpdate } from './user-update.model';
+import { PasswordUpdate } from './password-update.model';
 import { User } from './user.model';
 import { Observable } from 'rxjs';
 
@@ -34,6 +35,14 @@ export class UsersService {
 
   logout() {
     return this.tokenService.signOut();
+  }
+
+  resetPassword(email: string) {
+    return this.tokenService.resetPassword({login: email});
+  }
+
+  updatePassword(passwordUpdate: PasswordUpdate) {
+    return this.tokenService.updatePassword(passwordUpdate);
   }
 
   update(userUpdate: UserUpdate): Observable<void> {

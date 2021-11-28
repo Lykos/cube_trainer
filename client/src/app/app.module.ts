@@ -27,10 +27,13 @@ import { APP_BASE_HREF } from '@angular/common';
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    // TODO: Figure out whether we can move thit to the users module.
+    // TODO: Don't use the host, use Location and PathLocationStrategy.
     AngularTokenModule.forRoot({
       loginField: 'email',
       apiBase: environment.apiPrefix,
       registerAccountCallback: `http://${environment.host}/confirm_email`,
+      resetPasswordCallback: `http://${environment.host}/update_password`,
     }),
   ],
   providers: [

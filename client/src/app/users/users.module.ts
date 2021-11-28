@@ -40,6 +40,8 @@ import { NewLetterSchemeComponent } from './new-letter-scheme/new-letter-scheme.
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { EditUserComponent } from './edit-user/edit-user.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { UpdatePasswordComponent } from './update-password/update-password.component';
 
 @NgModule({
   declarations: [
@@ -59,6 +61,8 @@ import { EditUserComponent } from './edit-user/edit-user.component';
     DeleteAccountConfirmationDialogComponent,
     ConfirmEmailComponent,
     EditUserComponent,
+    ResetPasswordComponent,
+    UpdatePasswordComponent,
   ],
   imports: [
     BrowserModule,
@@ -105,6 +109,8 @@ import { EditUserComponent } from './edit-user/edit-user.component';
     MessagesComponent,
     MessageComponent,
     ConfirmEmailComponent,
+    ResetPasswordComponent,
+    UpdatePasswordComponent,
   ],
 })
 export class UsersModule {}
