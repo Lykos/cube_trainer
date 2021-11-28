@@ -1,9 +1,16 @@
-<mat-card>
-  <mat-card-title>{{name}}</mat-card-title>
-  <mat-card-content>
-    {{description}}
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="onAll()">All Achievements</button>
-  </mat-card-actions>
-</mat-card>
+<div *ngIf="achievement$ | orerror | async as achievementOrError; else loading">
+  <ng-container *ngIf="achievementOrError | value as achievement; else error">
+    <h1>{{achievement.name}}</h1>
+    {{achievement.description}}
+    <br>
+    <a mat-raised-button color="primary" routerLink="/achievements">All Achievements</a>
+  </ng-container>
+  <ng-template #error>
+    <h1>Error Loading Achievement</h1>
+  </ng-template>
+</div>
+<ng-template #loading>
+  <div>
+    Loading achievement...
+  </div>
+</ng-template>
