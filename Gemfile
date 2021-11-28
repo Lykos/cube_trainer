@@ -34,6 +34,8 @@ group :development, :test, :production do
 
   # Postgresql support.
   gem 'pg', '~> 1.2.3', '>= 1.2.3'
+
+  gem 'ruby-filemagic'
 end
 
 group :development, :test do
@@ -44,7 +46,6 @@ group :development, :test do
 
   gem 'colorize'
   gem 'parallel'
-  gem 'ruby-filemagic'
   gem 'ruby-progressbar'
   gem 'rubyzip'
   gem 'wombat'
