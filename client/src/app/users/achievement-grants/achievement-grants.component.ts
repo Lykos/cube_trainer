@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AchievementGrantsService } from '../achievement-grants.service';
 import { AchievementGrant } from '../achievement-grant.model';
 import { Observable } from 'rxjs';
@@ -8,17 +8,11 @@ import { Observable } from 'rxjs';
   templateUrl: './achievement-grants.component.html',
   styleUrls: ['./achievement-grants.component.css']
 })
-export class AchievementGrantsComponent implements OnInit {
-  userId$: Observable<number>;
-  achievementGrants: AchievementGrant[] = [];
+export class AchievementGrantsComponent {
+  achievementGrants$: Observable<AchievementGrant[]>;
   columnsToDisplay = ['achievement', 'timestamp'];
 
-  constructor(private readonly achievementGrantsService: AchievementGrantsService) {}
-
-  ngOnInit() {
-    this.achievementGrantsService.list()
-      .subscribe((achievementGrants: AchievementGrant[]) => {
-	this.achievementGrants = achievementGrants
-      });
+  constructor(private readonly achievementGrantsService: AchievementGrantsService) {
+    this.achievementGrants$ = this.achievementGrantsService.list();
   }
 }
