@@ -1,31 +1,41 @@
 <div>
-  <h2>Modes</h2>
+  <h1>Modes</h1>
   <div>
-    <table mat-table class="mat-elevation-z2" [dataSource]="modes">
-      <mat-text-column name="name"></mat-text-column>
-      <ng-container matColumnDef="numResults">
-        <th mat-header-cell *matHeaderCellDef> Number of Results </th>
-        <td mat-cell *matCellDef="let mode"> {{mode.numResults}} </td>
+    <ng-container *ngIf="modes$ | orerror | async as modesOrError; else loading">
+      <ng-container *ngIf="modesOrError | value as modes; else error">
+        <table mat-table class="mat-elevation-z2" [dataSource]="modes">
+          <mat-text-column name="name"></mat-text-column>
+          <ng-container matColumnDef="numResults">
+            <th mat-header-cell *matHeaderCellDef> Number of Results </th>
+            <td mat-cell *matCellDef="let mode"> {{mode.numResults}} </td>
+          </ng-container>
+          <ng-container matColumnDef="use">
+            <th mat-header-cell *matHeaderCellDef> Use </th>
+            <td mat-cell *matCellDef="let mode">
+              <button mat-icon-button (click)="onUse(mode)">
+                <span class="material-icons">play_arrow</span>
+              </button>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="delete">
+            <th mat-header-cell *matHeaderCellDef> Delete </th>
+            <td mat-cell *matCellDef="let mode">
+              <button mat-icon-button (click)="onDelete(mode)">
+                <span class="material-icons">delete</span>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
+          <tr mat-row *matRowDef="let mode; columns: columnsToDisplay"></tr>
+        </table>
       </ng-container>
-      <ng-container matColumnDef="use">
-        <th mat-header-cell *matHeaderCellDef> Use </th>
-        <td mat-cell *matCellDef="let mode">
-          <button mat-icon-button (click)="onUse(mode)">
-            <span class="material-icons">play_arrow</span>
-          </button>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="delete">
-        <th mat-header-cell *matHeaderCellDef> Delete </th>
-        <td mat-cell *matCellDef="let mode">
-          <button mat-icon-button (click)="onDelete(mode)">
-            <span class="material-icons">delete</span>
-          </button>
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-      <tr mat-row *matRowDef="let mode; columns: columnsToDisplay"></tr>
-    </table>
+      <ng-template #error>
+        Error loading modes...
+      </ng-template>
+    </ng-container>
+    <ng-template #loading>
+      Loading modes...
+    </ng-template>
   </div>
   <div>
     <button mat-raised-button color="primary" routerLink="/modes/new">
