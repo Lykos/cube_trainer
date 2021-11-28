@@ -15,9 +15,9 @@ describe 'signup', type: :system do
     fill_in 'Email', with: 'system_test@example.org'
     fill_in 'Password', with: 'password'
     fill_in 'Confirm Password', with: 'password'
-    check 'cube-trainer-terms-and-conditions-accepted'
-    check 'cube-trainer-privacy-policy-accepted'
-    check 'cube-trainer-cookie-policy-accepted'
+    find(:css, '#cube-trainer-terms-and-conditions-accepted').set(true)
+    find(:css, '#cube-trainer-privacy-policy-accepted').set(true)
+    find(:css, '#cube-trainer-cookie-policy-accepted').set(true)
     click_button 'Submit'
 
     expect(page).to have_text('Signup successful!')
