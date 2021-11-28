@@ -53,9 +53,8 @@
     </div>
     <div>
       <h3>Cookies</h3>
-      Besides the cookies for Google Analytics, CubeTrainer only stores a cookie called <em>{{consentCookieKey}}</em>
-      to remember that the user has consented to using cookies. The user has to consent to cookies when registering the account.
-      We use local storage to store login information.
+      Besides the cookies for Google Analytics, CubeTrainer uses a cookie called <em>{{consentCookieKey}}</em> to remember that the user has consented to using cookies. The user has to consent to cookies when registering the account and CubeTrainer only sets these after account registration. Furthermore, CubeTrainer uses a cookie called <em>_cube_trainer_session</em>. It was originally used to track the login status. Nowadays it serves no purpose, and we are working on removing it.
+      CubeTrainer uses local storage to store login information.
       See our <a routerLink="/cookie_policy">Cookie policy</a> for more information.
     </div>
     <div>
@@ -132,7 +131,7 @@
         But note that Heroku utilizes ISO 27001 and FISMA certified data centers managed by Amazon. Amazon has many years of experience in designing, constructing, and operating large-scale data centers. This experience has been applied to the AWS platform and infrastructure. AWS data centers are housed in nondescript facilities, and critical facilities have extensive setback and military grade perimeter control berms as well as other natural boundary protection. Physical access is strictly controlled both at the perimeter and at building ingress points by professional security staff utilizing video surveillance, state-of-the-art intrusion detection systems, and other electronic means. Authorized staff must pass two-factor authentication no fewer than three times to access data center floors. All visitors and contractors are required to present identification and are signed in and continually escorted by authorized staff. See the <a href='https://www.heroku.com/policy/security'>security policy of Heroku</a> for more information.
       </p>
       <p>
-        We use <a href='https://github.com/lynndylanhurley/devise_token_auth'>devise-token-auth</a> that is based on <a href='https://github.com/heartcombo/devise'>devise</a> for authentication. Almost all requests to our website require authentication and can only access the content belonging to the authenticated user. The exceptions are the ones that access public information. This is done via a whitelist so we don't introduce security bugs by forgetting to add the requirement to authenticate. We don't construct any HTML or SQL queries based on user supplied data. We have functional tests for all our access control.
+        CubeTrainer uses <a href='https://github.com/lynndylanhurley/devise_token_auth'>devise-token-auth</a> that is based on <a href='https://github.com/heartcombo/devise'>devise</a> for authentication. Almost all requests to our website require authentication and can only access the content belonging to the authenticated user. The exceptions are the ones that access public information. This is done via a whitelist so we don't introduce security bugs by forgetting to add the requirement to authenticate. CubeTrainer doesn't construct any HTML or SQL queries based on user supplied data. CubeTrainer has functional tests for all our access control.
       </p>
     </div>
     <div>
