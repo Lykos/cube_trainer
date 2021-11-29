@@ -18,7 +18,7 @@ describe 'achievements', type: :system do
 
     find('cube-trainer-achievement-grants td', text: achievement_grant.achievement.name).click
     expect(page).to have_text('Fake achievement for tests.')
-    click_button 'All Achievements'
+    click_link 'All Achievements'
 
     expect(page).to have_text('Mode Creator')
   end
