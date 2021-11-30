@@ -130,7 +130,7 @@ class Mode < ApplicationRecord
   def to_dump
     to_simple.merge!(
       {
-        results: inputs.map(&:to_dump),
+        inputs: inputs.map(&:to_dump),
         stats: stats.map(&:to_dump)
       }
     )

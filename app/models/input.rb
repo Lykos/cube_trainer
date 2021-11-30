@@ -31,7 +31,6 @@ class Input < ApplicationRecord
   def to_dump
     {
       id: id,
-      result: result&.to_dump,
       input_representation: input_representation.to_s,
       created_at: created_at,
       result: result&.to_dump

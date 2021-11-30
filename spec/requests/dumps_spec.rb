@@ -58,7 +58,7 @@ RSpec.describe 'Dumps', type: :request do
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['letter_scheme']['mappings']).to eq_modulo_symbol_vs_string([{ letter: 'd', part: { key: 'Edge:UB', name: 'UB' } }])
       expect(parsed_body['color_scheme']['f']).to eq('green')
-      expect(parsed_body['modes'][0]['results'][0]['time_s']).to eq(10.0)
+      expect(parsed_body['modes'][0]['inputs'][0]['result']['time_s']).to eq(10.0)
     end
 
     it 'returns not found when not logged in' do
