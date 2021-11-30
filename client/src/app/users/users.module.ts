@@ -45,6 +45,7 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { UpdatePasswordComponent } from './update-password/update-password.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { FileSaverModule } from 'ngx-filesaver';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
     ChangePasswordComponent,
   ],
   imports: [
+    FileSaverModule,
     BrowserModule,
     BrowserAnimationsModule,
     RailsModule,
