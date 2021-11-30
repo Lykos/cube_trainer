@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RailsModule } from '../rails/rails.module';
 import { UsersModule } from '../users/users.module';
+import { SharedModule } from '../shared/shared.module';
 import { UniqueModeNameValidator } from './unique-mode-name.validator';
 import { ModesService } from './modes.service';
 import { StatsService } from './stats.service';
@@ -43,6 +44,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatDialogModule,
     MatSnackBarModule,
     UsersModule,
+    SharedModule,
     UtilsModule,
     MatProgressSpinnerModule,
     MatRippleModule,

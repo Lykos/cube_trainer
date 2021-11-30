@@ -31,7 +31,9 @@
     "@rails/ujs": "^6.1.4",
     "@rxweb/reactive-form-validators": "^2.1.6",
     "angular-token": "^7.0.1",
+    "file-saver": "^2.0.5",
     "ngx-cookie-service": "^13.0.1",
+    "ngx-filesaver": "^12.0.0",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -46,6 +48,7 @@
     "@angular/cli": "~13.0.1",
     "@angular/compiler-cli": "~13.0.0",
     "@types/chai": "^4.2.22",
+    "@types/file-saver": "^2.0.4",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
     "@types/rails__ujs": "^6.0.1",

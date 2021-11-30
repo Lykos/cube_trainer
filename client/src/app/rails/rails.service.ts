@@ -33,6 +33,36 @@ class UrlParameterPath {
   }
 }
 
+function constructUrl(relativeUrl: string) {
+  return `${environment.apiPrefix}/${relativeUrl}`;
+}
+
+function serializeUrlParams(data: object): HttpParams {
+  const partsAccumulator: string[] = []
+  for (let [key, value] of Object.entries(data)) {
+    serializeUrlParamsPart(value, new UrlParameterPath(key), partsAccumulator);
+  }
+  return new HttpParams({fromString: partsAccumulator.join('&')});
+}
+
+function serializeUrlParamsPart(value: any, path: UrlParameterPath, partsAccumulator: string[]) {
+  if (value === undefined || value === null) {
+    return;
+  } else if (typeof value === "object") {
+    if (value instanceof Array) {
+      for (let subValue of value) {
+        serializeUrlParamsPart(subValue, path.withArraySegment(), partsAccumulator);
+      }
+    } else {
+      for (let [key, subValue] of Object.entries(value)) {
+        serializeUrlParamsPart(subValue, path.withSegment(key), partsAccumulator);
+      }
+    }
+  } else {
+    partsAccumulator.push(path.serializeWithValue(value));
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -41,7 +71,7 @@ export class RailsService {
 
   ajax<X>(type: HttpVerb, relativeUrl: string, data: object): Observable<X> {
     const url = environment.apiPrefix + relativeUrl;
-    const params = this.serializeUrlParams(data);
+    const params = serializeUrlParams(data);
     // TODO clean this up, this is a relict from when we used railsujs where you needed to pass the method.
     switch (type) {
       case HttpVerb.Get:
@@ -80,29 +110,10 @@ export class RailsService {
     }
   }
 
-  private serializeUrlParams(data: object): HttpParams {
-    const partsAccumulator: string[] = []
-    for (let [key, value] of Object.entries(data)) {
-      this.serializeUrlParamsPart(value, new UrlParameterPath(key), partsAccumulator);
-    }
-    return new HttpParams({fromString: partsAccumulator.join('&')});
-  }
+  getBlob(relativeUrl: string): Observable<Blob> {
+    return this.http.get(constructUrl(relativeUrl), {
+      responseType: 'blob',
+    });
 
-  private serializeUrlParamsPart(value: any, path: UrlParameterPath, partsAccumulator: string[]) {
-    if (value === undefined || value === null) {
-      return;
-    } else if (typeof value === "object") {
-      if (value instanceof Array) {
-	for (let subValue of value) {
-          this.serializeUrlParamsPart(subValue, path.withArraySegment(), partsAccumulator);
-	}
-      } else {
-	for (let [key, subValue] of Object.entries(value)) {
-	  this.serializeUrlParamsPart(subValue, path.withSegment(key), partsAccumulator);
-	}
-      }
-    } else {
-      partsAccumulator.push(path.serializeWithValue(value));
-    }
   }
 }

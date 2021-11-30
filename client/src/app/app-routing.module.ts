@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { UserComponent } from './users/user/user.component';
 import { ResetPasswordComponent } from './users/reset-password/reset-password.component';
 import { UpdatePasswordComponent } from './users/update-password/update-password.component';
+import { ChangePasswordComponent } from './users/change-password/change-password.component';
 import { EditUserComponent } from './users/edit-user/edit-user.component';
 import { AchievementsComponent } from './users/achievements/achievements.component';
 import { AchievementGrantsComponent } from './users/achievement-grants/achievement-grants.component';
@@ -32,6 +33,7 @@ const routes: Routes = [
   { path: 'signup', component: SignupComponent },
   { path: 'reset_password', component: ResetPasswordComponent },
   { path: 'update_password', component: UpdatePasswordComponent },
+  { path: 'change_password', component: ChangePasswordComponent },
   { path: 'login', component: LoginComponent },
   { path: 'logged_out', component: LoggedOutComponent },
   { path: 'account_deleted', component: AccountDeletedComponent },

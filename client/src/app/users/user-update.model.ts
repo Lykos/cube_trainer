@@ -1,3 +1,4 @@
-import { NewUser } from './new-user.model';
-
-export type UserUpdate = Partial<NewUser>;
+export interface UserUpdate {
+  name?: string;
+  email?: string;
+};

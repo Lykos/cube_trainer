@@ -25,6 +25,7 @@ import { LoggedOutComponent } from './logged-out/logged-out.component';
 import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 import { AccountDeletedComponent } from './account-deleted/account-deleted.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -43,6 +44,8 @@ import { RouterModule } from '@angular/router';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { UpdatePasswordComponent } from './update-password/update-password.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
+import { FileSaverModule } from 'ngx-filesaver';
 
 @NgModule({
   declarations: [
@@ -64,8 +67,10 @@ import { UpdatePasswordComponent } from './update-password/update-password.compo
     EditUserComponent,
     ResetPasswordComponent,
     UpdatePasswordComponent,
+    ChangePasswordComponent,
   ],
   imports: [
+    FileSaverModule,
     BrowserModule,
     BrowserAnimationsModule,
     RailsModule,
@@ -78,6 +83,7 @@ import { UpdatePasswordComponent } from './update-password/update-password.compo
     MatTableModule,
     MatSnackBarModule,
     MatFormFieldModule,
+    MatProgressSpinnerModule,
     MatDialogModule,
     RouterModule,
     ReactiveFormsModule,
@@ -114,6 +120,7 @@ import { UpdatePasswordComponent } from './update-password/update-password.compo
     ConfirmEmailComponent,
     ResetPasswordComponent,
     UpdatePasswordComponent,
+    ChangePasswordComponent,
   ],
 })
 export class UsersModule {}

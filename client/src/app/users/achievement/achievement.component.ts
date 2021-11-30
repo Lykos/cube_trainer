@@ -1,40 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AchievementsService } from '../achievements.service';
 import { Achievement } from '../achievement.model';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-achievement',
   templateUrl: './achievement.component.html'
 })
-export class AchievementComponent implements OnInit {
-  achievementKey$: Observable<string>;
-  achievement: Achievement | undefined = undefined;
+export class AchievementComponent {
+  achievement$: Observable<Achievement>;
 
   constructor(private readonly achievementsService: AchievementsService,
-	      private readonly router: Router,
 	      private readonly activatedRoute: ActivatedRoute) {
-    this.achievementKey$ = this.activatedRoute.params.pipe(map(p => p['achievementKey']));
-  }
-
-  get name() {
-    return this.achievement?.name;
-  }
-
-  get description() {
-    return this.achievement?.description;
-  }
-
-  onAll() {
-    this.router.navigate(['/achievements']);
-  }
-
-  ngOnInit() {
-    this.achievementKey$.subscribe(achievementKey => {
-      this.achievementsService.show(achievementKey).subscribe((achievement: Achievement) =>
-	this.achievement = achievement);
-    });
+    this.achievement$ = this.activatedRoute.params.pipe(
+      map(p => p['achievementKey']),
+      switchMap(achievementKey => this.achievementsService.show(achievementKey)),
+    );
   }
 }

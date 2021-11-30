@@ -31,6 +31,17 @@ class Result < ApplicationRecord
 
   delegate :input_representation, to: :input
 
+  def to_dump
+    {
+      time_s: time_s,
+      failed_attempts: failed_attempts,
+      word: word,
+      success: success,
+      num_hints: num_hints,
+      created_at: created_at
+    }
+  end
+
   def time
     time_s&.seconds
   end

@@ -13,6 +13,10 @@ class ColorScheme < ApplicationRecord
   end
   validate :colors_valid
 
+  def to_dump
+    attributes
+  end
+
   def to_twisty_puzzles_color_scheme
     @to_twisty_puzzles_color_scheme ||=
       begin

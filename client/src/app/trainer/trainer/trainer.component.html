@@ -1,12 +1,24 @@
-<div layout="row" layout-sm="column">
-  <div flex>
-    <cube-trainer-trainer-input [input]="input" [mode]="mode" [numHints]="numHints" *ngIf="mode && input"></cube-trainer-trainer-input>
-    <cube-trainer-stopwatch [mode]="mode" (inputItem)="onInputItem($event)" (resultSaved)="onResultsModified()" (numHints)="onNumHints($event)" *ngIf="mode"></cube-trainer-stopwatch>
-  </div>
-  <div flex>
-    <cube-trainer-results-table [resultEvents$]="resultEventsSubject.asObservable()" (resultsModified)="onResultsModified()"></cube-trainer-results-table>
-  </div>
-  <div flex>
-    <cube-trainer-stats-table [statEvents$]="resultEventsSubject.asObservable()"></cube-trainer-stats-table>
-  </div>
+<div>
+  <ng-container *ngIf="mode$ | orerror | async as modeOrError; else loading">
+    <ng-container *ngIf="modeOrError | value as mode; else error">
+      <div layout="row" layout-sm="column">
+        <div flex>
+          <cube-trainer-trainer-input [input]="input" [mode]="mode" [numHints]="numHints" *ngIf="mode && input"></cube-trainer-trainer-input>
+          <cube-trainer-stopwatch [mode]="mode" (inputItem)="onInputItem($event)" (resultSaved)="onResultsModified()" (numHints)="onNumHints($event)" *ngIf="mode"></cube-trainer-stopwatch>
+        </div>
+        <div flex>
+          <cube-trainer-results-table [resultEvents$]="resultEventsSubject.asObservable()" (resultsModified)="onResultsModified()"></cube-trainer-results-table>
+        </div>
+        <div flex>
+          <cube-trainer-stats-table [statEvents$]="resultEventsSubject.asObservable()"></cube-trainer-stats-table>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #error>
+      Error Loading Mode.
+    </ng-template>
+  </ng-container>
+  <ng-template #loading>
+    <mat-spinner></mat-spinner>
+  </ng-template>
 </div>

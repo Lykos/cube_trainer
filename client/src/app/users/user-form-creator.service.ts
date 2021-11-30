@@ -32,11 +32,14 @@ export class UserFormCreator {
       ],
       password: [
 	'',
-	[Validators.required],
+	[Validators.required, Validators.minLength(6)],
       ],
       passwordConfirmation: [
 	'',
-	[Validators.required, RxwebValidators.compare({ conditionalExpression: (x: any) => x.password || x.passwordConfirmation, fieldName: 'password' })],
+	[
+          Validators.required,
+          RxwebValidators.compare({ conditionalExpression: (x: any) => x.password || x.passwordConfirmation, fieldName: 'password' }),
+        ],
       ],
       termsAndConditionsAccepted: [false, Validators.requiredTrue],
       privacyPolicyAccepted: [false, Validators.requiredTrue],
@@ -48,7 +51,24 @@ export class UserFormCreator {
     return this.formBuilder.group({
       password: [
 	'',
+	[Validators.required, Validators.minLength(6)],
+      ],
+      passwordConfirmation: [
+	'',
+	([Validators.required]).concat([RxwebValidators.compare({ conditionalExpression: (x: any) => x.password || x.passwordConfirmation, fieldName: 'password' })]),
+      ],
+    });
+  }
+
+  createChangePasswordForm(): FormGroup {
+    return this.formBuilder.group({
+      currentPassword: [
+	'',
 	[Validators.required],
+      ],
+      password: [
+	'',
+	[Validators.required, Validators.minLength(6)],
       ],
       passwordConfirmation: [
 	'',
@@ -76,14 +96,6 @@ export class UserFormCreator {
 	  asyncValidators: this.uniqueUsernameOrEmailValidator.validate(user?.email),
 	  updateOn: 'blur'
 	}
-      ],
-      password: [
-	'',
-	[]
-      ],
-      passwordConfirmation: [
-	'',
-	[RxwebValidators.compare({ conditionalExpression: (x: any) => x.password || x.passwordConfirmation, fieldName: 'password' })],
       ],
     });
   }

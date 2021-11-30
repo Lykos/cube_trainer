@@ -14,9 +14,19 @@
       </mat-form-field>
       <mat-form-field>
         <mat-label>Mode Type</mat-label>
-        <mat-select formControlName="modeType">
-          <mat-option *ngFor="let modeType of modeTypes" [value]="modeType"> {{modeType.name}} </mat-option>
-        </mat-select>
+        <ng-container *ngIf="modeTypes$ | orerror | async as modeTypesOrError; else loading">
+          <ng-container *ngIf="modeTypesOrError | value as modeTypes; else error">
+            <mat-select formControlName="modeType">
+              <mat-option *ngFor="let modeType of modeTypes" [value]="modeType"> {{modeType.name}} </mat-option>
+            </mat-select>
+          </ng-container>
+          <ng-template #error>
+            Error loading mode types.
+          </ng-template>
+        </ng-container>
+        <ng-template #loading>
+          <mat-spinner></mat-spinner>
+        </ng-template>
         <mat-error *ngIf="relevantInvalid(modeType) && modeType.errors && modeType.errors['required']">
           You must provide a <strong>mode type</strong>.
         </mat-error>

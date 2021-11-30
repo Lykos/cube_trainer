@@ -28,6 +28,20 @@ class User < ApplicationRecord
     }
   end
 
+  def to_dump
+    to_simple.merge!(
+      {
+        provider: provider,
+        uid: uid,
+        color_scheme: color_scheme&.to_dump,
+        letter_scheme: letter_scheme&.to_dump,
+        achievement_grants: achievement_grants.map(&:to_dump),
+        messages: messages.map(&:to_dump),
+        modes: modes.map(&:to_dump)
+      }
+    )
+  end
+
   def grant_achievement_if_not_granted(achievement_key)
     return if achievement_grants.exists?(achievement: achievement_key)
 

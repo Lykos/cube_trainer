@@ -1,8 +1,15 @@
 <div *ngIf="user">
   <h1>{{user.name}}</h1>
   <a mat-raised-button color="primary" routerLink="/edit_user">Edit Account Information</a>
+  <br>
+  <a mat-raised-button color="primary" routerLink="/change_password">Change Password</a>
+  <br>
   <a mat-raised-button color="primary" routerLink="/color_schemes/new">Create Color Scheme</a>
+  <br>
   <a mat-raised-button color="primary" routerLink="/letter_schemes/new">Create Letter Scheme</a>
+  <br>
+  <a mat-raised-button color="primary" (click)="download()">Download All Personal Data</a>
+  <br>
   <cube-trainer-messages></cube-trainer-messages>
   <cube-trainer-achievement-grants></cube-trainer-achievement-grants>
   <cube-trainer-delete-account-button></cube-trainer-delete-account-button>

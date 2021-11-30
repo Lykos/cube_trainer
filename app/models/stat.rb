@@ -19,6 +19,10 @@ class Stat < ApplicationRecord
     }
   end
 
+  def to_dump
+    to_simple
+  end
+
   def grant_stat_achievement
     mode.user.grant_achievement_if_not_granted(:stat_creator)
   end

@@ -6,7 +6,6 @@ class Input < ApplicationRecord
   belongs_to :mode
   has_one :result, dependent: :destroy
 
-  attribute :old_mode, :symbol
   attribute :input_representation, :input_representation
 
   def representation
@@ -26,6 +25,15 @@ class Input < ApplicationRecord
       success: result.success,
       num_hints: result.num_hints,
       created_at: created_at
+    }
+  end
+
+  def to_dump
+    {
+      id: id,
+      input_representation: input_representation.to_s,
+      created_at: created_at,
+      result: result&.to_dump
     }
   end
 end
