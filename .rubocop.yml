@@ -4,6 +4,7 @@ require:
 - rubocop-rails
 - rubocop-rspec
 AllCops:
+  TargetRubyVersion: 3.0
   Exclude:
   - 'bin/*'
   - 'client/**/*'
@@ -293,5 +294,10 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   # TODO: Enable
   Enabled: false
-Rails/LexicallyScopedActionFilter:
-  Exclude: ['app/controllers/application_controller.rb']
+Gemspec/RequireMFA: # new in 1.23
+  Enabled: true
+Lint/UselessRuby2Keywords: # new in 1.23
+  Enabled: true
+Style/OpenStructUse: # new in 1.23
+  # TODO: Enable
+  Enabled: false
