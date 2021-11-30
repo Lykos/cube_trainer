@@ -14,6 +14,10 @@ class LetterScheme < ApplicationRecord
   alias mapping_ids letter_scheme_mapping_ids
   alias mapping_ids= letter_scheme_mapping_ids=
 
+  def to_dump
+    to_simple
+  end
+
   def letter(part)
     mappings.find { |e| e.part == part }&.letter
   end

@@ -127,6 +127,10 @@ class Mode < ApplicationRecord
     }
   end
 
+  def to_dump
+    to_simple.merge!({results: inputs.map(&:to_simple_result)})
+  end
+
   private
 
   def grant_mode_achievement

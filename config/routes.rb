@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     resources :messages, only: [:index, :create, :show, :update, :destroy]
     resources :achievement_grants, only: [:index, :show]
     resource :user
+    resource :dump, only: [:show]
     resources :modes do
       resources :results, only: [:index, :show, :destroy, :update]
       resources :stats, only: [:index, :show, :destroy]

@@ -28,4 +28,8 @@ class Input < ApplicationRecord
       created_at: created_at
     }
   end
+
+  def to_dump
+    to_simple_result
+  end
 end
