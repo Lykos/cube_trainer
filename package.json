@@ -48,6 +48,7 @@
     "@angular/cli": "~13.0.1",
     "@angular/compiler-cli": "~13.0.0",
     "@types/chai": "^4.2.22",
+    "@types/file-saver": "^2.0.4",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
     "@types/rails__ujs": "^6.0.1",
