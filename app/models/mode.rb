@@ -128,7 +128,12 @@ class Mode < ApplicationRecord
   end
 
   def to_dump
-    to_simple.merge!({results: inputs.map(&:to_simple_result)})
+    to_simple.merge!(
+      {
+        results: inputs.map(&:to_dump),
+        stats: stats.map(&:to_dump)
+      }
+    )
   end
 
   private

@@ -30,6 +30,6 @@ class Input < ApplicationRecord
   end
 
   def to_dump
-    to_simple_result
+    to_simple_result.tap { |s| s.delete(:mode) }
   end
 end
