@@ -18,9 +18,7 @@ class ColorScheme < ApplicationRecord
 
   def to_twisty_puzzles_color_scheme
     @to_twisty_puzzles_color_scheme ||=
-      begin
-        TwistyPuzzles::ColorScheme::WCA.turned(color_u, color_f)
-      end
+      TwistyPuzzles::ColorScheme::WCA.turned(color_u, color_f)
   end
 
   def self.from_twisty_puzzles_color_scheme(color_scheme)
@@ -29,8 +27,10 @@ class ColorScheme < ApplicationRecord
 
   ROTATION_COMBINATIONS =
     TwistyPuzzles::Rotation::ALL_ROTATIONS.map { |r| TwistyPuzzles::Algorithm.move(r) } +
-    TwistyPuzzles::Rotation::ALL_ROTATIONS.permutation(2).reject { |a, b| a.same_axis?(b) }.map { |rs| TwistyPuzzles::Algorithm.new(rs) }
-  
+    TwistyPuzzles::Rotation::ALL_ROTATIONS.permutation(2).reject do |a, b|
+      a.same_axis?(b)
+    end.map { |rs| TwistyPuzzles::Algorithm.new(rs) }
+
   def setup
     @setup =
       begin
@@ -54,7 +54,9 @@ class ColorScheme < ApplicationRecord
   private
 
   def validate_colors_not_opposite
-    return unless TwistyPuzzles::ColorScheme::WCA.opposite_color(color_u) == TwistyPuzzles::ColorScheme::WCA.color(color_f)
+    unless TwistyPuzzles::ColorScheme::WCA.opposite_color(color_u) == TwistyPuzzles::ColorScheme::WCA.color(color_f)
+      return
+    end
 
     errors.add(color_f, "has opposite colors for faces U (#{color_u}) and F (#{color_f})")
   end

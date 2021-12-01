@@ -143,7 +143,9 @@ class Mode < ApplicationRecord
     alg_setup =
       flat_hints.find { |i| i.is_a?(TwistyPuzzles::Algorithm) }&.inverse ||
       flat_hints.find { |i| i.is_a?(TwistyPuzzles::Commutator) }&.inverse&.algorithm ||
-      flat_hints.find { |i| i.is_a?(CubeTrainer::Training::CaseSolution) }&.best_alg&.inverse&.algorithm
+      flat_hints.find do |i|
+        i.is_a?(CubeTrainer::Training::CaseSolution)
+      end&.best_alg&.inverse&.algorithm
     color_scheme.setup + alg_setup if alg_setup
   end
 
