@@ -19,10 +19,6 @@ export class NewColorSchemeComponent implements OnInit {
   readonly wcaColorScheme: NewColorScheme = {
     U: Color.White,
     F: Color.Green,
-    R: Color.Red,
-    L: Color.Orange,
-    B: Color.Blue,
-    D: Color.Yellow,
   }
 
   constructor(private readonly formBuilder: FormBuilder,
