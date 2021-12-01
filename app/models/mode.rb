@@ -137,15 +137,19 @@ class Mode < ApplicationRecord
     )
   end
 
+  def commutator(input)
+    hints = hints(input)
+    hints.find { |i| i.is_a?(TwistyPuzzles::Commutator) } ||
+      hints.find { |i| i.is_a?(CubeTrainer::Training::CaseSolution) }&.best_alg
+  end
+
+  def algorithm(input)
+    hints(input).find { |i| i.is_a?(TwistyPuzzles::Algorithm) } ||
+      commutator(input)&.algorithm
+  end
+
   def setup(input)
-    flat_hints = hints(input)&.flatten
-    p flat_hints
-    alg_setup =
-      flat_hints.find { |i| i.is_a?(TwistyPuzzles::Algorithm) }&.inverse ||
-      flat_hints.find { |i| i.is_a?(TwistyPuzzles::Commutator) }&.inverse&.algorithm ||
-      flat_hints.find do |i|
-        i.is_a?(CubeTrainer::Training::CaseSolution)
-      end&.best_alg&.inverse&.algorithm
+    alg_setup = algorithm(input)&.inverse
     color_scheme.setup + alg_setup if alg_setup
   end
 

@@ -11,11 +11,6 @@ class TrainerController < ApplicationController
   def create
     input_item = @mode.random_item(cached_inputs)
     input = @mode.inputs.new(input_representation: input_item.representation)
-    puts
-    puts
-    p @mode.setup(input)
-    puts
-    puts
     if input.save
       response = {
         id: input.id,
