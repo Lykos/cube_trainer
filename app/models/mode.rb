@@ -3,6 +3,7 @@
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 require 'mode_type'
+require 'cube_trainer/training/case_solution'
 
 # Model for training modes that the user created.
 class Mode < ApplicationRecord
@@ -138,9 +139,11 @@ class Mode < ApplicationRecord
 
   def setup(input)
     flat_hints = hints(input)&.flatten
+    p flat_hints
     alg_setup =
       flat_hints.find { |i| i.is_a?(TwistyPuzzles::Algorithm) }&.inverse ||
-      flat_hints.find { |i| i.is_a?(TwistyPuzzles::Commutator) }&.inverse&.algorithm
+      flat_hints.find { |i| i.is_a?(TwistyPuzzles::Commutator) }&.inverse&.algorithm ||
+      flat_hints.find { |i| i.is_a?(CubeTrainer::Training::CaseSolution) }&.best_alg&.inverse&.algorithm
     color_scheme.setup + alg_setup if alg_setup
   end
 
