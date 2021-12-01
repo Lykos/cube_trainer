@@ -136,6 +136,14 @@ class Mode < ApplicationRecord
     )
   end
 
+  def setup(input)
+    flat_hints = hints(input)&.flatten
+    alg_setup =
+      flat_hints.find { |i| i.is_a?(TwistyPuzzles::Algorithm) }&.inverse ||
+      flat_hints.find { |i| i.is_a?(TwistyPuzzles::Commutator) }&.inverse&.algorithm
+    color_scheme.setup + alg_setup if alg_setup
+  end
+
   private
 
   def grant_mode_achievement

@@ -1,9 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Mode } from '../../modes/mode.model';
 import { ShowInputMode } from '../../modes/show-input-mode.model';
-import { TrainerService } from '../trainer.service';
 import { InputItem } from '../input-item.model';
-import { ImgSide } from '../img-side.model';
 
 @Component({
   selector: 'cube-trainer-trainer-input',
@@ -12,15 +10,19 @@ import { ImgSide } from '../img-side.model';
 })
 export class TrainerInputComponent {
   @Input()
-  input!: InputItem;
+  input?: InputItem;
 
   @Input()
-  mode!: Mode
+  mode?: Mode
 
   @Input()
-  numHints!: number;
+  numHints?: number;
 
-  constructor(private readonly trainerService: TrainerService) {}
+  constructor() {}
+
+  get setup() {
+    return this.input?.setup;
+  }
 
   get hints() {
     return this.input?.hints ? this.input.hints : [];
@@ -32,17 +34,5 @@ export class TrainerInputComponent {
 
   get showName() {
     return this.mode && this.mode.showInputMode == ShowInputMode.Name;
-  }
-
-  get imgLeftSrc() {
-    return this.imgSrc(ImgSide.Left);
-  }
-
-  get imgRightSrc() {
-    return this.imgSrc(ImgSide.Right);
-  }
-
-  imgSrc(imgSide: ImgSide) {
-    return this.mode && this.input && this.showImage ? this.trainerService.inputImgSrc(this.mode, this.input, imgSide) : undefined;
   }
 }

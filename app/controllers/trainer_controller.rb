@@ -11,10 +11,16 @@ class TrainerController < ApplicationController
   def create
     input_item = @mode.random_item(cached_inputs)
     input = @mode.inputs.new(input_representation: input_item.representation)
+    puts
+    puts
+    p @mode.setup(input)
+    puts
+    puts
     if input.save
       response = {
         id: input.id,
         representation: @mode.maybe_apply_letter_scheme(input_item.representation).to_s,
+        setup: @mode.setup(input).to_s,
         hints: @mode.hints(input).map(&:to_s)
       }
       render json: response, status: :created

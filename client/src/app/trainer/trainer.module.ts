@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TrainerComponent } from './trainer/trainer.component';
 import { StopwatchComponent } from './stopwatch/stopwatch.component';
 import { TrainerService } from './trainer.service';
@@ -48,5 +48,8 @@ import { MatRippleModule } from '@angular/material/core';
     TrainerService,
     ResultsService,
   ],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA,
+  ]
 })
 export class TrainerModule {}
