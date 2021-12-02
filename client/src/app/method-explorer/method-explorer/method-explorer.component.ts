@@ -7,7 +7,15 @@ import { expectedAlgs, ExecutionOrder } from '../../utils/cube-stats';
   styleUrls: ['./method-explorer.component.css']
 })
 export class MethodExplorerComponent {
+  get executionOrder() {
+    return ExecutionOrder.EC;
+  }
+
+  get methodDescription() {
+    return {executionOrder: this.executionOrder};
+  }
+  
   get expectedAlgs() {
-    return expectedAlgs({executionOrder: ExecutionOrder.EC});
+    return expectedAlgs(this.methodDescription).toFixed(2);
   }
 }

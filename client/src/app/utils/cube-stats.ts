@@ -61,7 +61,10 @@ class PermutationGroup {
       result /= factorial(cycleGroup.count);
     }
     // For every unsolved piece except for the last one, we have a choice for the orientation.
-    result *= (this.unoriented.length + 1) ** (this.normalTargets - 1)
+    // In case of only twists, we already discarded the invalid ones, so we can just leave this.
+    if (this.normalTargets > 0) {
+      result *= (this.unoriented.length + 1) ** (this.normalTargets - 1)
+    }
     return result;
   }
 }
@@ -144,6 +147,7 @@ class PiecePermutationDescription {
 
   get count() {
     const divisor = this.allowOddPermutations ? 1 : 2;
+    // Every piece except the last has a choice for the orientation.
     const orientations = (this.unorientedTypes + 1) ** (this.pieces - 1);
     const permutations = factorial(this.pieceDescription.pieces);
     return orientations * permutations / divisor;
@@ -159,6 +163,10 @@ class PiecePermutationDescription {
     assert(unoriented.length <= this.unorientedTypes, 'unoriented.length <= this.unorientedTypes');
     if (unoriented.length === this.unorientedTypes) {
       const remainingUnsolved = this.pieces - solved - sum(unoriented);
+      if (remainingUnsolved === 0 && sum(unoriented.map((unorientedForType, unorientedType) => unorientedForType * (unorientedType + 1))) % (unoriented.length + 1) != 0) {
+        // Invalid twist. So it's impossible, so 0 possibilities. If we have remaining unsolved, the twist can be in that part.
+        return [];
+      }
       return this.possibleCycleGroups(remainingUnsolved).map(cycleGroups => {
         const group = new PermutationGroup(solved, unoriented, cycleGroups);
         assert(group.solved + group.twists + group.normalTargets === this.pieces, `${group.solved} + ${group.twists} + ${group.normalTargets} === ${this.pieces}`);
@@ -178,6 +186,7 @@ class PiecePermutationDescription {
     const maxLength = cycleGroupsPrefix.length ? (cycleGroupsPrefix[cycleGroupsPrefix.length - 1].length - 1) : Infinity;
     if (remainingUnsolved === 0) {
       if (!this.allowOddPermutations && cycleGroupsParity(cycleGroupsPrefix) == 1) {
+        // We don't allow odd permutations and this is one, so it's impossible, so 0 possibilities.
         return [];
       }
       return [cycleGroupsPrefix];
