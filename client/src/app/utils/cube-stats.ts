@@ -1,72 +1,65 @@
-interface CycleGroup {
-  length: number;
-  count: number;
-}
+import { some, none, Optional, orElseCall } from './optional';
 
-function cycleGroupsSum(cycleGroups: CycleGroup[]) {
-  return sum(cycleGroups.map(cycleGroup => cycleGroup.count * cycleGroup.length));
-}
-
-function cycleGroupsParity(cycleGroups: CycleGroup[]) {
-  return (cycleGroupsSum(cycleGroups) + cycleGroupsTotalCount(cycleGroups)) % 2;
-}
-
-function cycleGroupsTotalCount(cycleGroups: CycleGroup[]) {
-  return sum(cycleGroups.map(cycleGroup => cycleGroup.count));
+interface Piece {
+  id: number;
 }
 
 // Represents one group of similar permutations, i.e.
 // * same number of pieces solved
 // * same number of pieces twisted or flipped
-// * same split into multiple cycles
+// * same number of pieces permuted
 class PermutationGroup {
-  readonly twists: number;
-  readonly normalTargets: number;
-
   constructor(
-    // Number of solved pieces.
-    readonly solved: number,
+    readonly description: PiecePermutationDescription,
+    // Solved pieces.
+    readonly solved: Piece[],
     // Only used for corners, edges and midges.
     // It's an array because there can be multiple types of unoriented.
     // (clockwise and counter-clockwise for corners)
-    readonly unoriented: number[],
-    // Lengths of permutation cycles in decreasing size.
-    readonly cycleGroups: CycleGroup[]) {
-    this.twists = sum(this.unoriented);
-    this.normalTargets = cycleGroupsSum(this.cycleGroups);
+    readonly unoriented: Piece[][],
+    // Permuted pieces
+    readonly permuted: Piece[]) {
+    assert(description.pieces.length === this.solved.length + sum(this.unoriented.map(e => e.length)) + this.permuted.length, 'inconsistent number of pieces');
+  }
+
+  get orientationTypes() {
+    return this.unoriented.length;
   }
 
   get pieces() {
-    return this.solved + this.twists + this.normalTargets;
+    return this.description.pieces;
   }
-1
+
   // Number of permutations in this group.
-  count() {
-    let result = ncr(this.pieces, this.solved);
-    let remaining = this.pieces - this.solved;
-    for (let unorientedForType of this.unoriented) {
-      result *= ncr(remaining, unorientedForType);
-      remaining -= unorientedForType;
-    }
-    for (let cycleGroup of this.cycleGroups) {
-      for (let i = 0; i < cycleGroup.count; ++i) {
-        result *= ncr(remaining, cycleGroup.length);
-        // Number of possible cycles of length cycleGroup.
-        result *= factorial(cycleGroup.length - 1);
-        remaining -= cycleGroup.length;
-      }
-      // If we have multiple cycles of the same length,
-      // we count different orderings of the cycles multiple times,
-      // so we have to divide by the permutations of those cycles.
-      result /= factorial(cycleGroup.count);
-    }
-    // For every unsolved piece except for the last one, we have a choice for the orientation.
-    // In case of only twists, we already discarded the invalid ones, so we can just leave this.
-    if (this.normalTargets > 0) {
-      result *= (this.unoriented.length + 1) ** (this.normalTargets - 1)
-    }
-    return result;
+  get probability() {
+    const solvedChoices = ncr(this.pieces.length, this.solved.length);
+    let remainingPieces = this.pieces.length - this.solved.length;
+    let unorientedChoices = 1;
+    this.unoriented.forEach(unorientedForType => {
+      unorientedChoices *= ncr(remainingPieces, unorientedForType.length);
+      remainingPieces -= unorientedForType.length;
+    });
+    return solvedChoices * unorientedChoices / this.description.count;
   }
+}
+
+class ScrambleGroup {
+  constructor(readonly solved: Piece[],
+              readonly unoriented: Piece[][],
+              readonly permuted: Piece[]) {}
+
+  isSolved(piece: Piece) {
+    return this.solved.includes(piece)
+  }
+
+  isUnoriented(piece: Piece) {
+    return this.unoriented.some(unorientedForType => unorientedForType.includes(piece));
+  }
+  
+  isPermuted(piece: Piece) {
+    return this.permuted.includes(piece);
+  }
+
 }
 
 function sum(numbers: number[]) {
@@ -78,17 +71,6 @@ function sum(numbers: number[]) {
 function range(n: number): number[] {
   assert(n >= 0, 'n in range(n) has to be non-negative');
   return [...Array(n + 1).keys()];
-}
-
-// Returns an array of integers from n to m, both ends included.
-function doubleRange(n: number, m: number): number[] {
-  assert(n >= 0, 'n >= 0 in doubleRange(n, m)');
-  assert(m + 1 >= n, 'm + 1 >= n in doubleRange(n, m)');
-  const result = [];
-  for (let i = n; i <= m; ++i) {
-    result.push(i);
-  }
-  return result;
 }
 
 // Multiplies integers between n and m, both ends included.
@@ -123,10 +105,12 @@ function assert(b: boolean, message: string) {
 }
 
 class PieceDescription {
-  constructor(readonly pieces: number,
+  readonly pieces: Piece[];
+  constructor(readonly numPieces: number,
               readonly unorientedTypes: number) {
-    assert(pieces >= 2, 'There have to be at least 2 pieces');
+    assert(numPieces >= 2, 'There have to be at least 2 pieces');
     assert(unorientedTypes >= 0, 'The number of oriented types has to be non-negative');
+    this.pieces = range(numPieces - 1).map(id => { return {id}; });
   }
 }
 
@@ -148,154 +132,204 @@ class PiecePermutationDescription {
   get count() {
     const divisor = this.allowOddPermutations ? 1 : 2;
     // Every piece except the last has a choice for the orientation.
-    const orientations = (this.unorientedTypes + 1) ** (this.pieces - 1);
-    const permutations = factorial(this.pieceDescription.pieces);
+    const orientations = (this.unorientedTypes + 1) ** (this.pieces.length - 1);
+    const permutations = factorial(this.pieceDescription.pieces.length);
     return orientations * permutations / divisor;
   }
 
   groups(): PermutationGroup[] {
-    return range(this.pieces).flatMap(
-      solved => this.groupsWithSolvedAndUnoriented(solved, [])
-    );
+    return subsets(this.pieces).flatMap(solved => this.groupsWithSolvedAndUnoriented(solved, []));
   }
 
-  private groupsWithSolvedAndUnoriented(solved: number, unoriented: number[]): PermutationGroup[] {
+  private groupsWithSolvedAndUnoriented(solved: Piece[], unoriented: Piece[][]): PermutationGroup[] {
     assert(unoriented.length <= this.unorientedTypes, 'unoriented.length <= this.unorientedTypes');
+    const remainingPieces = this.pieces.filter(p => !solved.includes(p) && !unoriented.some(unorientedForType => unorientedForType.includes(p)));
     if (unoriented.length === this.unorientedTypes) {
-      const remainingUnsolved = this.pieces - solved - sum(unoriented);
-      if (remainingUnsolved === 0 && sum(unoriented.map((unorientedForType, unorientedType) => unorientedForType * (unorientedType + 1))) % (unoriented.length + 1) != 0) {
+      if (remainingPieces.length === 1 || remainingPieces.length === 2 && !this.allowOddPermutations) {
+        // Parity. So it's impossible, so 0 possibilities.
+        return [];
+      }
+      if (remainingPieces.length === 0 && sum(unoriented.map((unorientedForType, unorientedType) => unorientedForType.length * (unorientedType + 1))) % (unoriented.length + 1) != 0) {
         // Invalid twist. So it's impossible, so 0 possibilities. If we have remaining unsolved, the twist can be in that part.
         return [];
       }
-      return this.possibleCycleGroups(remainingUnsolved).map(cycleGroups => {
-        const group = new PermutationGroup(solved, unoriented, cycleGroups);
-        assert(group.solved + group.twists + group.normalTargets === this.pieces, `${group.solved} + ${group.twists} + ${group.normalTargets} === ${this.pieces}`);
-        return group;
-      });
+      return [new PermutationGroup(this, solved, unoriented, remainingPieces)];
     }
-    return range(this.pieces - solved - sum(unoriented)).flatMap(
+    return subsets(remainingPieces).flatMap(
       unorientedForType => this.groupsWithSolvedAndUnoriented(solved, unoriented.concat([unorientedForType]))
     );
   }
-
-  private possibleCycleGroups(remainingUnsolved: number): CycleGroup[][] {
-    return this.possibleCycleGroupsForPrefix(remainingUnsolved, []);
-  }
-
-  private possibleCycleGroupsForPrefix(remainingUnsolved: number, cycleGroupsPrefix: CycleGroup[]): CycleGroup[][] {
-    const maxLength = cycleGroupsPrefix.length ? (cycleGroupsPrefix[cycleGroupsPrefix.length - 1].length - 1) : Infinity;
-    if (remainingUnsolved === 0) {
-      if (!this.allowOddPermutations && cycleGroupsParity(cycleGroupsPrefix) == 1) {
-        // We don't allow odd permutations and this is one, so it's impossible, so 0 possibilities.
-        return [];
-      }
-      return [cycleGroupsPrefix];
-    } else if (remainingUnsolved === 1) {
-      // One piece alone cannot be unsolved, so this is impossible, so 0 possibilities.
-      return [];
-    } else if (remainingUnsolved <= 3) {
-      if (!this.allowOddPermutations && (cycleGroupsParity(cycleGroupsPrefix) + remainingUnsolved + 1) % 2 == 1) {
-        // We don't allow odd permutations and this is one, so it's impossible, so 0 possibilities.
-        return [];
-      }
-      if (remainingUnsolved > maxLength) {
-        return [];
-      }
-      // This can only be one cycle, so 1 possibility. Make a cycle of the remaining pieces.
-      return [cycleGroupsPrefix.concat([{count: 1, length: remainingUnsolved}])];
-    }
-    const result = this.possibleNextCycleGroups(remainingUnsolved, maxLength).flatMap(cycleGroup => {
-      const newRemainingUnsolved = remainingUnsolved - cycleGroup.length * cycleGroup.count;
-      const newPrefix = cycleGroupsPrefix.concat(cycleGroup);
-      return this.possibleCycleGroupsForPrefix(newRemainingUnsolved, newPrefix);
-    });
-    return result;
-  }
-
-  private possibleNextCycleGroups(remainingUnsolved: number, maxLength: number): CycleGroup[] {
-    const result: CycleGroup[] = [];
-    for (let length = 2; length <= remainingUnsolved && length <= maxLength; ++length) {
-      for (let count = 1; count * length <= remainingUnsolved; ++count) {
-        result.push({count, length});
-      }
-    }
-    return result;
-  }
 }
 
-class Piece {
+function subsets<X>(xs: X[]): X[][] {
+  let result: X[][] = [[]];
+  for (let x of xs) {
+    result = result.concat(result.map(ys => ys.concat([x])));
+  }
+  return result;
+}
+
+class BufferState {
+  constructor(readonly previousBuffer?: Piece) {}
+}
+
+class ParityTwist {
   constructor(
-    readonly id: number,
-    readonly bufferPriority?: number,
-    readonly avoidAsTwistedIfWeCanFloat: boolean) {}
+    readonly buffer: Piece,
+    readonly parityPiece: Piece,
+    readonly unoriented: Piece) {}
+}
 
-  get isBuffer() {
-    return !!bufferPriority;
+class Parity {
+  constructor(
+    readonly buffer: Piece,
+    readonly parityPiece: Piece) {}
+}
+
+class EvenCycle {
+  constructor(
+    readonly pieces: Piece[]) {
+    assert(pieces.length % 2 === 1, 'uneven cycle');
   }
 }
 
-class BufferState {}
-
-function emptyBufferState(): BufferState {}
+class DoubleSwap {
+  constructor(readonly firstPiece: Piece,
+              readonly secondPiece: Piece,
+              readonly orientationType: number,
+              readonly thirdPiece: Piece,
+              readonly fourthPiece: Piece) {}
+}
 
 class Decider {
   nextCycleBreakOnSecondPiece(buffer: Piece, firstPiece: Piece, unsolvedPieces: Piece[]): Piece {
+    return unsolvedPieces[0];
   }
 
   nextCycleBreakOnFirstPiece(buffer: Piece, unsolvedPieces: Piece[]): Piece {
+    return unsolvedPieces[0];
   }
 
-  canParityTwist(buffer, otherPiece, piece) {}
-
-  // Buffers that are used up first due to not being avoided twists.
-  isFirstPassBuffer(piece: Piece) {
-    return piece.isBuffer && (this.group.isPermuted(piece) || !piece.avoidAsTwistedIfWeCanFloat && this.group.isTwisted(piece));
+  canParityTwist(parityTwist: ParityTwist) {
+    return false;
   }
 
-  // Buffers that are used up second due to not being solved.
-  isSecondPassBuffer(piece: Piece) {
-    return piece.isBuffer && !isSolved(piece);
+  isBuffer(piece: Piece) {
+    return true;
+  }
+
+  bufferPriority(piece: Piece) {
+    return piece.id;
+  }
+
+  stayWithSolvedBuffer(piece: Piece) {
+    return true;
+  }
+
+  canChangeBuffer(bufferState: BufferState) {
+    return true;
+  }
+
+  get avoidUnorientedIfWeCanFloat() {
+    return true;
   }
 }
 
-class SolveState {
-  constructor(readonly decider: Decider, readonly group: PermutationGroup, readonly bufferState: BufferState, readonly pieces: Piece[]) {}
+type ScrambleGroupWithAnswer<X> = [ScrambleGroup, X, number];
 
-  get twists() {
-    return this.group.twists;
+class ProbabilisticAnswer<X> {
+  constructor(readonly answerPossibilities: ScrambleGroupWithAnswer<X>[]) {}
+
+  mapAnswer<Y>(f: (x: X) => Y): ProbabilisticAnswer<Y> {
+    return new ProbabilisticAnswer<Y>(this.answerPossibilities.map(
+      (x: ScrambleGroupWithAnswer<X>) => {
+        const [group, answer, probability] = x;
+        return [group, f(answer), probability];
+      }
+    ));
   }
 
-  get normalTargets() {
-    return this.group.normalTargets;
+  flatMap<Y>(f: (group: ScrambleGroup, x: X) => ProbabilisticAnswer<Y>): ProbabilisticAnswer<Y> {
+    return new ProbabilisticAnswer<Y>(this.answerPossibilities.flatMap(
+      (x: ScrambleGroupWithAnswer<X>) => {
+        const [group, answer, probability] = x;
+        return f(group, answer).timesProbability(probability).answerPossibilities;
+      }
+    ));
   }
 
-  get buffers() {
-    this.pieces.filter(piece => piece.isBuffer);
+  timesProbability(probabilityFactor: number) {
+    return new ProbabilisticAnswer<X>(this.answerPossibilities.map(
+      (x: ScrambleGroupWithAnswer<X>) => {
+        const [group, answer, probability] = x;
+        return [group, answer, probability * probabilityFactor];
+      }
+    ));
+  }
+}
+
+function certainAnswer<X>(group: ScrambleGroup, answer: X): ProbabilisticAnswer<X> {
+  return new ProbabilisticAnswer([[group, answer, 1]]);
+}
+
+function first<X>(xs: X[]): Optional<X> {
+  if (xs.length >= 1) {
+    return some(xs[0]);
+  } else {
+    return none;
+  }
+}
+
+class Solver {
+  constructor(readonly decider: Decider, readonly pieces: Piece[]) {}
+
+  get orderedBuffers() {
+    return this.pieces.filter(piece => this.decider.isBuffer(piece)).sort((left, right) => this.decider.bufferPriority(right) - this.decider.bufferPriority(left));
   }
 
-  private nextBuffer(): Piece {
+  get favoriteBuffer() {
+    return this.orderedBuffers[0];
+  }
+  
+  private nextBufferAvoidingSolved(bufferState: BufferState, group: ScrambleGroup): Piece {
+    const unsolvedBuffer = first(this.orderedBuffers.filter(piece => !group.isSolved(piece)));
+    return orElseCall(unsolvedBuffer, () => {
+      const previousBuffer = bufferState.previousBuffer;
+      if (previousBuffer && this.decider.stayWithSolvedBuffer(previousBuffer)) {
+        return previousBuffer;
+      } else {
+        return this.favoriteBuffer;
+      }
+    });
+  }
+
+  private nextBufferAvoidingUnoriented(bufferState: BufferState, group: ScrambleGroup): Piece {
+    const permutedBuffer = first(this.orderedBuffers.filter(buffer => group.isPermuted(buffer)));
+    return orElseCall(permutedBuffer, () => this.nextBufferAvoidingSolved(bufferState, group));
+  }
+
+  private nextBuffer(bufferState: BufferState, group: ScrambleGroup): Piece {
     const previousBuffer = bufferState.previousBuffer;
     if (previousBuffer && !this.decider.canChangeBuffer(bufferState)) {
-      return previousBuffer;
+      return certainAnswer(group, previousBuffer);
     }
-    const firstPassBuffers = this.buffers.filter(piece => this.decider.isFirstPassBuffer(piece));
-    const secondPassBuffers = this.buffers.filter(piece => this.decider.isSecondPassBuffer(piece));
-    const bufferChoices = firstPassBuffers.length > 0 ? firstPassBuffers : (secondPassBuffers > 0 ? secondPassBuffers : this.buffers);
-    const buffer = minBy(bufferChoices, piece => decider.bufferPriority(piece) || -Infinity);
-    assert(decider.isBuffer(buffer), 'At least one buffer is needed.');
-    return buffer;
+    if (this.decider.avoidUnorientedIfWeCanFloat) {
+      return this.nextBufferAvoidingUnoriented(bufferState, group);
+    } else {
+      return this.nextBufferAvoidingSolved(bufferState, group);
+    }
   }
 
   algsWithVanillaParity(parity: Parity) {
     // If they want to do one other twist first, that can be done.
-    const twists = this.group.twists
-    if (twistsAllowed && twists.length === 1) {
-      const twist = twists[0];
-      if (decider.doTwistBeforeParity(parity, twist)) {
-        const cycleBreak = this.group.cycleBreak(parity.firstPiece, parity.lastPiece, twist);
-        const remainingGroup = this.group.solveCycle(cycleBreak);
+    const unorienteds = this.group.unorienteds;
+    if (unorienteds.length === 1) {
+      const unoriented = unorienteds[0];
+      if (decider.doUnorientedBeforeParity(parity, unoriented)) {
+        const cycleBreak = new EvenCycle(parity.firstPiece, parity.lastPiece, unoriented);
+        const remainingGroup = this.group.breakCycle(cycleBreak);
         const bufferState = bufferState.withCycleBreak(cycleBreak);
-        const parity = this.group.parity(parity.firstPiece, twist);
+        const parity = this.group.parity(parity.firstPiece, unoriented);
         const remainingTrace = new SolveState(this.decider, this.pieces, bufferState, remainingGroup).algsWithParity(parity);
         return remainingTrace.prefixCycle(cycleBreak);
       }
@@ -303,95 +337,103 @@ class SolveState {
     const remainingGroup = this.group.solveParity(parity);
     const bufferState = bufferState.withParity(parity);
     const remainingTrace = new SolveState(this.decider, this.pieces, bufferState, remainingGroup).algs();
-    return remainingTrace.prefixParity(parityTwist);
+    return remainingTrace.prefixParity(parityUnoriented);
   }
 
-  algsWithParityTwist(parityTwist: ParityTwist) {
-    // If they want to do one other twist first, that can be done.
-    const twists = this.group.twists
-    if (twistsAllowed && twists.length === 1) {
-      const twist = twists[0];
-      if (decider.doTwistBeforeParityTwist(parityTwist, twist)) {
-        const cycleBreak = this.group.cycleBreak(parityTwist.firstPiece, parityTwist.lastPiece, twist);
-        const remainingGroup = this.group.solveCycle(cycleBreak);
+  algsWithParityUnoriented(parityUnoriented: ParityUnoriented) {
+    // If they want to do one other unoriented first, that can be done.
+    const unoriented = this.group.unoriented;
+    if (unorientedsAllowed && unorienteds.length === 1) {
+      const unoriented = unorienteds[0];
+      if (decider.doUnorientedBeforeParityUnoriented(parityUnoriented, unoriented)) {
+        const cycleBreak = new EvenCycle(parityUnoriented.firstPiece, parityUnoriented.lastPiece, unoriented);
+        const remainingGroup = this.group.breakCycle(cycleBreak);
         const bufferState = bufferState.withCycleBreak(cycleBreak);
-        const parity = this.group.parity(parity.firstPiece, twist);
+        const parity = new Parity(parity.firstPiece, unoriented);
+        const remainingTrace: algsWithParity(parity);
         return remainingTrace.prefixCycle(cycleBreak);
       }
     }
-    const bufferState = bufferState.withParityTwist(parityTwist);
-    const remainingGroup = this.group.solveParityTwist(parityTwist);
+    const bufferState = bufferState.withParityUnoriented(parityUnoriented);
+    const remainingGroup = this.group.solveParityUnoriented(parityUnoriented);
     const remainingTrace = new SolveState(this.decider, this.pieces, bufferState, remainingGroup).algs();
-    return remainingTrace.prefixParityTwist(parityTwist);
+    return remainingTrace.prefixParityUnoriented(parityUnoriented);
   }
 
   algsWithParity(parity: Parity) {
     const otherPiece = parity.lastPiece;
-    const parityTwistPieces = this.group.unorientedForType(parity.unorientedType.invert).filter(piece => this.decider.canParityTwist(buffer, otherPiece, piece));
-    if (parityTwistPieces.length > 0) {
-      const parityTwistPiece = minBy(parityTwistPieces, piece => this.decider.parityTwistPriority(buffer, otherPiece, piece));
-      const parityTwist = this.group.parityTwist(buffer, otherPiece, parityTwistPiece);
-      return algsWithParityTwist(buffer, parityTwist);
+    const parityUnorientedPieces = this.group.unorientedForType(parity.unorientedType.invert).filter(piece => this.decider.canParityUnoriented(buffer, otherPiece, piece));
+    if (parityUnorientedPieces.length > 0) {
+      const parityUnorientedPiece = minBy(parityUnorientedPieces, piece => this.decider.parityUnorientedPriority(buffer, otherPiece, piece));
+      const parityUnoriented = new ParityUnoriented(buffer, otherPiece, parityUnorientedPiece);
+      return algsWithParityUnoriented(buffer, parityUnoriented);
     } else {
       return algsWithVanillaParity(parity);
     }
   }
 
-  algsWithDoubleSwap(buffer, otherPiece, cycleBreak, nextPiece) {
-    const doubleSwap = this.group.doubleSwap(buffer, otherPiece, cycleBreak, nextPiece);
+  algsWithDoubleSwap(doubleSwap: DoubleSwap) {
     const remainingGroup = this.group.solveDoubleSwap(doubleSwap);
     const bufferState = this.swapBufferState(cycleBreak, nextPiece);
     const remainingTrace = new SolveState(this.decider, this.pieces, bufferState, remainingGroup).algs();
     return remainingTrace.prefixDoubleSwap(doubleSwap);
   }
 
-  algsWithCycleBreak(buffer, otherPiece, cycleBreak) {
-    const cycleBreak = this.group.cycleBreak(buffer, otherPiece, cycleBreak);
-    const remainingGroup = this.group.solveCycle(cycleBreak);
+  algsWithCycleBreak(cycleBreak: EvenCycle) {
+    const remainingGroup = this.group.breakCycle(cycleBreak);
     const bufferState = bufferState.withCycleBreak(cycleBreak);
     const remainingTrace = new SolveState(this.decider, this.pieces, bufferState, remainingGroup).algs();
     return remainingTrace.prefixCycle(cycleBreak);
   }
 
   algsWithEvenCycle(cycle: EvenCycle) {
-    const remainingGroup = this.group.solveCycle(evenPermutationCycle);
-    const bufferState = this.bufferState.withCycle(evenPermutationCycle);
+    const remainingGroup = this.group.solveCycle(cycle);
+    const bufferState = this.bufferState.withCycle(cycle);
     const remainingTrace = new SolveState(this.decider, this.pieces, bufferState, remainingGroup).algs();
-    return remainingTrace.prefixCycle(evenPermutationCycle);
+    return remainingTrace.prefixCycle(cycle);
   }
 
-  private twistAlgs(): AlgTrace {
-    assert(!this.group.hasPermuted, 'Twists cannot permute');
+  private unorientedAlgs(group: ScrambleGroup): AlgTrace {
+    assert(!group.hasPermuted, 'Unorienteds cannot permute');
     // TODO
   }
 
-  algs(): AlgTrace {
+  private algsWithBufferAndCycleLength(bufferState, group, buffer, cycleLength) {
+    if (cycleLength === 2) {
+      if (this.group.parityTime) {
+        const otherPiece = assertDeterministic(group.nextPiece(buffer));
+        this.algsWithParity(group, new Parity(buffer, otherPiece));
+      } else {
+        const cycleBreak = this.decider.nextCycleBreakOnSecondPiece(buffer, otherPiece, this.group.permutedPieces);
+        this.group.nextPiece(cycleBreak).flatMap((group, nextPiece) => {
+          const doubleSwap = new DoubleSwap(buffer, otherPiece, cycleBreak, nextPiece);
+          if (this.decider.canChangeBuffer(bufferState) && this.decider.canDoubleSwap(doubleSwap)) {
+            return this.algsWithDoubleSwap(bufferState, group, doubleSwap);
+          }
+          return this.algsWithCycleBreak(bufferState, group, new EvenCycle(buffer, otherPiece, cycleBreak));
+        });
+      }
+    } else {
+      group.evenPermutationCyclePart(buffer).flatMap((group, evenPermutationCycle) => {
+        return this.algsWithEvenCycle(evenPermutationCycle);
+      });
+    }
+  }
+  
+  private algs(bufferState: BufferState, group: ScrambleGroup): ProbabilisticAnswer<AlgTrace> {
     const buffer = this.nextBuffer();
     if (this.group.isSolved(buffer) && this.group.hasPermuted) {
-      const cycleBreak = this.decider.nextCycleBreakOnFirstPiece(buffer);
-      const nextPiece = this.group.cycle(cycleBreak).secondPiece;
-      this.algsWithCycleBreak(buffer, cycleBreak, nextPiece);
+      const cycleBreakPiece = this.decider.nextCycleBreakOnFirstPiece(buffer, this.group.permutedPieces);
+      return this.group.nextPiece(cycleBreakPiece).flatMap((group, nextPiece) => {
+        return this.algsWithCycleBreak(bufferState, group, new EvenCycle(buffer, cycleBreakPiece, nextPiece));
+      });
     } else if (this.group.isPermuted(buffer)) {
-      const cycle = this.group.cycle(buffer);
-      if (cycle.length === 2) {
-        const otherPiece = cycle.lastPiece;
-        if (this.group.parityTime) {
-          this.algsWithParity(parity);
-        } else {
-          const cycleBreak = this.decider.nextCycleBreakOnSecondPiece(buffer, otherPiece);
-          const nextPiece = this.group.cycle(cycleBreak).secondPiece;
-          if (this.decider.canChangeBuffer(bufferState) && this.decider.canDoubleSwap(buffer, otherPiece, cycleBreak, nextPiece)) {
-            return this.algsWithDoubleSwap(buffer, otherPiece, cycleBreak, nextPiece);
-          }
-          return this.algsWithCycleBreak(buffer, otherPiece, cycleBreak);
-        }
-      } else {
-        const evenPermutationCycle = cycle.evenPermutationPart();
-        return this.algsWithEvenCycle(evenPermutationCycle);
-      }
+      this.group.cycleLength(buffer).flatMap((group, cycleLength) => {
+        return this.algsWithBufferAndCycleLength(bufferState, group, buffer, cycleLength);
+      });
     }
-  } else if (this.group.hasTwists) {
-    return this.twistAlgs();
+  } else if (this.group.hasUnorienteds) {
+    return this.unorientedAlgs();
   } else {
     assert(this.group.isSolved, 'Nothing to do but not solved');
     return emptyAlgTrace();
@@ -401,7 +443,6 @@ class SolveState {
 class AlgTrace {
 }
 
-// TODO: Potentially skip twisted buffers if you have another floating one.
 class SolvingMethod {
   constructor(readonly piecePermutationDescription: PiecePermutationDescription,
               readonly piece: Piece[]) {
