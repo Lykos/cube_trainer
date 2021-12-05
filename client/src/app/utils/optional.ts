@@ -16,8 +16,12 @@ export const none: None = {tag: "none"};
 export type Optional<X> = Some<X> | None;
 
 export function mapOptional<X, Y>(optional: Optional<X>, f: (x: X) => Y): Optional<Y> {
+  return flatMapOptional(optional, x => some(f(x)));
+}
+
+export function flatMapOptional<X, Y>(optional: Optional<X>, f: (x: X) => Optional<Y>): Optional<Y> {
   switch (optional.tag) {
-    case "some": return some(f(optional.value));
+    case "some": return f(optional.value);
     case "none": return none;
   }
 }

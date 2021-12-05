@@ -1,4 +1,4 @@
-import { assert } from './assert';
+import { assert } from '../assert';
 
 // Multiplies integers between n and m, both ends included.
 function rangeProduct(n: number, m: number) {

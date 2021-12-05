@@ -1,6 +1,6 @@
 import { Piece } from './piece';
 import { ParityTwist, Parity, ThreeCycle, EvenCycle } from './alg';
-import { assert } from './assert';
+import { assert } from '../assert';
 
 export class BufferState {
   constructor(readonly previousBuffer?: Piece) {}
@@ -12,6 +12,12 @@ export class BufferState {
   }
 
   withEvenCycle(cycle: EvenCycle) {
+    // TODO
+    assert(false);
+    return this;
+  }
+
+  withPartialEvenCycle(cycle: EvenCycle) {
     // TODO
     assert(false);
     return this;
@@ -34,4 +40,8 @@ export class BufferState {
     assert(false);
     return this;
   }
+}
+
+export function emptyBufferState() {
+  return new BufferState();
 }

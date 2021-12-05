@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { expectedAlgs, ExecutionOrder } from '../../utils/cube-stats';
+import { expectedAlgCounts, ExecutionOrder } from '../../utils/cube-stats/cube-stats';
 
 @Component({
   selector: 'cube-trainer-method-explorer',
@@ -16,6 +16,6 @@ export class MethodExplorerComponent {
   }
   
   get expectedAlgs() {
-    return expectedAlgs(this.methodDescription).toFixed(2);
+    return expectedAlgCounts(this.methodDescription).total.toFixed(2);
   }
 }

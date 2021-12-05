@@ -1,6 +1,32 @@
 // Generally useful functions that have nothing to do with our bot or Travian.
 
 import { Optional, some, none } from './optional';
+import { assert } from './assert';
+
+export function first<X>(xs: X[]): Optional<X> {
+  if (xs.length >= 1) {
+    return some(xs[0]);
+  } else {
+    return none;
+  }
+}
+
+export function subsets<X>(xs: X[]): X[][] {
+  let result: X[][] = [[]];
+  for (let x of xs) {
+    result = result.concat(result.map(ys => ys.concat([x])));
+  }
+  return result;
+}
+
+export function combination<X>(xs: X[], k: number): X[][] {
+  assert(k <= xs.length);
+  let result: X[][] = [[]];
+  for (let x of xs) {
+    result = result.concat(result.flatMap(ys => ys.length >= k ? [] : [ys.concat([x])]));
+  }
+  return result.filter(xs => xs.length === k);
+}
 
 export function flatMap<X, Y>(xs: X[], f: (x: X) => Y[]): Y[] {
   return xs.reduce((ys: Y[], x: X) => ys.concat(f(x)), []);
@@ -18,6 +44,10 @@ export function sum(xs: number[]) {
   return xs.reduce((a, b) => a + b, 0);
 }
 
+export function count<X>(xs: X[], f: (x: X) => boolean): number {
+  return xs.reduce((a, b) => a + (f(b) ? 1 : 0), 0);
+}
+
 export function maxBy<X>(xs: X[], f: (x: X) => number): Optional<X> {
   let maxX: Optional<X> = none;
   let maxY = -Infinity;
@@ -33,6 +63,15 @@ export function maxBy<X>(xs: X[], f: (x: X) => number): Optional<X> {
 
 export function minBy<X>(xs: X[], f: (x: X) => number): Optional<X> {
   return maxBy(xs, (x: X) => -f(x));
+}
+
+export function findIndex<X>(xs: X[], f: (x: X) => boolean): Optional<number> {
+  const index = xs.findIndex(f);
+  return index === -1 ? none : some(index);
+}
+
+export function indexOf<X>(xs: X[], x: X): Optional<number> {
+  return findIndex(xs, y => y === x);
 }
 
 // Returns a range that includes start but doesn't include end.

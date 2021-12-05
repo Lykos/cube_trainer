@@ -1,5 +1,6 @@
 import { Piece } from './piece';
 import { Parity, ParityTwist, DoubleSwap } from './alg';
+import { BufferState } from './buffer-state';
 
 export class Decider {
   nextCycleBreakOnSecondPiece(buffer: Piece, firstPiece: Piece, unsolvedPieces: Piece[]): Piece {
@@ -48,5 +49,13 @@ export class Decider {
 
   parityTwistPriority(parityTwist: ParityTwist) {
     return parityTwist.unoriented.pieceId;
+  }
+
+  canSolveNSameUnoriented(n: number) {
+    return n <= 3;
+  }
+
+  get maxCycleLength() {
+    return 3;
   }
 }

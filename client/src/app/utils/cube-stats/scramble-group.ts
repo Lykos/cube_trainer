@@ -1,159 +1,133 @@
-import { ncr, factorial } from './combinatorics-utils';
-import { none, Optional } from './optional';
-import { Probabilistic } from './probabilistic';
-
-// Returns an array of integers from `0` to `n`.
-// e.g. `range(5) === [0, 1, 2, 3, 4, 5]`
-function range(n: number): number[] {
-  assert(n >= 0, 'n in range(n) has to be non-negative');
-  return [...Array(n + 1).keys()];
-}
-
-class PieceDescription {
-  readonly pieces: Piece[];
-  constructor(readonly numPieces: number,
-              readonly unorientedTypes: number) {
-    assert(numPieces >= 2, 'There have to be at least 2 pieces');
-    assert(unorientedTypes >= 0, 'The number of oriented types has to be non-negative');
-    this.pieces = range(numPieces - 1).map(pieceId => { return {pieceId}; });
-  }
-}
-
-export const CORNER = new PieceDescription(8, 2);
-export const EDGE = new PieceDescription(12, 1);
-
-class PiecePermutationDescription {
-  constructor(readonly pieceDescription: PieceDescription,
-              readonly allowOddPermutations: boolean) {}
-
-  get pieces() {
-    return this.pieceDescription.pieces;
-  }
-
-  get unorientedTypes() {
-    return this.pieceDescription.unorientedTypes;
-  }
-
-  get count() {
-    const divisor = this.allowOddPermutations ? 1 : 2;
-    // Every piece except the last has a choice for the orientation.
-    const orientations = (this.unorientedTypes + 1) ** (this.pieces.length - 1);
-    const permutations = factorial(this.pieceDescription.pieces.length);
-    return orientations * permutations / divisor;
-  }
-
-  groups(): PermutationGroup[] {
-    return subsets(this.pieces).flatMap(solved => this.groupsWithSolvedAndUnoriented(solved, []));
-  }
-
-  private groupsWithSolvedAndUnoriented(solved: Piece[], unoriented: Piece[][]): PermutationGroup[] {
-    assert(unoriented.length <= this.unorientedTypes, 'unoriented.length <= this.unorientedTypes');
-    const remainingPieces = this.pieces.filter(p => !solved.includes(p) && !unoriented.some(unorientedForType => unorientedForType.includes(p)));
-    if (unoriented.length === this.unorientedTypes) {
-      if (remainingPieces.length === 1 || remainingPieces.length === 2 && !this.allowOddPermutations) {
-        // Parity. So it's impossible, so 0 possibilities.
-        return [];
-      }
-      if (remainingPieces.length === 0 && sum(unoriented.map((unorientedForType, unorientedType) => unorientedForType.length * (unorientedType + 1))) % (unoriented.length + 1) != 0) {
-        // Invalid twist. So it's impossible, so 0 possibilities. If we have remaining unsolved, the twist can be in that part.
-        return [];
-      }
-      return [new PermutationGroup(this, solved, unoriented, remainingPieces)];
-    }
-    return subsets(remainingPieces).flatMap(
-      unorientedForType => this.groupsWithSolvedAndUnoriented(solved, unoriented.concat([unorientedForType]))
-    );
-  }
-}
-
-function subsets<X>(xs: X[]): X[][] {
-  let result: X[][] = [[]];
-  for (let x of xs) {
-    result = result.concat(result.map(ys => ys.concat([x])));
-  }
-  return result;
-}
-
-// Represents one big group of similar scrambles, i.e.
-// * same number of pieces solved
-// * same number of pieces twisted or flipped
-// * same number of pieces permuted
-class BigScrambleGroup {
-  constructor(
-    readonly description: PiecePermutationDescription,
-    // Solved pieces.
-    readonly solved: Piece[],
-    // Only used for corners, edges and midges.
-    // It's an array because there can be multiple types of unoriented.
-    // (clockwise and counter-clockwise for corners)
-    readonly unoriented: Piece[][],
-    // Permuted pieces
-    readonly permuted: Piece[]) {
-    assert(description.pieces.length === this.solved.length + sum(this.unoriented.map(e => e.length)) + this.permuted.length, 'inconsistent number of pieces');
-  }
-
-  get orientationTypes() {
-    return this.unoriented.length;
-  }
-
-  get pieces() {
-    return this.description.pieces;
-  }
-
-  // Number of permutations in this group.
-  get probability() {
-    const solvedChoices = ncr(this.pieces.length, this.solved.length);
-    let remainingPieces = this.pieces.length - this.solved.length;
-    let unorientedChoices = 1;
-    this.unoriented.forEach(unorientedForType => {
-      unorientedChoices *= ncr(remainingPieces, unorientedForType.length);
-      remainingPieces -= unorientedForType.length;
-    });
-    return solvedChoices * unorientedChoices / this.description.count;
-  }
-}
-
-function sortPieces(pieces: Piece[]) {
-  pieces.sort((a, b) => a.pieceId < b.pieceId);
-}
-
-class PartiallyFixedCycle {
-  // Pieces sorted by their id, not necessarily in the order they appear in the cycle.
-  readonly sortedPieces: Piece[];
-  constructor(
-    pieces: Piece[],
-    readonly length: Optional<number>) {
-    this.sortedPieces = sortPieces(pieces);
-  }
-
-  hasExactlyPieces(pieces: Piece[]) {
-    return sortPieces(pieces) === sortedPieces;
-  }
-}
-
-function scrambleGroupFromBigScrambleGroup(group: BigScrambleGroup): ScrambleGroup {
-  assert(false);
-}
+import { ncr } from './combinatorics-utils';
+import { Optional, ifPresent, hasValue, mapOptional, orElseCall, orElse, forceValue, flatMapOptional, some, none } from '../optional';
+import { assert } from '../assert';
+import { Piece } from './piece';
+import { UnorientedType } from './unoriented-type';
+import { ParityTwist, Parity, ThreeCycle, EvenCycle, DoubleSwap } from './alg';
+import { contains, findIndex, count, sum, indexOf, combination } from '../utils';
+import { Probabilistic, ProbabilisticPossibility, deterministic } from './probabilistic';
+import { BigScrambleGroup } from './big-scramble-group';
 
 type ScrambleGroupWithAnswer<X> = [ScrambleGroup, X];
 
-export class ProbabilisticAnswer<X> {
-  constructor(probabilisticGroupAndAnswer: Probabilistic<GroupWithAnswer<X>>) {}
+type PossibleScrambleGroupWithAnswer<X> = ProbabilisticPossibility<ScrambleGroupWithAnswer<X>>;
 
-  mapAnswer<Y>(f: (x: X) => Y): ProbabilisticAnswer<Y> {
-    this.probabilisticGroupAndAnswer.map(groupAndAnswer => {
-      [group, x] = groupAndAnswer;
-      return [group, f(x)];
+export class ProbabilisticAnswer<X> {
+  constructor(private readonly probabilisticGroupAndAnswer: Probabilistic<ScrambleGroupWithAnswer<X>>) {}
+
+  removeGroups(): Probabilistic<X> {
+    return this.probabilisticGroupAndAnswer.map(groupWithAnswer => {
+      const [_, answer] = groupWithAnswer;
+      return answer;
     });
   }
 
-  flatMap<Y>(f: (group: ScrambleGroup, x: X) => ProbabilisticAnswer<Y>) {
-    new ProbabilisticAnswer<Y>(this.probabilisticGroupAndAnswer.flatMap(f));
+  mapAnswer<Y>(f: (x: X) => Y): ProbabilisticAnswer<Y> {
+    return new ProbabilisticAnswer<Y>(this.probabilisticGroupAndAnswer.map(groupAndAnswer => {
+      const [group, x] = groupAndAnswer;
+      return [group, f(x)];
+    }));
+  }
+
+  flatMap<Y>(f: (group: ScrambleGroup, x: X) => ProbabilisticAnswer<Y>): ProbabilisticAnswer<Y> {
+    return new ProbabilisticAnswer<Y>(this.probabilisticGroupAndAnswer.flatMap(groupAndAnswer => {
+      const [group, x] = groupAndAnswer;
+      return f(group, x).probabilisticGroupAndAnswer;
+    }));
   }
 
   assertDeterministicAnswer(): X {
     return this.probabilisticGroupAndAnswer.assertDeterministic()[1];
   }
+}
+
+export function deterministicAnswer<X>(group: ScrambleGroup, x: X) {
+  return new ProbabilisticAnswer<X>(deterministic([group, x]));
+}
+
+export function probabilisticAnswer<X>(groupsWithAnswers: PossibleScrambleGroupWithAnswer<X>[]): ProbabilisticAnswer<X> {
+  return new ProbabilisticAnswer<X>(new Probabilistic<ScrambleGroupWithAnswer<X>>(groupsWithAnswers));
+}
+
+function sortPieces(pieces: Piece[]) {
+  return pieces.sort((a, b) => b.pieceId - a.pieceId);
+}
+
+class PartiallyFixedCycle {
+  // Pieces sorted by their id, not necessarily in the order they appear in the cycle.
+  readonly sortedFixedPieces: Piece[];
+
+  constructor(
+    fixedPieces: Piece[],
+    readonly definingPiece: Optional<Piece>,
+    readonly pieceAfter: Optional<Piece>,
+    readonly pieceBefore: Optional<Piece>,
+    readonly length: number) {
+    assert(fixedPieces.length <= this.length);
+    this.sortedFixedPieces = sortPieces(fixedPieces);
+    ifPresent(this.definingPiece, piece => assert(this.containsPiece(piece)));
+    ifPresent(this.pieceAfter, piece => assert(this.containsPiece(piece)));
+    ifPresent(this.pieceBefore, piece => assert(this.containsPiece(piece)));
+  }
+
+  hasExactlyFixedPieces(pieces: Piece[]) {
+    return sortPieces(pieces) === this.sortedFixedPieces;
+  }
+
+  nextPiece(piece: Piece): Optional<Piece> {
+    assert(this.containsPiece(piece));
+    return flatMapOptional(this.definingPiece, definingPiece => {
+      if (definingPiece === piece) {
+        return this.pieceAfter;
+      }
+      return none;
+    });
+  }
+
+  previousPiece(piece: Piece): Optional<Piece> {
+    assert(this.containsPiece(piece));
+    return flatMapOptional(this.definingPiece, definingPiece => {
+      if (definingPiece === piece) {
+        return this.pieceBefore;
+      }
+      return none;
+    });
+  }
+
+  private definingPieceCompatible(piece: Piece) {
+    assert(this.containsPiece(piece));
+    return orElse(mapOptional(this.definingPiece, definingPiece => definingPiece === piece), true);
+  }
+
+  withPieces(pieces: Piece[]) {
+    assert(pieces.length + this.sortedFixedPieces.length <= this.length);
+    assert(pieces.every(piece => !this.containsPiece(piece)));
+    return new PartiallyFixedCycle(this.sortedFixedPieces.concat(pieces), this.definingPiece, this.pieceAfter, this.pieceBefore, this.length);
+  }
+
+  withPieceAdjacent(piece: Piece, definingPiece: Piece, adjacentType: AdjacentType) {
+    assert(this.containsPiece(piece));
+    assert(this.containsPiece(definingPiece));
+    assert(!hasValue(adjacentType === AdjacentType.NEXT ? this.pieceAfter : this.pieceBefore));
+    assert(this.definingPieceCompatible(definingPiece));
+    if (adjacentType === AdjacentType.NEXT) {
+      return new PartiallyFixedCycle(this.sortedFixedPieces.concat([piece]), some(definingPiece), some(piece), this.pieceBefore, this.length);
+    } else {
+      return new PartiallyFixedCycle(this.sortedFixedPieces.concat([piece]), some(definingPiece), this.pieceAfter, some(piece), this.length);
+    }
+  }
+
+  containsPiece(piece: Piece): boolean {
+    return contains(this.sortedFixedPieces, piece);
+  }
+}
+
+function emptyPartiallyFixedCycle(length: number): PartiallyFixedCycle {
+  return new PartiallyFixedCycle([], none, none, none, length);
+}
+
+enum AdjacentType {
+  NEXT, PREVIOUS
 }
 
 // Represents one group of similar scrambles, i.e.
@@ -162,36 +136,195 @@ export class ProbabilisticAnswer<X> {
 // * same number of pieces permuted
 // * some pieces may have fixed equal positions or orientations.
 export class ScrambleGroup {
+  readonly unorientedTypes: number;
+  readonly unfixedPieces: Piece[];
+
   constructor(readonly solved: Piece[],
-              readonly unoriented: Piece[][],
+              private readonly unorientedByType: Piece[][],
               readonly permuted: Piece[],
-              readonly fixedUnorientedTypes: Optional<UnorietedType>[],
-              readonly partiallyFixedCycles: PartiallyFixedCycle[]) {
-    // fixedUnorientedTypes = unoriented.map(() => none);
+              private readonly fixedUnorientedTypes: Optional<UnorientedType>[],
+              private readonly partiallyFixedCycles: PartiallyFixedCycle[]) {
+    assert(sum(this.partiallyFixedCycles.map(cycle => cycle.length)) === this.permuted.length, 'cycles do not cover permuted pieces');
+    this.unorientedTypes = count(this.unorientedByType, unorientedForType => unorientedForType.length > 0);
+    this.unfixedPieces = permuted.filter(piece => !partiallyFixedCycles.some(cycle => cycle.containsPiece(piece)));
+  }
+
+  get unoriented(): Piece[] {
+    return this.unoriented.flat(1);
   }
 
   get parityTime() {
     return this.permuted.length === 2;
   }
 
-  nextPiece(buffer): ProbabilisticAnswer<Piece> {
-    // TODO
-    assert(false);
+  cycleLength(piece: Piece): ProbabilisticAnswer<number> {
+    assert(this.isPermuted(piece));
+    return this.cycleIndex(piece).mapAnswer(cycleIndex => {
+      const cycle = this.partiallyFixedCycles[cycleIndex];
+      return cycle.length;
+    });
+  }
+  
+  nextPiece(piece: Piece): ProbabilisticAnswer<Piece> {
+    assert(this.isPermuted(piece));
+    return this.cycleIndex(piece).flatMap((group, index) => {
+      return group.adjacentPieceWithCycleIndex(piece, index, AdjacentType.NEXT);
+    });
   }
 
-  breakCycleFromUnpermuted(cycle: EvenCycle): ScrambleGroup {
-    assert(cycle.isThreeCycle);
-    assert(!this.isPermuted(cycle.firstThreeCyclePiece));
+  lastPiece(piece: Piece): ProbabilisticAnswer<Piece> {
+    assert(this.isPermuted(piece));
+    return this.cycleIndex(piece).flatMap((group, index) => {
+      return group.adjacentPieceWithCycleIndex(piece, index, AdjacentType.PREVIOUS);
+    });
+  }
+
+  private adjacentPieceWithCycleIndex(piece: Piece, cycleIndex: number, adjacentType: AdjacentType) {
+    const maybeNextPiece = this.partiallyFixedCycles[cycleIndex].nextPiece(piece);
+    return this.deterministicOrElseProbabilistic(
+      maybeNextPiece,
+      () => {
+        const cycle = this.partiallyFixedCycles[cycleIndex];
+        const probabilityToUseThisFixedPiece = 1 / (cycle.length - 1);
+        const fromSameCycle: PossibleScrambleGroupWithAnswer<Piece>[] = cycle.sortedFixedPieces.flatMap(
+          potentialNextPiece => {
+            if (potentialNextPiece === piece) {
+              return [];
+            }
+            const groupWithAnswer: ScrambleGroupWithAnswer<Piece> =
+              [this.withPieceInCycleAdjacent(potentialNextPiece, cycleIndex, piece, adjacentType), potentialNextPiece];
+            return [[groupWithAnswer, probabilityToUseThisFixedPiece]];
+          }
+        );
+        const slotsRemaining = cycle.length - cycle.sortedFixedPieces.length;
+        const probabilityToUseAnyUnfixedPiece = slotsRemaining / (cycle.length - 1);
+        const probabilityToUseThisUnfixedPiece = probabilityToUseAnyUnfixedPiece / this.unfixedPieces.length;
+        const fromUnfixed: PossibleScrambleGroupWithAnswer<Piece>[] = slotsRemaining === 0 ? [] : this.unfixedPieces.map(
+          potentialNextPiece => {
+            const groupWithAnswer: ScrambleGroupWithAnswer<Piece> =
+              [this.withPieceInCycle(potentialNextPiece, cycleIndex).withPieceInCycleAdjacent(potentialNextPiece, cycleIndex, piece, adjacentType), potentialNextPiece];
+            return [groupWithAnswer, probabilityToUseThisUnfixedPiece]
+          }
+        );
+        return probabilisticAnswer<Piece>(fromSameCycle.concat(fromUnfixed));
+      });
+  }
+
+  unsortedPiecesInCycle(piece: Piece): ProbabilisticAnswer<Piece[]> {
+    assert(this.isPermuted(piece));
+    return this.cycleIndex(piece).flatMap((group, index) => {
+      return group.unsortedPiecesInCycleWithIndex(piece, index);
+    });
+  }
+  
+  evenPermutationCyclePart(piece: Piece): ProbabilisticAnswer<Piece[]> {
+    assert(this.isPermuted(piece));
+    return this.cycleIndex(piece).flatMap((group, index) => {
+      return group.unsortedPiecesInCycleWithIndex(piece, index);
+    });
+  }
+
+  evenPermutationCyclePartWithIndex(piece: Piece, cycleIndex: number): ProbabilisticAnswer<Piece[]> {
+    const cycle = this.partiallyFixedCycles[cycleIndex];
+    assert(cycle.length % 2 === 0);
+    return this.unsortedPiecesInCycle(piece).flatMap((group, unsortedPieces) => {
+      return group.evenPermutationCyclePartWithUnsortedPieces(piece, unsortedPieces);
+    });
+  }
+
+  evenPermutationCyclePartWithUnsortedPieces(piece: Piece, unsortedPieces: Piece[]): ProbabilisticAnswer<Piece[]> {
+    return this.lastPiece(piece).flatMap((group, lastPiece) => {
+      return group.evenPermutationCyclePartWithUnsortedPiecesAndLastPiece(piece, unsortedPieces, lastPiece);
+    });
+  }
+
+  evenPermutationCyclePartWithUnsortedPiecesAndLastPiece(piece: Piece, unsortedPieces: Piece[], lastPiece: Piece): ProbabilisticAnswer<Piece[]> {
+    assert(piece !== lastPiece);
+    const index = forceValue(indexOf(unsortedPieces, lastPiece));
+    const pieces = unsortedPieces.slice(0, index).concat(unsortedPieces.slice(index + 1, -1));
+    return deterministicAnswer(this, pieces);
+  }
+  
+  private unsortedPiecesInCycleWithIndex(piece: Piece, cycleIndex: number): ProbabilisticAnswer<Piece[]> {
+    const cycle = this.partiallyFixedCycles[cycleIndex];
+    const slotsRemaining = cycle.length - cycle.sortedFixedPieces.length;
+    if (slotsRemaining === 0) {
+      return deterministicAnswer(this, cycle.sortedFixedPieces);
+    }
+    const probability = ncr(this.unfixedPieces.length, slotsRemaining);
+    return probabilisticAnswer(combination(this.unfixedPieces, slotsRemaining).map(
+      pieces => {
+        const group = this.withPiecesInCycle(pieces, cycleIndex);
+        const allCyclePieces = group.partiallyFixedCycles[cycleIndex].sortedFixedPieces;
+        const groupWithAnswer: ScrambleGroupWithAnswer<Piece[]> = [group, allCyclePieces];
+        return [groupWithAnswer, probability]
+      }
+    ));
+  }
+  
+  deterministicOrElseProbabilistic<X>(
+    maybeDeterministicAnswer: Optional<X>,
+    computeProbabilisticAnswer: () => ProbabilisticAnswer<X>): ProbabilisticAnswer<X> {
+    return orElseCall(
+      mapOptional(maybeDeterministicAnswer, answer => deterministicAnswer(this, answer)),
+      computeProbabilisticAnswer);
+  }
+
+  private cycleIndex(piece: Piece): ProbabilisticAnswer<number> {
+    assert(this.isPermuted(piece));
+    const maybeIndex = findIndex(this.partiallyFixedCycles, cycle => cycle.containsPiece(piece));
+    return this.deterministicOrElseProbabilistic(
+      maybeIndex,
+      () => {
+        return probabilisticAnswer<number>(this.partiallyFixedCycles.map((cycle, cycleIndex) => {
+          const groupWithAnswer: ScrambleGroupWithAnswer<number> = [this.withPieceInCycle(piece, cycleIndex), cycleIndex];
+          const probability = cycle.length / this.permuted.length
+          return [groupWithAnswer, probability];
+        }));
+      });
+  }
+
+  private withChangedCycle(cycleIndex: number, cycle: PartiallyFixedCycle) {
+    const partiallyFixedCycles = this.partiallyFixedCycles.slice(0, cycleIndex).concat([cycle]).concat(this.partiallyFixedCycles.slice(cycleIndex + 1, -1));
+    return new ScrambleGroup(this.solved, this.unorientedByType, this.permuted, this.fixedUnorientedTypes, partiallyFixedCycles);
+  }
+
+  private withPieceInCycle(piece: Piece, cycleIndex: number) {
+    return this.withPiecesInCycle([piece], cycleIndex);
+  }
+
+  private withPiecesInCycle(pieces: Piece[], cycleIndex: number) {
+    assert(pieces.every(piece => this.isPermuted(piece)));
+    assert(pieces.every(piece => contains(this.unfixedPieces, piece)));
+    const cycle = this.partiallyFixedCycles[cycleIndex];
+    const changedCycle = cycle.withPieces(pieces);
+    return this.withChangedCycle(cycleIndex, changedCycle);
+  }
+
+  private withPieceInCycleAdjacent(piece: Piece, cycleIndex: number, otherPiece: Piece, adjacentType: AdjacentType) {
+    assert(this.isPermuted(piece));
+    assert(this.isPermuted(otherPiece));
+    const cycle = this.partiallyFixedCycles[cycleIndex];
+    assert(cycle.containsPiece(piece));
+    const changedCycle = cycle.withPieceAdjacent(piece, otherPiece, adjacentType);
+    return this.withChangedCycle(cycleIndex, changedCycle);
+  }
+
+  breakCycleFromUnpermuted(cycle: ThreeCycle): ScrambleGroup {
+    assert(!this.isPermuted(cycle.firstPiece));
+    assert(!this.isPermuted(cycle.secondPiece));
+    assert(!this.isPermuted(cycle.thirdPiece));
     // TODO
     assert(false);
     return this;
   }
   
-  breakCycleFromSwap(cycle: EvenCycle): ScrambleGroup {
-    assert(this.isPermuted(cycle.firstThreeCyclePiece));
-    assert(this.isPermuted(cycle.secondThreeCyclePiece));
-    const swappedPieces = [cycle.firstThreeCyclePiece, cycle.secondThreeCyclePiece];
-    this.partiallyFixedCycles.find(cycle => cycle.hasExactlyPieces(swappedPieces));
+  breakCycleFromSwap(cycle: ThreeCycle): ScrambleGroup {
+    assert(this.isPermuted(cycle.firstPiece));
+    assert(this.isPermuted(cycle.secondPiece));
+    assert(this.isPermuted(cycle.thirdPiece));
+    const swappedPieces = [cycle.firstPiece, cycle.secondPiece];
+    this.partiallyFixedCycles.find(cycle => cycle.hasExactlyFixedPieces(swappedPieces));
     // TODO
     assert(false);
     return this;
@@ -203,29 +336,53 @@ export class ScrambleGroup {
     return this;
   }
 
+  solvePartialEvenCycle(evenCycle: EvenCycle): ScrambleGroup {
+    assert(evenCycle.pieces.every(piece => this.isPermuted(piece)));
+    const solvedPieces = evenCycle.pieces.slice(1, -2);
+    const solved = this.solved.concat(solvedPieces);
+    const permuted = this.permuted.filter(piece => !contains(solvedPieces, piece));
+    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.hasExactlyFixedPieces(evenCycle.pieces)));
+    const firstUnsolvedPiece = evenCycle.pieces[1];
+    const secondUnsolvedPiece = evenCycle.pieces[-1];
+    const changedCycle = new PartiallyFixedCycle([firstUnsolvedPiece, secondUnsolvedPiece], some(firstUnsolvedPiece), none, none, 2);
+    const partiallyFixedCycles = this.partiallyFixedCycles.slice(0, cycleIndex).concat([changedCycle]).concat(this.partiallyFixedCycles.slice(cycleIndex + 1, -1));
+    return new ScrambleGroup(solved, this.unorientedByType, permuted, this.fixedUnorientedTypes, partiallyFixedCycles);
+  }
+
   solveEvenCycle(evenCycle: EvenCycle): ScrambleGroup {
-    // TODO
-    assert(false);
-    return this;
+    assert(evenCycle.pieces.every(piece => this.isPermuted(piece)));
+    const solved = this.solved.concat(evenCycle.pieces);
+    const permuted = this.permuted.filter(piece => !contains(evenCycle.pieces, piece));
+    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.hasExactlyFixedPieces(evenCycle.pieces)));
+    const partiallyFixedCycles = this.partiallyFixedCycles.slice(0, cycleIndex).concat(this.partiallyFixedCycles.slice(cycleIndex + 1, -1));
+    return new ScrambleGroup(solved, this.unorientedByType, permuted, this.fixedUnorientedTypes, partiallyFixedCycles);
   }
 
   solveParity(parity: Parity): ScrambleGroup {
-    assert(this.isPermuted(cycle.firstThreeCyclePiece));
-    assert(this.isPermuted(cycle.secondThreeCyclePiece));
-    const swappedPieces = [cycle.firstThreeCyclePiece, cycle.secondThreeCyclePiece];
-    this.partiallyFixedCycles.find(cycle => cycle.hasExactlyPieces(swappedPieces));
-    assert(false);
-    return this
+    assert(this.isPermuted(parity.firstPiece));
+    assert(this.isPermuted(parity.lastPiece));
+    const solved = this.solved.concat(parity.pieces);
+    const permuted = this.permuted.filter(piece => piece !== parity.firstPiece && piece !== parity.lastPiece);
+    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.hasExactlyFixedPieces(parity.pieces)));
+    const partiallyFixedCycles = this.partiallyFixedCycles.slice(0, cycleIndex).concat(this.partiallyFixedCycles.slice(cycleIndex + 1, -1));
+    return new ScrambleGroup(solved, this.unorientedByType, permuted, this.fixedUnorientedTypes, partiallyFixedCycles);
   }
 
   solveParityTwist(parityTwist: ParityTwist): ScrambleGroup {
-    assert(this.isPermuted(cycle.firstThreeCyclePiece));
-    assert(this.isPermuted(cycle.secondThreeCyclePiece));
-    const swappedPieces = [cycle.firstThreeCyclePiece, cycle.secondThreeCyclePiece];
-    this.partiallyFixedCycles.find(cycle => cycle.hasExactlyPieces(swappedPieces));
-    // TODO
-    assert(false);
-    return this;
+    assert(this.isPermuted(parityTwist.firstPiece));
+    assert(this.isPermuted(parityTwist.lastPiece));
+    assert(this.isUnoriented(parityTwist.unoriented));
+    const solved = this.solved.concat(parityTwist.pieces);
+    const unorientedByType = this.unorientedByType.map(orientedForType => {
+      const maybeWithoutOriented = mapOptional(
+        indexOf(orientedForType, parityTwist.unoriented),
+        index => orientedForType.slice(0, index).concat(orientedForType.slice(index + 1, -1)));
+      return orElse(maybeWithoutOriented, orientedForType);
+    });
+    const permuted = this.permuted.filter(piece => piece !== parityTwist.firstPiece && piece !== parityTwist.lastPiece);
+    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.hasExactlyFixedPieces(parityTwist.swappedPieces)));
+    const partiallyFixedCycles = this.partiallyFixedCycles.slice(0, cycleIndex).concat(this.partiallyFixedCycles.slice(cycleIndex + 1, -1));
+    return new ScrambleGroup(solved, unorientedByType, permuted, this.fixedUnorientedTypes, partiallyFixedCycles);
   }
 
   isSolved(piece: Piece) {
@@ -233,7 +390,7 @@ export class ScrambleGroup {
   }
 
   isUnoriented(piece: Piece) {
-    return this.unoriented.some(unorientedForType => unorientedForType.includes(piece));
+    return this.unorientedByType.some(unorientedForType => unorientedForType.includes(piece));
   }
   
   isPermuted(piece: Piece) {
@@ -244,9 +401,18 @@ export class ScrambleGroup {
     return this.permuted.length > 0;
   }
   
-  unorientedForInverseType(parity: Parity) {
+  get hasUnoriented() {
+    return this.unoriented.length > 0;
+  }
+
+  unorientedForInverseType(parity: Parity): Piece[] {
     // TODO
     assert(false);
     return [];
   }
+}
+
+export function bigScrambleGroupToScrambleGroup(group: BigScrambleGroup) {
+  const cycles = group.sortedCycleLengths.map(emptyPartiallyFixedCycle);
+  return new ScrambleGroup(group.solved, group.unorientedByType, group.permuted, group.unorientedByType.map(() => none), cycles);
 }
