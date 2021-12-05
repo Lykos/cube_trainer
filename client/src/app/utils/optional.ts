@@ -26,10 +26,21 @@ export function flatMapOptional<X, Y>(optional: Optional<X>, f: (x: X) => Option
   }
 }
 
-export function ifPresent<X>(optional: Optional<X>, f: (x: X) => void): void {
-  if (optional.tag == "some") {
-    f(optional.value);
+export function ifPresentOrElse<X>(optional: Optional<X>, f: (x: X) => void, g: () => void): void {
+  switch (optional.tag) {
+    case "some": {
+      f(optional.value);
+      break;
+    }
+    case "none": {
+      g();
+      break;
+    }
   }
+}
+
+export function ifPresent<X>(optional: Optional<X>, f: (x: X) => void): void {
+  ifPresentOrElse(optional, f, () => {});
 }
 
 export function orElse<X>(optional: Optional<X>, x: X): X {

@@ -70,6 +70,10 @@ class PartiallyFixedCycle {
     ifPresent(this.pieceBefore, piece => assert(this.containsPiece(piece)));
   }
 
+  get isCompletelyUnfixed() {
+    return this.sortedFixedPieces.length === 0;
+  }
+
   hasExactlyFixedPieces(pieces: Piece[]) {
     return sortPieces(pieces) === this.sortedFixedPieces;
   }
@@ -276,7 +280,17 @@ export class ScrambleGroup {
     return this.deterministicOrElseProbabilistic(
       maybeIndex,
       () => {
-        return probabilisticAnswer<number>(this.partiallyFixedCycles.map((cycle, cycleIndex) => {
+        const relevantCycleIndices: number[] = []
+        let lastCompletelyUnfixed = false;
+        for (let index = 0; index < this.partiallyFixedCycles.length; ++index) {
+          const cycle = this.partiallyFixedCycles[index]
+          if (!cycle.isCompletelyUnfixed || !lastCompletelyUnfixed) {
+            relevantCycleIndices.push(index);
+          }
+          lastCompletelyUnfixed = cycle.isCompletelyUnfixed;
+        }
+        return probabilisticAnswer<number>(relevantCycleIndices.map(cycleIndex => {
+          const cycle = this.partiallyFixedCycles[cycleIndex]
           const groupWithAnswer: ScrambleGroupWithAnswer<number> = [this.withPieceInCycle(piece, cycleIndex), cycleIndex];
           const probability = cycle.length / this.permuted.length
           return [groupWithAnswer, probability];

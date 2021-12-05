@@ -10,6 +10,18 @@ import { Probabilistic, ProbabilisticPossibility, flattenProbabilistic, expected
 import { BigScrambleGroup } from './big-scramble-group';
 import { AlgCounts } from './alg-counts'
 
+function logRandomGroup(groups: BigScrambleGroup[]) {
+  const group = groups[Math.floor(Math.random() * groups.length)];
+  console.log(group, group.count);
+}
+
+function logRandomGroups(groups: BigScrambleGroup[]) {
+  const interestingGroups = groups.filter(group => group.solved.length === 0 && group.unorientedByType[0].length === 0);
+  for (let i = 0; i < 10; ++i) {
+    logRandomGroup(interestingGroups);
+  }
+}
+
 class SolvingMethod {
   private readonly solver: Solver;
 
@@ -30,7 +42,9 @@ class SolvingMethod {
     const groups = this.piecePermutationDescription.groups();
     const directComputed = this.piecePermutationDescription.count;
     const groupSum = sum(groups.map(group => group.count));
-    assert(Math.round(directComputed) === Math.round(groupSum), `${directComputed} === ${groupSum} (direct computed vs group sum)`)
+    logRandomGroups(groups)
+    console.log(groups.length);
+    assert(Math.round(directComputed) === Math.round(groupSum), `directComputed === groupSum (${directComputed} vs ${groupSum})`)
     return flattenProbabilistic(new Probabilistic<Probabilistic<AlgCounts>>(groups.map(
       group => this.algCountsWithProbabilityForGroup(group)
     )));
