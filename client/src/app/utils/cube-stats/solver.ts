@@ -147,7 +147,7 @@ export class Solver {
   }
 
   private cycleBreakWithBufferAndOtherPiece(bufferState: BufferState, group: ScrambleGroup, buffer: Piece, otherPiece: Piece): ProbabilisticAlgTrace {
-    const cycleBreak = this.decider.nextCycleBreakOnSecondPiece(buffer, otherPiece, group.permuted);
+    const cycleBreak = this.decider.nextCycleBreakOnSecondPiece(buffer, otherPiece, group.permuted.filter(piece => piece !== buffer && piece !== otherPiece));
     return group.nextPiece(cycleBreak).flatMap((group, nextPiece) => this.cycleBreakWithBufferAndOtherPieceAndNextPiece(bufferState, group, buffer, otherPiece, cycleBreak, nextPiece));
   }
 
@@ -178,7 +178,7 @@ export class Solver {
   private algs(bufferState: BufferState, group: ScrambleGroup): ProbabilisticAlgTrace {
     const buffer = this.nextBuffer(bufferState, group);
     if (group.isSolved(buffer) && group.hasPermuted) {
-      const cycleBreakPiece = this.decider.nextCycleBreakOnFirstPiece(buffer, group.permuted);
+      const cycleBreakPiece = this.decider.nextCycleBreakOnFirstPiece(buffer, group.permuted.filter(piece => piece !== buffer));
       return group.nextPiece(cycleBreakPiece).flatMap((group, nextPiece) => {
         return this.algsWithCycleBreakFromUnpermuted(bufferState, group, new ThreeCycle(buffer, cycleBreakPiece, nextPiece));
       });

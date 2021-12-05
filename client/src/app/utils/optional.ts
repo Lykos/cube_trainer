@@ -57,6 +57,13 @@ export function orElseCall<X>(optional: Optional<X>, f: () => X): X {
   }
 }
 
+export function orElseTryCall<X>(optional: Optional<X>, f: () => Optional<X>): Optional<X> {
+  switch (optional.tag) {
+    case "some": return optional;
+    case "none": return f();
+  }
+}
+
 export function forceValue<X>(optional: Optional<X>): X {
   switch (optional.tag) {
     case "some": return optional.value;

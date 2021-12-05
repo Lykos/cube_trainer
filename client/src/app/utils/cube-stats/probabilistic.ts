@@ -1,4 +1,4 @@
-import { assert } from '../assert';
+import { assert, assertApproxEqual } from '../assert';
 import { sum } from '../utils';
 import { VectorSpaceElement, sumVectorSpaceElements } from './vector-space-element';
 
@@ -6,12 +6,11 @@ export type Probability = number;
 
 export type ProbabilisticPossibility<X> = [X, Probability];
 
-const EPSILON = 0.00001;
-
 // This is a monad.
 export class Probabilistic<X> {
   constructor(readonly possibilities: ProbabilisticPossibility<X>[]) {
-    assert(Math.abs(sum(possibilities.map(possibility => possibility[1])) - 1) < EPSILON);
+    const probabilitySum = sum(possibilities.map(possibility => possibility[1]));
+    assertApproxEqual(probabilitySum, 1);
   }
 
   map<Y>(f: (x: X) => Y): Probabilistic<Y> {
