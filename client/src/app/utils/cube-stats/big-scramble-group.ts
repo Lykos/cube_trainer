@@ -42,6 +42,10 @@ export class BigScrambleGroup {
     // We have to divide by this to account for the fact that we don't
     // care about the order in case of multiple cycles of the same length.
     let cyclePermutationDivisor = 1;
+    // For all except for the last permuted piece, we can choose the orientation.
+    // Note that in case of no permuted pieces, we took care of excluding invalid
+    // possibilities earlier.
+    const permutationOrientationChoices = this.permuted.length > 0 ? (this.unorientedTypes + 1) ** (this.permuted.length - 1) : 1;
     this.sortedCycleLengths.forEach(cycleLength => {
       // Choices for the pieces in this cycle plus orders within the cycle.
       permutedChoices *= ncr(remainingPieces, cycleLength) * factorial(cycleLength - 1);
@@ -63,6 +67,6 @@ export class BigScrambleGroup {
     // We can have clockwise and counter clockwise turned corners.
     // In practice, this formula will return 2 if there is at least on unoriented corner and 0 oterwise.
     const unorientedTypeChoices = ncr(this.unorientedTypes, usedUnorientedTypes.length) * factorial(usedUnorientedTypes.length);
-    return permutedChoices * unorientedTypeChoices / cyclePermutationDivisor;
+    return permutedChoices * unorientedTypeChoices * permutationOrientationChoices / cyclePermutationDivisor;
   }
 }
