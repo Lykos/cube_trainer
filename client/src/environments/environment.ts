@@ -6,7 +6,7 @@ export const environment = {
   apiPrefix: '/api',
   production: false,
   host: 'localhost:4200',
-  redirectProtocol: 'https',
+  redirectProtocol: 'http',
 };
 
 /*
