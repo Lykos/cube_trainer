@@ -8,24 +8,18 @@ describe 'account deletion', type: :system do
   end
 
   it 'enables users to sign up and then delete their account' do
-    visit ''
-    click_link 'Sign Up'
-
-    fill_in 'Username', with: 'system test user'
-    fill_in 'Email', with: 'system_test@example.org'
-    fill_in 'Password', with: 'password'
-    fill_in 'Confirm Password', with: 'password'
-    find(:css, '#cube-trainer-terms-and-conditions-accepted').set(true)
-    find(:css, '#cube-trainer-privacy-policy-accepted').set(true)
-    find(:css, '#cube-trainer-cookie-policy-accepted').set(true)
-    click_button 'Submit'
-
-    expect(page).to have_text('Signup successful!')
-
-    user = User.find_by(name: 'system test user')
-    user.admin_confirm!
+    user = User.find_or_initialize_by(name: 'account deletion user')
+    user.update(
+      email: 'account_deletion_test@example.org',
+      provider: 'email',
+      uid: 'account_deletion_test@example.org',
+      admin_confirmed: true,
+      email_confirmed: true,
+      password: 'password',
+      password_confirmation: 'password'
+    )
+    user.save!
     user.confirm
-    user.password = 'password'
 
     login(user)
 
