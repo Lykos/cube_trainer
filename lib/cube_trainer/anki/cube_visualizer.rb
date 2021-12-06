@@ -42,7 +42,7 @@ module CubeTrainer
       ].freeze
       STAGE_MASK_REGEXP = Regexp.new("(#{StageMask::BASE_MASKS.join('|')})(?:-([xyz]['2]?+))?")
 
-      def initialize(base_mask, rotations = TwistyPuzzles::Algorithm::EMPTY)
+      def initialize(base_mask, rotations = TwistyPuzzles::Algorithm.empty)
         raise ArgumentError unless BASE_MASKS.include?(base_mask)
         raise TypeError unless rotations.is_a?(TwistyPuzzles::Algorithm)
         raise TypeError unless rotations.moves.all?(TwistyPuzzles::Rotation)
@@ -60,7 +60,7 @@ module CubeTrainer
         end
 
         raw_base_mask, raw_rotations = match.captures
-        rotations = raw_rotations ? parse_algorithm(raw_rotations) : TwistyPuzzles::Algorithm::EMPTY
+        rotations = raw_rotations ? parse_algorithm(raw_rotations) : TwistyPuzzles::Algorithm.empty
         StageMask.new(raw_base_mask.to_sym, rotations)
       end
     end

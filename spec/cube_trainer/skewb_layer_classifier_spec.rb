@@ -11,7 +11,7 @@ describe SkewbLayerClassifier do
   let(:sarah) { TwistyPuzzles::SkewbNotation.sarah }
 
   it 'classifies the solved layer correctly' do
-    expect(classifier.classify_layer(TwistyPuzzles::Algorithm::EMPTY)).to be == '4_solved'
+    expect(classifier.classify_layer(TwistyPuzzles::Algorithm.empty)).to be == '4_solved'
     expect(classifier.classify_layer(parse_skewb_algorithm("R' F R F'", sarah))).to be == '4_solved'
   end
 
