@@ -121,12 +121,8 @@ shared_context 'with color scheme' do
       user: user
     )
     color_scheme.update(
-      u: :yellow,
-      f: :red,
-      r: :green,
-      l: :blue,
-      b: :orange,
-      d: :white
+      color_u: :yellow,
+      color_f: :red
     )
     color_scheme.save!
     color_scheme
@@ -137,13 +133,13 @@ shared_context 'with letter scheme' do
   include_context 'with user abc'
 
   let(:letter_scheme) do
-    color_scheme = LetterScheme.find_or_initialize_by(
+    letter_scheme = LetterScheme.find_or_initialize_by(
       user: user
     )
     part = TwistyPuzzles::Edge.for_face_symbols(%i[U F])
-    color_scheme.mappings.new(part: part, letter: 'a')
-    color_scheme.save!
-    color_scheme
+    letter_scheme.mappings.new(part: part, letter: 'a')
+    letter_scheme.save!
+    letter_scheme
   end
 end
 

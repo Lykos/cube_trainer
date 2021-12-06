@@ -21,7 +21,7 @@ module CubeTrainer
       NON_ZERO_AUFS = TwistyPuzzles::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
         TwistyPuzzles::Algorithm.move(TwistyPuzzles::FatMove.new(TwistyPuzzles::Face::U, d))
       end.freeze
-      AUFS = ([TwistyPuzzles::Algorithm::EMPTY] + NON_ZERO_AUFS).freeze
+      AUFS = ([TwistyPuzzles::Algorithm.empty] + NON_ZERO_AUFS).freeze
       # rubocop:disable Style/StringHashKeys
       LETTER_REPLACEMENTS = {
         'ä' => 'ae',

@@ -9,7 +9,7 @@ describe SkewbLayerSearcher do
   let(:color_scheme) { TwistyPuzzles::ColorScheme::BERNHARD }
 
   def verify_zero_move_algs(zero_move_algs)
-    expect(zero_move_algs).to be == [TwistyPuzzles::Algorithm::EMPTY]
+    expect(zero_move_algs).to be == [TwistyPuzzles::Algorithm.empty]
   end
 
   def verify_one_move_algs(one_move_algs)

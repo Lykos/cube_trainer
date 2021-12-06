@@ -15,6 +15,7 @@ class TrainerController < ApplicationController
       response = {
         id: input.id,
         representation: @mode.maybe_apply_letter_scheme(input_item.representation).to_s,
+        setup: @mode.setup(input).to_s,
         hints: @mode.hints(input).map(&:to_s)
       }
       render json: response, status: :created

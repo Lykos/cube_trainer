@@ -16,7 +16,7 @@ RSpec.describe 'Trainer', type: :request do
       post "/api/trainer/#{mode.id}/inputs", headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body.keys).to eq(%w[id representation hints])
+      expect(parsed_body.keys).to eq(%w[id representation setup hints])
       expect(Input.find(parsed_body['id'])).not_to be(nil)
     end
 
@@ -27,7 +27,7 @@ RSpec.describe 'Trainer', type: :request do
       post "/api/trainer/#{mode.id}/inputs", headers: user_headers, params: { cached_input_ids: [id] }
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body.keys).to eq(%w[id representation hints])
+      expect(parsed_body.keys).to eq(%w[id representation setup hints])
       expect(Input.find(parsed_body['id'])).not_to be(nil)
       expect(parsed_body['id']).not_to eq(id)
     end

@@ -17,7 +17,7 @@ describe SkewbLayerFinder do
     it 'finds an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to eq(
         {
-          white: [TwistyPuzzles::Algorithm::EMPTY]
+          white: [TwistyPuzzles::Algorithm.empty]
         }
       )
     end
@@ -115,12 +115,12 @@ describe SkewbLayerFinder do
     it 'finds an existing layer' do
       expect(layer_finder.find_layer(skewb_state, 0).extract_algorithms).to eq(
         {
-          yellow: [TwistyPuzzles::Algorithm::EMPTY],
-          red: [TwistyPuzzles::Algorithm::EMPTY],
-          green: [TwistyPuzzles::Algorithm::EMPTY],
-          blue: [TwistyPuzzles::Algorithm::EMPTY],
-          orange: [TwistyPuzzles::Algorithm::EMPTY],
-          white: [TwistyPuzzles::Algorithm::EMPTY]
+          yellow: [TwistyPuzzles::Algorithm.empty],
+          red: [TwistyPuzzles::Algorithm.empty],
+          green: [TwistyPuzzles::Algorithm.empty],
+          blue: [TwistyPuzzles::Algorithm.empty],
+          orange: [TwistyPuzzles::Algorithm.empty],
+          white: [TwistyPuzzles::Algorithm.empty]
         }
       )
     end

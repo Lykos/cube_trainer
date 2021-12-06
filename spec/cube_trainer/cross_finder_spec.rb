@@ -13,12 +13,12 @@ describe CrossFinder do
   it 'finds an existing cross' do
     expect(cross_finder.find_cross(cube_state, 0).extract_algorithms).to eq(
       {
-        yellow: [TwistyPuzzles::Algorithm::EMPTY],
-        red: [TwistyPuzzles::Algorithm::EMPTY],
-        green: [TwistyPuzzles::Algorithm::EMPTY],
-        blue: [TwistyPuzzles::Algorithm::EMPTY],
-        orange: [TwistyPuzzles::Algorithm::EMPTY],
-        white: [TwistyPuzzles::Algorithm::EMPTY]
+        yellow: [TwistyPuzzles::Algorithm.empty],
+        red: [TwistyPuzzles::Algorithm.empty],
+        green: [TwistyPuzzles::Algorithm.empty],
+        blue: [TwistyPuzzles::Algorithm.empty],
+        orange: [TwistyPuzzles::Algorithm.empty],
+        white: [TwistyPuzzles::Algorithm.empty]
       }
     )
   end

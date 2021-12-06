@@ -14,7 +14,7 @@ module CubeTrainer
         options = OpenStruct.new
         options.color_scheme = TwistyPuzzles::ColorScheme::BERNHARD
         options.cube_size = 3
-        options.algorithm = TwistyPuzzles::Algorithm::EMPTY
+        options.algorithm = TwistyPuzzles::Algorithm.empty
         options.cache = true
         options
       end
