@@ -43,12 +43,8 @@ RSpec.describe 'Dumps', type: :request do
       # Create a new color scheme.
       post '/api/color_scheme', headers: user_headers, params: {
         color_scheme: {
-          u: :yellow,
-          f: :green,
-          r: :orange,
-          l: :red,
-          b: :blue,
-          d: :white
+          color_u: :yellow,
+          color_f: :green
         }
       }
 
@@ -57,7 +53,7 @@ RSpec.describe 'Dumps', type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['letter_scheme']['mappings']).to eq_modulo_symbol_vs_string([{ letter: 'd', part: { key: 'Edge:UB', name: 'UB' } }])
-      expect(parsed_body['color_scheme']['f']).to eq('green')
+      expect(parsed_body['color_scheme']['color_f']).to eq('green')
       expect(parsed_body['modes'][0]['inputs'][0]['result']['time_s']).to eq(10.0)
     end
 

@@ -21,7 +21,7 @@ module CubeTrainer
     def random_algorithm(length)
       raise TypeError unless length.is_a?(Integer)
       raise ArgumentError if length.negative?
-      return TwistyPuzzles::Algorithm::EMPTY if length.zero?
+      return TwistyPuzzles::Algorithm.empty if length.zero?
 
       a = [moves.sample]
       (length - 1).times do

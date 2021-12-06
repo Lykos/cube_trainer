@@ -30,30 +30,22 @@ RSpec.describe 'ColorSchemes', type: :request do
     it 'returns http success' do
       post '/api/color_scheme', headers: eve_headers, params: {
         color_scheme: {
-          u: :yellow,
-          f: :green,
-          r: :orange,
-          l: :red,
-          b: :blue,
-          d: :white
+          color_u: :yellow,
+          color_f: :green
         }
       }
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).not_to eq(color_scheme.id)
-      expect(ColorScheme.find(parsed_body['id']).u).to eq(:yellow)
+      expect(ColorScheme.find(parsed_body['id']).color_u).to eq(:yellow)
     end
 
     it 'returns unprocessable entity if the user already has a color scheme' do
       color_scheme
       post '/api/color_scheme', headers: user_headers, params: {
         color_scheme: {
-          u: :yellow,
-          f: :green,
-          r: :orange,
-          l: :red,
-          b: :blue,
-          d: :white
+          color_u: :yellow,
+          color_f: :green
         }
       }
       expect(response).to have_http_status(:unprocessable_entity)
@@ -62,7 +54,7 @@ RSpec.describe 'ColorSchemes', type: :request do
     it 'returns bad request for invalid color_schemes' do
       post '/api/color_scheme', headers: eve_headers, params: {
         color_scheme: {
-          u: :red
+          color_u: :red
         }
       }
       expect(response).to have_http_status(:bad_request)
@@ -72,24 +64,24 @@ RSpec.describe 'ColorSchemes', type: :request do
   describe 'PUT #update' do
     it 'returns http success' do
       color_scheme
-      put '/api/color_scheme', headers: user_headers, params: { color_scheme: { d: 'black' } }
+      put '/api/color_scheme', headers: user_headers, params: { color_scheme: { color_f: 'blue' } }
       expect(response).to have_http_status(:success)
       color_scheme.reload
-      expect(color_scheme.d).to eq(:black)
-      expect(color_scheme.u).to eq(:yellow)
+      expect(color_scheme.color_f).to eq(:blue)
+      expect(color_scheme.color_u).to eq(:yellow)
     end
 
     it 'returns unprocessable entity for invalid updates' do
       color_scheme
-      put '/api/color_scheme', headers: user_headers, params: { color_scheme: { u: nil } }
+      put '/api/color_scheme', headers: user_headers, params: { color_scheme: { color_u: nil } }
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(ColorScheme.find(color_scheme.id).u).to eq(:yellow)
+      expect(ColorScheme.find(color_scheme.id).color_u).to eq(:yellow)
     end
 
     it 'returns not found for user with no color scheme' do
-      put '/api/color_scheme', headers: eve_headers, params: { color_scheme: { d: 'black' } }
+      put '/api/color_scheme', headers: eve_headers, params: { color_scheme: { color_f: 'blue' } }
       expect(response).to have_http_status(:not_found)
-      expect(ColorScheme.find(color_scheme.id).u).to eq(:yellow)
+      expect(ColorScheme.find(color_scheme.id).color_u).to eq(:yellow)
     end
   end
 

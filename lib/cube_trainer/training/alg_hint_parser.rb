@@ -26,11 +26,11 @@ module CubeTrainer
       ADJACENT_PLL_NAME = SimpleAlgName.new('Ja')
       DIAGONAL_PLL_NAME = SimpleAlgName.new('Y')
       SOLVED_HINTER = AlgHinter.new(
-        SimpleAlgName.new('solved') => CaseSolution.new(TwistyPuzzles::Algorithm::EMPTY)
+        SimpleAlgName.new('solved') => CaseSolution.new(TwistyPuzzles::Algorithm.empty)
       )
       AUF_HINTER =
         AlgHinter.new(
-          ([[SimpleAlgName.new('auf skip'), TwistyPuzzles::Algorithm::EMPTY]] +
+          ([[SimpleAlgName.new('auf skip'), TwistyPuzzles::Algorithm.empty]] +
            TwistyPuzzles::CubeDirection::NON_ZERO_DIRECTIONS.map do |d|
              alg =
                TwistyPuzzles::Algorithm.move(TwistyPuzzles::FatMove.new(TwistyPuzzles::Face::U, d))

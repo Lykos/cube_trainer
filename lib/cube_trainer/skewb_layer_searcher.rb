@@ -45,7 +45,7 @@ module CubeTrainer
       def algorithm
         @algorithm ||=
           if move.nil?
-            TwistyPuzzles::Algorithm::EMPTY
+            TwistyPuzzles::Algorithm.empty
           else
             TwistyPuzzles::Algorithm.move(@move) + @sub_solution.algorithm
           end
@@ -82,7 +82,7 @@ module CubeTrainer
             TwistyPuzzles::Algorithm.move(@move) + alg
           end
         else
-          [TwistyPuzzles::Algorithm::EMPTY]
+          [TwistyPuzzles::Algorithm.empty]
         end
       end
 

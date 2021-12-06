@@ -2,4 +2,5 @@ export interface InputItem {
   readonly id: number;
   readonly representation: string;
   readonly hints: string[];
+  readonly setup?: string;
 }

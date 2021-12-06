@@ -17,10 +17,6 @@ describe 'new color scheme', type: :system do
     sleep(0.5)
     mat_select 'Yellow', id: 'colorSelectU'
     mat_select 'Red', id: 'colorSelectF'
-    mat_select 'Green', id: 'colorSelectR'
-    mat_select 'Blue', id: 'colorSelectL'
-    mat_select 'Orange', id: 'colorSelectB'
-    mat_select 'White', id: 'colorSelectD'
 
     sleep(0.5)
     click_button 'Submit'

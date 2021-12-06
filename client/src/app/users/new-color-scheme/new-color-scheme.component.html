@@ -1,14 +1,18 @@
 <div>
   <h1>Pick Color Scheme</h1>
   <form [formGroup]="colorSchemeForm" (ngSubmit)="onSubmit()">
-    <ng-container *ngFor="let face of faceEnum | keyvalue">
-      <mat-form-field>
-        <mat-label>{{face.key}}</mat-label>
-        <mat-select [formControlName]="face.key" [id]="'colorSelect' + face.key">
-          <mat-option *ngFor="let color of colorEnum | keyvalue" [value]="color.key"> {{color.key}} </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </ng-container>
+    <mat-form-field>
+      <mat-label>U</mat-label>
+      <mat-select formControlName="colorU" id="colorSelectU">
+        <mat-option *ngFor="let color of colorEnum | keyvalue" [value]="color.key"> {{color.key}} </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>F</mat-label>
+      <mat-select formControlName="colorF" id="colorSelectF">
+        <mat-option *ngFor="let color of colorEnum | keyvalue" [value]="color.key"> {{color.key}} </mat-option>
+      </mat-select>
+    </mat-form-field>
     <div>
       <button mat-raised-button color="primary" type="Submit">Submit</button>
     </div>
