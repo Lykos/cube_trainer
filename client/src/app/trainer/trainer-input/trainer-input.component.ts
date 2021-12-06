@@ -13,7 +13,7 @@ export class TrainerInputComponent {
   input?: InputItem;
 
   @Input()
-  mode?: Mode
+  mode?: Mode;
 
   @Input()
   numHints?: number;
@@ -22,6 +22,12 @@ export class TrainerInputComponent {
 
   get setup() {
     return this.input?.setup;
+  }
+
+  get puzzle() {
+    const cubeSize = this.mode?.cubeSize;
+    console.log(`${cubeSize}x${cubeSize}x${cubeSize}`);
+    return cubeSize ? `${cubeSize}x${cubeSize}x${cubeSize}` : undefined;
   }
 
   get hints() {
