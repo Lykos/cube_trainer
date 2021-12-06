@@ -3,7 +3,7 @@ import { minBy, first } from '../utils';
 import { assert } from '../assert';
 import { Piece } from './piece';
 import { Parity, ThreeCycle, EvenCycle, ParityTwist, DoubleSwap } from './alg';
-import { ScrambleGroup, ProbabilisticAnswer, deterministicAnswer } from './scramble-group';
+import { ScrambleGroup, ProbabilisticAnswer, deterministicAnswer, PartiallyFixedOrientedType } from './scramble-group';
 import { Probabilistic } from './probabilistic';
 import { AlgTrace, emptyAlgTrace } from './alg-trace';
 import { AlgCounts } from './alg-counts';
@@ -65,7 +65,13 @@ export class Solver {
         return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixThreeCycle(cycleBreak));
       }
     }
-    const remainingGroup = group.solveParity(parity);
+    return group.orientedTypeForPieces(parity.pieces).flatMap((group, orientedType) => {
+      return this.algsWithVanillaParityWithOrientedType(bufferState, group, parity, orientedType);
+    });
+  }
+
+  private algsWithVanillaParityWithOrientedType(bufferState: BufferState, group: ScrambleGroup, parity: Parity, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {  
+    const remainingGroup = group.solveParity(parity, orientedType);
     const nextBufferState = bufferState.withParity(parity);
     const remainingTraces = this.unorientedAlgs(nextBufferState, remainingGroup);
     return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixParity(parity));
@@ -84,11 +90,17 @@ export class Solver {
         return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixThreeCycle(cycleBreak));
       }
     }
-    const nextBufferState = bufferState.withParityTwist(parityTwist);
-    const remainingGroup = group.solveParityTwist(parityTwist);
-    const remainingTraces = this.algs(nextBufferState, remainingGroup);
-    return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixParityTwist(parityTwist));
+    return group.orientedTypeForPieces(parityTwist.swappedPieces).flatMap((group, orientedType) => {
+      return this.algsWithParityTwistWithOrientedType(bufferState, group, parityTwist, orientedType);
+    });
   }
+
+  private algsWithParityTwistWithOrientedType(bufferState: BufferState, group: ScrambleGroup, parityTwist: ParityTwist, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
+    const nextBufferState = bufferState.withParityTwist(parityTwist);
+    const remainingGroup = group.solveParityTwist(parityTwist, orientedType);
+    const remainingTraces = this.unorientedAlgs(nextBufferState, remainingGroup);
+    return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixParityTwist(parityTwist));
+  };
 
   private algsWithParity(bufferState: BufferState, group: ScrambleGroup, parity: Parity): ProbabilisticAlgTrace {
     const buffer = parity.firstPiece;
@@ -122,7 +134,13 @@ export class Solver {
   }
 
   private algsWithEvenCycle(bufferState: BufferState, group: ScrambleGroup, cycle: EvenCycle): ProbabilisticAlgTrace {
-    const remainingGroup = group.solveEvenCycle(cycle);
+    return group.orientedTypeForPieces(cycle.pieces).flatMap((group, orientedType) => {
+      return this.algsWithEvenCycleWithOrientedType(bufferState, group, cycle, orientedType);
+    });
+  }
+  
+  private algsWithEvenCycleWithOrientedType(bufferState: BufferState, group: ScrambleGroup, cycle: EvenCycle, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
+    const remainingGroup = group.solveEvenCycle(cycle, orientedType);
     const nextBufferState = bufferState.withEvenCycle(cycle);
     const remainingTraces = this.algs(nextBufferState, remainingGroup);
     return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixEvenCycle(cycle));
