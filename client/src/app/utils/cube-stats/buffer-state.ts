@@ -1,47 +1,17 @@
 import { Piece } from './piece';
-import { ParityTwist, Parity, ThreeCycle, EvenCycle } from './alg';
-import { assert } from '../assert';
 
 export class BufferState {
-  constructor(readonly previousBuffer?: Piece) {}
+  constructor(readonly cycleBreaks: number, readonly previousBuffer?: Piece) {}
 
-  withCycleBreak(cycle: ThreeCycle) {
-    // TODO
-    assert(false);
-    return this;
-  }
-
-  withEvenCycle(cycle: EvenCycle) {
-    // TODO
-    assert(false);
-    return this;
-  }
-
-  withPartialEvenCycle(cycle: EvenCycle) {
-    // TODO
-    assert(false);
-    return this;
-  }
-
-  withParity(parity: Parity) {
-    // TODO
-    assert(false);
-    return this;
-  }
-
-  withParityTwist(parityTwist: ParityTwist) {
-    // TODO
-    assert(false);
-    return this;
-  }
-
-  withSwap(firstPiece: Piece, secondPiece: Piece) {
-    // TODO
-    assert(false);
-    return this;
+  withCycleBreak() {
+    return new BufferState(this.cycleBreaks + 1, this.previousBuffer);
   }
 }
 
 export function emptyBufferState() {
-  return new BufferState();
+  return new BufferState(0);
+}
+
+export function newBufferState(buffer: Piece) {
+  return new BufferState(0, buffer);
 }

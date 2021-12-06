@@ -28,7 +28,7 @@ export class Decider {
   }
 
   canChangeBuffer(bufferState: BufferState) {
-    return true;
+    return bufferState.cycleBreaks === 0;
   }
 
   canDoubleSwap(doubleSwap: DoubleSwap) {
