@@ -22,7 +22,7 @@ class ColorScheme < ApplicationRecord
   end
 
   def self.from_twisty_puzzles_color_scheme(color_scheme)
-    new(color_u: color_scheme.color(:U), color_f: color_scheme.color(:f))
+    new(color_u: color_scheme.color(:U), color_f: color_scheme.color(:F))
   end
 
   RELEVANT_ROTATION_PERMUTATIONS =
@@ -56,6 +56,8 @@ class ColorScheme < ApplicationRecord
   private
 
   def validate_colors_not_opposite
+    return unless color_u && color_f
+
     unless TwistyPuzzles::ColorScheme::WCA.opposite_color(color_u) ==
            TwistyPuzzles::ColorScheme::WCA.color(color_f)
       return

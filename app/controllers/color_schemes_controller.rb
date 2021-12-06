@@ -53,8 +53,8 @@ class ColorSchemesController < ApplicationController
   end
 
   def set_new_color_scheme
-    @color_scheme = ColorScheme.new(color_u: color_scheme_params[:color_u].downcase,
-                                    color_f: color_scheme_params[:color_f].downcase)
+    @color_scheme = ColorScheme.new(color_u: color_scheme_params[:color_u]&.downcase,
+                                    color_f: color_scheme_params[:color_f]&.downcase)
     @color_scheme.user = current_user
   end
 
