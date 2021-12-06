@@ -379,8 +379,8 @@ export class ScrambleGroup {
 
   breakCycleFromUnpermuted(cycle: ThreeCycle): ScrambleGroup {
     assert(!this.isPermuted(cycle.firstPiece));
-    assert(!this.isPermuted(cycle.secondPiece));
-    assert(!this.isPermuted(cycle.thirdPiece));
+    assert(this.isPermuted(cycle.secondPiece));
+    assert(this.isPermuted(cycle.thirdPiece));
     // TODO
     assert(false);
     return this;
@@ -391,10 +391,13 @@ export class ScrambleGroup {
     assert(this.isPermuted(cycle.secondPiece));
     assert(this.isPermuted(cycle.thirdPiece));
     const swappedPieces = [cycle.firstPiece, cycle.secondPiece];
-    this.partiallyFixedCycles.find(cycle => cycle.hasExactlyFixedPieces(swappedPieces));
-    // TODO
-    assert(false);
-    return this;
+    const solvedCycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.hasExactlyFixedPieces(swappedPieces)));
+    const brokenCycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.containsPiece(cycle.thirdPiece)));
+    const brokenCycle = this.partiallyFixedCycles[brokenCycleIndex].extendLengthAndPrepend(cycle.firstPiece);
+    const solved = this.solved.concat(cycle.secondPiece);
+    const permuted = this.permuted.filter(piece => piece !== cycle.secondPiece);
+    const partiallyFixedCycles = this.partiallyFixedCycles.filter((_, index) => index !== solvedCycleIndex && index !== brokenCycleIndex).concat([brokenCycle]).sort((a, b) => b.length - a.length);
+    return new ScrambleGroup(solved, this.unorientedByType, permuted, this.partiallyFixedOrientedTypes, partiallyFixedCycles);
   }
 
   solveDoubleSwap(doubleSwap: DoubleSwap): ScrambleGroup {
