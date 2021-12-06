@@ -28,18 +28,22 @@ export class AlgCountsBuilder {
 
   incrementCycles() {
     ++this.cycles;
+    return this;
   }
 
   incrementDoubleSwaps() {
     ++this.doubleSwaps;
+    return this;
   }
 
   incrementParities() {
     ++this.parities;
+    return this;
   }
 
   incrementParityTwists() {
     ++this.parityTwists;
+    return this;
   }
 
   build(): AlgCounts {
