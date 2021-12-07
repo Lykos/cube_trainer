@@ -1,58 +1,29 @@
-import { createSolver, Solver } from './solver';
+import { createSolver } from './solver';
 import { CORNER, EDGE } from './piece-description';
 import { ExecutionOrder, MethodDescription } from './method-description';
-import { assert } from '../assert';
 import { Decider } from './decider';
-import { sum } from '../utils';
 import { PiecePermutationDescription } from './piece-permutation-description';
-import { bigScrambleGroupToScrambleGroup } from './scramble-group';
-import { Probabilistic, ProbabilisticPossibility, flattenProbabilistic, expectedValue } from './probabilistic';
-import { BigScrambleGroup } from './big-scramble-group';
+import { expectedValue } from './probabilistic';
 import { AlgCounts } from './alg-counts'
+import { ExhaustiveSamplingStrategy } from './exhaustive-sampling-strategy';
 
-class SolvingMethod {
-  private readonly solver: Solver;
-
-  constructor(readonly piecePermutationDescription: PiecePermutationDescription,
-              readonly decider: Decider) {
-    this.solver = createSolver(this.decider, this.piecePermutationDescription.pieceDescription);
-  }
-
-  private algCountsWithProbabilityForGroup(group: BigScrambleGroup): ProbabilisticPossibility<Probabilistic<AlgCounts>> {
-    const probability = group.count / this.piecePermutationDescription.count;
-    const scrambleGroup = bigScrambleGroupToScrambleGroup(group);
-    const algsForGroup = this.solver.algCounts(scrambleGroup);
-    return [algsForGroup, probability];
-  }
-
-  private algCounts(): Probabilistic<AlgCounts> {
-    const groups = this.piecePermutationDescription.groups();
-    const directComputed = this.piecePermutationDescription.count;
-    const groupSum = sum(groups.map(group => group.count));
-    assert(Math.round(directComputed) === Math.round(groupSum), `directComputed === groupSum (${directComputed} vs ${groupSum})`)
-    return flattenProbabilistic(new Probabilistic<Probabilistic<AlgCounts>>(groups.map(
-      group => this.algCountsWithProbabilityForGroup(group)
-    )));
-  }
-
-  expectedAlgCounts(): AlgCounts {
-    return expectedValue(this.algCounts());
-  }
+function expectedAlgCountsForPieces(pieces: PiecePermutationDescription): AlgCounts {
+  const solver = createSolver(new Decider(pieces), pieces.pieceDescription);
+  const samplingStrategy = new ExhaustiveSamplingStrategy(pieces);
+  return expectedValue(samplingStrategy.groups().flatMap(group => solver.algCounts(group)));
 }
 
 export function expectedAlgCounts(methodDescription: MethodDescription): AlgCounts {
   switch (methodDescription.executionOrder) {
     case ExecutionOrder.EC: {
-      const edgePermutationDescription = new PiecePermutationDescription(EDGE, false);
-      const cornerPermutationDescription = new PiecePermutationDescription(CORNER, true);
-      return new SolvingMethod(edgePermutationDescription, new Decider(edgePermutationDescription)).expectedAlgCounts().plus(
-        new SolvingMethod(cornerPermutationDescription, new Decider(cornerPermutationDescription)).expectedAlgCounts());
+      const edges = new PiecePermutationDescription(EDGE, false);
+      const corners = new PiecePermutationDescription(CORNER, true);
+      return expectedAlgCountsForPieces(edges).plus(expectedAlgCountsForPieces(corners));
     }
     case ExecutionOrder.CE: {
-      const cornerPermutationDescription = new PiecePermutationDescription(CORNER, false);
-      const edgePermutationDescription = new PiecePermutationDescription(EDGE, true);
-      return new SolvingMethod(edgePermutationDescription, new Decider(edgePermutationDescription)).expectedAlgCounts().plus(
-        new SolvingMethod(cornerPermutationDescription, new Decider(cornerPermutationDescription)).expectedAlgCounts());
+      const corners = new PiecePermutationDescription(CORNER, false);
+      const edges = new PiecePermutationDescription(EDGE, true);
+      return expectedAlgCountsForPieces(corners).plus(expectedAlgCountsForPieces(edges));
     }
   }
 }

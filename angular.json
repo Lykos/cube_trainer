@@ -61,7 +61,8 @@
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "outputHashing": "none"
             }
           },
           "defaultConfiguration": "production"
@@ -102,8 +103,7 @@
               "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "client/src/styles.css"
             ],
-            "scripts": [],
-            "webWorkerTsConfig": "tsconfig.worker.json"
+            "scripts": []
           }
         },
         "lint": {

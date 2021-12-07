@@ -1,7 +1,7 @@
 import { deterministic, Probabilistic } from './probabilistic';
 import { Piece } from './piece';
-import { sum, minBy, findIndex, contains } from '../utils';
-import { none, some, Optional, forceValue, mapOptional, orElse } from '../optional';
+import { count, sum, minBy, findIndex, contains } from '../utils';
+import { none, some, Optional, forceValue, mapOptional, ifPresentOrElse, orElse, hasValue } from '../optional';
 import { AlgTrace, emptyAlgTrace } from './alg-trace';
 import { TwistWithCost } from './twist-with-cost';
 import { PieceDescription } from './piece-description';
@@ -24,23 +24,43 @@ class TwistSolverImpl implements TwistSolver {
 
   algs(unorientedByType: Piece[][]): Probabilistic<AlgTrace> {
     const index = unorientedByTypeIndex(unorientedByType);
+    if (!hasValue(this.algsByIndex[index])) {
+      console.log(this);
+      console.log(unorientedByType);
+    }
     const algTrace = forceValue(this.algsByIndex[index]);
     return deterministic(algTrace);
   }
 }
 
 interface AlgTraceWithCost {
-  targetUnorientedByType: Piece[][];
-  algTrace: AlgTrace;
-  cost: number;
+  readonly index: number;
+  readonly targetUnorientedByType: Piece[][];
+  readonly algTrace: AlgTrace;
+  readonly cost: number;
 }
 
 // Note that this is not efficient, but it doesn't have to be because we have only 8 corners and not that many twists.
-function extractMin(unprocessed: AlgTraceWithCost[]): AlgTraceWithCost {
-  const unprocessedWithIndex: [AlgTraceWithCost, number][] = unprocessed.map((e, i) => [e, i]);
-  const min = forceValue(minBy(unprocessedWithIndex, e => e[0].cost));
-  unprocessed.splice(min[1], 1);
-  return min[0];
+class AlgTracesPriorityQueue {
+  readonly elements: AlgTraceWithCost[] = [];
+
+  get empty() {
+    return this.elements.length === 0;
+  }
+
+  pushOrDecreaseCost(algTraceWithCost: AlgTraceWithCost) {
+    const maybeReplacedIndex = findIndex(this.elements, e => e.index === algTraceWithCost.index);
+    ifPresentOrElse(maybeReplacedIndex,
+                    index => { this.elements[index] = algTraceWithCost; },
+                    () => { this.elements.push(algTraceWithCost); });
+  }
+
+  extractMin(): AlgTraceWithCost {
+    const unprocessedWithIndex: [AlgTraceWithCost, number][] = this.elements.map((e, i) => [e, i]);
+    const min = forceValue(minBy(unprocessedWithIndex, e => e[0].cost));
+    this.elements.splice(min[1], 1);
+    return min[0];
+  }
 }
 
 function orientedTypeForPiece(unorientedByType: Piece[][], piece: Piece) {
@@ -58,7 +78,7 @@ function combineUnorientedByTypes(left: Piece[][], right: Piece[][]): Piece[][] 
   const result: Piece[][] = left.map(() => []);
   for (let piece of pieces) {
     const leftOrientedType = orientedTypeForPiece(left, piece);
-    const rightOrientedType = orientedTypeForPiece(left, piece);
+    const rightOrientedType = orientedTypeForPiece(right, piece);
     const orientedType = (leftOrientedType + rightOrientedType) % orientedTypes;
     if (orientedType !== 0) {
       const unorientedType = orientedType - 1;
@@ -69,8 +89,11 @@ function combineUnorientedByTypes(left: Piece[][], right: Piece[][]): Piece[][] 
 }
 
 function combine(algTraceWithCost: AlgTraceWithCost, twistWithCost: TwistWithCost): AlgTraceWithCost {
+  const targetUnorientedByType = combineUnorientedByTypes(algTraceWithCost.targetUnorientedByType, twistWithCost.twist.unorientedByType);
+  const index = unorientedByTypeIndex(targetUnorientedByType);
   return {
-    targetUnorientedByType: combineUnorientedByTypes(algTraceWithCost.targetUnorientedByType, twistWithCost.twist.unorientedByType),
+    targetUnorientedByType,
+    index,
     algTrace: algTraceWithCost.algTrace.withSuffix(twistWithCost.twist),
     cost: algTraceWithCost.cost + twistWithCost.cost,
   };
@@ -79,20 +102,27 @@ function combine(algTraceWithCost: AlgTraceWithCost, twistWithCost: TwistWithCos
 export function createTwistSolver(pieceDescription: PieceDescription, twistsWithCosts: TwistWithCost[]): TwistSolver {
   assert(pieceDescription.unorientedTypes <= 2);
   const numItems = pieceDescription.orientedTypes ** pieceDescription.pieces.length;
-  const algsByIndex: Optional<AlgTrace>[] = new Array(numItems).map(() => none);
-  const costByIndex: number[] = new Array(numItems).map(() => Infinity);
-  const targetUnorientedByType: Piece[][] = new Array(pieceDescription.unorientedTypes).map(() => []);
-  const unprocessed: AlgTraceWithCost[] = [{targetUnorientedByType, algTrace: emptyAlgTrace(), cost: 0}];
-  while (unprocessed.length > 0) {
-    const current = extractMin(unprocessed);
-    const index = unorientedByTypeIndex(current.targetUnorientedByType);
-    const previousCost = costByIndex[index];
-    if (current.cost < previousCost) {
-      algsByIndex[index] = some(current.algTrace);
-      for (let twistWithCost of twistsWithCosts) {
-        unprocessed.push(combine(current, twistWithCost));
+  const algsByIndex: Optional<AlgTrace>[] = Array(numItems).fill(none);
+  const costByIndex: number[] = Array(numItems).fill(Infinity);
+  const targetUnorientedByType: Piece[][] = Array(pieceDescription.unorientedTypes).fill([]);
+  const index = unorientedByTypeIndex(targetUnorientedByType);
+  const solvedAlgTraceWithCost: AlgTraceWithCost = {targetUnorientedByType, index, algTrace: emptyAlgTrace(), cost: 0};
+  const unprocessed = new AlgTracesPriorityQueue();
+  unprocessed.pushOrDecreaseCost(solvedAlgTraceWithCost);
+  while (!unprocessed.empty) {
+    const current = unprocessed.extractMin();
+    for (let twistWithCost of twistsWithCosts) {
+      const neighbor = combine(current, twistWithCost);
+      const oldNeighborCost = costByIndex[neighbor.index];
+      if (neighbor.cost < oldNeighborCost) {
+        algsByIndex[neighbor.index] = some(neighbor.algTrace);
+        costByIndex[neighbor.index] = neighbor.cost;
+        unprocessed.pushOrDecreaseCost(neighbor);
       }
     }
   }
+  const actualSolved = count(algsByIndex, hasValue);
+  const expectedSolved = pieceDescription.orientedTypes ** (pieceDescription.pieces.length - 1);
+  assert(actualSolved === expectedSolved, `The set of given twists is not sufficient to solve all twists (${actualSolved}/${expectedSolved})`);
   return new TwistSolverImpl(algsByIndex);
 }

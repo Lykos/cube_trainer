@@ -66,7 +66,7 @@ export class Decider {
     return n <= 3;
   }
 
-  get maxCycleLength() {
+  maxCycleLengthForBuffer(buffer: Piece) {
     return 3;
   }
 }

@@ -1,5 +1,6 @@
 import { Piece } from './piece';
 import { assert } from '../assert';
+import { sum } from '../utils';
 
 export class ParityTwist {
   constructor(
@@ -28,15 +29,23 @@ export class Parity {
 
 export class EvenCycle {
   constructor(
-    readonly pieces: Piece[]) {
-    assert(pieces.length % 2 === 1, 'uneven cycle');
+    readonly firstPiece: Piece,
+    readonly unorderedLastPieces: Piece[]) {
+    assert(unorderedLastPieces.length % 2 === 0, 'uneven cycle');
+  }
+
+  get length() {
+    return this.unorderedLastPieces.length + 1;
+  }
+
+  get pieces(): Piece[] {
+    return [this.firstPiece].concat(this.unorderedLastPieces);
   }
 }
 
 export class ThreeCycle extends EvenCycle {
-  constructor(
-    readonly firstPiece: Piece, readonly secondPiece: Piece, readonly thirdPiece: Piece) {
-    super([firstPiece, secondPiece, thirdPiece]);
+  constructor(firstPiece: Piece, readonly secondPiece: Piece, readonly thirdPiece: Piece) {
+    super(firstPiece, [secondPiece, thirdPiece]);
   }
 }
 
@@ -49,6 +58,10 @@ export class DoubleSwap {
 
 export class Twist {
   constructor(readonly unorientedByType: Piece[][]) {}
+
+  get numUnoriented() {
+    return sum(this.unorientedByType.map(e => e.length));
+  }
 }
 
 export type Alg = ParityTwist | Parity | ThreeCycle | EvenCycle | DoubleSwap | Twist;

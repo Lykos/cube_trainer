@@ -200,11 +200,16 @@ export class Solver {
       } else {
         return group.nextPiece(buffer).flatMap((group, otherPiece) => this.cycleBreakWithBufferAndOtherPiece(bufferState, group, buffer, otherPiece));
       }
-    } else if (cycleLength % 2 === 0) {
-      return group.unsortedPiecesInCycle(buffer).flatMap((group, pieces) => this.algsWithEvenCycle(bufferState, group, new EvenCycle(pieces)));
+    } else if (cycleLength % 2 === 1) {
+      return group.unsortedOtherPiecesInCycle(buffer).flatMap((group, unsortedLastPieces) => {
+        assert(unsortedLastPieces.length % 2 === 0, 'uneven completed cycle');
+        return this.algsWithEvenCycle(bufferState, group, new EvenCycle(buffer, unsortedLastPieces));
+      });
     } else {
-      return group.evenPermutationCyclePart(buffer).flatMap((group, pieces) => {
-        return this.algsWithPartialCycle(bufferState, group, new EvenCycle(pieces));
+      return group.unsortedOtherPiecesInEvenPermutationCyclePart(buffer).flatMap((group, unsortedLastPieces) => {
+        assert(unsortedLastPieces.length === cycleLength - 2);
+        assert(unsortedLastPieces.length % 2 === 0, 'uneven partial cycle');
+        return this.algsWithPartialCycle(bufferState, group, new EvenCycle(buffer, unsortedLastPieces));
       });
     }
   }
@@ -231,7 +236,7 @@ export class Solver {
   }
 
   algCounts(group: ScrambleGroup): Probabilistic<AlgCounts> {
-    return this.algs(emptyBufferState(), group).removeGroups().map(algTrace => algTrace.withMaxCycleLength(this.decider.maxCycleLength).countAlgs());
+    return this.algs(emptyBufferState(), group).removeGroups().map(algTrace => algTrace.withMaxCycleLength(buffer => this.decider.maxCycleLengthForBuffer(buffer)).countAlgs());
   }
 }
 

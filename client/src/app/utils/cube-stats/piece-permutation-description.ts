@@ -57,6 +57,10 @@ export class PiecePermutationDescription {
     return this.pieceDescription.unorientedTypes;
   }
 
+  get orientedTypes() {
+    return this.pieceDescription.orientedTypes;
+  }
+
   get count() {
     const divisor = this.allowOddPermutations ? 1 : 2;
     // Every piece except the last has a choice for the orientation.
