@@ -5,7 +5,7 @@
       {{ expectedTotalAlgs }}
     </ng-container>
     <div class="error" *ngIf="expectedTotalAlgsOrError | error as error">
-      Error computing expected total algs:<br><pre>{{ error.stack }}</pre>
+      Error computing expected total algs: {{ error }}
     </div>
   </ng-container>
   <ng-template #loading>

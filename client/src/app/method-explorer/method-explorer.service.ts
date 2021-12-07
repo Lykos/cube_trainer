@@ -38,7 +38,7 @@ export class MethodExplorerService {
       return this.algCountsWithId$.pipe(
         first(response => response.id === currentId),
         map(response => {
-          ifError(response.dataOrError, console.log);
+          ifError(response.dataOrError, console.error);
           return valueOrElseThrow(response.dataOrError);
         }),
       );
