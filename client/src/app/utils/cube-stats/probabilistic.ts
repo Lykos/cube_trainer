@@ -13,6 +13,10 @@ export class Probabilistic<X> {
     assertApproxEqual(probabilitySum, 1);
   }
 
+  get length() {
+    return this.possibilities.length;
+  }
+
   map<Y>(f: (x: X) => Y): Probabilistic<Y> {
     return new Probabilistic<Y>(this.possibilities.map(
       (x: ProbabilisticPossibility<X>) => {
