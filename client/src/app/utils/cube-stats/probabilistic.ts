@@ -26,18 +26,18 @@ export class Probabilistic<X> {
     return new Probabilistic<Y>(this.possibilities.flatMap(
       (x: ProbabilisticPossibility<X>) => {
         const [possibility, probability] = x;
-        return f(possibility).timesProbability(probability).possibilities;
+        return f(possibility).possibilitiesTimesProbability(probability);
       }
     ));
   }
 
-  timesProbability(probabilityFactor: Probability) {
-    return new Probabilistic<X>(this.possibilities.map(
+  possibilitiesTimesProbability(probabilityFactor: Probability): ProbabilisticPossibility<X>[] {
+    return this.possibilities.map(
       (x: ProbabilisticPossibility<X>) => {
         const [possibility, probability] = x;
         return [possibility, probability * probabilityFactor];
       }
-    ));
+    );
   }
 
   assertDeterministic(): X {
@@ -50,7 +50,7 @@ export function flattenProbabilistic<X, Y extends Probabilistic<X>>(probabilisti
   return new Probabilistic<X>(probabilistic.possibilities.flatMap(
     (probabilisticAndProbability: ProbabilisticPossibility<Y>) => {
       const [innerProbabilistic, probability] = probabilisticAndProbability;
-      return innerProbabilistic.timesProbability(probability).possibilities;
+      return innerProbabilistic.possibilitiesTimesProbability(probability);
     }
   ));
 }

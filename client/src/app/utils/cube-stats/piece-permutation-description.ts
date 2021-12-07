@@ -5,12 +5,19 @@ import { subsets, sum, contains } from '../utils';
 import { factorial } from './combinatorics-utils';
 import { assert } from '../assert';
 
-function sortedCycleLengthPossibilities(remainingPieces: number, allowOddPermutations: boolean): number[][] {
-  return sortedCycleLengthPossibilitiesWithPrefix(remainingPieces, allowOddPermutations, [], true);
+function unorientationSum(unorientedByType: Piece[][]) {
+  // This only works if there are at most 2 unoriented types. This has to be fixed otherwise.
+  assert(unorientedByType.length <= 2);
+  // The unoriented types plus the solved case.
+  const orientedTypes = unorientedByType.length + 1;
+  return sum(unorientedByType.map((unorientedForType, unorientedType) => {
+    const orientedType = unorientedType + 1;
+    return unorientedForType.length * orientedType;
+  })) % orientedTypes;
 }
 
-function containsPieceIndexAtMost(pieces: Piece[], piece: Piece) {
-  return pieces.some(p => p.pieceId <= piece.pieceId);
+function sortedCycleLengthPossibilities(remainingPieces: number, allowOddPermutations: boolean): number[][] {
+  return sortedCycleLengthPossibilitiesWithPrefix(remainingPieces, allowOddPermutations, [], true);
 }
 
 function sortedCycleLengthPossibilitiesWithPrefix(remainingPieces: number, allowOddPermutations: boolean, prefix: number[], prefixEven: boolean): number[][] {
@@ -75,11 +82,9 @@ export class PiecePermutationDescription {
   
   private splitsWithSolvedAndUnorientedPrefix(solved: Piece[], unorientedByType: Piece[][]): SolvedUnorientedSplit[] {
     assert(unorientedByType.length <= this.unorientedTypes, `unorientedByType.length <= this.unorientedTypes (${unorientedByType.length} vs ${this.unorientedTypes})`);
+    const remainingPieces = this.pieces.filter(p => !solved.includes(p) && !unorientedByType.some(unorientedForType => contains(unorientedForType, p)));
     if (unorientedByType.length === this.unorientedTypes) {
-      // This only works if there are at most 2 unoriented types. This has to be fixed otherwise.
-      const unorientationSum = sum(unorientedByType.map((unorientedForType, unorientedType) => unorientedForType.length * (unorientedType + 1))) % (unorientedByType.length + 1);
-      const remainingPieces = this.pieces.filter(p => !solved.includes(p) && !unorientedByType.some(unorientedForType => contains(unorientedForType, p)));
-      if (remainingPieces.length === 0 && unorientationSum !== 0) {
+      if (remainingPieces.length === 0 && unorientationSum(unorientedByType) !== 0) {
         // Invalid twist. So it's impossible, so 0 possibilities.
         // If we have remaining unsolved, the twist can be in that part.
         return [];
@@ -90,10 +95,23 @@ export class PiecePermutationDescription {
         return [[solved, unorientedByType]];
       }
     }
-    // We assume that the groups of unoriented elements are ordered by their minimum piece index. So we exclude variations that would violate this.
-    const remainingPiecesForUnoriented = this.pieces.filter(p => !solved.includes(p) && !unorientedByType.some(unorientedForType => containsPieceIndexAtMost(unorientedForType, p)));
-    return subsets(remainingPiecesForUnoriented).flatMap(
-      unorientedForType => this.splitsWithSolvedAndUnorientedPrefix(solved, unorientedByType.concat([unorientedForType]))
-    );
+    return subsets(remainingPieces).flatMap(unorientedForType => {
+      // To avoid double counting, we assume that the groups of unoriented elements are ordered by
+      // their length and then their minimum piece index.
+      // So we exclude cases that would violate this.
+      if (unorientedByType.length > 0) {
+        const unorientedForPreviousType = unorientedByType[unorientedByType.length - 1];
+        const currentLength = unorientedForType.length;
+        const previousLength = unorientedForPreviousType.length;
+        if (previousLength > currentLength) {
+          return [];
+        }
+        if (previousLength === currentLength && currentLength > 0 &&
+            unorientedForPreviousType[0].pieceId > unorientedForType[0].pieceId) {
+          return [];
+        }
+      }
+      return this.splitsWithSolvedAndUnorientedPrefix(solved, unorientedByType.concat([unorientedForType]));
+    });
   }
 }

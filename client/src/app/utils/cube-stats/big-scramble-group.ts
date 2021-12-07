@@ -58,15 +58,12 @@ export class BigScrambleGroup {
         numCyclesWithLastLength = 1;
       }
     });
-    cyclePermutationDivisor *= factorial(numCyclesWithLastLength); 
-    const usedUnorientedTypes = this.unorientedByType.filter(unorientedForType => unorientedForType.length > 0);
-    // This line is written in this way such that it in theory supports n dimensional cubes.
-    // It counts the choices we have for choosing the types of unorientation and then distributing them among
-    // the unoriented pieces.
-    // In reality, the only case where this is relevant is for corners.
-    // We can have clockwise and counter clockwise turned corners.
-    // In practice, this formula will return 2 if there is at least on unoriented corner and 0 oterwise.
-    const unorientedTypeChoices = ncr(this.unorientedTypes, usedUnorientedTypes.length) * factorial(usedUnorientedTypes.length);
+    cyclePermutationDivisor *= factorial(numCyclesWithLastLength);
+    assert(this.unorientedTypes <= 2);
+    // If there are 2 orientation types (i.e for corners)
+    // and there is a different number of unoriented pieces for the two unoriented types,
+    // we have to multiply by 2 for those two choices.
+    const unorientedTypeChoices = this.unorientedTypes === 2 && this.unorientedByType[0].length + this.unorientedByType[1].length > 0 ? 2 : 1;
     return permutedChoices * unorientedTypeChoices * permutationOrientationChoices / cyclePermutationDivisor;
   }
 }
