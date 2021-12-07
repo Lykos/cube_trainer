@@ -196,17 +196,20 @@ export class ScrambleGroup {
   readonly unfixedPieces: Piece[];
 
   constructor(readonly solved: Piece[],
-              private readonly unorientedByType: Piece[][],
+              readonly unorientedByType: Piece[][],
               readonly permuted: Piece[],
               private readonly partiallyFixedCycles: PartiallyFixedCycle[]) {
     const totalCycleLength = sum(this.partiallyFixedCycles.map(cycle => cycle.length));
     assert(totalCycleLength === this.permuted.length, `cycles do not cover permuted pieces (${totalCycleLength} vs ${this.permuted.length})`);
     this.unorientedTypes = count(this.unorientedByType, unorientedForType => unorientedForType.length > 0);
+    for (let cycle of this.partiallyFixedCycles) {
+      assert(cycle.sortedFixedPieces.every(p => this.isPermuted(p)));
+    }
     this.unfixedPieces = permuted.filter(piece => !partiallyFixedCycles.some(cycle => cycle.containsPiece(piece)));
   }
 
   get unoriented(): Piece[] {
-    return this.unoriented.flat(1);
+    return this.unorientedByType.flat(1);
   }
 
   get parityTime() {
@@ -331,7 +334,7 @@ export class ScrambleGroup {
   // and only consider one of them relevant, but we give the weight sum of all of them to
   // that cycle.
   private relevantCyclesWithWeights(): [number, number][] {
-    const result: [number, number][] = []
+    const result: [number, number][] = [];
     let lastNCompletelyUnfixed = 0;
     let lastCycleLength = 0;
     for (let index = this.partiallyFixedCycles.length - 1; index >= 0; --index) {
@@ -453,7 +456,7 @@ export class ScrambleGroup {
     const permuted = this.permuted.filter(piece => !contains(solvedPieces, piece));
     const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.hasExactlyFixedPieces(evenCycle.pieces)));
     const cycle = this.partiallyFixedCycles[cycleIndex];
-    const firstUnsolvedPiece = evenCycle.pieces[1];
+    const firstUnsolvedPiece = evenCycle.pieces[0];
     const secondUnsolvedPiece = evenCycle.pieces[evenCycle.pieces.length - 1];
     const changedCycle = new PartiallyFixedCycle([firstUnsolvedPiece, secondUnsolvedPiece], some(firstUnsolvedPiece), none, none, cycle.orientedType, 2);
     const partiallyFixedCycles = this.partiallyFixedCycles.slice(0, cycleIndex).concat([changedCycle]).concat(this.partiallyFixedCycles.slice(cycleIndex + 1));

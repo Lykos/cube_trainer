@@ -2,18 +2,24 @@ import { orElseCall, mapOptional } from '../optional';
 import { minBy, first } from '../utils';
 import { assert } from '../assert';
 import { Piece } from './piece';
-import { Parity, ThreeCycle, EvenCycle, ParityTwist, DoubleSwap } from './alg';
+import { PieceDescription } from './piece-description';
+import { Parity, ThreeCycle, EvenCycle, ParityTwist, DoubleSwap, Alg } from './alg';
 import { ScrambleGroup, ProbabilisticAnswer, deterministicAnswer, PartiallyFixedOrientedType } from './scramble-group';
 import { Probabilistic } from './probabilistic';
 import { AlgTrace, emptyAlgTrace } from './alg-trace';
 import { AlgCounts } from './alg-counts';
 import { Decider } from './decider';
 import { BufferState, emptyBufferState, newBufferState } from './buffer-state';
+import { TwistSolver, createTwistSolver } from './twist-solver';
 
 type ProbabilisticAlgTrace = ProbabilisticAnswer<AlgTrace>;
 
+function withPrefix(algTraces: ProbabilisticAlgTrace, alg: Alg): ProbabilisticAlgTrace {
+  return algTraces.mapAnswer(trace => trace.withPrefix(alg));
+}
+
 export class Solver {
-  constructor(readonly decider: Decider, readonly pieces: Piece[]) {}
+  constructor(readonly decider: Decider, readonly pieces: Piece[], readonly twistSolver: TwistSolver) {}
 
   get orderedBuffers() {
     return this.pieces.filter(piece => this.decider.isBuffer(piece)).sort((left, right) => this.decider.bufferPriority(right) - this.decider.bufferPriority(left));
@@ -62,7 +68,7 @@ export class Solver {
         const nextBufferState = bufferState.withCycleBreak();
         const newParity = new Parity(parity.firstPiece, unoriented);
         const remainingTraces = this.algsWithParity(nextBufferState, remainingGroup, newParity);
-        return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixThreeCycle(cycleBreak));
+        return withPrefix(remainingTraces, cycleBreak);
       }
     }
     return group.orientedTypeForPieces(parity.pieces).flatMap((group, orientedType) => {
@@ -73,7 +79,7 @@ export class Solver {
   private algsWithVanillaParityWithOrientedType(bufferState: BufferState, group: ScrambleGroup, parity: Parity, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {  
     const remainingGroup = group.solveParity(parity, orientedType);
     const remainingTraces = this.unorientedAlgs(remainingGroup);
-    return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixParity(parity));
+    return withPrefix(remainingTraces, parity);
   }
 
   private algsWithParityTwist(bufferState: BufferState, group: ScrambleGroup, parityTwist: ParityTwist): ProbabilisticAlgTrace {
@@ -86,7 +92,7 @@ export class Solver {
         const nextBufferState = bufferState.withCycleBreak();
         const newParity = new Parity(parityTwist.firstPiece, unoriented);
         const remainingTraces = this.algsWithParity(nextBufferState, remainingGroup, newParity);
-        return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixThreeCycle(cycleBreak));
+        return withPrefix(remainingTraces, cycleBreak);
       }
     }
     return group.orientedTypeForPieces(parityTwist.swappedPieces).flatMap((group, orientedType) => {
@@ -97,7 +103,7 @@ export class Solver {
   private algsWithParityTwistWithOrientedType(bufferState: BufferState, group: ScrambleGroup, parityTwist: ParityTwist, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
     const remainingGroup = group.solveParityTwist(parityTwist, orientedType);
     const remainingTraces = this.unorientedAlgs(remainingGroup);
-    return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixParityTwist(parityTwist));
+    return withPrefix(remainingTraces, parityTwist);
   };
 
   private algsWithParity(bufferState: BufferState, group: ScrambleGroup, parity: Parity): ProbabilisticAlgTrace {
@@ -113,7 +119,7 @@ export class Solver {
   private algsWithPartialDoubleSwap(bufferState: BufferState, group: ScrambleGroup, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
     const remainingGroup = group.partiallySolveDoubleSwap(doubleSwap);
     const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingGroup);
-    return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixDoubleSwap(doubleSwap));
+    return withPrefix(remainingTraces, doubleSwap);
   }
 
   private algsWithSolvedDoubleSwap(bufferState: BufferState, group: ScrambleGroup, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
@@ -125,7 +131,7 @@ export class Solver {
   private algsWithSolvedDoubleSwapAndOrientedType(bufferState: BufferState, group: ScrambleGroup, doubleSwap: DoubleSwap, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
     const remainingGroup = group.solveDoubleSwap(doubleSwap, orientedType);
     const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingGroup);
-    return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixDoubleSwap(doubleSwap));
+    return withPrefix(remainingTraces, doubleSwap);
   }
 
   private algsWithDoubleSwap(bufferState: BufferState, group: ScrambleGroup, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
@@ -140,14 +146,14 @@ export class Solver {
     const remainingGroup = group.breakCycleFromSwap(cycleBreak);
     const nextBufferState = bufferState.withCycleBreak();
     const remainingTraces = this.algs(nextBufferState, remainingGroup);
-    return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixThreeCycle(cycleBreak));
+    return withPrefix(remainingTraces, cycleBreak);
   }
 
   private algsWithCycleBreakFromUnpermuted(bufferState: BufferState, group: ScrambleGroup, cycleBreak: ThreeCycle): ProbabilisticAlgTrace {
     const remainingGroup = group.breakCycleFromUnpermuted(cycleBreak);
     const nextBufferState = bufferState.withCycleBreak();
     const remainingTraces = this.algs(nextBufferState, remainingGroup);
-    return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixThreeCycle(cycleBreak));
+    return withPrefix(remainingTraces, cycleBreak);
   }
 
   private algsWithEvenCycle(bufferState: BufferState, group: ScrambleGroup, cycle: EvenCycle): ProbabilisticAlgTrace {
@@ -159,17 +165,12 @@ export class Solver {
   private algsWithEvenCycleWithOrientedType(bufferState: BufferState, group: ScrambleGroup, cycle: EvenCycle, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
     const remainingGroup = group.solveEvenCycle(cycle, orientedType);
     const remainingTraces = this.algs(bufferState, remainingGroup);
-    return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixEvenCycle(cycle));
+    return withPrefix(remainingTraces, cycle);
   }
 
   private unorientedAlgs(group: ScrambleGroup): ProbabilisticAlgTrace {
     assert(!group.hasPermuted, 'unorienteds cannot permute');
-    switch(group.unorientedTypes) {
-      case 0:
-        return deterministicAnswer(group, emptyAlgTrace());
-      default:
-        assert(false, 'more than 2 types of unoriented aren not supported yet')
-    }
+    return new ProbabilisticAnswer<AlgTrace>(this.twistSolver.algs(group.unorientedByType).map(algs => [group, algs]));
   }
 
   private cycleBreakWithBufferAndOtherPieceAndNextPiece(bufferState: BufferState, group: ScrambleGroup, buffer: Piece, otherPiece: Piece, cycleBreak: Piece, nextPiece: Piece): ProbabilisticAlgTrace {
@@ -188,7 +189,7 @@ export class Solver {
   private algsWithPartialCycle(bufferState: BufferState, group: ScrambleGroup, cycle: EvenCycle): ProbabilisticAlgTrace {
     const remainingGroup = group.solvePartialEvenCycle(cycle);
     const remainingTraces = this.algs(bufferState, remainingGroup);
-    return remainingTraces.mapAnswer(remainingTrace => remainingTrace.prefixEvenCycle(cycle));
+    return withPrefix(remainingTraces, cycle);
   }
 
   private algsWithBufferAndCycleLength(bufferState: BufferState, group: ScrambleGroup, buffer: Piece, cycleLength: number): ProbabilisticAlgTrace {
@@ -232,4 +233,8 @@ export class Solver {
   algCounts(group: ScrambleGroup): Probabilistic<AlgCounts> {
     return this.algs(emptyBufferState(), group).removeGroups().map(algTrace => algTrace.withMaxCycleLength(this.decider.maxCycleLength).countAlgs());
   }
+}
+
+export function createSolver(decider: Decider, pieceDescription: PieceDescription) {
+  return new Solver(decider, pieceDescription.pieces, createTwistSolver(pieceDescription, decider.twistsWithCosts));
 }

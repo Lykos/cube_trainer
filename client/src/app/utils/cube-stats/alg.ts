@@ -47,4 +47,8 @@ export class DoubleSwap {
               readonly fourthPiece: Piece) {}
 }
 
-export type Alg = ParityTwist | Parity | ThreeCycle | EvenCycle | DoubleSwap;
+export class Twist {
+  constructor(readonly unorientedByType: Piece[][]) {}
+}
+
+export type Alg = ParityTwist | Parity | ThreeCycle | EvenCycle | DoubleSwap | Twist;

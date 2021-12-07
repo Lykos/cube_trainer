@@ -1,8 +1,19 @@
 import { Piece } from './piece';
-import { Parity, ParityTwist, DoubleSwap } from './alg';
+import { Parity, ParityTwist, DoubleSwap, Twist } from './alg';
 import { BufferState } from './buffer-state';
+import { TwistWithCost } from './twist-with-cost';
+import { PiecePermutationDescription } from './piece-permutation-description';
 
 export class Decider {
+
+  readonly twistsWithCosts: TwistWithCost[];
+
+  constructor(readonly piecePermutationDescription: PiecePermutationDescription) {
+    this.twistsWithCosts = piecePermutationDescription.pieceDescription.twistGroups().filter(g => g.numUnoriented === 2).map(g => {
+      return {twist: new Twist(g.unorientedByType), cost: 1};
+    });
+  }
+
   nextCycleBreakOnSecondPiece(buffer: Piece, firstPiece: Piece, unsolvedPieces: Piece[]): Piece {
     return unsolvedPieces[0];
   }

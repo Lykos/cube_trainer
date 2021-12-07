@@ -1,5 +1,4 @@
-import { Solver } from './solver';
-import { Piece } from './piece';
+import { createSolver, Solver } from './solver';
 import { CORNER, EDGE } from './piece-description';
 import { assert } from '../assert';
 import { Decider } from './decider';
@@ -14,9 +13,8 @@ class SolvingMethod {
   private readonly solver: Solver;
 
   constructor(readonly piecePermutationDescription: PiecePermutationDescription,
-              readonly pieces: Piece[],
               readonly decider: Decider) {
-    this.solver = new Solver(this.decider, this.pieces);
+    this.solver = createSolver(this.decider, this.piecePermutationDescription.pieceDescription);
   }
 
   private algCountsWithProbabilityForGroup(group: BigScrambleGroup): ProbabilisticPossibility<Probabilistic<AlgCounts>> {
@@ -51,11 +49,17 @@ export interface MethodDescription {
 
 export function expectedAlgCounts(methodDescription: MethodDescription): AlgCounts {
   switch (methodDescription.executionOrder) {
-    case ExecutionOrder.EC:
-      return new SolvingMethod(new PiecePermutationDescription(EDGE, false), EDGE.pieces, new Decider()).expectedAlgCounts().plus(
-        new SolvingMethod(new PiecePermutationDescription(CORNER, true), CORNER.pieces, new Decider()).expectedAlgCounts());
-    case ExecutionOrder.CE:
-      return new SolvingMethod(new PiecePermutationDescription(CORNER, false), CORNER.pieces, new Decider()).expectedAlgCounts().plus(
-        new SolvingMethod(new PiecePermutationDescription(EDGE, true), EDGE.pieces, new Decider()).expectedAlgCounts());
+    case ExecutionOrder.EC: {
+      const edgePermutationDescription = new PiecePermutationDescription(EDGE, false);
+      const cornerPermutationDescription = new PiecePermutationDescription(CORNER, true);
+      return new SolvingMethod(edgePermutationDescription, new Decider(edgePermutationDescription)).expectedAlgCounts().plus(
+        new SolvingMethod(cornerPermutationDescription, new Decider(cornerPermutationDescription)).expectedAlgCounts());
+    }
+    case ExecutionOrder.CE: {
+      const cornerPermutationDescription = new PiecePermutationDescription(CORNER, false);
+      const edgePermutationDescription = new PiecePermutationDescription(EDGE, true);
+      return new SolvingMethod(edgePermutationDescription, new Decider(edgePermutationDescription)).expectedAlgCounts().plus(
+        new SolvingMethod(cornerPermutationDescription, new Decider(cornerPermutationDescription)).expectedAlgCounts());
+    }
   }
 }

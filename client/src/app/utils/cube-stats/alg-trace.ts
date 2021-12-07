@@ -1,5 +1,5 @@
 import { Piece } from './piece';
-import { Alg, ParityTwist, Parity, ThreeCycle, EvenCycle, DoubleSwap } from './alg';
+import { Alg, ParityTwist, Parity, EvenCycle, DoubleSwap } from './alg';
 import { AlgCounts, AlgCountsBuilder } from './alg-counts';
 import { assert } from '../assert';
 
@@ -22,34 +22,18 @@ function splitPiecesIntoAlgs(pieces: Piece[], maxPiecesPerAlg: number) {
 export class AlgTrace {
   constructor(readonly algs: Alg[]) {}
 
-  prefixParityTwist(parityTwist: ParityTwist) {
-    const prefix: Alg[] = [parityTwist];
-    return new AlgTrace(prefix.concat(this.algs));
+  withPrefix(alg: Alg) {
+    return new AlgTrace([alg].concat(this.algs));
   }
-
-  prefixParity(parity: Parity) {
-    const prefix: Alg[] = [parity];
-    return new AlgTrace(prefix.concat(this.algs));
-  }
-
-  prefixThreeCycle(cycle: ThreeCycle) {
-    const prefix: Alg[] = [cycle];
-    return new AlgTrace(prefix.concat(this.algs));
-  }
-
-  prefixEvenCycle(cycle: EvenCycle) {
-    const prefix: Alg[] = [cycle];
-    return new AlgTrace(prefix.concat(this.algs));
-  }
-
-  prefixDoubleSwap(doubleSwap: DoubleSwap) {
-    const prefix: Alg[] = [doubleSwap];
-    return new AlgTrace(prefix.concat(this.algs));
+  
+  withSuffix(alg: Alg) {
+    return new AlgTrace(this.algs.concat([alg]));
   }
 
   withMaxCycleLength(n: number) {
     assert(n > 0);
     assert(n % 2 === 1);
+    // TODO
     let processedAlgs: Alg[] = [];
     let currentCycle: Piece[] = [];
     this.algs.forEach(alg => {
