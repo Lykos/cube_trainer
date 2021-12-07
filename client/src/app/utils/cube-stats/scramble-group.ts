@@ -98,7 +98,7 @@ class PartiallyFixedCycle {
   }
 
   hasExactlyFixedPieces(pieces: Piece[]) {
-    return pieces.every(p => this.containsPiece(p)) && pieces.length === this.length;
+    return pieces.length === this.length && pieces.every(p => this.containsPiece(p));
   }
 
   nextPiece(piece: Piece): Optional<Piece> {

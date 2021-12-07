@@ -1,17 +1,8 @@
 import { Piece } from './piece';
 import { PiecePermutationDescription } from './piece-permutation-description';
+import { rand, swap } from '../utils';
 
-function swap<X>(xs: X[], i: number, j: number) {
-  const x = xs[i];
-  xs[i] = xs[j];
-  xs[j] = x;
-}
-
-function rand(n: number) {
-  return Math.floor(Math.random() * n);
-}
-
-function shuffle<X>(xs: X[], allowOddPermutations: boolean) {
+export function shuffle<X>(xs: X[], allowOddPermutations: boolean) {
   let isEven = true;
   const n = xs.length;
   for (let i = 0; i < n; ++i) {

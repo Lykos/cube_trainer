@@ -99,6 +99,20 @@ export function compose<X, Y, Z>(f: (x: X) => Y, g: (y: Y) => Z): (x: X) => Z {
   return (x: X) => g(f(x));
 }
 
+export function rand(n: number) {
+  return Math.floor(Math.random() * n);
+}
+
+export function shuffle<X>(xs: X[]) {
+  const n = xs.length;
+  for (let i = 0; i < n; ++i) {
+    const j = i + rand(n - i);
+    if (j != i) {
+      swap(xs, i, j);
+    }
+  }
+}
+
 export function zip<X, Y>(xs: X[], ys: Y[]): [X, Y][] {
   if (xs.length != ys.length) {
     throw `Tried to zip arrays of different length: ${xs} and ${ys}`;
