@@ -4,9 +4,9 @@
     <ng-container *ngIf="expectedTotalAlgsOrError | value as expectedTotalAlgs">
       {{ expectedTotalAlgs }}
     </ng-container>
-    <ng-container *ngIf="expectedTotalAlgsOrError | error as error">
-      Error computing expected total algs: {{ error }}
-    </ng-container>
+    <div class="error" *ngIf="expectedTotalAlgsOrError | error as error">
+      Error computing expected total algs:<br><pre>{{ error.stack }}</pre>
+    </div>
   </ng-container>
   <ng-template #loading>
     <mat-spinner></mat-spinner>

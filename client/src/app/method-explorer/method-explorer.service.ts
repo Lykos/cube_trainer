@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { MethodDescription } from '../utils/cube-stats/method-description';
 import { expectedAlgCounts } from '../utils/cube-stats/cube-stats';
-import { valueOrElseThrow } from '../shared/or-error.type';
+import { valueOrElseThrow, ifError } from '../shared/or-error.type';
 import { WorkerRequest } from './worker-request.model';
 import { WorkerResponse } from './worker-response.model';
 import { AlgCounts } from '../utils/cube-stats/alg-counts';
-import { Observable, of, ReplaySubject } from 'rxjs';
+import { Observable, of, throwError, ReplaySubject } from 'rxjs';
 import { map, first } from 'rxjs/operators';
 
 @Injectable({
@@ -36,15 +36,18 @@ export class MethodExplorerService {
       const request: WorkerRequest<MethodDescription> = {data: methodDescription, id: currentId};
       this.worker.postMessage(request);
       return this.algCountsWithId$.pipe(
-        first(response =>
-              response.id === currentId
-             ),
-        map(response =>
-            valueOrElseThrow(response.dataOrError)
-           ),
+        first(response => response.id === currentId),
+        map(response => {
+          ifError(response.dataOrError, console.log);
+          return valueOrElseThrow(response.dataOrError);
+        }),
       );
     } else {
-      return of(expectedAlgCounts(methodDescription));
+      try {
+        return of(expectedAlgCounts(methodDescription));
+      } catch (error) {
+        return throwError(error);
+      }
     }
   }
 }
