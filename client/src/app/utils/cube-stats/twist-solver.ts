@@ -36,8 +36,11 @@ interface AlgTraceWithCost {
 }
 
 // Note that this is not efficient, but it doesn't have to be because we have only 8 corners and not that many twists.
-function extractMin(unprocessed: AlgTraceWithCost[]) {
-  return forceValue(minBy(unprocessed, e => e.cost));
+function extractMin(unprocessed: AlgTraceWithCost[]): AlgTraceWithCost {
+  const unprocessedWithIndex: [AlgTraceWithCost, number][] = unprocessed.map((e, i) => [e, i]);
+  const min = forceValue(minBy(unprocessedWithIndex, e => e[0].cost));
+  unprocessed.splice(min[1], 1);
+  return min[0];
 }
 
 function orientedTypeForPiece(unorientedByType: Piece[][], piece: Piece) {

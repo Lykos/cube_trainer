@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { expectedAlgCounts, MethodDescription } from '../utils/cube-stats/cube-stats';
 import { MethodDescriptionWithId } from './method-description-with-id.model';
 import { AlgCountsWithId } from './alg-counts-with-id.model';
@@ -9,10 +9,23 @@ import { map, filter } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class MethodExplorerService implements OnInit {
+export class MethodExplorerService {
   private id = 0;
   private algCountsWithId$ = new ReplaySubject<AlgCountsWithId>();
   worker: Worker | undefined;
+
+  constructor() {
+    if (typeof Worker !== 'undefined') {
+      // Create a new worker.
+      this.worker = new Worker(new URL('./cube-stats.worker', import.meta.url));
+      this.worker.onmessage = ({ data }) => {
+        this.algCountsWithId$.next(data);
+      };
+    } else {
+      // Web workers are not supported in this environment.
+      // We execute expensive calculations synchronously.
+    }
+  }
 
   expectedAlgCounts(methodDescription: MethodDescription): Observable<AlgCounts> {
     const currentId = ++this.id;
@@ -25,19 +38,6 @@ export class MethodExplorerService implements OnInit {
       );
     } else {
       return of(expectedAlgCounts(methodDescription));
-    }
-  }
-
-  ngOnInit() {
-    if (typeof Worker !== 'undefined') {
-      // Create a new worker.
-      this.worker = new Worker(new URL('./cube-stats.worker', import.meta.url));
-      this.worker.onmessage = ({ data }) => {
-        this.algCountsWithId$.next(data);
-      };
-    } else {
-      // Web workers are not supported in this environment.
-      // We execute expensive calculations synchronously.
     }
   }
 }
