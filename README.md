@@ -5,7 +5,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # CubeTrainer
-TODO: Write more than just installation instructions
 
 ## Install
 
@@ -30,7 +29,7 @@ sudo apt install ruby postgresql libpq-dev npm
 Using [Bundler](https://github.com/bundler/bundler) and [npm](https://github.com/npm/cli):
 
 ```shell
-bundle install && bundle exec rake npm:install
+bundle install && npm install
 ```
 
 ### Setup DB User
@@ -45,13 +44,13 @@ exit
 ### Initialize the database
 
 ```shell
-bundle exec rails db:create db:migrate
+bundle exec rake db:create db:migrate
 ```
 
 ### Build the frontend
 
 ```shell
-bundle exec rake ng:build
+npm run build_development
 ```
 
 ### Run tests
@@ -63,7 +62,7 @@ bundle exec rake spec
 ### Run frontend tests
 
 ```shell
-bundle exec rake ng:test
+npm run test
 ```
 
 ### Run server
@@ -71,8 +70,16 @@ bundle exec rake ng:test
 In two separate terminals, run these two commands:
 
 ```shell
-bundle exec rake ng:serve
+npm start
 bundle exec rails server
 ```
 
 Now you can access the site at http://localhost:4200. Note that accessing it via http://localhost:3000 might also work, but you won't get automatic refreshes on TypeScript changes, so it's not recommended.
+
+## Production Setup
+
+The website is hosted on Heroku and is automatically deployed if CI on the master branch on Github passes. It uses Mailgun for sending mails.
+
+## Using the Website
+
+Navigate to https://www.cubetrainer.org/signup to create an account. After the signup process, you can log in via https://www.cubetrainer.org/login and then create training sessions in https://www.cubetrainer.org/modes. What the website is best at is training blind algs with smart sampling that will show you algorithms more that you don't know well.
