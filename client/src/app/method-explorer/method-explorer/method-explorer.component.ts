@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ExecutionOrder, MethodDescription } from '../../utils/cube-stats/cube-stats';
+import { ExecutionOrder, MethodDescription } from '../../utils/cube-stats/method-description';
 import { MethodExplorerService } from '../method-explorer.service';
 import { map } from 'rxjs/operators';
 

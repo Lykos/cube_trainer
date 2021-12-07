@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
-import { expectedAlgCounts, MethodDescription } from '../utils/cube-stats/cube-stats';
-import { MethodDescriptionWithId } from './method-description-with-id.model';
-import { AlgCountsWithId } from './alg-counts-with-id.model';
+import { MethodDescription } from '../utils/cube-stats/method-description';
+import { expectedAlgCounts } from '../utils/cube-stats/cube-stats';
+import { valueOrElseThrow } from '../shared/or-error.type';
+import { WorkerRequest } from './worker-request.model';
+import { WorkerResponse } from './worker-response.model';
 import { AlgCounts } from '../utils/cube-stats/alg-counts';
 import { Observable, of, ReplaySubject } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { map, first } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MethodExplorerService {
   private id = 0;
-  private algCountsWithId$ = new ReplaySubject<AlgCountsWithId>();
+  private algCountsWithId$ = new ReplaySubject<WorkerResponse<AlgCounts>>();
   worker: Worker | undefined;
 
   constructor() {
@@ -19,7 +21,8 @@ export class MethodExplorerService {
       // Create a new worker.
       this.worker = new Worker(new URL('./cube-stats.worker', import.meta.url));
       this.worker.onmessage = ({ data }) => {
-        this.algCountsWithId$.next(data);
+        const response: WorkerResponse<AlgCounts> = data;
+        this.algCountsWithId$.next(response);
       };
     } else {
       // Web workers are not supported in this environment.
@@ -30,11 +33,15 @@ export class MethodExplorerService {
   expectedAlgCounts(methodDescription: MethodDescription): Observable<AlgCounts> {
     const currentId = ++this.id;
     if (this.worker) {
-      const methodDescriptionWithId: MethodDescriptionWithId = {methodDescription, id: currentId};
-      this.worker.postMessage(methodDescriptionWithId);
+      const request: WorkerRequest<MethodDescription> = {data: methodDescription, id: currentId};
+      this.worker.postMessage(request);
       return this.algCountsWithId$.pipe(
-        filter(algCountsWithId => algCountsWithId.id === currentId),
-        map(algCountsWithId => algCountsWithId.algCounts),
+        first(response =>
+              response.id === currentId
+             ),
+        map(response =>
+            valueOrElseThrow(response.dataOrError)
+           ),
       );
     } else {
       return of(expectedAlgCounts(methodDescription));

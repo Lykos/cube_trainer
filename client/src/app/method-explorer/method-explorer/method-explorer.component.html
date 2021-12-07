@@ -1,4 +1,14 @@
 <div>
   <h1>Method Explorer</h1>
-  {{ expectedTotalAlgs$ | async }}
+  <ng-container *ngIf="expectedTotalAlgs$ | orerror | async as expectedTotalAlgsOrError; else loading">
+    <ng-container *ngIf="expectedTotalAlgsOrError | value as expectedTotalAlgs">
+      {{ expectedTotalAlgs }}
+    </ng-container>
+    <ng-container *ngIf="expectedTotalAlgsOrError | error as error">
+      Error computing expected total algs: {{ error }}
+    </ng-container>
+  </ng-container>
+  <ng-template #loading>
+    <mat-spinner></mat-spinner>
+  </ng-template>
 </div>

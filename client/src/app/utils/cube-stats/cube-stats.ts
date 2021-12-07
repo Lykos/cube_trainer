@@ -1,5 +1,6 @@
 import { createSolver, Solver } from './solver';
 import { CORNER, EDGE } from './piece-description';
+import { ExecutionOrder, MethodDescription } from './method-description';
 import { assert } from '../assert';
 import { Decider } from './decider';
 import { sum } from '../utils';
@@ -37,14 +38,6 @@ class SolvingMethod {
   expectedAlgCounts(): AlgCounts {
     return expectedValue(this.algCounts());
   }
-}
-
-export enum ExecutionOrder {
-  CE, EC
-}
-
-export interface MethodDescription {
-  readonly executionOrder: ExecutionOrder;
 }
 
 export function expectedAlgCounts(methodDescription: MethodDescription): AlgCounts {
