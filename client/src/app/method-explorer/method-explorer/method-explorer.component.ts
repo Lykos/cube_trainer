@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { expectedAlgCounts, ExecutionOrder } from '../../utils/cube-stats/cube-stats';
+import { ExecutionOrder, MethodDescription } from '../../utils/cube-stats/cube-stats';
+import { MethodExplorerService } from '../method-explorer.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-method-explorer',
@@ -7,15 +9,19 @@ import { expectedAlgCounts, ExecutionOrder } from '../../utils/cube-stats/cube-s
   styleUrls: ['./method-explorer.component.css']
 })
 export class MethodExplorerComponent {
+  constructor(private readonly methodExplorerService: MethodExplorerService) {}
+
   get executionOrder() {
     return ExecutionOrder.EC;
   }
 
-  get methodDescription() {
+  get methodDescription(): MethodDescription {
     return {executionOrder: this.executionOrder};
   }
   
-  get expectedAlgs() {
-    return expectedAlgCounts(this.methodDescription).total.toFixed(2);
+  get expectedTotalAlgs$() {
+    return this.methodExplorerService.expectedAlgCounts(this.methodDescription).pipe(
+      map(algCounts => algCounts.total.toFixed(2))
+    );
   }
 }
