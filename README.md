@@ -6,6 +6,8 @@
 
 # CubeTrainer
 
+This is the repository for https://www.cubetrainer.org, which is a small website that contains some tools to support Rubik's Cube training with a focus on blindfolded solving.
+
 ## Install
 
 ### Clone the repository
@@ -83,3 +85,7 @@ The website is hosted on Heroku and is automatically deployed if CI on the maste
 ## Using the Website
 
 Navigate to https://www.cubetrainer.org/signup to create an account. After the signup process, you can log in via https://www.cubetrainer.org/login and then create training sessions in https://www.cubetrainer.org/modes. What the website is best at is training blind algs with smart sampling that will show you algorithms more that you don't know well.
+
+## Background
+
+This website started as a bunch of command line scripts that helped me practicing and eventually I added a database, than a small web frontend and eventually I turned it into a full website. The entire backstory can be found in https://www.cubetrainer.org/about.
