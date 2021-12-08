@@ -4,7 +4,7 @@ import { assert } from '../assert';
 import { Piece } from './piece';
 import { PieceDescription } from './piece-description';
 import { Parity, ThreeCycle, EvenCycle, ParityTwist, DoubleSwap, Alg } from './alg';
-import { ScrambleGroup, ProbabilisticAnswer, deterministicAnswer, PartiallyFixedOrientedType } from './scramble-group';
+import { Solvable, ProbabilisticAnswer, deterministicAnswer, PartiallyFixedOrientedType } from './solvable';
 import { Probabilistic } from './probabilistic';
 import { AlgTrace, emptyAlgTrace } from './alg-trace';
 import { AlgCounts } from './alg-counts';
@@ -28,9 +28,9 @@ export class Solver {
   get favoriteBuffer() {
     return this.orderedBuffers[0];
   }
-  
-  private nextBufferAvoidingSolved(bufferState: BufferState, group: ScrambleGroup): Piece {
-    const unsolvedBuffer = first(this.orderedBuffers.filter(piece => !group.isSolved(piece)));
+
+  private nextBufferAvoidingSolved(bufferState: BufferState, solvable: Solvable): Piece {
+    const unsolvedBuffer = first(this.orderedBuffers.filter(piece => !solvable.isSolved(piece)));
     return orElseCall(unsolvedBuffer, () => {
       const previousBuffer = bufferState.previousBuffer;
       if (previousBuffer && this.decider.stayWithSolvedBuffer(previousBuffer)) {
@@ -41,202 +41,202 @@ export class Solver {
     });
   }
 
-  private nextBufferAvoidingUnoriented(bufferState: BufferState, group: ScrambleGroup): Piece {
-    const permutedBuffer = first(this.orderedBuffers.filter(buffer => group.isPermuted(buffer)));
-    return orElseCall(permutedBuffer, () => this.nextBufferAvoidingSolved(bufferState, group));
+  private nextBufferAvoidingUnoriented(bufferState: BufferState, solvable: Solvable): Piece {
+    const permutedBuffer = first(this.orderedBuffers.filter(buffer => solvable.isPermuted(buffer)));
+    return orElseCall(permutedBuffer, () => this.nextBufferAvoidingSolved(bufferState, solvable));
   }
 
-  private nextBuffer(bufferState: BufferState, group: ScrambleGroup): Piece {
+  private nextBuffer(bufferState: BufferState, solvable: Solvable): Piece {
     const previousBuffer = bufferState.previousBuffer;
     if (previousBuffer && !this.decider.canChangeBuffer(bufferState)) {
       return previousBuffer;
     }
     if (this.decider.avoidUnorientedIfWeCanFloat) {
-      return this.nextBufferAvoidingUnoriented(bufferState, group);
+      return this.nextBufferAvoidingUnoriented(bufferState, solvable);
     } else {
-      return this.nextBufferAvoidingSolved(bufferState, group);
+      return this.nextBufferAvoidingSolved(bufferState, solvable);
     }
   }
 
-  private algsWithVanillaParity(bufferState: BufferState, group: ScrambleGroup, parity: Parity): ProbabilisticAlgTrace {
+  private algsWithVanillaParity(bufferState: BufferState, solvable: Solvable, parity: Parity): ProbabilisticAlgTrace {
     // If they want to do one other unoriented first, that can be done.
-    if (group.unoriented.length === 1) {
-      const unoriented = group.unoriented[0];
+    if (solvable.unoriented.length === 1) {
+      const unoriented = solvable.unoriented[0];
       if (this.decider.doUnorientedBeforeParity(parity, unoriented)) {
         const cycleBreak = new ThreeCycle(parity.firstPiece, parity.lastPiece, unoriented);
-        const remainingGroup = group.breakCycleFromSwap(cycleBreak);
+        const remainingSolvable = solvable.applyCycleBreakFromSwap(cycleBreak);
         const nextBufferState = bufferState.withCycleBreak();
         const newParity = new Parity(parity.firstPiece, unoriented);
-        const remainingTraces = this.algsWithParity(nextBufferState, remainingGroup, newParity);
+        const remainingTraces = this.algsWithParity(nextBufferState, remainingSolvable, newParity);
         return withPrefix(remainingTraces, cycleBreak);
       }
     }
-    return group.orientedTypeForPieces(parity.pieces).flatMap((group, orientedType) => {
-      return this.algsWithVanillaParityWithOrientedType(bufferState, group, parity, orientedType);
+    return solvable.decideOrientedTypeForPieces(parity.pieces).flatMap((solvable, orientedType) => {
+      return this.algsWithVanillaParityWithOrientedType(bufferState, solvable, parity, orientedType);
     });
   }
 
-  private algsWithVanillaParityWithOrientedType(bufferState: BufferState, group: ScrambleGroup, parity: Parity, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {  
-    const remainingGroup = group.solveParity(parity, orientedType);
-    const remainingTraces = this.unorientedAlgs(remainingGroup);
+  private algsWithVanillaParityWithOrientedType(bufferState: BufferState, solvable: Solvable, parity: Parity, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
+    const remainingSolvable = solvable.applyParity(parity, orientedType);
+    const remainingTraces = this.unorientedAlgs(remainingSolvable);
     return withPrefix(remainingTraces, parity);
   }
 
-  private algsWithParityTwist(bufferState: BufferState, group: ScrambleGroup, parityTwist: ParityTwist): ProbabilisticAlgTrace {
+  private algsWithParityTwist(bufferState: BufferState, solvable: Solvable, parityTwist: ParityTwist): ProbabilisticAlgTrace {
     // If they want to do one other unoriented first, that can be done.
-    if (group.unoriented.length === 1) {
-      const unoriented = group.unoriented[0];
+    if (solvable.unoriented.length === 1) {
+      const unoriented = solvable.unoriented[0];
       if (this.decider.doUnorientedBeforeParityTwist(parityTwist, unoriented)) {
         const cycleBreak = new ThreeCycle(parityTwist.firstPiece, parityTwist.lastPiece, unoriented);
-        const remainingGroup = group.breakCycleFromSwap(cycleBreak);
+        const remainingSolvable = solvable.applyCycleBreakFromSwap(cycleBreak);
         const nextBufferState = bufferState.withCycleBreak();
         const newParity = new Parity(parityTwist.firstPiece, unoriented);
-        const remainingTraces = this.algsWithParity(nextBufferState, remainingGroup, newParity);
+        const remainingTraces = this.algsWithParity(nextBufferState, remainingSolvable, newParity);
         return withPrefix(remainingTraces, cycleBreak);
       }
     }
-    return group.orientedTypeForPieces(parityTwist.swappedPieces).flatMap((group, orientedType) => {
-      return this.algsWithParityTwistWithOrientedType(bufferState, group, parityTwist, orientedType);
+    return solvable.decideOrientedTypeForPieces(parityTwist.swappedPieces).flatMap((solvable, orientedType) => {
+      return this.algsWithParityTwistWithOrientedType(bufferState, solvable, parityTwist, orientedType);
     });
   }
 
-  private algsWithParityTwistWithOrientedType(bufferState: BufferState, group: ScrambleGroup, parityTwist: ParityTwist, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
-    const remainingGroup = group.solveParityTwist(parityTwist, orientedType);
-    const remainingTraces = this.unorientedAlgs(remainingGroup);
+  private algsWithParityTwistWithOrientedType(bufferState: BufferState, solvable: Solvable, parityTwist: ParityTwist, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
+    const remainingSolvable = solvable.applyParityTwist(parityTwist, orientedType);
+    const remainingTraces = this.unorientedAlgs(remainingSolvable);
     return withPrefix(remainingTraces, parityTwist);
   };
 
-  private algsWithParity(bufferState: BufferState, group: ScrambleGroup, parity: Parity): ProbabilisticAlgTrace {
+  private algsWithParity(bufferState: BufferState, solvable: Solvable, parity: Parity): ProbabilisticAlgTrace {
     const buffer = parity.firstPiece;
     const otherPiece = parity.lastPiece;
-    const parityTwistPieces = group.unoriented.filter(piece => this.decider.canParityTwist(new ParityTwist(buffer, otherPiece, piece)));
+    const parityTwistPieces = solvable.unoriented.filter(piece => this.decider.canParityTwist(new ParityTwist(buffer, otherPiece, piece)));
     const parityTwists = parityTwistPieces.map(piece => new ParityTwist(buffer, otherPiece, piece));
     const maybeParityTwist = minBy(parityTwists, parityTwist => this.decider.parityTwistPriority(parityTwist));
-    return orElseCall(mapOptional(maybeParityTwist, parityTwist => this.algsWithParityTwist(bufferState, group, parityTwist)),
-                      () => this.algsWithVanillaParity(bufferState, group, parity));
+    return orElseCall(mapOptional(maybeParityTwist, parityTwist => this.algsWithParityTwist(bufferState, solvable, parityTwist)),
+                      () => this.algsWithVanillaParity(bufferState, solvable, parity));
   }
 
-  private algsWithPartialDoubleSwap(bufferState: BufferState, group: ScrambleGroup, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
-    const remainingGroup = group.partiallySolveDoubleSwap(doubleSwap);
-    const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingGroup);
+  private algsWithPartialDoubleSwap(bufferState: BufferState, solvable: Solvable, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
+    const remainingSolvable = solvable.applyPartialDoubleSwap(doubleSwap);
+    const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingSolvable);
     return withPrefix(remainingTraces, doubleSwap);
   }
 
-  private algsWithSolvedDoubleSwap(bufferState: BufferState, group: ScrambleGroup, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
-    return group.orientedTypeForPieces([doubleSwap.thirdPiece, doubleSwap.fourthPiece]).flatMap((group, orientedType) => {
-      return this.algsWithSolvedDoubleSwapAndOrientedType(bufferState, group, doubleSwap, orientedType);
+  private algsWithSolvedDoubleSwap(bufferState: BufferState, solvable: Solvable, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
+    return solvable.decideOrientedTypeForPieces([doubleSwap.thirdPiece, doubleSwap.fourthPiece]).flatMap((solvable, orientedType) => {
+      return this.algsWithSolvedDoubleSwapAndOrientedType(bufferState, solvable, doubleSwap, orientedType);
     });
   }
 
-  private algsWithSolvedDoubleSwapAndOrientedType(bufferState: BufferState, group: ScrambleGroup, doubleSwap: DoubleSwap, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
-    const remainingGroup = group.solveDoubleSwap(doubleSwap, orientedType);
-    const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingGroup);
+  private algsWithSolvedDoubleSwapAndOrientedType(bufferState: BufferState, solvable: Solvable, doubleSwap: DoubleSwap, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
+    const remainingSolvable = solvable.applySolvedDoubleSwap(doubleSwap, orientedType);
+    const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingSolvable);
     return withPrefix(remainingTraces, doubleSwap);
   }
 
-  private algsWithDoubleSwap(bufferState: BufferState, group: ScrambleGroup, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
-    if (group.cycleLength(doubleSwap.thirdPiece).assertDeterministicAnswer() === 2) {
-      return this.algsWithSolvedDoubleSwap(bufferState, group, doubleSwap);
+  private algsWithDoubleSwap(bufferState: BufferState, solvable: Solvable, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
+    if (solvable.decideCycleLength(doubleSwap.thirdPiece).assertDeterministicAnswer() === 2) {
+      return this.algsWithSolvedDoubleSwap(bufferState, solvable, doubleSwap);
     } else {
-      return this.algsWithPartialDoubleSwap(bufferState, group, doubleSwap);
+      return this.algsWithPartialDoubleSwap(bufferState, solvable, doubleSwap);
     }
   }
 
-  private algsWithCycleBreakFromSwap(bufferState: BufferState, group: ScrambleGroup, cycleBreak: ThreeCycle): ProbabilisticAlgTrace {
-    const remainingGroup = group.breakCycleFromSwap(cycleBreak);
+  private algsWithCycleBreakFromSwap(bufferState: BufferState, solvable: Solvable, cycleBreak: ThreeCycle): ProbabilisticAlgTrace {
+    const remainingSolvable = solvable.applyCycleBreakFromSwap(cycleBreak);
     const nextBufferState = bufferState.withCycleBreak();
-    const remainingTraces = this.algs(nextBufferState, remainingGroup);
+    const remainingTraces = this.algs(nextBufferState, remainingSolvable);
     return withPrefix(remainingTraces, cycleBreak);
   }
 
-  private algsWithCycleBreakFromUnpermuted(bufferState: BufferState, group: ScrambleGroup, cycleBreak: ThreeCycle): ProbabilisticAlgTrace {
-    const remainingGroup = group.breakCycleFromUnpermuted(cycleBreak);
+  private algsWithCycleBreakFromUnpermuted(bufferState: BufferState, solvable: Solvable, cycleBreak: ThreeCycle): ProbabilisticAlgTrace {
+    const remainingSolvable = solvable.applyCycleBreakFromUnpermuted(cycleBreak);
     const nextBufferState = bufferState.withCycleBreak();
-    const remainingTraces = this.algs(nextBufferState, remainingGroup);
+    const remainingTraces = this.algs(nextBufferState, remainingSolvable);
     return withPrefix(remainingTraces, cycleBreak);
   }
 
-  private algsWithEvenCycle(bufferState: BufferState, group: ScrambleGroup, cycle: EvenCycle): ProbabilisticAlgTrace {
-    return group.orientedTypeForPieces(cycle.pieces).flatMap((group, orientedType) => {
-      return this.algsWithEvenCycleWithOrientedType(bufferState, group, cycle, orientedType);
+  private algsWithEvenCycle(bufferState: BufferState, solvable: Solvable, cycle: EvenCycle): ProbabilisticAlgTrace {
+    return solvable.decideOrientedTypeForPieces(cycle.pieces).flatMap((solvable, orientedType) => {
+      return this.algsWithEvenCycleWithOrientedType(bufferState, solvable, cycle, orientedType);
     });
   }
-  
-  private algsWithEvenCycleWithOrientedType(bufferState: BufferState, group: ScrambleGroup, cycle: EvenCycle, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
-    const remainingGroup = group.solveEvenCycle(cycle, orientedType);
-    const remainingTraces = this.algs(bufferState, remainingGroup);
+
+  private algsWithEvenCycleWithOrientedType(bufferState: BufferState, solvable: Solvable, cycle: EvenCycle, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
+    const remainingSolvable = solvable.applyCompleteEvenCycle(cycle, orientedType);
+    const remainingTraces = this.algs(bufferState, remainingSolvable);
     return withPrefix(remainingTraces, cycle);
   }
 
-  private unorientedAlgs(group: ScrambleGroup): ProbabilisticAlgTrace {
-    assert(!group.hasPermuted, 'unorienteds cannot permute');
-    return new ProbabilisticAnswer<AlgTrace>(this.twistSolver.algs(group.unorientedByType).map(algs => [group, algs]));
+  private unorientedAlgs(solvable: Solvable): ProbabilisticAlgTrace {
+    assert(!solvable.hasPermuted, 'unorienteds cannot permute');
+    return new ProbabilisticAnswer<AlgTrace>(this.twistSolver.algs(solvable.unorientedByType).map(algs => [solvable, algs]));
   }
 
-  private cycleBreakWithBufferAndOtherPieceAndNextPiece(bufferState: BufferState, group: ScrambleGroup, buffer: Piece, otherPiece: Piece, cycleBreak: Piece, nextPiece: Piece): ProbabilisticAlgTrace {
+  private cycleBreakWithBufferAndOtherPieceAndNextPiece(bufferState: BufferState, solvable: Solvable, buffer: Piece, otherPiece: Piece, cycleBreak: Piece, nextPiece: Piece): ProbabilisticAlgTrace {
     const doubleSwap = new DoubleSwap(buffer, otherPiece, cycleBreak, nextPiece);
     if (this.decider.canChangeBuffer(bufferState) && this.decider.canDoubleSwap(doubleSwap)) {
-      return this.algsWithDoubleSwap(bufferState, group, doubleSwap);
+      return this.algsWithDoubleSwap(bufferState, solvable, doubleSwap);
     }
-    return this.algsWithCycleBreakFromSwap(bufferState, group, new ThreeCycle(buffer, otherPiece, cycleBreak));
+    return this.algsWithCycleBreakFromSwap(bufferState, solvable, new ThreeCycle(buffer, otherPiece, cycleBreak));
   }
 
-  private cycleBreakWithBufferAndOtherPiece(bufferState: BufferState, group: ScrambleGroup, buffer: Piece, otherPiece: Piece): ProbabilisticAlgTrace {
-    const cycleBreak = this.decider.nextCycleBreakOnSecondPiece(buffer, otherPiece, group.permuted.filter(piece => piece !== buffer && piece !== otherPiece));
-    return group.nextPiece(cycleBreak).flatMap((group, nextPiece) => this.cycleBreakWithBufferAndOtherPieceAndNextPiece(bufferState, group, buffer, otherPiece, cycleBreak, nextPiece));
+  private cycleBreakWithBufferAndOtherPiece(bufferState: BufferState, solvable: Solvable, buffer: Piece, otherPiece: Piece): ProbabilisticAlgTrace {
+    const cycleBreak = this.decider.nextCycleBreakOnSecondPiece(buffer, otherPiece, solvable.permuted.filter(piece => piece !== buffer && piece !== otherPiece));
+    return solvable.decideNextPiece(cycleBreak).flatMap((solvable, nextPiece) => this.cycleBreakWithBufferAndOtherPieceAndNextPiece(bufferState, solvable, buffer, otherPiece, cycleBreak, nextPiece));
   }
 
-  private algsWithPartialCycle(bufferState: BufferState, group: ScrambleGroup, cycle: EvenCycle): ProbabilisticAlgTrace {
-    const remainingGroup = group.solvePartialEvenCycle(cycle);
-    const remainingTraces = this.algs(bufferState, remainingGroup);
+  private algsWithPartialCycle(bufferState: BufferState, solvable: Solvable, cycle: EvenCycle): ProbabilisticAlgTrace {
+    const remainingSolvable = solvable.applyPartialEvenCycle(cycle);
+    const remainingTraces = this.algs(bufferState, remainingSolvable);
     return withPrefix(remainingTraces, cycle);
   }
 
-  private algsWithBufferAndCycleLength(bufferState: BufferState, group: ScrambleGroup, buffer: Piece, cycleLength: number): ProbabilisticAlgTrace {
+  private algsWithBufferAndCycleLength(bufferState: BufferState, solvable: Solvable, buffer: Piece, cycleLength: number): ProbabilisticAlgTrace {
     if (cycleLength === 2) {
-      if (group.parityTime) {
-        const otherPiece = group.nextPiece(buffer).assertDeterministicAnswer();
-        return this.algsWithParity(bufferState, group, new Parity(buffer, otherPiece));
+      if (solvable.parityTime) {
+        const otherPiece = solvable.decideNextPiece(buffer).assertDeterministicAnswer();
+        return this.algsWithParity(bufferState, solvable, new Parity(buffer, otherPiece));
       } else {
-        return group.nextPiece(buffer).flatMap((group, otherPiece) => this.cycleBreakWithBufferAndOtherPiece(bufferState, group, buffer, otherPiece));
+        return solvable.decideNextPiece(buffer).flatMap((solvable, otherPiece) => this.cycleBreakWithBufferAndOtherPiece(bufferState, solvable, buffer, otherPiece));
       }
     } else if (cycleLength % 2 === 1) {
-      return group.unsortedOtherPiecesInCycle(buffer).flatMap((group, unsortedLastPieces) => {
+      return solvable.decideUnsortedOtherPiecesInCycle(buffer).flatMap((solvable, unsortedLastPieces) => {
         assert(unsortedLastPieces.length % 2 === 0, 'uneven completed cycle');
-        return this.algsWithEvenCycle(bufferState, group, new EvenCycle(buffer, unsortedLastPieces));
+        return this.algsWithEvenCycle(bufferState, solvable, new EvenCycle(buffer, unsortedLastPieces.length));
       });
     } else {
-      return group.unsortedOtherPiecesInEvenPermutationCyclePart(buffer).flatMap((group, unsortedLastPieces) => {
+      return solvable.decideUnsortedOtherPiecesInEvenPermutationCyclePart(buffer).flatMap((solvable, unsortedLastPieces) => {
         assert(unsortedLastPieces.length === cycleLength - 2);
         assert(unsortedLastPieces.length % 2 === 0, 'uneven partial cycle');
-        return this.algsWithPartialCycle(bufferState, group, new EvenCycle(buffer, unsortedLastPieces));
+        return this.algsWithPartialCycle(bufferState, solvable, new EvenCycle(buffer, unsortedLastPieces.length));
       });
     }
   }
-  
-  private algs(bufferState: BufferState, group: ScrambleGroup): ProbabilisticAlgTrace {
-    const buffer = this.nextBuffer(bufferState, group);
+
+  private algs(bufferState: BufferState, solvable: Solvable): ProbabilisticAlgTrace {
+    const buffer = this.nextBuffer(bufferState, solvable);
     if (buffer !== bufferState.previousBuffer) {
       bufferState = emptyBufferState();
     }
-    if (group.isSolved(buffer) && group.hasPermuted) {
-      const cycleBreakPiece = this.decider.nextCycleBreakOnFirstPiece(buffer, group.permuted.filter(piece => piece !== buffer));
-      return group.nextPiece(cycleBreakPiece).flatMap((group, nextPiece) => {
-        return this.algsWithCycleBreakFromUnpermuted(bufferState, group, new ThreeCycle(buffer, cycleBreakPiece, nextPiece));
+    if (solvable.isSolved(buffer) && solvable.hasPermuted) {
+      const cycleBreakPiece = this.decider.nextCycleBreakOnFirstPiece(buffer, solvable.permuted.filter(piece => piece !== buffer));
+      return solvable.decideNextPiece(cycleBreakPiece).flatMap((solvable, nextPiece) => {
+        return this.algsWithCycleBreakFromUnpermuted(bufferState, solvable, new ThreeCycle(buffer, cycleBreakPiece, nextPiece));
       });
-    } else if (group.isPermuted(buffer)) {
-      return group.cycleLength(buffer).flatMap((group, cycleLength) => {
-        return this.algsWithBufferAndCycleLength(bufferState, group, buffer, cycleLength);
+    } else if (solvable.isPermuted(buffer)) {
+      return solvable.decideCycleLength(buffer).flatMap((solvable, cycleLength) => {
+        return this.algsWithBufferAndCycleLength(bufferState, solvable, buffer, cycleLength);
       });
-    } else if (group.hasUnoriented) {
-      return this.unorientedAlgs(group);
+    } else if (solvable.hasUnoriented) {
+      return this.unorientedAlgs(solvable);
     } else {
-      return deterministicAnswer(group, emptyAlgTrace());
+      return deterministicAnswer(solvable, emptyAlgTrace());
     }
   }
 
-  algCounts(group: ScrambleGroup): Probabilistic<AlgCounts> {
-    return this.algs(emptyBufferState(), group).removeGroups().map(algTrace => algTrace.withMaxCycleLength(buffer => this.decider.maxCycleLengthForBuffer(buffer)).countAlgs());
+  algCounts(solvable: Solvable): Probabilistic<AlgCounts> {
+    return this.algs(emptyBufferState(), solvable).removeSolvables().map(algTrace => algTrace.withMaxCycleLength(buffer => this.decider.maxCycleLengthForBuffer(buffer)).countAlgs());
   }
 }
 

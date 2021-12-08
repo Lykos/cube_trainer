@@ -1,6 +1,7 @@
 import { Piece } from './piece';
 import { PiecePermutationDescription } from './piece-permutation-description';
 import { rand, swap } from '../utils';
+import { Solvable } from './solvable';
 
 export function shuffle<X>(xs: X[], allowOddPermutations: boolean) {
   let isEven = true;

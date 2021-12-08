@@ -4,21 +4,16 @@ import { AlgCounts, AlgCountsBuilder } from './alg-counts';
 import { assert } from '../assert';
 import { Optional, some, none, mapOptional, orElse, forceValue } from '../optional';
 
-function splitPiecesIntoAlgs(buffer: Piece, pieces: Piece[], maxCycleLengthForBuffer: (piece: Piece) => number) {
+function splitPiecesIntoAlgs(buffer: Piece, numRemainingPieces: number, maxCycleLengthForBuffer: (piece: Piece) => number) {
   const maxCycleLength = maxCycleLengthForBuffer(buffer);
   assert(maxCycleLength > 0);
   assert(maxCycleLength % 2 === 1);
-  assert(pieces.length % 2 === 0);
+  assert(numRemainingPieces % 2 === 0);
   const algs: Alg[] = [];
-  let lastPieces: Piece[] = []
-  pieces.forEach(piece => {
-    lastPieces.push(piece);
-    if (lastPieces.length + 1 === maxCycleLength) {
-      algs.push(new EvenCycle(buffer, lastPieces));
-      lastPieces = [];
-    }
-  });
-  algs.push(new EvenCycle(buffer, lastPieces));
+  for (; numRemainingPieces >= maxCycleLength; numRemainingPieces -= maxCycleLength) {
+    algs.push(new EvenCycle(buffer, maxCycleLength));
+  }
+  algs.push(new EvenCycle(buffer, numRemainingPieces));
   return algs;
 }
 
@@ -32,7 +27,7 @@ export class AlgTrace {
   withPrefix(alg: Alg) {
     return new AlgTrace([alg].concat(this.algs));
   }
-  
+
   withSuffix(alg: Alg) {
     return new AlgTrace(this.algs.concat([alg]));
   }
@@ -40,22 +35,22 @@ export class AlgTrace {
   withMaxCycleLength(maxCycleLengthForBuffer: (piece: Piece) => number) {
     let processedAlgs: Alg[] = [];
     let currentBuffer: Optional<Piece> = none;
-    let currentCycle: Piece[] = [];
+    let numRemainingPieces = 0;
     this.algs.forEach(alg => {
       if (alg instanceof EvenCycle && sameOrNone(alg.firstPiece, currentBuffer)) {
         currentBuffer = some(alg.firstPiece);
-        currentCycle = currentCycle.concat(alg.unorderedLastPieces);
+        numRemainingPieces += alg.numRemainingPieces;
       } else {
-        if (currentCycle.length > 0) {
-          processedAlgs = processedAlgs.concat(splitPiecesIntoAlgs(forceValue(currentBuffer), currentCycle, maxCycleLengthForBuffer));
+        if (numRemainingPieces.length > 0) {
+          processedAlgs = processedAlgs.concat(splitPiecesIntoAlgs(forceValue(currentBuffer), numRemainingPieces, maxCycleLengthForBuffer));
           currentBuffer = none;
-          currentCycle = [];
+          numRemainingPieces = 0;
         }
         processedAlgs.push(alg)
       }
     });
-    if (currentCycle.length > 0) {
-      processedAlgs = processedAlgs.concat(splitPiecesIntoAlgs(forceValue(currentBuffer), currentCycle, maxCycleLengthForBuffer));
+    if (numRemainingPieces.length > 0) {
+      processedAlgs = processedAlgs.concat(splitPiecesIntoAlgs(forceValue(currentBuffer), numRemainingPieces, maxCycleLengthForBuffer));
     }
     return new AlgTrace(processedAlgs);
   }

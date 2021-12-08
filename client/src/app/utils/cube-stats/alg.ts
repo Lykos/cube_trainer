@@ -30,8 +30,8 @@ export class Parity {
 export class EvenCycle {
   constructor(
     readonly firstPiece: Piece,
-    readonly unorderedLastPieces: Piece[]) {
-    assert(unorderedLastPieces.length % 2 === 0, 'uneven cycle');
+    readonly numRemainingPieces: number) {
+    assert(numRemainingPieces % 2 === 0, 'uneven cycle');
   }
 
   get length() {
@@ -45,7 +45,7 @@ export class EvenCycle {
 
 export class ThreeCycle extends EvenCycle {
   constructor(firstPiece: Piece, readonly secondPiece: Piece, readonly thirdPiece: Piece) {
-    super(firstPiece, [secondPiece, thirdPiece]);
+    super(firstPiece, 2);
   }
 }
 
