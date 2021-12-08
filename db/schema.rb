@@ -25,11 +25,11 @@ ActiveRecord::Schema.define(version: 2021_12_01_001114) do
   end
 
   create_table "color_schemes", force: :cascade do |t|
+    t.integer "user_id", null: false
     t.string "color_u", null: false
     t.string "color_f", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_color_schemes_on_user_id", unique: true
   end
 
@@ -52,9 +52,9 @@ ActiveRecord::Schema.define(version: 2021_12_01_001114) do
   end
 
   create_table "letter_schemes", force: :cascade do |t|
+    t.integer "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_letter_schemes_on_user_id", unique: true
   end
 
@@ -118,11 +118,11 @@ ActiveRecord::Schema.define(version: 2021_12_01_001114) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "admin", default: false, null: false
-    t.string "email"
+    t.string "email", null: false
     t.boolean "admin_confirmed", default: false
     t.boolean "email_confirmed", default: false
     t.string "confirm_token"
