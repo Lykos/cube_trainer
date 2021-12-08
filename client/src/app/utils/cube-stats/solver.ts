@@ -18,44 +18,67 @@ function withPrefix(algTraces: ProbabilisticAlgTrace, alg: Alg): ProbabilisticAl
   return algTraces.mapAnswer(trace => trace.withPrefix(alg));
 }
 
-export class Solver {
-  constructor(readonly decider: Decider, readonly pieces: Piece[], readonly twistSolver: TwistSolver) {}
+function pOrElseTryCall<X>(probOptX: ProbabilisticAnswer<Optional<X>>, probXGen: (solvable: Solvable) => ProbabilisticAnswer<Optional<X>>): Probabilistic<Optional<X>> {
+  return probOptX.flatMap((solvable, optX) => {
+    return orElseTryCall(mapOptional(optX, deterministicAnswer), probXGen(solvable));
+  });
+}
 
-  get orderedBuffers() {
-    return this.pieces.filter(piece => this.decider.isBuffer(piece)).sort((left, right) => this.decider.bufferPriority(right) - this.decider.bufferPriority(left));
+function pOrElseDeterministic<X>(probOptX: ProbabilisticAnswer<Optional<X>>, x: X): Probabilistic<X> {
+  return probOptX.mapAnswer(optX => orElse(optX, x));
+}
+
+function pFilter(solvable: Solvable, x: X, probCond: (solvable: Solvable, x: X) => ProbabilisticAnswer<boolean>): ProbabilisticAnswer<Optional<X>> {
+  return propCond(solvable, x).mapAnswer(answer => answer ? some(x) : none);
+}
+
+function pNot(probCond: ProbabilisticAnswer<boolean>): boolean {
+  return probCond.mapAnswer(cond => !cond);
+}
+
+function decideNextBufferAmong(
+  solvable: Solvable,
+  probBufferCond: (solvable: Solvable, buffer: Piece) => ProbabilististicAnswer<boolean>,
+  buffers: Piece[]): ProbabilisticAnswer<Optional<Piece>> {
+  if (buffers.length === 0) {
+    return deterministicAnswer(none);
+  }
+  const probMaybeBuffer = pFilter(solvable, buffers[0], probBufferCond);
+  return pOrElseCall(probMaybeBuffer, solvable => this.decideNextBufferAmong(probBufferCond, buffers.slice(1)));
+}
+
+function decideNextBufferAmongPermuted(solvable: Solvable, buffers: Piece[]): ProbabilisticAnswer<Optional<Piece>> {
+  return decideNextBufferAmong(solvable, (solvable, buffer) => solvable.decideIsPermuted());
+}
+
+function decideNextBufferAmongUnsolved(solvable: Solvable, buffers: Piece[]): ProbabilisticAnswer<Optional<Piece>> {
+  return decideNextBufferAmong(solvable, (solvable, buffer) => pNot(solvable.decideIsPermuted()));
+}
+
+export class Solver {
+  // The buffers sorted by priority.
+  sortedBuffers: Piece[];
+
+  constructor(readonly decider: Decider, readonly pieces: Piece[], readonly twistSolver: TwistSolver) {
+    sortedBuffers = this.pieces.filter(piece => this.decider.isBuffer(piece)).sort((left, right) => this.decider.bufferPriority(right) - this.decider.bufferPriority(left));
   }
 
   get favoriteBuffer() {
-    return this.orderedBuffers[0];
+    return this.sortedBuffers[0];
   }
 
-  private nextBufferAvoidingSolved(bufferState: BufferState, solvable: Solvable): Piece {
-    const unsolvedBuffer = first(this.orderedBuffers.filter(piece => !solvable.isSolved(piece)));
-    return orElseCall(unsolvedBuffer, () => {
-      const previousBuffer = bufferState.previousBuffer;
-      if (previousBuffer && this.decider.stayWithSolvedBuffer(previousBuffer)) {
-        return previousBuffer;
-      } else {
-        return this.favoriteBuffer;
-      }
-    });
-  }
-
-  private nextBufferAvoidingUnoriented(bufferState: BufferState, solvable: Solvable): Piece {
-    const permutedBuffer = first(this.orderedBuffers.filter(buffer => solvable.isPermuted(buffer)));
-    return orElseCall(permutedBuffer, () => this.nextBufferAvoidingSolved(bufferState, solvable));
-  }
-
-  private nextBuffer(bufferState: BufferState, solvable: Solvable): Piece {
+  private decideNextBuffer(bufferState: BufferState, solvable: Solvable): ProbabilisticAnswer<Piece> {
     const previousBuffer = bufferState.previousBuffer;
     if (previousBuffer && !this.decider.canChangeBuffer(bufferState)) {
       return previousBuffer;
     }
-    if (this.decider.avoidUnorientedIfWeCanFloat) {
-      return this.nextBufferAvoidingUnoriented(bufferState, solvable);
-    } else {
-      return this.nextBufferAvoidingSolved(bufferState, solvable);
+    const previousBufferIndex = orElse(indexOf(this.sortedBuffers, previousBuffer), -1);
+    const relevantBuffers = orderedBuffers.slice(previousBufferIndex + 1);
+    const fallbackBuffer = previousBuffer && this.decider.stayWithSolvedBuffer(previousBuffer) ? previousBuffer : this.favoriteBuffer;
+    if (decideNextBufferAmong(this.decider.avoidUnorientedIfWeCanFloat)) {
+      return pOrElseDeterministic(pOrElseTryCall(decideNextBufferAmongPermuted(solvable, relevantBuffers), solvable => decideNextBufferAmongUnsolved(solvable, relevantBuffers)), fallbackBuffer);
     }
+    return pOrElseDeterministic(decideNextBufferAmongUnsolved(solvable, relevantBuffers), fallbackBuffer);
   }
 
   private algsWithVanillaParity(bufferState: BufferState, solvable: Solvable, parity: Parity): ProbabilisticAlgTrace {

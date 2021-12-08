@@ -34,6 +34,8 @@ export class Decider {
     return piece.pieceId;
   }
 
+  // Stay with this buffer if all buffers are solved.
+  // If false, will switch back to the main buffer instead.
   stayWithSolvedBuffer(piece: Piece) {
     return true;
   }
