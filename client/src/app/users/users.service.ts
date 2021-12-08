@@ -7,6 +7,7 @@ import { UserUpdate } from './user-update.model';
 import { PasswordUpdate } from './password-update.model';
 import { PasswordChange } from './password-change.model';
 import { User } from './user.model';
+import { Credentials } from './credentials.model';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { CookieConsentService } from '../shared/cookie-consent.service';
@@ -36,11 +37,14 @@ export class UsersService {
     );
   }
 
-  login(email: string, password: string): Observable<User> {
-    // Users have to consent to cookies during registration,
-    // so we know they consented in the past if they log in.
-    return this.tokenService.signIn({login: email, password}).pipe(
-      tap(() => { this.cookieConsentService.turnOnConsent(); })
+  login(credentials: Credentials): Observable<User> {
+    const params = { login: credentials.email, password: credentials.password };
+    return this.tokenService.signIn(params).pipe(
+      tap(() => {
+        // Users have to consent to cookies during registration,
+        // so we know they consented in the past if they log in.
+        this.cookieConsentService.turnOnConsent();
+      })
     );
   }
 
