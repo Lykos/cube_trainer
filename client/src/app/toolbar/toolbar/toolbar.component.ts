@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../../users/users.service';
+import { selectUser } from '../../state/user.selectors';
 import { MessagesService } from '../../users/messages.service';
 import { User } from '../../users/user.model';
 import { Optional, some, none, hasValue, mapOptional, orElse } from '../../utils/optional';
 import { map, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'cube-trainer-toolbar',
@@ -13,24 +15,25 @@ import { Router } from '@angular/router';
   styleUrls: ['./toolbar.component.css']
 })
 export class ToolbarComponent implements OnInit {
-  user: Optional<User> = none;
+  readonly user$: Observable<Optional<User>>;
   unreadMessagesCount: number | undefined = undefined;
 
-  constructor(private readonly usersService: UsersService,
-	      private readonly messagesService: MessagesService,
-              private readonly router: Router) {
+  constructor(private readonly messagesService: MessagesService,
+              private readonly router: Router,
+              private readonly store: Store) {
+    this.user$ = this.store.select(selectUser);
   }
 
   get unreadMessagesBadge() {
     return this.unreadMessagesCount == 0 ? undefined : this.unreadMessagesCount;
   }
 
-  get userName() {
-    return orElse(mapOptional(this.user, u => u.name), '');
+  get userName$() {
+    return user$.pipe(map(user => orElse(mapOptional(user, u => u.name), '')));
   }
 
-  get loggedIn() {
-    return hasValue(this.user);
+  get loggedIn$() {
+    return this.user.pipe(map(hasValue));
   }
 
   get numBadges() {

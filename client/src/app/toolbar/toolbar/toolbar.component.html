@@ -5,20 +5,20 @@
     </a>
   </ng-container>
   <div class="horizontal-spacer"></div>
-  <ng-container *ngIf="!loggedIn; else loggedInBlock">
+  <ng-container *ngIf="loggedIn$ | async; else loggedOutBlock">
+    <a mat-button routerLink="/user" [matBadge]="unreadMessagesBadge" matBadgeColor="accent">
+      {{ userName$ | async }}
+    </a>
+    <button mat-button (click)="onLogout()">
+      Logout
+    </button>
+  </ng-container>
+  <ng-template #loggedOutBlock>
     <a id="toolbar-login" mat-button routerLink="/login">
       Login
     </a>
     <a id="toolbar-signup" mat-button routerLink="/signup">
       Sign Up
     </a>
-  </ng-container>
-  <ng-template #loggedInBlock>
-    <a mat-button routerLink="/user" [matBadge]="unreadMessagesBadge" matBadgeColor="accent">
-      {{userName}}
-    </a>
-    <button mat-button (click)="onLogout()">
-      Logout
-    </button>
   </ng-template>
 </mat-toolbar>
