@@ -22,7 +22,7 @@ function range(n: number): number[] {
 }
 
 export class PieceDescription {
-  readonly pieces: Piece[];
+  readonly pieces: readonly Piece[];
   constructor(readonly numPieces: number,
               readonly unorientedTypes: number) {
     assert(numPieces >= 2, 'There have to be at least 2 pieces');
@@ -38,7 +38,7 @@ export class PieceDescription {
     return this.twistGroupsWithPrefix([]);
   }
 
-  private twistGroupsWithPrefix(unorientedByType: Piece[][]): TwistGroup[] {
+  private twistGroupsWithPrefix(unorientedByType: readonly (readonly Piece[])[]): TwistGroup[] {
     assert(unorientedByType.length <= this.unorientedTypes, `unorientedByType.length <= this.unorientedTypes (${unorientedByType.length} vs ${this.unorientedTypes})`);
     const remainingPieces = this.pieces.filter(p => !unorientedByType.some(unorientedForType => contains(unorientedForType, p)));
     if (unorientedByType.length === this.unorientedTypes) {

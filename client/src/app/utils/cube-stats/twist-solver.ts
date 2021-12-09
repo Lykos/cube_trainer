@@ -99,8 +99,9 @@ function combine(algTraceWithCost: AlgTraceWithCost, twistWithCost: TwistWithCos
   };
 }
 
-export function createTwistSolver(pieceDescription: PieceDescription, twistsWithCosts: TwistWithCost[]): TwistSolver {
+export function createTwistSolver(decider: Decider, pieceDescription: PieceDescription): TwistSolver {
   assert(pieceDescription.unorientedTypes <= 2);
+  const twistsWithCosts: TwistWithCost[] = decider.twistsWithCosts;
   const numItems = pieceDescription.orientedTypes ** pieceDescription.pieces.length;
   const algsByIndex: Optional<AlgTrace>[] = Array(numItems).fill(none);
   const costByIndex: number[] = Array(numItems).fill(Infinity);

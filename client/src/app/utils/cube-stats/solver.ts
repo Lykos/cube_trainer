@@ -3,20 +3,16 @@ import { minBy } from '../utils';
 import { assert } from '../assert';
 import { Piece } from './piece';
 import { PieceDescription } from './piece-description';
-import { Parity, ThreeCycle, EvenCycle, ParityTwist, DoubleSwap, Alg } from './alg';
-import { Solvable, PartiallyFixedOrientedType } from './solvable';
+import { Parity, ThreeCycle, EvenCycle, DoubleSwap, Alg } from './alg';
+import { Solvable, OrientedType } from './solvable';
 import { Probabilistic, deterministic, mapSecond } from './probabilistic';
 import { AlgTrace, emptyAlgTrace } from './alg-trace';
 import { AlgCounts } from './alg-counts';
 import { Decider } from './decider';
 import { BufferState, emptyBufferState, newBufferState } from './buffer-state';
+import { ParitySolver, createParitySolver } from './parity-solver';
 import { TwistSolver, createTwistSolver } from './twist-solver';
-
-type ProbabilisticAlgTrace = Probabilistic<[Solvable, AlgTrace]>;
-
-function withPrefix(algTraces: ProbabilisticAlgTrace, alg: Alg): ProbabilisticAlgTrace {
-  return mapSecond(algTraces, trace => trace.withPrefix(alg));
-}
+import { ProbabilisticAlgTrace, withPrefix } from './solver-utils';
 
 function pOrElseTryCall<X>(probOptX: Probabilistic<[Solvable, Optional<X>]>, probXGen: (solvable: Solvable) => ProbabilisticAnswer<[Solvable, Optional<X>]>): Probabilistic<[Solvable, Optional<X>]> {
   return probOptX.flatMap((solvable, optX) => {
@@ -59,7 +55,7 @@ export class Solver {
   // The buffers sorted by priority.
   sortedBuffers: Piece[];
 
-  constructor(readonly decider: Decider, readonly pieces: Piece[], readonly twistSolver: TwistSolver) {
+  constructor(private readonly decider: Decider, private readonly pieces: readonly Piece[], private readonly paritySolver: ParitySolver) {
     sortedBuffers = this.pieces.filter(piece => this.decider.isBuffer(piece)).sort((left, right) => this.decider.bufferPriority(right) - this.decider.bufferPriority(left));
   }
 
@@ -81,64 +77,6 @@ export class Solver {
     return pOrElseDeterministic(decideNextBufferAmongUnsolved(solvable, relevantBuffers), fallbackBuffer);
   }
 
-  private algsWithVanillaParity(bufferState: BufferState, solvable: Solvable, parity: Parity): ProbabilisticAlgTrace {
-    // If they want to do one other unoriented first, that can be done.
-    if (solvable.unoriented.length === 1) {
-      const unoriented = solvable.unoriented[0];
-      if (this.decider.doUnorientedBeforeParity(parity, unoriented)) {
-        const cycleBreak = new ThreeCycle(parity.firstPiece, parity.lastPiece, unoriented);
-        const remainingSolvable = solvable.applyCycleBreakFromSwap(cycleBreak);
-        const nextBufferState = bufferState.withCycleBreak();
-        const newParity = new Parity(parity.firstPiece, unoriented);
-        const remainingTraces = this.algsWithParity(nextBufferState, remainingSolvable, newParity);
-        return withPrefix(remainingTraces, cycleBreak);
-      }
-    }
-    return solvable.decideOrientedTypeForPieces(parity.pieces).flatMap((solvable, orientedType) => {
-      return this.algsWithVanillaParityWithOrientedType(bufferState, solvable, parity, orientedType);
-    });
-  }
-
-  private algsWithVanillaParityWithOrientedType(bufferState: BufferState, solvable: Solvable, parity: Parity, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
-    const remainingSolvable = solvable.applyParity(parity, orientedType);
-    const remainingTraces = this.unorientedAlgs(remainingSolvable);
-    return withPrefix(remainingTraces, parity);
-  }
-
-  private algsWithParityTwist(bufferState: BufferState, solvable: Solvable, parityTwist: ParityTwist): ProbabilisticAlgTrace {
-    // If they want to do one other unoriented first, that can be done.
-    if (solvable.unoriented.length === 1) {
-      const unoriented = solvable.unoriented[0];
-      if (this.decider.doUnorientedBeforeParityTwist(parityTwist, unoriented)) {
-        const cycleBreak = new ThreeCycle(parityTwist.firstPiece, parityTwist.lastPiece, unoriented);
-        const remainingSolvable = solvable.applyCycleBreakFromSwap(cycleBreak);
-        const nextBufferState = bufferState.withCycleBreak();
-        const newParity = new Parity(parityTwist.firstPiece, unoriented);
-        const remainingTraces = this.algsWithParity(nextBufferState, remainingSolvable, newParity);
-        return withPrefix(remainingTraces, cycleBreak);
-      }
-    }
-    return solvable.decideOrientedTypeForPieces(parityTwist.swappedPieces).flatMap((solvable, orientedType) => {
-      return this.algsWithParityTwistWithOrientedType(bufferState, solvable, parityTwist, orientedType);
-    });
-  }
-
-  private algsWithParityTwistWithOrientedType(bufferState: BufferState, solvable: Solvable, parityTwist: ParityTwist, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
-    const remainingSolvable = solvable.applyParityTwist(parityTwist, orientedType);
-    const remainingTraces = this.unorientedAlgs(remainingSolvable);
-    return withPrefix(remainingTraces, parityTwist);
-  };
-
-  private algsWithParity(bufferState: BufferState, solvable: Solvable, parity: Parity): ProbabilisticAlgTrace {
-    const buffer = parity.firstPiece;
-    const otherPiece = parity.lastPiece;
-    const parityTwistPieces = solvable.unoriented.filter(piece => this.decider.canParityTwist(new ParityTwist(buffer, otherPiece, piece)));
-    const parityTwists = parityTwistPieces.map(piece => new ParityTwist(buffer, otherPiece, piece));
-    const maybeParityTwist = minBy(parityTwists, parityTwist => this.decider.parityTwistPriority(parityTwist));
-    return orElseCall(mapOptional(maybeParityTwist, parityTwist => this.algsWithParityTwist(bufferState, solvable, parityTwist)),
-                      () => this.algsWithVanillaParity(bufferState, solvable, parity));
-  }
-
   private algsWithPartialDoubleSwap(bufferState: BufferState, solvable: Solvable, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
     const remainingSolvable = solvable.applyPartialDoubleSwap(doubleSwap);
     const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingSolvable);
@@ -151,7 +89,7 @@ export class Solver {
     });
   }
 
-  private algsWithSolvedDoubleSwapAndOrientedType(bufferState: BufferState, solvable: Solvable, doubleSwap: DoubleSwap, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
+  private algsWithSolvedDoubleSwapAndOrientedType(bufferState: BufferState, solvable: Solvable, doubleSwap: DoubleSwap, orientedType: OrientedType): ProbabilisticAlgTrace {
     const remainingSolvable = solvable.applySolvedDoubleSwap(doubleSwap, orientedType);
     const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingSolvable);
     return withPrefix(remainingTraces, doubleSwap);
@@ -185,7 +123,7 @@ export class Solver {
     });
   }
 
-  private algsWithEvenCycleWithOrientedType(bufferState: BufferState, solvable: Solvable, cycle: EvenCycle, orientedType: PartiallyFixedOrientedType): ProbabilisticAlgTrace {
+  private algsWithEvenCycleWithOrientedType(bufferState: BufferState, solvable: Solvable, cycle: EvenCycle, orientedType: OrientedType): ProbabilisticAlgTrace {
     const remainingSolvable = solvable.applyCompleteEvenCycle(cycle, orientedType);
     const remainingTraces = this.algs(bufferState, remainingSolvable);
     return withPrefix(remainingTraces, cycle);
@@ -219,7 +157,7 @@ export class Solver {
     if (cycleLength === 2) {
       if (solvable.parityTime) {
         const otherPiece = solvable.decideNextPiece(buffer).assertDeterministic()[1];
-        return this.algsWithParity(bufferState, solvable, new Parity(buffer, otherPiece));
+        return this.paritySolver.algsWithParity(solvable, new Parity(buffer, otherPiece));
       } else {
         return solvable.decideNextPiece(buffer).flatMap((solvable, otherPiece) => this.cycleBreakWithBufferAndOtherPiece(bufferState, solvable, buffer, otherPiece));
       }
@@ -264,5 +202,6 @@ export class Solver {
 }
 
 export function createSolver(decider: Decider, pieceDescription: PieceDescription) {
-  return new Solver(decider, pieceDescription.pieces, createTwistSolver(pieceDescription, decider.twistsWithCosts));
+  const twistSolver = createTwistSolver(decider, pieceDescription);
+  return new Solver(decider, pieceDescription.pieces, createParitySolver(decider, twistSolver), twistSolver);
 }
