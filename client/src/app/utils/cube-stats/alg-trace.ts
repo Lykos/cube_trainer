@@ -41,7 +41,7 @@ export class AlgTrace {
         currentBuffer = some(alg.firstPiece);
         numRemainingPieces += alg.numRemainingPieces;
       } else {
-        if (numRemainingPieces.length > 0) {
+        if (numRemainingPieces > 0) {
           processedAlgs = processedAlgs.concat(splitPiecesIntoAlgs(forceValue(currentBuffer), numRemainingPieces, maxCycleLengthForBuffer));
           currentBuffer = none;
           numRemainingPieces = 0;
@@ -49,7 +49,7 @@ export class AlgTrace {
         processedAlgs.push(alg)
       }
     });
-    if (numRemainingPieces.length > 0) {
+    if (numRemainingPieces > 0) {
       processedAlgs = processedAlgs.concat(splitPiecesIntoAlgs(forceValue(currentBuffer), numRemainingPieces, maxCycleLengthForBuffer));
     }
     return new AlgTrace(processedAlgs);

@@ -5,7 +5,6 @@ import { Decider } from './decider';
 import { PiecePermutationDescription } from './piece-permutation-description';
 import { expectedValue } from './probabilistic';
 import { AlgCounts } from './alg-counts'
-import { SamplingStrategy } from './sampling-strategy';
 import { ExhaustiveSamplingStrategy } from './exhaustive-sampling-strategy';
 import { RandomSamplingStrategy } from './random-sampling-strategy';
 import { now } from '../instant';
@@ -17,7 +16,7 @@ const outputInterval = seconds(1);
 
 function expectedAlgCountsForPieces(pieces: PiecePermutationDescription, useExhaustiveSampling: boolean): AlgCounts {
   const solver = createSolver(new Decider(pieces), pieces.pieceDescription);
-  const samplingStrategy: SamplingStrategy = useExhaustiveSampling ? new ExhaustiveSamplingStrategy(pieces) : new RandomSamplingStrategy(pieces, numIterations);
+  const samplingStrategy = useExhaustiveSampling ? new ExhaustiveSamplingStrategy(pieces) : new RandomSamplingStrategy(pieces, numIterations);
   const groups = samplingStrategy.groups();
   let groupsDone = 0;
   const start = now()

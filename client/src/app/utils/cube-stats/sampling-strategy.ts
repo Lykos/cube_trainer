@@ -1,6 +1,6 @@
-import { ScrambleGroup } from './scramble-group';
+import { Solvable } from './solvable';
 import { Probabilistic } from './probabilistic';
 
-export interface SamplingStrategy {
-  groups(): Probabilistic<ScrambleGroup>;
+export interface SamplingStrategy<T extends Solvable<T>> {
+  groups(): Probabilistic<T>;
 }

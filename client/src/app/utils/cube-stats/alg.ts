@@ -35,11 +35,7 @@ export class EvenCycle {
   }
 
   get length() {
-    return this.unorderedLastPieces.length + 1;
-  }
-
-  get pieces(): Piece[] {
-    return [this.firstPiece].concat(this.unorderedLastPieces);
+    return this.numRemainingPieces + 1;
   }
 }
 

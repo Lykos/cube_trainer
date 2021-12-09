@@ -1,19 +1,18 @@
 import { PiecePermutationDescription } from './piece-permutation-description';
 import { SamplingStrategy } from './sampling-strategy';
-import { randomScramble } from './scramble';
-import { ScrambleGroup, scrambleToScrambleGroup } from './scramble-group';
+import { randomScramble, Scramble } from './scramble';
 import { Probabilistic, ProbabilisticPossibility } from './probabilistic';
 
-export class RandomSamplingStrategy implements SamplingStrategy {
+export class RandomSamplingStrategy implements SamplingStrategy<Scramble> {
   constructor(readonly piecePermutationDescription: PiecePermutationDescription, readonly numIterations: number) {}  
 
-  groups(): Probabilistic<ScrambleGroup> {
-    const possibilities: ProbabilisticPossibility<ScrambleGroup>[] = [];
+  groups(): Probabilistic<Scramble> {
+    const possibilities: ProbabilisticPossibility<Scramble>[] = [];
     const probability = 1 / this.numIterations;
     for (let i = 0; i < this.numIterations; ++i) {
-      const group = scrambleToScrambleGroup(randomScramble(this.piecePermutationDescription));
-      possibilities.push([group, probability]);
+      const scramble = randomScramble(this.piecePermutationDescription);
+      possibilities.push([scramble, probability]);
     }
-    return new Probabilistic<ScrambleGroup>(possibilities);
+    return new Probabilistic<Scramble>(possibilities);
   }
 }

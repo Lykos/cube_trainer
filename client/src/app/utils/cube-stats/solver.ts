@@ -1,57 +1,57 @@
 import { orElseCall, mapOptional } from '../optional';
-import { minBy, first } from '../utils';
+import { minBy } from '../utils';
 import { assert } from '../assert';
 import { Piece } from './piece';
 import { PieceDescription } from './piece-description';
 import { Parity, ThreeCycle, EvenCycle, ParityTwist, DoubleSwap, Alg } from './alg';
-import { Solvable, ProbabilisticAnswer, deterministicAnswer, PartiallyFixedOrientedType } from './solvable';
-import { Probabilistic } from './probabilistic';
+import { Solvable, PartiallyFixedOrientedType } from './solvable';
+import { Probabilistic, deterministic, mapSecond } from './probabilistic';
 import { AlgTrace, emptyAlgTrace } from './alg-trace';
 import { AlgCounts } from './alg-counts';
 import { Decider } from './decider';
 import { BufferState, emptyBufferState, newBufferState } from './buffer-state';
 import { TwistSolver, createTwistSolver } from './twist-solver';
 
-type ProbabilisticAlgTrace = ProbabilisticAnswer<AlgTrace>;
+type ProbabilisticAlgTrace = Probabilistic<[Solvable, AlgTrace]>;
 
 function withPrefix(algTraces: ProbabilisticAlgTrace, alg: Alg): ProbabilisticAlgTrace {
-  return algTraces.mapAnswer(trace => trace.withPrefix(alg));
+  return mapSecond(algTraces, trace => trace.withPrefix(alg));
 }
 
-function pOrElseTryCall<X>(probOptX: ProbabilisticAnswer<Optional<X>>, probXGen: (solvable: Solvable) => ProbabilisticAnswer<Optional<X>>): Probabilistic<Optional<X>> {
+function pOrElseTryCall<X>(probOptX: Probabilistic<[Solvable, Optional<X>]>, probXGen: (solvable: Solvable) => ProbabilisticAnswer<[Solvable, Optional<X>]>): Probabilistic<[Solvable, Optional<X>]> {
   return probOptX.flatMap((solvable, optX) => {
-    return orElseTryCall(mapOptional(optX, deterministicAnswer), probXGen(solvable));
+    return orElseTryCall(mapOptional(optX, deterministic), probXGen(solvable));
   });
 }
 
-function pOrElseDeterministic<X>(probOptX: ProbabilisticAnswer<Optional<X>>, x: X): Probabilistic<X> {
+function pOrElseDeterministic<X>(probOptX: Probabilistic<[Solvable, Optional<X>]>, x: X): Probabilistic<X> {
   return probOptX.mapAnswer(optX => orElse(optX, x));
 }
 
-function pFilter(solvable: Solvable, x: X, probCond: (solvable: Solvable, x: X) => ProbabilisticAnswer<boolean>): ProbabilisticAnswer<Optional<X>> {
+function pFilter(solvable: Solvable, x: X, probCond: (solvable: Solvable, x: X) => Probabilistic<[Solvable, boolean]>): Probabilistic<[Solvable, Optional<X>]> {
   return propCond(solvable, x).mapAnswer(answer => answer ? some(x) : none);
 }
 
-function pNot(probCond: ProbabilisticAnswer<boolean>): boolean {
+function pNot(probCond: Probabilistic<[Solvable, boolean]>): boolean {
   return probCond.mapAnswer(cond => !cond);
 }
 
 function decideNextBufferAmong(
   solvable: Solvable,
   probBufferCond: (solvable: Solvable, buffer: Piece) => ProbabilististicAnswer<boolean>,
-  buffers: Piece[]): ProbabilisticAnswer<Optional<Piece>> {
+  buffers: Piece[]): Probabilistic<[Solvable, Optional<Piece>]> {
   if (buffers.length === 0) {
-    return deterministicAnswer(none);
+    return deterministic(solvable, none);
   }
   const probMaybeBuffer = pFilter(solvable, buffers[0], probBufferCond);
   return pOrElseCall(probMaybeBuffer, solvable => this.decideNextBufferAmong(probBufferCond, buffers.slice(1)));
 }
 
-function decideNextBufferAmongPermuted(solvable: Solvable, buffers: Piece[]): ProbabilisticAnswer<Optional<Piece>> {
+function decideNextBufferAmongPermuted(solvable: Solvable, buffers: Piece[]): Probabilistic<[Solvable, Optional<Piece>]> {
   return decideNextBufferAmong(solvable, (solvable, buffer) => solvable.decideIsPermuted());
 }
 
-function decideNextBufferAmongUnsolved(solvable: Solvable, buffers: Piece[]): ProbabilisticAnswer<Optional<Piece>> {
+function decideNextBufferAmongUnsolved(solvable: Solvable, buffers: Piece[]): Probabilistic<[Solvable, Optional<Piece>]> {
   return decideNextBufferAmong(solvable, (solvable, buffer) => pNot(solvable.decideIsPermuted()));
 }
 
@@ -67,7 +67,7 @@ export class Solver {
     return this.sortedBuffers[0];
   }
 
-  private decideNextBuffer(bufferState: BufferState, solvable: Solvable): ProbabilisticAnswer<Piece> {
+  private decideNextBuffer(bufferState: BufferState, solvable: Solvable): Probabilistic<[Solvable, Piece]> {
     const previousBuffer = bufferState.previousBuffer;
     if (previousBuffer && !this.decider.canChangeBuffer(bufferState)) {
       return previousBuffer;
@@ -158,7 +158,7 @@ export class Solver {
   }
 
   private algsWithDoubleSwap(bufferState: BufferState, solvable: Solvable, doubleSwap: DoubleSwap): ProbabilisticAlgTrace {
-    if (solvable.decideCycleLength(doubleSwap.thirdPiece).assertDeterministicAnswer() === 2) {
+    if (solvable.decideCycleLength(doubleSwap.thirdPiece).assertDeterministic()[1] === 2) {
       return this.algsWithSolvedDoubleSwap(bufferState, solvable, doubleSwap);
     } else {
       return this.algsWithPartialDoubleSwap(bufferState, solvable, doubleSwap);
@@ -193,7 +193,7 @@ export class Solver {
 
   private unorientedAlgs(solvable: Solvable): ProbabilisticAlgTrace {
     assert(!solvable.hasPermuted, 'unorienteds cannot permute');
-    return new ProbabilisticAnswer<AlgTrace>(this.twistSolver.algs(solvable.unorientedByType).map(algs => [solvable, algs]));
+    return new ProbabilisticAlgTrace(this.twistSolver.algs(solvable.unorientedByType).map(algs => [solvable, algs]));
   }
 
   private cycleBreakWithBufferAndOtherPieceAndNextPiece(bufferState: BufferState, solvable: Solvable, buffer: Piece, otherPiece: Piece, cycleBreak: Piece, nextPiece: Piece): ProbabilisticAlgTrace {
@@ -218,7 +218,7 @@ export class Solver {
   private algsWithBufferAndCycleLength(bufferState: BufferState, solvable: Solvable, buffer: Piece, cycleLength: number): ProbabilisticAlgTrace {
     if (cycleLength === 2) {
       if (solvable.parityTime) {
-        const otherPiece = solvable.decideNextPiece(buffer).assertDeterministicAnswer();
+        const otherPiece = solvable.decideNextPiece(buffer).assertDeterministic()[1];
         return this.algsWithParity(bufferState, solvable, new Parity(buffer, otherPiece));
       } else {
         return solvable.decideNextPiece(buffer).flatMap((solvable, otherPiece) => this.cycleBreakWithBufferAndOtherPiece(bufferState, solvable, buffer, otherPiece));
@@ -254,7 +254,7 @@ export class Solver {
     } else if (solvable.hasUnoriented) {
       return this.unorientedAlgs(solvable);
     } else {
-      return deterministicAnswer(solvable, emptyAlgTrace());
+      return deterministic([solvable, emptyAlgTrace()]);
     }
   }
 

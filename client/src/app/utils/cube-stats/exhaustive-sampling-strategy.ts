@@ -1,12 +1,13 @@
 import { PiecePermutationDescription } from './piece-permutation-description';
 import { SamplingStrategy } from './sampling-strategy';
-import { ScrambleGroup, bigScrambleGroupToScrambleGroup } from './scramble-group';
+import { bigScrambleGroupToScrambleGroup } from './scramble-group';
 import { BigScrambleGroup } from './big-scramble-group';
+import { ScrambleGroup } from './scramble-group';
 import { Probabilistic, ProbabilisticPossibility } from './probabilistic';
 import { sum, shuffle } from '../utils';
 import { assert } from '../assert';
 
-export class ExhaustiveSamplingStrategy implements SamplingStrategy {
+export class ExhaustiveSamplingStrategy implements SamplingStrategy<ScrambleGroup> {
   constructor(readonly piecePermutationDescription: PiecePermutationDescription) {}  
 
   private scrambleGroupWithProbability(group: BigScrambleGroup): ProbabilisticPossibility<ScrambleGroup> {
