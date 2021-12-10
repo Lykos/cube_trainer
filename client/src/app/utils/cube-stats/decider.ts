@@ -14,24 +14,20 @@ export class Decider {
     });
   }
 
-  nextCycleBreakOnSecondPiece(buffer: Piece, firstPiece: Piece, unsolvedPieces: Piece[]): Piece {
-    return unsolvedPieces[0];
+  sortedNextCycleBreaksOnSecondPiece(buffer: Piece, firstPiece: Piece): readonly Piece[] {
+    return this.piecePermutationDescription.pieces;
   }
 
-  nextCycleBreakOnFirstPiece(buffer: Piece, unsolvedPieces: Piece[]): Piece {
-    return unsolvedPieces[0];
+  sortedNextCycleBreaksOnFirstPiece(buffer: Piece): readonly Piece[] {
+    return this.piecePermutationDescription.pieces;
   }
 
   canParityTwist(parityTwist: ParityTwist) {
     return false;
   }
 
-  isBuffer(piece: Piece) {
-    return true;
-  }
-
-  bufferPriority(piece: Piece) {
-    return piece.pieceId;
+  get sortedBuffers(): readonly Piece[] {
+    return [this.piecePermutationDescription.piece[0]];
   }
 
   // Stay with this buffer if all buffers are solved.

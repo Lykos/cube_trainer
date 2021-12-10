@@ -1,6 +1,6 @@
 import { Parity, ThreeCycle, ParityTwist } from './alg';
-import { Probabilistic, deterministic } from './probabilistic';
-import { Solvable, OrientedType } from './solvable';
+import { Solvable } from './solvable';
+import { OrientedType } from './oriented-type';
 import { ProbabilisticAlgTrace, withPrefix } from './solver-utils';
 import { TwistSolver } from './twist-solver';
 import { Decider } from './decider';
@@ -9,7 +9,7 @@ import { Decider } from './decider';
 export class ParitySolver {
   constructor(private readonly decider: Decider, private readonly twistSolver: TwistSolver) {}
 
-  private algsWithVanillaParity(solvable: Solvable, parity: Parity): ProbabilisticAlgTrace {
+  private algsWithVanillaParity<T>(solvable: Solvable<T>, parity: Parity): ProbabilisticAlgTrace {
     // If they want to do one other unoriented first, that can be done.
     if (solvable.unoriented.length === 1) {
       const unoriented = solvable.unoriented[0];
@@ -26,13 +26,13 @@ export class ParitySolver {
     });
   }
 
-  private algsWithVanillaParityWithOrientedType(solvable: Solvable, parity: Parity, orientedType: OrientedType): ProbabilisticAlgTrace {
+  private algsWithVanillaParityWithOrientedType<T>(solvable: Solvable<T>, parity: Parity, orientedType: OrientedType): ProbabilisticAlgTrace {
     const remainingSolvable = solvable.applyParity(parity, orientedType);
     const remainingTraces = this.unorientedAlgs(remainingSolvable);
     return withPrefix(remainingTraces, parity);
   }
 
-  private algsWithParityTwist(solvable: Solvable, parityTwist: ParityTwist): ProbabilisticAlgTrace {
+  private algsWithParityTwist<T>(solvable: Solvable<T>, parityTwist: ParityTwist): ProbabilisticAlgTrace {
     // If they want to do one other unoriented first, that can be done.
     if (solvable.unoriented.length === 1) {
       const unoriented = solvable.unoriented[0];
@@ -49,13 +49,13 @@ export class ParitySolver {
     });
   }
 
-  private algsWithParityTwistWithOrientedType(solvable: Solvable, parityTwist: ParityTwist, orientedType: OrientedType): ProbabilisticAlgTrace {
+  private algsWithParityTwistWithOrientedType<T>(solvable: Solvable<T>, parityTwist: ParityTwist, orientedType: OrientedType): ProbabilisticAlgTrace {
     const remainingSolvable = solvable.applyParityTwist(parityTwist, orientedType);
     const remainingTraces = this.unorientedAlgs(remainingSolvable);
     return withPrefix(remainingTraces, parityTwist);
   };
 
-  algsWithParity(solvable: Solvable, parity: Parity): ProbabilisticAlgTrace {
+  algsWithParity<T>(solvable: Solvable<T>, parity: Parity): ProbabilisticAlgTrace {
     const buffer = parity.firstPiece;
     const otherPiece = parity.lastPiece;
     const parityTwistPieces = solvable.unoriented.filter(piece => this.decider.canParityTwist(new ParityTwist(buffer, otherPiece, piece)));
@@ -65,7 +65,7 @@ export class ParitySolver {
                       () => this.algsWithVanillaParity(solvable, parity));
   }
 
-  private unorientedAlgs(solvable: Solvable): ProbabilisticAlgTrace {
+  private unorientedAlgs<T>(solvable: Solvable<T>): ProbabilisticAlgTrace {
     assert(!solvable.hasPermuted, 'unorienteds cannot permute');
     return new ProbabilisticAlgTrace(this.twistSolver.algs(solvable.unorientedByType).map(algs => [solvable, algs]));
   }

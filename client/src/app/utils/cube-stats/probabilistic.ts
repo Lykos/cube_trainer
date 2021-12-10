@@ -50,10 +50,6 @@ export class Probabilistic<X> {
   }
 }
 
-export function mapSecond<X, Y, Z>(probabilistic: Probabilistic<[X, Y]>, f: (y: Y) => Z): Probabilistic<[X, Z]> {
-  return probabilistic.map(([x, y]) => [x, f(y)]);
-}
-
 export function flattenProbabilistic<X, Y extends Probabilistic<X>>(probabilistic: Probabilistic<Y>): Probabilistic<X> {
   return new Probabilistic<X>(probabilistic.possibilities.flatMap(
     (probabilisticAndProbability: ProbabilisticPossibility<Y>) => {

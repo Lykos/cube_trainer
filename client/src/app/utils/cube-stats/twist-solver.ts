@@ -4,10 +4,12 @@ import { count, sum, minBy, findIndex, contains } from '../utils';
 import { none, some, Optional, forceValue, mapOptional, ifPresentOrElse, orElse, hasValue } from '../optional';
 import { AlgTrace, emptyAlgTrace } from './alg-trace';
 import { TwistWithCost } from './twist-with-cost';
+import { Decider } from './decider';
 import { PieceDescription } from './piece-description';
 import { assert, assertEqual } from '../assert';
+import { Solvable } from './solvable';
 
-function unorientedByTypeIndex(unorientedByType: Piece[][]) {
+function unorientedByTypeIndex(unorientedByType: readonly (readonly Piece[])[]) {
   const orientedTypes = unorientedByType.length + 1;
   return sum(unorientedByType.map((unorientedForType, unorientedType) => {
     const orientedType = unorientedType + 1;
@@ -16,13 +18,19 @@ function unorientedByTypeIndex(unorientedByType: Piece[][]) {
 }
 
 export interface TwistSolver {
-  algs(unorientedByType: Piece[][]): Probabilistic<AlgTrace>;
+  algs<T extends Solvable<T>>(solvable: T): Probabilistic<[T, AlgTrace]>;
 }
 
 class TwistSolverImpl implements TwistSolver {
   constructor(private readonly algsByIndex: Optional<AlgTrace>[]) {}
 
-  algs(unorientedByType: Piece[][]): Probabilistic<AlgTrace> {
+  algs<T extends Solvable<T>>(solvable: T): Probabilistic<[T, AlgTrace]> {
+    return solvable.decideUnorientedByType().flatMap(([solvable, unorientedByType]) => {
+      return this.algsWithFixedPieces(unorientedByType).map(algs => [solvable, algs]);
+    });
+  }
+
+  private algsWithFixedPieces(unorientedByType: readonly (readonly Piece[])[]): Probabilistic<AlgTrace> {
     const index = unorientedByTypeIndex(unorientedByType);
     if (!hasValue(this.algsByIndex[index])) {
       console.log(this);
