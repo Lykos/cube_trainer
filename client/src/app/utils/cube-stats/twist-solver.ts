@@ -1,20 +1,17 @@
 import { deterministic, Probabilistic } from './probabilistic';
-import { Piece } from './piece';
-import { count, sum, minBy, findIndex, contains } from '../utils';
-import { none, some, Optional, forceValue, mapOptional, ifPresentOrElse, orElse, hasValue } from '../optional';
+import { count, zip, sum, minBy, findIndex } from '../utils';
+import { none, some, Optional, forceValue, ifPresentOrElse, hasValue } from '../optional';
 import { AlgTrace, emptyAlgTrace } from './alg-trace';
 import { TwistWithCost } from './twist-with-cost';
 import { Decider } from './decider';
 import { PieceDescription } from './piece-description';
 import { assert, assertEqual } from '../assert';
 import { Solvable } from './solvable';
+import { numOrientedTypes, OrientedType, solvedOrientedType } from './oriented-type';
 
-function unorientedByTypeIndex(unorientedByType: readonly (readonly Piece[])[]) {
-  const orientedTypes = unorientedByType.length + 1;
-  return sum(unorientedByType.map((unorientedForType, unorientedType) => {
-    const orientedType = unorientedType + 1;
-    return sum(unorientedForType.map(piece => orientedType * orientedTypes ** piece.pieceId));
-  }));
+function orientedTypesIndex(orientedTypes: readonly OrientedType[]) {
+  const calculatedNumOrientedTypes = numOrientedTypes(orientedTypes);
+  return sum(orientedTypes.map((orientedType, index) => orientedType.index * calculatedNumOrientedTypes ** index));
 }
 
 export interface TwistSolver {
@@ -25,16 +22,16 @@ class TwistSolverImpl implements TwistSolver {
   constructor(private readonly algsByIndex: Optional<AlgTrace>[]) {}
 
   algs<T extends Solvable<T>>(solvable: T): Probabilistic<[T, AlgTrace]> {
-    return solvable.decideUnorientedByType().flatMap(([solvable, unorientedByType]) => {
-      return this.algsWithFixedPieces(unorientedByType).map(algs => [solvable, algs]);
+    return solvable.decideOrientedTypes().flatMap(([solvable, orientedTypes]) => {
+      return this.algsWithFixedPieces(orientedTypes).map(algs => [solvable, algs]);
     });
   }
 
-  private algsWithFixedPieces(unorientedByType: readonly (readonly Piece[])[]): Probabilistic<AlgTrace> {
-    const index = unorientedByTypeIndex(unorientedByType);
+  private algsWithFixedPieces(orientedTypes: readonly OrientedType[]): Probabilistic<AlgTrace> {
+    const index = orientedTypesIndex(orientedTypes);
     if (!hasValue(this.algsByIndex[index])) {
       console.log(this);
-      console.log(unorientedByType);
+      console.log(orientedTypes);
     }
     const algTrace = forceValue(this.algsByIndex[index]);
     return deterministic(algTrace);
@@ -43,7 +40,7 @@ class TwistSolverImpl implements TwistSolver {
 
 interface AlgTraceWithCost {
   readonly index: number;
-  readonly targetUnorientedByType: readonly (readonly Piece[])[];
+  readonly targetOrientedTypes: readonly OrientedType[];
   readonly algTrace: AlgTrace;
   readonly cost: number;
 }
@@ -71,36 +68,16 @@ class AlgTracesPriorityQueue {
   }
 }
 
-function orientedTypeForPiece(unorientedByType: readonly (readonly Piece[])[], piece: Piece) {
-  const maybeUnorientedType = findIndex(unorientedByType, unorientedForType => contains(unorientedForType, piece));
-  const maybeOrientedType = mapOptional(maybeUnorientedType, unorientedType => unorientedType + 1)
-  return orElse(maybeOrientedType, 0);
-}
-
-function combineUnorientedByTypes(left: readonly (readonly Piece[])[], right: readonly (readonly Piece[])[]): Piece[][] {
+function combineOrientedTypess(left: readonly OrientedType[], right: readonly OrientedType[]): OrientedType[] {
   assertEqual(left.length, right.length);
-  const unorientedTypes = left.length;
-  assert(unorientedTypes <= 2);
-  const orientedTypes = unorientedTypes + 1;
-  const pieces: Piece[] = left.flat(1).concat(right.flat(1));
-  const result: Piece[][] = left.map(() => []);
-  for (let piece of pieces) {
-    const leftOrientedType = orientedTypeForPiece(left, piece);
-    const rightOrientedType = orientedTypeForPiece(right, piece);
-    const orientedType = (leftOrientedType + rightOrientedType) % orientedTypes;
-    if (orientedType !== 0) {
-      const unorientedType = orientedType - 1;
-      result[unorientedType].push(piece);
-    }
-  }
-  return result;
+  return zip(left, right).map(([left, right]) => left.plus(right));
 }
 
 function combine(algTraceWithCost: AlgTraceWithCost, twistWithCost: TwistWithCost): AlgTraceWithCost {
-  const targetUnorientedByType = combineUnorientedByTypes(algTraceWithCost.targetUnorientedByType, twistWithCost.twist.unorientedByType);
-  const index = unorientedByTypeIndex(targetUnorientedByType);
+  const targetOrientedTypes = combineOrientedTypess(algTraceWithCost.targetOrientedTypes, twistWithCost.twist.orientedTypes);
+  const index = orientedTypesIndex(targetOrientedTypes);
   return {
-    targetUnorientedByType,
+    targetOrientedTypes,
     index,
     algTrace: algTraceWithCost.algTrace.withSuffix(twistWithCost.twist),
     cost: algTraceWithCost.cost + twistWithCost.cost,
@@ -108,14 +85,14 @@ function combine(algTraceWithCost: AlgTraceWithCost, twistWithCost: TwistWithCos
 }
 
 export function createTwistSolver(decider: Decider, pieceDescription: PieceDescription): TwistSolver {
-  assert(pieceDescription.unorientedTypes <= 2);
+  assert(pieceDescription.numOrientedTypes <= 3);
   const twistsWithCosts: TwistWithCost[] = decider.twistsWithCosts;
-  const numItems = pieceDescription.orientedTypes ** pieceDescription.pieces.length;
+  const numItems = pieceDescription.numOrientedTypes ** pieceDescription.pieces.length;
   const algsByIndex: Optional<AlgTrace>[] = Array(numItems).fill(none);
   const costByIndex: number[] = Array(numItems).fill(Infinity);
-  const targetUnorientedByType: readonly (readonly Piece[])[] = Array(pieceDescription.unorientedTypes).fill([]);
-  const index = unorientedByTypeIndex(targetUnorientedByType);
-  const solvedAlgTraceWithCost: AlgTraceWithCost = {targetUnorientedByType, index, algTrace: emptyAlgTrace(), cost: 0};
+  const targetOrientedTypes: readonly OrientedType[] = pieceDescription.pieces.map(() => solvedOrientedType);
+  const index = orientedTypesIndex(targetOrientedTypes);
+  const solvedAlgTraceWithCost: AlgTraceWithCost = {targetOrientedTypes, index, algTrace: emptyAlgTrace(), cost: 0};
   const unprocessed = new AlgTracesPriorityQueue();
   unprocessed.pushOrDecreaseCost(solvedAlgTraceWithCost);
   while (!unprocessed.empty) {
@@ -131,7 +108,7 @@ export function createTwistSolver(decider: Decider, pieceDescription: PieceDescr
     }
   }
   const actualSolved = count(algsByIndex, hasValue);
-  const expectedSolved = pieceDescription.orientedTypes ** (pieceDescription.pieces.length - 1);
+  const expectedSolved = pieceDescription.numOrientedTypes ** (pieceDescription.pieces.length - 1);
   assert(actualSolved === expectedSolved, `The set of given twists is not sufficient to solve all twists (${actualSolved}/${expectedSolved})`);
   return new TwistSolverImpl(algsByIndex);
 }

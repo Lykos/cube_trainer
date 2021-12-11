@@ -40,7 +40,7 @@ export function contains<X>(xs: readonly X[], x: X) {
   return xs.some(y => y === x);
 }
 
-export function sum(xs: number[]) {
+export function sum(xs: readonly number[]) {
   return xs.reduce((a, b) => a + b, 0);
 }
 

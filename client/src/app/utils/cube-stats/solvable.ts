@@ -5,6 +5,9 @@ import { OrientedType } from './oriented-type'
 import { Optional } from '../optional';
 
 export interface Solvable<T> {
+  numPermuted(): number;
+  numCycles(): number;
+
   applyCycleBreakFromSwap(cycleBreak: ThreeCycle): T;
   applyCycleBreakFromUnpermuted(cycleBreak: ThreeCycle): T;
   applyParity(parity: Parity, orientedType: OrientedType): T;
@@ -29,7 +32,7 @@ export interface Solvable<T> {
   decideOnlyUnorientedExcept(piece: Piece): Probabilistic<[T, Optional<Piece>]>;
 
   decideOrientedTypeForPieceCycle(piece: Piece): Probabilistic<[T, OrientedType]>;
-  decideUnorientedByType(): Probabilistic<[T, readonly (readonly Piece[])[]]>;
+  decideOrientedTypes(): Probabilistic<[T, readonly OrientedType[]]>;
   decideCycleLength(piece: Piece): Probabilistic<[T, number]>;
   decideNextPiece(piece: Piece): Probabilistic<[T, Piece]>;
 }

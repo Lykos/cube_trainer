@@ -72,7 +72,7 @@ export function forceValue<X>(optional: Optional<X>): X {
 }
 
 export function checkNone<X>(optional: Optional<X>): void {
-  if (optional.tag == "some") {
+  if (optional.tag == 'some') {
     throw new Error(`Checked None for ${optional}.`);
   }
 }

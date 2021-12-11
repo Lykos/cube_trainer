@@ -10,3 +10,15 @@ export function sumVectorSpaceElements<X extends VectorSpaceElement<X>>(xs: X[],
     return xs.reduce((a, b) => a.plus(b));
   }
 }
+
+export class NumberAsVectorSpaceElement implements VectorSpaceElement<NumberAsVectorSpaceElement> {
+  constructor(readonly value: number) {}
+
+  plus(that: NumberAsVectorSpaceElement) {
+    return new NumberAsVectorSpaceElement(this.value + that.value);
+  }
+  
+  times(factor: number) {
+    return new NumberAsVectorSpaceElement(this.value * factor);
+  }
+}

@@ -10,7 +10,7 @@ export class Decider {
 
   constructor(readonly piecePermutationDescription: PiecePermutationDescription) {
     this.twistsWithCosts = piecePermutationDescription.pieceDescription.twistGroups().filter(g => g.numUnoriented === 2).map(g => {
-      return {twist: new Twist(g.unorientedByType), cost: 1};
+      return {twist: new Twist(g.orientedTypes), cost: 1};
     });
   }
 

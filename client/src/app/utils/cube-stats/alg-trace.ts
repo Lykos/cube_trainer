@@ -10,8 +10,8 @@ function splitPiecesIntoAlgs(buffer: Piece, numRemainingPieces: number, maxCycle
   assert(maxCycleLength % 2 === 1);
   assert(numRemainingPieces % 2 === 0);
   const algs: Alg[] = [];
-  for (; numRemainingPieces >= maxCycleLength; numRemainingPieces -= maxCycleLength) {
-    algs.push(new EvenCycle(buffer, maxCycleLength));
+  for (; numRemainingPieces >= maxCycleLength; numRemainingPieces -= maxCycleLength - 1) {
+    algs.push(new EvenCycle(buffer, maxCycleLength - 1));
   }
   algs.push(new EvenCycle(buffer, numRemainingPieces));
   return algs;
@@ -59,9 +59,9 @@ export class AlgTrace {
     const builder = new AlgCountsBuilder();
     this.algs.forEach(alg => {
       if (alg instanceof EvenCycle) {
-        builder.incrementCycles();
+        builder.incrementCycles(alg.length);
       } else if (alg instanceof Parity) {
-        builder.incrementCycles();
+        builder.incrementParities();
       } else if (alg instanceof ParityTwist) {
         builder.incrementParityTwists();
       } else if (alg instanceof DoubleSwap) {

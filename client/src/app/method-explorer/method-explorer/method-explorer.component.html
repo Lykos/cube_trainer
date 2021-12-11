@@ -1,10 +1,10 @@
 <div>
   <h1>Method Explorer</h1>
-  <ng-container *ngIf="expectedTotalAlgs$ | orerror | async as expectedTotalAlgsOrError; else loading">
-    <ng-container *ngIf="expectedTotalAlgsOrError | value as expectedTotalAlgs">
-      {{ expectedTotalAlgs }}
+  <ng-container *ngIf="expectedAlgsData$ | orerror | async as expectedAlgsDataOrError; else loading">
+    <ng-container *ngIf="expectedAlgsDataOrError | value as expectedAlgsData">
+      <cube-trainer-alg-counts-table [expectedAlgsData]="expectedAlgsData"></cube-trainer-alg-counts-table>
     </ng-container>
-    <div class="error" *ngIf="expectedTotalAlgsOrError | error as error">
+    <div class="error" *ngIf="expectedAlgsDataOrError | error as error">
       Error computing expected total algs: {{ error }}
     </div>
   </ng-container>

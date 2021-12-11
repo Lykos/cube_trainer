@@ -1,5 +1,6 @@
-import { orElse, forceValue, Optional } from '../optional';
+import { orElse, forceValue, Optional, some, none, ifPresent } from '../optional';
 import { indexOf } from '../utils';
+import { assert } from '../assert';
 import { Piece } from './piece';
 import { PieceDescription } from './piece-description';
 import { Parity, ThreeCycle, EvenCycle, DoubleSwap } from './alg';
@@ -74,55 +75,78 @@ export class Solver {
       fallbackBuffer);
   }
 
-  private algsWithPartialDoubleSwap<T extends Solvable<T>>(bufferState: BufferState, solvable: T, doubleSwap: DoubleSwap): ProbabilisticAlgTrace<T> {
+  private algsWithPartialDoubleSwap<T extends Solvable<T>>(bufferState: BufferState, solvable: T, decreasingNumber: number, doubleSwap: DoubleSwap): ProbabilisticAlgTrace<T> {
     const remainingSolvable = solvable.applyPartialDoubleSwap(doubleSwap);
-    const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingSolvable);
+    const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingSolvable, some(decreasingNumber));
     return withPrefix(remainingTraces, doubleSwap);
   }
 
-  private algsWithCompleteDoubleSwap<T extends Solvable<T>>(bufferState: BufferState, solvable: T, doubleSwap: DoubleSwap): ProbabilisticAlgTrace<T> {
+  private algsWithCompleteDoubleSwap<T extends Solvable<T>>(bufferState: BufferState,
+                                                            solvable: T,
+                                                            decreasingNumber: number,
+                                                            doubleSwap: DoubleSwap): ProbabilisticAlgTrace<T> {
     return solvable.decideOrientedTypeForPieceCycle(doubleSwap.thirdPiece).flatMap(([solvable, orientedType]) => {
-      return this.algsWithCompleteDoubleSwapAndOrientedType(bufferState, solvable, doubleSwap, orientedType);
+      return this.algsWithCompleteDoubleSwapAndOrientedType(bufferState, solvable, decreasingNumber, doubleSwap, orientedType);
     });
   }
 
-  private algsWithCompleteDoubleSwapAndOrientedType<T extends Solvable<T>>(bufferState: BufferState, solvable: T, doubleSwap: DoubleSwap, orientedType: OrientedType): ProbabilisticAlgTrace<T> {
+  private algsWithCompleteDoubleSwapAndOrientedType<T extends Solvable<T>>(bufferState: BufferState,
+                                                                           solvable: T,
+                                                                           decreasingNumber: number,
+                                                                           doubleSwap: DoubleSwap,
+                                                                           orientedType: OrientedType): ProbabilisticAlgTrace<T> {
     const remainingSolvable = solvable.applyCompleteDoubleSwap(doubleSwap, orientedType);
-    const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingSolvable);
+    const remainingTraces = this.algs(newBufferState(doubleSwap.thirdPiece), remainingSolvable, some(decreasingNumber));
     return withPrefix(remainingTraces, doubleSwap);
   }
 
-  private algsWithDoubleSwap<T extends Solvable<T>>(bufferState: BufferState, solvable: T, doubleSwap: DoubleSwap): ProbabilisticAlgTrace<T> {
+  private algsWithDoubleSwap<T extends Solvable<T>>(bufferState: BufferState,
+                                                    solvable: T,
+                                                    decreasingNumber: number,
+                                                    doubleSwap: DoubleSwap): ProbabilisticAlgTrace<T> {
     if (solvable.decideCycleLength(doubleSwap.thirdPiece).assertDeterministic()[1] === 2) {
-      return this.algsWithCompleteDoubleSwap(bufferState, solvable, doubleSwap);
+      return this.algsWithCompleteDoubleSwap(bufferState, solvable, decreasingNumber, doubleSwap);
     } else {
-      return this.algsWithPartialDoubleSwap(bufferState, solvable, doubleSwap);
+      return this.algsWithPartialDoubleSwap(bufferState, solvable, decreasingNumber, doubleSwap);
     }
   }
 
-  private algsWithCycleBreakFromSwap<T extends Solvable<T>>(bufferState: BufferState, solvable: T, cycleBreak: ThreeCycle): ProbabilisticAlgTrace<T> {
+  private algsWithCycleBreakFromSwap<T extends Solvable<T>>(bufferState: BufferState,
+                                                            solvable: T,
+                                                            decreasingNumber: number,
+                                                            cycleBreak: ThreeCycle): ProbabilisticAlgTrace<T> {
     const remainingSolvable = solvable.applyCycleBreakFromSwap(cycleBreak);
     const nextBufferState = bufferState.withCycleBreak();
-    const remainingTraces = this.algs(nextBufferState, remainingSolvable);
+    const remainingTraces = this.algs(nextBufferState, remainingSolvable, some(decreasingNumber));
     return withPrefix(remainingTraces, cycleBreak);
   }
 
-  private algsWithCycleBreakFromUnpermuted<T extends Solvable<T>>(bufferState: BufferState, solvable: T, cycleBreak: ThreeCycle): ProbabilisticAlgTrace<T> {
+  private algsWithCycleBreakFromUnpermuted<T extends Solvable<T>>(bufferState: BufferState,
+                                                                  solvable: T,
+                                                                  decreasingNumber: number,
+                                                                  cycleBreak: ThreeCycle): ProbabilisticAlgTrace<T> {
     const remainingSolvable = solvable.applyCycleBreakFromUnpermuted(cycleBreak);
     const nextBufferState = bufferState.withCycleBreak();
-    const remainingTraces = this.algs(nextBufferState, remainingSolvable);
+    const remainingTraces = this.algs(nextBufferState, remainingSolvable, some(decreasingNumber));
     return withPrefix(remainingTraces, cycleBreak);
   }
 
-  private algsWithEvenCycle<T extends Solvable<T>>(bufferState: BufferState, solvable: T, cycle: EvenCycle): ProbabilisticAlgTrace<T> {
+  private algsWithEvenCycle<T extends Solvable<T>>(bufferState: BufferState,
+                                                   solvable: T,
+                                                   decreasingNumber: number,
+                                                   cycle: EvenCycle): ProbabilisticAlgTrace<T> {
     return solvable.decideOrientedTypeForPieceCycle(cycle.firstPiece).flatMap(([solvable, orientedType]) => {
-      return this.algsWithEvenCycleWithOrientedType(bufferState, solvable, cycle, orientedType);
+      return this.algsWithEvenCycleWithOrientedType(bufferState, solvable, decreasingNumber, cycle, orientedType);
     });
   }
 
-  private algsWithEvenCycleWithOrientedType<T extends Solvable<T>>(bufferState: BufferState, solvable: T, cycle: EvenCycle, orientedType: OrientedType): ProbabilisticAlgTrace<T> {
+  private algsWithEvenCycleWithOrientedType<T extends Solvable<T>>(bufferState: BufferState,
+                                                                   solvable: T,
+                                                                   decreasingNumber: number,
+                                                                   cycle: EvenCycle,
+                                                                   orientedType: OrientedType): ProbabilisticAlgTrace<T> {
     const remainingSolvable = solvable.applyCompleteEvenCycle(cycle, orientedType);
-    const remainingTraces = this.algs(bufferState, remainingSolvable);
+    const remainingTraces = this.algs(bufferState, remainingSolvable, some(decreasingNumber));
     return withPrefix(remainingTraces, cycle);
   }
 
@@ -130,12 +154,18 @@ export class Solver {
     return this.twistSolver.algs(solvable);
   }
 
-  private cycleBreakWithBufferAndOtherPieceAndNextPiece<T extends Solvable<T>>(bufferState: BufferState, solvable: T, buffer: Piece, otherPiece: Piece, cycleBreak: Piece, nextPiece: Piece): ProbabilisticAlgTrace<T> {
+  private cycleBreakWithBufferAndOtherPieceAndNextPiece<T extends Solvable<T>>(bufferState: BufferState,
+                                                                               solvable: T,
+                                                                               decreasingNumber: number, 
+                                                                               buffer: Piece,
+                                                                               otherPiece: Piece,
+                                                                               cycleBreak: Piece,
+                                                                               nextPiece: Piece): ProbabilisticAlgTrace<T> {
     const doubleSwap = new DoubleSwap(buffer, otherPiece, cycleBreak, nextPiece);
     if (this.decider.canChangeBuffer(bufferState) && this.decider.canDoubleSwap(doubleSwap)) {
-      return this.algsWithDoubleSwap(bufferState, solvable, doubleSwap);
+      return this.algsWithDoubleSwap(bufferState, solvable, decreasingNumber, doubleSwap);
     }
-    return this.algsWithCycleBreakFromSwap(bufferState, solvable, new ThreeCycle(buffer, otherPiece, cycleBreak));
+    return this.algsWithCycleBreakFromSwap(bufferState, solvable, decreasingNumber, new ThreeCycle(buffer, otherPiece, cycleBreak));
   }
 
   private sortedNextCycleBreaksOnSecondPiece(buffer: Piece, firstPiece: Piece): readonly Piece[] {
@@ -146,17 +176,21 @@ export class Solver {
     return this.decider.piecePermutationDescription.pieces.filter(p => p !== buffer);
   }
 
-  private cycleBreakWithBufferAndOtherPiece<T extends Solvable<T>>(bufferState: BufferState, solvable: T, buffer: Piece, otherPiece: Piece): ProbabilisticAlgTrace<T> {
+  private cycleBreakWithBufferAndOtherPiece<T extends Solvable<T>>(bufferState: BufferState,
+                                                                   solvable: T,
+                                                                   decreasingNumber: number,
+                                                                   buffer: Piece,
+                                                                   otherPiece: Piece): ProbabilisticAlgTrace<T> {
     return decideNextCycleBreak(solvable, this.sortedNextCycleBreaksOnSecondPiece(buffer, otherPiece)).flatMap(([solvable, cycleBreakPiece]) => {
       return solvable.decideNextPiece(cycleBreakPiece).flatMap(([solvable, nextPiece]) => {
-	return this.cycleBreakWithBufferAndOtherPieceAndNextPiece(bufferState, solvable, buffer, otherPiece, cycleBreakPiece, nextPiece);
+	return this.cycleBreakWithBufferAndOtherPieceAndNextPiece(bufferState, solvable, decreasingNumber, buffer, otherPiece, cycleBreakPiece, nextPiece);
       });
     });
   }
 
-  private algsWithPartialCycle<T extends Solvable<T>>(bufferState: BufferState, solvable: T, cycle: EvenCycle): ProbabilisticAlgTrace<T> {
+  private algsWithPartialCycle<T extends Solvable<T>>(bufferState: BufferState, solvable: T, decreasingNumber: number, cycle: EvenCycle): ProbabilisticAlgTrace<T> {
     const remainingSolvable = solvable.applyPartialEvenCycle(cycle);
-    const remainingTraces = this.algs(bufferState, remainingSolvable);
+    const remainingTraces = this.algs(bufferState, remainingSolvable, some(decreasingNumber));
     return withPrefix(remainingTraces, cycle);
   }
 
@@ -165,66 +199,88 @@ export class Solver {
     return this.paritySolver.algsWithParity(solvable, new Parity(buffer, otherPiece));
   }
 
-  private algsWithCycleBreakAndPermutedBuffer<T extends Solvable<T>>(bufferState: BufferState, solvable: T, buffer: Piece): ProbabilisticAlgTrace<T> {
+  private algsWithCycleBreakAndPermutedBuffer<T extends Solvable<T>>(bufferState: BufferState, solvable: T, decreasingNumber: number, buffer: Piece): ProbabilisticAlgTrace<T> {
     return solvable.decideNextPiece(buffer).flatMap(([solvable, otherPiece]) => {
-      return this.cycleBreakWithBufferAndOtherPiece(bufferState, solvable, buffer, otherPiece);
+      return this.cycleBreakWithBufferAndOtherPiece(bufferState, solvable, decreasingNumber, buffer, otherPiece);
     });
   }
 
-  private algsWithPermutedBufferAndCycleLength<T extends Solvable<T>>(bufferState: BufferState, solvable: T, buffer: Piece, cycleLength: number): ProbabilisticAlgTrace<T> {
+  private algsWithPermutedBufferAndCycleLength<T extends Solvable<T>>(bufferState: BufferState, solvable: T, decreasingNumber: number, buffer: Piece, cycleLength: number): ProbabilisticAlgTrace<T> {
     if (cycleLength === 2) {
       return pSecondIfThenElse(
 	solvable.decideIsParityTime(),
 	solvable => this.algsWithParityAndBuffer(solvable, buffer),
-	solvable => this.algsWithCycleBreakAndPermutedBuffer(bufferState, solvable, buffer));
+	solvable => this.algsWithCycleBreakAndPermutedBuffer(bufferState, solvable, decreasingNumber, buffer));
     } else if (cycleLength % 2 === 1) {
-      return this.algsWithEvenCycle(bufferState, solvable, new EvenCycle(buffer, cycleLength - 1));
+      return this.algsWithEvenCycle(bufferState, solvable, decreasingNumber, new EvenCycle(buffer, cycleLength - 1));
     } else {
-      return this.algsWithPartialCycle(bufferState, solvable, new EvenCycle(buffer, cycleLength - 2));
+      return this.algsWithPartialCycle(bufferState, solvable, decreasingNumber, new EvenCycle(buffer, cycleLength - 2));
     }
   }
 
-  private algsWithPermutedBuffer<T extends Solvable<T>>(bufferState: BufferState, solvable: T, buffer: Piece): ProbabilisticAlgTrace<T> {
+  private algsWithPermutedBuffer<T extends Solvable<T>>(bufferState: BufferState,
+                                                        solvable: T,
+                                                        decreasingNumber: number,
+                                                        buffer: Piece): ProbabilisticAlgTrace<T> {
     return solvable.decideCycleLength(buffer).flatMap(([solvable, cycleLength]) => {
-      return this.algsWithPermutedBufferAndCycleLength(bufferState, solvable, buffer, cycleLength);
+      return this.algsWithPermutedBufferAndCycleLength(bufferState, solvable, decreasingNumber, buffer, cycleLength);
     });
   }
 
-  private algsWithUnpermutedBufferAndPermutedRest<T extends Solvable<T>>(bufferState: BufferState, solvable: T, buffer: Piece): ProbabilisticAlgTrace<T> {
+  private algsWithUnpermutedBufferAndPermutedRest<T extends Solvable<T>>(bufferState: BufferState,
+                                                                         solvable: T,
+                                                                         decreasingNumber: number,
+                                                                         buffer: Piece): ProbabilisticAlgTrace<T> {
     return decideNextCycleBreak(solvable, this.sortedNextCycleBreaksOnFirstPiece(buffer)).flatMap(([solvable, cycleBreakPiece]) => {
       return solvable.decideNextPiece(cycleBreakPiece).flatMap(([solvable, nextPiece]) => {
-	return this.algsWithCycleBreakFromUnpermuted(bufferState, solvable, new ThreeCycle(buffer, cycleBreakPiece, nextPiece));
+	return this.algsWithCycleBreakFromUnpermuted(bufferState, solvable, decreasingNumber, new ThreeCycle(buffer, cycleBreakPiece, nextPiece));
       });
     });
   }
 
   private algsWithUnpermutedBuffer<T extends Solvable<T>>(bufferState: BufferState,
 							  solvable: T,
+                                                          decreasingNumber: number,
 							  buffer: Piece): ProbabilisticAlgTrace<T> {
     return pSecondIfThenElse(
       solvable.decideHasPermuted(),
-      solvable => this.algsWithUnpermutedBufferAndPermutedRest(bufferState, solvable, buffer),
+      solvable => this.algsWithUnpermutedBufferAndPermutedRest(bufferState, solvable, decreasingNumber, buffer),
       solvable => this.unorientedAlgs(solvable));
   }
 
-  private algs<T extends Solvable<T>>(bufferState: BufferState, solvable: T): ProbabilisticAlgTrace<T> {
+  private algs<T extends Solvable<T>>(bufferState: BufferState, solvable: T, decreasingNumber: Optional<number>): ProbabilisticAlgTrace<T> {
+    // In order to avoid infinite loops, we check that the number of swaps decreases.
+    // Because breaking into a new cycle from a new buffer doesn't decrease the number of swaps,
+    // we add 1 as a single-use joker if we can.
+    let nextDecreasingNumber = (solvable.numPermuted() + solvable.numCycles()) * 2;
+    if (nextDecreasingNumber + 1 < orElse(decreasingNumber, Infinity)) {
+      ++nextDecreasingNumber;
+    }
+    ifPresent(decreasingNumber, decreasingNumber => {
+      assert(nextDecreasingNumber < decreasingNumber, 'decreasing number not decreasing');
+    });
     return this.decideNextBuffer(bufferState, solvable).flatMap(([solvable, buffer]) => {
       if (buffer !== bufferState.previousBuffer) {
 	bufferState = emptyBufferState();
       }
-      return this.algsWithBuffer(bufferState, solvable, buffer);
+      return this.algsWithBuffer(bufferState, solvable, nextDecreasingNumber, buffer);
     });
   }
 
-  private algsWithBuffer<T extends Solvable<T>>(bufferState: BufferState, solvable: T, buffer: Piece): ProbabilisticAlgTrace<T> {
+  private algsWithBuffer<T extends Solvable<T>>(bufferState: BufferState,
+                                                solvable: T,
+                                                decreasingNumber: number,
+                                                buffer: Piece): ProbabilisticAlgTrace<T> {
     return pSecondIfThenElse(
       solvable.decideIsPermuted(buffer),
-      solvable => this.algsWithPermutedBuffer(bufferState, solvable, buffer),
-      solvable => this.algsWithUnpermutedBuffer(bufferState, solvable, buffer));
+      solvable => this.algsWithPermutedBuffer(bufferState, solvable, decreasingNumber, buffer),
+      solvable => this.algsWithUnpermutedBuffer(bufferState, solvable, decreasingNumber, buffer));
   }
 
   algCounts<T extends Solvable<T>>(solvable: T): Probabilistic<AlgCounts> {
-    return pSecond(this.algs(emptyBufferState(), solvable)).map(algTrace => algTrace.withMaxCycleLength((buffer: Piece) => this.decider.maxCycleLengthForBuffer(buffer)).countAlgs());
+    const algTraces = pSecond(this.algs(emptyBufferState(), solvable, none))
+    const adjustedAlgTraces = algTraces.map(algTrace => algTrace.withMaxCycleLength((buffer: Piece) => this.decider.maxCycleLengthForBuffer(buffer)));
+    return adjustedAlgTraces.map(algTrace => algTrace.countAlgs());
   }
 }
 

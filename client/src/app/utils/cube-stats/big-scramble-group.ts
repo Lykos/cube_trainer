@@ -5,28 +5,23 @@ import { assert } from '../assert';
 import { ncr, factorial } from './combinatorics-utils';
 
 // Represents one big group of similar scrambles, i.e.
-// * same number of pieces solved
-// * same number of pieces twisted or flipped
+// * same number of pieces solved, twisted or flipped
 // * same number of pieces permuted
 // * same cycle sizes.
 export class BigScrambleGroup {
   constructor(
     readonly description: PiecePermutationDescription,
-    // Solved pieces.
-    readonly solved: Piece[],
-    // Only used for corners, edges and midges.
-    // It's an array because there can be multiple types of unoriented.
-    // (clockwise and counter-clockwise for corners)
-    readonly unorientedByType: Piece[][],
+    // Solved or unoriented pieces.
+    readonly solvedOrUnoriented: Piece[],
     // Permuted pieces
     readonly permuted: Piece[],
     readonly sortedCycleLengths: number[]) {
-    assert(description.pieces.length === this.solved.length + sum(this.unorientedByType.map(e => e.length)) + this.permuted.length, `inconsistent number of pieces (${description.pieces.length} vs ${this.solved.length} + ${sum(this.unorientedByType.map(e => e.length))} + ${this.permuted.length})`);
+    assert(description.pieces.length === this.solvedOrUnoriented.length + this.permuted.length, `inconsistent number of pieces (${description.pieces.length} vs ${this.solvedOrUnoriented.length} + ${this.permuted.length})`);
     assert(sum(sortedCycleLengths) ===  this.permuted.length, 'inconsistent number of pieces and cycle lengths');
   }
 
-  get unorientedTypes() {
-    return this.unorientedByType.length;
+  get numOrientedTypes() {
+    return this.description.numOrientedTypes;
   }
 
   get pieces() {
@@ -45,7 +40,7 @@ export class BigScrambleGroup {
     // For all except for the last permuted piece, we can choose the orientation.
     // Note that in case of no permuted pieces, we took care of excluding invalid
     // possibilities earlier.
-    const permutationOrientationChoices = this.permuted.length > 0 ? (this.unorientedTypes + 1) ** (this.permuted.length - 1) : 1;
+    const orientationChoices = this.numOrientedTypes ** (this.pieces.length - 1)
     this.sortedCycleLengths.forEach(cycleLength => {
       // Choices for the pieces in this cycle plus orders within the cycle.
       permutedChoices *= ncr(remainingPieces, cycleLength) * factorial(cycleLength - 1);
@@ -59,11 +54,6 @@ export class BigScrambleGroup {
       }
     });
     cyclePermutationDivisor *= factorial(numCyclesWithLastLength);
-    assert(this.unorientedTypes <= 2);
-    // If there are 2 orientation types (i.e for corners)
-    // and there is a different number of unoriented pieces for the two unoriented types,
-    // we have to multiply by 2 for those two choices.
-    const unorientedTypeChoices = this.unorientedTypes === 2 && this.unorientedByType[0].length + this.unorientedByType[1].length > 0 ? 2 : 1;
-    return permutedChoices * unorientedTypeChoices * permutationOrientationChoices / cyclePermutationDivisor;
+    return permutedChoices * orientationChoices / cyclePermutationDivisor;
   }
 }

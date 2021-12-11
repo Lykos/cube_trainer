@@ -1,10 +1,13 @@
-import { Piece } from './piece';
-import { sum } from '../utils';
+import { count } from '../utils';
+import { assert } from '../assert';
+import { OrientedType, orientedSum } from './oriented-type';
 
 export class TwistGroup {
-  constructor(readonly unorientedByType: readonly (readonly Piece[])[]) {}
+  constructor(readonly orientedTypes: readonly OrientedType[]) {
+    assert(orientedSum(this.orientedTypes).isSolved);
+  }
 
   get numUnoriented() {
-    return sum(this.unorientedByType.map(unorientedForType => unorientedForType.length));
+    return count(this.orientedTypes, o => !o.isSolved);
   }
 }

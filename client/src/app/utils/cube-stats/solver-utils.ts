@@ -4,6 +4,7 @@ import { Optional, mapOptional, orElseCall, some, none } from '../optional';
 import { Solvable } from './solvable';
 import { Alg } from './alg';
 import { AlgTrace } from './alg-trace';
+import { assert } from '../assert';
 
 export type ProbabilisticAlgTrace<T extends Solvable<T>> = Probabilistic<[T, AlgTrace]>;
 
@@ -38,5 +39,6 @@ export function decideFirstPieceWithCond<T extends Solvable<T>>(
     return deterministic([solvable, none]);
   }
   const pMaybeGoodPiece = pFilter(solvable, pieces[0], pCond);
+  assert(pieces.slice(1).length < pieces.length);
   return pSecondOrElseTryCall(pMaybeGoodPiece, solvable => decideFirstPieceWithCond(solvable, pCond, pieces.slice(1)));
 }

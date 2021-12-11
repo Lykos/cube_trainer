@@ -1,16 +1,19 @@
 import { createSolver } from './solver';
 import { CORNER, EDGE } from './piece-description';
-import { ExecutionOrder, MethodDescription } from './method-description';
 import { Decider } from './decider';
+import { ExecutionOrder } from './method-description';
 import { PiecePermutationDescription } from './piece-permutation-description';
 import { expectedValue } from './probabilistic';
 import { AlgCounts } from './alg-counts'
+import { AlgCountsRequest, SamplingMethod } from './alg-counts-request'
+import { AlgCountsResponse } from './alg-counts-response'
 import { ExhaustiveSamplingStrategy } from './exhaustive-sampling-strategy';
 import { RandomSamplingStrategy } from './random-sampling-strategy';
 import { now } from '../instant';
 import { seconds } from '../duration';
+import { sumVectorSpaceElements } from './vector-space-element';
 
-const numIterations = 1000;
+const numIterations = 100000;
 const slowGroupThreshold = seconds(10);
 const outputInterval = seconds(1);
 
@@ -41,26 +44,34 @@ function expectedAlgCountsForPieces(pieces: PiecePermutationDescription, samplin
   }));
 }
 
-export enum SamplingMethod {
-  EXHAUSTIVE, SAMPLED
-}
-
-export interface CubeStatsRequest {
-  methodDescription: MethodDescription;
-  samplingMethod: SamplingMethod;
-}
-
-export function expectedAlgCounts(request: CubeStatsRequest): AlgCounts {
-  switch (request.methodDescription.executionOrder) {
+function piecePermutationDescriptions(executionOrder: ExecutionOrder): PiecePermutationDescription[] {
+  switch (executionOrder) {
     case ExecutionOrder.EC: {
-      const edges = new PiecePermutationDescription(EDGE, false);
-      const corners = new PiecePermutationDescription(CORNER, true);
-      return expectedAlgCountsForPieces(edges, request.samplingMethod).plus(expectedAlgCountsForPieces(corners, request.samplingMethod));
+      return [
+        new PiecePermutationDescription(EDGE, false),
+        new PiecePermutationDescription(CORNER, true),
+      ]
     }
     case ExecutionOrder.CE: {
-      const corners = new PiecePermutationDescription(CORNER, false);
-      const edges = new PiecePermutationDescription(EDGE, true);
-      return expectedAlgCountsForPieces(corners, request.samplingMethod).plus(expectedAlgCountsForPieces(edges, request.samplingMethod));
+      return [
+        new PiecePermutationDescription(CORNER, false),
+        new PiecePermutationDescription(EDGE, true),
+      ]
     }
+    default:
+      throw new Error(`Unsupported execution order ${executionOrder}.`);
   }
+}
+
+export function expectedAlgCounts(request: AlgCountsRequest): AlgCountsResponse {
+  const descriptions =
+    piecePermutationDescriptions(request.methodDescription.executionOrder);
+  const piecesWithAlgCounts: readonly [PiecePermutationDescription, AlgCounts][] =
+    descriptions.map(pieces => [pieces, expectedAlgCountsForPieces(pieces, request.samplingMethod)])
+  const pieceNamesWithAlgCounts = piecesWithAlgCounts.map(([pieces, algCounts]) => {
+    return { pluralName: pieces.pluralName, algCounts: algCounts.serializableAlgCounts };
+  });
+  const totalAlgCounts = sumVectorSpaceElements(piecesWithAlgCounts.map(e => e[1])).serializableAlgCounts;
+  const totalRow = { pluralName: 'total', algCounts: totalAlgCounts };
+  return {byPieces: pieceNamesWithAlgCounts.concat([totalRow])};
 }

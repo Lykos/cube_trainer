@@ -1,6 +1,7 @@
 import { Piece } from './piece';
 import { assert } from '../assert';
-import { sum } from '../utils';
+import { count } from '../utils';
+import { OrientedType } from './oriented-type';
 
 export class ParityTwist {
   constructor(
@@ -53,10 +54,10 @@ export class DoubleSwap {
 }
 
 export class Twist {
-  constructor(readonly unorientedByType: readonly (readonly Piece[])[]) {}
+  constructor(readonly orientedTypes: readonly OrientedType[]) {}
 
   get numUnoriented() {
-    return sum(this.unorientedByType.map(e => e.length));
+    return count(this.orientedTypes, e => !e.isSolved);
   }
 }
 

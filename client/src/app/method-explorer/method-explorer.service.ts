@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { MethodDescription } from '../utils/cube-stats/method-description';
-import { expectedAlgCounts, CubeStatsRequest, SamplingMethod } from '../utils/cube-stats/cube-stats';
+import { expectedAlgCounts } from '../utils/cube-stats/cube-stats';
 import { valueOrElseThrow, ifError } from '../shared/or-error.type';
 import { WorkerRequest } from './worker-request.model';
 import { WorkerResponse } from './worker-response.model';
-import { AlgCounts } from '../utils/cube-stats/alg-counts';
+import { AlgCountsRequest, SamplingMethod } from '../utils/cube-stats/alg-counts-request';
+import { AlgCountsResponse } from '../utils/cube-stats/alg-counts-response';
+import { AlgCountsData } from './alg-counts-data.model';
 import { Observable, of, throwError, ReplaySubject } from 'rxjs';
 import { map, first } from 'rxjs/operators';
 
@@ -13,7 +15,7 @@ import { map, first } from 'rxjs/operators';
 })
 export class MethodExplorerService {
   private id = 0;
-  private algCountsWithId$ = new ReplaySubject<WorkerResponse<AlgCounts>>();
+  private algCountsWithId$ = new ReplaySubject<WorkerResponse<AlgCountsResponse>>();
   worker: Worker | undefined;
 
   constructor() {
@@ -21,7 +23,7 @@ export class MethodExplorerService {
       // Create a new worker.
       this.worker = new Worker(new URL('./cube-stats.worker', import.meta.url));
       this.worker.onmessage = ({ data }) => {
-        const response: WorkerResponse<AlgCounts> = data;
+        const response: WorkerResponse<AlgCountsResponse> = data;
         this.algCountsWithId$.next(response);
       };
     } else {
@@ -30,11 +32,15 @@ export class MethodExplorerService {
     }
   }
 
-  expectedAlgCounts(methodDescription: MethodDescription): Observable<AlgCounts> {
+  expectedAlgCounts(methodDescription: MethodDescription): Observable<AlgCountsData> {
+    const request = {methodDescription, samplingMethod: SamplingMethod.SAMPLED};
+    return this.expectedAlgCountsInternal(request).pipe(map(response => new AlgCountsData(response)));
+  }
+
+  private expectedAlgCountsInternal(algCountsRequest: AlgCountsRequest): Observable<AlgCountsResponse> {
     const currentId = ++this.id;
-    const cubeStatsRequest = {methodDescription, samplingMethod: SamplingMethod.SAMPLED};
     if (this.worker) {
-      const request: WorkerRequest<CubeStatsRequest> = {data: cubeStatsRequest, id: currentId};
+      const request: WorkerRequest<AlgCountsRequest> = {data: algCountsRequest, id: currentId};
       this.worker.postMessage(request);
       return this.algCountsWithId$.pipe(
         first(response => response.id === currentId),
@@ -45,7 +51,7 @@ export class MethodExplorerService {
       );
     } else {
       try {
-        return of(expectedAlgCounts(cubeStatsRequest));
+        return of(expectedAlgCounts(algCountsRequest));
       } catch (error) {
         return throwError(error);
       }
