@@ -2,11 +2,12 @@ import { Optional, hasValue, mapOptional, orElseCall, orElse, forceValue, some, 
 import { assert, assertEqual } from '../assert';
 import { Piece } from './piece';
 import { ParityTwist, Parity, ThreeCycle, EvenCycle, DoubleSwap } from './alg';
-import { findIndex, sum, indexOf } from '../utils';
-import { deterministic, mapSecond, Probabilistic, ProbabilisticPossibility } from './probabilistic';
+import { findIndex, sum, indexOf, only } from '../utils';
+import { deterministic, Probabilistic, ProbabilisticPossibility } from './probabilistic';
+import { pMapSecond } from './solver-utils';
 import { BigScrambleGroup } from './big-scramble-group';
 import { Solvable } from './solvable';
-import { solvedOrientedType, OrientedType } from './oriented-type';
+import { solvedOrientedType, orientedType, OrientedType } from './oriented-type';
 
 class PartiallyFixedCycle {
   constructor(
@@ -29,7 +30,7 @@ class PartiallyFixedCycle {
     return this.length - (hasValue(this.definingPiece) ? 1 : 0) - (hasValue(this.nextPiece) ? 1 : 0);
   }
 
-  maybeAdjacentPiece(piece: Piece): Optional<Piece> {
+  maybeNextPiece(piece: Piece): Optional<Piece> {
     const definingPiece = forceValue(this.definingPiece);
     assert(definingPiece === piece);
     return this.nextPiece;
@@ -72,6 +73,12 @@ class PartiallyFixedCycle {
     return new PartiallyFixedCycle(some(definingPiece), some(piece), this.orientedType, this.length);
   }
 
+  // Removes the given piece from the "next piece" position (but doesn't change the length).
+  withoutNextPiece(piece: Piece): PartiallyFixedCycle {
+    assert(forceValue(this.nextPiece) === piece);
+    return new PartiallyFixedCycle(this.definingPiece, none, this.orientedType, this.length);
+  }
+
   containsPiece(piece: Piece) {
     const isDefiningPiece = orElse(mapOptional(this.definingPiece, p => piece === p), false);
     const isNextPiece = orElse(mapOptional(this.nextPiece, p => piece === p), false);
@@ -91,11 +98,11 @@ function emptyPartiallyFixedCycle(length: number): PartiallyFixedCycle {
 export class ScrambleGroup implements Solvable<ScrambleGroup> {
   readonly unfixedPieces: readonly Piece[];
 
-  constructor(readonly solved: readonly Piece[],
-              readonly unorientedByType: readonly (readonly Piece[])[],
-              readonly solvedOrPermuted: readonly Piece[],
-	      readonly numSecretlySolved: number,
-              private readonly partiallyFixedCycles: PartiallyFixedCycle[]) {
+  constructor(private readonly solved: readonly Piece[],
+              private readonly unorientedByType: readonly (readonly Piece[])[],
+              private readonly solvedOrPermuted: readonly Piece[],
+	      private readonly numSecretlySolved: number,
+              private readonly partiallyFixedCycles: readonly PartiallyFixedCycle[]) {
     const totalCycleLength = sum(this.partiallyFixedCycles.map(cycle => cycle.length));
     assert(totalCycleLength === this.numPermuted, `cycles do not cover permuted pieces (${totalCycleLength} vs ${this.numPermuted})`);
     this.unfixedPieces = this.solvedOrPermuted.filter(piece => !partiallyFixedCycles.some(cycle => cycle.containsPiece(piece)));
@@ -113,12 +120,24 @@ export class ScrambleGroup implements Solvable<ScrambleGroup> {
     return this.solvedOrPermuted.length - this.numSecretlySolved;
   }
   
-  get unoriented(): Piece[] {
+  private get parityTime() {
+    return this.numPermuted === 2;
+  }
+
+  private get orientedTypes(): OrientedType[] {
+    return [solvedOrientedType].concat(this.unorientedByType.map((_, index) => orientedType(index)));
+  }
+
+  private get unoriented(): Piece[] {
     return this.unorientedByType.flat(1);
   }
 
-  get parityTime() {
-    return this.numPermuted === 2;
+  decideHasPermuted(): Probabilistic<[ScrambleGroup, boolean]> {
+    return deterministic([this, this.numPermuted === 0]);
+  }
+
+  decideUnorientedByType(): Probabilistic<[ScrambleGroup, readonly (readonly Piece[])[]]> {
+    return deterministic([this, this.unorientedByType]);
   }
 
   decideIsParityTime(): Probabilistic<[ScrambleGroup, boolean]> {
@@ -134,10 +153,29 @@ export class ScrambleGroup implements Solvable<ScrambleGroup> {
     // TODO
     assert(false);    
   }
-  
+
+  decideIsOriented(piece: Piece): Probabilistic<[ScrambleGroup, boolean]> {
+    // TODO
+    assert(false);    
+  }
+
+  decideOnlyUnoriented(): Probabilistic<[ScrambleGroup, Optional<Piece>]> {
+    const unoriented = this.unoriented;
+    const onlyUnoriented = unoriented.length === 1 ? some(unoriented[0]) : none;
+    return deterministic([this, onlyUnoriented]);
+  }
+
+  decideOnlyUnorientedExcept(piece: Piece): Probabilistic<[ScrambleGroup, Optional<Piece>]> {
+    const unoriented = this.unoriented;
+    assert(unoriented.includes(piece));
+    const onlyOtherUnoriented = unoriented.length === 2 ? some(only(unoriented.filter(p => p !== piece))) : none;
+    return deterministic([this, onlyOtherUnoriented]);
+  }
+
+
   decideCycleLength(piece: Piece): Probabilistic<[ScrambleGroup, number]> {
     assert(this.couldBePermuted(piece));
-    return mapSecond(this.cycleIndex(piece), cycleIndex => {
+    return pMapSecond(this.cycleIndex(piece), cycleIndex => {
       const cycle = this.partiallyFixedCycles[cycleIndex];
       return cycle.length;
     });
@@ -151,7 +189,7 @@ export class ScrambleGroup implements Solvable<ScrambleGroup> {
   }
 
   private nextPieceWithCycleIndex(piece: Piece, cycleIndex: number) {
-    const maybeNextPiece = this.partiallyFixedCycles[cycleIndex].maybeAdjacentPiece(piece);
+    const maybeNextPiece = this.partiallyFixedCycles[cycleIndex].maybeNextPiece(piece);
     return this.deterministicOrElseProbabilistic(
       maybeNextPiece,
       () => {
@@ -276,7 +314,7 @@ export class ScrambleGroup implements Solvable<ScrambleGroup> {
     assert(this.couldBePermuted(doubleSwap.fourthPiece));
     const firstSwap = new Parity(doubleSwap.firstPiece, doubleSwap.secondPiece);
     const secondSwap = new Parity(doubleSwap.firstPiece, doubleSwap.secondPiece);
-    return this.applyParity(firstSwap, solvedOrientedType).partiallySolveParity(secondSwap);
+    return this.applyParity(firstSwap, solvedOrientedType).applyPartialParity(secondSwap);
   }
 
   applyCompleteDoubleSwap(doubleSwap: DoubleSwap, orientedType: OrientedType): ScrambleGroup {
@@ -328,13 +366,14 @@ export class ScrambleGroup implements Solvable<ScrambleGroup> {
     return new ScrambleGroup(solved, unorientedByType, solvedOrPermuted, this.numSecretlySolved, partiallyFixedCycles);
   }
 
-  private partiallySolveParity(parity: Parity): ScrambleGroup {
+  // Apply a parity alg that only solves the second piece.
+  private applyPartialParity(parity: Parity): ScrambleGroup {
     assert(this.couldBePermuted(parity.firstPiece));
     assert(this.couldBePermuted(parity.lastPiece));
     const solved = this.solved.concat([parity.lastPiece]);
     const solvedOrPermuted = this.solvedOrPermuted.filter(piece => piece !== parity.lastPiece);
-    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.hasExactlyFixedPieces(parity.pieces)));
-    const cycle = this.partiallyFixedCycles[cycleIndex].withoutPieceAfter(parity.lastPiece).withDecrementedLength();
+    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.containsPiece(parity.firstPiece)));
+    const cycle = this.partiallyFixedCycles[cycleIndex].withoutNextPiece(parity.lastPiece).withDecrementedLength();
     const partiallyFixedCycles = this.partiallyFixedCycles.slice(0, cycleIndex).concat([cycle]).concat(this.partiallyFixedCycles.slice(cycleIndex + 1));
     return new ScrambleGroup(solved, this.unorientedByType, solvedOrPermuted, this.numSecretlySolved, partiallyFixedCycles);
   }
@@ -345,11 +384,11 @@ export class ScrambleGroup implements Solvable<ScrambleGroup> {
     const newSolved = orientedType.isSolved ? parity.pieces : [parity.lastPiece];
     const solved = this.solved.concat(newSolved);
     const unorientedByType = this.unorientedByTypeWithPiece(orientedType, parity.firstPiece);
-    const permuted = this.permuted.filter(piece => piece !== parity.firstPiece && piece !== parity.lastPiece);
-    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.hasExactlyFixedPieces(parity.pieces)));
+    const solvedOrPermuted = this.solvedOrPermuted.filter(piece => piece !== parity.firstPiece && piece !== parity.lastPiece);
+    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.containsPiece(parity.firstPiece)));
     assertEqual(forceValue(this.partiallyFixedCycles[cycleIndex].orientedType), orientedType);
     const partiallyFixedCycles = this.partiallyFixedCycles.slice(0, cycleIndex).concat(this.partiallyFixedCycles.slice(cycleIndex + 1));
-    return new ScrambleGroup(solved, unorientedByType, permuted, partiallyFixedCycles);
+    return new ScrambleGroup(solved, unorientedByType, solvedOrPermuted, this.numSecretlySolved, partiallyFixedCycles);
   }
 
   applyParityTwist(parityTwist: ParityTwist, orientedType: OrientedType): ScrambleGroup {
@@ -360,11 +399,11 @@ export class ScrambleGroup implements Solvable<ScrambleGroup> {
     const solved = this.solved.concat(newSolved);
     const unorientedByTypeWithBuffer = this.unorientedByTypeWithPiece(orientedType, parityTwist.firstPiece);
     const unorientedByType = this.unorientedByTypeWithoutPiece(unorientedByTypeWithBuffer, parityTwist.unoriented);
-    const permuted = this.permuted.filter(piece => piece !== parityTwist.firstPiece && piece !== parityTwist.lastPiece);
-    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.hasExactlyFixedPieces(parityTwist.swappedPieces)));
+    const solvedOrPermuted = this.solvedOrPermuted.filter(piece => piece !== parityTwist.firstPiece && piece !== parityTwist.lastPiece);
+    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.containsPiece(parityTwist.firstPiece)));
     assertEqual(forceValue(this.partiallyFixedCycles[cycleIndex].orientedType), orientedType);
     const partiallyFixedCycles = this.partiallyFixedCycles.slice(0, cycleIndex).concat(this.partiallyFixedCycles.slice(cycleIndex + 1));
-    return new ScrambleGroup(solved, unorientedByType, permuted, partiallyFixedCycles);
+    return new ScrambleGroup(solved, unorientedByType, solvedOrPermuted, this.numSecretlySolved, partiallyFixedCycles);
   }
 
   isSolved(piece: Piece) {
@@ -380,8 +419,8 @@ export class ScrambleGroup implements Solvable<ScrambleGroup> {
     return this.solvedOrPermuted.includes(piece);
   }
 
-  decideOrientedTypeForPieces(pieces: Piece[]): Probabilistic<[ScrambleGroup, OrientedType]> {
-    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.hasExactlyFixedPieces(pieces)));
+  decideOrientedTypeForPieceCycle(piece: Piece): Probabilistic<[ScrambleGroup, OrientedType]> {
+    const cycleIndex = forceValue(findIndex(this.partiallyFixedCycles, cycle => cycle.containsPiece(piece)));
     const maybeOrientedType = this.partiallyFixedCycles[cycleIndex].orientedType;
     return this.deterministicOrElseProbabilistic(
       maybeOrientedType,
@@ -392,13 +431,13 @@ export class ScrambleGroup implements Solvable<ScrambleGroup> {
           const orientedIndex = unorientedSum === 0 ? 0 : this.unorientedByType.length + 1 - unorientedSum;
           const orientedType = this.orientedTypes[orientedIndex];
           const group = this.withChangedCycle(cycleIndex, cycle.withOrientedType(orientedType));
-          return deterministic<OrientedType>([group, orientedType]);
+          return deterministic<[ScrambleGroup, OrientedType]>([group, orientedType]);
         } else {
-          return new Probabilistic<OrientedType>(
+          const probability = 1 / (this.orientedTypes.length);
+          return new Probabilistic<[ScrambleGroup, OrientedType]>(
             this.orientedTypes.map(orientedType => {
               const group = this.withChangedCycle(cycleIndex, cycle.withOrientedType(orientedType));
               const groupWithAnswer: [ScrambleGroup, OrientedType] = [group, orientedType];
-              const probability = 1 / (this.orientedTypes.length);
               return [groupWithAnswer, probability];
             }));
         }
@@ -408,22 +447,5 @@ export class ScrambleGroup implements Solvable<ScrambleGroup> {
 
 export function bigScrambleGroupToScrambleGroup(group: BigScrambleGroup) {
   const cycles = group.sortedCycleLengths.map(emptyPartiallyFixedCycle);
-  return new ScrambleGroup(group.solved, group.unorientedByType, group.permuted, cycles);
-}
-
-function extractCycles(permutedWithIndex: [Piece, number][]): [Piece, number][][] {
-  const cycles = [];
-  while (permutedWithIndex.length > 0) {
-    const pieceIs = [permutedWithIndex.pop()];
-    const finishPieceId = pieceIs[0][1];
-    while (pieceIs[0][0].pieceId != finishPieceId) {
-      const nextI = pieceIs[0][0].pieceId;
-      const index = forceValue(findIndex(permutedWithIndex, pieceI => pieceI[1] == nextI));
-      const pieceI = permutedWithIndex[index];
-      pieceIs.unshift(pieceI);
-      permutedWithIndex.splice(index, 1);
-    }
-    cycles.push(pieceIs);
-  }
-  return cycles;
+  return new ScrambleGroup(group.solved, group.unorientedByType, group.permuted, 0, cycles);
 }

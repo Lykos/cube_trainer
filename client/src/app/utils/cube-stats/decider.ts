@@ -22,12 +22,13 @@ export class Decider {
     return this.piecePermutationDescription.pieces;
   }
 
-  canParityTwist(parityTwist: ParityTwist) {
-    return false;
+  // Pieces that can be twisted in combination with the given parity. Sorted by priority.
+  sortedParityTwistUnorientedsForParity(parity: Parity): readonly Piece[] {
+    return [];
   }
 
   get sortedBuffers(): readonly Piece[] {
-    return [this.piecePermutationDescription.piece[0]];
+    return [this.piecePermutationDescription.pieces[0]];
   }
 
   // Stay with this buffer if all buffers are solved.
@@ -54,14 +55,6 @@ export class Decider {
 
   doUnorientedBeforeParityTwist(parityTwist: ParityTwist, unoriented: Piece) {
     return true;
-  }
-
-  parityTwistPriority(parityTwist: ParityTwist) {
-    return parityTwist.unoriented.pieceId;
-  }
-
-  canSolveNSameUnoriented(n: number) {
-    return n <= 3;
   }
 
   maxCycleLengthForBuffer(buffer: Piece) {

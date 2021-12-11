@@ -3,7 +3,7 @@ import { TwistGroup } from './twist-group';
 import { assert } from '../assert';
 import { contains, sum, subsets } from '../utils';
 
-function unorientationSum(unorientedByType: Piece[][]) {
+function unorientationSum(unorientedByType: readonly (readonly Piece[])[]) {
   // This only works if there are at most 2 unoriented types. This has to be fixed otherwise.
   assert(unorientedByType.length <= 2);
   // The unoriented types plus the solved case.

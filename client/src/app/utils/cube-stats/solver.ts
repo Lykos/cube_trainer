@@ -1,4 +1,4 @@
-import { orElseCall, mapOptional, orElse, forceValue, Optional, none, some } from '../optional';
+import { orElse, forceValue, Optional } from '../optional';
 import { indexOf } from '../utils';
 import { Piece } from './piece';
 import { PieceDescription } from './piece-description';
@@ -11,25 +11,10 @@ import { Decider } from './decider';
 import { BufferState, emptyBufferState, newBufferState } from './buffer-state';
 import { ParitySolver, createParitySolver } from './parity-solver';
 import { TwistSolver, createTwistSolver } from './twist-solver';
-import { ProbabilisticAlgTrace, withPrefix, pMapSecond } from './solver-utils';
-
-function pSecondOrElseTryCall<X, T extends Solvable<T>>(pOptX: Probabilistic<[T, Optional<X>]>, pXGen: (solvable: T) => Probabilistic<[T, Optional<X>]>): Probabilistic<[T, Optional<X>]> {
-  return pOptX.flatMap(([solvable, optX]) => {
-    const optPX: Optional<Probabilistic<[T, Optional<X>]>> = mapOptional(optX, x => deterministic([solvable, some(x)]));
-    return orElseCall(optPX, () => pXGen(solvable));
-  });
-}
+import { ProbabilisticAlgTrace, withPrefix, pMapSecond, pSecondNot, decideFirstPieceWithCond, pSecondOrElseTryCall } from './solver-utils';
 
 function pSecondOrElseDeterministic<X, T extends Solvable<T>>(probOptX: Probabilistic<[T, Optional<X>]>, x: X): Probabilistic<[T, X]> {
   return pMapSecond(probOptX, optX => orElse(optX, x));
-}
-
-function pFilter<X, T extends Solvable<T>>(solvable: T, x: X, pCond: (solvable: T, x: X) => Probabilistic<[T, boolean]>): Probabilistic<[T, Optional<X>]> {
-  return pMapSecond(pCond(solvable, x), answer => answer ? some(x) : none);
-}
-
-function pSecondNot<T extends Solvable<T>>(probCond: Probabilistic<[T, boolean]>): Probabilistic<[T, boolean]> {
-  return pMapSecond(probCond, cond => !cond);
 }
 
 function pSecond<X, Y>(probabilistic: Probabilistic<[X, Y]>): Probabilistic<Y> {
@@ -42,17 +27,6 @@ function pSecondIfThenElse<X, Y>(pCond: Probabilistic<[X, boolean]>,
   return pCond.flatMap(([x, cond]) => {
     return cond ? pThenF(x) : pElseF(x);
   });
-}
-
-function decideFirstPieceWithCond<T extends Solvable<T>>(
-  solvable: T,
-  pCond: (solvable: T, buffer: Piece) => Probabilistic<[T, boolean]>,
-  pieces: readonly Piece[]): Probabilistic<[T, Optional<Piece>]> {
-  if (pieces.length === 0) {
-    return deterministic([solvable, none]);
-  }
-  const pMaybeGoodPiece = pFilter(solvable, pieces[0], pCond);
-  return pSecondOrElseTryCall(pMaybeGoodPiece, solvable => decideFirstPieceWithCond(solvable, pCond, pieces.slice(1)));
 }
 
 function decideNextBufferAmongPermuted<T extends Solvable<T>>(solvable: T, buffers: readonly Piece[]): Probabilistic<[T, Optional<Piece>]> {
@@ -107,7 +81,7 @@ export class Solver {
   }
 
   private algsWithCompleteDoubleSwap<T extends Solvable<T>>(bufferState: BufferState, solvable: T, doubleSwap: DoubleSwap): ProbabilisticAlgTrace<T> {
-    return solvable.decideOrientedTypeForPiece(doubleSwap.thirdPiece).flatMap(([solvable, orientedType]) => {
+    return solvable.decideOrientedTypeForPieceCycle(doubleSwap.thirdPiece).flatMap(([solvable, orientedType]) => {
       return this.algsWithCompleteDoubleSwapAndOrientedType(bufferState, solvable, doubleSwap, orientedType);
     });
   }
@@ -141,7 +115,7 @@ export class Solver {
   }
 
   private algsWithEvenCycle<T extends Solvable<T>>(bufferState: BufferState, solvable: T, cycle: EvenCycle): ProbabilisticAlgTrace<T> {
-    return solvable.decideOrientedTypeForPiece(cycle.firstPiece).flatMap(([solvable, orientedType]) => {
+    return solvable.decideOrientedTypeForPieceCycle(cycle.firstPiece).flatMap(([solvable, orientedType]) => {
       return this.algsWithEvenCycleWithOrientedType(bufferState, solvable, cycle, orientedType);
     });
   }

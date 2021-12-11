@@ -10,6 +10,6 @@ export class OrientedType {
 
 export const solvedOrientedType = new OrientedType(0);
 
-export function unfixedOrientedType(index: number) {
-  return new PartiallyFixedOrientedType(false, index);
+export function orientedType(index: number) {
+  return new OrientedType(index);
 }

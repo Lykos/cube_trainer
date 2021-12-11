@@ -53,7 +53,7 @@ export class DoubleSwap {
 }
 
 export class Twist {
-  constructor(readonly unorientedByType: Piece[][]) {}
+  constructor(readonly unorientedByType: readonly (readonly Piece[])[]) {}
 
   get numUnoriented() {
     return sum(this.unorientedByType.map(e => e.length));

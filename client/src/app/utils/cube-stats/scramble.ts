@@ -3,6 +3,7 @@ import { PiecePermutationDescription } from './piece-permutation-description';
 import { rand, swap } from '../utils';
 import { Solvable } from './solvable';
 import { OrientedType, solvedOrientedType } from './oriented-type';
+import { Optional, none } from '../optional';
 import { assert } from '../assert';
 import { Probabilistic, deterministic } from './probabilistic';
 import { Parity, EvenCycle, ThreeCycle, ParityTwist, DoubleSwap } from './alg';
@@ -84,12 +85,27 @@ export class Scramble implements Solvable<Scramble> {
     assert(false); return deterministic([this, false]);
   }
 
+  decideIsOriented(piece: Piece): Probabilistic<[Scramble, boolean]> {
+    // TODO
+    assert(false); return deterministic([this, false]);
+  }
+
   decideHasPermuted(): Probabilistic<[Scramble, boolean]> {
     // TODO
     assert(false); return deterministic([this, false]);
   }
 
-  decideOrientedTypeForPiece(piece: Piece): Probabilistic<[Scramble, OrientedType]> {
+  decideOnlyUnoriented(): Probabilistic<[Scramble, Optional<Piece>]> {
+    // TODO
+    assert(false); return deterministic([this, none]);
+  }
+
+  decideOnlyUnorientedExcept(piece: Piece): Probabilistic<[Scramble, Optional<Piece>]> {
+    // TODO
+    assert(false); return deterministic([this, none]);
+  }
+
+  decideOrientedTypeForPieceCycle(piece: Piece): Probabilistic<[Scramble, OrientedType]> {
     // TODO
     assert(false); return deterministic([this, solvedOrientedType]);
   }
