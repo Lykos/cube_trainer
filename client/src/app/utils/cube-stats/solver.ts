@@ -34,7 +34,7 @@ function decideNextBufferAmongPermuted<T extends Solvable<T>>(solvable: T, buffe
 }
 
 function decideNextBufferAmongUnsolved<T extends Solvable<T>>(solvable: T, buffers: readonly Piece[]): Probabilistic<[T, Optional<Piece>]> {
-  return decideFirstPieceWithCond(solvable, (solvable, buffer) => pSecondNot(solvable.decideIsPermuted(buffer)), buffers);
+  return decideFirstPieceWithCond(solvable, (solvable, buffer) => pSecondNot(solvable.decideIsSolved(buffer)), buffers);
 }
 
 function decideNextCycleBreak<T extends Solvable<T>>(solvable: T, pieces: readonly Piece[]): Probabilistic<[T, Piece]> {
