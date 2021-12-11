@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MethodDescription } from '../utils/cube-stats/method-description';
-import { expectedAlgCounts } from '../utils/cube-stats/cube-stats';
+import { expectedAlgCounts, CubeStatsRequest, SamplingMethod } from '../utils/cube-stats/cube-stats';
 import { valueOrElseThrow, ifError } from '../shared/or-error.type';
 import { WorkerRequest } from './worker-request.model';
 import { WorkerResponse } from './worker-response.model';
@@ -32,8 +32,9 @@ export class MethodExplorerService {
 
   expectedAlgCounts(methodDescription: MethodDescription): Observable<AlgCounts> {
     const currentId = ++this.id;
+    const cubeStatsRequest = {methodDescription, samplingMethod: SamplingMethod.SAMPLED};
     if (this.worker) {
-      const request: WorkerRequest<MethodDescription> = {data: methodDescription, id: currentId};
+      const request: WorkerRequest<CubeStatsRequest> = {data: cubeStatsRequest, id: currentId};
       this.worker.postMessage(request);
       return this.algCountsWithId$.pipe(
         first(response => response.id === currentId),
@@ -44,7 +45,7 @@ export class MethodExplorerService {
       );
     } else {
       try {
-        return of(expectedAlgCounts(methodDescription));
+        return of(expectedAlgCounts(cubeStatsRequest));
       } catch (error) {
         return throwError(error);
       }

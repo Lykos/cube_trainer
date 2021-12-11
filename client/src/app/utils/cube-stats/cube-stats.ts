@@ -14,9 +14,9 @@ const numIterations = 1000;
 const slowGroupThreshold = seconds(10);
 const outputInterval = seconds(1);
 
-function expectedAlgCountsForPieces(pieces: PiecePermutationDescription, useExhaustiveSampling: boolean): AlgCounts {
+function expectedAlgCountsForPieces(pieces: PiecePermutationDescription, samplingMethod: SamplingMethod): AlgCounts {
   const solver = createSolver(new Decider(pieces), pieces.pieceDescription);
-  const samplingStrategy = useExhaustiveSampling ? new ExhaustiveSamplingStrategy(pieces) : new RandomSamplingStrategy(pieces, numIterations);
+  const samplingStrategy = samplingMethod === SamplingMethod.EXHAUSTIVE ? new ExhaustiveSamplingStrategy(pieces) : new RandomSamplingStrategy(pieces, numIterations);
   const groups = samplingStrategy.groups();
   let groupsDone = 0;
   const start = now()
@@ -41,17 +41,26 @@ function expectedAlgCountsForPieces(pieces: PiecePermutationDescription, useExha
   }));
 }
 
-export function expectedAlgCounts(methodDescription: MethodDescription, useExhaustiveSampling?: boolean): AlgCounts {
-  switch (methodDescription.executionOrder) {
+export enum SamplingMethod {
+  EXHAUSTIVE, SAMPLED
+}
+
+export interface CubeStatsRequest {
+  methodDescription: MethodDescription;
+  samplingMethod: SamplingMethod;
+}
+
+export function expectedAlgCounts(request: CubeStatsRequest): AlgCounts {
+  switch (request.methodDescription.executionOrder) {
     case ExecutionOrder.EC: {
       const edges = new PiecePermutationDescription(EDGE, false);
       const corners = new PiecePermutationDescription(CORNER, true);
-      return expectedAlgCountsForPieces(edges, true).plus(expectedAlgCountsForPieces(corners, true));
+      return expectedAlgCountsForPieces(edges, request.samplingMethod).plus(expectedAlgCountsForPieces(corners, request.samplingMethod));
     }
     case ExecutionOrder.CE: {
       const corners = new PiecePermutationDescription(CORNER, false);
       const edges = new PiecePermutationDescription(EDGE, true);
-      return expectedAlgCountsForPieces(corners, useExhaustiveSampling).plus(expectedAlgCountsForPieces(edges, useExhaustiveSampling));
+      return expectedAlgCountsForPieces(corners, request.samplingMethod).plus(expectedAlgCountsForPieces(edges, request.samplingMethod));
     }
   }
 }
