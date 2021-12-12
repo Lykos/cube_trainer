@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { UsersService } from '../../users/users.service';
 import { selectUser } from '../../state/user.selectors';
 import { MessagesService } from '../../users/messages.service';
 import { User } from '../../users/user.model';
 import { Optional, hasValue, mapOptional, orElse, ifPresent } from '../../utils/optional';
 import { map, tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { initialLoad } from '../../state/user.actions';
+import { initialLoad, logout } from '../../state/user.actions';
 
 @Component({
   selector: 'cube-trainer-toolbar',
@@ -20,8 +18,6 @@ export class ToolbarComponent implements OnInit {
   unreadMessagesCount$: Observable<number>;
 
   constructor(private readonly messagesService: MessagesService,
-              private readonly usersService: UsersService,
-              private readonly router: Router,
               private readonly store: Store) {
     this.user$ = this.store.select(selectUser).pipe(
       tap(user => {
@@ -45,8 +41,6 @@ export class ToolbarComponent implements OnInit {
   }
   
   onLogout() {
-    this.usersService.logout().subscribe(() => {
-      this.router.navigate(['/logged_out']);
-    });
+    this.store.dispatch(logout());
   } 
 }
