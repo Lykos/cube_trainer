@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { MethodExplorerComponent } from './method-explorer/method-explorer/method-explorer.component';
 import { UserComponent } from './users/user/user.component';
 import { ResetPasswordComponent } from './users/reset-password/reset-password.component';
 import { UpdatePasswordComponent } from './users/update-password/update-password.component';
@@ -29,6 +30,7 @@ import { RouterModule, Routes, ExtraOptions } from '@angular/router';
 import { environment } from './../environments/environment';
 
 const routes: Routes = [
+  { path: 'method_explorer', component: MethodExplorerComponent },
   { path: 'confirm_email', component: ConfirmEmailComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'reset_password', component: ResetPasswordComponent },

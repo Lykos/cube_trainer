@@ -25,6 +25,19 @@ export function valueOrElse<X, Y>(valueOrError: OrError<X>, elseValue: Y): X | Y
   }
 }
 
+export function ifError<X, Y>(valueOrError: OrError<X>, errorF: (error: any) => void): void {
+  switch (valueOrError.tag) {
+    case 'error': errorF(valueOrError.error);
+  }
+}
+
+export function valueOrElseThrow<X, Y>(valueOrError: OrError<X>): X {
+  switch (valueOrError.tag) {
+    case 'value': return valueOrError.value;
+    case 'error': throw valueOrError.error;
+  }
+}
+
 export function errorOrElse<X>(valueOrError: OrError<X>, elseError: any): any {
   switch (valueOrError.tag) {
     case 'value': return elseError;

@@ -16,6 +16,10 @@ export class Instant {
     return new Instant(this.rep.minus(that));
   }
 
+  minusInstant(that: Instant) {
+    return this.rep.minus(that.rep);
+  }
+
   durationUntil(that: Instant) {
     return that.rep.minus(this.rep);
   }

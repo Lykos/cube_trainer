@@ -16,22 +16,51 @@ export const none: None = {tag: "none"};
 export type Optional<X> = Some<X> | None;
 
 export function mapOptional<X, Y>(optional: Optional<X>, f: (x: X) => Y): Optional<Y> {
+  return flatMapOptional(optional, x => some(f(x)));
+}
+
+export function flatMapOptional<X, Y>(optional: Optional<X>, f: (x: X) => Optional<Y>): Optional<Y> {
   switch (optional.tag) {
-    case "some": return some(f(optional.value));
+    case "some": return f(optional.value);
     case "none": return none;
   }
 }
 
-export function ifPresent<X>(optional: Optional<X>, f: (x: X) => void): void {
-  if (optional.tag == "some") {
-    f(optional.value);
+export function ifPresentOrElse<X>(optional: Optional<X>, f: (x: X) => void, g: () => void): void {
+  switch (optional.tag) {
+    case "some": {
+      f(optional.value);
+      break;
+    }
+    case "none": {
+      g();
+      break;
+    }
   }
+}
+
+export function ifPresent<X>(optional: Optional<X>, f: (x: X) => void): void {
+  ifPresentOrElse(optional, f, () => {});
 }
 
 export function orElse<X>(optional: Optional<X>, x: X): X {
   switch (optional.tag) {
     case "some": return optional.value;
     case "none": return x;
+  }
+}
+
+export function orElseCall<X>(optional: Optional<X>, f: () => X): X {
+  switch (optional.tag) {
+    case "some": return optional.value;
+    case "none": return f();
+  }
+}
+
+export function orElseTryCall<X>(optional: Optional<X>, f: () => Optional<X>): Optional<X> {
+  switch (optional.tag) {
+    case "some": return optional;
+    case "none": return f();
   }
 }
 
@@ -43,7 +72,7 @@ export function forceValue<X>(optional: Optional<X>): X {
 }
 
 export function checkNone<X>(optional: Optional<X>): void {
-  if (optional.tag == "some") {
+  if (optional.tag == 'some') {
     throw new Error(`Checked None for ${optional}.`);
   }
 }

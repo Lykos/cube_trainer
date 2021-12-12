@@ -5,7 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # CubeTrainer
-TODO: Write more than just installation instructions
+
+This is the repository for https://www.cubetrainer.org, which is a small website that contains some tools to support Rubik's Cube training with a focus on blindfolded solving.
 
 ## Install
 
@@ -30,7 +31,7 @@ sudo apt install ruby postgresql libpq-dev npm
 Using [Bundler](https://github.com/bundler/bundler) and [npm](https://github.com/npm/cli):
 
 ```shell
-bundle install && bundle exec rake npm:install
+bundle install && npm install
 ```
 
 ### Setup DB User
@@ -45,7 +46,7 @@ exit
 ### Initialize the database
 
 ```shell
-bundle exec rails db:create db:migrate
+bundle exec rake db:create db:migrate
 ```
 
 ### Build the frontend
@@ -76,3 +77,15 @@ bundle exec rails server
 ```
 
 Now you can access the site at http://localhost:4200. Note that accessing it via http://localhost:3000 might also work, but you won't get automatic refreshes on TypeScript changes, so it's not recommended.
+
+## Production Setup
+
+The website is hosted on Heroku and is automatically deployed if CI on the master branch on Github passes. It uses Mailgun for sending mails.
+
+## Using the Website
+
+Navigate to https://www.cubetrainer.org/signup to create an account. After the signup process, you can log in via https://www.cubetrainer.org/login and then create training sessions in https://www.cubetrainer.org/modes. What the website is best at is training blind algs with smart sampling that will show you algorithms more that you don't know well.
+
+## Background
+
+This website started as a bunch of command line scripts that helped me practicing and eventually I added a database, than a small web frontend and eventually I turned it into a full website. The entire backstory can be found in https://www.cubetrainer.org/about.
