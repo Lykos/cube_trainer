@@ -46,7 +46,12 @@ export class AlgTrace {
           currentBuffer = none;
           numRemainingPieces = 0;
         }
-        processedAlgs.push(alg)
+        if (alg instanceof EvenCycle) {
+          currentBuffer = some(alg.firstPiece);
+          numRemainingPieces = alg.numRemainingPieces;
+        } else {
+          processedAlgs.push(alg)
+        }
       }
     });
     if (numRemainingPieces > 0) {

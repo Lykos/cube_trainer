@@ -79,7 +79,7 @@ class HierarchicalAlgSetLevelImpl implements HierarchicalAlgSetLevel {
     for (let piece of this.unusedPieces) {
       const sublevel = new HierarchicalAlgSetLevelImpl(this.formBuilder, this.uniformOptions, this.helpers.slice(1), this.pieces, this.piecePath.concat([piece]));
       sublevels.push(sublevel);
-      subsets.push(this.formBuilder.group({piece, subset: sublevel.formGroup}));
+      subsets.push(this.formBuilder.group({piece: piece.piece, subset: sublevel.formGroup}));
     }
     this.sublevels = some(sublevels);
     return sublevels;
@@ -120,7 +120,7 @@ export class MethodDescriptionFormComponent {
 
   private doubleSwapLevelHelpers(pieceDescription: PieceDescription): readonly AlgSetLevelHelper[] {
     return [
-      { name: 'Double Swaps', isEnabledPiece: () => this.canFloat(pieceDescription) },
+      { name: 'Double Swaps for Buffer Switches', isEnabledPiece: () => this.canFloat(pieceDescription) },
       { name: 'first buffer', isEnabledPiece: (p: PieceWithName | undefined) => this.buffers(pieceDescription).some(b => b.pieceId === p.piece.pieceId) },
       { name: 'second buffer', isEnabledPiece: (p: PieceWithName | undefined) => this.buffers(pieceDescription).some(b => b.pieceId === p.piece.pieceId) },
       { name: 'third piece', isEnabledPiece: () => true },

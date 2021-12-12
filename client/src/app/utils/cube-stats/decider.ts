@@ -104,14 +104,14 @@ export class Decider {
   }
 
   canDoubleSwap(doubleSwap: DoubleSwap, orientedType: OrientedType) {
-    return hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.firstPiece, doubleSwap.secondPiece, doubleSwap.thirdPiece, doubleSwap.fourthPiece, orientedType) ||
-      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.firstPiece, doubleSwap.secondPiece, doubleSwap.fourthPiece, doubleSwap.thirdPiece, orientedType) ||
-      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.secondPiece, doubleSwap.firstPiece, doubleSwap.thirdPiece, doubleSwap.fourthPiece, orientedType) ||
-      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.secondPiece, doubleSwap.firstPiece, doubleSwap.fourthPiece, doubleSwap.thirdPiece, orientedType) ||
-      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.thirdPiece, doubleSwap.fourthPiece, doubleSwap.firstPiece, doubleSwap.secondPiece, orientedType) ||
-      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.fourthPiece, doubleSwap.thirdPiece, doubleSwap.firstPiece, doubleSwap.secondPiece, orientedType) ||
-      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.thirdPiece, doubleSwap.fourthPiece, doubleSwap.secondPiece, doubleSwap.firstPiece, orientedType) ||
-      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.fourthPiece, doubleSwap.thirdPiece, doubleSwap.secondPiece, doubleSwap.firstPiece, orientedType);
+    return hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.firstPiece, doubleSwap.thirdPiece, doubleSwap.secondPiece, doubleSwap.fourthPiece, orientedType) ||
+      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.firstPiece, doubleSwap.thirdPiece, doubleSwap.fourthPiece, doubleSwap.secondPiece, orientedType) ||
+      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.thirdPiece, doubleSwap.firstPiece, doubleSwap.secondPiece, doubleSwap.fourthPiece, orientedType) ||
+      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.thirdPiece, doubleSwap.firstPiece, doubleSwap.fourthPiece, doubleSwap.secondPiece, orientedType) ||
+      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.secondPiece, doubleSwap.fourthPiece, doubleSwap.firstPiece, doubleSwap.thirdPiece, orientedType) ||
+      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.fourthPiece, doubleSwap.secondPiece, doubleSwap.firstPiece, doubleSwap.thirdPiece, orientedType) ||
+      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.secondPiece, doubleSwap.fourthPiece, doubleSwap.thirdPiece, doubleSwap.firstPiece, orientedType) ||
+      hasOrientedHierarchicalAlg4(this.methodDescription.doubleSwaps, doubleSwap.fourthPiece, doubleSwap.secondPiece, doubleSwap.thirdPiece, doubleSwap.firstPiece, orientedType);
   }
 
   get avoidUnorientedIfWeCanFloat() {

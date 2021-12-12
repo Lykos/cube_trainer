@@ -15,7 +15,7 @@ import { seconds } from '../duration';
 import { find } from '../utils';
 import { sumVectorSpaceElements } from './vector-space-element';
 
-const numIterations = 10000;
+const numIterations = 20000;
 const slowGroupThreshold = seconds(10);
 const outputInterval = seconds(1);
 

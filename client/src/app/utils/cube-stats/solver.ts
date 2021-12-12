@@ -166,6 +166,10 @@ export class Solver {
     });
   }
 
+  private canDoubleSwap(doubleSwap: DoubleSwap, orientedType: OrientedType) {
+    return this.decider.canDoubleSwap(doubleSwap, orientedType) && this.sortedBuffers.some(b => b.pieceId === doubleSwap.thirdPiece.pieceId);
+  }
+
   private cycleBreakWithBufferAndOtherPieceAndNextPieceAndOrientedType<T extends Solvable<T>>(bufferState: BufferState,
                                                                                               solvable: T,
                                                                                               decreasingNumber: number, 
@@ -175,7 +179,7 @@ export class Solver {
                                                                                               nextPiece: Piece,
                                                                                               orientedType: OrientedType): ProbabilisticAlgTrace<T> {
     const doubleSwap = new DoubleSwap(buffer, otherPiece, cycleBreak, nextPiece);
-    if (this.decider.canChangeBuffer(bufferState) && this.decider.canDoubleSwap(doubleSwap, orientedType)) {
+    if (this.decider.canChangeBuffer(bufferState) && this.canDoubleSwap(doubleSwap, orientedType)) {
       return this.algsWithDoubleSwap(bufferState, solvable, decreasingNumber, doubleSwap);
     }
     return this.algsWithCycleBreakFromSwap(bufferState, solvable, decreasingNumber, new ThreeCycle(buffer, otherPiece, cycleBreak));
