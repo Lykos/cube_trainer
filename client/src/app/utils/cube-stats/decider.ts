@@ -1,8 +1,8 @@
 import { Piece } from './piece';
-import { assert } from '../assert';
+import { find } from '../utils';
+import { forceValue } from '../optional';
 import { Parity, ParityTwist, DoubleSwap, Twist } from './alg';
 import { BufferState } from './buffer-state';
-import { orientedType } from './oriented-type';
 import { TwistWithCost } from './twist-with-cost';
 import { PiecePermutationDescription } from './piece-permutation-description';
 import { PieceMethodDescription } from './method-description';
@@ -11,16 +11,25 @@ import { PieceMethodDescription } from './method-description';
 // Interprets the method description to make these decisions.
 export class Decider {
   readonly twistsWithCosts: TwistWithCost[];
+  readonly sortedBuffers: readonly Piece[];
 
   constructor(readonly piecePermutationDescription: PiecePermutationDescription,
-              readonly methodDescription: PieceMethodDescription) {
-    const numOrientedTypes = this.piecePermutationDescription.numOrientedTypes;
-    const numPieces = this.piecePermutationDescription.pieces.length;
-    this.twistsWithCosts = methodDescription.twistsWithCosts.map(t => {
-      const orientedTypes = t.twistOrientedTypeIndices.map(o => orientedType(o, numOrientedTypes));
-      assert(orientedTypes.length === numPieces);
-      return {twist: new Twist(orientedTypes), cost: t.cost};
+              private readonly methodDescription: PieceMethodDescription) {
+    this.twistsWithCosts = piecePermutationDescription.pieceDescription.twistGroups().filter(g => {
+      const allowedAsFloatingTwist = g.numUnoriented <= this.methodDescription.maxFloatingTwistLength
+      const allowedAsBufferedTwist = g.orientedTypes.some((orientedType, index) => {
+        return !orientedType.isSolved &&
+          this.methodDescription.sortedBufferDescriptions.some(b => b.maxTwistLength >= g.numUnoriented && b.buffer.pieceId === index);
+      });
+      return allowedAsFloatingTwist || allowedAsBufferedTwist;
+    }).map(g => {
+      return {twist: new Twist(g.orientedTypes), cost: 1};
     });
+    this.sortedBuffers = this.methodDescription.sortedBufferDescriptions.map(d => d.buffer);
+  }
+
+  private bufferDescription(buffer: Piece) {
+    return forceValue(find(this.methodDescription.sortedBufferDescriptions, b => b.buffer.pieceId === buffer.pieceId));
   }
 
   sortedNextCycleBreaksOnSecondPiece(buffer: Piece, firstPiece: Piece): readonly Piece[] {
@@ -33,17 +42,16 @@ export class Decider {
 
   // Pieces that can be twisted in combination with the given parity. Sorted by priority.
   sortedParityTwistUnorientedsForParity(parity: Parity): readonly Piece[] {
-    return [];
-  }
-
-  get sortedBuffers(): readonly Piece[] {
-    return this.methodDescription.sortedBuffers;
+    if (!this.bufferDescription(parity.firstPiece).canDoParityTwists) {
+      return [];
+    }
+    return this.piecePermutationDescription.pieces;
   }
 
   // Stay with this buffer if all buffers are solved.
   // If false, will switch back to the main buffer instead.
-  stayWithSolvedBuffer(piece: Piece) {
-    return true;
+  stayWithSolvedBuffer(buffer: Piece) {
+    return this.bufferDescription(buffer).stayWithSolvedBuffer;
   }
 
   canChangeBuffer(bufferState: BufferState) {
@@ -55,7 +63,7 @@ export class Decider {
   }
 
   get avoidUnorientedIfWeCanFloat() {
-    return true;
+    return this.methodDescription.avoidUnorientedIfWeCanFloat;
   }
 
   doUnorientedBeforeParity(parity: Parity, unoriented: Piece) {
@@ -67,6 +75,6 @@ export class Decider {
   }
 
   maxCycleLengthForBuffer(buffer: Piece) {
-    return 3;
+    return this.bufferDescription(buffer).fiveCycles ? 5 : 3;
   }
 }

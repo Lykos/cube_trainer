@@ -21,6 +21,10 @@ export class PieceDescription {
     this.pieces = range(numPieces - 1).map(pieceId => { return {pieceId}; });
   }
 
+  get hasOrientation() {
+    return this.numOrientedTypes > 1;
+  }
+
   twistGroups(): TwistGroup[] {
     let currentGroup = new TwistGroup(this.pieces.map(() => solvedOrientedType));
     const groups = [currentGroup];

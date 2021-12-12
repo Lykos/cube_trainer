@@ -5,37 +5,19 @@ export enum ExecutionOrder {
   EC = 'EC',
 }
 
-export interface CompleteAlgSet {
-  readonly tag: 'complete';
-}
-
-export interface PartialAlgSet<X> {
-  readonly tag: 'partial';
-  readonly subsetsForPieces: readonly [Piece, X][];
-}
-
-export type HierarchicalAlgSet<X> = PartialAlgSet<X> | CompleteAlgSet;
-
-export interface CompleteTwistAlgSet {
-  readonly tag: 'complete';
-}
-
-export interface PartialTwistAlgSet {
-  readonly tag: 'partial';
-  readonly subsetsForPieces: readonly [Piece, TwistAlgSet][];
-}
-
-export type TwistAlgSet = PartialTwistAlgSet | CompleteTwistAlgSet;
-
-export interface TwistWithCostDescription {
-  readonly twistOrientedTypeIndices: number[];
-  readonly cost: number;
+export interface BufferDescription {
+  readonly buffer: Piece;
+  readonly fiveCycles: boolean;
+  readonly stayWithSolvedBuffer: boolean;
+  readonly maxTwistLength: number;
+  readonly canDoParityTwists: boolean;
 }
 
 export interface PieceMethodDescription {
   readonly pluralName: string;
-  readonly sortedBuffers: readonly Piece[];
-  readonly twistsWithCosts: readonly TwistWithCostDescription[];
+  readonly sortedBufferDescriptions: readonly BufferDescription[];
+  readonly avoidUnorientedIfWeCanFloat: boolean;
+  readonly maxFloatingTwistLength: number;
 }
 
 export interface MethodDescription {

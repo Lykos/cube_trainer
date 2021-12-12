@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { AlgCountsData, AlgCountsRow } from '../alg-counts-data.model';
 
+const DATA_COLUMNS = ['name', 'threeCycles', 'fiveCycles', 'doubleSwaps', 'parities', 'parityTwists', 'totalTwists', 'total'];
+
 class RenderableAlgCountsRow {
   constructor(readonly row: AlgCountsRow) {}
 
@@ -47,6 +49,8 @@ class RenderableAlgCountsRow {
   get total() {
     return this.row.algCounts.total.toFixed(2);
   }
+
+  [key: string]: any;
 }
 
 @Component({
@@ -61,5 +65,7 @@ export class AlgCountsTableComponent {
     return this.expectedAlgsData.rows.map(row => new RenderableAlgCountsRow(row));
   }
 
-  readonly columnsToDisplay = ['name', 'threeCycles', 'fiveCycles', 'doubleSwaps', 'parities', 'parityTwists', 'totalTwists', 'total'];
+  get columnsToDisplay() {
+    return ['name'].concat(DATA_COLUMNS.filter(c => this.expectedAlgsRows.some(r => r[c] && r[c] > 0)));
+  }
 }

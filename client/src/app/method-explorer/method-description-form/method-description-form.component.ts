@@ -1,9 +1,10 @@
 import { Piece } from '../../utils/cube-stats/piece';
-import { zip } from '../../utils/utils';
-import { ExecutionOrder, MethodDescription } from '../../utils/cube-stats/method-description';
+import { zip, find } from '../../utils/utils';
+import { forceValue } from '../../utils/optional';
+import { ExecutionOrder, MethodDescription, BufferDescription } from '../../utils/cube-stats/method-description';
 import { CORNER, EDGE, PieceDescription } from '../../utils/cube-stats/piece-description';
 import { Component, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 
 const EDGE_NAMES = ['UF', 'UR', 'UL', 'UB', 'FR', 'FL', 'DF', 'DB', 'DR', 'DL', 'RB', 'LB'];
 const CORNER_NAMES = ['UFR', 'UBR', 'UFL', 'UBL', 'DFR', 'DBR', 'DFL', 'DBL'];
@@ -51,17 +52,34 @@ export class MethodDescriptionFormComponent {
     this.form = this.formBuilder.group({
       executionOrder: [ExecutionOrder.EC],
       pieceMethodDescriptions: this.formBuilder.array(this.pieceDescriptions.map(p => {
-        const sortedBuffers = [p.pieces[0]];
-        const twistsWithCosts = p.twistGroups().filter(g => g.numUnoriented === 2).map(g => {
-          return {twistOrientedTypeIndices: g.orientedTypes.map(o => o.index), cost: 1};
-        });
         return this.formBuilder.group({
           pluralName: [p.pluralName],
-          sortedBuffers: [sortedBuffers],
-          twistsWithCosts: [twistsWithCosts],
+          maxFloatingTwistLength: [0],
+          sortedBufferDescriptions: this.formBuilder.array([this.createBufferGroup(p.pieces[0])]),
+          avoidUnorientedIfWeCanFloat: [false],
         });
       })),
     });
+  }
+
+  createBufferGroup(buffer: Piece): FormGroup {
+    return this.formBuilder.group({
+      buffer: [buffer],
+      fiveCycles: [false],
+      maxTwistLength: [2],      
+      stayWithSolvedBuffer: [false],
+      canDoParityTwists: [false],
+    });
+  }
+
+  onAddBuffer(pieceDescription: PieceDescription) {
+    const control = this.sortedBufferDescriptionsControl(pieceDescription);
+    const suggestedNextBuffer = find(pieceDescription.pieces, piece => control.value.every((p: BufferDescription) => p.buffer.pieceId !== piece.pieceId));
+    control.push(this.createBufferGroup(forceValue(suggestedNextBuffer)));
+  }
+
+  onRemoveBuffer(pieceDescription: PieceDescription, index: number) {
+    this.sortedBufferDescriptionsControl(pieceDescription).removeAt(index);
   }
 
   get pieceDescriptions() {
@@ -70,6 +88,26 @@ export class MethodDescriptionFormComponent {
 
   get executionOrderEnum(): typeof ExecutionOrder {
     return ExecutionOrder;
+  }
+
+  get pieceMethodDescriptionsControl(): FormArray {
+    return this.form.get('pieceMethodDescriptions')! as FormArray;
+  }
+
+  canFloat(pieceDescription: PieceDescription): boolean {
+    return this.sortedBufferDescriptionsControls(pieceDescription).length > 1;
+  }
+
+  sortedBufferDescriptionsControl(pieceDescription: PieceDescription): FormArray {
+    return this.pieceMethodDescriptionControl(pieceDescription).get('sortedBufferDescriptions')! as FormArray;
+  }
+
+  sortedBufferDescriptionsControls(pieceDescription: PieceDescription): readonly FormGroup[] {
+    return this.sortedBufferDescriptionsControl(pieceDescription).controls as FormGroup[];
+  }
+
+  pieceMethodDescriptionControl(pieceDescription: PieceDescription): FormGroup {
+    return this.pieceMethodDescriptionsControl.controls.find(c => c.get('pluralName')!.value === pieceDescription.pluralName) as FormGroup;
   }
 
   onCalculate() {

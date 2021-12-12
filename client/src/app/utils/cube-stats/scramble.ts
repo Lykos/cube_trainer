@@ -50,6 +50,7 @@ export class Scramble implements Solvable<Scramble> {
   }
 
   private transferTwist(fromPiece: Piece, toPiece: Piece) {
+    assert(fromPiece.pieceId !== toPiece.pieceId, 'transferring from a piece to itself');
     const orientedTypes = [...this.orientedTypes];
     const orientedSum = orientedTypes[fromPiece.pieceId].plus(orientedTypes[toPiece.pieceId]);
     orientedTypes[toPiece.pieceId] = orientedSum;

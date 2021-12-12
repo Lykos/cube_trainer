@@ -74,8 +74,12 @@ export class ParitySolver {
     return withPrefix(remainingTraces, parityTwist);
   };
 
+  private sortedParityTwistUnorientedsForParity(parity: Parity) {
+    return this.decider.sortedParityTwistUnorientedsForParity(parity).filter(p => p.pieceId !== parity.firstPiece.pieceId && p.pieceId !== parity.lastPiece.pieceId);
+  }
+
   algsWithParity<T extends Solvable<T>>(solvable: T, parity: Parity): ProbabilisticAlgTrace<T> {
-    const pMaybeParityTwist: Probabilistic<[T, Optional<ParityTwist>]> = decideParityTwist(solvable, parity, this.decider.sortedParityTwistUnorientedsForParity(parity));
+    const pMaybeParityTwist: Probabilistic<[T, Optional<ParityTwist>]> = decideParityTwist(solvable, parity, this.sortedParityTwistUnorientedsForParity(parity));
     return pMaybeParityTwist.flatMap(([solvable, maybeParityTwist]) => {
       const maybeParityTwistAlgs = mapOptional(maybeParityTwist, parityTwist => this.algsWithParityTwist(solvable, parityTwist));
       return orElseCall(maybeParityTwistAlgs, () => this.algsWithVanillaParity(solvable, parity));
