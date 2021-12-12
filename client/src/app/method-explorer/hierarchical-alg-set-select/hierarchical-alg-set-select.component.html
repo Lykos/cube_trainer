@@ -1,0 +1,18 @@
+<mat-card *ngIf="isEnabled" [formGroup]="formGroup">
+  <mat-card-title> {{levelName}} {{pieceName}} </mat-card-title>
+  <mat-card-content>
+    <mat-select *ngIf="hasSublevels" formControlName="tag">
+      <mat-option *ngFor="let option of hierarchicalExpandOptions" [value]="option.tag"> {{option.name}} </mat-option>
+    </mat-select>
+    <div *ngIf="!isExpanded">
+      <mat-select formControlName="mode">
+        <mat-option *ngFor="let option of uniformOptions" [value]="option.mode"> {{option.name}} </mat-option>
+      </mat-select>
+    </div>
+    <div *ngIf="isExpanded">
+      <ng-container *ngFor="let sublevel of getOrCreateSublevels()">
+        <cube-trainer-hierarchical-alg-set-select [level]="sublevel"></cube-trainer-hierarchical-alg-set-select>
+      </ng-container>
+    </div>  
+  </mat-card-content>
+</mat-card>

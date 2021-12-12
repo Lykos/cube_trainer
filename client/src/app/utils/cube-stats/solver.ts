@@ -161,8 +161,21 @@ export class Solver {
                                                                                otherPiece: Piece,
                                                                                cycleBreak: Piece,
                                                                                nextPiece: Piece): ProbabilisticAlgTrace<T> {
+    return solvable.decideOrientedTypeForPieceCycle(buffer).flatMap(([solvable, orientedType]) => {
+      return this.cycleBreakWithBufferAndOtherPieceAndNextPieceAndOrientedType(bufferState, solvable, decreasingNumber, buffer, otherPiece, cycleBreak, nextPiece, orientedType);
+    });
+  }
+
+  private cycleBreakWithBufferAndOtherPieceAndNextPieceAndOrientedType<T extends Solvable<T>>(bufferState: BufferState,
+                                                                                              solvable: T,
+                                                                                              decreasingNumber: number, 
+                                                                                              buffer: Piece,
+                                                                                              otherPiece: Piece,
+                                                                                              cycleBreak: Piece,
+                                                                                              nextPiece: Piece,
+                                                                                              orientedType: OrientedType): ProbabilisticAlgTrace<T> {
     const doubleSwap = new DoubleSwap(buffer, otherPiece, cycleBreak, nextPiece);
-    if (this.decider.canChangeBuffer(bufferState) && this.decider.canDoubleSwap(doubleSwap)) {
+    if (this.decider.canChangeBuffer(bufferState) && this.decider.canDoubleSwap(doubleSwap, orientedType)) {
       return this.algsWithDoubleSwap(bufferState, solvable, decreasingNumber, doubleSwap);
     }
     return this.algsWithCycleBreakFromSwap(bufferState, solvable, decreasingNumber, new ThreeCycle(buffer, otherPiece, cycleBreak));

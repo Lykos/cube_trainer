@@ -1,27 +1,90 @@
 import { Piece } from '../../utils/cube-stats/piece';
-import { zip, find } from '../../utils/utils';
-import { forceValue } from '../../utils/optional';
-import { ExecutionOrder, MethodDescription, BufferDescription } from '../../utils/cube-stats/method-description';
+import { PieceWithName, piecesWithNames } from '../piece-with-name.model';
+import { ModeWithName, HierarchicalAlgSetLevel } from '../hierarchical-alg-set-level.model';
+import { find } from '../../utils/utils';
+import { Optional, hasValue, forceValue, some, none } from '../../utils/optional';
+import { assert } from '../../utils/assert';
+import { ExecutionOrder, PieceMethodDescription, MethodDescription, BufferDescription, UniformAlgSetMode, HierarchicalAlgSet } from '../../utils/cube-stats/method-description';
 import { CORNER, EDGE, PieceDescription } from '../../utils/cube-stats/piece-description';
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 
-const EDGE_NAMES = ['UF', 'UR', 'UL', 'UB', 'FR', 'FL', 'DF', 'DB', 'DR', 'DL', 'RB', 'LB'];
-const CORNER_NAMES = ['UFR', 'UBR', 'UFL', 'UBL', 'DFR', 'DBR', 'DFL', 'DBL'];
+const UNIFORM_OPTIONS: readonly ModeWithName[] = [
+  {name: 'I know all algs from this set', mode: UniformAlgSetMode.ALL},
+  {name: 'I know all oriented algs from this set', mode: UniformAlgSetMode.ONLY_ORIENTED},
+  {name: 'I know no algs from this set', mode: UniformAlgSetMode.NONE},
+];
 
-interface PieceWithName {
-  readonly piece: Piece;
-  readonly name: string;
+const UNIFORM_OPTIONS_WITHOUT_ORIENTED: readonly ModeWithName[] = UNIFORM_OPTIONS.filter(o => o.mode !== UniformAlgSetMode.ONLY_ORIENTED);
+
+interface AlgSetLevelHelper {
+  name: string;
+  isEnabledPiece(piece: PieceWithName | undefined): boolean;
 }
 
-function pieceWithName([piece, name]: [Piece, string]) {
-  return { piece, name };
-}
+class HierarchicalAlgSetLevelImpl implements HierarchicalAlgSetLevel {
+  readonly formGroup: FormGroup;
+  private sublevels: Optional<readonly HierarchicalAlgSetLevel[]> = none;
 
-// Note that the mapping between these and the pieces surprisingly doesn't matter.
-// We need to have a mapping, but the calculations don't really care which is which, so any mapping works.
-const EDGES: PieceWithName[] = zip(EDGE.pieces, EDGE_NAMES).map(pieceWithName);
-const CORNERS: PieceWithName[] = zip(CORNER.pieces, CORNER_NAMES).map(pieceWithName);
+  constructor(private readonly formBuilder: FormBuilder,
+              readonly uniformOptions: readonly ModeWithName[],
+              private readonly helpers: readonly AlgSetLevelHelper[],
+              private readonly pieces: readonly PieceWithName[],
+              private readonly piecePath: readonly PieceWithName[]) {
+    assert(this.helpers.length > 0);
+    this.formGroup =  this.formBuilder.group({
+      tag: ['uniform'],
+      mode: [UniformAlgSetMode.NONE],
+      subsets: this.formBuilder.array([]),
+    });
+  }
+
+  get levelName(): string {
+    return this.helpers[0].name;
+  }
+
+  get piece(): PieceWithName | undefined {
+    return this.piecePath.length > 0 ? this.piecePath[this.piecePath.length - 1] : undefined;
+  }
+
+  get value(): HierarchicalAlgSet<any> {
+    return this.formGroup.value;
+  }
+
+  get isExpanded(): boolean {
+    return this.value.tag === 'partial';
+  }
+
+  get isEnabled(): boolean {
+    return this.helpers[0].isEnabledPiece(this.piece) ;
+  }
+
+  get hasSublevels(): boolean {
+    return this.helpers.length > 1;
+  }
+
+  get unusedPieces(): PieceWithName[] {
+    return this.pieces.filter(piece => !this.piecePath.some(p => p.piece.pieceId === piece.piece.pieceId))    
+  }
+
+  getOrCreateSublevels(): readonly HierarchicalAlgSetLevel[] {
+    if (!this.hasSublevels) {
+      return [];
+    }
+    if (hasValue(this.sublevels)) {
+      return forceValue(this.sublevels);
+    }
+    const sublevels: HierarchicalAlgSetLevel[] = [];
+    const subsets = this.formGroup.get('subsets')! as FormArray;
+    for (let piece of this.unusedPieces) {
+      const sublevel = new HierarchicalAlgSetLevelImpl(this.formBuilder, this.uniformOptions, this.helpers.slice(1), this.pieces, this.piecePath.concat([piece]));
+      sublevels.push(sublevel);
+      subsets.push(this.formBuilder.group({piece, subset: sublevel.formGroup}));
+    }
+    this.sublevels = some(sublevels);
+    return sublevels;
+  }
+}
 
 @Component({
   selector: 'cube-trainer-method-description-form',
@@ -29,26 +92,18 @@ const CORNERS: PieceWithName[] = zip(CORNER.pieces, CORNER_NAMES).map(pieceWithN
   styleUrls: ['./method-description-form.component.css']
 })
 export class MethodDescriptionFormComponent {
-  pieces(pieceDescription: PieceDescription): PieceWithName[] {
-    if (pieceDescription === EDGE) {
-      return EDGES;
-    } else if (pieceDescription === CORNER) {
-      return CORNERS;
-    } else {
-      throw new Error('unknown piece description');
-    }
-  }
-
-  get cornerNames() {
-    return CORNER_NAMES;
+  piecesEqual(left: Piece, right: Piece) {
+    return left.pieceId === right.pieceId;
   }
 
   @Output()
   private submitMethodDescription: EventEmitter<MethodDescription> = new EventEmitter();
 
   readonly form: FormGroup;
-
+  readonly doubleSwapsTopLevelByPieceDescription: readonly [PieceDescription, HierarchicalAlgSetLevel][];
+  
   constructor(private readonly formBuilder: FormBuilder) {
+    this.doubleSwapsTopLevelByPieceDescription = this.pieceDescriptions.map(p => [p, this.createDoubleSwapsTopLevel(p)]);
     this.form = this.formBuilder.group({
       executionOrder: [ExecutionOrder.EC],
       pieceMethodDescriptions: this.formBuilder.array(this.pieceDescriptions.map(p => {
@@ -57,9 +112,43 @@ export class MethodDescriptionFormComponent {
           maxFloatingTwistLength: [0],
           sortedBufferDescriptions: this.formBuilder.array([this.createBufferGroup(p.pieces[0])]),
           avoidUnorientedIfWeCanFloat: [false],
+          doubleSwaps: this.doubleSwapsTopLevel(p).formGroup,
         });
       })),
     });
+  }
+
+  private doubleSwapLevelHelpers(pieceDescription: PieceDescription): readonly AlgSetLevelHelper[] {
+    return [
+      { name: 'Double Swaps', isEnabledPiece: () => this.canFloat(pieceDescription) },
+      { name: 'first buffer', isEnabledPiece: (p: PieceWithName | undefined) => this.buffers(pieceDescription).some(b => b.pieceId === p.piece.pieceId) },
+      { name: 'second buffer', isEnabledPiece: (p: PieceWithName | undefined) => this.buffers(pieceDescription).some(b => b.pieceId === p.piece.pieceId) },
+      { name: 'third piece', isEnabledPiece: () => true },
+      { name: 'fourth piece', isEnabledPiece: () => true },
+    ];
+  }
+
+  private createDoubleSwapsTopLevel(pieceDescription: PieceDescription): HierarchicalAlgSetLevel {
+    return new HierarchicalAlgSetLevelImpl(
+      this.formBuilder, this.uniformOptions(pieceDescription),
+      this.doubleSwapLevelHelpers(pieceDescription),
+      this.piecesWithNames(pieceDescription), []);
+  }
+
+  doubleSwapsTopLevel(pieceDescription: PieceDescription): HierarchicalAlgSetLevel {
+    return forceValue(find(this.doubleSwapsTopLevelByPieceDescription, e => e[0].pluralName === pieceDescription.pluralName))[1];
+  }
+
+  private uniformOptions(pieceDescription: PieceDescription) {
+    return pieceDescription.hasOrientation ? UNIFORM_OPTIONS : UNIFORM_OPTIONS_WITHOUT_ORIENTED;
+  }
+
+  piecesWithNames(pieceDescription: PieceDescription): readonly PieceWithName[] {
+    return piecesWithNames(pieceDescription);
+  }
+
+  buffers(pieceDescription: PieceDescription) {
+    return this.pieceMethodDescription(pieceDescription).sortedBufferDescriptions.map(d => d.buffer);
   }
 
   createBufferGroup(buffer: Piece): FormGroup {
@@ -69,6 +158,8 @@ export class MethodDescriptionFormComponent {
       maxTwistLength: [2],      
       stayWithSolvedBuffer: [false],
       canDoParityTwists: [false],
+      doUnorientedBeforeParity: [true],
+      doUnorientedBeforeParityTwist: [true],
     });
   }
 
@@ -83,7 +174,7 @@ export class MethodDescriptionFormComponent {
   }
 
   get pieceDescriptions() {
-    return [CORNER, EDGE];
+    return this.form?.value?.executionOrder === ExecutionOrder.CE ? [CORNER, EDGE] : [EDGE, CORNER];
   }
 
   get executionOrderEnum(): typeof ExecutionOrder {
@@ -98,6 +189,10 @@ export class MethodDescriptionFormComponent {
     return this.sortedBufferDescriptionsControls(pieceDescription).length > 1;
   }
 
+  canDoParityTwists(pieceDescription: PieceDescription, index: number): boolean {
+    return this.sortedBufferDescriptionsControls(pieceDescription)[index].value.canDoParityTwists;
+  }
+
   sortedBufferDescriptionsControl(pieceDescription: PieceDescription): FormArray {
     return this.pieceMethodDescriptionControl(pieceDescription).get('sortedBufferDescriptions')! as FormArray;
   }
@@ -106,11 +201,19 @@ export class MethodDescriptionFormComponent {
     return this.sortedBufferDescriptionsControl(pieceDescription).controls as FormGroup[];
   }
 
+  get value(): MethodDescription {
+    return this.form.value;
+  }
+
+  pieceMethodDescription(pieceDescription: PieceDescription): PieceMethodDescription {
+    return this.value.pieceMethodDescriptions.find(d => d.pluralName === pieceDescription.pluralName);
+  }
+
   pieceMethodDescriptionControl(pieceDescription: PieceDescription): FormGroup {
     return this.pieceMethodDescriptionsControl.controls.find(c => c.get('pluralName')!.value === pieceDescription.pluralName) as FormGroup;
   }
 
   onCalculate() {
-    this.submitMethodDescription.emit(this.form.value);
+    this.submitMethodDescription.emit(this.value);
   }
 }

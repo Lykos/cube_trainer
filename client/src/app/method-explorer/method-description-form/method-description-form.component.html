@@ -5,38 +5,49 @@
       <mat-option *ngFor="let executionOrder of executionOrderEnum | keyvalue" [value]="executionOrder.key"> {{executionOrder.key}} </mat-option>
     </mat-select>
   </mat-form-field>
-  <div *ngFor="let pieceDescription of pieceDescriptions" [formGroup]="pieceMethodDescriptionControl(pieceDescription)">
+  <div *ngFor="let pieceDescription of pieceDescriptions" [formGroup]="pieceMethodDescriptionControl(pieceDescription)" class="piece-section">
     <h2> {{ pieceDescription.pluralName }} </h2>
     <mat-checkbox formControlName="avoidUnorientedIfWeCanFloat" *ngIf="canFloat(pieceDescription) && pieceDescription.hasOrientation">
       Avoid flipped/twisted buffers if we still have unsolved buffers
     </mat-checkbox>
-    <mat-form-field>
+    <mat-form-field class="number-input">
       <mat-label>max floating twists/flips</mat-label>
       <input type="number" matInput formControlName="maxFloatingTwistLength">
     </mat-form-field>
-    <div *ngFor="let bufferControl of sortedBufferDescriptionsControls(pieceDescription); index as i" [formGroup]="bufferControl">
-      <h3> Buffer {{i + 1}} </h3>
-      <mat-select>
-        <mat-option *ngFor="let buffer of pieces(pieceDescription)" [value]="buffer.piece"> {{buffer.name}} </mat-option>
-      </mat-select>
-      <mat-checkbox formControlName="fiveCycles">
-        I can do 5 style for this buffer
-      </mat-checkbox>
-      <button *ngIf="canFloat(pieceDescription)" mat-raised-button color="primary" type="button" (click)="onRemoveBuffer(pieceDescription, i)">
-        Remove this buffer
-      </button>
-      <mat-checkbox formControlName="stayWithSolvedBuffer" *ngIf="i !== 0">
-        If all buffers are solved and this is the last buffer, I'll stay with this one (rather than going back to the main buffer).
-      </mat-checkbox>
-      <mat-form-field>
-        <mat-label *ngIf="pieceDescription.hasOrientation">max twists/flips</mat-label>
-        <input type="number" matInput formControlName="maxTwistLength">
-      </mat-form-field>
-      <mat-checkbox formControlName="canDoParityTwists" *ngIf="pieceDescription.hasOrientation">
-        I can solve one twist/flip and a parity at once for this buffer.
-      </mat-checkbox>
-    </div>
+    <mat-card *ngFor="let bufferControl of sortedBufferDescriptionsControls(pieceDescription); index as i" [formGroup]="bufferControl">
+      <mat-card-title> Buffer {{i + 1}} </mat-card-title>
+      <mat-card-content class="form-card-content">
+        <mat-select formControlName="buffer" class="buffer-select">
+          <mat-option *ngFor="let buffer of piecesWithNames(pieceDescription)" [value]="buffer.piece"> {{buffer.name}} </mat-option>
+        </mat-select>
+        <mat-checkbox formControlName="fiveCycles">
+          I can do 5 style for this buffer
+        </mat-checkbox>
+        <mat-checkbox formControlName="stayWithSolvedBuffer" *ngIf="i !== 0">
+          If all buffers are solved and this is the last buffer, I'll stay with this one (rather than going back to the main buffer).
+        </mat-checkbox>
+        <mat-form-field class="number-input">
+          <mat-label *ngIf="pieceDescription.hasOrientation">max twists/flips</mat-label>
+          <input type="number" matInput formControlName="maxTwistLength">
+        </mat-form-field>
+        <mat-checkbox formControlName="canDoParityTwists" *ngIf="pieceDescription.hasOrientation">
+          I can solve one twist/flip and a parity at once for this buffer.
+        </mat-checkbox>
+        <mat-checkbox formControlName="doUnorientedBeforeParity" *ngIf="pieceDescription.hasOrientation">
+          If I have a single twisted piece, I solve it with a commutator before doing parity.
+        </mat-checkbox>
+        <mat-checkbox formControlName="doUnorientedBeforeParityTwist" *ngIf="canDoParityTwists(pieceDescription, i) && pieceDescription.hasOrientation">
+          If I have a parity twist and an additional twisted piece, I solve it with a commutator before doing the parity twist.
+        </mat-checkbox>
+      </mat-card-content>
+      <mat-card-actions>
+        <button *ngIf="canFloat(pieceDescription)" mat-raised-button color="primary" type="button" (click)="onRemoveBuffer(pieceDescription, i)">
+          Remove this buffer
+        </button>
+      </mat-card-actions>
+    </mat-card>
     <button mat-raised-button color="primary" type="button" (click)="onAddBuffer(pieceDescription)">Add another buffer</button>
+    <cube-trainer-hierarchical-alg-set-select [level]="doubleSwapsTopLevel(pieceDescription)"></cube-trainer-hierarchical-alg-set-select>
   </div>
   <br>
   <button mat-raised-button color="primary" type="submit">

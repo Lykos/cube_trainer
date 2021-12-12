@@ -16,12 +16,15 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
+import { HierarchicalAlgSetSelectComponent } from './hierarchical-alg-set-select/hierarchical-alg-set-select.component';
 
 @NgModule({
   declarations: [
     MethodExplorerComponent,
     AlgCountsTableComponent,
     MethodDescriptionFormComponent,
+    HierarchicalAlgSetSelectComponent,
   ],
   imports: [
     CommonModule,
@@ -38,6 +41,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatButtonModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatCardModule,
   ],
   exports: [
     MethodExplorerComponent,
