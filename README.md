@@ -52,19 +52,19 @@ bundle exec rake db:create db:migrate
 ### Build the frontend
 
 ```shell
-npm run build_development
+bundle exec rails npm:build
 ```
 
 ### Run tests
 
 ```shell
-bundle exec rake spec
+bundle exec rails spec
 ```
 
 ### Run frontend tests
 
 ```shell
-npm run test
+bundle exec rails npm:test
 ```
 
 ### Run server
@@ -72,7 +72,7 @@ npm run test
 In two separate terminals, run these two commands:
 
 ```shell
-npm start
+bundle exec rails npm:start
 bundle exec rails server
 ```
 

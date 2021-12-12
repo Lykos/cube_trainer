@@ -1,0 +1,14 @@
+.form-card-content {
+    display: flex;
+    flex-direction: column;
+}
+.piece-section {
+    display: flex;
+    flex-direction: column;
+}
+.number-input {
+    max-width: 150px;
+}
+.buffer-select {
+    max-width: 150px;
+}

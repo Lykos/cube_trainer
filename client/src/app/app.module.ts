@@ -9,6 +9,7 @@ import { NgModule } from '@angular/core';
 import { UsersModule } from './users/users.module';
 import { StoreModule } from '@ngrx/store';
 import { ModesModule } from './modes/modes.module';
+import { MethodExplorerModule } from './method-explorer/method-explorer.module';
 import { FooterModule } from './footer/footer.module';
 import { TrainerModule } from './trainer/trainer.module';
 import { ToolbarModule } from './toolbar/toolbar.module';
@@ -24,6 +25,7 @@ import { UserEffects } from './effects/user.effects';
   ],
   imports: [
     BrowserModule,
+    MethodExplorerModule,
     ToolbarModule,
     TrainerModule,
     UsersModule,

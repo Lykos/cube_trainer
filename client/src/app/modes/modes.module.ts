@@ -54,7 +54,6 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatButtonModule,
     MatStepperModule,
     CdkStepperModule,
-    MatTableModule,
     MatCardModule,
     MatInputModule,
     MatFormFieldModule,
