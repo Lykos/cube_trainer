@@ -10,6 +10,9 @@
     <mat-checkbox formControlName="avoidUnorientedIfWeCanFloat" *ngIf="canFloat(pieceDescription) && pieceDescription.hasOrientation">
       Avoid flipped/twisted buffers if we still have unsolved buffers
     </mat-checkbox>
+    <mat-checkbox formControlName="avoidBuffersForCycleBreaks" *ngIf="canFloat(pieceDescription)">
+      Avoid buffers for cycle breaks if possible
+    </mat-checkbox>
     <mat-form-field class="number-input">
       <mat-label>max floating twists/flips</mat-label>
       <input type="number" matInput formControlName="maxFloatingTwistLength">

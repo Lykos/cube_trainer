@@ -57,6 +57,7 @@ function hasOrientedHierarchicalAlg4(algSet: HierarchicalAlgSet<HierarchicalAlgS
 export class Decider {
   readonly twistsWithCosts: TwistWithCost[];
   readonly sortedBuffers: readonly Piece[];
+  readonly sortedCycleBreaks: readonly Piece[];
 
   constructor(readonly piecePermutationDescription: PiecePermutationDescription,
               private readonly methodDescription: PieceMethodDescription) {
@@ -71,6 +72,12 @@ export class Decider {
       return {twist: new Twist(g.orientedTypes), cost: 1};
     });
     this.sortedBuffers = this.methodDescription.sortedBufferDescriptions.map(d => d.buffer);
+    if (this.methodDescription.avoidBuffersForCycleBreaks) {
+      const nonBuffers = this.piecePermutationDescription.pieces.filter(p => !this.sortedBuffers.some(b => b.pieceId === p.pieceId));
+      this.sortedCycleBreaks = nonBuffers.concat([...this.sortedBuffers].reverse());
+    } else {
+      this.sortedCycleBreaks = this.piecePermutationDescription.pieces;
+    }
   }
 
   private bufferDescription(buffer: Piece) {
@@ -78,11 +85,11 @@ export class Decider {
   }
 
   sortedNextCycleBreaksOnSecondPiece(buffer: Piece, firstPiece: Piece): readonly Piece[] {
-    return this.piecePermutationDescription.pieces;
+    return this.sortedCycleBreaks;
   }
 
   sortedNextCycleBreaksOnFirstPiece(buffer: Piece): readonly Piece[] {
-    return this.piecePermutationDescription.pieces;
+    return this.sortedCycleBreaks;
   }
 
   // Pieces that can be twisted in combination with the given parity. Sorted by priority.

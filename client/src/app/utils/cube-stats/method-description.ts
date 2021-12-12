@@ -44,6 +44,7 @@ export interface PieceMethodDescription {
   readonly avoidUnorientedIfWeCanFloat: boolean;
   readonly maxFloatingTwistLength: number;
   readonly doubleSwaps: HierarchicalAlgSet<HierarchicalAlgSet<HierarchicalAlgSet<HierarchicalAlgSet<UniformAlgSet>>>>;
+  readonly avoidBuffersForCycleBreaks: boolean;
 }
 
 export interface MethodDescription {

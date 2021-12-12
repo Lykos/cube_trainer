@@ -112,6 +112,7 @@ export class MethodDescriptionFormComponent {
           maxFloatingTwistLength: [0],
           sortedBufferDescriptions: this.formBuilder.array([this.createBufferGroup(p.pieces[0])]),
           avoidUnorientedIfWeCanFloat: [false],
+          avoidBuffersForCycleBreaks: [false],
           doubleSwaps: this.doubleSwapsTopLevel(p).formGroup,
         });
       })),
