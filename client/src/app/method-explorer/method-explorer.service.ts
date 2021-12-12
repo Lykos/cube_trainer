@@ -24,6 +24,7 @@ export class MethodExplorerService {
       this.worker = new Worker(new URL('./cube-stats.worker', import.meta.url));
       this.worker.onmessage = ({ data }) => {
         const response: WorkerResponse<AlgCountsResponse> = data;
+        console.log('Got response', response);
         this.algCountsWithId$.next(response);
       };
     } else {
@@ -41,6 +42,7 @@ export class MethodExplorerService {
     const currentId = ++this.id;
     if (this.worker) {
       const request: WorkerRequest<AlgCountsRequest> = {data: algCountsRequest, id: currentId};
+      console.log('Sending request', request);
       this.worker.postMessage(request);
       return this.algCountsWithId$.pipe(
         first(response => response.id === currentId),

@@ -1,6 +1,6 @@
 // Generally useful functions that have nothing to do with our bot or Travian.
 
-import { Optional, some, none } from './optional';
+import { Optional, some, none, mapOptional } from './optional';
 import { assert } from './assert';
 
 export function first<X>(xs: readonly X[]): Optional<X> {
@@ -68,6 +68,10 @@ export function minBy<X>(xs: readonly X[], f: (x: X) => number): Optional<X> {
 export function findIndex<X>(xs: readonly X[], f: (x: X) => boolean): Optional<number> {
   const index = xs.findIndex(f);
   return index === -1 ? none : some(index);
+}
+
+export function find<X>(xs: readonly X[], f: (x: X) => boolean): Optional<X> {
+  return mapOptional(findIndex(xs, f), i => xs[i]);
 }
 
 export function indexOf<X>(xs: readonly X[], x: X): Optional<number> {

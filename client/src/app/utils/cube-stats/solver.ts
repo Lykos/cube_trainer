@@ -1,5 +1,5 @@
 import { orElse, forceValue, Optional, some, none, ifPresent } from '../optional';
-import { indexOf } from '../utils';
+import { findIndex } from '../utils';
 import { assert } from '../assert';
 import { Piece } from './piece';
 import { PieceDescription } from './piece-description';
@@ -60,7 +60,7 @@ export class Solver {
     if (previousBuffer && !this.decider.canChangeBuffer(bufferState)) {
       return deterministic([solvable, previousBuffer]);
     }
-    const previousBufferIndex = orElse(indexOf(this.sortedBuffers, previousBuffer), -1);
+    const previousBufferIndex = orElse(findIndex(this.sortedBuffers, p => p.pieceId === previousBuffer?.pieceId), -1);
     const relevantBuffers = this.sortedBuffers.slice(previousBufferIndex + 1);
     const fallbackBuffer = previousBuffer && this.decider.stayWithSolvedBuffer(previousBuffer) ? previousBuffer : this.favoriteBuffer;
     if (this.decider.avoidUnorientedIfWeCanFloat) {
@@ -169,11 +169,11 @@ export class Solver {
   }
 
   private sortedNextCycleBreaksOnSecondPiece(buffer: Piece, firstPiece: Piece): readonly Piece[] {
-    return this.decider.piecePermutationDescription.pieces.filter(p => p !== buffer && p !== firstPiece);
+    return this.decider.piecePermutationDescription.pieces.filter(p => p.pieceId !== buffer.pieceId && p.pieceId !== firstPiece.pieceId);
   }
 
   private sortedNextCycleBreaksOnFirstPiece(buffer: Piece): readonly Piece[] {
-    return this.decider.piecePermutationDescription.pieces.filter(p => p !== buffer);
+    return this.decider.piecePermutationDescription.pieces.filter(p => p.pieceId !== buffer.pieceId);
   }
 
   private cycleBreakWithBufferAndOtherPiece<T extends Solvable<T>>(bufferState: BufferState,
@@ -260,7 +260,7 @@ export class Solver {
       assert(nextDecreasingNumber < decreasingNumber, 'decreasing number not decreasing');
     });
     return this.decideNextBuffer(bufferState, solvable).flatMap(([solvable, buffer]) => {
-      if (buffer !== bufferState.previousBuffer) {
+      if (buffer.pieceId !== bufferState.previousBuffer?.pieceId) {
 	bufferState = emptyBufferState();
       }
       return this.algsWithBuffer(bufferState, solvable, nextDecreasingNumber, buffer);

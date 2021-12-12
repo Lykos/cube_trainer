@@ -1,7 +1,8 @@
 import { createSolver } from './solver';
+import { forceValue } from '../optional';
 import { CORNER, EDGE } from './piece-description';
 import { Decider } from './decider';
-import { ExecutionOrder } from './method-description';
+import { ExecutionOrder, PieceMethodDescription } from './method-description';
 import { PiecePermutationDescription } from './piece-permutation-description';
 import { expectedValue } from './probabilistic';
 import { AlgCounts } from './alg-counts'
@@ -11,14 +12,15 @@ import { ExhaustiveSamplingStrategy } from './exhaustive-sampling-strategy';
 import { RandomSamplingStrategy } from './random-sampling-strategy';
 import { now } from '../instant';
 import { seconds } from '../duration';
+import { find } from '../utils';
 import { sumVectorSpaceElements } from './vector-space-element';
 
-const numIterations = 100000;
+const numIterations = 100;
 const slowGroupThreshold = seconds(10);
 const outputInterval = seconds(1);
 
-function expectedAlgCountsForPieces(pieces: PiecePermutationDescription, samplingMethod: SamplingMethod): AlgCounts {
-  const solver = createSolver(new Decider(pieces), pieces.pieceDescription);
+function expectedAlgCountsForPieces(pieces: PiecePermutationDescription, methodDescription: PieceMethodDescription, samplingMethod: SamplingMethod): AlgCounts {
+  const solver = createSolver(new Decider(pieces, methodDescription), pieces.pieceDescription);
   const samplingStrategy = samplingMethod === SamplingMethod.EXHAUSTIVE ? new ExhaustiveSamplingStrategy(pieces) : new RandomSamplingStrategy(pieces, numIterations);
   const groups = samplingStrategy.groups();
   let groupsDone = 0;
@@ -67,7 +69,10 @@ export function expectedAlgCounts(request: AlgCountsRequest): AlgCountsResponse 
   const descriptions =
     piecePermutationDescriptions(request.methodDescription.executionOrder);
   const piecesWithAlgCounts: readonly [PiecePermutationDescription, AlgCounts][] =
-    descriptions.map(pieces => [pieces, expectedAlgCountsForPieces(pieces, request.samplingMethod)])
+    descriptions.map(pieces => {
+      const pieceMethodDescription = forceValue(find(request.methodDescription.pieceMethodDescriptions, m => m.pluralName === pieces.pluralName));
+      return [pieces, expectedAlgCountsForPieces(pieces, pieceMethodDescription, request.samplingMethod)];
+    });
   const pieceNamesWithAlgCounts = piecesWithAlgCounts.map(([pieces, algCounts]) => {
     return { pluralName: pieces.pluralName, algCounts: algCounts.serializableAlgCounts };
   });

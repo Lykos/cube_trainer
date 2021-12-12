@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ExecutionOrder, MethodDescription } from '../../utils/cube-stats/method-description';
+import { MethodDescription } from '../../utils/cube-stats/method-description';
 import { MethodExplorerService } from '../method-explorer.service';
 import { AlgCountsData } from '../alg-counts-data.model';
 import { Observable } from 'rxjs';
@@ -10,17 +10,11 @@ import { Observable } from 'rxjs';
   styleUrls: ['./method-explorer.component.css']
 })
 export class MethodExplorerComponent {
-  readonly expectedAlgCountsData$: Observable<AlgCountsData>;
+  expectedAlgsData$: Observable<AlgCountsData> = undefined;
   
-  constructor(private readonly methodExplorerService: MethodExplorerService) {
-    this.expectedAlgCountsData$ = this.methodExplorerService.expectedAlgCounts(this.methodDescription);
-  }
+  constructor(private readonly methodExplorerService: MethodExplorerService) {}
 
-  get executionOrder() {
-    return ExecutionOrder.CE;
-  }
-
-  get methodDescription(): MethodDescription {
-    return {executionOrder: this.executionOrder};
+  calculate(methodDescription: MethodDescription) {
+    this.expectedAlgsData$ = this.methodExplorerService.expectedAlgCounts(methodDescription);
   }
 }

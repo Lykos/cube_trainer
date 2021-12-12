@@ -1,7 +1,8 @@
 import { MethodDescription } from './method-description';
 
 export enum SamplingMethod {
-  EXHAUSTIVE, SAMPLED
+  EXHAUSTIVE = 'exhaustive',
+  SAMPLED = 'sampled',
 }
 
 export interface AlgCountsRequest {

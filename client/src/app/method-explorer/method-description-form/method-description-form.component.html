@@ -1,0 +1,26 @@
+<form [formGroup]="form" (ngSubmit)="onCalculate()">
+  <mat-form-field>
+    <mat-label>execution order</mat-label>
+    <mat-select formControlName="executionOrder">
+      <mat-option *ngFor="let executionOrder of executionOrderEnum | keyvalue" [value]="executionOrder.key"> {{executionOrder.key}} </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <div *ngFor="let pieceDescription of pieceDescriptions">
+    <h2> {{ pieceDescription.pluralName }} </h2>
+    <mat-form-field appearance="fill">
+      <mat-label>Number of Buffers</mat-label>
+      <input type="number" matInput>
+    </mat-form-field>
+    <div>
+      <mat-select>
+        <mat-option *ngFor="let buffer of pieces(pieceDescription)" [value]="buffer.piece"> {{buffer.name}} </mat-option>
+      </mat-select>
+    </div>
+    <div>
+    </div>
+  </div>
+  <br>
+  <button mat-raised-button color="primary" type="submit">
+    Calculate
+  </button>
+</form>

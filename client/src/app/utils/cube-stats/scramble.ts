@@ -1,6 +1,6 @@
 import { Piece } from './piece';
 import { PiecePermutationDescription } from './piece-permutation-description';
-import { rand, swap, only, indexOf } from '../utils';
+import { rand, swap, only, findIndex } from '../utils';
 import { assert } from '../assert';
 import { Solvable } from './solvable';
 import { VectorSpaceElement, NumberAsVectorSpaceElement } from './vector-space-element';
@@ -27,13 +27,6 @@ function shuffle<X>(xs: X[], allowOddPermutations: boolean) {
 export class Scramble implements Solvable<Scramble> {
   constructor(readonly pieces: readonly Piece[], readonly orientedTypes: readonly OrientedType[]) {
     assert(orientedSum(this.orientedTypes).isSolved, 'oriented sum does not add up');
-    for (let i = 0; i < this.pieces.length; ++i) {
-      for (let j = 0; j < this.pieces.length; ++j) {
-        if (i !== j) {
-          assert(this.pieces[i].pieceId !== this.pieces[j].pieceId, 'piece appears multiple times');
-        }
-      }
-    }
   }
 
   private applyCycle(piece: Piece, length: number) {
@@ -69,11 +62,14 @@ export class Scramble implements Solvable<Scramble> {
   }
 
   private applyCycleBreak(cycleBreak: ThreeCycle): Scramble {
+    assert(cycleBreak.firstPiece.pieceId !== cycleBreak.secondPiece.pieceId);
+    assert(cycleBreak.firstPiece.pieceId !== cycleBreak.thirdPiece.pieceId);
+    assert(cycleBreak.secondPiece.pieceId !== cycleBreak.thirdPiece.pieceId);
     const pieces = [...this.pieces];
     const orientedTypes = [...this.orientedTypes];
-    const firstIndex = forceValue(indexOf(this.pieces, cycleBreak.firstPiece));
-    const secondIndex = forceValue(indexOf(this.pieces, cycleBreak.secondPiece));
-    const thirdIndex = forceValue(indexOf(this.pieces, cycleBreak.thirdPiece));
+    const firstIndex = forceValue(findIndex(this.pieces, p => p.pieceId === cycleBreak.firstPiece.pieceId));
+    const secondIndex = forceValue(findIndex(this.pieces, p => p.pieceId === cycleBreak.secondPiece.pieceId));
+    const thirdIndex = forceValue(findIndex(this.pieces, p => p.pieceId === cycleBreak.thirdPiece.pieceId));
     const cycleOrientedSum = orientedTypes[firstIndex].plus(orientedTypes[secondIndex]).plus(orientedTypes[thirdIndex]);
     // Technically we don't have enough information how the orientation gets distributed.
     // Given that it doesn't matter, we just move it to the first one.
@@ -120,7 +116,7 @@ export class Scramble implements Solvable<Scramble> {
 
   private isMinimumInCycle(piece: Piece) {
     let current = this.nextPiece(piece);
-    while (current != piece) {
+    while (current.pieceId !== piece.pieceId) {
       if (current.pieceId < piece.pieceId) {
         return false;
       }
@@ -153,7 +149,7 @@ export class Scramble implements Solvable<Scramble> {
 
   isSolved(piece: Piece) {
     const index = piece.pieceId;
-    return this.pieces[index] === piece && this.orientedTypes[index].isSolved;
+    return this.pieces[index].pieceId === piece.pieceId && this.orientedTypes[index].isSolved;
   }
   
   decideIsSolved(piece: Piece): Probabilistic<[Scramble, boolean]> {
@@ -161,7 +157,7 @@ export class Scramble implements Solvable<Scramble> {
   }
 
   isPermuted(piece: Piece) {
-    return this.pieces[piece.pieceId] !== piece;
+    return this.pieces[piece.pieceId].pieceId !== piece.pieceId;
   }
   
   decideIsPermuted(piece: Piece): Probabilistic<[Scramble, boolean]> {
@@ -199,10 +195,14 @@ export class Scramble implements Solvable<Scramble> {
 
   onlyUnorientedExcept(piece: Piece) {
     const unoriented = this.unoriented();
-    if (unoriented.length !== 2 || !unoriented.includes(piece)) {
+    if (unoriented.length !== 2) {
       return none;
     }
-    return some(only(unoriented.filter(p => p === piece)));
+    const unorientedWithout = unoriented.filter(p => p.pieceId === piece.pieceId);
+    if (unorientedWithout.length !== 1) {
+      return none;
+    }
+    return some(only(unorientedWithout));
   }
 
   decideOnlyUnorientedExcept(piece: Piece): Probabilistic<[Scramble, Optional<Piece>]> {
@@ -212,7 +212,7 @@ export class Scramble implements Solvable<Scramble> {
   private sumOverCycleIndices<T extends VectorSpaceElement<T>>(piece: Piece, f: (index: number) => T): T {
     let current = this.nextPiece(piece);
     let accumulator: T = f(piece.pieceId);
-    while (current != piece) {
+    while (current.pieceId !== piece.pieceId) {
       const nextIndex = current.pieceId;
       accumulator = accumulator.plus(f(nextIndex));
       current = this.nextPiece(current);

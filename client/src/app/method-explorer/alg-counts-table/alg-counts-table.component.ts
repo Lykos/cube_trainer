@@ -1,9 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { ExecutionOrder, MethodDescription } from '../../utils/cube-stats/method-description';
-import { MethodExplorerService } from '../method-explorer.service';
-import { AlgCountsRow } from '../alg-counts-data.model';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { AlgCountsData, AlgCountsRow } from '../alg-counts-data.model';
 
 class RenderableAlgCountsRow {
   constructor(readonly row: AlgCountsRow) {}
@@ -13,27 +9,35 @@ class RenderableAlgCountsRow {
   }
 
   get threeCycles() {
-    return this.row.algCounts.cyclesByLength[3].toFixed(2);
+    return this.row.algCounts.cyclesByLength[3]?.toFixed(2);
   }
 
   get fiveCycles() {
-    return this.row.algCounts.cyclesByLength[5].toFixed(2);
+    return this.row.algCounts.cyclesByLength[5]?.toFixed(2);
   }
 
   get doubleSwaps() {
     return this.row.algCounts.doubleSwaps.toFixed(2);
   }
-  
+
+  get parities() {
+    return this.row.algCounts.parities.toFixed(2);
+  }
+
+  get parityTwists() {
+    return this.row.algCounts.parityTwists.toFixed(2);
+  }
+
   get twoTwists() {
-    return this.row.algCounts.twistsByNumUnoriented[2].toFixed(2);
+    return this.row.algCounts.twistsByNumUnoriented[2]?.toFixed(2);
   }
   
   get threeTwists() {
-    return this.row.algCounts.twistsByNumUnoriented[3].toFixed(2);
+    return this.row.algCounts.twistsByNumUnoriented[3]?.toFixed(2);
   }
   
   get fourTwists() {
-    return this.row.algCounts.twistsByNumUnoriented[4].toFixed(2);
+    return this.row.algCounts.twistsByNumUnoriented[4]?.toFixed(2);
   }
   
   get totalTwists() {
@@ -51,11 +55,11 @@ class RenderableAlgCountsRow {
   styleUrls: ['./alg-counts-table.component.css']
 })
 export class AlgCountsTableComponent {
-  @Input() readonly expectedAlgsData;
+  @Input() expectedAlgsData: AlgCountsData;
 
   get expectedAlgsRows(): RenderableAlgCountsRow[] {
-    return expectedAlgsData.rows.map(row => new RenderableExpectedAlgRow(row));
+    return this.expectedAlgsData.rows.map(row => new RenderableAlgCountsRow(row));
   }
 
-  readonly columnsToDisplay = ['name', 'threeCycles', 'fiveCycles', 'doubleSwaps', 'parities', 'parityTwists', 'total'];
+  readonly columnsToDisplay = ['name', 'threeCycles', 'fiveCycles', 'doubleSwaps', 'parities', 'parityTwists', 'totalTwists', 'total'];
 }
