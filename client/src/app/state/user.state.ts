@@ -3,6 +3,8 @@ import { Optional } from '../utils/optional';
 
 export interface UserState {
   readonly user: Optional<User>;
-  readonly loading: boolean;
-  readonly error: Optional<any>;
+  readonly loginLoading: boolean;
+  readonly loginError: Optional<any>;
+  readonly initialLoadLoading: boolean;
+  readonly initialLoadError: Optional<any>;
 }

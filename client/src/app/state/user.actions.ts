@@ -16,3 +16,17 @@ export const loginFailure = createAction(
   '[User] login failure',
   props<{ error: any }>()
 );
+
+export const initialLoad = createAction(
+  '[User] initialLoad'
+);
+ 
+export const initialLoadSuccess = createAction(
+  '[User] initial load success',
+  props<{ user: User }>()
+);
+ 
+export const initialLoadFailure = createAction(
+  '[User] initial load failure',
+  props<{ error: any }>()
+);
