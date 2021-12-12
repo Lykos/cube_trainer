@@ -16,6 +16,7 @@ function orientedTypesIndex(orientedTypes: readonly OrientedType[]) {
 
 export interface TwistSolver {
   algs<T extends Solvable<T>>(solvable: T): Probabilistic<[T, AlgTrace]>;
+  algsForOrientedTypes(orientedTypes: readonly OrientedType[]): Probabilistic<AlgTrace>;
 }
 
 class TwistSolverImpl implements TwistSolver {
@@ -23,11 +24,11 @@ class TwistSolverImpl implements TwistSolver {
 
   algs<T extends Solvable<T>>(solvable: T): Probabilistic<[T, AlgTrace]> {
     return solvable.decideOrientedTypes().flatMap(([solvable, orientedTypes]) => {
-      return this.algsWithFixedPieces(orientedTypes).map(algs => [solvable, algs]);
+      return this.algsForOrientedTypes(orientedTypes).map(algs => [solvable, algs]);
     });
   }
 
-  private algsWithFixedPieces(orientedTypes: readonly OrientedType[]): Probabilistic<AlgTrace> {
+  algsForOrientedTypes(orientedTypes: readonly OrientedType[]): Probabilistic<AlgTrace> {
     const index = orientedTypesIndex(orientedTypes);
     if (!hasValue(this.algsByIndex[index])) {
       console.log(this);
@@ -85,8 +86,12 @@ function combine(algTraceWithCost: AlgTraceWithCost, twistWithCost: TwistWithCos
 }
 
 export function createTwistSolver(decider: Decider, pieceDescription: PieceDescription): TwistSolver {
+  return createTwistSolverInternal(decider.twistsWithCosts, pieceDescription);
+}
+
+// Exported for testing
+export function createTwistSolverInternal(twistsWithCosts: readonly TwistWithCost[], pieceDescription: PieceDescription): TwistSolver {
   assert(pieceDescription.numOrientedTypes <= 3);
-  const twistsWithCosts: TwistWithCost[] = decider.twistsWithCosts;
   const numItems = pieceDescription.numOrientedTypes ** pieceDescription.pieces.length;
   const algsByIndex: Optional<AlgTrace>[] = Array(numItems).fill(none);
   const costByIndex: number[] = Array(numItems).fill(Infinity);

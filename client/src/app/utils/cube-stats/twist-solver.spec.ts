@@ -1,17 +1,27 @@
 import { PieceDescription } from './piece-description';
 import { Twist } from './alg';
-import { createTwistSolver } from './twist-solver';
+import { TwistWithCost } from './twist-with-cost';
+import { createTwistSolverInternal } from './twist-solver';
+import { solvedOrientedType, orientedType } from './oriented-type';
 import { combination } from '../utils';
 
-const topLayerCorners = new PieceDescription(4, 2);
-const twoTwistsWithCosts = combination(topLayerCorners.pieces, 2).flatMap(pieces => {
+const topLayerCorners = new PieceDescription('top layer corners', 4, 3);
+const cw = orientedType(1, 3);
+const ccw = orientedType(2, 3);
+const twoTwistsWithCosts: readonly TwistWithCost[] = combination(topLayerCorners.pieces, 2).flatMap(pieces => {
+  const firstTwist = [solvedOrientedType, solvedOrientedType, solvedOrientedType, solvedOrientedType];
+  firstTwist[pieces[0].pieceId] = cw;
+  firstTwist[pieces[1].pieceId] = ccw;
+  const secondTwist = [solvedOrientedType, solvedOrientedType, solvedOrientedType, solvedOrientedType];
+  secondTwist[pieces[0].pieceId] = ccw;
+  secondTwist[pieces[1].pieceId] = cw;
   return [
     {
-      twist: new Twist([[pieces[0]], [pieces[1]]]),
+      twist: new Twist(firstTwist),
       cost: 1,
     },
     {
-      twist: new Twist([[pieces[1]], [pieces[0]]]),
+      twist: new Twist(secondTwist),
       cost: 1,
     },
   ]
@@ -19,23 +29,23 @@ const twoTwistsWithCosts = combination(topLayerCorners.pieces, 2).flatMap(pieces
 
 describe('TwistSolver', () => {
   fit('should find the right 2 twist', () => {
-    const solver = createTwistSolver(topLayerCorners, twoTwistsWithCosts);
-    const inputTwist = [[topLayerCorners.pieces[0]], [topLayerCorners.pieces[1]]];
-    const actual = solver.algs(inputTwist).assertDeterministic();
+    const solver = createTwistSolverInternal(twoTwistsWithCosts, topLayerCorners);
+    const inputTwist = [cw, ccw];
+    const actual = solver.algsForOrientedTypes(inputTwist).assertDeterministic();
     expect(actual.algs.length).toEqual(1);
     const alg = actual.algs[0];
     if (alg instanceof Twist) {
-      expect(alg.unorientedByType[0][0]).toEqual(topLayerCorners.pieces[0]);
-      expect(alg.unorientedByType[1][0]).toEqual(topLayerCorners.pieces[1]);
+      expect(alg.orientedTypes[0]).toEqual(cw);
+      expect(alg.orientedTypes[1]).toEqual(ccw);
     } else {
       expect(false).toEqual(true);
     }
   });
 
   it('should find two 2 twists', () => {
-    const solver = createTwistSolver(topLayerCorners, twoTwistsWithCosts);
-    const inputTwist = [[topLayerCorners.pieces[0], topLayerCorners.pieces[1], topLayerCorners.pieces[2]], []];
-    const actual = solver.algs(inputTwist).assertDeterministic();
+    const solver = createTwistSolverInternal(twoTwistsWithCosts, topLayerCorners);
+    const inputTwist = [cw, cw, cw];
+    const actual = solver.algsForOrientedTypes(inputTwist).assertDeterministic();
     expect(actual.algs.length).toEqual(2);
   });
 });
