@@ -1,10 +1,9 @@
 Rails.application.configure do
-  # Settings specified here will take precedence over those in config/application.rb.
-
-  console do
-    require 'pry'
-    config.console = Pry
+  # Specify AnyCable WebSocket server URL to use by JS client
+  config.after_initialize do
+    config.action_cable.url = ActionCable.server.config.url = ENV.fetch("CABLE_URL", "ws://localhost:8080/cable") if AnyCable::Rails.enabled?
   end
+  # Settings specified here will take precedence over those in config/application.rb.
 
   config.middleware.insert_before 0, Rack::Cors do
     allow do
