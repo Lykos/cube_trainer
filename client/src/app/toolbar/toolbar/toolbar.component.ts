@@ -17,15 +17,8 @@ export class ToolbarComponent implements OnInit {
   readonly user$: Observable<Optional<User>>;
   unreadMessagesCount$: Observable<number>;
 
-  constructor(private readonly messagesService: MessagesService,
-              private readonly store: Store) {
-    this.user$ = this.store.select(selectUser).pipe(
-      tap(user => {
-        ifPresent(user, () => {
-          this.unreadMessagesCount$ = this.messagesService.countUnread();
-        });
-      })
-    );
+  constructor(private readonly store: Store) {
+    this.user$ = this.store.select(selectUser);
   }
 
   get userName$() {
