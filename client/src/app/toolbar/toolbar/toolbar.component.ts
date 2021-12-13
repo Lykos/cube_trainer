@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { selectUser } from '../../state/user.selectors';
-import { MessagesService } from '../../users/messages.service';
 import { User } from '../../users/user.model';
-import { Optional, hasValue, mapOptional, orElse, ifPresent } from '../../utils/optional';
-import { map, tap } from 'rxjs/operators';
+import { Optional, hasValue, mapOptional, orElse } from '../../utils/optional';
+import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { initialLoad, logout } from '../../state/user.actions';
