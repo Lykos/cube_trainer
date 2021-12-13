@@ -1,6 +1,11 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  console do
+    require 'pry'
+    config.console = Pry
+  end
+
   config.middleware.insert_before 0, Rack::Cors do
     allow do
       origins 'localhost:3000', 'localhost:4200'
