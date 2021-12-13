@@ -36,9 +36,6 @@ group :development, :test, :production do
   gem 'pg', '~> 1.2.3', '>= 1.2.3'
 
   gem 'ruby-filemagic'
-
-  # We use AnyCable as a websockets wrapper (replaces ActionCable)
-  gem 'anycable-rails'
 end
 
 group :development, :test do
