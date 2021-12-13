@@ -11,9 +11,9 @@ module ApplicationCable
     private
 
     def find_verified_user
-      uid = request.headers['HTTP_UID']
-      token = request.headers['HTTP_ACCESS_TOKEN']
-      client_id = request.headers['HTTP_CLIENT']
+      uid = request.params[:uid]
+      token = request.params[:access_token]
+      client_id = request.params[:client]
 
       user = User.find_by_uid(uid)
 

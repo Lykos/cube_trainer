@@ -3,10 +3,10 @@ require 'rails_helper'
 RSpec.describe ApplicationCable::Connection, type: :channel do
   include_context 'with user abc'
   include_context 'with headers'
-  include_context 'with user auth headers'
 
   it "successfully connects" do
-    connect '/cable', headers: user_headers
+    auth_data = user.create_new_auth_token
+    connect "/cable?uid=#{auth_data['uid']}&client=#{auth_data['client']}&access_token=#{auth_data['access-token']}"
     expect(connection.current_user).to eq(user)
   end
 
