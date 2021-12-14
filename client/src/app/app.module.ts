@@ -7,12 +7,17 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { UsersModule } from './users/users.module';
+import { StoreModule } from '@ngrx/store';
 import { ModesModule } from './modes/modes.module';
 import { MethodExplorerModule } from './method-explorer/method-explorer.module';
 import { FooterModule } from './footer/footer.module';
 import { TrainerModule } from './trainer/trainer.module';
 import { ToolbarModule } from './toolbar/toolbar.module';
 import { APP_BASE_HREF } from '@angular/common';
+// TODO: Move this to a better place
+import { userReducer } from './state/user.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { UserEffects } from './effects/user.effects';
 
 @NgModule({
   declarations: [
@@ -37,6 +42,8 @@ import { APP_BASE_HREF } from '@angular/common';
       registerAccountCallback: `${environment.redirectProtocol}://${environment.host}/confirm_email`,
       resetPasswordCallback: `${environment.redirectProtocol}://${environment.host}/update_password`,
     }),
+    StoreModule.forRoot({ user: userReducer }),
+    EffectsModule.forRoot([UserEffects]),
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},

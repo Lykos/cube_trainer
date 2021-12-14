@@ -7,6 +7,7 @@ export const environment = {
   production: false,
   host: 'localhost:4200',
   redirectProtocol: 'http',
+  actionCableUrl: 'ws://localhost:3000/cable',
 };
 
 /*

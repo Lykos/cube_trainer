@@ -52,6 +52,14 @@ class User < ApplicationRecord
     update(admin_confirmed: true)
   end
 
+  def unread_messages_count
+    messages.where(read: false).count
+  end
+
+  def broadcast_unread_messages_count
+    UnreadMessagesCountChannel.broadcast_to(self, unread_messages_count: unread_messages_count)
+  end
+
   private
 
   def validate_name_not_equal_to_email

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UsersService } from '../users.service';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { login } from '../../state/user.actions';
+import { Credentials } from '../credentials.model';
 
 @Component({
   selector: 'cube-trainer-login',
@@ -11,9 +12,8 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   loginFailed = false;
 
-  constructor(private readonly usersService: UsersService,
-	      private readonly router: Router,
-	      private readonly formBuilder: FormBuilder) {}
+  constructor(private readonly formBuilder: FormBuilder,
+              private readonly  store: Store) {}
 
   relevantInvalid(control: AbstractControl) {
     return control.invalid && (control.dirty || control.touched);
@@ -27,23 +27,11 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    this.usersService.login(this.email.value, this.password.value)
-      .subscribe(
-	r => {
-          // TODO: Remove the reload once the toolbar subscription to
-          // the logged in user works.
-	  this.router.navigate(['/modes'])
-            .then(() => {
-              window.location.reload();
-            });
-	},
-	err => {
-          // TODO: Get 401 from a constant.
-	  if (err.status == 401) {
-	    this.loginFailed = true;
-	  }
-	},
-      );
+    this.store.dispatch(login({ credentials: this.credentials }));
+  }
+
+  get credentials(): Credentials {
+    return { email: this.email.value, password: this.password.value };
   }
 
   get email() { return this.loginForm.get('email')!; }
