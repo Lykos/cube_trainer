@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     resource :user
     resource :dump, only: [:show]
     resources :modes do
+      resources :cases, only: [:index, :show]
       resources :results, only: [:index, :show, :destroy, :update]
       resources :stats, only: [:index, :show, :destroy]
     end
