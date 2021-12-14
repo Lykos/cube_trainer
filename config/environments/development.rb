@@ -76,4 +76,6 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.log_level = :debug
+
+  config.redirect_whitelist = ['http://localhost:4200/*']
 end
