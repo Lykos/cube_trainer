@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe UnreadMessagesCountChannel, type: :channel do
   include_context 'with user abc'
 
-  it "successfully subscribes" do
+  it 'successfully subscribes' do
     user.messages.clear
     stub_connection current_user: user
 

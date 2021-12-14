@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module ApplicationCable
+  # Connection for websockets that handles authentication.
   class Connection < ActionCable::Connection::Base
     identified_by :current_user
 
@@ -15,9 +16,9 @@ module ApplicationCable
       token = request.params[:access_token]
       client_id = request.params[:client]
 
-      user = User.find_by_uid(uid)
+      user = User.find_by(uid: uid)
 
-      if user && user.valid_token?(token, client_id)
+      if user&.valid_token?(token, client_id)
         user
       else
         reject_unauthorized_connection
