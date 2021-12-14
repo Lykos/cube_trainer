@@ -22,7 +22,7 @@ class ModesController < ApplicationController
   # POST /api/modes.json
   def create
     if !@mode.valid?
-      render json: @mode.to_simple, status: :bad_request
+      render json: @mode.errors, status: :bad_request
     elsif @mode.save
       render json: @mode.to_simple, status: :created
     else
