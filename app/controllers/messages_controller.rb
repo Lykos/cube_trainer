@@ -4,11 +4,6 @@
 class MessagesController < ApplicationController
   before_action :set_message, only: %i[show update destroy]
 
-  # GET /api/messages/count_unread
-  def count_unread
-    render json: current_user.messages.where(read: false).count
-  end
-
   # GET /api/messages
   def index
     render json: current_user.messages

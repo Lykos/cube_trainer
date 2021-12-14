@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { UsersService } from '../../users/users.service';
-import { MessagesService } from '../../users/messages.service';
+import { selectUser } from '../../state/user.selectors';
 import { User } from '../../users/user.model';
-import { Optional, some, none, hasValue, mapOptional, orElse } from '../../utils/optional';
-import { map, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { Router } from '@angular/router';
+import { MessagesService } from '../../users/messages.service';
+import { Optional, hasValue, mapOptional, orElse } from '../../utils/optional';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { initialLoad, logout } from '../../state/user.actions';
 
 @Component({
   selector: 'cube-trainer-toolbar',
@@ -13,47 +14,31 @@ import { Router } from '@angular/router';
   styleUrls: ['./toolbar.component.css']
 })
 export class ToolbarComponent implements OnInit {
-  user: Optional<User> = none;
-  unreadMessagesCount: number | undefined = undefined;
+  readonly user$: Observable<Optional<User>>;
+  unreadMessagesCount$: Observable<number>;
 
-  constructor(private readonly usersService: UsersService,
-	      private readonly messagesService: MessagesService,
-              private readonly router: Router) {
+  constructor(private readonly messagesService: MessagesService,
+              private readonly store: Store) {
+    this.user$ = this.store.select(selectUser);
+    // We map 0 to undefined s.t. the badge gets hidden.
+    this.unreadMessagesCount$ = this.messagesService.unreadCountNotifications().pipe(
+      map(count => count > 0 ? count : undefined)
+    );
   }
 
-  get unreadMessagesBadge() {
-    return this.unreadMessagesCount == 0 ? undefined : this.unreadMessagesCount;
+  get userName$() {
+    return this.user$.pipe(map(user => orElse(mapOptional(user, u => u.name), '')));
   }
 
-  get userName() {
-    return orElse(mapOptional(this.user, u => u.name), '');
+  get loggedIn$() {
+    return this.user$.pipe(map(hasValue));
   }
-
-  get loggedIn() {
-    return hasValue(this.user);
-  }
-
-  get numBadges() {
-    return this.unreadMessagesCount;
-  }
-
-  onLogout() {
-    this.usersService.logout().subscribe(() => {
-      this.user = none;
-      this.router.navigate(['/logged_out']);
-    });
-  } 
 
   ngOnInit() {
-    this.usersService.show().pipe(
-      map(user => some(user)),
-      catchError(err => of(none)),
-    ).subscribe(
-      (user) => {
-	this.user = user;
-	mapOptional(user, u => {
-	  this.messagesService.countUnread().subscribe(count => this.unreadMessagesCount = count);
-	});
-      });
+    this.store.dispatch(initialLoad());
   }
+  
+  onLogout() {
+    this.store.dispatch(logout());
+  } 
 }

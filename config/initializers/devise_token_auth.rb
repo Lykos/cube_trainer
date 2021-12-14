@@ -58,5 +58,5 @@ DeviseTokenAuth.setup do |config|
   # send email, set it to true. (This is a setting for compatibility)
   # config.send_confirmation_email = true
 
-  config.redirect_whitelist = Rails.env.production? ? ['https://www.cube_trainer.org/*'] : ['http://localhost:4200/*']
+  config.redirect_whitelist = Rails.env.production? ? ['https://www.cubetrainer.org/*'] : ['http://localhost:4200/*']
 end
