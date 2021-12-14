@@ -26,6 +26,12 @@ Ruby, PostgreSQL and npm on your OS, too.
 sudo apt install ruby postgresql libpq-dev npm
 ```
 
+Optionally, you can install mailcatcher. This is a useful tool to debug emails that the website sends. Note that the documentation of mailcatcher recommends to set it up separately as a global gem and to not make it a gem dependency.
+
+```shell
+gem install mailcatcher
+```
+
 ### Install Ruby & JS dependencies
 
 Using [Bundler](https://github.com/bundler/bundler) and [npm](https://github.com/npm/cli):
@@ -69,11 +75,18 @@ bundle exec rails npm:test
 
 ### Run server
 
-In two separate terminals, run these two commands:
+The best way to start all the necessary processes is to install [overmind](https://github.com/DarthSim/overmind) and then to simply run:
+
+```shell
+overmind start
+```
+
+Alternatively, you can run these commands in separate terminals. Mailcatcher is optional and only needed if you want to debug emails.
 
 ```shell
 bundle exec rails npm:start
 bundle exec rails server
+mailcatcher # optional
 ```
 
 Now you can access the site at http://localhost:4200. Note that accessing it via http://localhost:3000 might also work, but you won't get automatic refreshes on TypeScript changes, so it's not recommended.
