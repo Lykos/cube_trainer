@@ -32,6 +32,8 @@
     "@angular/platform-browser": "^13.0.2",
     "@angular/platform-browser-dynamic": "^13.0.2",
     "@angular/router": "^13.0.2",
+    "@ngrx/effects": "^13.0.2",
+    "@ngrx/store": "^13.0.2",
     "@rails/ujs": "^6.1.4",
     "@rxweb/reactive-form-validators": "^2.1.6",
     "angular-token": "^7.0.1",
