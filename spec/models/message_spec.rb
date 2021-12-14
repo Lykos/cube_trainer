@@ -18,6 +18,14 @@ RSpec.describe Message, type: :model do
     end.to broadcast_to(UnreadMessagesCountChannel.broadcasting_for(user)).with(unread_messages_count: 1)
   end
 
+  it 'broadcasts unread messages count after deletion' do
+    user.messages.clear
+    message = user.messages.create(title: 'hi')
+    expect do
+      message.destroy
+    end.to broadcast_to(UnreadMessagesCountChannel.broadcasting_for(user)).with(unread_messages_count: 0)
+  end
+
   it 'broadcasts unread messages count after being read' do
     user.messages.clear
     message = user.messages.create(title: 'hi')
