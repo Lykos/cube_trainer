@@ -3,40 +3,63 @@ import { Injectable } from '@angular/core';
 import { Cable, ChannelNameWithParams, Channel } from 'actioncable';
 import * as ActionCable from 'actioncable';
 import { environment } from './../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { distinctUntilChanged, switchMap, shareReplay } from 'rxjs/operators';
+import { mapOptional, orElse } from '../utils/optional';
+import { Store } from '@ngrx/store';
+import { User } from '../users/user.model';
+import { selectUser } from '../state/user.selectors';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CableService {
-  private consumer: Cable;
+  private consumer$: Observable<Cable>;
 
-  constructor(private readonly tokenService: AngularTokenService) {}
+  constructor(private readonly tokenService: AngularTokenService,
+              private readonly store: Store) {
+    this.consumer$ = this.switchToActiveUser(() => this.createConsumer());
+  }
 
-  private getOrCreateConsumer() {
-    if (!this.consumer) {
-      const authData = this.tokenService.currentAuthData;
-      if (!authData) {
-        throw new Error('Tried to create a consumer before authentication.');
+  private switchToActiveUser<X>(f: (user: User) => Observable<X>) {
+    return this.store.select(selectUser).pipe(
+      distinctUntilChanged(undefined, user => orElse(mapOptional(user, user => user.id), undefined)),
+      switchMap(user => orElse(mapOptional(user, f), of())),
+      shareReplay(),
+    );
+  }
+
+  private createConsumer(): Observable<Cable> {
+    return new Observable<Cable>(subscriber => {
+      try {
+        const authData = this.tokenService.currentAuthData;
+        if (!authData) {
+          throw new Error('Tried to create a consumer before authentication.');
+        }
+        console.log('Connecting to ActionCable');
+        subscriber.next(ActionCable.createConsumer(`${environment.actionCableUrl}/?client=${authData.client}&uid=${authData.uid}&access_token=${authData.accessToken}`));
+        subscriber.complete();
+      } catch (error: any) {
+        subscriber.error(error);
       }
-      this.consumer = ActionCable.createConsumer(`${environment.actionCableUrl}?client=${authData.client}&uid=${authData.uid}&access_token=${authData.accessToken}`);
-    }
-    return this.consumer;
+    });
   }
 
   channelSubscription<X>(channelName: string | ChannelNameWithParams): Observable<X> {
-    return new Observable(subscriber => {
-      const channel: Channel = this.getOrCreateConsumer().subscriptions.create(channelName, {
-        disconnected: () => {
-          subscriber.complete();
-        },
-        received: (x: X) => {
-          subscriber.next(x);
-        },
+    return this.consumer$.pipe(switchMap(consumer => {
+      return new Observable<X>(subscriber => {
+        const channel: Channel = consumer.subscriptions.create(channelName, {
+          disconnected: () => {
+            subscriber.complete();
+          },
+          received: (x: X) => {
+            subscriber.next(x);
+          },
+        });
+        return () => {
+          channel.unsubscribe();
+        };
       });
-      return () => {
-        channel.unsubscribe();
-      };
-    });
+    }));
   }
 }

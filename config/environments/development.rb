@@ -78,4 +78,6 @@ Rails.application.configure do
   config.log_level = :debug
 
   config.redirect_whitelist = ['http://localhost:4200/*']
+
+  config.action_cable.allowed_request_origins = [/^https?:\/\/(127.0.0.1|localhost):\d+$/]
 end
