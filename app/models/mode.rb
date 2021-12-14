@@ -96,6 +96,18 @@ class Mode < ApplicationRecord
     hinter.hints(input.input_representation)
   end
 
+  def cases
+    return unless has_bounded_inputs?
+
+    @cases ||= generator.input_items.map.with_index do |input_item, index|
+      Case.new(
+        id: index,
+        mode: self,
+        representation: input_item.representation
+      )
+    end
+  end
+  
   def parity_parts
     [first_parity_part, second_parity_part]
   end
