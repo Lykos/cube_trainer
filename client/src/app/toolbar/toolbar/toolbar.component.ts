@@ -20,7 +20,10 @@ export class ToolbarComponent implements OnInit {
   constructor(private readonly messagesService: MessagesService,
               private readonly store: Store) {
     this.user$ = this.store.select(selectUser);
-    this.unreadMessagesCount$ = this.messagesService.unreadCountNotifications();
+    // We map 0 to undefined s.t. the badge gets hidden.
+    this.unreadMessagesCount$ = this.messagesService.unreadCountNotifications().pipe(
+      map(count => count > 0 ? count : undefined)
+    );
   }
 
   get userName$() {

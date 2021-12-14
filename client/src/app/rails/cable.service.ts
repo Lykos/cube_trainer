@@ -19,7 +19,6 @@ export class CableService {
       if (!authData) {
         throw new Error('Tried to create a consumer before authentication.');
       }
-      console.log('Creating consumer');
       this.consumer = ActionCable.createConsumer(`${environment.actionCableUrl}?client=${authData.client}&uid=${authData.uid}&access_token=${authData.accessToken}`);
     }
     return this.consumer;

@@ -4,9 +4,10 @@ import { selectUser } from '../state/user.selectors';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
 import { Message } from './message.model';
+import { User } from './user.model';
 import { MessageNotification } from './message-notification.model';
 import { map, distinctUntilChanged, switchMap, shareReplay } from 'rxjs/operators';
-import { hasValue, mapOptional, orElse } from '../utils/optional';
+import { mapOptional, orElse } from '../utils/optional';
 import { fromDateString } from '../utils/instant'
 import { Observable, of } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -20,7 +21,6 @@ function parseMessage(message: any): Message {
     timestamp: fromDateString(message.created_at),
   }
 }
-
 
 @Injectable({
   providedIn: 'root',
@@ -52,23 +52,19 @@ export class MessagesService {
       map(parseMessage));
   }
 
-  unreadCountNotifications(): Observable<number> {
+  private switchToActiveUser<X>(f: (user: User) => Observable<X>) {
     return this.store.select(selectUser).pipe(
       distinctUntilChanged(undefined, user => orElse(mapOptional(user, user => user.id), undefined)),
-      switchMap(user => {
-        return hasValue(user) ? this.cableService.channelSubscription<number>('UnreadMessagesCountChannel') : of(0);
-      }),
+      switchMap(user => orElse(mapOptional(user, f), of())),
       shareReplay(),
     );
   }
 
+  unreadCountNotifications(): Observable<number> {
+    return this.switchToActiveUser(() => this.cableService.channelSubscription<number>('UnreadMessagesCountChannel'));
+  }
+
   notifications(): Observable<MessageNotification> {
-    return this.store.select(selectUser).pipe(
-      distinctUntilChanged(undefined, user => orElse(mapOptional(user, user => user.id), undefined)),
-      switchMap(user => {
-        return hasValue(user) ? this.cableService.channelSubscription<MessageNotification>('MessageChannel') : of();
-      }),
-      shareReplay(),
-    );
+    return this.switchToActiveUser(() => this.cableService.channelSubscription<MessageNotification>('MessageChannel'));
   }
 }
