@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { selectUser } from '../../state/user.selectors';
-import { MessagesService } from '../../users/messages.service';
 import { User } from '../../users/user.model';
-import { Optional, hasValue, mapOptional, orElse, ifPresent } from '../../utils/optional';
-import { map, tap } from 'rxjs/operators';
+import { MessagesService } from '../../users/messages.service';
+import { Optional, hasValue, mapOptional, orElse } from '../../utils/optional';
+import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { initialLoad, logout } from '../../state/user.actions';
@@ -17,8 +17,13 @@ export class ToolbarComponent implements OnInit {
   readonly user$: Observable<Optional<User>>;
   unreadMessagesCount$: Observable<number>;
 
-  constructor(private readonly store: Store) {
+  constructor(private readonly messagesService: MessagesService,
+              private readonly store: Store) {
     this.user$ = this.store.select(selectUser);
+    // We map 0 to undefined s.t. the badge gets hidden.
+    this.unreadMessagesCount$ = this.messagesService.unreadCountNotifications().pipe(
+      map(count => count > 0 ? count : undefined)
+    );
   }
 
   get userName$() {

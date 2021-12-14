@@ -1,0 +1,2 @@
+server: bundle exec rails s
+frontend: npm start
