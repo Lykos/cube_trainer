@@ -123,8 +123,6 @@ Rails.application.configure do
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 
-  config.redirect_whitelist = config.hosts.map { |host| "https://#{host}/*" }
-
   # ActionCable configuration
-  config.action_cable.allowed_request_origins = config.hosts.map { |host| "https://#{host}" }
+  config.action_cable.allowed_request_origins = ['https://www.cubetrainer.org', 'https://cube-trainer.herokuapp.com']
 end
