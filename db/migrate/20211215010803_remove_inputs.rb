@@ -12,6 +12,7 @@ class RemoveInputs < ActiveRecord::Migration[6.0]
     add_index :results, :representation
     remove_foreign_key :results, :inputs
     remove_foreign_key :inputs, :modes
+    change_column_null :results, :input_id, true
     Input.reset_column_information
     Result.reset_column_information
     reversible do |dir|
@@ -30,7 +31,6 @@ class RemoveInputs < ActiveRecord::Migration[6.0]
     end
     Input.reset_column_information
     Result.reset_column_information
-    change_column_null :results, :input_id, true
     remove_column :results, :input_id, :integer
     change_column_null :results, :mode_id, false
     change_column_null :results, :representation, false

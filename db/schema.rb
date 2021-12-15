@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_01_001114) do
+ActiveRecord::Schema.define(version: 2021_12_15_010803) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,14 +31,6 @@ ActiveRecord::Schema.define(version: 2021_12_01_001114) do
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_color_schemes_on_user_id", unique: true
-  end
-
-  create_table "inputs", force: :cascade do |t|
-    t.text "input_representation", null: false
-    t.bigint "mode_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["mode_id"], name: "index_inputs_on_mode_id"
   end
 
   create_table "letter_scheme_mappings", force: :cascade do |t|
@@ -102,8 +94,9 @@ ActiveRecord::Schema.define(version: 2021_12_01_001114) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "uploaded_at", precision: 6
-    t.integer "input_id", null: false
-    t.index ["input_id"], name: "index_results_on_input_id", unique: true
+    t.string "representation", null: false
+    t.integer "mode_id", null: false
+    t.index ["representation"], name: "index_results_on_representation"
   end
 
   create_table "stats", force: :cascade do |t|
@@ -151,13 +144,12 @@ ActiveRecord::Schema.define(version: 2021_12_01_001114) do
 
   add_foreign_key "achievement_grants", "users"
   add_foreign_key "color_schemes", "users"
-  add_foreign_key "inputs", "modes"
   add_foreign_key "letter_scheme_mappings", "letter_schemes"
   add_foreign_key "letter_schemes", "users"
   add_foreign_key "messages", "users"
   add_foreign_key "mode_usages", "modes"
   add_foreign_key "mode_usages", "modes", column: "used_mode_id"
   add_foreign_key "modes", "users"
-  add_foreign_key "results", "inputs"
+  add_foreign_key "results", "modes"
   add_foreign_key "stats", "modes"
 end
