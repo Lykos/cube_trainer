@@ -35,9 +35,9 @@ ActiveRecord::Schema.define(version: 2021_12_01_001114) do
 
   create_table "inputs", force: :cascade do |t|
     t.text "input_representation", null: false
+    t.bigint "mode_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "mode_id", null: false
     t.index ["mode_id"], name: "index_inputs_on_mode_id"
   end
 
@@ -102,7 +102,7 @@ ActiveRecord::Schema.define(version: 2021_12_01_001114) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "uploaded_at", precision: 6
-    t.bigint "input_id", null: false
+    t.integer "input_id", null: false
     t.index ["input_id"], name: "index_results_on_input_id", unique: true
   end
 
