@@ -9,7 +9,7 @@ require 'cube_trainer/training/case_solution'
 class Mode < ApplicationRecord
   include PartHelper
 
-  has_many :inputs, dependent: :destroy
+  has_many :results, dependent: :destroy
   belongs_to :user
 
   attribute :mode_type, :mode_type
@@ -93,15 +93,14 @@ class Mode < ApplicationRecord
   delegate :hinter, to: :generator
 
   def hints(input)
-    hinter.hints(input.input_representation)
+    hinter.hints(input.representation)
   end
 
   def cases
     return unless has_bounded_inputs?
 
-    @cases ||= generator.input_items.map.with_index do |input_item, index|
+    @cases ||= generator.input_items.map do |input_item|
       Case.new(
-        id: index,
         mode: self,
         representation: input_item.representation
       )

@@ -19,9 +19,9 @@ module CubeTrainer
         @mode = mode
       end
 
-      def results_for_inputs(inputs)
-        hashes = inputs.map { |e| e.representation.hash }
-        grouped_results.select { |input, _rs| hashes.include?(input.hash) }
+      def results_for_cases(cases)
+        hashes = cases.map { |e| e.representation.hash }
+        grouped_results.select { |c, _rs| hashes.include?(c.hash) }
       end
 
       def newish_elements(filtered_results)
@@ -30,10 +30,10 @@ module CubeTrainer
         lengths.count { |l| l >= 1 && l < new_item_boundary }
       end
 
-      def input_stats(inputs)
-        filtered_results = results_for_inputs(inputs)
+      def case_stats(cases)
+        filtered_results = results_for_cases(cases)
         found = filtered_results.keys.uniq.length
-        total = inputs.length
+        total = cases.length
         missing = total - found
         {
           found: found, total: total,
@@ -108,7 +108,7 @@ module CubeTrainer
       end
 
       def results
-        @results ||= @mode.inputs.joins(:result).map(&:result)
+        @results ||= @mode.results
       end
 
       def grouped_results
@@ -116,7 +116,7 @@ module CubeTrainer
       end
 
       def group_results(results)
-        results.group_by { |r| r.input.representation }
+        results.group_by { |r| r.representation }
       end
 
       # Interesting time boundaries to see the number of bad results above that boundary.

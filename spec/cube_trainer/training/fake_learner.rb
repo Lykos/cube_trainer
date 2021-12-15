@@ -68,6 +68,6 @@ class FakeLearner
     end
     @indices[input] = @current_index
     @current_index += 1
-    PartialResult.new(time_s: stats.execute, failed_attempts: 0, word: nil)
+    {representatoin: input.representation, time_s: stats.execute, failed_attempts: 0, word: nil}
   end
 end
