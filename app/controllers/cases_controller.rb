@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Controller for returning the cases of a mode.
 class CasesController < ApplicationController
   before_action :set_mode
   before_action :set_case, only: %i[show]

@@ -116,7 +116,7 @@ module CubeTrainer
       end
 
       def group_results(results)
-        results.group_by { |r| r.case_key }
+        results.group_by(&:case_key)
       end
 
       # Interesting time boundaries to see the number of bad results above that boundary.

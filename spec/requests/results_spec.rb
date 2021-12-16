@@ -105,7 +105,7 @@ RSpec.describe 'Results', type: :request do
       post "/api/modes/#{mode.id}/results", headers: eve_headers, params: { result: { case_key: 'Scramble:R U', time_s: 10 } }
       expect(response).to have_http_status(:not_found)
     end
-  end  
+  end
 
   describe 'PUT/PATCH #update' do
     include_context 'with result'
@@ -133,5 +133,5 @@ RSpec.describe 'Results', type: :request do
       put "/api/modes/#{mode.id}/results/#{result.id}", headers: eve_headers, params: { result: { case_key: 'Scramble:R U', time_s: 10 } }
       expect(response).to have_http_status(:not_found)
     end
-  end  
+  end
 end

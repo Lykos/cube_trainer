@@ -43,7 +43,7 @@ class Result < ApplicationRecord
       created_at: created_at
     }
   end
-  
+
   def time
     time_s&.seconds
   end

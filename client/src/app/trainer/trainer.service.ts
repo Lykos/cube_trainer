@@ -48,6 +48,6 @@ export class TrainerService {
 
   randomCase(modeId: number, cachedCases: Case[] = []): Observable<Case> {
     const cachedCaseKeys = cachedCases.map(i => i.key);
-    return this.rails.ajax<Case>(HttpVerb.Post, `trainer/${modeId}/random_case`, {cachedCaseKeys}).pipe(map(parseCase));
+    return this.rails.ajax<Case>(HttpVerb.Get, `/trainer/${modeId}/random_case`, {cachedCaseKeys}).pipe(map(parseCase));
   }
 }

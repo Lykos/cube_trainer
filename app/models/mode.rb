@@ -105,7 +105,7 @@ class Mode < ApplicationRecord
 
     @cases ||= generator.input_items.map { |item| to_case(item) }
   end
-  
+
   def parity_parts
     [first_parity_part, second_parity_part]
   end
@@ -133,7 +133,7 @@ class Mode < ApplicationRecord
       buffer: part_to_simple(buffer),
       goal_badness: goal_badness,
       memo_time_s: memo_time_s,
-      cube_size: cube_size,
+      cube_size: cube_size
     }
   end
 

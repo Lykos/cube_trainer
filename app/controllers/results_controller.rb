@@ -52,11 +52,11 @@ class ResultsController < ApplicationController
 
   private
 
-  def set_new_result    
+  def set_new_result
     @result = @mode.results.new(result_params)
   end
 
-  def set_result    
+  def set_result
     head :not_found unless (@result = @mode.results.find_by(id: params[:id]))
   end
 
@@ -65,6 +65,9 @@ class ResultsController < ApplicationController
   end
 
   def result_params
-    params.require(:result).permit(:case_key, :time_s, :failed_attempts, :word, :success, :num_hints)
+    params.require(:result).permit(
+      :case_key, :time_s, :failed_attempts, :word, :success,
+      :num_hints
+    )
   end
 end
