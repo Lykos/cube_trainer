@@ -187,7 +187,7 @@ class StatType
       case_keys_seen =
         mode.results.pluck(:case_key).uniq
       valid_case_keys =
-        mode.cases.map(&:key)
+        mode.cases.map(&:case_key)
       (case_keys_seen & valid_case_keys).length
     end
 

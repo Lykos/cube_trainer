@@ -14,7 +14,8 @@ function parseResult(result: any): Result {
     id: result.id,
     timestamp: fromDateString(result.created_at),
     duration: seconds(result.time_s),
-    inputRepresentation: result.input_representation,
+    caseKey: result.case_key,
+    caseName: result.case_name,
     numHints: result.num_hints,
     success: result.success,
   };

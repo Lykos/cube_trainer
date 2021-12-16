@@ -15,7 +15,7 @@ class TrainerController < ApplicationController
   private
 
   def set_cached_cases
-    @cached_cases = @mode.cases.select { |c| @cached_case_case_keys.include?(c.case_key) }
+    @cached_cases = @mode.cases&.select { |c| @cached_case_case_keys.include?(c.case_key) } || []
   end
 
   def set_cached_case_case_keys
