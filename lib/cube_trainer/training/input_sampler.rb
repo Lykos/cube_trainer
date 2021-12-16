@@ -87,7 +87,7 @@ module CubeTrainer
       }.freeze
 
       # `items` are the items from which we get samples. They have to be an array of InputItem.
-      #         But the representation inside InputItem can be anything.
+      #         But the case key inside InputItem can be anything.
       # `mode` is the mode that is used to retrieve associated previous results and for all kinds
       #        of options.
       def initialize(items, mode, logger = Rails.logger)
@@ -110,13 +110,13 @@ module CubeTrainer
         config
       end
 
-      def create_result_history(cached_inputs)
+      def create_result_history(cached_cases)
         ResultHistory.new(
           mode: @mode,
           badness_memory: @config[:badness_memory],
           failed_seconds: @config[:failed_seconds],
           hint_seconds: @config[:hint_seconds],
-          cached_inputs: cached_inputs
+          cached_cases: cached_cases
         )
       end
 
@@ -167,13 +167,13 @@ module CubeTrainer
         CombinedSampler::SubSampler.new(sampler, sampling_fraction)
       end
 
-      def random_item(cached_inputs = [])
-        @result_history = create_result_history(cached_inputs)
+      def random_item(cached_cases = [])
+        @result_history = create_result_history(cached_cases)
         sampler = create_sampler
         managed_sample = sampler.random_item
 
         item = managed_sample.input_item
-        @logger.debug "[#{item.representation}] #{managed_sample.sampling_info}"
+        @logger.debug "[#{item.case_key}] #{managed_sample.sampling_info}"
         item
       end
     end
@@ -186,7 +186,7 @@ module CubeTrainer
 
       attr_reader :items
 
-      def random_item(_cached_inputs = [])
+      def random_item(_cached_cases = [])
         @items.sample
       end
     end

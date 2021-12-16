@@ -7,6 +7,7 @@ require 'cube_trainer/training/commutator_sets'
 require 'cube_trainer/training/stats_computer'
 require 'cube_trainer/letter_pair'
 require 'ostruct'
+require 'rails_helper'
 
 ITERATIONS = 300
 

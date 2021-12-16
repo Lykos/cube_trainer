@@ -19,7 +19,7 @@ import { ResultsDataSource } from '../results.data-source';
 export class ResultsTableComponent implements OnInit, OnDestroy {
   modeId$: Observable<number>;
   dataSource!: ResultsDataSource;
-  columnsToDisplay = ['select', 'input', 'time', 'numHints', 'timestamp'];
+  columnsToDisplay = ['select', 'case', 'time', 'numHints', 'timestamp'];
 
   @Input() resultEvents$!: Observable<void>;
 

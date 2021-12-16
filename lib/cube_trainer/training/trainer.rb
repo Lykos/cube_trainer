@@ -13,10 +13,8 @@ module CubeTrainer
 
       def one_iteration
         input_item = @generator.random_item
-        input = @mode.inputs.new(input_representation: input_item.representation)
-        input.save!
-        partial_result = @learner.execute(input_item)
-        Result.from_input_and_partial(input, partial_result).save!
+        result_params = @learner.execute(input_item)
+        @mode.results.create!(result_params)
       end
 
       def run

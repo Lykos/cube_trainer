@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Mode } from '../../modes/mode.model';
 import { ShowInputMode } from '../../modes/show-input-mode.model';
-import { InputItem } from '../input-item.model';
+import { Case } from '../case.model';
 
 @Component({
   selector: 'cube-trainer-trainer-input',
@@ -10,7 +10,7 @@ import { InputItem } from '../input-item.model';
 })
 export class TrainerInputComponent {
   @Input()
-  input?: InputItem;
+  casee?: Case;
 
   @Input()
   mode?: Mode;
@@ -21,7 +21,7 @@ export class TrainerInputComponent {
   constructor() {}
 
   get setup() {
-    return this.input?.setup;
+    return this.casee?.setup;
   }
 
   get puzzle() {
@@ -31,7 +31,7 @@ export class TrainerInputComponent {
   }
 
   get hints() {
-    return this.input?.hints ? this.input.hints : [];
+    return this.casee?.hints ? this.casee.hints : [];
   }
 
   get showImage() {
