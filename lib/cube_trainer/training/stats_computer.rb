@@ -20,7 +20,7 @@ module CubeTrainer
       end
 
       def results_for_cases(cases)
-        hashes = cases.map { |e| e.representation.hash }
+        hashes = cases.map { |e| e.case_key.hash }
         grouped_results.select { |c, _rs| hashes.include?(c.hash) }
       end
 
@@ -116,7 +116,7 @@ module CubeTrainer
       end
 
       def group_results(results)
-        results.group_by { |r| r.representation }
+        results.group_by { |r| r.case_key }
       end
 
       # Interesting time boundaries to see the number of bad results above that boundary.

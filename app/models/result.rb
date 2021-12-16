@@ -10,16 +10,19 @@ class Result < ApplicationRecord
 
   belongs_to :mode
 
+  attribute :case_key, :input_representation
   validates :time_s, presence: true, numericality: { greater_than: 0 }
   validates :failed_attempts, numericality: POSITIVE_INTEGER
   validates :success, inclusion: [true, false]
   validates :num_hints, numericality: POSITIVE_INTEGER
-  validates :representation, presence: true
+  validates :case_key, presence: true
   validates :mode_id, presence: true
 
   def to_simple
     {
-      representation: mode.maybe_apply_letter_scheme(representation).to_s,
+      id: id,
+      case_key: InputRepresentationType.new.serialize(case_key),
+      case_name: mode.maybe_apply_letter_scheme(case_key).to_s,
       time_s: time_s,
       failed_attempts: failed_attempts,
       word: word,
@@ -31,7 +34,7 @@ class Result < ApplicationRecord
 
   def to_dump
     {
-      representation: representation.to_s,
+      case_key: case_key.to_s,
       time_s: time_s,
       failed_attempts: failed_attempts,
       word: word,

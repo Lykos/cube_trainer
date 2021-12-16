@@ -184,11 +184,11 @@ class StatType
     end
 
     def calculate_count(mode)
-      representations_seen =
-        mode.results.pluck(:representation).uniq
-      valid_case_representations =
-        mode.cases.map(&:representation)
-      (representations_seen & valid_representations).length
+      case_keys_seen =
+        mode.results.pluck(:case_key).uniq
+      valid_case_keys =
+        mode.cases.map(&:key)
+      (case_keys_seen & valid_case_keys).length
     end
 
     def name

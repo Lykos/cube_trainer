@@ -74,30 +74,30 @@ class ModeType
   end
 
   # TODO: Refactor
-  def maybe_apply_letter_scheme(letter_scheme, input_representation)
+  def maybe_apply_letter_scheme(letter_scheme, case_key)
     # TODO: Remove this backwards compatibility logic if possible.
-    return input_representation if input_representation.is_a?(LetterPair)
+    return case_key if case_key.is_a?(LetterPair)
 
-    letters = letters_internal(letter_scheme, input_representation)
-    return input_representation if letters.any?(&:nil?)
+    letters = letters_internal(letter_scheme, case_key)
+    return case_key if letters.any?(&:nil?)
 
     LetterPair.new(letters)
   end
 
-  def letters_internal(letter_scheme, input_representation)
+  def letters_internal(letter_scheme, case_key)
     case letter_scheme_mode
     when :buffer_plus_2_parts
-      raise TypeError unless input_representation.is_a?(TwistyPuzzles::PartCycle)
-      raise ArgumentError unless input_representation.length == 3
+      raise TypeError unless case_key.is_a?(TwistyPuzzles::PartCycle)
+      raise ArgumentError unless case_key.length == 3
 
       [
-        letter_scheme.letter(input_representation.parts[1]),
-        letter_scheme.letter(input_representation.parts[2])
+        letter_scheme.letter(case_key.parts[1]),
+        letter_scheme.letter(case_key.parts[2])
       ]
     when :simple
-      raise TypeError unless input_representation.is_a?(TwistyPuzzles::PartCycle)
+      raise TypeError unless case_key.is_a?(TwistyPuzzles::PartCycle)
 
-      input_representation.parts.map { |p| letter_scheme.letter(p) }
+      case_key.parts.map { |p| letter_scheme.letter(p) }
     else
       [nil]
     end

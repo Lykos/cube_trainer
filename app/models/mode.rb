@@ -62,6 +62,10 @@ class Mode < ApplicationRecord
 
   delegate :random_item, to: :input_sampler
 
+  def random_case(cached_cases)
+    to_case(random_item(cached_cases))
+  end
+
   def restrict_parts
     part_type::ELEMENTS
   end
@@ -74,10 +78,10 @@ class Mode < ApplicationRecord
     []
   end
 
-  def maybe_apply_letter_scheme(input_representation)
-    return input_representation unless user.letter_scheme
+  def maybe_apply_letter_scheme(input_case_key)
+    return input_case_key unless user.letter_scheme
 
-    mode_type.maybe_apply_letter_scheme(user.letter_scheme, input_representation)
+    mode_type.maybe_apply_letter_scheme(user.letter_scheme, input_case_key)
   end
 
   def picture
@@ -93,18 +97,13 @@ class Mode < ApplicationRecord
   delegate :hinter, to: :generator
 
   def hints(input)
-    hinter.hints(input.representation)
+    hinter.hints(input.case_key)
   end
 
   def cases
     return unless has_bounded_inputs?
 
-    @cases ||= generator.input_items.map do |input_item|
-      Case.new(
-        mode: self,
-        representation: input_item.representation
-      )
-    end
+    @cases ||= generator.input_items.map { |item| to_case(item) }
   end
   
   def parity_parts
@@ -135,14 +134,13 @@ class Mode < ApplicationRecord
       goal_badness: goal_badness,
       memo_time_s: memo_time_s,
       cube_size: cube_size,
-      num_results: inputs.joins(:result).count
     }
   end
 
   def to_dump
     to_simple.merge!(
       {
-        inputs: inputs.map(&:to_dump),
+        results: results.map(&:to_dump),
         stats: stats.map(&:to_dump)
       }
     )
@@ -165,6 +163,15 @@ class Mode < ApplicationRecord
   end
 
   private
+
+  def to_case(item)
+    Case.new(
+      mode: self,
+      hints: hints(item),
+      case_key: item.case_key,
+      setup: setup(item)
+    )
+  end
 
   def grant_mode_achievement
     user.grant_achievement_if_not_granted(:mode_creator)

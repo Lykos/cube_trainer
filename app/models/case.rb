@@ -1,15 +1,16 @@
 class Case
   include ActiveModel::Model
 
-  belongs_to :mode
-  attribute :representation, :representation
-  validates :representation, presence: true
-  validates :mode_id, presence: true
+  attr_accessor :mode, :hints, :setup, :case_key
+  validates :case_key, presence: true
+  validates :mode, presence: true
 
   def to_simple
     {
-      representation: mode.maybe_apply_letter_scheme(representation).to_s,
-      created_at: mode.created_at
+      hints: hints.map(&:to_s),
+      setup: setup.to_s,
+      case_key: InputRepresentationType.new.serialize(case_key),
+      case_name: mode.maybe_apply_letter_scheme(case_key).to_s,
     }
   end
 end

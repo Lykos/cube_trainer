@@ -1,4 +1,4 @@
-import { InputItem } from '../input-item.model';
+import { Case } from '../case.model';
 import { Component } from '@angular/core';
 import { map, switchMap } from 'rxjs/operators';
 import { Mode } from '../../modes/mode.model';
@@ -11,7 +11,7 @@ import { Observable, Subject } from 'rxjs';
   templateUrl: './trainer.component.html'
 })
 export class TrainerComponent {
-  input: InputItem | undefined = undefined;
+  casee: Case | undefined = undefined;
   numHints = 0;
   mode$: Observable<Mode>
   resultEventsSubject = new Subject<void>();
@@ -28,8 +28,8 @@ export class TrainerComponent {
     this.resultEventsSubject.next();
   }
 
-  onInputItem(input: InputItem) {
-    this.input = input;
+  onCase(casee: Case) {
+    this.casee = casee;
   }
 
   onNumHints(numHints: number) {

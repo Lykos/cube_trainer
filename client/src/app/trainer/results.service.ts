@@ -1,8 +1,10 @@
 import { RailsService } from '../rails/rails.service';
+import { PartialResult } from './partial-result.model';
 import { Injectable } from '@angular/core';
 import { HttpVerb } from '../rails/http-verb';
 import { Result } from './result.model';
 import { map } from 'rxjs/operators';
+import { Case } from './case.model';
 import { Observable } from 'rxjs';
 import { seconds } from '../utils/duration'
 import { fromDateString } from '../utils/instant'
@@ -15,6 +17,15 @@ function parseResult(result: any): Result {
     inputRepresentation: result.input_representation,
     numHints: result.num_hints,
     success: result.success,
+  };
+}
+
+function createResult(casee: Case, partialResult: PartialResult) {
+  return {
+    caseKey: casee.key,
+    timeS: partialResult.duration.toSeconds(),
+    numHints: partialResult.numHints,
+    success: partialResult.success,
   };
 }
 
@@ -36,4 +47,9 @@ export class ResultsService {
   markDnf(modeId: number, resultId: number): Observable<void> {
     return this.rails.ajax<void>(HttpVerb.Patch, `/modes/${modeId}/results/${resultId}`, {result: {success: false}});
  }
+
+  create(modeId: number, casee: Case, partialResult: PartialResult): Observable<void> {
+    return this.rails.ajax<void>(HttpVerb.Post, `/modes/${modeId}/results`,
+				 {result: createResult(casee, partialResult)});
+  }
 }

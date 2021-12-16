@@ -5,7 +5,6 @@ require 'rails_helper'
 RSpec.describe 'Results', type: :request do
   include_context 'with user abc'
   include_context 'with user eve'
-  include_context 'with input'
   include_context 'with result'
   include_context 'with headers'
   include_context 'with user auth headers'
@@ -21,8 +20,7 @@ RSpec.describe 'Results', type: :request do
       expect(parsed_body.length).to eq(1)
       parsed_item = parsed_body[0]
       expect(parsed_item['id']).to eq(result.id)
-      expect(parsed_item['mode']).to eq_modulo_symbol_vs_string(mode.to_simple)
-      expect(parsed_item['input_representation']).to eq(input.input_representation.to_s)
+      expect(parsed_item['case_name']).to eq(result.case_key.to_s)
       expect(parsed_item['time_s']).to eq(10)
       expect(parsed_item['failed_attempts']).to eq(0)
       expect(parsed_item['success']).to eq(true)
@@ -41,8 +39,7 @@ RSpec.describe 'Results', type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).to eq(result.id)
-      expect(parsed_body['mode']).to eq_modulo_symbol_vs_string(mode.to_simple)
-      expect(parsed_body['input_representation']).to eq(input.input_representation.to_s)
+      expect(parsed_body['case_name']).to eq(result.case_key.to_s)
       expect(parsed_body['time_s']).to eq(10)
       expect(parsed_body['failed_attempts']).to eq(0)
       expect(parsed_body['success']).to eq(true)
@@ -78,4 +75,63 @@ RSpec.describe 'Results', type: :request do
       expect(Result.exists?(result.id)).to be(true)
     end
   end
+
+  describe 'POST #create' do
+    it 'returns http success' do
+      post "/api/modes/#{mode.id}/results", headers: user_headers, params: { result: { case_key: 'Scramble:R U', time_s: 10 } }
+      expect(response).to have_http_status(:success)
+      parsed_body = JSON.parse(response.body)
+      result_id = parsed_body['id']
+      expect(parsed_body['time_s']).to eq(10)
+      expect(Result.find(result_id).time).to eq(10.seconds)
+    end
+
+    it 'returns not found for unknown modes' do
+      post '/api/modes/143432332/results', headers: user_headers
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it 'returns bad request if no numeric time is given' do
+      post "/api/modes/#{mode.id}/results", headers: user_headers, params: { result: { case_key: 'Scramble:R U', time_s: true } }
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'returns bad request if no time is given' do
+      post "/api/modes/#{mode.id}/results", headers: user_headers, params: { result: { case_key: 'Scramble:RU', success: true } }
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it 'returns not found for other users' do
+      post "/api/modes/#{mode.id}/results", headers: eve_headers, params: { result: { case_key: 'Scramble:R U', time_s: 10 } }
+      expect(response).to have_http_status(:not_found)
+    end
+  end  
+
+  describe 'PUT/PATCH #update' do
+    include_context 'with result'
+
+    it 'returns http success' do
+      put "/api/modes/#{mode.id}/results/#{result.id}", headers: user_headers, params: { result: { case_key: 'Scramble:R U', time_s: 10 } }
+      expect(response).to have_http_status(:success)
+      parsed_body = JSON.parse(response.body)
+      result_id = parsed_body['id']
+      expect(parsed_body['time_s']).to eq(10)
+      expect(Result.find(result_id).time).to eq(10.seconds)
+    end
+
+    it 'returns not found for unknown modes' do
+      put "/api/modes/143432332/results/#{result.id}", headers: user_headers
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it 'returns bad request if no numeric time is given' do
+      put "/api/modes/#{mode.id}/results/#{result.id}", headers: user_headers, params: { result: { case_key: 'Scramble:R U', time_s: true } }
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+
+    it 'returns not found for other users' do
+      put "/api/modes/#{mode.id}/results/#{result.id}", headers: eve_headers, params: { result: { case_key: 'Scramble:R U', time_s: 10 } }
+      expect(response).to have_http_status(:not_found)
+    end
+  end  
 end

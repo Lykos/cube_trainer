@@ -14,7 +14,7 @@ module CubeTrainer
       def one_iteration
         input_item = @generator.random_item
         result_params = @learner.execute(input_item)
-        Result.create!(result_params)
+        @mode.results.create!(result_params)
       end
 
       def run

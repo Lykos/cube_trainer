@@ -9,6 +9,7 @@ require 'cube_trainer/training/scramble'
 require 'twisty_puzzles/utils'
 
 # Result of giving one task to the learner and judging their performance.
+# TODO: Rename to CaseKeyType
 class InputRepresentationType < ActiveRecord::Type::String
   extend TwistyPuzzles::Utils::StringHelper
   include TwistyPuzzles::Utils::StringHelper
