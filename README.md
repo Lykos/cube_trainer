@@ -91,6 +91,34 @@ mailcatcher # optional
 
 Now you can access the site at http://localhost:4200. Note that accessing it via http://localhost:3000 might also work, but you won't get automatic refreshes on TypeScript changes, so it's not recommended.
 
+## Dependencies
+
+For the full list of dependencies, please check the [Gemfile](Gemfile) and the [package.json](package.json), but the most relevant ones are listed here:
+
+* [Ruby on Rails](https://rubyonrails.org/) is the backend framework.
+* Typescript with [Angular](https://angular.io/) is the frontend framework.
+* [Angular Material](https://material.angular.io/) for the UI components.
+* [PostgreSQL](https://www.postgresql.org/) for the backend database.
+* [NgRx Store](https://ngrx.io/guide/store) for the state management of the frontend.
+* [Devise Token Auth](https://github.com/lynndylanhurley/devise_token_auth) that is based on [Devise](https://github.com/heartcombo/devise) for authentication in the backend.
+* [Angular Token](https://github.com/neroniaky/angular-token) for the frontend parts of authentication.
+* [TwistyPuzzles](https://github.com/Lykos/twisty_puzzles) to deal with twisty puzzles (like the 3x3x3 cube) in the backend.
+* [cubing.js](https://github.com/cubing/cubing.js) to display twisty puzzles in the frontend.
+* [Redis](https://redis.io/) to run websockets for ActionCable. This is used to send notifications to the frontend.
+
+For development, there are these relevant dependencies:
+
+* [Rubocop](https://github.com/rubocop/rubocop) is an amazing linter on steroids that helped us a lot to use more idiomatic and modern Ruby constructs.
+* [Rspec](https://rspec.info/) is our testing framework.
+* [Capybara](https://github.com/teamcapybara/capybara) for integration tests that run a browser and use both frontend and backend. They can be found in the [spec/system](spec/system) directory.
+* [Rantly](https://github.com/rantly-rb/rantly) to randomly generate test cases.
+
+Note that the way we combine Angular and Ruby is a bit self-baked. They basically live in different directories and the only connection is a hand-crafted Rails controller that serves the index.html file compiled by Angular. We previously tried to use various other ways to integrate them. Some of them worked, but they were a huge pain, so we went for this handcrafted solution. The problems we encountered with other integrations included:
+
+* We never got Angular components with separate HTML and TS files to work. This meant all the HTML was somehow inlined in a string in the TS file which was ugly and hard to work with.
+* For some setups we tried, we couldn't get our integration tests to work. These integration tests are very valuable and we don't want to lose them.
+* Somehow the setup forced us to depend on some old webpack versions with known security issues. It wasn't possible to upgrade because some dependencies really needed the old versions.
+
 ## Production Setup
 
 The website is hosted on Heroku and is automatically deployed if CI on the master branch on Github passes. It uses Mailgun for sending mails.
