@@ -1,24 +1,17 @@
 import { RailsService } from '../rails/rails.service';
 import { Injectable } from '@angular/core';
-import { InputItem } from './input-item.model';
+import { Case } from './case.model';
 import { HttpVerb } from '../rails/http-verb';
-import { PartialResult } from './partial-result.model';
-import { Mode } from '../modes/mode.model';
-import { ImgSide } from './img-side.model';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { QueueCache } from '../utils/queue-cache';
-import { environment } from '../../environments/environment';
 
-function constructPath(modeId: number, input?: InputItem) {
-  const suffix = input ? `/${input.id}` : '';
-  return `/trainer/${modeId}/inputs${suffix}`;
-}
-
-function transformedPartialResult(partialResult: PartialResult) {
+function parseCase(casee: any) {
   return {
-    timeS: partialResult.duration.toSeconds(),
-    numHints: partialResult.numHints,
-    success: partialResult.success,
+    key: casee.case_key,
+    name: casee.case_name,
+    hints: casee.hints,
+    setup: casee.setup
   };
 }
 
@@ -33,41 +26,28 @@ const cacheSize = 2;
 export class TrainerService {
   constructor(private readonly rails: RailsService) {}
 
-  private readonly inputItemsCacheMap = new Map<number, QueueCache<InputItem>>();
+  private readonly casesCacheMap = new Map<number, QueueCache<Case>>();
 
-  inputImgSrc(mode: Mode, input: InputItem, imgSide: ImgSide) {
-    return `${environment.apiPrefix}${constructPath(mode.id, input)}/image/${imgSide}.jpg`
-  }
-
-  private inputItemsCache(modeId: number) {
-    const cache = this.inputItemsCacheMap.get(modeId);
+  private casesCache(modeId: number) {
+    const cache = this.casesCacheMap.get(modeId);
     if (cache) {
       return cache;
     }
-    const newCache = new QueueCache<InputItem>(cacheSize, (cachedItems: InputItem[]) => this.create(modeId, cachedItems));
-    this.inputItemsCacheMap.set(modeId, newCache);
+    const newCache = new QueueCache<Case>(cacheSize, (cachedItems: Case[]) => this.randomCase(modeId, cachedItems));
+    this.casesCacheMap.set(modeId, newCache);
     return newCache;
   }
 
-  nextInputItemWithCache(modeId: number): Observable<InputItem> {
-    return this.inputItemsCache(modeId).next();
+  nextCaseWithCache(modeId: number): Observable<Case> {
+    return this.casesCache(modeId).next();
   }
 
-  prewarmInputItemsCache(modeId: number) {
-    this.inputItemsCache(modeId);
+  prewarmCasesCache(modeId: number) {
+    this.casesCache(modeId);
   }
 
-  create(modeId: number, cachedItems: InputItem[] = []): Observable<InputItem> {
-    const cachedItemIds = cachedItems.map(i => i.id);
-    return this.rails.ajax<InputItem>(HttpVerb.Post, constructPath(modeId), {cachedInputIds: cachedItemIds});
-  }
-
-  destroy(modeId: number, input: InputItem): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Delete, constructPath(modeId, input), {});
-  }
-
-  stop(modeId: number, input: InputItem, partialResult: PartialResult): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Post, constructPath(modeId, input),
-				 {partialResult: transformedPartialResult(partialResult)});
+  randomCase(modeId: number, cachedCases: Case[] = []): Observable<Case> {
+    const cachedCaseKeys = cachedCases.map(i => i.key);
+    return this.rails.ajax<Case>(HttpVerb.Get, `/trainer/${modeId}/random_case`, {cachedCaseKeys}).pipe(map(parseCase));
   }
 }

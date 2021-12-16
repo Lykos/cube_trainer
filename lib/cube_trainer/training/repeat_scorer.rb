@@ -45,15 +45,15 @@ module CubeTrainer
 
         # When the item is completely new, repeat often, then less and less often, but also
         # adjust to the total number of items.
-        rep_index = repetition_index(input_item.representation, occ)
+        rep_index = repetition_index(input_item.case_key, occ)
 
-        last_representations = @result_history.last_input_representations(rep_index)
-        last_representations.include?(input_item.representation) ? 0 : 1
+        last_case_keys = @result_history.last_case_keys(rep_index)
+        last_case_keys.include?(input_item.case_key) ? 0 : 1
       end
 
       # After how many other items should this item be repeated.
-      def repetition_index(input_representation, occ)
-        @repetition_indices[[input_representation, occ]] ||=
+      def repetition_index(input_case_key, occ)
+        @repetition_indices[[input_case_key, occ]] ||=
           begin
             rep_index = 2**occ
             # Do a bit of random distortion to avoid completely

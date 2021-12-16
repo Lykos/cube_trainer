@@ -6,6 +6,7 @@ require 'cube_trainer/alg_name'
 require 'cube_trainer/training/input_item'
 require 'cube_trainer/training/sequence_hinter'
 require 'twisty_puzzles'
+require 'rails_helper'
 
 class FakeHeterogenousSequenceHinter < Training::HeterogenousSequenceHinter
   def generate_combinations(input)
@@ -35,16 +36,16 @@ describe Training::HeterogenousSequenceHinter do
   before do
     Result.destroy_all
     5.times do |i|
-      Result.create!(
-        input: mode.inputs.create!(created_at: Time.zone.at(i), input_representation: algname_a),
+      mode.results.create!(
+        created_at: Time.zone.at(i), case_key: algname_a,
         time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
       )
-      Result.create!(
-        input: mode.inputs.create!(created_at: Time.zone.at(i), input_representation: algname_b),
+      mode.results.create!(
+        created_at: Time.zone.at(i), case_key: algname_b,
         time_s: 2.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
       )
-      Result.create!(
-        input: mode.inputs.create!(created_at: Time.zone.at(i), input_representation: algname_d),
+      mode.results.create!(
+        created_at: Time.zone.at(i), case_key: algname_d,
         time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
       )
     end

@@ -27,7 +27,7 @@ module CubeTrainer
           @results_model.delete_after_time(Time.zone.now - 10)
           exit
         else
-          puts input.representation if @picture
+          puts input.case_key if @picture
           puts "Time: #{format_time(data.time_s)}"
         end
       end
@@ -36,9 +36,9 @@ module CubeTrainer
         if @picture
           puts input.cube_state.colored_to_s
         else
-          puts_and_say(input.representation)
+          puts_and_say(input.case_key)
         end
-        data = time_before_any_key_press(@hinter.hints(input.representation))
+        data = time_before_any_key_press(@hinter.hints(input.case_key))
         handle_user_input_data(input, data)
         PartialResult.new(time_s: data.time_s, num_hints: data.num_hints)
       end

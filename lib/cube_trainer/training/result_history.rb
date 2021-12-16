@@ -17,15 +17,15 @@ module CubeTrainer
         badness_memory:,
         hint_seconds:,
         failed_seconds:,
-        cached_inputs: []
+        cached_cases: []
       )
-        raise unless cached_inputs.all?(Input)
+        raise TypeError unless cached_cases.all? { |c| c.respond_to?(:case_key) }
 
         @mode = mode
         @badness_memory = badness_memory
         @hint_seconds = hint_seconds
         @failed_seconds = failed_seconds
-        @cached_inputs = cached_inputs
+        @cached_cases = cached_cases
       end
 
       def occurred_today?(item)
@@ -34,16 +34,16 @@ module CubeTrainer
 
       # On how many different days the item appeared.
       def occurrence_days(item)
-        occurrence_days_cache[item.representation]
+        occurrence_days_cache[item.case_key]
       end
 
       def occurrences(item)
-        occurrences_cache[item.representation]
+        occurrences_cache[item.case_key]
       end
 
       # Infinite for items that have never occurred or never got a hint.
       def last_hint_age(item)
-        last_hint_age_cache[item.representation]
+        last_hint_age_cache[item.case_key]
       end
 
       def last_hint_days_ago(item)
@@ -51,12 +51,12 @@ module CubeTrainer
       end
 
       def badness_average(item)
-        badness_averages[item.representation]
+        badness_averages[item.case_key]
       end
 
       # Infinite for items that have never occurred.
       def last_occurrence_age(item)
-        last_occurrence_age_cache[item.representation]
+        last_occurrence_age_cache[item.case_key]
       end
 
       def last_occurrence_days_ago(item)
@@ -70,33 +70,33 @@ module CubeTrainer
       # On how many different days the item appeared since the user last used a hint for it.
       def occurrence_days_since_last_hint(item)
         # TODO: Don't recalculate this per item.
-        (@occurrence_days_since_last_hint ||= {})[item.representation] ||=
+        (@occurrence_days_since_last_hint ||= {})[item.case_key] ||=
           calculate_occurrence_days_since_last_hint(item)
       end
 
-      # Returns the input representations of the last `num_items` inputs (including cached inputs).
-      def last_input_representations(num_items)
+      # Returns the case_keys of the last `num_items` results (including cached cases).
+      def last_case_keys(num_items)
         if @max_num_items.nil? || num_items > @max_num_items
           @max_num_items = num_items
-          @last_input_representations =
-            @cached_inputs.map(&:representation) +
-            fetch_last_input_representations(num_items - @cached_inputs.length)
+          @last_case_keys =
+            @cached_cases.map(&:case_key) +
+            fetch_last_case_keys(num_items - @cached_cases.length)
         end
 
-        adjusted_num_items = [num_items, @last_input_representations.length].min
-        @last_input_representations[...adjusted_num_items]
+        adjusted_num_items = [num_items, @last_case_keys.length].min
+        @last_case_keys[...adjusted_num_items]
       end
 
       def badness_averages
         @badness_averages ||=
           begin
-            result = @mode.inputs.joins(:result)
-                          .group(:input_representation)
-                          .pluck(:input_representation, badness_array_exp).to_h
+            result = @mode.results
+                          .group(:case_key)
+                          .pluck(:case_key, badness_array_exp).to_h
             result.transform_values! do |badnesses|
               new_cube_average.push_all(badnesses[0...@badness_memory])
             end
-            # We ignore the cached inputs here because we don't know their outcomes yet.
+            # We ignore the cached cases here because we don't know their outcomes yet.
             result.default = Float::NAN
             result.freeze
           end
@@ -113,16 +113,15 @@ module CubeTrainer
         array_agg(badness_exp, order: created_at.desc)
       end
 
-      def fetch_last_input_representations(num_items)
+      def fetch_last_case_keys(num_items)
         return [] unless num_items.positive?
 
-        # We ignore the cached inputs here because they are handled at a different level.
+        # We ignore the cached cases here because they are handled at a different level.
         @mode
-          .inputs
-          .joins(:result)
+          .results
           .order(created_at: :desc)
           .limit(num_items)
-          .pluck(:input_representation)
+          .pluck(:case_key)
       end
 
       # On how many different days the item appeared since the user last used a hint for it.
@@ -131,12 +130,11 @@ module CubeTrainer
         last_hint_age = last_hint_age(item)
         return Float::INFINITY if last_hint_age.infinite?
 
-        # We ignore the cached inputs here because we don't know whether they will trigger a hint.
+        # We ignore the cached cases here because we don't know whether they will trigger a hint.
         # TODO: Avoid having one query per item.
         @mode
-          .inputs
-          .joins(:result)
-          .where(input_representation: item.representation)
+          .results
+          .where(case_key: item.case_key)
           .where(days_old_exp.gt(days(last_hint_age)))
           .count
       end
@@ -145,38 +143,32 @@ module CubeTrainer
         @results_table ||= Result.arel_table
       end
 
-      def inputs_table
-        @inputs_table ||= Input.arel_table
-      end
-
       def last_hint_age_cache
         @last_hint_age_cache ||=
           begin
             result =
               @mode
-              .inputs
-              .joins(:result)
+              .results
               .where(Result.arel_table[:num_hints].gt(0))
-              .group(:input_representation)
+              .group(:case_key)
               .minimum(age_exp)
-            # We ignore the cached inputs here because we don't know whether they will trigger a
+            # We ignore the cached cases here because we don't know whether they will trigger a
             # hint.
             result.default = Float::INFINITY
             result.freeze
           end
       end
 
-      # Without taking cached_inputs into consideration.
+      # Without taking cached_cases into consideration.
       def raw_last_occurrence_age_cache
         @raw_last_occurrence_age_cache ||=
           begin
             result =
               @mode
-              .inputs
-              .joins(:result)
-              .group(:input_representation)
+              .results
+              .group(:case_key)
               .minimum(age_exp)
-            # We ignore the cached inputs here because we handle them in last_occurrence_cache.
+            # We ignore the cached cases here because we handle them in last_occurrence_cache.
             result.default = Float::INFINITY
             result.freeze
           end
@@ -186,13 +178,13 @@ module CubeTrainer
         @last_occurrence_age_cache ||=
           begin
             result = raw_last_occurrence_age_cache.dup
-            @cached_inputs.each { |i| result[i.representation] = 0 }
+            @cached_cases.each { |i| result[i.case_key] = 0 }
             result.freeze
           end
       end
 
       def age_exp
-        extract(:epoch, age(current_timestamp, inputs_table[:created_at]))
+        extract(:epoch, age(current_timestamp, results_table[:created_at]))
       end
 
       def days_old_exp
@@ -205,17 +197,16 @@ module CubeTrainer
           begin
             result =
               @mode
-              .inputs
-              .joins(:result)
-              .group(:input_representation)
+              .results
+              .group(:case_key)
               .distinct
               .count(days_old_exp)
             result.default = 0
             cached_items_not_seen_today =
-              @cached_inputs.select do |i|
-                raw_last_occurrence_age_cache[i.representation] > 1.day
+              @cached_cases.select do |i|
+                raw_last_occurrence_age_cache[i.case_key] > 1.day
               end
-            cached_items_not_seen_today.each { |i| result[i.representation] += 1 }
+            cached_items_not_seen_today.each { |i| result[i.case_key] += 1 }
             result.freeze
           end
       end
@@ -224,9 +215,9 @@ module CubeTrainer
       def occurrences_cache
         @occurrences_cache ||=
           begin
-            result = @mode.inputs.joins(:result).group(:input_representation).count
+            result = @mode.results.group(:case_key).count
             result.default = 0
-            @cached_inputs.each { |i| result[i.representation] += 1 }
+            @cached_cases.each { |i| result[i.case_key] += 1 }
             result.freeze
           end
       end

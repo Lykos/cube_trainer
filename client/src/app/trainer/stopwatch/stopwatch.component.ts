@@ -1,8 +1,9 @@
 import { now } from '../../utils/instant';
 import { Duration, zeroDuration } from '../../utils/duration';
-import { InputItem } from '../input-item.model';
+import { Case } from '../case.model';
 import { Mode } from '../../modes/mode.model';
 import { TrainerService } from '../trainer.service';
+import { ResultsService } from '../results.service';
 import { HostListener, Component, OnDestroy, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { PartialResult } from '../partial-result.model';
 import { interval, timer } from 'rxjs';
@@ -23,7 +24,7 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   mode!: Mode;
 
   @Output()
-  private inputItem: EventEmitter<InputItem> = new EventEmitter();
+  private casee: EventEmitter<Case> = new EventEmitter();
 
   @Output()
   private resultSaved: EventEmitter<void> = new EventEmitter();
@@ -31,7 +32,7 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   @Output()
   private numHints: EventEmitter<number> = new EventEmitter();
 
-  private input: InputItem | undefined = undefined;
+  private casee_: Case | undefined = undefined;
   private numHints_ = 0;
   private maxHints = 0;
   duration: Duration = zeroDuration;
@@ -40,7 +41,8 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   private state: StopWatchState = StopWatchState.NotStarted;
   private goAudio: HTMLAudioElement | undefined = undefined;
 
-  constructor(private readonly trainerService: TrainerService) {}
+  constructor(private readonly trainerService: TrainerService,
+              private readonly resultsService: ResultsService) {}
 
   get hintsAvailable() {
     return this.numHints_ < this.maxHints;
@@ -77,20 +79,20 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   onStart() {
     if (this.hasSetup) {
       // TODO: Handle the (unlikely) situation that the input hasn't been received yet.
-      this.startFor(this.input!);
+      this.startFor(this.casee_!);
     } else {
-      this.trainerService.nextInputItemWithCache(this.mode.id).subscribe(input => this.startFor(input));
+      this.trainerService.nextCaseWithCache(this.mode.id).subscribe(casee => this.startFor(casee));
     }
   }
 
-  startFor(input: InputItem) {
+  startFor(casee: Case) {
     this.numHints_ = 0;
     this.numHints.emit(this.numHints_);
-    this.maxHints = input.hints ? input.hints.length : 0;
-    this.input = input;
+    this.maxHints = casee.hints ? casee.hints.length : 0;
+    this.casee_ = casee;
     // TODO: Make the emit location depending on hasSetup nicer.
     if (!this.hasSetup) {
-      this.inputItem.emit(input);
+      this.casee.emit(casee);
     }
     this.state = StopWatchState.Running;
     const start = now();
@@ -110,9 +112,9 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   stopAnd(onSuccess: () => void) {
     this.stopInterval();
     this.state = StopWatchState.Paused;
-    this.trainerService.stop(this.mode.id, this.input!, this.partialResult).subscribe(() => {
+    this.resultsService.create(this.mode.id, this.casee_!, this.partialResult).subscribe(() => {
       this.resultSaved.emit();
-      this.maybePrefetchInputAnd(onSuccess);
+      this.maybePrefetchCaseAnd(onSuccess);
     });
   }
 
@@ -147,12 +149,12 @@ export class StopwatchComponent implements OnDestroy, OnInit {
     this.stopInterval();
   }
 
-  maybePrefetchInputAnd(onSuccess: () => void) {
+  maybePrefetchCaseAnd(onSuccess: () => void) {
     if (this.hasSetup) {
-      this.trainerService.nextInputItemWithCache(this.mode.id).subscribe(input => {
-        this.input = input;
+      this.trainerService.nextCaseWithCache(this.mode.id).subscribe(casee => {
+        this.casee_ = casee;
         // TODO: Make the emit location depending on hasSetup nicer.
-        this.inputItem.emit(input);
+        this.casee.emit(casee);
         onSuccess();
       });
     } else {
@@ -161,7 +163,7 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.maybePrefetchInputAnd(() => {});
+    this.maybePrefetchCaseAnd(() => {});
     if (this.memoTime) {
       this.goAudio = new Audio('../../assets/audio/go.wav');
     }

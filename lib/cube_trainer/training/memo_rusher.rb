@@ -77,7 +77,7 @@ module CubeTrainer
       end
 
       def execute(input)
-        scramble = input.representation
+        scramble = input.case_key
         raise TypeError unless scramble.is_a?(TwistyPuzzles::Algorithm)
 
         puts scramble

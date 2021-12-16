@@ -18,7 +18,7 @@ module CubeTrainer
         alg.apply_temporarily_to(@state) do |state|
           @input_items.find do |i|
             i.cube_state == state
-          end&.representation
+          end&.case_key
         end
       end
     end

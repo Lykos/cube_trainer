@@ -14,7 +14,7 @@ module CubeTrainer
 
       def restricted_hinter(alg_set)
         RestrictedHinter.new(
-          alg_set.input_items.map(&:representation),
+          alg_set.input_items.map(&:case_key),
           alg_set.hinter
         )
       end

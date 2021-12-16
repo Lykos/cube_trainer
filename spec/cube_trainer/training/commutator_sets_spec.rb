@@ -31,7 +31,7 @@ shared_examples 'commutator_set' do |mode_type, buffer|
   it 'parses all comms correctly and give a hint on a random one' do
     if input_items
       input_item = input_items.sample
-      hinter.hints(input_item.representation)
+      hinter.hints(input_item.case_key)
     end
   end
 end

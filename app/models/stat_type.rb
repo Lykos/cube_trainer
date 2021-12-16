@@ -87,8 +87,7 @@ class StatType
     def calculate_time_s_internal(mode)
       times =
         mode
-        .inputs
-        .joins(:result)
+        .results
         .limit(@size)
         .pluck(StatType.time_s_expression)
       TwistyPuzzles::Native::CubeAverage.new(@size, Float::NAN).push_all(times)
@@ -113,8 +112,7 @@ class StatType
     def calculate_time_s_internal(mode)
       times =
         mode
-        .inputs
-        .joins(:result)
+        .results
         .where(Result.arel_table[:success])
         .limit(@size)
         .pluck(Result.arel_table[:time_s])
@@ -146,8 +144,7 @@ class StatType
                          .sum
       total_expression = Result.arel_table[:success].count
       mode
-        .inputs
-        .joins(:result)
+        .results
         .limit(@size)
         .pick(num_successes_expression / total_expression)
     end
@@ -170,8 +167,7 @@ class StatType
 
     def calculate_time_s_internal(mode)
       mode
-        .inputs
-        .joins(:result)
+        .results
         .limit(@size)
         .pick(StatType.time_s_expression.average)
     end
@@ -181,18 +177,18 @@ class StatType
     end
   end
 
-  # Stat part that computes the number of inputs that have already been seen.
-  class InputsDone < StatPart
+  # Stat part that computes the number of cases that have already been seen.
+  class CasesDone < StatPart
     def type
       :count
     end
 
     def calculate_count(mode)
-      input_representations_seen =
-        mode.inputs.joins(:result).pluck(:input_representation).uniq
-      valid_input_representations =
-        mode.input_items.map(&:representation)
-      (input_representations_seen & valid_input_representations).length
+      case_keys_seen =
+        mode.results.pluck(:case_key).uniq
+      valid_case_keys =
+        mode.cases.map(&:case_key)
+      (case_keys_seen & valid_case_keys).length
     end
 
     def name
@@ -200,14 +196,14 @@ class StatType
     end
   end
 
-  # Stat part that computes the total number of inputs.
-  class TotalInputs < StatPart
+  # Stat part that computes the total number of cases.
+  class TotalCases < StatPart
     def type
       :count
     end
 
     def calculate_count(mode)
-      mode.input_items.length
+      mode.cases.length
     end
 
     def name
@@ -247,7 +243,7 @@ class StatType
       key: :progress,
       name: 'Progress',
       needs_bounded_inputs: true,
-      parts: [InputsDone.new, TotalInputs.new]
+      parts: [CasesDone.new, TotalCases.new]
     )
   ].freeze
   ALL.each(&:validate!)
