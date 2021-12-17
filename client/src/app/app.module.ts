@@ -20,6 +20,7 @@ import { modesReducer } from './state/modes.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { UserEffects } from './effects/user.effects';
 import { ModesEffects } from './effects/modes.effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,11 @@ import { ModesEffects } from './effects/modes.effects';
     }),
     StoreModule.forRoot({ user: userReducer, modes: modesReducer }),
     EffectsModule.forRoot([UserEffects, ModesEffects]),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25, // Retains last 25 states
+      logOnly: environment.production, // Restrict extension to log-only mode
+      autoPause: true, // Pauses recording actions and state changes when the extension window is not open
+    }),
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},

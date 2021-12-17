@@ -120,6 +120,6 @@
   },
   "defaultProject": "cube-trainer",
   "cli": {
-    "defaultCollection": "@angular-eslint/schematics"
+    "defaultCollection": "@ngrx/schematics"
   }
 }

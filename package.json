@@ -55,6 +55,7 @@
     "@angular-eslint/template-parser": "12.6.1",
     "@angular/cli": "~13.0.1",
     "@angular/compiler-cli": "~13.0.0",
+    "@ngrx/schematics": "^13.0.2",
     "@types/actioncable": "^5.2.7",
     "@types/chai": "^4.2.22",
     "@types/file-saver": "^2.0.4",
