@@ -3,7 +3,7 @@ import { User } from '../users/user.model';
 import { Credentials } from '../users/credentials.model';
  
 export const initialLoad = createAction(
-  '[User] initialLoad'
+  '[User] initial load'
 );
  
 export const initialLoadSuccess = createAction(

@@ -5,11 +5,11 @@ import { ModeType } from '../mode-type.model';
 import { ModesService } from '../modes.service';
 import { NewMode } from '../new-mode.model';
 import { StatType } from '../stat-type.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";
 import { Observable } from 'rxjs';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { create } from '../../state/modes.actions';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'cube-trainer-new-mode',
@@ -28,8 +28,7 @@ export class NewModeComponent implements OnInit {
   
   constructor(private readonly formBuilder: FormBuilder,
 	      private readonly modesService: ModesService,
-	      private readonly router: Router,
-	      private readonly snackBar: MatSnackBar,
+              private readonly store: Store,
 	      private readonly uniqueModeNameValidator: UniqueModeNameValidator) {
     this.modeTypes$ = this.modesService.listTypes();
   }
@@ -210,12 +209,7 @@ export class NewModeComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(`Creating ${JSON.stringify(this.newMode)}`);
-    this.modesService.create(this.newMode).subscribe(
-      r => {
-	this.snackBar.open(`Mode ${this.newMode.name} Created!`, 'Close');
-	this.router.navigate([`/modes`]);
-      });
+    this.store.dispatch(create({ newMode: this.newMode }));
   }
 
   drop(event: CdkDragDrop<StatType[]>) {

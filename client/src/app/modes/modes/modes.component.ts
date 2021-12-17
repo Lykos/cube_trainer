@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { ModesService } from '../modes.service';
 import { Mode } from '../mode.model';
 import { Observable } from 'rxjs';
-import { DeleteModeConfirmationDialogComponent } from '../delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Store } from '@ngrx/store';
+import { initialLoad, deleteClick } from '../../state/modes.actions';
+import { selectModes, selectInitialLoadLoading, selectInitialLoadError } from '../../state/modes.selectors';
 
 @Component({
   selector: 'cube-trainer-modes',
@@ -12,25 +11,22 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./modes.component.css']
 })
 export class ModesComponent {
-  modes$: Observable<Mode[]>;
+  modes$: Observable<readonly Mode[]>;
+  loading$: Observable<boolean>;
+  error$: Observable<any>;
   columnsToDisplay = ['name', 'numResults', 'use', 'delete'];
 
-  constructor(private readonly modesService: ModesService,
-	      private readonly dialog: MatDialog,
-	      private readonly snackBar: MatSnackBar) {
-    this.modes$ = this.modesService.list();
+  constructor(private readonly store: Store) {
+    this.modes$ = this.store.select(selectModes);
+    this.loading$ = this.store.select(selectInitialLoadLoading);
+    this.error$ = this.store.select(selectInitialLoadError);
   }
 
+  ngOnInit() {
+    this.store.dispatch(initialLoad());
+  }
+  
   onDelete(mode: Mode) {
-    const dialogRef = this.dialog.open(DeleteModeConfirmationDialogComponent, { data: mode });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-	this.snackBar.open(`Mode ${mode.name} deleted`, 'Close');
-	this.modesService.destroy(mode.id).subscribe(() => {
-          this.modes$ = this.modesService.list();
-        });
-      }
-    });
-  }
+    this.store.dispatch(deleteClick({ mode }));
+  } 
 }

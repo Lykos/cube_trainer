@@ -16,8 +16,10 @@ import { ToolbarModule } from './toolbar/toolbar.module';
 import { APP_BASE_HREF } from '@angular/common';
 // TODO: Move this to a better place
 import { userReducer } from './state/user.reducer';
+import { modesReducer } from './state/modes.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { UserEffects } from './effects/user.effects';
+import { ModesEffects } from './effects/modes.effects';
 
 @NgModule({
   declarations: [
@@ -42,8 +44,8 @@ import { UserEffects } from './effects/user.effects';
       registerAccountCallback: `${environment.redirectProtocol}://${environment.host}/confirm_email`,
       resetPasswordCallback: `${environment.redirectProtocol}://${environment.host}/update_password`,
     }),
-    StoreModule.forRoot({ user: userReducer }),
-    EffectsModule.forRoot([UserEffects]),
+    StoreModule.forRoot({ user: userReducer, modes: modesReducer }),
+    EffectsModule.forRoot([UserEffects, ModesEffects]),
   ],
   providers: [
     {provide: APP_BASE_HREF, useValue: '/'},

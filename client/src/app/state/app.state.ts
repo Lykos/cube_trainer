@@ -1,5 +1,5 @@
-import { UserState } from './user.reducer';
-import { ModesState } from './modes.reducer';
+import { UserState } from './user.state';
+import { ModesState } from './modes.state';
 
 export interface AppState {
   user: UserState;

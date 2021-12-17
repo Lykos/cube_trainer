@@ -3,17 +3,15 @@ import { Optional } from '../utils/optional';
 
 export interface ModesState {
   // Modes that are stored on the backend server.
-  // If the user is logged in, this contains all modes except for the ones that were just created and not sent yet.
-  readonly serverModes: Modes[];
+  // In normal conditions, this contains all modes except for the ones that were just created and not sent yet.
+  readonly serverModes: readonly Mode[];
 
-  // Modes that are stored in local storage.
-  // If the user is logged out, this contains all modes except for the ones that were just created and not saved yet.
-  readonly localStorageModes: Modes[];
+  readonly initialLoadLoading: boolean;
+  readonly initialLoadError: Optional<any>;
 
-  // Modes that are stored in local storage.
-  // This contains modes that were just created and not saved yet.
-  readonly unsavedModes: Modes[];
+  readonly createLoading: boolean;
+  readonly createError: Optional<any>;
 
-  readonly initialLoadFromServerLoading: boolean;
-  readonly initialLoadFromServerError: Optional<any>;
+  readonly destroyLoading: boolean;
+  readonly destroyError: Optional<any>;
 }
