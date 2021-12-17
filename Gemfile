@@ -64,6 +64,9 @@ end
 group :production do
   # Use Redis adapter to run Action Cable in production
   gem 'redis', '~> 4.5'
+
+  gem 'google-api-client'
+  gem 'googleauth'
 end
 
 group :development do
