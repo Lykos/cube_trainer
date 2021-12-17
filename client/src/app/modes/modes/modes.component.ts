@@ -3,7 +3,7 @@ import { Mode } from '../mode.model';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { initialLoad, deleteClick } from '../../state/modes.actions';
-import { selectModes, selectInitialLoadLoading, selectInitialLoadError } from '../../state/modes.selectors';
+import { selectModes, selectInitialLoadOrDestroyLoading, selectInitialLoadError } from '../../state/modes.selectors';
 
 @Component({
   selector: 'cube-trainer-modes',
@@ -18,7 +18,7 @@ export class ModesComponent {
 
   constructor(private readonly store: Store) {
     this.modes$ = this.store.select(selectModes);
-    this.loading$ = this.store.select(selectInitialLoadLoading);
+    this.loading$ = this.store.select(selectInitialLoadOrDestroyLoading);
     this.error$ = this.store.select(selectInitialLoadError);
   }
 

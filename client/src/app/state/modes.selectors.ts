@@ -7,9 +7,9 @@ export const selectModes = createSelector(
   selectModesState,
   modesState => modesState.serverModes);
 
-export const selectInitialLoadLoading = createSelector(
+export const selectInitialLoadOrDestroyLoading = createSelector(
   selectModesState,
-  modesState => modesState.initialLoadLoading);
+  modesState => modesState.initialLoadLoading || modesState.destroyLoading);
 
 export const selectInitialLoadError = createSelector(
   selectModesState,
