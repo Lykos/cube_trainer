@@ -133,7 +133,8 @@ class Mode < ApplicationRecord
       buffer: part_to_simple(buffer),
       goal_badness: goal_badness,
       memo_time_s: memo_time_s,
-      cube_size: cube_size
+      cube_size: cube_size,
+      num_results: results.count
     }
   end
 

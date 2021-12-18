@@ -7,7 +7,7 @@
           <cube-trainer-stopwatch [mode]="mode" (casee)="onCase($event)" (resultSaved)="onResultsModified()" (numHints)="onNumHints($event)" *ngIf="mode"></cube-trainer-stopwatch>
         </div>
         <div flex>
-          <cube-trainer-results-table [resultEvents$]="resultEventsSubject.asObservable()" (resultsModified)="onResultsModified()"></cube-trainer-results-table>
+          <cube-trainer-results-table [modeId]="mode.id"></cube-trainer-results-table>
         </div>
         <div flex>
           <cube-trainer-stats-table [statEvents$]="resultEventsSubject.asObservable()"></cube-trainer-stats-table>

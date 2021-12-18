@@ -17,9 +17,11 @@ import { APP_BASE_HREF } from '@angular/common';
 // TODO: Move this to a better place
 import { userReducer } from './state/user.reducer';
 import { modesReducer } from './state/modes.reducer';
+import { resultsReducer } from './state/results.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { UserEffects } from './effects/user.effects';
 import { ModesEffects } from './effects/modes.effects';
+import { ResultsEffects } from './effects/results.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
@@ -45,8 +47,20 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
       registerAccountCallback: `${environment.redirectProtocol}://${environment.host}/confirm_email`,
       resetPasswordCallback: `${environment.redirectProtocol}://${environment.host}/update_password`,
     }),
-    StoreModule.forRoot({ user: userReducer, modes: modesReducer }),
-    EffectsModule.forRoot([UserEffects, ModesEffects]),
+    StoreModule.forRoot(
+      { user: userReducer, modes: modesReducer, results: resultsReducer },
+      {
+        runtimeChecks: {
+          strictStateImmutability: true,
+          strictActionImmutability: true,
+          strictStateSerializability: true,
+          // strictActionSerializability: true,
+          strictActionWithinNgZone: true,
+          strictActionTypeUniqueness: true,
+        },
+      },
+    ),
+    EffectsModule.forRoot([UserEffects, ModesEffects, ResultsEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
       logOnly: environment.production, // Restrict extension to log-only mode

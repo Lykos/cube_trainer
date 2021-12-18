@@ -9,6 +9,7 @@ import { SharedModule } from '../shared/shared.module';
 import { ModesModule } from '../modes/modes.module';
 import { ResultsService } from './results.service';
 import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { TrainerInputComponent } from './trainer-input/trainer-input.component';
 import { ResultsTableComponent } from './results-table/results-table.component';
 import { RailsModule } from '../rails/rails.module';
@@ -37,6 +38,7 @@ import { MatRippleModule } from '@angular/material/core';
     MatButtonModule,
     MatCheckboxModule,
     BrowserAnimationsModule,
+    MatPaginatorModule,
     RailsModule,
     UtilsModule,
     SharedModule,
