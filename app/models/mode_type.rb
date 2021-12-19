@@ -73,6 +73,11 @@ class ModeType
     end
   end
 
+  # Takes an external errors list so it can be used for other models, too.
+  def validate_buffer(buffer, errors, attribute)
+    errors.add(:buffer, "has to be a #{part_type}") unless buffer.is_a?(part_type)
+  end
+
   # TODO: Refactor
   def maybe_apply_letter_scheme(letter_scheme, case_key)
     # TODO: Remove this backwards compatibility logic if possible.
