@@ -26,6 +26,7 @@ import { PrivacyPolicyComponent } from './footer/privacy-policy/privacy-policy.c
 import { ContactComponent } from './footer/contact/contact.component';
 import { DisclaimerComponent } from './footer/disclaimer/disclaimer.component';
 import { TermsAndConditionsComponent } from './footer/terms-and-conditions/terms-and-conditions.component';
+import { TwistyPlayerComponent } from './trainer/twisty-player/twisty-player.component';
 import { RouterModule, Routes, ExtraOptions } from '@angular/router';
 import { environment } from './../environments/environment';
 
@@ -57,6 +58,7 @@ const routes: Routes = [
   { path: 'cookie_policy', component: CookiePolicyComponent },
   { path: 'terms_and_conditions', component: TermsAndConditionsComponent },
   { path: 'disclaimer', component: DisclaimerComponent },
+  { path: 'twisty_player', component: TwistyPlayerComponent },
 ];
 
 const routerOptions: ExtraOptions = {

@@ -18,6 +18,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
+import { TwistyPlayerComponent } from './twisty-player/twisty-player.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { MatRippleModule } from '@angular/material/core';
     TrainerInputComponent,
     ResultsTableComponent,
     StopwatchComponent,
+    TwistyPlayerComponent,
   ],
   imports: [
     BrowserModule,
