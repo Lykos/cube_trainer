@@ -14,4 +14,6 @@ export interface ModesState {
 
   readonly destroyLoading: boolean;
   readonly destroyError: Optional<any>;
+
+  readonly selectedModeId: number;
 }

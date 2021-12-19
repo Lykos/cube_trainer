@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure } from '../state/modes.actions';
+import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, setSelectedModeId } from '../state/modes.actions';
 import { ModesState } from './modes.state';
 import { none, some } from '../utils/optional';
 
@@ -11,6 +11,7 @@ const initialModesState: ModesState = {
   createError: none,
   destroyLoading: false,
   destroyError: none,
+  selectedModeId: 0,
 };
 
 export const modesReducer = createReducer(
@@ -42,4 +43,7 @@ export const modesReducer = createReducer(
   on(destroyFailure, (modeState, { error }) => {
     return { ...modeState, destroyLoading: false, destroyError: some(error) };
   }),  
+  on(setSelectedModeId, (modeState, { selectedModeId }) => {
+    return { ...modeState, selectedModeId };
+  }),
 )

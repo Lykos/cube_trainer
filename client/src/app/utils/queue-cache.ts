@@ -1,4 +1,5 @@
-import { Observable, ReplaySubject, zip } from 'rxjs';
+import { Observable, ReplaySubject, forkJoin } from 'rxjs';
+import { flatMap, take } from 'rxjs/operators';
 import { Queue } from './queue';
 
 export class QueueCache<X> {
@@ -18,8 +19,10 @@ export class QueueCache<X> {
       this.fetch([]).subscribe(subject);
       return subject;
     }
-    const xs$ = zip(...this.queue.values.map(s => s.asObservable()));
-    xs$.subscribe(xs => this.fetch(xs).subscribe(subject));
+    forkJoin(...this.queue.values.map(s => s.asObservable())).pipe(
+      flatMap(xs => this.fetch(xs)),
+      take(1),
+    ).subscribe(subject);
     return subject;
   }
 

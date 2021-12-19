@@ -55,3 +55,8 @@ export const destroyFailure = createAction(
   '[Modes] destroy failure',
   props<{ error: any }>()
 );
+
+export const setSelectedModeId = createAction(
+  '[Modes] set selected mode id',
+  props<{ selectedModeId: number }>()
+);

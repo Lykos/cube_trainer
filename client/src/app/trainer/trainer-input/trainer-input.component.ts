@@ -10,13 +10,13 @@ import { Case } from '../case.model';
 })
 export class TrainerInputComponent {
   @Input()
-  casee?: Case;
+  casee: Case;
 
   @Input()
-  mode?: Mode;
+  mode: Mode;
 
   @Input()
-  numHints?: number;
+  numHints: number;
 
   constructor() {}
 
@@ -26,7 +26,6 @@ export class TrainerInputComponent {
 
   get puzzle() {
     const cubeSize = this.mode?.cubeSize;
-    console.log(`${cubeSize}x${cubeSize}x${cubeSize}`);
     return cubeSize ? `${cubeSize}x${cubeSize}x${cubeSize}` : undefined;
   }
 
