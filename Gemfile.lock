@@ -375,7 +375,7 @@ GEM
     thor (1.1.0)
     thread_safe (0.3.6)
     trailblazer-option (0.1.2)
-    twisty_puzzles (0.0.26)
+    twisty_puzzles (0.0.30)
       colorize
     tzinfo (1.2.9)
       thread_safe (~> 0.1)
@@ -452,7 +452,7 @@ DEPENDENCIES
   simplecov
   spring
   spring-watcher-listen (~> 2.0.0)
-  twisty_puzzles (>= 0.0.26)
+  twisty_puzzles (>= 0.0.29)
   web-console (>= 3.3.0)
   webdrivers
   wombat
