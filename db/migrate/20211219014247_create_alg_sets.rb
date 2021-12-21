@@ -1,9 +1,13 @@
 class CreateAlgSets < ActiveRecord::Migration[6.0]
   def change
+    create_table :alg_spreadsheets do |t|
+      t.string :owner, null: false
+      t.string :spreadsheet_id, null: false
+    end
+
     create_table :alg_sets do |t|
-      t.string :owner
-      t.text :spreadsheet_id, null: false
-      t.text :sheet_id, null: false
+      t.references :alg_spreadsheet, null: false, foreign_key: true
+      t.string :sheet_title, null: false
       t.string :mode_type, null: false
       t.string :buffer
 

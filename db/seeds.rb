@@ -8,3 +8,5 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+AlgSpreadsheet.create!(owner: 'Eliott Kobelansky', spreadsheet_id: '1txRjB-fAWWSM-1e1w-eJbDp9xhu0ZDwLWQdswNZhcew')

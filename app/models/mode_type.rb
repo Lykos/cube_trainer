@@ -243,7 +243,8 @@ class ModeType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            letter_scheme_mode: :buffer_plus_2_parts
+            letter_scheme_mode: :buffer_plus_2_parts,
+            has_bounded_inputs: true
           ),
           ModeType.new(
             key: :corner_parities,

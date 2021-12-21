@@ -25,13 +25,18 @@ ActiveRecord::Schema.define(version: 2021_12_19_014247) do
   end
 
   create_table "alg_sets", force: :cascade do |t|
-    t.string "owner"
-    t.text "spreadsheet_id", null: false
-    t.text "sheet_id", null: false
+    t.bigint "alg_spreadsheet_id", null: false
+    t.string "sheet_title", null: false
     t.string "mode_type", null: false
     t.string "buffer"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["alg_spreadsheet_id"], name: "index_alg_sets_on_alg_spreadsheet_id"
+  end
+
+  create_table "alg_spreadsheets", force: :cascade do |t|
+    t.string "owner", null: false
+    t.string "spreadsheet_id", null: false
   end
 
   create_table "algs", force: :cascade do |t|
@@ -162,6 +167,7 @@ ActiveRecord::Schema.define(version: 2021_12_19_014247) do
   end
 
   add_foreign_key "achievement_grants", "users"
+  add_foreign_key "alg_sets", "alg_spreadsheets"
   add_foreign_key "algs", "alg_sets"
   add_foreign_key "color_schemes", "users"
   add_foreign_key "letter_scheme_mappings", "letter_schemes"
