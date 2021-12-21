@@ -8,13 +8,14 @@ module CubeTrainer
     # Class that extracts algorithms from a table.
     class AlgExtractor
       class AlgSet
-        def initialize(part_type:, buffer:, algs:)
+        def initialize(part_type:, buffer:, algs:, fixes:)
           @part_type = part_type
           @buffer = buffer
           @algs = algs
+          @fixes = fixes
         end
 
-        attr_reader :part_type, :buffer, :algs
+        attr_reader :part_type, :buffer, :algs, :fixes
       end
 
       def self.extract_alg_set(table)
@@ -29,12 +30,13 @@ module CubeTrainer
         interpretation = CommonalityFinder.interpret_table(alg_table, @buffer)
         return unless interpretation.buffer
 
+        Rails.logger.info "Sheet #{table.sheet_info.title} is for #{interpretation.part_type.name.split('::').last.downcase}s with buffer #{interpretation.buffer}"
         # Now check everything and construct the alg table.
-        # TODO: Avoid the restriction to cube size 3.
+        cube_size = interpretation.part_type.exists_on_cube_size?(3) ? 3 : 5
         @checker =
           CommutatorChecker.new(
             part_type: interpretation.part_type,
-            cube_size: 3,
+            cube_size: cube_size,
             verbose: true,
             show_cube_states: false,
             find_fixes: true,
@@ -46,6 +48,7 @@ module CubeTrainer
           part_type: interpretation.part_type,
           buffer: interpretation.buffer,
           algs: algs,
+          fixes: @checker.fixes
         )
       end
 
@@ -139,8 +142,8 @@ module CubeTrainer
       def process_alg_table_cell(hints, cell_description, cell)
         if cell_description.part_cycle.nil?
           process_outside_cell(cell_description, cell)
-        elsif cell_description.part_cycle.length == 2 &&
-              cell_description.part_cycle[0] == cell_description.part_cycle[1]
+        elsif cell_description.part_cycle.length == 3 &&
+              cell_description.part_cycle.parts[1].turned_equals?(cell_description.part_cycle.parts[2])
           process_diagonal_cell(cell_description, cell)
         elsif cell.is_a?(ErrorEntry)
           process_error_cell(cell_description, cell)
@@ -167,12 +170,16 @@ module CubeTrainer
         table.map { |row| row + (nil_array * (max_row_length - row.length)) }
       end
 
-      # TODO: Avoid the restriction to cube size 3.
       def reverse_engineer
         @reverse_engineer ||=
           CommutatorReverseEngineer.new(cube_size: 3)
       end
-      
+
+      def big_cube_reverse_engineer
+        @big_cube_reverse_engineer ||=
+          CommutatorReverseEngineer.new(cube_size: 5)
+      end      
+
       def log_final_report
         if @checker.found_problems?
           Rails.logger.warn @checker.failure_report
@@ -188,6 +195,26 @@ module CubeTrainer
         BLACKLIST.include?(value.downcase)
       end
 
+      def maybe_part_cycle(algorithm)
+        part_cycles = reverse_engineer.find_part_cycles(algorithm)
+        return part_cycles.first if part_cycles.length == 1
+
+        part_cycles = big_cube_reverse_engineer.find_part_cycles(algorithm)
+        return part_cycles.first if part_cycles.length == 1
+
+        # If we have one wing cycle, we ignore that it's not center safe and some equivalent centers get swapped.
+        wing_cycles = part_cycles.select { |c| c.part_type == TwistyPuzzles::Wing }
+        if wing_cycles.length == 1
+          other_cycles = part_cycles - wing_cycles
+          return wing_cycles[0] if other_cycles.all? { |c| equivalent_center_cycle?(c) }
+        end
+        nil
+      end
+
+      def equivalent_center_cycle?(part_cycle)
+        part_cycle.part_type.is_a?(TwistyPuzzles::MoveableCenter) && part_cycle.parts.all? { |p| p.face_symbol == part_cycle.first.face_symbol }
+      end
+
       def parse_table_cell(cell)
         return EmptyEntry if cell.blank? || blacklisted?(cell)
 
@@ -198,9 +225,7 @@ module CubeTrainer
         # types.
         return EmptyEntry if alg.algorithm.length <= 3
 
-        part_cycles = reverse_engineer.find_part_cycles(alg.algorithm)
-        maybe_part_cycle = part_cycles.length == 1 ? part_cycles.first : nil
-        AlgEntry.new(maybe_part_cycle, alg)
+        AlgEntry.new(maybe_part_cycle(alg.algorithm), alg)
       rescue TwistyPuzzles::CommutatorParseError => e
         ErrorEntry.new("Couldn't parse commutator: #{e}")
       end

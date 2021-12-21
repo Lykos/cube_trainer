@@ -10,3 +10,4 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 AlgSpreadsheet.create!(owner: 'Eliott Kobelansky', spreadsheet_id: '1txRjB-fAWWSM-1e1w-eJbDp9xhu0ZDwLWQdswNZhcew')
+AlgSpreadsheet.create!(owner: 'Daniel Lin', spreadsheet_id: '1yHyLJDvVbuEsoHONefUq7jAAFta9qM9wydwfSrJOZWQ')

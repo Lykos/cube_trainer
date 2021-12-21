@@ -15,9 +15,9 @@ module CubeTrainer
         Rails.logger.info "Scraping #{alg_spreadsheet.spreadsheet_id} by #{alg_spreadsheet.owner}."
         tables = sheets_client.get_tables(alg_spreadsheet.spreadsheet_id)
         Rails.logger.info "Got #{tables.length} sheets with a total of #{total_cells(tables)} cells."
-        counters = {updated_algs: 0, new_algs: 0}
+        counters = {updated_algs: 0, new_algs: 0, confirmed_algs: 0}
         tables.map { |t| extract_alg_set(alg_spreadsheet, t, counters) }
-        Rails.logger.info "Got #{counters[:new_algs]} new algs and updated #{counters[:updated_algs]} algs."
+        Rails.logger.info "Got #{counters[:new_algs]} new algs, updated #{counters[:updated_algs]} algs and confirmed #{counters[:confirmed_algs]} algs."
       end
 
       private
@@ -36,9 +36,12 @@ module CubeTrainer
         extracted_alg_set.algs.each do |part_cycle, alg|
           save_alg(alg_set, part_cycle, alg, counters)
         end
+        extracted_alg_set.fixes.each do |fix|
+          save_alg(alg_set, fix.cell_description.part_cycle, fix.fixed_algorithm, counters, is_fixed: true)
+        end
       end
 
-      def save_alg(alg_set, part_cycle, alg, counters)
+      def save_alg(alg_set, part_cycle, alg, counters, is_fixed: false)
         case_key = InputRepresentationType.new.serialize(part_cycle)
         existing_alg = alg_set.algs.find_by(case_key: case_key)
         unless existing_alg
@@ -49,11 +52,15 @@ module CubeTrainer
           )
         end
         alg_string = alg.to_s
-        return if existing_alg.alg == alg_string
+        if existing_alg.alg == alg_string
+          counters[:confirmed_algs] += 1
+          
+          return existing_alg
+        end
 
+        counters[:updated_algs] += 1
         existing_alg.alg = alg_string
         existing_alg.save!
-        countrs[:updated_algs] += 1
       end
 
       def sheets_client

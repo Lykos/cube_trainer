@@ -18,6 +18,7 @@ class CreateAlgSets < ActiveRecord::Migration[6.0]
       t.references :alg_set, null: false, foreign_key: true
       t.string :case_key, null: false
       t.text :alg, null: false
+      t.boolean :is_fixed, default: false, null: false
 
       t.timestamps
     end
