@@ -1,6 +1,6 @@
  require 'cube_trainer/sheet_scraping/google_sheets_scraper'
 
- class GoogleSheetsScraperWorker
+ class GoogleSheetsScrapeWorker
    include Sidekiq::Worker
 
    # This is scheduled regularly anyway, so we don't need to
