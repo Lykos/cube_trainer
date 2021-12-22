@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/commutator_reverse_engineer'
 require 'cube_trainer/training/commutator_hinter'
-require 'cube_trainer/commonality_finder'
-require 'cube_trainer/commutator_checker'
+require 'cube_trainer/sheet_scraping/commonality_finder'
+require 'cube_trainer/sheet_scraping/commutator_reverse_engineer'
+require 'cube_trainer/sheet_scraping/commutator_checker'
 require 'cube_trainer/training/hint_parser'
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
@@ -182,7 +182,10 @@ module CubeTrainer
 
       def reverse_engineer
         @reverse_engineer ||=
-          CommutatorReverseEngineer.new(@part_type, @buffer, @cube_size)
+          CommutatorReverseEngineer.new(
+            part_type: @part_type, buffer: @buffer,
+            cube_size: @cube_size
+          )
       end
 
       def parse_hint_table_cell(cell)

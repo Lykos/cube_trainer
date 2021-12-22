@@ -27,7 +27,7 @@ group :development, :test, :production do
   gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
 
   # Core cubing related functionality.
-  gem 'twisty_puzzles', '>= 0.0.26'
+  gem 'twisty_puzzles', '>= 0.0.32'
 
   # Database access. TODO: figure out whether this is still needed now that this project uses rails.
   gem 'activerecord'
@@ -59,11 +59,18 @@ group :development, :production do
 
   # Pry is needed to inspect the production state via rails console.
   gem 'pry'
+
+  gem 'google-api-client'
+  gem 'googleauth'
 end
 
 group :production do
   # Use Redis adapter to run Action Cable in production
   gem 'redis', '~> 4.5'
+
+  # Sidekiq is used to scrape alg sheets on Google sheet.
+  gem 'sidekiq', '~> 6.3.1'
+  gem 'sidekiq-cron', '~> 1.2'
 end
 
 group :development do

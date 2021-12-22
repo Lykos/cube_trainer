@@ -1,0 +1,3 @@
+scrape_sheets:
+  cron: '0 0 * * *'
+  class: 'GoogleSheetsScrapeWorker'

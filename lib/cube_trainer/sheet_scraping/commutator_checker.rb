@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'cube_trainer/alg_modifications_helper'
+require_relative 'alg_modifications_helper'
 
 module CubeTrainer
   # Class that checks whether a commutator algorithm does
@@ -68,6 +68,9 @@ module CubeTrainer
 
     def construct_cycle(parts)
       @part_cycle_factory.construct(parts)
+    rescue StandardError
+      p parts
+      raise
     end
 
     # Count an alg with a parse error or something like that that is broken before the checker gets
@@ -78,8 +81,8 @@ module CubeTrainer
     end
 
     def failure_report
-      msg = "#{@error_algs} error algs and #{@broken_algs} " \
-            "broken algs of #{@total_algs}."
+      msg = "#{@error_algs} unparseable algs and #{@broken_algs} " \
+            "incorrect algs of #{@total_algs}."
       msg << " #{@unfixable_algs} were unfixable." if @unfixable_algs
       msg
     end
@@ -90,8 +93,8 @@ module CubeTrainer
 
     def handle_incorrect(cell_description, commutator, alg, desired_state)
       if @verbose
-        puts "Algorithm for #{cell_description} #{commutator} " \
-             "doesn't do what it's expected to do."
+        Rails.logger.warn "Algorithm for #{cell_description} #{commutator} " \
+                          "doesn't do what it's expected to do."
       end
       @broken_algs += 1
 
@@ -99,7 +102,7 @@ module CubeTrainer
       if @find_fixes
         if (fix = find_fix(commutator, desired_state))
           fixes.push(Fix.new(cell_description, fix))
-          puts "Found fix #{fix}." if @verbose
+          Rails.logger.info "Found fix #{fix}." if @verbose
           return CheckAlgResult.new(:fix_found, fix)
         else
           handle_unfixable_alg(alg)
@@ -162,13 +165,13 @@ module CubeTrainer
       count_unfixable_alg
       return unless @verbose
 
-      puts "Couldn't find a fix for this alg."
+      Rails.logger.warn "Couldn't find a fix for this alg."
       return unless @show_cube_states
 
-      puts 'actual'
-      puts alg.apply_temporarily_to(@alg_cube_state) { |s| cube_string(s, :color) }
-      puts 'expected'
-      puts cube_string(@cycle_cube_state, :color)
+      Rails.logger.info 'actual'
+      Rails.logger.info alg.apply_temporarily_to(@alg_cube_state) { |s| cube_string(s, :color) }
+      Rails.logger.info 'expected'
+      Rails.logger.info cube_string(@cycle_cube_state, :color)
     end
 
     def count_unfixable_alg

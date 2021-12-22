@@ -185,7 +185,7 @@ class Mode < ApplicationRecord
   end
 
   def buffer_valid
-    errors.add(:buffer, "has to be a #{part_type}") unless buffer.is_a?(part_type)
+    mode_type.validate_buffer(buffer, errors, :buffer)
   end
 
   def cube_size_valid

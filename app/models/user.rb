@@ -18,6 +18,10 @@ class User < ApplicationRecord
   has_one :letter_scheme, dependent: :destroy
   after_create :send_welcome_message
 
+  def admin?
+    admin
+  end
+
   def to_simple
     {
       id: id,
