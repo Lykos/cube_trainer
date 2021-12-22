@@ -69,12 +69,15 @@ module CubeTrainer
           end
       end
 
+      # Delegate doesn't work during tests here.
+      # rubocop:disable Rails/Delegate
       def fetch_access_token!
         authorizer.fetch_access_token!
       end
+      # rubocop:enable Rails/Delegate
 
       def get_sheets(spreadsheet_id)
-        p(service.get_spreadsheet(spreadsheet_id)).sheets.map do |s|
+        service.get_spreadsheet(spreadsheet_id).sheets.map do |s|
           props = s.properties
           grid_props = props.grid_properties
           SheetInfo.new(

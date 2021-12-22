@@ -183,13 +183,13 @@ shared_context 'with alg spreadsheet' do
 end
 
 shared_context 'with google sheets get_spreadsheet API response' do
-  # We define our own versions because the proper ones are hard to create.
-  Spreadsheet = Struct.new(:sheets)
-  Sheet = Struct.new(:properties)
-  Properties = Struct.new(:title, :grid_properties)
-  GridProperties = Struct.new(:row_count, :column_count)
-
   let(:get_spreadsheet_response) do
+    # We define our own versions because the proper ones are hard to create.
+    stub_const('Spreadsheet', Struct.new(:sheets))
+    stub_const('Sheet', Struct.new(:properties))
+    stub_const('Properties', Struct.new(:title, :grid_properties))
+    stub_const('GridProperties', Struct.new(:row_count, :column_count))
+
     Spreadsheet.new(
       [
         Sheet.new(
@@ -204,18 +204,18 @@ shared_context 'with google sheets get_spreadsheet API response' do
 end
 
 shared_context 'with google sheets get_spreadsheet_values API response' do
-  # We define our own versions because the proper ones are hard to create.
-  SpreadsheetValues = Struct.new(:values)
-
   let(:get_spreadsheet_values_response) do
+    # We define our own versions because the proper ones are hard to create.
+    stub_const('SpreadsheetValues', Struct.new(:values)) # rubocop:disable Lint/StructNewOverride
+
     SpreadsheetValues.new(
       [
-        ["", "UB", "UR", "UL"],
-        ["UB", "", "[R2 U : [S, R2]]", "[L2 U' : [L2, S']]"],
-        ["UR", "[R2 U : [R2, S]]", "", "[M2 : [U/M']]"],
-        ["UL", "[L2 U' : [L2, S']]", "[M2 : [U/M']]"],
+        ['', 'UB', 'UR', 'UL'],
+        ['UB', '', '[R2 U : [S, R2]]', "[L2 U' : [L2, S']]"],
+        ['UR', '[R2 U : [R2, S]]', '', "[M2 : [U/M']]"],
+        ['UL', "[L2 U' : [L2, S']]", "[M2 : [U/M']]"],
         [],
-        ["", "One of the UL UR algs needs to be fixed"]
+        ['', 'One of the UL UR algs needs to be fixed']
       ]
     )
   end

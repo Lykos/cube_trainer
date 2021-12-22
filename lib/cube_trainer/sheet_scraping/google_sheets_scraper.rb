@@ -9,8 +9,10 @@ module CubeTrainer
   module SheetScraping
     # Client that scrapes alg sets from Google sheets.
     class GoogleSheetsScraper
-      def initialize(credentials_factory: Google::Auth::ServiceAccountCredentials,
-                     sheets_service_factory: Google::Apis::SheetsV4::SheetsService)
+      def initialize(
+        credentials_factory: Google::Auth::ServiceAccountCredentials,
+        sheets_service_factory: Google::Apis::SheetsV4::SheetsService
+      )
         @sheets_client = GoogleSheetsClient.new(
           credentials_factory: credentials_factory,
           sheets_service_factory: sheets_service_factory
