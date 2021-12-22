@@ -182,7 +182,10 @@ module CubeTrainer
 
       def reverse_engineer
         @reverse_engineer ||=
-          CommutatorReverseEngineer.new(@part_type, @buffer, @cube_size)
+          CommutatorReverseEngineer.new(
+            part_type: @part_type, buffer: @buffer,
+            cube_size: @cube_size
+          )
       end
 
       def parse_hint_table_cell(cell)

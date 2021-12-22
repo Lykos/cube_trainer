@@ -12,7 +12,7 @@ module CubeTrainer
     # TODO: Also look at different cube sizes.
     def initialize(cube_size:, part_type: nil, buffer: nil)
       raise TypeError unless part_type.nil? || part_type.is_a?(Class)
-      raise TypeError unless buffer.nil? || (buffer.is_a?(TwistyPuzzles::Part) && (part_type.nil? || buffer.is_a?(part_type)))
+      raise TypeError unless buffer.nil? || buffer_satisfies_part_type?(buffer, part_type)
       raise TypeError unless cube_size.is_a?(Integer)
 
       @cube_size = cube_size
@@ -20,6 +20,10 @@ module CubeTrainer
       @buffer = buffer
       @solved_positions = {}
       @state = initial_cube_state
+    end
+
+    def buffer_satisfies_part_type?(buffer, part_type)
+      buffer.is_a?(TwistyPuzzles::Part) && (part_type.nil? || buffer.is_a?(part_type))
     end
 
     def initial_cube_state
@@ -45,7 +49,8 @@ module CubeTrainer
     end
 
     def relevant_part_types
-      @relevant_part_types ||= @part_type ? [@part_type] : TwistyPuzzles::PART_TYPES - [TwistyPuzzles::Face]
+      @relevant_part_types ||=
+        @part_type ? [@part_type] : TwistyPuzzles::PART_TYPES - [TwistyPuzzles::Face]
     end
 
     def relevant_parts
@@ -80,12 +85,12 @@ module CubeTrainer
         buffer = remaining_parts.pop
         cycle = find_part_cycle_internal(state, buffer)
         remaining_parts.delete_if { |p| cycle.parts.any? { |q| p.turned_equals?(q) } }
-        cycles.push(cycle) if cycle.length > 1 || cycle.twist > 0
+        cycles.push(cycle) if cycle.length > 1 || cycle.twist.positive?
       end
 
       cycles
     end
-    
+
     def find_part_cycles(alg)
       raise TypeError unless alg.is_a?(TwistyPuzzles::Algorithm)
 

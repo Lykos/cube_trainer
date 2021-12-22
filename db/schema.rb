@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 2021_12_19_014247) do
     t.bigint "alg_set_id", null: false
     t.string "case_key", null: false
     t.text "alg", null: false
+    t.boolean "is_fixed", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["alg_set_id"], name: "index_algs_on_alg_set_id"

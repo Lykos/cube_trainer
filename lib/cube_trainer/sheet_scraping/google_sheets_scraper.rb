@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'google_sheets_client'
 require_relative 'alg_extractor'
 
@@ -14,16 +16,22 @@ module CubeTrainer
       def scrape_sheet(alg_spreadsheet)
         Rails.logger.info "Scraping #{alg_spreadsheet.spreadsheet_id} by #{alg_spreadsheet.owner}."
         tables = sheets_client.get_tables(alg_spreadsheet.spreadsheet_id)
-        Rails.logger.info "Got #{tables.length} sheets with a total of #{total_cells(tables)} cells."
-        counters = {updated_algs: 0, new_algs: 0, confirmed_algs: 0}
+        Rails.logger.info "Got #{tables.length} sheets " \
+                          "with a total of #{total_cells(tables)} cells."
+        counters = { updated_algs: 0, new_algs: 0, confirmed_algs: 0 }
         tables.map { |t| extract_alg_set(alg_spreadsheet, t, counters) }
-        Rails.logger.info "Got #{counters[:new_algs]} new algs, updated #{counters[:updated_algs]} algs and confirmed #{counters[:confirmed_algs]} algs."
+        Rails.logger.info "Got #{counters[:new_algs]} new algs, " \
+                          "updated #{counters[:updated_algs]} algs " \
+                          "and confirmed #{counters[:confirmed_algs]} algs."
       end
 
       private
 
       def mode_type(alg_set)
-        ModeType.all.find { |m| (defined? m.generator_class::PART_TYPE) && m.generator_class::PART_TYPE == alg_set.part_type } || raise
+        ModeType.all.find do |m|
+          (defined? m.generator_class::PART_TYPE) &&
+            m.generator_class::PART_TYPE == alg_set.part_type
+        end || raise
       end
 
       def extract_alg_set(alg_spreadsheet, table, counters)
@@ -37,29 +45,41 @@ module CubeTrainer
           save_alg(alg_set, part_cycle, alg, counters)
         end
         extracted_alg_set.fixes.each do |fix|
-          save_alg(alg_set, fix.cell_description.part_cycle, fix.fixed_algorithm, counters, is_fixed: true)
+          save_alg(
+            alg_set, fix.cell_description.part_cycle, fix.fixed_algorithm, counters,
+            is_fixed: true
+          )
         end
       end
 
       def save_alg(alg_set, part_cycle, alg, counters, is_fixed: false)
         case_key = InputRepresentationType.new.serialize(part_cycle)
         existing_alg = alg_set.algs.find_by(case_key: case_key)
-        unless existing_alg
-          counters[:new_algs] += 1
-          return alg_set.algs.create!(
-            case_key: case_key,
-            alg: alg
-          )
-        end
+        return update_alg(existing_alg, alg, counters, is_fixed: is_fixed) if existing_alg
+
+        create_new_alg(alg_set, case_key, alg, counters, is_fixed: is_fixed)
+      end
+
+      def create_new_alg(alg_set, case_key, alg, counters, is_fixed:)
+        counters[:new_algs] += 1
+        alg_set.algs.create!(
+          case_key: case_key,
+          alg: alg,
+          is_fixed: is_fixed
+        )
+      end
+
+      def update_alg(existing_alg, alg, counters, is_fixed:)
         alg_string = alg.to_s
-        if existing_alg.alg == alg_string
+        if existing_alg.alg == alg_string && existing_alg.is_fixed == is_fixed
           counters[:confirmed_algs] += 1
-          
+
           return existing_alg
         end
 
         counters[:updated_algs] += 1
         existing_alg.alg = alg_string
+        existing_alg.is_fixed = is_fixed
         existing_alg.save!
       end
 
@@ -68,7 +88,7 @@ module CubeTrainer
       end
 
       def total_cells(tables)
-        tables.map { |t| table_cells(t) }.sum
+        tables.sum { |t| table_cells(t) }
       end
 
       def table_cells(table)

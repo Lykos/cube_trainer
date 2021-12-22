@@ -13,12 +13,18 @@ module CubeTrainer
         row_axis_interpretation, column_axis_interpretation,
         row_interpretations, column_interpretations
       )
-        unless [row_axis_interpretation, column_axis_interpretation].sort == AXIS_INTERPRETATIONS.first
+        unless [
+          row_axis_interpretation,
+          column_axis_interpretation
+        ].sort == AXIS_INTERPRETATIONS.first
           raise ArgumentError
         end
 
         @buffer = buffer
-        @flip_parts = [row_axis_interpretation, column_axis_interpretation] == AXIS_INTERPRETATIONS[1]
+        @flip_parts = AXIS_INTERPRETATIONS[1] == [
+          row_axis_interpretation,
+          column_axis_interpretation
+        ]
         @row_interpretations = row_interpretations
         @column_interpretations = column_interpretations
       end
@@ -49,11 +55,14 @@ module CubeTrainer
 
     # Table should be a 2D array where the entries have a method called maybe_part_cycle that
     # returns a part pair of length 2 or nil.
-    def self.interpret_table(table, buffer=nil)
+    def self.interpret_table(table, forced_buffer = nil)
       found_buffer = find_buffer(table)
       return EMPTY_INTERPRETATION unless found_buffer
 
-      buffer = buffer || found_buffer
+      interpret_table_with_buffer(table, forced_buffer || found_buffer)
+    end
+
+    def self.interpret_table_with_buffer(table, buffer)
       transposed_table = table.transpose
       table_interpretations =
         AXIS_INTERPRETATIONS.map do |row_axis_interpretation, column_axis_interpretation|
@@ -70,16 +79,17 @@ module CubeTrainer
     end
 
     def self.find_buffer(table)
-      part_frequencies = {}
-      part_frequencies.default = 0
-      table.map.with_index do |row|
-        row.map.with_index do |cell|
-          cell.maybe_part_cycle&.parts&.each do |p|
-            part_frequencies[p.rotations.min] += 1
-          end
+      part_frequencies = new_counter_hash
+      table.map do |row|
+        row.map do |cell|
+          count_cell_min_parts(cell, part_frequencies)
         end
       end
-      part_frequencies.max_by { |p, v| v }&.first
+      part_frequencies.max_by { |_p, v| v }&.first
+    end
+
+    def self.count_cell_min_parts(cell, part_frequencies)
+      cell.maybe_part_cycle&.parts&.each { |p| part_frequencies[p.rotations.min] += 1 }
     end
 
     def self.best_interpretation(table_interpretations, table)
@@ -91,9 +101,15 @@ module CubeTrainer
         row.map.with_index do |cell, col_index|
           cell_part_cycle = cell.maybe_part_cycle
           interpretation_part_cycle = table_interpretation.part_cycle(row_index, col_index)
-          cell_part_cycle && interpretation_part_cycle && cell_part_cycle.equivalent?(interpretation_part_cycle) ? 1 : 0
+          present_and_equivalent?(cell_part_cycle, interpretation_part_cycle) ? 1 : 0
         end.sum
       end.sum
+    end
+
+    def self.present_and_equivalent?(cell_part_cycle, interpretation_part_cycle)
+      cell_part_cycle &&
+        interpretation_part_cycle &&
+        cell_part_cycle.equivalent?(interpretation_part_cycle)
     end
 
     def self.find_row_interpretations(rows, buffer, axis_interpretation)
@@ -118,7 +134,10 @@ module CubeTrainer
     end
 
     def self.find_row_interpretation(row, buffer, axis_interpretation)
-      parts = relevant_part_cycles(row, buffer).map { |e| e.start_with(buffer).parts[axis_interpretation + 1] }
+      parts =
+        relevant_part_cycles(row, buffer).map do |e|
+          e.start_with(buffer).parts[axis_interpretation + 1]
+        end
       counts = new_counter_hash
       parts.each { |l| counts[l] += 1 }
       max_count = counts.values.max

@@ -68,7 +68,7 @@ module CubeTrainer
 
     def construct_cycle(parts)
       @part_cycle_factory.construct(parts)
-    rescue
+    rescue StandardError
       p parts
       raise
     end

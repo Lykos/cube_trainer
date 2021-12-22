@@ -17,17 +17,20 @@ module CubeTrainer
     end
 
     def algs_with_replaced_move(alg, move_index, moves)
-      moves = alg.moves.dup
+      alg_moves = alg.moves.dup
       moves.map do |move|
-        moves[move_index] = move
-        TwistyPuzzles::Algorithm.new(moves)
+        alg_moves[move_index] = move
+        TwistyPuzzles::Algorithm.new(alg_moves)
       end
     end
-    
+
     def alg_modifications(alg)
       perms = permutation_modifications(alg)
-      algs = alg.moves.flat_map.with_index { |m, i| algs_with_replaced_move(alg, i, move_modifications(m)) }
-      perms + algs
+      algs =
+        alg.moves.flat_map.with_index do |m, i|
+          algs_with_replaced_move(alg, i, move_modifications(m))
+        end
+      perms + algs + [alg.inverse]
     end
 
     # Creates all modifications of an alg that follow a certain pattern, e.g.

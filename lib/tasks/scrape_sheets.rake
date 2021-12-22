@@ -4,7 +4,7 @@ desc 'Scrape algs sheets from Google sheets'
 task scrape_sheets: :environment do
   require 'cube_trainer/sheet_scraping/google_sheets_scraper'
 
-  Rails.logger = Logger.new(STDOUT)
+  Rails.logger = Logger.new($stdout)
   ActiveRecord::Base.logger.level = 1
   CubeTrainer::SheetScraping::GoogleSheetsScraper.new.run
 end

@@ -74,7 +74,7 @@ class ModeType
   end
 
   # Takes an external errors list so it can be used for other models, too.
-  def validate_buffer(buffer, errors, attribute)
+  def validate_buffer(buffer, errors, _attribute)
     errors.add(:buffer, "has to be a #{part_type}") unless buffer.is_a?(part_type)
   end
 

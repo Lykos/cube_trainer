@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'googleauth'
 require 'google/apis/sheets_v4'
 
@@ -5,6 +7,8 @@ module CubeTrainer
   module SheetScraping
     # Client to access Google sheets API.
     class GoogleSheetsClient
+      # Data of one one sheet (i.e. one tab of a spreadsheet).
+      # Includes meta information and the actual values.
       class SheetTable
         def initialize(sheet_info:, values:)
           @sheet_info = sheet_info
@@ -14,6 +18,7 @@ module CubeTrainer
         attr_reader :sheet_info, :values
       end
 
+      # Meta information about one sheet (i.e. one tab of a spreadsheet).
       class SheetInfo
         ALPHABET = ('A'..'Z').to_a.freeze
 
@@ -32,10 +37,10 @@ module CubeTrainer
         def max_row_name
           if @row_count <= ALPHABET.length
             ALPHABET[@row_count - 1]
-          elsif @row_count <= ALPHABET.length ** 2
+          elsif @row_count <= ALPHABET.length**2
             "#{ALPHABET[(@row_count - 1) / 26]}#{ALPHABET[(@row_count - 1) % 26]}"
           else
-            "ZZ"
+            'ZZ'
           end
         end
 
@@ -54,11 +59,12 @@ module CubeTrainer
       end
 
       def service
-        @service ||= begin
-                       service = Google::Apis::SheetsV4::SheetsService.new
-                       service.authorization = authorizer
-                       service
-                     end
+        @service ||=
+          begin
+            service = Google::Apis::SheetsV4::SheetsService.new
+            service.authorization = authorizer
+            service
+          end
       end
 
       delegate :fetch_access_token!, to: :authorizer
