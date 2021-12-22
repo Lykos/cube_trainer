@@ -59,10 +59,11 @@ class RenderableAlgCountsRow {
   styleUrls: ['./alg-counts-table.component.css']
 })
 export class AlgCountsTableComponent {
-  @Input() expectedAlgsData: AlgCountsData;
+  @Input() expectedAlgsData: AlgCountsData | undefined = undefined;
 
   get expectedAlgsRows(): RenderableAlgCountsRow[] {
-    return this.expectedAlgsData.rows.map(row => new RenderableAlgCountsRow(row));
+    const rows = this.expectedAlgsData ? this.expectedAlgsData.rows : [];
+    return rows.map(row => new RenderableAlgCountsRow(row));
   }
 
   get columnsToDisplay() {

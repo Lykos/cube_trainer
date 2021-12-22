@@ -122,8 +122,8 @@ export class MethodDescriptionFormComponent {
   private doubleSwapLevelHelpers(pieceDescription: PieceDescription): readonly AlgSetLevelHelper[] {
     return [
       { name: 'Double Swaps for Buffer Switches', isEnabledPiece: () => this.canFloat(pieceDescription) },
-      { name: 'first buffer', isEnabledPiece: (p: PieceWithName | undefined) => this.buffers(pieceDescription).some(b => b.pieceId === p.piece.pieceId) },
-      { name: 'second buffer', isEnabledPiece: (p: PieceWithName | undefined) => this.buffers(pieceDescription).some(b => b.pieceId === p.piece.pieceId) },
+      { name: 'first buffer', isEnabledPiece: (p: PieceWithName) => this.buffers(pieceDescription).some(b => b.pieceId === p.piece.pieceId) },
+      { name: 'second buffer', isEnabledPiece: (p: PieceWithName) => this.buffers(pieceDescription).some(b => b.pieceId === p.piece.pieceId) },
       { name: 'third piece', isEnabledPiece: () => true },
       { name: 'fourth piece', isEnabledPiece: () => true },
     ];
@@ -207,7 +207,7 @@ export class MethodDescriptionFormComponent {
   }
 
   pieceMethodDescription(pieceDescription: PieceDescription): PieceMethodDescription {
-    return this.value.pieceMethodDescriptions.find(d => d.pluralName === pieceDescription.pluralName);
+    return forceValue(find(this.value.pieceMethodDescriptions, d => d.pluralName === pieceDescription.pluralName));
   }
 
   pieceMethodDescriptionControl(pieceDescription: PieceDescription): FormGroup {
