@@ -28,9 +28,6 @@
     "noImplicitThis": true,
     "noImplicitReturns": true
   },
-  "exclude": [  
-    "node_modules",  
-  ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
