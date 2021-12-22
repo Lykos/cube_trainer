@@ -172,3 +172,51 @@ shared_context 'with eve auth headers' do
     eve.create_new_auth_token.merge!(headers)
   end
 end
+
+shared_context 'with alg spreadsheet' do
+  let(:alg_spreadsheet) do
+    AlgSpreadsheet.create!(
+      owner: 'Testy Testikow',
+      spreadsheet_id: '1l3IcCG0vVJbZtj30ZXQTn1UBWTya6i84tUZZg5PN3OY'
+    )
+  end
+end
+
+shared_context 'with google sheets get_spreadsheet API response' do
+  # We define our own versions because the proper ones are hard to create.
+  Spreadsheet = Struct.new(:sheets)
+  Sheet = Struct.new(:properties)
+  Properties = Struct.new(:title, :grid_properties)
+  GridProperties = Struct.new(:row_count, :column_count)
+
+  let(:get_spreadsheet_response) do
+    Spreadsheet.new(
+      [
+        Sheet.new(
+          Properties.new(
+            'UF',
+            GridProperties.new(1000, 26)
+          )
+        )
+      ]
+    )
+  end
+end
+
+shared_context 'with google sheets get_spreadsheet_values API response' do
+  # We define our own versions because the proper ones are hard to create.
+  SpreadsheetValues = Struct.new(:values)
+
+  let(:get_spreadsheet_values_response) do
+    SpreadsheetValues.new(
+      [
+        ["", "UB", "UR", "UL"],
+        ["UB", "", "[R2 U : [S, R2]]", "[L2 U' : [L2, S']]"],
+        ["UR", "[R2 U : [R2, S]]", "", "[M2 : [U/M']]"],
+        ["UL", "[L2 U' : [L2, S']]", "[M2 : [U/M']]"],
+        [],
+        ["", "One of the UL UR algs needs to be fixed"]
+      ]
+    )
+  end
+end
