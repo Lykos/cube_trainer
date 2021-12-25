@@ -68,9 +68,6 @@ module CubeTrainer
 
     def construct_cycle(parts)
       @part_cycle_factory.construct(parts)
-    rescue StandardError
-      p parts
-      raise
     end
 
     # Count an alg with a parse error or something like that that is broken before the checker gets

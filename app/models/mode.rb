@@ -153,8 +153,7 @@ class Mode < ApplicationRecord
   end
 
   def algorithm(input)
-    hints(input).find { |i| i.is_a?(TwistyPuzzles::Algorithm) } ||
-      commutator(input)&.algorithm
+    alg_set.alg(input.case_key)
   end
 
   def setup(input)
@@ -167,8 +166,8 @@ class Mode < ApplicationRecord
   def to_case(item)
     Case.new(
       mode: self,
-      hints: hints(item),
       case_key: item.case_key,
+      alg: algorithm(item),
       setup: setup(item)
     )
   end

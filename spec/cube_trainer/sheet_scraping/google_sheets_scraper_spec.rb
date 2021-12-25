@@ -7,8 +7,41 @@ require 'rails_helper'
 
 describe CubeTrainer::SheetScraping::GoogleSheetsScraper do
   include_context 'with alg spreadsheet'
-  include_context 'with google sheets get_spreadsheet API response'
-  include_context 'with google sheets get_spreadsheet_values API response'
+
+  let(:get_spreadsheet_response) do
+    # We define our own versions because the proper ones are hard to create.
+    stub_const('Spreadsheet', Struct.new(:sheets))
+    stub_const('Sheet', Struct.new(:properties))
+    stub_const('Properties', Struct.new(:title, :grid_properties))
+    stub_const('GridProperties', Struct.new(:row_count, :column_count))
+
+    Spreadsheet.new(
+      [
+        Sheet.new(
+          Properties.new(
+            'UF',
+            GridProperties.new(1000, 26)
+          )
+        )
+      ]
+    )
+  end
+
+  let(:get_spreadsheet_values_response) do
+    # We define our own versions because the proper ones are hard to create.
+    stub_const('SpreadsheetValues', Struct.new(:values)) # rubocop:disable Lint/StructNewOverride
+
+    SpreadsheetValues.new(
+      [
+        ['', 'UB', 'UR', 'UL'],
+        ['UB', '', '[R2 U : [S, R2]]', "[L2 U' : [L2, S']]"],
+        ['UR', '[R2 U : [R2, S]]', '', "[M2 : [U/M']]"],
+        ['UL', "[L2 U' : [L2, S']]", "[M2 : [U/M']]"],
+        [],
+        ['', 'One of the UL UR algs needs to be fixed']
+      ]
+    )
+  end
 
   let(:spreadsheet_id) { alg_spreadsheet.spreadsheet_id }
   let(:range) { 'UF!A1:Z1000' }

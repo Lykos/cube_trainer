@@ -74,8 +74,21 @@ class ModeType
   end
 
   # Takes an external errors list so it can be used for other models, too.
-  def validate_buffer(buffer, errors, _attribute)
+  def validate_buffer(buffer, errors)
     errors.add(:buffer, "has to be a #{part_type}") unless buffer.is_a?(part_type)
+  end
+
+  # Takes an external errors list so it can be used for other models, too.
+  def validate_case_key(case_key, errors)
+    errors.add(:case_key, "has to be a part cycle") unless case_key.is_a?(TwistyPuzzles::PartCycle)
+    errors.add(:case_key, "has to be a #{part_type}") unless case_key.part_type == part_type
+    errors.add(:case_key, "has to have length #{cycle_length}") unless case_key.length == cycle_length
+    errors.add(:case_key, "cannot twist") unless case_key.twist == 0
+  end
+
+  # TODO: Support more than 3 cycles
+  def cycle_length
+    3
   end
 
   # TODO: Refactor
