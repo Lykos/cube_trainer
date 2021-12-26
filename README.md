@@ -19,12 +19,32 @@ cd cube_trainer
 
 ### Install OS dependencies
 
+### Postgresql
+
 This example is what I did on Ubuntu, but I'm sure you can figure out how to install
 Ruby, PostgreSQL and npm on your OS, too.
 
 ```shell
-sudo apt install ruby postgresql libpq-dev npm
+sudo apt install postgresql libpq-dev
 ```
+
+### Ruby
+
+Ruby is the programming language that is used for the CubeTrainer backend. If you only want to run the frontend, this dependency might not be necessary, but note that the frontend alone cannot do a lot, so this is only useful if you want to contribute something where the backend really isn't relevant.
+
+You can install Ruby via any means you prefer. We recommend installing Ruby via [rbenv](https://github.com/rbenv/rbenv). This is a tool that lets you manage different Ruby versions. Check the first few lines in the [Gemfile](Gemfile) for the Ruby version that should be used for CubeTrainer. Other versions might work as well, but there is no guarantee.
+
+You can try to use the Ruby installation that comes via your OS package manager, too, but there is a good chance that this will be an older Ruby version that won't work.
+
+### Node.js and NPM
+
+NPM is the package manager and toolchain we use for the CubeTrainer frontend and Node.js is the JavaScript runtime that NPM uses. If you only want to run the backend, this dependency might not be necessary, but note that the backend alone cannot do a lot, so this is only useful if you want to contribute something where the frontend really isn't relevant.
+
+You can install Node.js and NPM via any means you prefer. We recommend installing it via [nvm](https://github.com/nvm-sh/nvm). This is a tool that lets you manage different Node.js and NPM versions. Check the first few line of the [package.json](package.json) (look for the string "engines") for the Node.js and NPM versions that should be used for CubeTrainer. Other versions might work as well, but there is no guarantee.
+
+You can try to use the Node.js and NPM installation that comes via your OS package manager, too, but there is a good chance that this will be older versions that won't work.
+
+### Mailcatcher (optional)
 
 Optionally, you can install mailcatcher. This is a useful tool to debug emails that the website sends. Note that the documentation of mailcatcher recommends to set it up separately as a global gem and to not make it a gem dependency.
 
