@@ -46,14 +46,15 @@ class Alg < ApplicationRecord
     errors.add(:case_key, 'case has an incorrect buffer') unless buffer == alg_set.buffer
   end
 
+  def commutator_or_nil
+    commutator
+  rescue CommutatorParseError
+    nil
+  end
+
   # TODO: Make this work for other types of alg sets than commutators.
   def validate_alg
-    comm =
-      begin
-        commutator
-      rescue CommutatorParseError
-        nil
-      end
+    comm = commutator_or_nil
 
     unless comm
       errors.add(:alg, 'cannot be parsed as a commutator')

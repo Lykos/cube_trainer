@@ -27,6 +27,9 @@ describe 'new mode', type: :system do
     click_button 'Next'
 
     sleep(0.5)
+    click_button 'Next'
+
+    sleep(0.5)
     mat_select 'name', from: 'showInputMode'
     fill_in 'Goal Time per Element', with: '2.0'
     click_button 'Next'
@@ -49,6 +52,9 @@ describe 'new mode', type: :system do
     sleep(0.5)
     fill_in 'Name', with: 'system test mode'
     mat_select 'Memo Rush', from: 'modeType'
+    click_button 'Next'
+
+    sleep(0.5)
     click_button 'Next'
 
     sleep(0.5)
