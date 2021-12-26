@@ -67,10 +67,6 @@ end
 group :production do
   # Use Redis adapter to run Action Cable in production
   gem 'redis', '~> 4.5'
-
-  # Sidekiq is used to scrape alg sheets on Google sheet.
-  gem 'sidekiq', '~> 6.3.1'
-  gem 'sidekiq-cron', '~> 1.2'
 end
 
 group :development do
