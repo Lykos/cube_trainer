@@ -88,7 +88,7 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   startFor(casee: Case) {
     this.numHints_ = 0;
     this.numHints.emit(this.numHints_);
-    this.maxHints = casee.hints ? casee.hints.length : 0;
+    this.maxHints = casee.alg ? 1 : 0;
     this.casee_ = casee;
     // TODO: Make the emit location depending on hasSetup nicer.
     if (!this.hasSetup) {

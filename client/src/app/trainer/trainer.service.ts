@@ -10,7 +10,7 @@ function parseCase(casee: any) {
   return {
     key: casee.case_key,
     name: casee.case_name,
-    hints: casee.hints,
+    alg: casee.alg,
     setup: casee.setup
   };
 }

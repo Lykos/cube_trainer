@@ -65,8 +65,7 @@ module CubeTrainer
         end
       end
 
-      def save_alg(alg_set, part_cycle, alg, counters, is_fixed: false)
-        case_key = InputRepresentationType.new.serialize(part_cycle)
+      def save_alg(alg_set, case_key, alg, counters, is_fixed: false)
         existing_alg = alg_set.algs.find_by(case_key: case_key)
         return update_alg(existing_alg, alg, counters, is_fixed: is_fixed) if existing_alg
 

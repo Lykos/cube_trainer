@@ -32,6 +32,7 @@ function parseModeType(rawModeType: any): ModeType {
     hasSetup: rawModeType.has_setup,
     buffers: rawModeType.buffers,
     statsTypes: rawModeType.stats_types,
+    algSets: rawModeType.alg_sets,
   };
 }
 
