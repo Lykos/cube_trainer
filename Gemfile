@@ -24,7 +24,7 @@ group :development, :test, :production do
   gem 'rack-cors', require: 'rack/cors'
 
   # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-  gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
+  gem 'rails', '~> 6.1'
 
   # Core cubing related functionality.
   gem 'twisty_puzzles', '>= 0.0.32'
