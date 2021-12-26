@@ -22,8 +22,6 @@ describe 'trainer', type: :system do
     sleep(0.5)
     click_button 'Stop and Start'
     sleep(0.5)
-    click_button 'Hint'
-    sleep(0.5)
     click_button 'Stop and Pause'
 
     # Check that hints are 0 and 1.

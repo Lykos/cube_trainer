@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_19_014247) do
+ActiveRecord::Schema.define(version: 2021_12_25_182507) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -106,6 +106,7 @@ ActiveRecord::Schema.define(version: 2021_12_19_014247) do
     t.string "second_parity_part"
     t.float "memo_time_s"
     t.string "buffer"
+    t.integer "alg_set_id"
     t.index ["user_id", "name"], name: "index_modes_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_modes_on_user_id"
   end
@@ -176,6 +177,7 @@ ActiveRecord::Schema.define(version: 2021_12_19_014247) do
   add_foreign_key "messages", "users"
   add_foreign_key "mode_usages", "modes"
   add_foreign_key "mode_usages", "modes", column: "used_mode_id"
+  add_foreign_key "modes", "alg_sets"
   add_foreign_key "modes", "users"
   add_foreign_key "results", "modes"
   add_foreign_key "stats", "modes"

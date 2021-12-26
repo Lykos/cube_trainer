@@ -24,7 +24,7 @@ RSpec.describe Alg, type: :model do
     it 'should return true for a valid alg' do
       alg = alg_set.algs.new(
         case_key: TwistyPuzzles::PartCycle.new([uf, df, ub]),
-        alg: parse_algorithm("M' U2 M U2"),
+        alg: "M' U2 M U2",
       )
       expect(alg).to be_valid
     end
@@ -32,7 +32,7 @@ RSpec.describe Alg, type: :model do
     it 'should return false if the case starts with a twisted version of the buffer' do
       alg = alg_set.algs.new(
         case_key: TwistyPuzzles::PartCycle.new([fu, df, ub]),
-        alg: parse_algorithm("M' U2 M U2"),
+        alg: "M' U2 M U2",
       )
       expect(alg).not_to be_valid
       expect(alg.errors.messages[:case_key].first).to include('buffer')
@@ -41,7 +41,7 @@ RSpec.describe Alg, type: :model do
     it 'should return false if the case starts with a different piece than the buffer' do
       alg = alg_set.algs.new(
         case_key: TwistyPuzzles::PartCycle.new([df, ub, uf]),
-        alg: parse_algorithm("M' U2 M U2"),
+        alg: "M' U2 M U2",
       )
       expect(alg).not_to be_valid
       expect(alg.errors.messages[:case_key].first).to include('buffer')
@@ -50,7 +50,7 @@ RSpec.describe Alg, type: :model do
     it 'should return false if the case twists' do
       alg = alg_set.algs.new(
         case_key: TwistyPuzzles::PartCycle.new([uf, df, ub], 2),
-        alg: parse_algorithm("M' U2 M U2"),
+        alg: "M' U2 M U2",
       )
       expect(alg).not_to be_valid
       expect(alg.errors.messages[:case_key].first).to include('twist')
@@ -59,7 +59,7 @@ RSpec.describe Alg, type: :model do
     it 'should return false if the algorithm cannot be parsed' do
       alg = alg_set.algs.new(
         case_key: TwistyPuzzles::PartCycle.new([uf, ub, df]),
-        alg: parse_algorithm("asdfadsfasfd"),
+        alg: "asdfadsfasfd",
       )
       expect(alg).not_to be_valid
       expect(alg.errors.messages[:alg].first).not_to be_empty
@@ -68,7 +68,7 @@ RSpec.describe Alg, type: :model do
     it 'should return false if the algorithm is for a different case' do
       alg = alg_set.algs.new(
         case_key: TwistyPuzzles::PartCycle.new([uf, ub, df]),
-        alg: parse_algorithm("M' U2 M U2"),
+        alg: "M' U2 M U2",
       )
       expect(alg).not_to be_valid
       expect(alg.errors.messages[:alg].first).not_to be_empty

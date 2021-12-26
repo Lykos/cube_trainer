@@ -16,7 +16,7 @@ RSpec.describe 'Trainer', type: :request do
       get "/api/trainer/#{mode.id}/random_case", headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body.keys).to contain_exactly('case_key', 'case_name', 'setup', 'hints')
+      expect(parsed_body.keys).to contain_exactly('case_key', 'case_name', 'setup', 'alg')
     end
 
     it 'returns http success with cached ids' do
@@ -26,7 +26,7 @@ RSpec.describe 'Trainer', type: :request do
       get "/api/trainer/#{mode.id}/random_case", headers: user_headers, params: { cached_case_keys: [case_key] }
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body.keys).to contain_exactly('case_key', 'case_name', 'setup', 'hints')
+      expect(parsed_body.keys).to contain_exactly('case_key', 'case_name', 'setup', 'alg')
       expect(parsed_body['case_key']).not_to eq(case_key)
     end
 

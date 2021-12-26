@@ -12,7 +12,8 @@ RSpec.describe AlgSet, type: :model do
   let(:fu) { TwistyPuzzles::Edge.for_face_symbols([:F, :U]) }
   let(:df) { TwistyPuzzles::Edge.for_face_symbols([:D, :F]) }
   let(:ub) { TwistyPuzzles::Edge.for_face_symbols([:U, :B]) }
-  let(:algorithm) { parse_algorithm("M' U2 M U2") }
+  let(:ur) { TwistyPuzzles::Edge.for_face_symbols([:U, :R]) }
+  let(:commutator) { parse_commutator("[M', U2]") }
 
   let(:alg_set) do
     alg_spreadsheet.alg_sets.create!(
@@ -23,19 +24,26 @@ RSpec.describe AlgSet, type: :model do
   end
 
   let(:alg) do
-    alg_set.algs.new(
+    alg_set.algs.create!(
       case_key: TwistyPuzzles::PartCycle.new([uf, df, ub]),
-      alg: algorithm,
+      alg: commutator.to_s,
     )
   end
 
   describe '#alg' do
-    it 'finds an algorithm for the given case' do
-      alg_set.algorithm(TwistyPuzzles::PartCycle.new([uf, df, ub])).to eq(algorithm)
+    it 'finds a commutator for the given case' do
+      alg
+      expect(alg_set.commutator(TwistyPuzzles::PartCycle.new([uf, df, ub]))).to eq(commutator)
     end
 
-    it 'finds an algorithm for the given case based on its inverse' do
-      alg_set.algorithm(TwistyPuzzles::PartCycle.new([uf, ub, df])).to eq(algorithm.inverse)
+    it 'finds a commutator for the given case based on its inverse' do
+      alg
+      expect(alg_set.commutator(TwistyPuzzles::PartCycle.new([uf, ub, df]))).to eq(commutator.inverse)
+    end
+
+    it 'returns nil if there is no commutator for the given case' do
+      alg
+      expect(alg_set.commutator(TwistyPuzzles::PartCycle.new([uf, ur, ub]))).to be(nil)
     end
   end
 end

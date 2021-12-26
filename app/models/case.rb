@@ -5,7 +5,7 @@
 class Case
   include ActiveModel::Model
 
-  attr_accessor :mode, :setup, :alg, :representation
+  attr_accessor :case_key, :mode, :setup, :alg, :representation
 
   validates :case_key, presence: true
   validates :mode, presence: true

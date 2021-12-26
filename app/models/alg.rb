@@ -38,7 +38,7 @@ class Alg < ApplicationRecord
     case_key.parts.first if case_key.is_a?(TwistyPuzzles::PartCycle)
   end
 
-  def algorithm
+  def commutator
     parse_commutator(alg)
   end
 
@@ -46,16 +46,16 @@ class Alg < ApplicationRecord
 
   # TODO: Make this work for other types of alg sets than commutators.
   def validate_alg
-    commutator =
+    comm =
       begin
-        algorithm
-      rescue TwistyPuzzles::CommutatorParseError => e
+        commutator
+      rescue CommutatorParseError => e
         errors.add(:alg, 'cannot be parsed as a commutator')
         return
       end
 
     checker = CommutatorChecker.new(part_type: part_type, cube_size: alg_set.mode_type.default_cube_size)
-    return if checker.check_alg(SyntheticCellDescription.new(case_key), commutator).result == :correct
+    return if checker.check_alg(SyntheticCellDescription.new(case_key), comm).result == :correct
 
     errors.add(:alg, 'is for the wrong case')    
   end
