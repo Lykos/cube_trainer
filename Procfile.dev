@@ -1,3 +1,3 @@
 rails: bundle exec rails s
-npm_watch: npm start
+npm: bundle exec rails npm:start
 mailcatcher: mailcatcher
