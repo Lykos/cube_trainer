@@ -24,16 +24,6 @@ class Alg < ApplicationRecord
     delegate :to_s, to: :part_cycle
   end
 
-  def validate_case
-    alg_set.mode_type.validate_case_key(case_key, errors)
-  end
-
-  def validate_buffer
-    return unless alg_set.buffer
-
-    errors.add(:case_key, 'case has an incorrect buffer') unless buffer == alg_set.buffer
-  end
-
   def buffer
     case_key.parts.first if case_key.is_a?(TwistyPuzzles::PartCycle)
   end
@@ -44,19 +34,38 @@ class Alg < ApplicationRecord
 
   delegate :part_type, to: :case_key
 
+  private
+
+  def validate_case
+    alg_set.mode_type.validate_case_key(case_key, errors)
+  end
+
+  def validate_buffer
+    return unless alg_set.buffer
+
+    errors.add(:case_key, 'case has an incorrect buffer') unless buffer == alg_set.buffer
+  end
+
   # TODO: Make this work for other types of alg sets than commutators.
   def validate_alg
     comm =
       begin
         commutator
-      rescue CommutatorParseError => e
-        errors.add(:alg, 'cannot be parsed as a commutator')
-        return
+      rescue CommutatorParseError
+        nil
       end
 
-    checker = CommutatorChecker.new(part_type: part_type, cube_size: alg_set.mode_type.default_cube_size)
+    unless comm
+      errors.add(:alg, 'cannot be parsed as a commutator')
+      return
+    end
+
+    checker = CommutatorChecker.new(
+      part_type: part_type,
+      cube_size: alg_set.mode_type.default_cube_size
+    )
     return if checker.check_alg(SyntheticCellDescription.new(case_key), comm).result == :correct
 
-    errors.add(:alg, 'is for the wrong case')    
+    errors.add(:alg, 'is for the wrong case')
   end
 end

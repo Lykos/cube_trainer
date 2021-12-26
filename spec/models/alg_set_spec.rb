@@ -8,11 +8,11 @@ RSpec.describe AlgSet, type: :model do
 
   include_context 'with alg spreadsheet'
 
-  let(:uf) { TwistyPuzzles::Edge.for_face_symbols([:U, :F]) }
-  let(:fu) { TwistyPuzzles::Edge.for_face_symbols([:F, :U]) }
-  let(:df) { TwistyPuzzles::Edge.for_face_symbols([:D, :F]) }
-  let(:ub) { TwistyPuzzles::Edge.for_face_symbols([:U, :B]) }
-  let(:ur) { TwistyPuzzles::Edge.for_face_symbols([:U, :R]) }
+  let(:uf) { TwistyPuzzles::Edge.for_face_symbols(%i[U F]) }
+  let(:fu) { TwistyPuzzles::Edge.for_face_symbols(%i[F U]) }
+  let(:df) { TwistyPuzzles::Edge.for_face_symbols(%i[D F]) }
+  let(:ub) { TwistyPuzzles::Edge.for_face_symbols(%i[U B]) }
+  let(:ur) { TwistyPuzzles::Edge.for_face_symbols(%i[U R]) }
   let(:commutator) { parse_commutator("[M', U2]") }
 
   let(:alg_set) do
@@ -26,7 +26,7 @@ RSpec.describe AlgSet, type: :model do
   let(:alg) do
     alg_set.algs.create!(
       case_key: TwistyPuzzles::PartCycle.new([uf, df, ub]),
-      alg: commutator.to_s,
+      alg: commutator.to_s
     )
   end
 

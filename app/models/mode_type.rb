@@ -57,7 +57,7 @@ class ModeType
   end
 
   # Takes an external errors list so it can be used for other models, too.
-  def validate_cube_size(cube_size, errors, attribute=:cube_size)
+  def validate_cube_size(cube_size, errors, attribute = :cube_size)
     unless cube_size <= max_cube_size
       errors.add(attribute, "has to be at most #{max_cube_size} for mode type #{name}")
     end
@@ -79,10 +79,15 @@ class ModeType
 
   # Takes an external errors list so it can be used for other models, too.
   def validate_case_key(case_key, errors)
-    errors.add(:case_key, "has to be a part cycle") unless case_key.is_a?(TwistyPuzzles::PartCycle)
+    errors.add(:case_key, 'has to be a part cycle') unless case_key.is_a?(TwistyPuzzles::PartCycle)
     errors.add(:case_key, "has to be a #{part_type}") unless case_key.part_type == part_type
-    errors.add(:case_key, "has to have length #{cycle_length}") unless case_key.length == cycle_length
-    errors.add(:case_key, "cannot twist") unless case_key.twist == 0
+    unless case_key.length == cycle_length
+      errors.add(
+        :case_key,
+        "has to have length #{cycle_length}"
+      )
+    end
+    errors.add(:case_key, 'cannot twist') unless case_key.twist.zero?
   end
 
   # TODO: Support more than 3 cycles
@@ -121,7 +126,7 @@ class ModeType
   end
 
   # Returns a simple version for the current user that can be returned to the frontend.
-  def to_simple(user = nil)
+  def to_simple(_user = nil)
     {
       key: key,
       name: name,

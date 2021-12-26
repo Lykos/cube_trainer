@@ -24,9 +24,7 @@ shared_examples 'commutator_set' do |mode_type, buffer|
   let(:input_items) { mode.input_items }
 
   it 'has input items if the mode type has bounded inputs' do
-    if mode_type.has_bounded_inputs?
-      expect(mode.input_items).not_to be_empty
-    end
+    expect(mode.input_items).not_to be_empty if mode_type.has_bounded_inputs?
   end
 end
 
