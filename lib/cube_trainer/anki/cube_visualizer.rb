@@ -191,7 +191,7 @@ module CubeTrainer
 
       def fetch_and_store(cube_state, output)
         image = fetch(cube_state)
-        File.open(output, 'wb') { |f| f.write(image) }
+        File.binwrite(output, image)
       end
 
       def uri(cube_state)

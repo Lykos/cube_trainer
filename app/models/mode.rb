@@ -20,7 +20,6 @@ class Mode < ApplicationRecord
   attr_writer :test_comms_mode
 
   before_validation :set_stats
-  validates :user_id, presence: true
   validates :name, presence: true, uniqueness: { scope: :user }
   validates :mode_type, presence: true
   validates :show_input_mode, presence: true, inclusion: ModeType::SHOW_INPUT_MODES

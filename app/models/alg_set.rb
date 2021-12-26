@@ -9,7 +9,6 @@ class AlgSet < ApplicationRecord
   has_many :algs, dependent: :destroy
   attribute :mode_type, :mode_type
   attribute :buffer, :part
-  validates :alg_spreadsheet_id, presence: true
   validates :sheet_title, presence: true
   validates :mode_type, presence: true
   validates :buffer, presence: true, if: -> { mode_type&.has_buffer? }

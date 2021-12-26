@@ -6,7 +6,6 @@ require 'twisty_puzzles'
 class ColorScheme < ApplicationRecord
   belongs_to :user
 
-  validates :user_id, presence: true
   attribute :color_u, :symbol
   attribute :color_f, :symbol
   validates :color_u, :color_f, presence: true, inclusion: TwistyPuzzles::ColorScheme::WCA.colors
