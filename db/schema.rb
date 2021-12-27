@@ -26,8 +26,8 @@ ActiveRecord::Schema.define(version: 2021_12_27_100017) do
 
   create_table "alg_overrides", force: :cascade do |t|
     t.bigint "mode_id", null: false
-    t.string "case_key"
-    t.string "alg"
+    t.string "case_key", null: false
+    t.string "alg", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["mode_id"], name: "index_alg_overrides_on_mode_id"

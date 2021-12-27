@@ -1,6 +1,6 @@
 import { Case } from '../case.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { map, filter, take, shareReplay } from 'rxjs/operators';
+import { map, filter, take, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { Mode } from '../../modes/mode.model';
 import { PartialResult } from '../partial-result.model';
 import { TrainerService } from '../trainer.service';
@@ -58,8 +58,8 @@ export class TrainerComponent implements OnInit, OnDestroy {
     this.modeSubscription = this.mode$.subscribe(m => { this.mode = m; });
     this.stopwatchLoadingSubscription = combineLatest(
       this.stopwatchStore.loading$.pipe(filter(l => l)),
-      this.mode$,
-    ).subscribe(([_, mode]) => { this.prepareNextCase(mode.id); })
+      this.mode$.pipe(map(mode => mode.id), distinctUntilChanged()),
+    ).subscribe(([_, modeId]) => { this.prepareNextCase(modeId); })
     this.stopSubscription = this.stopwatchStore.stop$.subscribe(duration => {
       const partialResult: PartialResult = { numHints: this.numHints, duration, success: true };
       this.store.dispatch(create({ modeId: this.mode!.id, casee: this.casee!, partialResult }));

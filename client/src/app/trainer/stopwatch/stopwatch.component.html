@@ -16,9 +16,6 @@
           Stop
         </ng-container>
       </button>
-      <button mat-raised-button color="primary" *ngIf="hintsAvailable" (click)="onHint()">
-        Hint
-      </button>
     </ng-container>
     <ng-container *ngIf="!running">
       <button mat-raised-button *ngIf="!loading" color="primary" (click)="onStart()">
@@ -26,5 +23,8 @@
       </button>
       <mat-spinner *ngIf="loading"></mat-spinner>
     </ng-container>
+    <button mat-raised-button color="primary" *ngIf="hintsAvailable" (click)="onHint()">
+      Hint
+    </button>
   </div>
 </div>

@@ -134,8 +134,12 @@ class Mode < ApplicationRecord
     )
   end
 
+  def commutator_override(input)
+    alg_overrides.find { |alg| alg.case_key == input.case_key }&.commutator
+  end
+
   def commutator(input)
-    alg_set&.commutator(input.case_key)
+    commutator_override(input) || alg_set&.commutator(input.case_key)
   end
 
   def algorithm(input)
@@ -153,7 +157,7 @@ class Mode < ApplicationRecord
     Case.new(
       mode: self,
       case_key: item.case_key,
-      alg: algorithm(item),
+      alg: commutator(item),
       setup: setup(item)
     )
   end

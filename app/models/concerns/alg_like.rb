@@ -41,10 +41,17 @@ module AlgLike
     raise NotImplementedError
   end
 
+  def to_simple
+    {
+      case_key: InputRepresentationType.new.serialize(case_key),
+      alg: alg.to_s
+    }
+  end
+  
   private
 
   def validate_case
-    owning_set.mode_type.validate_case_key(case_key, errors)
+    owning_set.mode_type.validate_case_key(case_key, errors) if case_key
   end
 
   def validate_buffer
@@ -68,12 +75,12 @@ module AlgLike
       return
     end
 
-    checker = CommutatorChecker.new(
+    checker = CubeTrainer::CommutatorChecker.new(
       part_type: part_type,
       cube_size: owning_set.mode_type.default_cube_size
     )
     return if checker.check_alg(SyntheticCellDescription.new(case_key), comm).result == :correct
 
-    errors.add(:alg, 'is for the wrong case')
+    errors.add(:alg, 'does not solve this case')
   end
 end

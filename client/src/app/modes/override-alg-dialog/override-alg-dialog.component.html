@@ -1,0 +1,13 @@
+<div>
+  <h1 mat-dialog-title>What alg should be used for {{casee.name}}?</h1>
+  <div mat-dialog-content>
+    <mat-form-field appearance="fill">
+      <mat-label>Alg Override</mat-label>
+      <input matInput [(ngModel)]="algOverride.alg" type="text">
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" [mat-dialog-close]="algOverride">Override</button>
+    <button mat-raised-button color="primary" [mat-dialog-close]="undefined">Cancel</button>
+  </div>
+</div>

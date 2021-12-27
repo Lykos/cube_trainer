@@ -1,5 +1,8 @@
 import { createAction, props } from '@ngrx/store';
 import { Mode } from '../modes/mode.model';
+import { Case } from '../trainer/case.model';
+import { BackendActionError } from '../shared/backend-action-error.model';
+import { AlgOverride } from '../modes/alg-override.model';
 import { NewMode } from '../modes/new-mode.model';
 
 export const initialLoad = createAction(
@@ -32,12 +35,12 @@ export const createFailure = createAction(
 );
 
 export const deleteClick = createAction(
-  '[Modes] deleteClick',
+  '[Modes] delete click',
   props<{ mode: Mode }>()
 );
  
 export const dontDestroy = createAction(
-  '[Modes] dontDestroy',
+  '[Modes] dont destroy',
   props<{ mode: Mode }>()
 );
  
@@ -59,4 +62,29 @@ export const destroyFailure = createAction(
 export const setSelectedModeId = createAction(
   '[Modes] set selected mode id',
   props<{ selectedModeId: number }>()
+);
+
+export const overrideAlgClick = createAction(
+  '[Modes] override alg click',
+  props<{ mode: Mode, casee: Case }>()
+);
+
+export const dontOverrideAlg = createAction(
+  '[Modes] dont override alg',
+  props<{ mode: Mode }>()
+);
+
+export const overrideAlg = createAction(
+  '[Modes] override alg',
+  props<{ mode: Mode, algOverride: AlgOverride }>()
+);
+ 
+export const overrideAlgSuccess = createAction(
+  '[Modes] override alg success',
+  props<{ mode: Mode, algOverride: AlgOverride }>()
+);
+ 
+export const overrideAlgFailure = createAction(
+  '[Modes] override alg failure',
+  props<{ error: BackendActionError }>()
 );
