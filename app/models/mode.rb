@@ -10,6 +10,7 @@ class Mode < ApplicationRecord
   include PartHelper
 
   has_many :results, dependent: :destroy
+  has_many :alg_overrides, dependent: :destroy
   belongs_to :user
   belongs_to :alg_set, optional: true
 

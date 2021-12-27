@@ -1,16 +1,17 @@
 <div>
-  <ng-container *ngIf="showImage && hints">
+  <ng-container *ngIf="showImage && setup">
     <twisty-player
       [alg]="setup"
       [puzzle]="puzzle"
       background="none"
-      control-panel="none"
-    ></twisty-player>
+      control-panel="none">
+    </twisty-player>
   </ng-container>
   <span class="trainer-input mat-elevation-z4" *ngIf="showName && casee">{{casee.name}}</span>
-  <div class="hints" *ngIf="numHints && numHints > 0">
-    <div class="hint" *ngFor="let hint of hints">
-      {{hint}}
-    </div>
+  <div *ngIf="numHints && numHints > 0 && alg">
+    <span class="alg">{{alg}}</span>
+    <button mat-raised-button color="primary" (click)="onOverride()">
+      Override
+    </button>
   </div>
 </div>
