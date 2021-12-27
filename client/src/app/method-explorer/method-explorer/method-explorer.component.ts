@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./method-explorer.component.css']
 })
 export class MethodExplorerComponent {
-  expectedAlgsData$: Observable<AlgCountsData> = undefined;
+  expectedAlgsData$: Observable<AlgCountsData> | undefined = undefined;
   
   constructor(private readonly methodExplorerService: MethodExplorerService) {}
 

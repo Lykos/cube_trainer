@@ -67,9 +67,12 @@ class ModesController < ApplicationController
     fixed_params = params
                    .require(:mode)
                    .permit(:name, :known, :show_input_mode, :goal_badness, :cube_size,
-                           :memo_time_s, stat_types: [], buffer: [:key], mode_type: [:key])
+                           :memo_time_s, stat_types: [], buffer: [:key], mode_type: [:key],
+                                         alg_set: [:id])
     fixed_params[:mode_type] = fixed_params[:mode_type][:key] if fixed_params[:mode_type]
     fixed_params[:buffer] = fixed_params[:buffer][:key] if fixed_params[:buffer]
+    fixed_params[:alg_set_id] = fixed_params[:alg_set][:id] if fixed_params[:alg_set]
+    fixed_params.delete(:alg_set)
     fixed_params
   end
 end

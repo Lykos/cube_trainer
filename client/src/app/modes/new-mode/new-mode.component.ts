@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { UniqueModeNameValidator } from '../unique-mode-name.validator';
+import { Component } from '@angular/core';
+import { FormGroup, AbstractControl } from '@angular/forms';
 import { ModeType } from '../mode-type.model';
 import { ModesService } from '../modes.service';
+import { ModeFormsService } from '../mode-forms.service';
 import { NewMode } from '../new-mode.model';
+import { AlgSet } from '../alg-set.model';
 import { StatType } from '../stat-type.model';
-import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";
 import { Observable } from 'rxjs';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { create } from '../../state/modes.actions';
@@ -16,21 +16,25 @@ import { Store } from '@ngrx/store';
   templateUrl: './new-mode.component.html',
   styleUrls: ['./new-mode.component.css']
 })
-export class NewModeComponent implements OnInit {
-  modeTypeGroup!: FormGroup;
-  setupGroup!: FormGroup;
-  trainingGroup!: FormGroup;
+export class NewModeComponent {
+  modeTypeGroup: FormGroup;
+  algSetGroup: FormGroup;
+  setupGroup: FormGroup;
+  trainingGroup: FormGroup;
   modeTypes$: Observable<ModeType[]>;
   pickedStatTypes: StatType[] = [];
 
   lastModeTypeForStatsTypes: ModeType | undefined
   statTypesForLastModeType: StatType[] = [];
   
-  constructor(private readonly formBuilder: FormBuilder,
+  constructor(private readonly modeFormsService: ModeFormsService,
 	      private readonly modesService: ModesService,
-              private readonly store: Store,
-	      private readonly uniqueModeNameValidator: UniqueModeNameValidator) {
+              private readonly store: Store) {
     this.modeTypes$ = this.modesService.listTypes();
+    this.modeTypeGroup = this.modeFormsService.modeTypeGroup();
+    this.algSetGroup = this.modeFormsService.algSetGroup(() => this.modeType);
+    this.setupGroup = this.modeFormsService.setupGroup(() => this.modeType);
+    this.trainingGroup = this.modeFormsService.trainingGroup(() => this.modeType);
   }
 
   relevantInvalid(control: AbstractControl) {
@@ -42,15 +46,15 @@ export class NewModeComponent implements OnInit {
   }
 
   get statTypesForCurrentModeType() {
-    if (this.lastModeTypeForStatsTypes !== this.modeType.value) {
-      this.statTypesForLastModeType = Object.assign([], this.modeType.value!.statsTypes);
-      this.lastModeTypeForStatsTypes = this.modeType.value;
+    if (this.lastModeTypeForStatsTypes !== this.modeType) {
+      this.statTypesForLastModeType = Object.assign([], this.modeType!.statsTypes);
+      this.lastModeTypeForStatsTypes = this.modeType;
     }
     return this.statTypesForLastModeType;
   }
 
   get hasMultipleShowInputModes() {
-    return this.modeType.value && this.modeType.value.showInputModes.length > 1;
+    return this.modeType && this.modeType.showInputModes.length > 1;
   }
 
   get cubeSize() {
@@ -73,58 +77,47 @@ export class NewModeComponent implements OnInit {
     return this.trainingGroup.get('showInputMode')!;
   }
 
-  get hasMultipleCubeSizes() {
-    return this.modeType.value?.cubeSizeSpec && this.minCubeSize < this.maxCubeSize;
-  }
-
-  get hasBuffer() {
-    return !!this.modeType.value?.buffers?.length;
-  }
-
-  get hasGoalBadness() {
-    return this.modeType.value?.hasGoalBadness;
-  }
-
-  get hasMemoTime() {
-    return this.modeType.value?.hasMemoTime;
-  }
-
-  get hasBoundedInputs() {
-    return this.modeType.value?.hasBoundedInputs;
-  }
-
   get defaultCubeSize() {
-    return this.modeType.value?.cubeSizeSpec?.default;
+    return this.modeType?.cubeSizeSpec?.default;
   }
 
   get minCubeSize() {
-    return this.modeType.value?.cubeSizeSpec?.min;
+    return this.modeType?.cubeSizeSpec?.min;
   }
 
   get maxCubeSize() {
-    return this.modeType.value?.cubeSizeSpec?.max;
+    return this.modeType?.cubeSizeSpec?.max;
   }
 
-  get oddAllowed() {
-    return this.modeType.value?.cubeSizeSpec?.oddAllowed;
-  }
-
-  get evenAllowed() {
-    return this.modeType.value?.cubeSizeSpec?.evenAllowed;
-  }
-
-  get modeType() {
+  get modeTypeControl(): AbstractControl {
     return this.modeTypeGroup.get('modeType')!;
   }
 
+  get modeType(): ModeType | undefined {
+    return this.modeTypeControl.value;
+  }
+
+  get algSetControl(): AbstractControl {
+    return this.algSetGroup.get('algSet')!;
+  }
+
+  get algSet(): AlgSet | undefined {
+    return this.algSetControl.value;
+  }
+
   get selectedShowInputMode() {
-    if (this.modeType.value && this.modeType.value.showInputModes.length == 1) {
-      return this.modeType.value.showInputModes[0];
+    if (this.modeType && this.modeType.showInputModes.length == 1) {
+      return this.modeType.showInputModes[0];
     } else if (this.hasMultipleShowInputModes) {
       return this.showInputMode.value;
     } else {
       return undefined;
     }
+  }
+
+  get hasMultipleCubeSizes(): boolean {
+    const cubeSizeSpec = this.modeType?.cubeSizeSpec;
+    return !!cubeSizeSpec && cubeSizeSpec.min < cubeSizeSpec.max;
   }
 
   get selectedCubeSize(): number | undefined {
@@ -135,9 +128,21 @@ export class NewModeComponent implements OnInit {
     }
   }
 
+  get bufferAlgSets(): AlgSet[] {
+    const modeType = this.modeType;
+    if (!modeType || !modeType?.buffers?.length) {
+      return [];
+    }
+    const buffer = this.buffer.value;
+    if (!buffer) {
+      return [];
+    }
+    return modeType.algSets.filter(a => a.buffer.key === buffer.key);
+  }
+
   get newMode(): NewMode {
     return {
-      modeType: this.modeType.value!,
+      modeType: this.modeType!,
       name: this.name.value,
       known: !!this.trainingGroup.get('known')?.value,
       showInputMode: this.selectedShowInputMode,
@@ -146,66 +151,8 @@ export class NewModeComponent implements OnInit {
       memoTimeS: this.memoTimeS.value,
       cubeSize: this.selectedCubeSize,
       statTypes: this.pickedStatTypes.map(s => s.key),
+      algSet: this.algSet,
     };
-  }
-
-  minCubeSizeValidator(value: number) {
-    return RxwebValidators.minNumber({ conditionalExpression: () => this.minCubeSize === value, value });
-  }
-
-  maxCubeSizeValidator(value: number) {
-    return RxwebValidators.maxNumber({ conditionalExpression: () => this.maxCubeSize === value, value });
-  }
-
-  cubeSizeValidators() {
-    const validators = [
-      RxwebValidators.minNumber({ value: 2 }),
-      RxwebValidators.maxNumber({ value: 7 }),
-      this.minCubeSizeValidator(7),
-      this.maxCubeSizeValidator(2),
-    ];
-    for (var i = 3; i <= 6; ++i) {
-      validators.push(this.minCubeSizeValidator(i));
-      validators.push(this.maxCubeSizeValidator(i));
-    }
-    return validators;
-  }
-
-  ngOnInit() {
-    this.modeTypeGroup = this.formBuilder.group({
-      name: ['', { validators: Validators.required, asyncValidators: this.uniqueModeNameValidator.validate, updateOn: 'blur' }],
-      modeType: ['', Validators.required],
-    });
-    this.setupGroup = this.formBuilder.group({
-      cubeSize: ['', RxwebValidators.compose({
-	conditionalExpression: () => this.hasMultipleCubeSizes,
-	validators: [
-	  RxwebValidators.required(),
-	  RxwebValidators.digit(),
-	  RxwebValidators.odd({ conditionalExpression: () => !this.evenAllowed }),
-	  RxwebValidators.even({ conditionalExpression: () => !this.oddAllowed }),
-	].concat(this.cubeSizeValidators()),
-      })],
-      buffer: ['', RxwebValidators.required({ conditionalExpression: () => this.hasBuffer })],
-    });
-    this.trainingGroup = this.formBuilder.group({
-      showInputMode: ['', RxwebValidators.required({ conditionalExpression: () => this.hasMultipleShowInputModes })],
-      goalBadness: ['', RxwebValidators.compose({
-	conditionalExpression: () => this.hasGoalBadness,
-	validators: [
-	  RxwebValidators.required(),
-	  RxwebValidators.numeric({ acceptValue: NumericValueType.PositiveNumber, allowDecimal: true })
-	],
-      })],
-      memoTimeS: ['', RxwebValidators.compose({
-	conditionalExpression: () => this.hasMemoTime,
-	validators: [
-	  RxwebValidators.required(),
-	  RxwebValidators.numeric({ acceptValue: NumericValueType.PositiveNumber, allowDecimal: true })
-	],
-      })],
-      known: ['']
-    });
   }
 
   onSubmit() {

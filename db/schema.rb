@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_15_232250) do
+ActiveRecord::Schema.define(version: 2021_12_27_100017) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,40 @@ ActiveRecord::Schema.define(version: 2021_12_15_232250) do
     t.string "achievement", null: false
     t.index ["user_id", "achievement"], name: "index_achievement_grants_on_user_id_and_achievement", unique: true
     t.index ["user_id"], name: "index_achievement_grants_on_user_id"
+  end
+
+  create_table "alg_overrides", force: :cascade do |t|
+    t.bigint "mode_id", null: false
+    t.string "case_key"
+    t.string "alg"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["mode_id"], name: "index_alg_overrides_on_mode_id"
+  end
+
+  create_table "alg_sets", force: :cascade do |t|
+    t.bigint "alg_spreadsheet_id", null: false
+    t.string "sheet_title", null: false
+    t.string "mode_type", null: false
+    t.string "buffer"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["alg_spreadsheet_id"], name: "index_alg_sets_on_alg_spreadsheet_id"
+  end
+
+  create_table "alg_spreadsheets", force: :cascade do |t|
+    t.string "owner", null: false
+    t.string "spreadsheet_id", null: false
+  end
+
+  create_table "algs", force: :cascade do |t|
+    t.bigint "alg_set_id", null: false
+    t.string "case_key", null: false
+    t.text "alg", null: false
+    t.boolean "is_fixed", default: false, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["alg_set_id"], name: "index_algs_on_alg_set_id"
   end
 
   create_table "color_schemes", force: :cascade do |t|
@@ -81,6 +115,7 @@ ActiveRecord::Schema.define(version: 2021_12_15_232250) do
     t.string "second_parity_part"
     t.float "memo_time_s"
     t.string "buffer"
+    t.integer "alg_set_id"
     t.index ["user_id", "name"], name: "index_modes_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_modes_on_user_id"
   end
@@ -143,12 +178,16 @@ ActiveRecord::Schema.define(version: 2021_12_15_232250) do
   end
 
   add_foreign_key "achievement_grants", "users"
+  add_foreign_key "alg_overrides", "modes"
+  add_foreign_key "alg_sets", "alg_spreadsheets"
+  add_foreign_key "algs", "alg_sets"
   add_foreign_key "color_schemes", "users"
   add_foreign_key "letter_scheme_mappings", "letter_schemes"
   add_foreign_key "letter_schemes", "users"
   add_foreign_key "messages", "users"
   add_foreign_key "mode_usages", "modes"
   add_foreign_key "mode_usages", "modes", column: "used_mode_id"
+  add_foreign_key "modes", "alg_sets"
   add_foreign_key "modes", "users"
   add_foreign_key "results", "modes"
   add_foreign_key "stats", "modes"

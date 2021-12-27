@@ -12,25 +12,25 @@
           You already have a mode with the same <strong>name</strong>.
         </mat-error>
       </mat-form-field>
-      <mat-form-field>
-        <mat-label>Mode Type</mat-label>
-        <ng-container *ngIf="modeTypes$ | orerror | async as modeTypesOrError; else loading">
-          <ng-container *ngIf="modeTypesOrError | value as modeTypes; else error">
+      <ng-container *ngIf="modeTypes$ | orerror | async as modeTypesOrError; else loading">
+        <ng-container *ngIf="modeTypesOrError | value as modeTypes; else error">
+          <mat-form-field>
+            <mat-label>Mode Type</mat-label>
             <mat-select formControlName="modeType">
               <mat-option *ngFor="let modeType of modeTypes" [value]="modeType"> {{modeType.name}} </mat-option>
             </mat-select>
-          </ng-container>
-          <ng-template #error>
-            Error loading mode types.
-          </ng-template>
+            <mat-error *ngIf="relevantInvalid(modeTypeControl) && modeTypeControl.errors && modeTypeControl.errors['required']">
+              You must provide a <strong>mode type</strong>.
+            </mat-error>
+          </mat-form-field>
         </ng-container>
-        <ng-template #loading>
-          <mat-spinner></mat-spinner>
+        <ng-template #error>
+          Error loading mode types.
         </ng-template>
-        <mat-error *ngIf="relevantInvalid(modeType) && modeType.errors && modeType.errors['required']">
-          You must provide a <strong>mode type</strong>.
-        </mat-error>
-      </mat-form-field>
+      </ng-container>
+      <ng-template #loading>
+        <mat-spinner></mat-spinner>
+      </ng-template>
       <div>
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
@@ -58,10 +58,10 @@
           The <strong>cube size</strong> has to be even for this cube size.
         </mat-error>
       </mat-form-field>
-      <mat-form-field *ngIf="hasBuffer">
+      <mat-form-field *ngIf="modeType?.buffers as buffers">
         <mat-label>Buffer</mat-label>
         <mat-select formControlName="buffer">
-          <mat-option *ngFor="let buffer of modeType.value.buffers" [value]="buffer"> {{buffer.name}} </mat-option>
+          <mat-option *ngFor="let buffer of buffers" [value]="buffer"> {{buffer.name}} </mat-option>
         </mat-select>
         <mat-error *ngIf="relevantInvalid(buffer) && buffer.errors && buffer.errors['required']">
           You must provide a <strong>buffer</strong> for this mode type.
@@ -73,19 +73,34 @@
       </div>
     </form>
   </mat-step>
+  <mat-step [stepControl]="algSetGroup">
+    <ng-template matStepLabel>Choose an alg set</ng-template>
+    <form [formGroup]="algSetGroup">
+      <mat-form-field *ngIf="bufferAlgSets as algSets">
+        <mat-label>Alg Set</mat-label>
+        <mat-select formControlName="algSet">
+          <mat-option *ngFor="let algSet of algSets" [value]="algSet"> {{algSet.owner}} </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-raised-button color="primary" matStepperPrevious>Back</button>
+        <button mat-raised-button color="primary" matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
   <mat-step [stepControl]="trainingGroup">
     <ng-template matStepLabel>Set training information</ng-template>
     <form [formGroup]="trainingGroup">
-      <mat-form-field *ngIf="hasMultipleShowInputModes">
+      <mat-form-field *ngIf="hasMultipleShowInputModes && modeType?.showInputModes as showInputModes">
         <mat-label>show input mode</mat-label>
         <mat-select formControlName="showInputMode">
-          <mat-option *ngFor="let showInputMode of modeType.value.showInputModes" [value]="showInputMode"> {{showInputMode}} </mat-option>
+          <mat-option *ngFor="let showInputMode of showInputModes" [value]="showInputMode"> {{showInputMode}} </mat-option>
         </mat-select>
         <mat-error *ngIf="relevantInvalid(showInputMode) && showInputMode.errors && showInputMode.errors['required']">
           You must select a <strong>show input mode</strong> for this mode type.
         </mat-error>
       </mat-form-field>
-      <mat-form-field *ngIf="hasGoalBadness">
+      <mat-form-field *ngIf="modeType?.hasGoalBadness">
         <mat-label>Goal Time per Element</mat-label>
         <input matInput formControlName="goalBadness" type="number">
         <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors && goalBadness.errors['required']">
@@ -95,7 +110,7 @@
           The <strong>goal badness</strong> has to be a positive number.
         </mat-error>
       </mat-form-field>
-      <mat-form-field *ngIf="hasMemoTime">
+      <mat-form-field *ngIf="modeType?.hasMemoTime">
         <mat-label>Memo Time in Seconds</mat-label>
         <input matInput formControlName="memoTimeS" type="number">
         <mat-error *ngIf="relevantInvalid(memoTimeS) && memoTimeS.errors && memoTimeS.errors['required']">
@@ -105,7 +120,7 @@
           The <strong>memo time</strong> has to be a positive number.
         </mat-error>
       </mat-form-field>
-      <mat-checkbox formControlName="known" *ngIf=hasBoundedInputs>Known</mat-checkbox>
+      <mat-checkbox formControlName="known" *ngIf="modeType?.hasBoundedInputs">Known</mat-checkbox>
       <div>
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
         <button mat-raised-button color="primary" matStepperNext>Next</button>

@@ -23,7 +23,7 @@ export class CableService {
 
   private switchToActiveUser<X>(f: (user: User) => Observable<X>) {
     return this.store.select(selectUser).pipe(
-      distinctUntilChanged(undefined, user => orElse(mapOptional(user, user => user.id), undefined)),
+      distinctUntilChanged(undefined as any, user => orElse(mapOptional(user, user => user.id), undefined)),
       switchMap(user => orElse(mapOptional(user, f), of())),
       shareReplay(),
     );

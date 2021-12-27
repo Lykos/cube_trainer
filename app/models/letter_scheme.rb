@@ -6,7 +6,6 @@ require 'twisty_puzzles'
 class LetterScheme < ApplicationRecord
   belongs_to :user
   has_many :letter_scheme_mappings, dependent: :destroy, autosave: true
-  validates :user_id, presence: true
   accepts_nested_attributes_for :letter_scheme_mappings
 
   alias mappings letter_scheme_mappings

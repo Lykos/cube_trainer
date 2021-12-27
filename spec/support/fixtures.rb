@@ -172,3 +172,12 @@ shared_context 'with eve auth headers' do
     eve.create_new_auth_token.merge!(headers)
   end
 end
+
+shared_context 'with alg spreadsheet' do
+  let(:alg_spreadsheet) do
+    AlgSpreadsheet.create!(
+      owner: 'Testy Testikow',
+      spreadsheet_id: '1l3IcCG0vVJbZtj30ZXQTn1UBWTya6i84tUZZg5PN3OY'
+    )
+  end
+end

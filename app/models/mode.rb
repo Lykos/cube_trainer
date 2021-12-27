@@ -10,7 +10,9 @@ class Mode < ApplicationRecord
   include PartHelper
 
   has_many :results, dependent: :destroy
+  has_many :alg_overrides, dependent: :destroy
   belongs_to :user
+  belongs_to :alg_set, optional: true
 
   attribute :mode_type, :mode_type
   attribute :show_input_mode, :symbol
@@ -19,7 +21,6 @@ class Mode < ApplicationRecord
   attr_writer :test_comms_mode
 
   before_validation :set_stats
-  validates :user_id, presence: true
   validates :name, presence: true, uniqueness: { scope: :user }
   validates :mode_type, presence: true
   validates :show_input_mode, presence: true, inclusion: ModeType::SHOW_INPUT_MODES
@@ -28,10 +29,6 @@ class Mode < ApplicationRecord
   validates :cube_size, presence: true, if: -> { mode_type&.cube_size? }
   validate :cube_size_valid, if: -> { mode_type&.cube_size? }
   validate :buffer_valid, if: -> { mode_type&.has_buffer? }
-  validates :first_parity_part, :second_parity_part,
-            presence: true,
-            if: -> { mode_type&.has_parity_parts? }
-  validate :parity_parts_valid, if: -> { mode_type&.has_parity_parts? }
   validates :memo_time_s, presence: true, if: -> { mode_type&.has_memo_time? }
   validate :memo_time_s_valid, if: -> { mode_type&.has_memo_time? }
   has_many :stats, dependent: :destroy
@@ -94,20 +91,10 @@ class Mode < ApplicationRecord
 
   delegate :parity_part_type, to: :mode_type
 
-  delegate :hinter, to: :generator
-
-  def hints(input)
-    hinter.hints(input.case_key)
-  end
-
   def cases
     return unless has_bounded_inputs?
 
     @cases ||= generator.input_items.map { |item| to_case(item) }
-  end
-
-  def parity_parts
-    [first_parity_part, second_parity_part]
   end
 
   def color_scheme
@@ -148,14 +135,11 @@ class Mode < ApplicationRecord
   end
 
   def commutator(input)
-    hints = hints(input)
-    hints.find { |i| i.is_a?(TwistyPuzzles::Commutator) } ||
-      hints.find { |i| i.is_a?(CubeTrainer::Training::CaseSolution) }&.best_alg
+    alg_set&.commutator(input.case_key)
   end
 
   def algorithm(input)
-    hints(input).find { |i| i.is_a?(TwistyPuzzles::Algorithm) } ||
-      commutator(input)&.algorithm
+    commutator(input)&.algorithm
   end
 
   def setup(input)
@@ -168,8 +152,8 @@ class Mode < ApplicationRecord
   def to_case(item)
     Case.new(
       mode: self,
-      hints: hints(item),
       case_key: item.case_key,
+      alg: algorithm(item),
       setup: setup(item)
     )
   end
@@ -186,44 +170,16 @@ class Mode < ApplicationRecord
   end
 
   def buffer_valid
-    errors.add(:buffer, "has to be a #{part_type}") unless buffer.is_a?(part_type)
+    mode_type.validate_buffer(buffer, errors)
   end
 
   def cube_size_valid
-    mode_type.validate_cube_size(cube_size, errors, :cube_size)
+    mode_type.validate_cube_size(cube_size, errors)
   end
 
   def memo_time_s_valid
     errors.add(:memo_time_s, 'has to be positive') unless memo_time_s.positive?
     errors.add(:memo_time_s, 'has to be below one day') unless memo_time_s < 1.day
-  end
-
-  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-  def parity_parts_valid
-    return unless first_parity_part && second_parity_part
-
-    unless first_parity_part < second_parity_part
-      errors.add(:second_parity_part, 'has to be alphabetically after first_parity_part')
-    end
-    unless parity_part_valid?(first_parity_part)
-      errors.add(:first_parity_part, "has to be a valid #{parity_part_type}")
-    end
-    unless parity_part_valid?(second_parity_part)
-      errors.add(:second_parity_part, "has to be a valid #{parity_part_type}")
-    end
-    return unless parity_parts.all? { |p| parity_part_valid?(p) }
-
-    first_part = parity_part_type.parse(first_parity_part)
-    second_part = parity_part_type.parse(second_parity_part)
-    return unless first_part.turned_equals?(second_part)
-
-    errors.add(:second_parity_part, 'has to be a different piece from first_parity_part')
-  end
-  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-
-  def parity_part_valid?(parity_part)
-    parity_part_type.parse(parity_part)
-  rescue ArgumentError # rubocop:disable Lint/SuppressedException
   end
 
   def set_stats

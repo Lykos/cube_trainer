@@ -16,7 +16,6 @@ class Result < ApplicationRecord
   validates :success, inclusion: [true, false]
   validates :num_hints, numericality: POSITIVE_INTEGER
   validates :case_key, presence: true
-  validates :mode_id, presence: true
 
   def to_simple
     {

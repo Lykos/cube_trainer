@@ -8,7 +8,7 @@ begin
   end
 
   desc 'Run all types of tests and lints'
-  task presubmit: ['rubocop', 'spec', 'npm:lint', 'npm:test']
+  task presubmit: ['rubocop', 'npm:build', 'spec', 'npm:lint', 'npm:test']
 rescue LoadError
   warn 'Coudn\'t load Rubocop.'
 end

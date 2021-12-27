@@ -29,8 +29,8 @@ export class TrainerInputComponent {
     return cubeSize ? `${cubeSize}x${cubeSize}x${cubeSize}` : undefined;
   }
 
-  get hints() {
-    return this.casee?.hints ? this.casee.hints : [];
+  get alg() {
+    return this.casee?.alg;
   }
 
   get showImage() {
@@ -40,4 +40,6 @@ export class TrainerInputComponent {
   get showName() {
     return this.mode && this.mode.showInputMode == ShowInputMode.Name;
   }
+
+  onOverride() {}
 }

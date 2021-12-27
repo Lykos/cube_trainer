@@ -121,10 +121,10 @@ module CubeTrainer
       end
 
       def parse_row(row)
-        @columns.map do |key, column|
+        @columns.to_h do |key, column|
           value = column.extract(row[key], row)
           [key, value]
-        end.to_h
+        end
       end
     end
 
