@@ -47,7 +47,7 @@ module AlgLike
       alg: alg.to_s
     }
   end
-  
+
   private
 
   def validate_case

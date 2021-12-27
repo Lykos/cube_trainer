@@ -9,16 +9,18 @@ class AlgOverridesController < ApplicationController
   # GET /api/modes/1/alg_overrides.json
   def index
     alg_overrides = @mode.alg_overrides
-                      .order(created_at: :desc)
-                      .limit(params[:limit])
-                      .offset(params[:offset])
-                      .map(&:to_simple)
+                         .order(created_at: :desc)
+                         .limit(params[:limit])
+                         .offset(params[:offset])
+                         .map(&:to_simple)
     render json: alg_overrides, status: :ok
   end
 
   # POST /api/modes/1/alg_overrides/create_or_update.json
   def create_or_update
-    @alg_override = @mode.alg_overrides.find_by(case_key: InputRepresentationType.new.cast(params[:case_key]))
+    @alg_override = @mode.alg_overrides.find_by(
+      case_key: InputRepresentationType.new.cast(params[:case_key])
+    )
     if @alg_override
       update
     else
