@@ -46,11 +46,14 @@ export class ResultsService {
   }
 
   markDnf(modeId: number, resultId: number): Observable<Result> {
-    return this.rails.ajax<Result>(HttpVerb.Patch, `/modes/${modeId}/results/${resultId}`, { result: { success: false } });
+    return this.rails.ajax<Result>(HttpVerb.Patch, `/modes/${modeId}/results/${resultId}`,
+                                   { result: { success: false } }).pipe(
+                                     map(r => { const s = parseResult(r); console.log(s); return s }));
  }
 
   create(modeId: number, casee: Case, partialResult: PartialResult): Observable<Result> {
     return this.rails.ajax<Result>(HttpVerb.Post, `/modes/${modeId}/results`,
-				   {result: createResult(casee, partialResult)});
+				   {result: createResult(casee, partialResult)}).pipe(
+                                     map(parseResult));
   }
 }

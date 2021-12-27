@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/sheet_scraping/commutator_checker'
 require 'twisty_puzzles'
 

@@ -12,6 +12,7 @@ describe 'logout', type: :system do
   it 'allows to log out' do
     login(user)
 
+    visit '/modes'
     click_button 'Logout'
     expect(page).to have_text('Logged Out')
   end

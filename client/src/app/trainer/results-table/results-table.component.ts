@@ -16,7 +16,7 @@ import { Store } from '@ngrx/store';
 })
 export class ResultsTableComponent implements OnInit {
   @Input()
-  modeId: number;
+  modeId?: number;
 
   columnsToDisplay = ['select', 'case', 'time', 'numHints', 'timestamp'];
   results$: Observable<readonly Result[]>;
@@ -40,17 +40,25 @@ export class ResultsTableComponent implements OnInit {
     );
   }
 
+  get checkedModeId(): number {
+    const modeId = this.modeId;
+    if (!modeId) {
+      throw new Error('modeId has to be defined');
+    }
+    return modeId
+  }
+
   ngOnInit() {
-    this.store.dispatch(setSelectedModeId({ selectedModeId: this.modeId}));
-    this.store.dispatch(initialLoad({ modeId: this.modeId }));
+    this.store.dispatch(setSelectedModeId({ selectedModeId: this.checkedModeId }));
+    this.store.dispatch(initialLoad({ modeId: this.checkedModeId }));
   }
 
   onDeleteSelected() {
-    this.store.dispatch(destroy({ modeId: this.modeId, results: this.selection.selected }));
+    this.store.dispatch(destroy({ modeId: this.checkedModeId, results: this.selection.selected }));
   }
 
   onMarkSelectedDnf() {
-    this.store.dispatch(markDnf({ modeId: this.modeId, results: this.selection.selected }));
+    this.store.dispatch(markDnf({ modeId: this.checkedModeId, results: this.selection.selected }));
   }
 
   onPage(pageEvent: PageEvent) {

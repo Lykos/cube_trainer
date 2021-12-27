@@ -62,7 +62,7 @@ export class TrainerComponent implements OnInit, OnDestroy {
     ).subscribe(([_, mode]) => { this.prepareNextCase(mode.id); })
     this.stopSubscription = this.stopwatchStore.stop$.subscribe(duration => {
       const partialResult: PartialResult = { numHints: this.numHints, duration, success: true };
-      this.store.dispatch(create({ modeId: this.mode.id, casee: this.casee, partialResult }));
+      this.store.dispatch(create({ modeId: this.mode!.id, casee: this.casee!, partialResult }));
     });
   }
 
@@ -86,11 +86,11 @@ export class TrainerComponent implements OnInit, OnDestroy {
   }
 
   get maxHints() {
-    return this.casee?.hints.length;
+    return this.casee?.alg ? 1 : 0;
   }
 
   get hasStopAndStart(): boolean {
-    return !this.casee?.setup;
+    return true;
   }
 
   onNumHints(numHints: number) {

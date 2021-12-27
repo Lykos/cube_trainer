@@ -51,7 +51,7 @@ export const resultsReducer = createReducer(
     return { ...modeResultsState, createLoading: true, createError: none };
   })),
   on(createSuccess, (resultsState, { modeId, result }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, results: modeResultsState.serverResults.concat([result]), createLoading: false, createError: none };
+    return { ...modeResultsState, serverResults: [result, ...modeResultsState.serverResults], createLoading: false, createError: none };
   })),
   on(createFailure, (resultsState, { modeId, error }) => changeForMode(resultsState, modeId, modeResultsState => {
     return { ...modeResultsState, createLoading: false, createError: some(error) };
@@ -60,7 +60,7 @@ export const resultsReducer = createReducer(
     return { ...modeResultsState, destroyLoading: true, destroyError: none };
   })),
   on(destroySuccess, (resultsState, { modeId, results }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, results: modeResultsState.serverResults.filter(m => !results.some(r => m.id !== r.id)), destroyLoading: false, destroyError: none };
+    return { ...modeResultsState, serverResults: modeResultsState.serverResults.filter(m => !results.some(r => m.id === r.id)), destroyLoading: false, destroyError: none };
   })),
   on(destroyFailure, (resultsState, { modeId, error }) => changeForMode(resultsState, modeId, modeResultsState => {
     return { ...modeResultsState, destroyLoading: false, destroyError: some(error) };
@@ -72,7 +72,7 @@ export const resultsReducer = createReducer(
     const resultsWithDnfs = modeResultsState.serverResults.map(result => {
       return orElse(find(results, r => r.id === result.id), result);
     });
-    return { ...modeResultsState, results: resultsWithDnfs, markDnfLoading: false, markDnfError: none };
+    return { ...modeResultsState, serverResults: resultsWithDnfs, markDnfLoading: false, markDnfError: none };
   })),
   on(markDnfFailure, (resultsState, { modeId, error }) => changeForMode(resultsState, modeId, modeResultsState => {
     return { ...modeResultsState, markDnfLoading: false, markDnfError: some(error) };

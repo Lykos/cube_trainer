@@ -67,7 +67,7 @@ export class ResultsEffects {
       exhaustMap(action => {
         const observables = action.results.map(result => this.resultsService.markDnf(action.modeId, result.id));
         return forkJoin(observables).pipe(
-          mapTo(markDnfSuccess({ modeId: action.modeId, results: action.results })),
+          map(results => markDnfSuccess({ modeId: action.modeId, results })),
           catchError(error => of(markDnfFailure({ modeId: action.modeId, error }))),
         )
       })

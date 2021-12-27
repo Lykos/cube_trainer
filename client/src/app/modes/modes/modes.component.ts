@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Mode } from '../mode.model';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { initialLoad, deleteClick } from '../../state/modes.actions';
 import { selectModes, selectInitialLoadOrDestroyLoading, selectInitialLoadError } from '../../state/modes.selectors';
@@ -17,7 +18,7 @@ export class ModesComponent {
   columnsToDisplay = ['name', 'numResults', 'use', 'delete'];
 
   constructor(private readonly store: Store) {
-    this.modes$ = this.store.select(selectModes);
+    this.modes$ = this.store.select(selectModes).pipe(tap(console.log));
     this.loading$ = this.store.select(selectInitialLoadOrDestroyLoading);
     this.error$ = this.store.select(selectInitialLoadError);
   }

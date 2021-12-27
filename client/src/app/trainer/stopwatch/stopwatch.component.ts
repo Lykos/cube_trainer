@@ -10,16 +10,16 @@ import { Observable } from 'rxjs';
 })
 export class StopwatchComponent implements OnDestroy, OnInit {
   @Input()
-  stopwatchStore: StopwatchStore;
+  stopwatchStore?: StopwatchStore;
 
   @Input()
-  memoTime: Duration;
+  memoTime?: Duration;
 
   @Input()
-  maxHints: number;
+  maxHints?: number;
 
   @Input()
-  hasStopAndStart: boolean;
+  hasStopAndStart?: boolean;
 
   @Output()
   private numHints: EventEmitter<number> = new EventEmitter();
@@ -28,23 +28,27 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   private numHints_ = 0;
   running = false;
   loading = true;
-  notStarted = true;
 
   private runningSubscription: any = undefined;
   private loadingSubscription: any = undefined;
-  private notStartedSubscription: any = undefined;
+
+  get checkedStopwatchStore(): StopwatchStore {
+    const stopwatchStore = this.stopwatchStore;
+    if (!stopwatchStore) {
+      throw new Error('stopwatchStore has to be defined');
+    }
+    return stopwatchStore;
+  }
 
   ngOnInit() {
-    this.duration$ = this.stopwatchStore.duration$;
-    this.runningSubscription = this.stopwatchStore?.running$.subscribe(r => { this.running = r; });
-    this.loadingSubscription = this.stopwatchStore?.loading$.subscribe(r => { this.loading = r; });
-    this.notStartedSubscription = this.stopwatchStore?.notStarted$.subscribe(r => { this.notStarted = r; });
+    this.duration$ = this.checkedStopwatchStore.duration$;
+    this.runningSubscription = this.checkedStopwatchStore.running$.subscribe(r => { this.running = r; });
+    this.loadingSubscription = this.checkedStopwatchStore.loading$.subscribe(r => { this.loading = r; });
   }
 
   ngOnDestroy() {
     this.runningSubscription?.unsubscribe();
     this.loadingSubscription?.unsubscribe();
-    this.notStartedSubscription?.unsubscribe();
   }
 
   isPostMemoTime(duration: Duration) {
@@ -56,16 +60,17 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   }
 
   onStart() {
-    this.stopwatchStore.start();
+    this.checkedStopwatchStore.start();
     this.numHints_ = 0;
+    this.numHints.emit(0);
   }
 
   onStopAndPause() {
-    this.stopwatchStore.stopAndPause();
+    this.checkedStopwatchStore.stopAndPause();
   }
 
   onStopAndStart() {
-    this.stopwatchStore.stopAndStart();
+    this.checkedStopwatchStore.stopAndStart();
   }
 
   onHint() {
@@ -75,18 +80,21 @@ export class StopwatchComponent implements OnDestroy, OnInit {
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'h') {
-      this.onHint();
-      return;
-    }
-    if (this.running) {
-      if (this.hasStopAndStart) {
-        this.onStopAndStart();
-      } else {
-        this.onStopAndPause();
-      }
-    } else if (this.notStarted) {
-      this.onStart();
+    switch (event.key) {
+      case 'h':
+        this.onHint();
+        return;
+      case 'Enter':
+      case ' ':
+        if (this.running) {
+          if (this.hasStopAndStart) {
+            this.onStopAndStart();
+          } else {
+            this.onStopAndPause();
+          }
+        } else if (!this.loading) {
+          this.onStart();
+        }
     }
   }
 }

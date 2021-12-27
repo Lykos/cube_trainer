@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, setSelectedModeId } from '../state/modes.actions';
+import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, setSelectedModeId } from './modes.actions';
 import { ModesState } from './modes.state';
 import { none, some } from '../utils/optional';
 
@@ -29,7 +29,7 @@ export const modesReducer = createReducer(
     return { ...modeState, createLoading: true, createError: none };
   }),
   on(createSuccess, (modeState, { mode, newMode }) => {
-    return { ...modeState, modes: modeState.serverModes.concat([mode]), createLoading: false, createError: none };
+    return { ...modeState, serverModes: modeState.serverModes.concat([mode]), createLoading: false, createError: none };
   }),
   on(createFailure, (modeState, { error }) => {
     return { ...modeState, createLoading: false, createError: some(error) };
@@ -38,7 +38,7 @@ export const modesReducer = createReducer(
     return { ...modeState, destroyLoading: true, destroyError: none };
   }),
   on(destroySuccess, (modeState, { mode }) => {
-    return { ...modeState, modes: modeState.serverModes.filter(m => m.id !== mode.id), destroyLoading: false, destroyError: none };
+    return { ...modeState, serverModes: modeState.serverModes.filter(m => m.id !== mode.id), destroyLoading: false, destroyError: none };
   }),
   on(destroyFailure, (modeState, { error }) => {
     return { ...modeState, destroyLoading: false, destroyError: some(error) };
