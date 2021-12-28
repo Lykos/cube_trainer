@@ -35,6 +35,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     // TODO: Don't use the host, use Location and PathLocationStrategy.
     AngularTokenModule.forRoot({
       loginField: 'email',
+      signInRedirect: 'login',
+      signInStoredUrlStorageKey: 'afterLoginRedirect',
       apiBase: environment.apiPrefix,
       registerAccountCallback: `${environment.redirectProtocol}://${environment.host}/confirm_email`,
       resetPasswordCallback: `${environment.redirectProtocol}://${environment.host}/update_password`,
