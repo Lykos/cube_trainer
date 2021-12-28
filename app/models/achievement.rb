@@ -26,9 +26,29 @@ class Achievement
                    'training session!'
     ),
     Achievement.new(
-      key: :stat_creator,
+      key: :statistician,
       name: 'Statistician',
-      description: 'You assigned your first stat to a mode!'
+      description: 'You assigned your first stat to a training session!'
+    ),
+    Achievement.new(
+      key: :enthusiast,
+      name: 'Enthusiast',
+      description: 'You have a training session with more than 100 results!'
+    ),
+    Achievement.new(
+      key: :addict,
+      name: 'Addict',
+      description: 'You have a training session with more than 1000 results!'
+    ),
+    Achievement.new(
+      key: :professional,
+      name: 'Professional',
+      description: 'You have a training session with more than 10000 results!'
+    ),
+    Achievement.new(
+      key: :wizard,
+      name: 'Wizard',
+      description: 'You have a training session with more than 100000 results!'
     ),
     Achievement.new(
       key: :alg_overrider,

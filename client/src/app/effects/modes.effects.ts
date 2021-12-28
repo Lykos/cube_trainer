@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { DeleteModeConfirmationDialogComponent } from '../modes/delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
-import { OverrideAlgDialogComponent } from '../modes/override-alg-dialog/override-alg-dialog.component';
-import { parseBackendActionError } from '../shared/parse-backend-action-error';
-import { BackendActionErrorDialogComponent } from '../shared/backend-action-error-dialog/backend-action-error-dialog.component';
+import { DeleteModeConfirmationDialogComponent } from '@training/delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
+import { OverrideAlgDialogComponent } from '@training/override-alg-dialog/override-alg-dialog.component';
+import { parseBackendActionError } from '@shared/parse-backend-action-error';
+import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ModeAndCase } from '../modes/mode-and-case.model';
+import { ModeAndCase } from '@training/mode-and-case.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, deleteClick, dontDestroy, destroy, destroySuccess, destroyFailure, overrideAlgClick, dontOverrideAlg, overrideAlg, overrideAlgSuccess, overrideAlgFailure } from '../state/modes.actions';
-import { ModesService } from '../modes/modes.service';
-import { AlgOverridesService } from '../modes/alg-overrides.service';
+import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, deleteClick, dontDestroy, destroy, destroySuccess, destroyFailure, overrideAlgClick, dontOverrideAlg, overrideAlg, overrideAlgSuccess, overrideAlgFailure } from '@store/modes.actions';
+import { ModesService } from '@training/modes.service';
+import { AlgOverridesService } from '@training/alg-overrides.service';
 import { Router } from '@angular/router';
- 
+
 @Injectable()
 export class ModesEffects {
   constructor(
@@ -31,22 +31,48 @@ export class ModesEffects {
       exhaustMap(action =>
         this.modesService.list().pipe(
           map(modes => initialLoadSuccess({ modes })),
-          catchError(error => of(initialLoadFailure({ error })))
+          catchError(httpResponseError => {
+            const context = {
+              action: 'loading',
+              subject: 'modes',
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(initialLoadFailure({ error }));
+          })
         )
       )
     )
   );
 
+  // Failure for initialLoad has no effect, it shows a message at the component where the modes are rendered.
+  
   create$ = createEffect(() =>
     this.actions$.pipe(
       ofType(create),
       exhaustMap(action =>
         this.modesService.create(action.newMode).pipe(
           map(mode => createSuccess({ newMode: action.newMode, mode })),
-          catchError(error => of(createFailure({ error })))
+          catchError(httpResponseError => {
+            const context = {
+              action: 'creating mode',
+              subject: action.newMode.name,
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(createFailure({ error }));
+          })
         )
       )
     )
+  );
+
+  createFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(createFailure),
+      tap(action => {
+        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
+      }),
+    ),
+    { dispatch: false }
   );
 
   createSuccess$ = createEffect(() =>
@@ -78,10 +104,27 @@ export class ModesEffects {
       exhaustMap(action =>
         this.modesService.destroy(action.mode.id).pipe(
           map(mode => destroySuccess({ mode: action.mode })),
-          catchError(error => of(destroyFailure({ error })))
+          catchError(httpResponseError => {
+            const context = {
+              action: 'deleting mode',
+              subject: action.mode.name,
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(destroyFailure({ error }));
+          })
         )
       )
     )
+  );
+
+  destroyFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(destroyFailure),
+      tap(action => {
+        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
+      }),
+    ),
+    { dispatch: false }
   );
 
   destroySuccess$ = createEffect(() =>

@@ -1,5 +1,5 @@
-import { AlgCounts } from '../utils/cube-stats/alg-counts';
-import { AlgCountsResponse } from '../utils/cube-stats/alg-counts-response';
+import { AlgCounts } from '@utils/cube-stats/alg-counts';
+import { AlgCountsResponse } from '@utils/cube-stats/alg-counts-response';
 
 export interface AlgCountsRow {
   readonly pluralName: string;
