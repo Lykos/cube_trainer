@@ -1,4 +1,4 @@
-import { Piece } from '../../utils/cube-stats/piece';
+import { Piece } from '@utils/cube-stats/piece';
 
 export interface PieceWithName {
   readonly piece: Piece;

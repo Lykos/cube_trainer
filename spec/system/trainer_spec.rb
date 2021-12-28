@@ -16,7 +16,7 @@ describe 'trainer', type: :system do
 
     # TODO: Figure out how to identify the right button in the mode list.
 
-    visit "/trainer/#{mode.id}"
+    visit "/training/#{mode.id}"
 
     click_button 'Start'
     sleep(0.5)

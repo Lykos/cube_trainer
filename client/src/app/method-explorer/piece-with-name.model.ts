@@ -1,6 +1,6 @@
-import { Piece } from '../utils/cube-stats/piece';
-import { EDGE, CORNER, PieceDescription } from '../utils/cube-stats/piece-description';
-import { zip } from '../utils/utils';
+import { Piece } from '@utils/cube-stats/piece';
+import { EDGE, CORNER, PieceDescription } from '@utils/cube-stats/piece-description';
+import { zip } from '@utils/utils';
 
 export interface PieceWithName {
   readonly piece: Piece;

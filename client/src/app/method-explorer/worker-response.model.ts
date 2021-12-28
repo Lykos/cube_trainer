@@ -1,4 +1,4 @@
-import { OrError } from '../shared/or-error.type';
+import { OrError } from '@shared/or-error.type';
 
 export interface WorkerResponse<X> {
   readonly dataOrError: OrError<X>;

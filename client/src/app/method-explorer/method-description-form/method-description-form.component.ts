@@ -1,11 +1,11 @@
-import { Piece } from '../../utils/cube-stats/piece';
+import { Piece } from '@utils/cube-stats/piece';
 import { PieceWithName, piecesWithNames } from '../piece-with-name.model';
 import { ModeWithName, HierarchicalAlgSetLevel } from '../hierarchical-alg-set-level.model';
-import { find } from '../../utils/utils';
-import { Optional, hasValue, forceValue, some, none } from '../../utils/optional';
-import { assert } from '../../utils/assert';
-import { ExecutionOrder, PieceMethodDescription, MethodDescription, BufferDescription, UniformAlgSetMode, HierarchicalAlgSet } from '../../utils/cube-stats/method-description';
-import { CORNER, EDGE, PieceDescription } from '../../utils/cube-stats/piece-description';
+import { find } from '@utils/utils';
+import { Optional, hasValue, forceValue, some, none } from '@utils/optional';
+import { assert } from '@utils/assert';
+import { ExecutionOrder, PieceMethodDescription, MethodDescription, BufferDescription, UniformAlgSetMode, HierarchicalAlgSet } from '@utils/cube-stats/method-description';
+import { CORNER, EDGE, PieceDescription } from '@utils/cube-stats/piece-description';
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 
