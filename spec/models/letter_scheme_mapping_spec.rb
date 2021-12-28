@@ -3,5 +3,36 @@
 require 'rails_helper'
 
 RSpec.describe LetterSchemeMapping, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  include_context 'with user abc'
+  let(:letter_scheme) do
+    letter_scheme = LetterScheme.find_or_initialize_by(user: user)
+    letter_scheme.mappings.clear
+    letter_scheme.save!
+    letter_scheme
+  end
+  let(:part) { TwistyPuzzles::Edge.for_face_symbols(%i[U F]) }
+  let(:other_part) { TwistyPuzzles::Edge.for_face_symbols(%i[U B]) }
+
+  describe '#to_simple' do
+    subject(:letter_scheme_mapping) { letter_scheme.mappings.new(part: part, letter: 'a') }
+
+    it 'returns a simple hash' do
+      expect(letter_scheme_mapping.to_simple).to eq({ part: { key: 'Edge:UF', name: 'UF' }, letter: 'a' })
+    end
+  end
+
+  describe '#valid?' do
+    it 'returns false if the letter is an empty string' do
+      expect(letter_scheme.mappings.new(part: part, letter: '')).not_to be_valid
+    end
+
+    it 'returns false if the letter is a string with multiple characters' do
+      expect(letter_scheme.mappings.new(part: part, letter: 'as')).not_to be_valid
+    end
+
+    it 'returns false if the part is not unique' do
+      letter_scheme.mappings.create!(part: part, letter: 'a')
+      expect(letter_scheme.mappings.new(part: part, letter: 'b')).not_to be_valid
+    end
+  end
 end

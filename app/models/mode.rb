@@ -40,7 +40,7 @@ class Mode < ApplicationRecord
                           association_foreign_key: :used_mode_id
   # rubocop:enable Rails/HasAndBelongsToMany
 
-  after_create :grant_mode_achievement
+  after_create :grant_training_session_achievement
 
   # TODO: deprecate
   def test_comm_modes
@@ -162,8 +162,8 @@ class Mode < ApplicationRecord
     )
   end
 
-  def grant_mode_achievement
-    user.grant_achievement_if_not_granted(:mode_creator)
+  def grant_training_session_achievement
+    user.grant_achievement_if_not_granted(:training_session_creator)
   end
 
   def show_input_mode_valid

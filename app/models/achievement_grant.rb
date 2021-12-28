@@ -18,6 +18,8 @@ class AchievementGrant < ApplicationRecord
     to_simple
   end
 
+  private
+
   def send_achievement_grant_message
     user.messages.create!(
       title: "Achievement Unlocked: #{achievement.name}"

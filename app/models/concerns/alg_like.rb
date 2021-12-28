@@ -32,10 +32,8 @@ module AlgLike
   end
 
   def commutator
-    parse_commutator(alg)
+    alg && parse_commutator(alg)
   end
-
-  delegate :part_type, to: :case_key
 
   def owning_set
     raise NotImplementedError
@@ -43,6 +41,7 @@ module AlgLike
 
   def to_simple
     {
+      id: id,
       case_key: InputRepresentationType.new.serialize(case_key),
       alg: alg.to_s
     }
@@ -66,20 +65,26 @@ module AlgLike
     nil
   end
 
-  # TODO: Make this work for other types of alg sets than commutators.
-  def validate_alg
-    comm = commutator_or_nil
-
-    unless comm
-      errors.add(:alg, 'cannot be parsed as a commutator')
-      return
-    end
-
-    checker = CubeTrainer::CommutatorChecker.new(
-      part_type: part_type,
+  def create_checker
+    CubeTrainer::CommutatorChecker.new(
+      part_type: case_key.part_type,
       cube_size: owning_set.mode_type.default_cube_size
     )
-    return if checker.check_alg(SyntheticCellDescription.new(case_key), comm).result == :correct
+  end
+
+  def alg_correct?(comm)
+    create_checker.check_alg(SyntheticCellDescription.new(case_key), comm).result == :correct
+  end
+
+  # TODO: Make this work for other types of alg sets than commutators.
+  def validate_alg
+    return unless case_key.respond_to?(:part_type)
+    return unless case_key.part_type == owning_set.mode_type.part_type
+
+    comm = commutator_or_nil
+    errors.add(:alg, 'cannot be parsed as a commutator') && return unless comm
+
+    return if alg_correct?(comm)
 
     errors.add(:alg, 'does not solve this case')
   end

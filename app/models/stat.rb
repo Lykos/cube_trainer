@@ -5,7 +5,8 @@ class Stat < ApplicationRecord
   attribute :stat_type, :stat_type
   belongs_to :mode
 
-  after_create :grant_stat_achievement
+  after_create :grant_stat_creator_achievement
+  delegate :user, to: :mode
 
   default_scope { order(index: :asc) }
 
@@ -23,7 +24,7 @@ class Stat < ApplicationRecord
     to_simple
   end
 
-  def grant_stat_achievement
-    mode.user.grant_achievement_if_not_granted(:stat_creator)
+  def grant_stat_creator_achievement
+    user.grant_achievement_if_not_granted(:stat_creator)
   end
 end

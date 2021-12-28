@@ -151,6 +151,20 @@ shared_context 'with result' do
   end
 end
 
+shared_context 'with alg override' do
+  include_context 'with mode'
+
+  let(:alg_override) do
+    uf = TwistyPuzzles::Edge.for_face_symbols(%i[U F])
+    df = TwistyPuzzles::Edge.for_face_symbols(%i[D F])
+    ub = TwistyPuzzles::Edge.for_face_symbols(%i[U B])
+    mode.alg_overrides.find_or_create_by!(
+      case_key: TwistyPuzzles::PartCycle.new([uf, df, ub]),
+      alg: "[M', U2]"
+    )
+  end
+end
+
 shared_context 'with headers' do
   let(:headers) { { ACCEPT: 'application/json' } }
 end

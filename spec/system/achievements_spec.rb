@@ -20,6 +20,6 @@ describe 'achievements', type: :system do
     expect(page).to have_text('Fake achievement for tests.')
     click_link 'All Achievements'
 
-    expect(page).to have_text('Mode Creator')
+    expect(page).to have_text('Training Session Creator')
   end
 end

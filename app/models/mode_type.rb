@@ -79,7 +79,13 @@ class ModeType
 
   # Takes an external errors list so it can be used for other models, too.
   def validate_case_key(case_key, errors)
-    errors.add(:case_key, 'has to be a part cycle') unless case_key.is_a?(TwistyPuzzles::PartCycle)
+    unless case_key.is_a?(TwistyPuzzles::PartCycle)
+      errors.add(
+        :case_key,
+        'has to be a part cycle'
+      ) && return
+    end
+
     errors.add(:case_key, "has to be a #{part_type}") unless case_key.part_type == part_type
     unless case_key.length == cycle_length
       errors.add(
