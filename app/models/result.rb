@@ -52,14 +52,19 @@ class Result < ApplicationRecord
   private
 
   def grant_num_results_achievements
+    achievement_key = num_results_achievement_key
+    user.grant_achievement_if_not_granted(achievement_key) if achievement_key
+  end
+
+  def num_results_achievement_key
     if mode.results.count >= 100_000
-      user.grant_achievement_if_not_granted(:wizard)
+      :wizard
     elsif mode.results.count >= 10_000
-      user.grant_achievement_if_not_granted(:professional)
+      :professional
     elsif mode.results.count >= 1000
-      user.grant_achievement_if_not_granted(:addict)
+      :addict
     elsif mode.results.count >= 100
-      user.grant_achievement_if_not_granted(:enthusiast)
+      :enthusiast
     end
   end
 end
