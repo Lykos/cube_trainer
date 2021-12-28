@@ -1,7 +1,7 @@
-import { RailsService } from '../core/rails.service';
+import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
 import { Case } from './case.model';
-import { HttpVerb } from '../core/http-verb';
+import { HttpVerb } from '@core/http-verb';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QueueCache } from '@utils/queue-cache';

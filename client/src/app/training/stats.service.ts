@@ -1,6 +1,6 @@
-import { RailsService } from '../core/rails.service';
+import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '../core/http-verb';
+import { HttpVerb } from '@core/http-verb';
 import { Stat } from './stat.model';
 import { StatPart } from './stat-part.model';
 import { StatType } from './stat-type.model';

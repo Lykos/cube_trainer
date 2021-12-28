@@ -9,7 +9,8 @@
       "@utils/*": ["app/utils/*"],
       "@store/*": ["app/store/*"],
       "@effects/*": ["app/effects/*"],
-      "@core/*": ["app/core/*"]          
+      "@core/*": ["app/core/*"],
+      "@training/*": ["app/training/*"]
     },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,

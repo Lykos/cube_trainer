@@ -1,7 +1,7 @@
-import { RailsService } from '../core/rails.service';
-import { CableService } from '../core/cable.service';
+import { RailsService } from '@core/rails.service';
+import { CableService } from '@core/cable.service';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '../core/http-verb';
+import { HttpVerb } from '@core/http-verb';
 import { Message } from './message.model';
 import { MessageNotification } from './message-notification.model';
 import { map } from 'rxjs/operators';

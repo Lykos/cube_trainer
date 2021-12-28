@@ -1,5 +1,5 @@
 import { Mode } from './mode.model';
-import { Case } from '../training/case.model';
+import { Case } from './case.model';
 
 export interface ModeAndCase {
   readonly mode: Mode;

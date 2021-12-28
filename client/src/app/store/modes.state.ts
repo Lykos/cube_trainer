@@ -1,4 +1,4 @@
-import { Mode } from '../training/mode.model';
+import { Mode } from '@training/mode.model';
 import { Optional } from '@utils/optional';
 import { BackendActionError } from '@shared/backend-action-error.model';
 

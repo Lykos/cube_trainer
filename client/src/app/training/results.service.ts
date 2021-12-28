@@ -1,7 +1,7 @@
-import { RailsService } from '../core/rails.service';
+import { RailsService } from '@core/rails.service';
 import { PartialResult } from './partial-result.model';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '../core/http-verb';
+import { HttpVerb } from '@core/http-verb';
 import { Result } from './result.model';
 import { map } from 'rxjs/operators';
 import { Case } from './case.model';

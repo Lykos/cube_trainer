@@ -1,7 +1,7 @@
 import { AngularTokenService, RegisterData } from 'angular-token';
-import { RailsService } from '../core/rails.service';
+import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '../core/http-verb';
+import { HttpVerb } from '@core/http-verb';
 import { NewUser } from './new-user.model';
 import { UserUpdate } from './user-update.model';
 import { PasswordUpdate } from './password-update.model';

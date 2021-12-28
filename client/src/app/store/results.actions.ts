@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { Result } from '../training/result.model';
-import { Case } from '../training/case.model';
-import { PartialResult } from '../training/partial-result.model';
+import { Result } from '@training/result.model';
+import { Case } from '@training/case.model';
+import { PartialResult } from '@training/partial-result.model';
 
 export const initialLoad = createAction(
   '[Results] initial load from server',

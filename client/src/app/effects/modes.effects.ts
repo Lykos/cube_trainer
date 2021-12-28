@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { DeleteModeConfirmationDialogComponent } from '../training/delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
-import { OverrideAlgDialogComponent } from '../training/override-alg-dialog/override-alg-dialog.component';
+import { DeleteModeConfirmationDialogComponent } from '@training/delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
+import { OverrideAlgDialogComponent } from '@training/override-alg-dialog/override-alg-dialog.component';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ModeAndCase } from '../training/mode-and-case.model';
+import { ModeAndCase } from '@training/mode-and-case.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
 import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, deleteClick, dontDestroy, destroy, destroySuccess, destroyFailure, overrideAlgClick, dontOverrideAlg, overrideAlg, overrideAlgSuccess, overrideAlgFailure } from '@store/modes.actions';
-import { ModesService } from '../training/modes.service';
-import { AlgOverridesService } from '../training/alg-overrides.service';
+import { ModesService } from '@training/modes.service';
+import { AlgOverridesService } from '@training/alg-overrides.service';
 import { Router } from '@angular/router';
  
 @Injectable()

@@ -1,9 +1,9 @@
 import { createAction, props } from '@ngrx/store';
-import { Mode } from '../training/mode.model';
-import { Case } from '../training/case.model';
+import { Mode } from '@training/mode.model';
+import { Case } from '@training/case.model';
 import { BackendActionError } from '@shared/backend-action-error.model';
-import { AlgOverride } from '../training/alg-override.model';
-import { NewMode } from '../training/new-mode.model';
+import { AlgOverride } from '@training/alg-override.model';
+import { NewMode } from '@training/new-mode.model';
 
 export const initialLoad = createAction(
   '[Modes] initial load from server'

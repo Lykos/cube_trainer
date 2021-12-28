@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Mode } from '../../training/mode.model';
+import { Mode } from '../mode.model';
 import { overrideAlgClick } from '@store/modes.actions';
-import { ShowInputMode } from '../../training/show-input-mode.model';
+import { ShowInputMode } from '../show-input-mode.model';
 import { Case } from '../case.model';
 import { Store } from '@ngrx/store';
 

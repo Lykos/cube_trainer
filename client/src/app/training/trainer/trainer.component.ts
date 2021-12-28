@@ -1,7 +1,7 @@
 import { Case } from '../case.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, filter, take, shareReplay, distinctUntilChanged } from 'rxjs/operators';
-import { Mode } from '../../training/mode.model';
+import { Mode } from '../mode.model';
 import { PartialResult } from '../partial-result.model';
 import { TrainerService } from '../trainer.service';
 import { ActivatedRoute } from '@angular/router';

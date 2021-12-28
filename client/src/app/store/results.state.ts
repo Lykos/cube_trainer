@@ -1,4 +1,4 @@
-import { Result } from '../training/result.model';
+import { Result } from '@training/result.model';
 import { Optional } from '@utils/optional';
 
 export interface ModeResultsState {
