@@ -3,8 +3,8 @@ import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of, forkJoin } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, map, tap, mapTo } from 'rxjs/operators';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, markDnf, markDnfSuccess, markDnfFailure } from '../state/results.actions';
-import { ResultsService } from '../trainer/results.service';
+import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, markDnf, markDnfSuccess, markDnfFailure } from '@store/results.actions';
+import { ResultsService } from '../training/results.service';
  
 @Injectable()
 export class ResultsEffects {

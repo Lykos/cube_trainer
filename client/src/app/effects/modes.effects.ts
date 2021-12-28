@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { DeleteModeConfirmationDialogComponent } from '../modes/delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
-import { OverrideAlgDialogComponent } from '../modes/override-alg-dialog/override-alg-dialog.component';
+import { DeleteModeConfirmationDialogComponent } from '../training/delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
+import { OverrideAlgDialogComponent } from '../training/override-alg-dialog/override-alg-dialog.component';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ModeAndCase } from '../modes/mode-and-case.model';
+import { ModeAndCase } from '../training/mode-and-case.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, deleteClick, dontDestroy, destroy, destroySuccess, destroyFailure, overrideAlgClick, dontOverrideAlg, overrideAlg, overrideAlgSuccess, overrideAlgFailure } from '../state/modes.actions';
-import { ModesService } from '../modes/modes.service';
-import { AlgOverridesService } from '../modes/alg-overrides.service';
+import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, deleteClick, dontDestroy, destroy, destroySuccess, destroyFailure, overrideAlgClick, dontOverrideAlg, overrideAlg, overrideAlgSuccess, overrideAlgFailure } from '@store/modes.actions';
+import { ModesService } from '../training/modes.service';
+import { AlgOverridesService } from '../training/alg-overrides.service';
 import { Router } from '@angular/router';
  
 @Injectable()

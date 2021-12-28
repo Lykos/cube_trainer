@@ -1,31 +1,31 @@
 import { NgModule } from '@angular/core';
 import { MethodExplorerComponent } from './method-explorer/method-explorer/method-explorer.component';
-import { UserComponent } from './users/user/user.component';
-import { ResetPasswordComponent } from './users/reset-password/reset-password.component';
-import { UpdatePasswordComponent } from './users/update-password/update-password.component';
-import { ChangePasswordComponent } from './users/change-password/change-password.component';
-import { EditUserComponent } from './users/edit-user/edit-user.component';
-import { AchievementsComponent } from './users/achievements/achievements.component';
-import { AchievementGrantsComponent } from './users/achievement-grants/achievement-grants.component';
-import { AchievementComponent } from './users/achievement/achievement.component';
-import { MessageComponent } from './users/message/message.component';
-import { MessagesComponent } from './users/messages/messages.component';
-import { NewColorSchemeComponent } from './users/new-color-scheme/new-color-scheme.component';
-import { NewLetterSchemeComponent } from './users/new-letter-scheme/new-letter-scheme.component';
-import { SignupComponent } from './users/signup/signup.component';
-import { LoginComponent } from './users/login/login.component';
-import { LoggedOutComponent } from './users/logged-out/logged-out.component';
-import { AccountDeletedComponent } from './users/account-deleted/account-deleted.component';
-import { ConfirmEmailComponent } from './users/confirm-email/confirm-email.component';
-import { ModesComponent } from './modes/modes/modes.component';
-import { NewModeComponent } from './modes/new-mode/new-mode.component';
-import { TrainerComponent } from './trainer/trainer/trainer.component';
-import { AboutComponent } from './footer/about/about.component';
-import { CookiePolicyComponent } from './footer/cookie-policy/cookie-policy.component';
-import { PrivacyPolicyComponent } from './footer/privacy-policy/privacy-policy.component';
-import { ContactComponent } from './footer/contact/contact.component';
-import { DisclaimerComponent } from './footer/disclaimer/disclaimer.component';
-import { TermsAndConditionsComponent } from './footer/terms-and-conditions/terms-and-conditions.component';
+import { UserComponent } from '@core/user/user.component';
+import { ResetPasswordComponent } from '@core/reset-password/reset-password.component';
+import { UpdatePasswordComponent } from '@core/update-password/update-password.component';
+import { ChangePasswordComponent } from '@core/change-password/change-password.component';
+import { EditUserComponent } from '@core/edit-user/edit-user.component';
+import { AchievementsComponent } from '@core/achievements/achievements.component';
+import { AchievementGrantsComponent } from '@core/achievement-grants/achievement-grants.component';
+import { AchievementComponent } from '@core/achievement/achievement.component';
+import { MessageComponent } from '@core/message/message.component';
+import { MessagesComponent } from '@core/messages/messages.component';
+import { NewColorSchemeComponent } from './training/new-color-scheme/new-color-scheme.component';
+import { NewLetterSchemeComponent } from './training/new-letter-scheme/new-letter-scheme.component';
+import { SignupComponent } from '@core/signup/signup.component';
+import { LoginComponent } from '@core/login/login.component';
+import { LoggedOutComponent } from '@core/logged-out/logged-out.component';
+import { AccountDeletedComponent } from '@core/account-deleted/account-deleted.component';
+import { ConfirmEmailComponent } from '@core/confirm-email/confirm-email.component';
+import { ModesComponent } from './training/modes/modes.component';
+import { NewModeComponent } from './training/new-mode/new-mode.component';
+import { TrainerComponent } from './training/trainer/trainer.component';
+import { AboutComponent } from '@core/about/about.component';
+import { CookiePolicyComponent } from '@core/cookie-policy/cookie-policy.component';
+import { PrivacyPolicyComponent } from '@core/privacy-policy/privacy-policy.component';
+import { ContactComponent } from '@core/contact/contact.component';
+import { DisclaimerComponent } from '@core/disclaimer/disclaimer.component';
+import { TermsAndConditionsComponent } from '@core/terms-and-conditions/terms-and-conditions.component';
 import { RouterModule, Routes, ExtraOptions } from '@angular/router';
 import { environment } from '@environment';
 
@@ -49,8 +49,8 @@ const routes: Routes = [
   { path: 'messages/:messageId', component: MessageComponent },
   { path: 'color_schemes/new', component: NewColorSchemeComponent },
   { path: 'letter_schemes/new', component: NewLetterSchemeComponent },
-  { path: 'modes/new', component: NewModeComponent },
-  { path: 'trainer/:modeId', component: TrainerComponent },
+  { path: 'training/new', component: NewModeComponent },
+  { path: 'training/:modeId', component: TrainerComponent },
   { path: 'about', component: AboutComponent },
   { path: 'privacy_policy', component: PrivacyPolicyComponent },
   { path: 'contact', component: ContactComponent },
