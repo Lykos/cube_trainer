@@ -26,7 +26,7 @@ xdescribe('RailsService', () => {
     httpMock.verify();
   });
 
-  it('should make an ajax call for an empty object', () => {
+  it('should make an get call for an empty object', () => {
     const req = httpMock.expectOne('/stuff');
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
@@ -34,10 +34,10 @@ xdescribe('RailsService', () => {
     expect(req.request.params.toString()).toEqual('');
     req.flush('successful');
 
-    railsService.ajax(HttpVerb.Get, '/stuff', {}).subscribe((result) => { expect(result).toEqual('successful'); })
+    railsService.get('/stuff', {}).subscribe((result) => { expect(result).toEqual('successful'); })
   });
 
-  it('should make an ajax call with snake caseified URL parameters', () => {
+  it('should make an get call with snake caseified URL parameters', () => {
     const req = httpMock.expectOne('/stuff');
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
@@ -49,10 +49,10 @@ xdescribe('RailsService', () => {
       someString: 'abc',
     };
 
-    railsService.ajax(HttpVerb.Get, '/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
   });
 
-  it('should make an ajax call with snake escaped URL parameters', () => {
+  it('should make an get call with snake escaped URL parameters', () => {
     const req = httpMock.expectOne('/stuff');
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
@@ -63,10 +63,10 @@ xdescribe('RailsService', () => {
       needsEscape: 'a b c',
     };
 
-    railsService.ajax(HttpVerb.Get, '/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
   });
 
-  it('should make an ajax call with inner object URL parameters', () => {
+  it('should make an get call with inner object URL parameters', () => {
     const req = httpMock.expectOne('/stuff');
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
@@ -82,10 +82,10 @@ xdescribe('RailsService', () => {
       },
     };
 
-    railsService.ajax(HttpVerb.Get, '/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
   });
 
-  it('should make an ajax call with array URL parameters', () => {
+  it('should make an get call with array URL parameters', () => {
     const req = httpMock.expectOne('/stuff');
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
@@ -96,10 +96,10 @@ xdescribe('RailsService', () => {
       someArray: [1, 2, 3],
     };
 
-    railsService.ajax(HttpVerb.Get, '/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
   });
 
-  it('should make an ajax call with object array URL parameters', () => {
+  it('should make an get call with object array URL parameters', () => {
     const req = httpMock.expectOne('/stuff');
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
@@ -110,6 +110,6 @@ xdescribe('RailsService', () => {
       someObjectArray: [{c: 12}],
     };
 
-    railsService.ajax(HttpVerb.Get, '/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
   });
 });

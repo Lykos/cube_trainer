@@ -6,6 +6,33 @@ RSpec.describe Result, type: :model do
   include_context 'with mode'
 
   describe '#valid?' do
+    it 'returns true for a valid result' do
+      expect(mode.results.new(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: 0, failed_attempts: 1, success: true, num_hints: 1)).not_to be_valid
+    end
+
+    it 'returns false for a negative time' do
+      expect(mode.results.new(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: -1)).not_to be_valid
+    end
+
+    it 'returns false for a zero time' do
+      expect(mode.results.new(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: 0)).not_to be_valid
+    end
+
+    it 'returns false for a negative number of failed attempts' do
+      expect(mode.results.new(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: 10, failed_attempts: -1)).not_to be_valid
+    end
+
+    it 'returns false for a non-integral number of failed attempts' do
+      expect(mode.results.new(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: 10, failed_attempts: 1.1)).not_to be_valid
+    end
+
+    it 'returns false for a negative number of hints' do
+      expect(mode.results.new(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: 10, num_hints: -1)).not_to be_valid
+    end
+
+    it 'returns false for a non-integral number of hints' do
+      expect(mode.results.new(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: 10, num_hints: 1.1)).not_to be_valid
+    end
   end
 
   describe '#to_dump' do

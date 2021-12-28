@@ -52,9 +52,9 @@ class Result < ApplicationRecord
   private
 
   def grant_num_results_achievements
-    if mode.results.count >= 100000
+    if mode.results.count >= 100_000
       user.grant_achievement_if_not_granted(:wizard)
-    elsif mode.results.count >= 10000
+    elsif mode.results.count >= 10_000
       user.grant_achievement_if_not_granted(:professional)
     elsif mode.results.count >= 1000
       user.grant_achievement_if_not_granted(:addict)
