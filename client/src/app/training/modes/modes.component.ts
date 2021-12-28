@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Mode } from '../mode.model';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -10,7 +10,7 @@ import { selectModes, selectInitialLoadOrDestroyLoading, selectInitialLoadError 
   templateUrl: './modes.component.html',
   styleUrls: ['./modes.component.css']
 })
-export class ModesComponent {
+export class ModesComponent implements OnInit {
   modes$: Observable<readonly Mode[]>;
   loading$: Observable<boolean>;
   error$: Observable<any>;
