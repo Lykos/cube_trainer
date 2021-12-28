@@ -61,6 +61,13 @@ export class MessagesComponent {
       this.selection.clear();
       this.snackBar.open(`Deleted ${observables.length} messages!`, 'Close');
       this.update();
+    },
+    error => {
+      const context = {
+        action: 'marking as read',
+        subject: `${observables.length} messages`,
+      };
+      this.dialog.open(BackendActionErrorDialogComponent, { data: parseBackendActionError(context, error) });
     });
   }
 
