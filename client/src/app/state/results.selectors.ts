@@ -1,7 +1,7 @@
 import { createSelector, createFeatureSelector } from '@ngrx/store';
 import { ResultsState } from './results.state';
-import { orElse, mapOptional } from '../utils/optional';
-import { find } from '../utils/utils';
+import { orElse, mapOptional } from '@utils/optional';
+import { find } from '@utils/utils';
 
 export const selectResultsState = createFeatureSelector<ResultsState>('results');
 

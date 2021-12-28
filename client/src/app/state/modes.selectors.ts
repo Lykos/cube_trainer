@@ -1,6 +1,6 @@
 import { createSelector, createFeatureSelector } from '@ngrx/store';
 import { ModesState } from './modes.state';
-import { find } from '../utils/utils';
+import { find } from '@utils/utils';
 
 export const selectModesState = createFeatureSelector<ModesState>('modes');
 

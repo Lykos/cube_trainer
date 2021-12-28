@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { MethodDescription } from '../utils/cube-stats/method-description';
-import { expectedAlgCounts } from '../utils/cube-stats/cube-stats';
-import { valueOrElseThrow, ifError } from '../shared/or-error.type';
+import { MethodDescription } from '@utils/cube-stats/method-description';
+import { expectedAlgCounts } from '@utils/cube-stats/cube-stats';
+import { valueOrElseThrow, ifError } from '@shared/or-error.type';
 import { WorkerRequest } from './worker-request.model';
 import { WorkerResponse } from './worker-response.model';
-import { AlgCountsRequest, SamplingMethod } from '../utils/cube-stats/alg-counts-request';
-import { AlgCountsResponse } from '../utils/cube-stats/alg-counts-response';
+import { AlgCountsRequest, SamplingMethod } from '@utils/cube-stats/alg-counts-request';
+import { AlgCountsResponse } from '@utils/cube-stats/alg-counts-response';
 import { AlgCountsData } from './alg-counts-data.model';
 import { Observable, of, throwError, ReplaySubject } from 'rxjs';
 import { map, first } from 'rxjs/operators';

@@ -1,8 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
 import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, markDnf, markDnfSuccess, markDnfFailure, setSelectedModeId, setPage } from '../state/results.actions';
 import { ResultsState, ModeResultsState } from './results.state';
-import { none, some, orElse } from '../utils/optional';
-import { find } from '../utils/utils';
+import { none, some, orElse } from '@utils/optional';
+import { find } from '@utils/utils';
 
 function initialModeResultsState(modeId: number): ModeResultsState {
   return {

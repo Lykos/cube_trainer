@@ -1,4 +1,4 @@
-import { UniformAlgSetMode } from '../utils/cube-stats/method-description';
+import { UniformAlgSetMode } from '@utils/cube-stats/method-description';
 import { PieceWithName } from './piece-with-name.model';
 import { FormGroup } from '@angular/forms';
 

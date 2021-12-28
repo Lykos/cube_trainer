@@ -10,7 +10,7 @@ import { User } from './user.model';
 import { Credentials } from './credentials.model';
 import { Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
-import { CookieConsentService } from '../shared/cookie-consent.service';
+import { CookieConsentService } from '@shared/cookie-consent.service';
 
 @Injectable({
   providedIn: 'root',

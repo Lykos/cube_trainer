@@ -1,5 +1,5 @@
 import { Result } from '../trainer/result.model';
-import { Optional } from '../utils/optional';
+import { Optional } from '@utils/optional';
 
 export interface ModeResultsState {
   readonly modeId: number;

@@ -1,6 +1,6 @@
 import { Mode } from '../modes/mode.model';
-import { Optional } from '../utils/optional';
-import { BackendActionError } from '../shared/backend-action-error.model';
+import { Optional } from '@utils/optional';
+import { BackendActionError } from '@shared/backend-action-error.model';
 
 export interface ModesState {
   // Modes that are stored on the backend server.

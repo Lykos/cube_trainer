@@ -1,9 +1,9 @@
 /// <reference lib="webworker" />
 
-import { AlgCountsRequest } from '../utils/cube-stats/alg-counts-request';
-import { AlgCountsResponse } from '../utils/cube-stats/alg-counts-response';
-import { expectedAlgCounts } from '../utils/cube-stats/cube-stats';
-import { value, error } from '../shared/or-error.type';
+import { AlgCountsRequest } from '@utils/cube-stats/alg-counts-request';
+import { AlgCountsResponse } from '@utils/cube-stats/alg-counts-response';
+import { expectedAlgCounts } from '@utils/cube-stats/cube-stats';
+import { value, error } from '@shared/or-error.type';
 import { WorkerRequest } from './worker-request.model';
 import { WorkerResponse } from './worker-response.model';
 

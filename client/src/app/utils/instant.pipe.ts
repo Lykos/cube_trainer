@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform, Inject, LOCALE_ID } from '@angular/core';
-import { Instant } from '../utils/instant';
+import { Instant } from '@utils/instant';
 import { formatDate } from '@angular/common';
 
 @Pipe({

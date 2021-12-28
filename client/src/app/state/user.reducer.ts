@@ -2,7 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 
 import { initialLoad, initialLoadSuccess, initialLoadFailure, login, loginSuccess, loginFailure, logout, logoutSuccess, logoutFailure } from './user.actions';
 import { UserState } from './user.state';
-import { none, some } from '../utils/optional';
+import { none, some } from '@utils/optional';
 
 export const initialUserState: UserState = {
   user: none,

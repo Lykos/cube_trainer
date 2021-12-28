@@ -7,7 +7,7 @@ import { TrainerService } from '../trainer.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, combineLatest } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { hasValue, forceValue } from '../../utils/optional';
+import { hasValue, forceValue } from '@utils/optional';
 import { selectSelectedMode, selectInitialLoadLoading, selectInitialLoadError } from '../../state/modes.selectors';
 import { initialLoad, setSelectedModeId } from '../../state/modes.actions';
 import { create } from '../../state/results.actions';

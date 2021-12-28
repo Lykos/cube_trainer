@@ -1,5 +1,5 @@
 import { RailsService } from './rails.service';
-import { environment } from './../../environments/environment';
+import { environment } from '@environment';
 import { TestBed } from '@angular/core/testing';
 // @ts-ignore
 import Rails from '@rails/ujs';

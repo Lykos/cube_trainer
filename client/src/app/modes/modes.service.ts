@@ -7,7 +7,7 @@ import { NewMode } from './new-mode.model';
 import { ModeType } from './mode-type.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { seconds } from '../utils/duration';
+import { seconds } from '@utils/duration';
 
 function parseCubeSizeSpec(rawCubeSizeSpec: any): CubeSizeSpec {
   return {

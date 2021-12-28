@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { User } from '../user.model';
-import { Optional, ifPresent, none, some } from '../../utils/optional';
+import { Optional, ifPresent, none, some } from '@utils/optional';
 
 @Component({
   selector: 'cube-trainer-delete-account-button',

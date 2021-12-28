@@ -1,9 +1,9 @@
-import { camelCaseToSnakeCase } from '../utils/case';
+import { camelCaseToSnakeCase } from '@utils/case';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { HttpVerb } from './http-verb';
-import { environment } from './../../environments/environment';
+import { environment } from '@environment';
 
 class UrlParameterPath {
   path: string[];

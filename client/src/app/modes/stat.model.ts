@@ -1,4 +1,4 @@
-import { Instant } from '../utils/instant';
+import { Instant } from '@utils/instant';
 import { StatType } from './stat-type.model';
 import { StatPart } from './stat-part.model';
 

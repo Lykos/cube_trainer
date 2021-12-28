@@ -1,4 +1,4 @@
-import { Instant } from '../utils/instant';
+import { Instant } from '@utils/instant';
 import { PartialResult } from './partial-result.model';
 
 export interface Result extends PartialResult {

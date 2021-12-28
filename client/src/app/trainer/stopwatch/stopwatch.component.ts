@@ -1,4 +1,4 @@
-import { Duration } from '../../utils/duration';
+import { Duration } from '@utils/duration';
 import { StopwatchStore } from '../stopwatch.store';
 import { HostListener, Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';

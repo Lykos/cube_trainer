@@ -5,7 +5,7 @@ import { HttpVerb } from '../rails/http-verb';
 import { Message } from './message.model';
 import { MessageNotification } from './message-notification.model';
 import { map } from 'rxjs/operators';
-import { fromDateString } from '../utils/instant'
+import { fromDateString } from '@utils/instant'
 import { Observable } from 'rxjs';
 
 function parseMessage(message: any): Message {

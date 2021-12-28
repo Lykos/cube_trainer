@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MethodDescription } from '../../utils/cube-stats/method-description';
+import { MethodDescription } from '@utils/cube-stats/method-description';
 import { MethodExplorerService } from '../method-explorer.service';
 import { AlgCountsData } from '../alg-counts-data.model';
 import { Observable } from 'rxjs';

@@ -1,5 +1,5 @@
 import { Achievement } from './achievement.model';
-import { Instant } from '../utils/instant';
+import { Instant } from '@utils/instant';
 
 export interface AchievementGrant {
   timestamp: Instant;

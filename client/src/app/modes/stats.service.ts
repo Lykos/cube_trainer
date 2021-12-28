@@ -6,8 +6,8 @@ import { StatPart } from './stat-part.model';
 import { StatType } from './stat-type.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { seconds } from '../utils/duration'
-import { fromDateString } from '../utils/instant'
+import { seconds } from '@utils/duration'
+import { fromDateString } from '@utils/instant'
 
 function parseStatPart(statPart: any): StatPart {
   return {

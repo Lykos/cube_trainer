@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { Mode } from '../modes/mode.model';
 import { Case } from '../trainer/case.model';
-import { BackendActionError } from '../shared/backend-action-error.model';
+import { BackendActionError } from '@shared/backend-action-error.model';
 import { AlgOverride } from '../modes/alg-override.model';
 import { NewMode } from '../modes/new-mode.model';
 

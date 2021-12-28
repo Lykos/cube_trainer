@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, overrideAlg, overrideAlgSuccess, overrideAlgFailure, setSelectedModeId } from './modes.actions';
 import { ModesState } from './modes.state';
-import { none, some } from '../utils/optional';
+import { none, some } from '@utils/optional';
 
 const initialModesState: ModesState = {
   serverModes: [],

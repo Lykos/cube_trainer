@@ -1,4 +1,4 @@
-import { Instant } from '../utils/instant';
+import { Instant } from '@utils/instant';
 
 export interface Message {
   readonly id: number;

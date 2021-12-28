@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import { now, Instant } from '../utils/instant';
-import { Duration, zeroDuration } from '../utils/duration';
+import { now, Instant } from '@utils/instant';
+import { Duration, zeroDuration } from '@utils/duration';
 import { of, interval } from 'rxjs';
 import { switchMap, map, filter, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 

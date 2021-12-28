@@ -6,8 +6,8 @@ import { Result } from './result.model';
 import { map } from 'rxjs/operators';
 import { Case } from './case.model';
 import { Observable } from 'rxjs';
-import { seconds } from '../utils/duration'
-import { fromDateString } from '../utils/instant'
+import { seconds } from '@utils/duration'
+import { fromDateString } from '@utils/instant'
 
 function parseResult(result: any): Result {
   return {

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { AlgCountsTableComponent } from './alg-counts-table/alg-counts-table.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MethodExplorerComponent } from './method-explorer/method-explorer.component';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { MethodExplorerService } from './method-explorer.service';
 import { MethodDescriptionFormComponent } from './method-description-form/method-description-form.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';

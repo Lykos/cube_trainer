@@ -27,7 +27,7 @@ import { ContactComponent } from './footer/contact/contact.component';
 import { DisclaimerComponent } from './footer/disclaimer/disclaimer.component';
 import { TermsAndConditionsComponent } from './footer/terms-and-conditions/terms-and-conditions.component';
 import { RouterModule, Routes, ExtraOptions } from '@angular/router';
-import { environment } from './../environments/environment';
+import { environment } from '@environment';
 
 const routes: Routes = [
   { path: 'method_explorer', component: MethodExplorerComponent },

@@ -1,4 +1,4 @@
-import { Duration } from '../utils/duration';
+import { Duration } from '@utils/duration';
 import { StatPartType } from './stat-part-type.model';
 
 export interface StatPart {
