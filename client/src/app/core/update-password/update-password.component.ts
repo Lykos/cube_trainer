@@ -5,6 +5,10 @@ import { UserFormCreator } from '../user-form-creator.service';
 import { UsersService } from '../users.service';
 import { PasswordUpdate } from '../password-update.model';
 
+// Component for updating the user password.
+// The user needs a link from an email to change the password.
+// For the normal password change flow that requires no email but the old password,
+// see ChangePasswordComponent.
 @Component({
   selector: 'cube-trainer-update-password',
   templateUrl: './update-password.component.html',

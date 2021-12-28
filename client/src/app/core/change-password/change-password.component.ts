@@ -5,6 +5,10 @@ import { UserFormCreator } from '../user-form-creator.service';
 import { UsersService } from '../users.service';
 import { PasswordChange } from '../password-change.model';
 
+// Component for changing the user password.
+// The user needs their old password to change the password.
+// For updating the password after the password forgotten flow where the old password is not available,
+// see UpdatePasswordComponent.
 @Component({
   selector: 'cube-trainer-change-password',
   templateUrl: './change-password.component.html',
