@@ -5,10 +5,12 @@ module CubeTrainer
     # Helper methods to construct SQL queries using Arel.
     module SqlHelper
       def check_exp(exp, optional: false)
-        return if (optional && exp.nil?) || exp.is_a?(Arel::Node) || exp.is_a?(Arel::Attribute) ||
+        return if (optional && exp.nil?) || exp.is_a?(Arel::Nodes::Node) ||
+                  exp.is_a?(Arel::Attribute) ||
                   exp.is_a?(Arel::Nodes::SqlLiteral)
 
-        raise TypeError
+        raise TypeError, "Expression #{exp} is of type #{exp.class} " \
+                         'which we do not recognize as an Arel expression.'
       end
 
       def array_agg(exp, order: nil)
