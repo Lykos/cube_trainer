@@ -1,42 +1,56 @@
+import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
+import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Component, LOCALE_ID, Inject } from '@angular/core';
 import { MessagesService } from '../messages.service';
 import { formatDate } from '@angular/common';
 import { Message } from '../message.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { zip } from 'rxjs';
+import { Observable, zip } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-messages',
   templateUrl: './messages.component.html',
   styleUrls: ['./messages.component.css']
 })
-export class MessagesComponent implements OnInit {
-  messages: Message[] = [];
+export class MessagesComponent {
+  messages$: Observable<Message[]>;
   columnsToDisplay = ['select', 'title', 'timestamp'];
   selection = new SelectionModel<Message>(true, []);
+  /** Whether the number of selected elements matches the total number of rows. */
+  allSelected$: Observable<{ value: boolean }>;
 
   constructor(private readonly messagesService: MessagesService,
+              private readonly dialog: MatDialog,
 	      @Inject(LOCALE_ID) private readonly locale: string,
-	      private readonly snackBar: MatSnackBar) {}
-
-  ngOnInit() {
-    this.update();
+	      private readonly snackBar: MatSnackBar) {
+    this.messages$ = this.messagesService.list().pipe(shareReplay());
+    this.allSelected$ = this.messages$.pipe(
+      map(ms => { return { value: this.selection.selected.length === ms.length }; }),
+      shareReplay(),
+    );
   }
     
   update() {
-    this.messagesService.list().subscribe((messages: Message[]) => {
-      this.messages = messages;
-    });
+    this.messages$ = this.messagesService.list().pipe(shareReplay());
   }
 
   onMarkAsReadSelected() {
     const observables = this.selection.selected.map(
       message => this.messagesService.markAsRead(message.id));
-    zip(...observables).subscribe((voids) => {
+    zip(...observables).subscribe(voids => {
       this.selection.clear();
       this.snackBar.open(`Marked ${observables.length} messages as read!`, 'Close');
       this.update();
+    },
+    error => {
+      const context = {
+        action: 'marking as read',
+        subject: `${observables.length} messages`,
+      };
+      this.dialog.open(BackendActionErrorDialogComponent, { data: parseBackendActionError(context, error) });
     });
   }
 
@@ -50,25 +64,29 @@ export class MessagesComponent implements OnInit {
     });
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
-  get allSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.messages.length;
-    return numSelected === numRows;
-  }
-
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    this.allSelected ?
+  masterToggle(messages: readonly Message[], allSelected: boolean) {
+    allSelected ?
       this.selection.clear() :
-      this.messages.forEach(row => this.selection.select(row));
+      messages.forEach(row => this.selection.select(row));
   }
 
   /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: Message): string {
+  checkboxLabel(allSelected: boolean, row?: Message): string {
     if (!row) {
-      return `${this.allSelected ? 'select' : 'deselect'} all`;
+      return `${allSelected ? 'select' : 'deselect'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} message from ${formatDate(row.timestamp.toDate(), 'short', this.locale)}`;
+  }
+
+  routerLink(message: Message) {
+    return `/messages/${message.id}`;
+  }
+
+  get context() {
+    return {
+      action: 'loading',
+      subject: 'messages',
+    };
   }
 }

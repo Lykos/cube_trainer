@@ -2,6 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { Result } from '@training/result.model';
 import { Case } from '@training/case.model';
 import { PartialResult } from '@training/partial-result.model';
+import { BackendActionError } from '@shared/backend-action-error.model';
 
 export const initialLoad = createAction(
   '[Results] initial load from server',
@@ -15,7 +16,7 @@ export const initialLoadSuccess = createAction(
  
 export const initialLoadFailure = createAction(
   '[Results] initial load from server failure',
-  props<{ modeId: number, error: any }>()
+  props<{ modeId: number, error: BackendActionError }>()
 );
 
 export const create = createAction(
@@ -30,7 +31,7 @@ export const createSuccess = createAction(
  
 export const createFailure = createAction(
   '[Results] create failure',
-  props<{ modeId: number, error: any }>()
+  props<{ modeId: number, error: BackendActionError }>()
 );
  
 export const destroy = createAction(
@@ -45,7 +46,7 @@ export const destroySuccess = createAction(
  
 export const destroyFailure = createAction(
   '[Results] destroy failure',
-  props<{ modeId: number, error: any }>()
+  props<{ modeId: number, error: BackendActionError }>()
 );
 
 export const markDnf = createAction(
@@ -60,7 +61,7 @@ export const markDnfSuccess = createAction(
  
 export const markDnfFailure = createAction(
   '[Results] mark DNF failure',
-  props<{ modeId: number, error: any }>()
+  props<{ modeId: number, error: BackendActionError }>()
 );
 
 export const setSelectedModeId = createAction(

@@ -1,6 +1,5 @@
 import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '@core/http-verb';
 import { Stat } from './stat.model';
 import { StatPart } from './stat-part.model';
 import { StatType } from './stat-type.model';
@@ -37,15 +36,15 @@ export class StatsService {
   constructor(private readonly rails: RailsService) {}
 
   listTypes(): Observable<StatType[]> {
-    return this.rails.ajax<StatType[]>(HttpVerb.Get, '/stat_types', {});
+    return this.rails.get<StatType[]>('/stat_types', {});
   }
   
   list(modeId: number): Observable<Stat[]> {
-    return this.rails.ajax<any[]>(HttpVerb.Get, `/modes/${modeId}/stats`, {}).pipe(
+    return this.rails.get<any[]>(`/modes/${modeId}/stats`, {}).pipe(
       map(stats => stats.map(parseStat)));
   }
 
   destroy(modeId: number, statId: number): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Delete, `/modes/${modeId}/stats/${statId}`, {});
+    return this.rails.delete<void>(`/modes/${modeId}/stats/${statId}`, {});
   }
 }

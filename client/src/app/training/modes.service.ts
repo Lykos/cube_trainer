@@ -1,6 +1,5 @@
 import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '@core/http-verb';
 import { Mode } from './mode.model';
 import { CubeSizeSpec } from './cube-size-spec.model';
 import { NewMode } from './new-mode.model';
@@ -58,28 +57,28 @@ export class ModesService {
   constructor(private readonly rails: RailsService) {}
 
   isModeNameTaken(modeName: string): Observable<boolean> {
-    return this.rails.ajax<boolean>(HttpVerb.Get, '/mode_name_exists_for_user', {modeName});
+    return this.rails.get<boolean>('/mode_name_exists_for_user', {modeName});
   }
 
   listTypes(): Observable<ModeType[]> {
-    return this.rails.ajax<any[]>(HttpVerb.Get, '/mode_types', {}).pipe(
+    return this.rails.get<any[]>('/mode_types', {}).pipe(
       map(modeTypes => modeTypes.map(parseModeType)));
   }
 
   list(): Observable<Mode[]> {
-    return this.rails.ajax<Mode[]>(HttpVerb.Get, '/modes', {}).pipe(
+    return this.rails.get<Mode[]>('/modes', {}).pipe(
       map(modes => modes.map(parseMode)));
   }
 
   show(modeId: number): Observable<Mode> {
-    return this.rails.ajax<Mode>(HttpVerb.Get, `/modes/${modeId}`, {}).pipe(map(parseMode));
+    return this.rails.get<Mode>(`/modes/${modeId}`, {}).pipe(map(parseMode));
   }
 
   destroy(modeId: number): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Delete, `/modes/${modeId}`, {});
+    return this.rails.delete<void>(`/modes/${modeId}`, {});
   }
 
   create(mode: NewMode): Observable<Mode> {
-    return this.rails.ajax<Mode>(HttpVerb.Post, '/modes', {mode}).pipe(map(parseMode));
+    return this.rails.post<Mode>('/modes', {mode}).pipe(map(parseMode));
   }
 }

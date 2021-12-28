@@ -1,12 +1,10 @@
 import { User } from '@core/user.model';
+import { BackendActionState } from '@shared/backend-action-state.model';
 import { Optional } from '@utils/optional';
 
 export interface UserState {
   readonly user: Optional<User>;
-  readonly initialLoadLoading: boolean;
-  readonly initialLoadError: Optional<any>;
-  readonly loginLoading: boolean;
-  readonly loginError: Optional<any>;
-  readonly logoutLoading: boolean;
-  readonly logoutError: Optional<any>;
+  readonly initialLoadState: BackendActionState;
+  readonly loginState: BackendActionState;
+  readonly logoutState: BackendActionState;
 }

@@ -1,7 +1,6 @@
 import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
 import { Case } from './case.model';
-import { HttpVerb } from '@core/http-verb';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QueueCache } from '@utils/queue-cache';
@@ -48,6 +47,6 @@ export class TrainerService {
 
   private randomCase(modeId: number, cachedCases: Case[] = []): Observable<Case> {
     const cachedCaseKeys = cachedCases.map(i => i.key);
-    return this.rails.ajax<Case>(HttpVerb.Get, `/trainer/${modeId}/random_case`, {cachedCaseKeys}).pipe(map(parseCase));
+    return this.rails.get<Case>(`/trainer/${modeId}/random_case`, {cachedCaseKeys}).pipe(map(parseCase));
   }
 }

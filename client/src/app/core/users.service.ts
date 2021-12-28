@@ -1,7 +1,6 @@
 import { AngularTokenService, RegisterData } from 'angular-token';
 import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '@core/http-verb';
 import { NewUser } from './new-user.model';
 import { UserUpdate } from './user-update.model';
 import { PasswordUpdate } from './password-update.model';
@@ -21,7 +20,7 @@ export class UsersService {
               private readonly cookieConsentService: CookieConsentService) {}
 
   isNameOrEmailTaken(nameOrEmail: string): Observable<boolean> {
-    return this.rails.ajax<boolean>(HttpVerb.Get, '/name_or_email_exists', {nameOrEmail});
+    return this.rails.get<boolean>('/name_or_email_exists', {nameOrEmail});
   }
 
   create(newUser: NewUser): Observable<void> {
@@ -72,11 +71,11 @@ export class UsersService {
   }
 
   update(userUpdate: UserUpdate): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Patch, '/auth', userUpdate);
+    return this.rails.patch<void>('/auth', userUpdate);
   }
 
   show(): Observable<User> {
-    return this.rails.ajax<User>(HttpVerb.Get, '/user', {});
+    return this.rails.get<User>('/user', {});
   }
 
   destroy(): Observable<void> {

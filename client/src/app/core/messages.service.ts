@@ -1,7 +1,6 @@
 import { RailsService } from '@core/rails.service';
 import { CableService } from '@core/cable.service';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '@core/http-verb';
 import { Message } from './message.model';
 import { MessageNotification } from './message-notification.model';
 import { map } from 'rxjs/operators';
@@ -30,20 +29,20 @@ export class MessagesService {
               private readonly cableService: CableService) {}
 
   markAsRead(messageId: number): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Put, `/messages/${messageId}`, {message: {read: true}})
+    return this.rails.patch<void>(`/messages/${messageId}`, {message: {read: true}})
   }
 
   destroy(messageId: number): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Delete, `/messages/${messageId}`, {})
+    return this.rails.delete<void>(`/messages/${messageId}`, {})
   }
 
   list(): Observable<Message[]> {
-    return this.rails.ajax<any[]>(HttpVerb.Get, '/messages', {}).pipe(
+    return this.rails.get<any[]>('/messages', {}).pipe(
       map(messages => messages.map(parseMessage)));
   }
 
   show(messageId: number): Observable<Message> {
-    return this.rails.ajax<any>(HttpVerb.Get, `/messages/${messageId}`, {}).pipe(
+    return this.rails.get<any>(`/messages/${messageId}`, {}).pipe(
       map(parseMessage));
   }
 

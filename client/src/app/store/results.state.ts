@@ -1,5 +1,5 @@
 import { Result } from '@training/result.model';
-import { Optional } from '@utils/optional';
+import { BackendActionState } from '@shared/backend-action-state.model';
 
 export interface ModeResultsState {
   readonly modeId: number;
@@ -8,17 +8,10 @@ export interface ModeResultsState {
   // In normal conditions, this contains all results except for the ones that were just created and not sent yet.
   readonly serverResults: readonly Result[];
 
-  readonly initialLoadLoading: boolean;
-  readonly initialLoadError: Optional<any>;
-
-  readonly createLoading: boolean;
-  readonly createError: Optional<any>;
-
-  readonly destroyLoading: boolean;
-  readonly destroyError: Optional<any>;
-
-  readonly markDnfLoading: boolean;
-  readonly markDnfError: Optional<any>;
+  readonly initialLoadState: BackendActionState;
+  readonly createState: BackendActionState;
+  readonly destroyState: BackendActionState;
+  readonly markDnfState: BackendActionState;
 }
 
 export interface ResultsState {

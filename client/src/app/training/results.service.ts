@@ -1,7 +1,6 @@
 import { RailsService } from '@core/rails.service';
 import { PartialResult } from './partial-result.model';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '@core/http-verb';
 import { Result } from './result.model';
 import { map } from 'rxjs/operators';
 import { Case } from './case.model';
@@ -37,23 +36,23 @@ export class ResultsService {
   constructor(private readonly rails: RailsService) {}
 
   list(modeId: number, offset?: number, limit?: number): Observable<Result[]> {
-    return this.rails.ajax<any[]>(HttpVerb.Get, `/modes/${modeId}/results`, {offset, limit}).pipe(
+    return this.rails.get<any[]>(`/modes/${modeId}/results`, {offset, limit}).pipe(
       map(results => results.map(parseResult)));
   }
 
   destroy(modeId: number, resultId: number): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Delete, `/modes/${modeId}/results/${resultId}`, {});
+    return this.rails.delete<void>(`/modes/${modeId}/results/${resultId}`, {});
   }
 
   markDnf(modeId: number, resultId: number): Observable<Result> {
-    return this.rails.ajax<Result>(HttpVerb.Patch, `/modes/${modeId}/results/${resultId}`,
-                                   { result: { success: false } }).pipe(
-                                     map(r => { const s = parseResult(r); console.log(s); return s }));
- }
+    return this.rails.patch<Result>(`/modes/${modeId}/results/${resultId}`,
+                                    { result: { success: false } }).pipe(
+                                      map(parseResult));
+  }
 
   create(modeId: number, casee: Case, partialResult: PartialResult): Observable<Result> {
-    return this.rails.ajax<Result>(HttpVerb.Post, `/modes/${modeId}/results`,
-				   {result: createResult(casee, partialResult)}).pipe(
+    return this.rails.post<Result>(`/modes/${modeId}/results`,
+				   { result: createResult(casee, partialResult) }).pipe(
                                      map(parseResult));
   }
 }

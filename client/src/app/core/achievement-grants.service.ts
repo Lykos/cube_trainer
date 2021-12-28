@@ -1,6 +1,5 @@
 import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
-import { HttpVerb } from '@core/http-verb';
 import { AchievementGrant } from './achievement-grant.model';
 import { map } from 'rxjs/operators';
 import { fromDateString } from '@utils/instant'
@@ -20,7 +19,7 @@ export class AchievementGrantsService {
   }
 
   list(): Observable<AchievementGrant[]> {
-    return this.rails.ajax<any[]>(HttpVerb.Get, '/achievement_grants', {}).pipe(
+    return this.rails.get<any[]>('/achievement_grants', {}).pipe(
       map(achievementGrants => achievementGrants.map(this.parseAchievementGrant)));
   }
 }

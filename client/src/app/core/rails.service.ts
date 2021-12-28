@@ -2,7 +2,6 @@ import { camelCaseToSnakeCase } from '@utils/case';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { HttpVerb } from './http-verb';
 import { environment } from '@environment';
 
 class UrlParameterPath {
@@ -63,51 +62,49 @@ function serializeUrlParamsPart(value: any, path: UrlParameterPath, partsAccumul
   }
 }
 
+// The precise type is actually important to choose the right override of the HttpClient.
+const paramLessOptions: { observe: 'body', responseType: 'json' } = {
+  observe: 'body',
+  responseType: 'json',
+};
+
+// The precise return type is actually important to choose the right override of the HttpClient.
+function createOptions(data: object): { observe: 'body', responseType: 'json', params: HttpParams } {
+  const params = serializeUrlParams(data);
+  return {
+    ...paramLessOptions,
+    params,
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class RailsService {
   constructor(private readonly http: HttpClient) {}
 
-  ajax<X>(type: HttpVerb, relativeUrl: string, data: object): Observable<X> {
-    const url = environment.apiPrefix + relativeUrl;
-    const params = serializeUrlParams(data);
-    // TODO clean this up, this is a relict from when we used railsujs where you needed to pass the method.
-    switch (type) {
-      case HttpVerb.Get:
-        return this.http.get<X>(url, {
-          observe: 'body',
-          responseType: 'json',
-          params,
-        });
-      case HttpVerb.Post:
-        return this.http.post<X>(url, params, {
-          observe: 'body',
-          responseType: 'json',
-        });
-      case HttpVerb.Put:
-        return this.http.put<X>(url, params, {
-          observe: 'body',
-          responseType: 'json',
-        });
-      case HttpVerb.Patch:
-        return this.http.patch<X>(url, params, {
-          observe: 'body',
-          responseType: 'json',
-        });
-      case HttpVerb.Delete:
-        return this.http.delete<X>(url, {
-          observe: 'body',
-          responseType: 'json',
-          params,
-        });
-      case HttpVerb.Head:
-        return this.http.head<X>(url, {
-          observe: 'body',
-          responseType: 'json',
-          params,
-        });
-    }
+  get<X>(relativeUrl: string, data: object): Observable<X> {
+    return this.http.get<X>(constructUrl(relativeUrl), createOptions(data));
+  }
+
+  post<X>(relativeUrl: string, data: object): Observable<X> {
+    return this.http.post<X>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions);
+  }
+
+  put<X>(relativeUrl: string, data: object): Observable<X> {
+    return this.http.put<X>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions);
+  }
+
+  patch<X>(relativeUrl: string, data: object): Observable<X> {
+    return this.http.patch<X>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions);
+  }
+
+  delete<X>(relativeUrl: string, data: object): Observable<X> {
+    return this.http.delete<X>(constructUrl(relativeUrl), createOptions(data));
+  }
+
+  head<X>(relativeUrl: string, data: object): Observable<X> {
+    return this.http.head<X>(constructUrl(relativeUrl), createOptions(data));
   }
 
   getBlob(relativeUrl: string): Observable<Blob> {

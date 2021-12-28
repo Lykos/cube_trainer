@@ -45,9 +45,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
         runtimeChecks: {
           strictStateImmutability: true,
           strictActionImmutability: true,
-          // TODO: Make errors serializable somehow.
-          // strictStateSerializability: true,
-          // strictActionSerializability: true,
+          strictStateSerializability: true,
+          strictActionSerializability: true,
           strictActionWithinNgZone: true,
           strictActionTypeUniqueness: true,
         },

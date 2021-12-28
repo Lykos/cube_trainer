@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { User } from '@core/user.model';
+import { BackendActionError } from '@shared/backend-action-error.model';
 import { Credentials } from '@core/credentials.model';
  
 export const initialLoad = createAction(
@@ -13,7 +14,7 @@ export const initialLoadSuccess = createAction(
  
 export const initialLoadFailure = createAction(
   '[User] initial load failure',
-  props<{ error: any }>()
+  props<{ error: BackendActionError }>()
 );
 
 export const login = createAction(
@@ -28,7 +29,7 @@ export const loginSuccess = createAction(
  
 export const loginFailure = createAction(
   '[User] login failure',
-  props<{ error: any }>()
+  props<{ error: BackendActionError }>()
 );
 
 export const logout = createAction(
@@ -41,5 +42,5 @@ export const logoutSuccess = createAction(
  
 export const logoutFailure = createAction(
   '[User] logout failure',
-  props<{ error: any }>()
+  props<{ error: BackendActionError }>()
 );

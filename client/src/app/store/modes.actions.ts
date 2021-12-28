@@ -16,7 +16,7 @@ export const initialLoadSuccess = createAction(
  
 export const initialLoadFailure = createAction(
   '[Modes] initial load from server failure',
-  props<{ error: any }>()
+  props<{ error: BackendActionError }>()
 );
 
 export const create = createAction(
@@ -31,7 +31,7 @@ export const createSuccess = createAction(
  
 export const createFailure = createAction(
   '[Modes] create failure',
-  props<{ error: any }>()
+  props<{ error: BackendActionError }>()
 );
 
 export const deleteClick = createAction(
@@ -56,7 +56,7 @@ export const destroySuccess = createAction(
  
 export const destroyFailure = createAction(
   '[Modes] destroy failure',
-  props<{ error: any }>()
+  props<{ error: BackendActionError }>()
 );
 
 export const setSelectedModeId = createAction(

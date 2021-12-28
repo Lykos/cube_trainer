@@ -1,21 +1,18 @@
 import { createReducer, on } from '@ngrx/store';
 import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, markDnf, markDnfSuccess, markDnfFailure, setSelectedModeId, setPage } from '@store/results.actions';
 import { ResultsState, ModeResultsState } from './results.state';
-import { none, some, orElse } from '@utils/optional';
+import { orElse } from '@utils/optional';
 import { find } from '@utils/utils';
+import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
 
 function initialModeResultsState(modeId: number): ModeResultsState {
   return {
     modeId,
     serverResults: [],
-    initialLoadLoading: false,
-    initialLoadError: none,
-    createLoading: false,
-    createError: none,
-    destroyLoading: false,
-    destroyError: none,
-    markDnfLoading: false,
-    markDnfError: none,
+    initialLoadState: backendActionNotStartedState,
+    createState: backendActionNotStartedState,
+    destroyState: backendActionNotStartedState,
+    markDnfState: backendActionNotStartedState,
   };
 };
 
@@ -39,43 +36,43 @@ function changeForMode(resultsState: ResultsState, modeId: number, f: (modeResul
 export const resultsReducer = createReducer(
   initialResultsState,
   on(initialLoad, (resultsState, { modeId }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, initialLoadLoading: true, initialLoadError: none };
+    return { ...modeResultsState, initialLoadState: backendActionLoadingState };
   })),
   on(initialLoadSuccess, (resultsState, { modeId, results }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, serverResults: results, initialLoadLoading: false, initialLoadError: none };
+    return { ...modeResultsState, serverResults: results, initialLoadState: backendActionSuccessState };
   })),
   on(initialLoadFailure, (resultsState, { modeId, error }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, initialLoadLoading: false, initialLoadError: some(error) };
+    return { ...modeResultsState, initialLoadState: backendActionFailureState(error) };
   })),
   on(create, (resultsState, { modeId }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, createLoading: true, createError: none };
+    return { ...modeResultsState, createState: backendActionLoadingState };
   })),
   on(createSuccess, (resultsState, { modeId, result }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, serverResults: [result, ...modeResultsState.serverResults], createLoading: false, createError: none };
+    return { ...modeResultsState, serverResults: [result, ...modeResultsState.serverResults], createState: backendActionSuccessState };
   })),
   on(createFailure, (resultsState, { modeId, error }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, createLoading: false, createError: some(error) };
+    return { ...modeResultsState, createState: backendActionFailureState(error) };
   })),  
   on(destroy, (resultsState, { modeId }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, destroyLoading: true, destroyError: none };
+    return { ...modeResultsState, destroyState: backendActionLoadingState };
   })),
   on(destroySuccess, (resultsState, { modeId, results }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, serverResults: modeResultsState.serverResults.filter(m => !results.some(r => m.id === r.id)), destroyLoading: false, destroyError: none };
+    return { ...modeResultsState, serverResults: modeResultsState.serverResults.filter(m => !results.some(r => m.id === r.id)), destroyState: backendActionSuccessState };
   })),
   on(destroyFailure, (resultsState, { modeId, error }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, destroyLoading: false, destroyError: some(error) };
+    return { ...modeResultsState, destroyState: backendActionFailureState(error) };
   })),  
   on(markDnf, (resultsState, { modeId }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, markDnfLoading: true, markDnfError: none };
+    return { ...modeResultsState, markDnfState: backendActionLoadingState };
   })),
   on(markDnfSuccess, (resultsState, { modeId, results }) => changeForMode(resultsState, modeId, modeResultsState => {
     const resultsWithDnfs = modeResultsState.serverResults.map(result => {
       return orElse(find(results, r => r.id === result.id), result);
     });
-    return { ...modeResultsState, serverResults: resultsWithDnfs, markDnfLoading: false, markDnfError: none };
+    return { ...modeResultsState, serverResults: resultsWithDnfs, markDnfState: backendActionSuccessState };
   })),
   on(markDnfFailure, (resultsState, { modeId, error }) => changeForMode(resultsState, modeId, modeResultsState => {
-    return { ...modeResultsState, markDnfLoading: false, markDnfError: some(error) };
+    return { ...modeResultsState, markDnfState: backendActionFailureState(error) };
   })),
   on(setSelectedModeId, (resultsState, { selectedModeId }) => {
     return { ...resultsState, selectedModeId };

@@ -1,6 +1,7 @@
 import { createSelector, createFeatureSelector } from '@ngrx/store';
 import { ModesState } from './modes.state';
 import { find } from '@utils/utils';
+import { isBackendActionLoading, maybeBackendActionError } from '@shared/backend-action-state.model';
 
 export const selectModesState = createFeatureSelector<ModesState>('modes');
 
@@ -10,15 +11,15 @@ export const selectModes = createSelector(
 
 export const selectInitialLoadLoading = createSelector(
   selectModesState,
-  modesState => modesState.initialLoadLoading);
+  modesState => isBackendActionLoading(modesState.initialLoadState));
 
 export const selectInitialLoadOrDestroyLoading = createSelector(
   selectModesState,
-  modesState => modesState.initialLoadLoading || modesState.destroyLoading);
+  modesState => isBackendActionLoading(modesState.initialLoadState) || isBackendActionLoading(modesState.destroyState));
 
 export const selectInitialLoadError = createSelector(
   selectModesState,
-  modesState => modesState.initialLoadError);
+  modesState => maybeBackendActionError(modesState.initialLoadState));
 
 export const selectSelectedMode = createSelector(
   selectModesState,

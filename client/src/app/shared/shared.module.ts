@@ -1,4 +1,5 @@
 import { BackendActionErrorDialogComponent } from './backend-action-error-dialog/backend-action-error-dialog.component';
+import { BackendActionErrorPipe } from './backend-action-error.pipe';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DurationPipe } from './duration.pipe';
@@ -24,15 +25,18 @@ import { OrErrorPipe } from './or-error.pipe';
 import { RouterModule } from '@angular/router';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { ValuePipe } from './value.pipe';
+import { BackendActionLoadErrorComponent } from './backend-action-load-error/backend-action-load-error.component';
 
 @NgModule({
   declarations: [
-    InstantPipe,
+    BackendActionErrorDialogComponent,
+    BackendActionErrorPipe,
+    BackendActionLoadErrorComponent,
     DurationPipe,
+    ErrorPipe,
+    InstantPipe,
     OrErrorPipe,
     ValuePipe,
-    ErrorPipe,
-    BackendActionErrorDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -57,12 +61,14 @@ import { ValuePipe } from './value.pipe';
     RxReactiveFormsModule,
   ],
   exports: [
-    DurationPipe,
-    ErrorPipe,
-    InstantPipe,
+    BackendActionErrorPipe,
+    BackendActionLoadErrorComponent,
     BrowserModule,
     BrowserAnimationsModule,
+    DurationPipe,
+    ErrorPipe,
     FormsModule,
+    InstantPipe,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,

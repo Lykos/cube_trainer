@@ -1,7 +1,8 @@
 import { createSelector, createFeatureSelector } from '@ngrx/store';
 import { ResultsState } from './results.state';
-import { orElse, mapOptional } from '@utils/optional';
+import { orElse, mapOptional, flatMapOptional } from '@utils/optional';
 import { find } from '@utils/utils';
+import { isBackendActionLoading, maybeBackendActionError } from '@shared/backend-action-state.model';
 
 export const selectResultsState = createFeatureSelector<ResultsState>('results');
 
@@ -16,6 +17,10 @@ export const selectSelectedModeResults = createSelector(
 export const selectSelectedModeNumResults = createSelector(
   selectSelectedModeResults,
   results => results.length);
+
+export const selectInitialLoadError = createSelector(
+  selectSelectedModeResultsState,
+  results => flatMapOptional(results, rs => maybeBackendActionError(rs.initialLoadState)));
 
 export const selectSelectedModeResultsOnPage = createSelector(
   selectResultsState,
@@ -33,4 +38,4 @@ export const selectSelectedModeNumResultsOnPage = createSelector(
 
 export const selectSelectedModeAnyLoading = createSelector(
   selectSelectedModeResultsState,
-  modeResultsState => orElse(mapOptional(modeResultsState, m => m.initialLoadLoading || m.createLoading || m.destroyLoading || m.markDnfLoading), false));
+  modeResultsState => orElse(mapOptional(modeResultsState, m => isBackendActionLoading(m.initialLoadState) || isBackendActionLoading(m.createState) || isBackendActionLoading(m.destroyState) || isBackendActionLoading(m.markDnfState)), false));

@@ -3,6 +3,7 @@ import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
 import { initialLoad, initialLoadSuccess, initialLoadFailure, login, loginSuccess, loginFailure, logout, logoutSuccess, logoutFailure } from '@store/user.actions';
+import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { UsersService } from '@core/users.service';
 import { Router } from '@angular/router';
  
@@ -20,7 +21,14 @@ export class UserEffects {
       exhaustMap(action =>
         this.usersService.show().pipe(
           map(user => initialLoadSuccess({ user })),
-          catchError(error => of(initialLoadFailure({ error })))
+          catchError(httpResponseError => {
+            const context = {
+              action: 'loading',
+              subject: 'user',
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(initialLoadFailure({ error }));
+          })
         )
       )
     )
@@ -32,7 +40,14 @@ export class UserEffects {
       exhaustMap(action =>
         this.usersService.login(action.credentials).pipe(
           map(user => loginSuccess({ user })),
-          catchError(error => of(loginFailure({ error })))
+          catchError(httpResponseError => {
+            const context = {
+              action: 'logging in',
+              subject: 'user',
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(loginFailure({ error }));
+          })
         )
       )
     )
@@ -52,7 +67,14 @@ export class UserEffects {
       exhaustMap(action =>
         this.usersService.logout().pipe(
           map(user => logoutSuccess()),
-          catchError(error => of(logoutFailure({ error })))
+          catchError(httpResponseError => {
+            const context = {
+              action: 'logging out',
+              subject: 'user',
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(logoutFailure({ error }));
+          })
         )
       )
     )
