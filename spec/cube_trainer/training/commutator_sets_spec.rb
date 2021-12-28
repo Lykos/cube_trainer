@@ -15,10 +15,6 @@ shared_examples 'commutator_set' do |mode_type, buffer|
       cube_size: mode_type.default_cube_size,
       buffer: buffer
     )
-    if mode_type.has_parity_parts?
-      mode.first_parity_part = TwistyPuzzles::Edge.for_face_symbols(%i[U B])
-      mode.second_parity_part = TwistyPuzzles::Edge.for_face_symbols(%i[U R])
-    end
     mode.memo_time_s = 1.second if mode_type.has_memo_time?
     mode.test_comms_mode = :fail
     mode.validate!
@@ -26,13 +22,9 @@ shared_examples 'commutator_set' do |mode_type, buffer|
   end
   let(:generator) { mode.generator }
   let(:input_items) { mode.input_items }
-  let(:hinter) { mode.hinter }
 
-  it 'parses all comms correctly and give a hint on a random one' do
-    if input_items
-      input_item = input_items.sample
-      hinter.hints(input_item.case_key)
-    end
+  it 'has input items if the mode type has bounded inputs' do
+    expect(mode.input_items).not_to be_empty if mode_type.has_bounded_inputs?
   end
 end
 

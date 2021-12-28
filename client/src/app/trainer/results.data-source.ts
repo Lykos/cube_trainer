@@ -5,7 +5,6 @@ import { Result } from './result.model';
 import { ResultsService } from './results.service';
 
 export class ResultsDataSource implements DataSource<Result> {
-
   private resultsSubject = new BehaviorSubject<Result[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();

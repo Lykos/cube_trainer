@@ -96,8 +96,6 @@ GEM
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     erubi (1.10.0)
-    et-orbi (1.2.6)
-      tzinfo
     faraday (1.8.0)
       faraday-em_http (~> 1.0)
       faraday-em_synchrony (~> 1.0)
@@ -118,9 +116,6 @@ GEM
     faraday-patron (1.0.0)
     faraday-rack (1.0.0)
     ffi (1.15.4)
-    fugit (1.5.2)
-      et-orbi (~> 1.1, >= 1.1.8)
-      raabro (~> 1.4)
     gems (1.2.0)
     globalid (1.0.0)
       activesupport (>= 5.0)
@@ -243,7 +238,6 @@ GEM
     public_suffix (4.0.6)
     puma (4.3.10)
       nio4r (~> 2.0)
-    raabro (1.4.0)
     racc (1.6.0)
     rack (2.2.3)
     rack-cors (1.1.1)
@@ -356,13 +350,6 @@ GEM
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2)
-    sidekiq (6.3.1)
-      connection_pool (>= 2.2.2)
-      rack (~> 2.0)
-      redis (>= 4.2.0)
-    sidekiq-cron (1.2.0)
-      fugit (~> 1.1)
-      sidekiq (>= 4.2.1)
     signet (0.16.0)
       addressable (~> 2.8)
       faraday (>= 0.17.3, < 2.0)
@@ -462,8 +449,6 @@ DEPENDENCIES
   ruby-progressbar
   rubyzip
   selenium-webdriver
-  sidekiq (~> 6.3.1)
-  sidekiq-cron (~> 1.2)
   simplecov
   spring
   spring-watcher-listen (~> 2.0.0)

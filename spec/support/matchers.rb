@@ -5,7 +5,7 @@ require 'twisty_puzzles'
 def transform_symbols_to_strings(value)
   case value
   when Hash
-    value.map { |k, v| [transform_symbols_to_strings(k), transform_symbols_to_strings(v)] }.to_h
+    value.to_h { |k, v| [transform_symbols_to_strings(k), transform_symbols_to_strings(v)] }
   when Array
     value.map { |v| transform_symbols_to_strings(v) }
   when Symbol

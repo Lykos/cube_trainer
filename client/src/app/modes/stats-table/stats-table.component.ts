@@ -1,10 +1,10 @@
 import { StatsService } from '../stats.service';
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 // @ts-ignore
 import Rails from '@rails/ujs';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { StatsDataSource } from '../stats.data-source';
 import { StatPartType } from '../stat-part-type.model';
 
@@ -13,12 +13,10 @@ import { StatPartType } from '../stat-part-type.model';
   templateUrl: './stats-table.component.html',
   styleUrls: ['./stats-table.component.css']
 })
-export class StatsTableComponent implements OnInit, OnDestroy {
+export class StatsTableComponent implements OnInit {
   modeId$: Observable<number>;
   dataSource!: StatsDataSource;
   columnsToDisplay = ['name', 'value'];
-  @Input() statEvents$!: Observable<void>;
-  private eventsSubscription!: Subscription;
 
   public get statPartType(): typeof StatPartType {
     return StatPartType; 
@@ -26,12 +24,11 @@ export class StatsTableComponent implements OnInit, OnDestroy {
 
   constructor(private readonly statsService: StatsService,
 	      activatedRoute: ActivatedRoute) {
-    this.modeId$ = activatedRoute.params.pipe(map(p => p['modeId']));
+    this.modeId$ = activatedRoute.params.pipe(map(p => +p['modeId']));
   }
 
   ngOnInit() {
     this.dataSource = new StatsDataSource(this.statsService);
-    this.eventsSubscription = this.statEvents$.subscribe(() => this.update());
     this.update();
   }
 
@@ -39,9 +36,5 @@ export class StatsTableComponent implements OnInit, OnDestroy {
     this.modeId$.subscribe(modeId => {
       this.dataSource.loadStats(modeId);
     });
-  }
-
-  ngOnDestroy() {
-    this.eventsSubscription.unsubscribe();
   }
 }

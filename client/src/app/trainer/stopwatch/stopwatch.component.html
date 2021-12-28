@@ -1,27 +1,30 @@
 <div class="stopwatch">
   <h2>Time</h2>
-  <div class="stopwatch-time" [ngClass]="{'post-memo-time': isPostMemoTime}"> {{duration}} </div>
+  <ng-container *ngIf="duration$ | async as duration">
+    <div class="stopwatch-time" [ngClass]="{'post-memo-time': running && isPostMemoTime(duration)}"> {{duration | duration}} </div>
+  </ng-container>
   <div>
-    <ng-container *ngIf="running; else notRunning">
-      <button mat-raised-button *ngIf="!hasSetup" color="primary" (click)="onStopAndStart()">
+    <ng-container *ngIf="running">
+      <button mat-raised-button *ngIf="hasStopAndStart" color="primary" (click)="onStopAndStart()">
         Stop and Start
       </button>
       <button mat-raised-button color="primary" (click)="onStopAndPause()">
-        <ng-container *ngIf="!hasSetup">
+        <ng-container *ngIf="hasStopAndStart">
           Stop and Pause
         </ng-container>
-        <ng-container *ngIf="hasSetup">
+        <ng-container *ngIf="!hasStopAndStart">
           Stop
         </ng-container>
       </button>
-      <button mat-raised-button color="primary" *ngIf="hintsAvailable" (click)="onHint()">
-        Hint
-      </button>
     </ng-container>
-    <ng-template #notRunning>
-      <button mat-raised-button color="primary" (click)="onStart()">
+    <ng-container *ngIf="!running">
+      <button mat-raised-button *ngIf="!loading" color="primary" (click)="onStart()">
         Start
       </button>
-    </ng-template>
+      <mat-spinner *ngIf="loading"></mat-spinner>
+    </ng-container>
+    <button mat-raised-button color="primary" *ngIf="hintsAvailable" (click)="onHint()">
+      Hint
+    </button>
   </div>
 </div>

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'googleauth'
+require 'google/apis/sheets_v4'
 require_relative 'google_sheets_client'
 require_relative 'alg_extractor'
 
@@ -7,7 +9,18 @@ module CubeTrainer
   module SheetScraping
     # Client that scrapes alg sets from Google sheets.
     class GoogleSheetsScraper
+      def initialize(
+        credentials_factory: Google::Auth::ServiceAccountCredentials,
+        sheets_service_factory: Google::Apis::SheetsV4::SheetsService
+      )
+        @sheets_client = GoogleSheetsClient.new(
+          credentials_factory: credentials_factory,
+          sheets_service_factory: sheets_service_factory
+        )
+      end
+
       def run
+        @sheets_client.fetch_access_token!
         AlgSpreadsheet.all.each do |alg_spreadsheet|
           scrape_sheet(alg_spreadsheet)
         end
@@ -15,7 +28,7 @@ module CubeTrainer
 
       def scrape_sheet(alg_spreadsheet)
         Rails.logger.info "Scraping #{alg_spreadsheet.spreadsheet_id} by #{alg_spreadsheet.owner}."
-        tables = sheets_client.get_tables(alg_spreadsheet.spreadsheet_id)
+        tables = @sheets_client.get_tables(alg_spreadsheet.spreadsheet_id)
         Rails.logger.info "Got #{tables.length} sheets " \
                           "with a total of #{total_cells(tables)} cells."
         counters = { updated_algs: 0, new_algs: 0, confirmed_algs: 0 }
@@ -52,8 +65,7 @@ module CubeTrainer
         end
       end
 
-      def save_alg(alg_set, part_cycle, alg, counters, is_fixed: false)
-        case_key = InputRepresentationType.new.serialize(part_cycle)
+      def save_alg(alg_set, case_key, alg, counters, is_fixed: false)
         existing_alg = alg_set.algs.find_by(case_key: case_key)
         return update_alg(existing_alg, alg, counters, is_fixed: is_fixed) if existing_alg
 
@@ -81,10 +93,6 @@ module CubeTrainer
         existing_alg.alg = alg_string
         existing_alg.is_fixed = is_fixed
         existing_alg.save!
-      end
-
-      def sheets_client
-        @sheets_client ||= GoogleSheetsClient.new
       end
 
       def total_cells(tables)

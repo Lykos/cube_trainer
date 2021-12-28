@@ -41,7 +41,7 @@ export class UserEffects {
   loginSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loginSuccess),
-      tap(() => this.router.navigate(['/modes']))
+      tap(() => { this.router.navigate(['/modes']); })
     ),
     { dispatch: false },
   );
@@ -61,7 +61,7 @@ export class UserEffects {
   logoutSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(logoutSuccess),
-      tap(() => this.router.navigate(['/logged_out']))
+      tap(() => { this.router.navigate(['/logged_out']); })
     ),
     { dispatch: false },
   );

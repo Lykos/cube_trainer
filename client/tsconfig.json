@@ -26,11 +26,10 @@
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noImplicitThis": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "strict": true,
+    "skipLibCheck": true
   },
-  "exclude": [  
-    "node_modules",  
-  ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,

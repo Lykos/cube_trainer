@@ -1,99 +1,83 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { ResultsService } from '../results.service';
 import { Result } from '../result.model';
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, LOCALE_ID, Inject } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Component, OnInit, Input, LOCALE_ID, Inject } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
 import { formatDate } from '@angular/common';
-// @ts-ignore
-import Rails from '@rails/ujs';
-import { Observable, Subscription, zip } from 'rxjs';
-import { ResultsDataSource } from '../results.data-source';
+import { Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
+import { selectSelectedModeResults, selectSelectedModeNumResults, selectSelectedModeResultsOnPage, selectSelectedModeNumResultsOnPage, selectSelectedModeAnyLoading } from '../../state/results.selectors';
+import { initialLoad, destroy, markDnf, setSelectedModeId, setPage } from '../../state/results.actions';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'cube-trainer-results-table',
   templateUrl: './results-table.component.html',
   styleUrls: ['./results-table.component.css']
 })
-export class ResultsTableComponent implements OnInit, OnDestroy {
-  modeId$: Observable<number>;
-  dataSource!: ResultsDataSource;
+export class ResultsTableComponent implements OnInit {
+  @Input()
+  modeId?: number;
+
   columnsToDisplay = ['select', 'case', 'time', 'numHints', 'timestamp'];
+  results$: Observable<readonly Result[]>;
+  resultsOnPage$: Observable<readonly Result[]>;
+  loading$: Observable<boolean>;
+  numResults$: Observable<number>;
+  /** Whether the number of selected elements matches the total number of rows. */
+  allSelected$: Observable<{ value: boolean }>;
 
-  @Input() resultEvents$!: Observable<void>;
-
-  @Output()
-  private resultsModified: EventEmitter<void> = new EventEmitter();
-
-  private eventsSubscription!: Subscription;
   selection = new SelectionModel<Result>(true, []);
 
-  constructor(private readonly resultsService: ResultsService,
-	      private readonly snackBar: MatSnackBar,
-	      @Inject(LOCALE_ID) private readonly locale: string,
-	      activatedRoute: ActivatedRoute) {
-    this.modeId$ = activatedRoute.params.pipe(map(p => p['modeId']));
+  constructor(private readonly store: Store,
+	      @Inject(LOCALE_ID) private readonly locale: string) {
+    this.loading$ = this.store.select(selectSelectedModeAnyLoading);
+    this.results$ = this.store.select(selectSelectedModeResults);
+    this.resultsOnPage$ = this.store.select(selectSelectedModeResultsOnPage);
+    this.numResults$ = this.store.select(selectSelectedModeNumResults);
+    this.allSelected$ = this.store.select(selectSelectedModeNumResultsOnPage).pipe(
+      map(l => { return { value: this.selection.selected.length === l }; }),
+      shareReplay(),
+    );
+  }
+
+  get checkedModeId(): number {
+    const modeId = this.modeId;
+    if (!modeId) {
+      throw new Error('modeId has to be defined');
+    }
+    return modeId
   }
 
   ngOnInit() {
-    this.dataSource = new ResultsDataSource(this.resultsService);
-    this.eventsSubscription = this.resultEvents$.subscribe(() => this.update());
-    this.update();
-  }
-
-  update() {
-    this.modeId$.subscribe(modeId => {
-      this.dataSource.loadResults(modeId);
-    });
-  }
-
-  ngOnDestroy() {
-    this.eventsSubscription.unsubscribe();
+    this.store.dispatch(setSelectedModeId({ selectedModeId: this.checkedModeId }));
+    this.store.dispatch(initialLoad({ modeId: this.checkedModeId }));
   }
 
   onDeleteSelected() {
-    this.modeId$.subscribe(modeId => {
-      const observables = this.selection.selected.map(result =>
-	this.resultsService.destroy(modeId, result.id));
-      zip(...observables).subscribe((voids) => {
-	this.selection.clear();
-	this.snackBar.open(`Deleted ${observables.length} results!`, 'Close');
-        this.resultsModified.emit();
-      });
-    });
+    this.store.dispatch(destroy({ modeId: this.checkedModeId, results: this.selection.selected }));
   }
 
   onMarkSelectedDnf() {
-    this.modeId$.subscribe(modeId => {
-      const observables = this.selection.selected.map(result =>
-	this.resultsService.markDnf(modeId, result.id));
-      zip(...observables).subscribe((voids) => {
-	this.selection.clear();
-	this.snackBar.open(`Marked ${observables.length} results as DNF!`, 'Close');
-        this.resultsModified.emit();
-      });
-    });
+    this.store.dispatch(markDnf({ modeId: this.checkedModeId, results: this.selection.selected }));
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
-  get allSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
+  onPage(pageEvent: PageEvent) {
+    this.store.dispatch(setPage({ pageSize: pageEvent.pageSize, pageIndex: pageEvent.pageIndex }));
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    this.allSelected ?
-      this.selection.clear() :
-      this.dataSource.data.forEach(row => this.selection.select(row));
+  masterToggle(resultsOnPage: readonly Result[], allSelected: boolean) {
+    if (allSelected) {
+      this.selection.clear();
+    } else {
+      resultsOnPage.forEach(row => this.selection.select(row));
+    }
   }
 
   /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: Result): string {
+  checkboxLabel(allSelected: boolean, row?: Result): string {
     if (!row) {
-      return `${this.allSelected ? 'select' : 'deselect'} all`;
+      return `${allSelected ? 'select' : 'deselect'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} result from ${formatDate(row.timestamp.toDate(), 'short', this.locale)}`;
   }

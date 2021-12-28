@@ -151,6 +151,20 @@ shared_context 'with result' do
   end
 end
 
+shared_context 'with alg override' do
+  include_context 'with mode'
+
+  let(:alg_override) do
+    uf = TwistyPuzzles::Edge.for_face_symbols(%i[U F])
+    df = TwistyPuzzles::Edge.for_face_symbols(%i[D F])
+    ub = TwistyPuzzles::Edge.for_face_symbols(%i[U B])
+    mode.alg_overrides.find_or_create_by!(
+      case_key: TwistyPuzzles::PartCycle.new([uf, df, ub]),
+      alg: "[M', U2]"
+    )
+  end
+end
+
 shared_context 'with headers' do
   let(:headers) { { ACCEPT: 'application/json' } }
 end
@@ -170,5 +184,14 @@ shared_context 'with eve auth headers' do
 
   let(:eve_headers) do
     eve.create_new_auth_token.merge!(headers)
+  end
+end
+
+shared_context 'with alg spreadsheet' do
+  let(:alg_spreadsheet) do
+    AlgSpreadsheet.create!(
+      owner: 'Testy Testikow',
+      spreadsheet_id: '1l3IcCG0vVJbZtj30ZXQTn1UBWTya6i84tUZZg5PN3OY'
+    )
   end
 end

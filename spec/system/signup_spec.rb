@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 # TODO: Doesn't work on github for some reason.
-xdescribe 'signup', type: :system do
+describe 'signup', type: :system do
   before do
     driven_by(:selenium_chrome_headless)
   end
@@ -14,7 +14,7 @@ xdescribe 'signup', type: :system do
 
     fill_in 'Username', with: 'system test user'
     fill_in 'Email', with: 'system_test@example.org'
-    fill_in 'Password', with: 'password'
+    find('#password').fill_in 'Password', with: 'password'
     fill_in 'Confirm Password', with: 'password'
     find(:css, '#cube-trainer-terms-and-conditions-accepted').set(true)
     find(:css, '#cube-trainer-privacy-policy-accepted').set(true)
@@ -35,6 +35,7 @@ xdescribe 'signup', type: :system do
     user.password = 'password'
 
     login(user)
+    visit '/modes'
     expect(page).to have_text('system test user')
     expect(page).to have_text('Logout')
   end

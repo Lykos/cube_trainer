@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'googleauth'
-require 'google/apis/sheets_v4'
-
 module CubeTrainer
   module SheetScraping
     # Client to access Google sheets API.
@@ -30,29 +27,34 @@ module CubeTrainer
 
         attr_reader :title, :row_count, :column_count
 
-        def max_column_name
-          [@column_count, 1000].min.to_s
+        def max_row_name
+          [@row_count, 1000].min.to_s
         end
 
-        def max_row_name
-          if @row_count <= ALPHABET.length
-            ALPHABET[@row_count - 1]
-          elsif @row_count <= ALPHABET.length**2
-            "#{ALPHABET[(@row_count - 1) / 26]}#{ALPHABET[(@row_count - 1) % 26]}"
+        def max_column_name
+          if @column_count <= ALPHABET.length
+            ALPHABET[@column_count - 1]
+          elsif @column_count <= ALPHABET.length**2
+            "#{ALPHABET[(@column_count - 1) / 26]}#{ALPHABET[(@column_count - 1) % 26]}"
           else
             'ZZ'
           end
         end
 
         def range
-          "#{@title}!A1:#{max_row_name}#{max_column_name}"
+          "#{@title}!A1:#{max_column_name}#{max_row_name}"
         end
       end
 
       SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly'
 
+      def initialize(credentials_factory:, sheets_service_factory:)
+        @credentials_factory = credentials_factory
+        @sheets_service_factory = sheets_service_factory
+      end
+
       def authorizer
-        @authorizer ||= Google::Auth::ServiceAccountCredentials.make_creds(
+        @authorizer ||= @credentials_factory.make_creds(
           json_key_io: StringIO.new(Rails.application.credentials[:google_service_account].to_json),
           scope: SCOPE
         )
@@ -61,13 +63,18 @@ module CubeTrainer
       def service
         @service ||=
           begin
-            service = Google::Apis::SheetsV4::SheetsService.new
+            service = @sheets_service_factory.new
             service.authorization = authorizer
             service
           end
       end
 
-      delegate :fetch_access_token!, to: :authorizer
+      # Delegate doesn't work during tests here.
+      # rubocop:disable Rails/Delegate
+      def fetch_access_token!
+        authorizer.fetch_access_token!
+      end
+      # rubocop:enable Rails/Delegate
 
       def get_sheets(spreadsheet_id)
         service.get_spreadsheet(spreadsheet_id).sheets.map do |s|

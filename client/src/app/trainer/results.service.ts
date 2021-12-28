@@ -36,7 +36,7 @@ function createResult(casee: Case, partialResult: PartialResult) {
 export class ResultsService {
   constructor(private readonly rails: RailsService) {}
 
-  list(modeId: number, offset: number, limit: number): Observable<Result[]> {
+  list(modeId: number, offset?: number, limit?: number): Observable<Result[]> {
     return this.rails.ajax<any[]>(HttpVerb.Get, `/modes/${modeId}/results`, {offset, limit}).pipe(
       map(results => results.map(parseResult)));
   }
@@ -45,12 +45,15 @@ export class ResultsService {
     return this.rails.ajax<void>(HttpVerb.Delete, `/modes/${modeId}/results/${resultId}`, {});
   }
 
-  markDnf(modeId: number, resultId: number): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Patch, `/modes/${modeId}/results/${resultId}`, {result: {success: false}});
+  markDnf(modeId: number, resultId: number): Observable<Result> {
+    return this.rails.ajax<Result>(HttpVerb.Patch, `/modes/${modeId}/results/${resultId}`,
+                                   { result: { success: false } }).pipe(
+                                     map(r => { const s = parseResult(r); console.log(s); return s }));
  }
 
-  create(modeId: number, casee: Case, partialResult: PartialResult): Observable<void> {
-    return this.rails.ajax<void>(HttpVerb.Post, `/modes/${modeId}/results`,
-				 {result: createResult(casee, partialResult)});
+  create(modeId: number, casee: Case, partialResult: PartialResult): Observable<Result> {
+    return this.rails.ajax<Result>(HttpVerb.Post, `/modes/${modeId}/results`,
+				   {result: createResult(casee, partialResult)}).pipe(
+                                     map(parseResult));
   }
 }

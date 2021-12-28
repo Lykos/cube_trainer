@@ -1,0 +1,27 @@
+<div>
+  <h1 mat-dialog-title>{{ context.action }} {{ context.subject }} failed!</h1>
+  <div mat-dialog-content>
+    <span *ngIf="!error.fieldErrors">
+      {{ error.statusText }}
+    </span>
+    <ng-container *ngFor="let fieldError of error.fieldErrors">
+      <span class="field">
+        {{ fieldError.field }}
+      </span>
+      <span *ngIf="noMessage(fieldError) as message">
+        is invalid.
+      </span>
+      <span *ngIf="uniqueMessage(fieldError) as message">
+        {{ message }}
+      </span>
+      <ul *ngIf="multipleMessages(fieldError)">
+        <li *ngFor="let message of fieldError.messages">
+          {{ message }}
+        </li>
+      </ul>
+    </ng-container>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" mat-dialog-close>Ok</button>
+  </div>
+</div>

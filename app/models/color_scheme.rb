@@ -6,11 +6,10 @@ require 'twisty_puzzles'
 class ColorScheme < ApplicationRecord
   belongs_to :user
 
-  validates :user_id, presence: true
   attribute :color_u, :symbol
   attribute :color_f, :symbol
   validates :color_u, :color_f, presence: true, inclusion: TwistyPuzzles::ColorScheme::WCA.colors
-  validate :validate_colors_not_opposite
+  validate :validate_colors_not_opposite, :validate_colors_not_same
 
   def to_dump
     attributes
@@ -28,10 +27,11 @@ class ColorScheme < ApplicationRecord
   RELEVANT_ROTATION_PERMUTATIONS =
     TwistyPuzzles::Rotation::ALL_ROTATIONS.permutation(2).reject do |a, b|
       a.same_axis?(b)
-    end
+    end.freeze
   ROTATION_COMBINATIONS =
+    ([TwistyPuzzles::Algorithm.empty].freeze +
     TwistyPuzzles::Rotation::ALL_ROTATIONS.map { |r| TwistyPuzzles::Algorithm.move(r) } +
-    RELEVANT_ROTATION_PERMUTATIONS.map { |rs| TwistyPuzzles::Algorithm.new(rs) }
+    RELEVANT_ROTATION_PERMUTATIONS.map { |rs| TwistyPuzzles::Algorithm.new(rs) }).freeze
 
   def setup
     @setup =
@@ -57,18 +57,17 @@ class ColorScheme < ApplicationRecord
 
   def validate_colors_not_opposite
     return unless color_u && color_f
+    return unless TwistyPuzzles::ColorScheme::WCA.colors.include?(color_u)
+    return unless TwistyPuzzles::ColorScheme::WCA.colors.include?(color_f)
+    return unless TwistyPuzzles::ColorScheme::WCA.opposite_color(color_u) == color_f
 
-    unless TwistyPuzzles::ColorScheme::WCA.opposite_color(color_u) ==
-           TwistyPuzzles::ColorScheme::WCA.color(color_f)
-      return
-    end
-
-    errors.add(color_f, "has opposite colors for faces U (#{color_u}) and F (#{color_f})")
+    errors.add(:color_f, "has opposite colors for faces U (#{color_u}) and F (#{color_f})")
   end
 
   def validate_colors_not_same
+    return unless color_u && color_f
     return unless color_u == color_f
 
-    errors.add(color_f, "has the same colors for faces U (#{color_u}) and F (#{color_f})")
+    errors.add(:color_f, "has the same colors for faces U (#{color_u}) and F (#{color_f})")
   end
 end

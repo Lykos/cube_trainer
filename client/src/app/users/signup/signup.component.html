@@ -26,7 +26,7 @@
       </mat-error>
     </mat-form-field>
     <br>
-    <mat-form-field appearance="fill">
+    <mat-form-field id="password" appearance="fill">
       <mat-label>Password</mat-label>
       <input type="password" matInput formControlName="password">
       <mat-error *ngIf="relevantInvalid(password) && password.errors && password.errors['required']">

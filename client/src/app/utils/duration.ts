@@ -94,7 +94,7 @@ export class Duration {
     const days = Math.floor(this.toDays());
     const hours = Math.floor(this.toHours()) % numHoursPerDay;
     const minutes = Math.floor(this.toMinutes()) % numMinutesPerHour;
-    const seconds = Math.floor((this.toSeconds() % numSecondsPerMinute) * 1000) / 1000;
+    const seconds = Math.floor((this.toSeconds() % numSecondsPerMinute) * 100) / 100;
     const array = ((days > 0) ? [days + ''] : []).concat((hours > 0) ? [toDD(hours)] : []).concat([toDD(minutes), toDD(seconds)]);
     return array.join(':');
   }

@@ -1,25 +1,27 @@
 <div>
   <h2>Results</h2>
   <div>
-    <div class="spinner-container" *ngIf="dataSource.loading$ | async">
+    <div class="spinner-container" *ngIf="loading$ | async">
       <mat-spinner></mat-spinner>
     </div>
-    <table mat-table class="mat-elevation-z2" [dataSource]="dataSource">
-      <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && allSelected"
-                        [indeterminate]="selection.hasValue() && !allSelected"
-                        [aria-label]="checkboxLabel()">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let result">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(result) : null"
-                        [checked]="selection.isSelected(result)"
-                        [aria-label]="checkboxLabel(result)">
-          </mat-checkbox>
-        </td>
+    <table mat-table class="mat-elevation-z2" [dataSource]="results$" *ngIf="(loading$ | async) === false">
+      <ng-container *ngIf="resultsOnPage$ | async as resultsOnPage">
+        <ng-container matColumnDef="select" *ngIf="allSelected$ | async as allSelected">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle(resultsOnPage, allSelected.value) : null"
+                          [checked]="selection.hasValue() && allSelected.value"
+                          [indeterminate]="selection.hasValue() && !allSelected.value"
+                          [aria-label]="checkboxLabel(allSelected.value)">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let result">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="$event ? selection.toggle(result) : null"
+                          [cnhecked]="selection.isSelected(result)"
+                          [aria-label]="checkboxLabel(allSelected.value, result)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
       </ng-container>
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef> Timestamp </th>
@@ -39,6 +41,7 @@
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let result; columns: columnsToDisplay"></tr>
+      <mat-paginator [length]="numResults$ | async" [pageSize]="20"  [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)"></mat-paginator>
     </table>
     <button mat-fab (click)="onDeleteSelected()" *ngIf="selection.hasValue()">
       <span class="material-icons">delete</span>

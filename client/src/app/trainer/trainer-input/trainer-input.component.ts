@@ -1,7 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { Mode } from '../../modes/mode.model';
+import { overrideAlgClick } from '../../state/modes.actions';
 import { ShowInputMode } from '../../modes/show-input-mode.model';
 import { Case } from '../case.model';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'cube-trainer-trainer-input',
@@ -18,7 +20,7 @@ export class TrainerInputComponent {
   @Input()
   numHints?: number;
 
-  constructor() {}
+  constructor(private readonly store: Store) {}
 
   get setup() {
     return this.casee?.setup;
@@ -26,12 +28,11 @@ export class TrainerInputComponent {
 
   get puzzle() {
     const cubeSize = this.mode?.cubeSize;
-    console.log(`${cubeSize}x${cubeSize}x${cubeSize}`);
     return cubeSize ? `${cubeSize}x${cubeSize}x${cubeSize}` : undefined;
   }
 
-  get hints() {
-    return this.casee?.hints ? this.casee.hints : [];
+  get alg() {
+    return this.casee?.alg;
   }
 
   get showImage() {
@@ -40,5 +41,9 @@ export class TrainerInputComponent {
 
   get showName() {
     return this.mode && this.mode.showInputMode == ShowInputMode.Name;
+  }
+
+  onOverride() {
+    this.mode && this.casee && this.store.dispatch(overrideAlgClick({ mode: this.mode, casee: this.casee }));
   }
 }

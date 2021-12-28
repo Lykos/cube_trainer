@@ -10,7 +10,7 @@ function parseCase(casee: any) {
   return {
     key: casee.case_key,
     name: casee.case_name,
-    hints: casee.hints,
+    alg: casee.alg,
     setup: casee.setup
   };
 }
@@ -46,7 +46,7 @@ export class TrainerService {
     this.casesCache(modeId);
   }
 
-  randomCase(modeId: number, cachedCases: Case[] = []): Observable<Case> {
+  private randomCase(modeId: number, cachedCases: Case[] = []): Observable<Case> {
     const cachedCaseKeys = cachedCases.map(i => i.key);
     return this.rails.ajax<Case>(HttpVerb.Get, `/trainer/${modeId}/random_case`, {cachedCaseKeys}).pipe(map(parseCase));
   }

@@ -1,24 +1,26 @@
 <div>
-  <ng-container *ngIf="mode$ | orerror | async as modeOrError; else loading">
-    <ng-container *ngIf="modeOrError | value as mode; else error">
-      <div layout="row" layout-sm="column">
-        <div flex>
-          <cube-trainer-trainer-input [casee]="casee" [mode]="mode" [numHints]="numHints" *ngIf="mode && casee"></cube-trainer-trainer-input>
-          <cube-trainer-stopwatch [mode]="mode" (casee)="onCase($event)" (resultSaved)="onResultsModified()" (numHints)="onNumHints($event)" *ngIf="mode"></cube-trainer-stopwatch>
-        </div>
-        <div flex>
-          <cube-trainer-results-table [resultEvents$]="resultEventsSubject.asObservable()" (resultsModified)="onResultsModified()"></cube-trainer-results-table>
-        </div>
-        <div flex>
-          <cube-trainer-stats-table [statEvents$]="resultEventsSubject.asObservable()"></cube-trainer-stats-table>
-        </div>
+  <ng-container *ngIf="mode">
+    <div layout="row" layout-sm="column">
+      <div flex *ngIf="casee">
+        <cube-trainer-trainer-input [casee]="casee" [mode]="mode" [numHints]="numHints"></cube-trainer-trainer-input>
+        <cube-trainer-stopwatch
+          [stopwatchStore]="stopwatchStore"
+          [memoTime]="mode.memoTime"
+          [maxHints]="maxHints"
+          [hasStopAndStart]="hasStopAndStart"
+          (numHints)="onNumHints($event)">
+        </cube-trainer-stopwatch>
       </div>
-    </ng-container>
-    <ng-template #error>
-      Error Loading Mode.
-    </ng-template>
+      <div flex>
+        <cube-trainer-results-table [modeId]="mode.id"></cube-trainer-results-table>
+      </div>
+      <div flex>
+        <cube-trainer-stats-table></cube-trainer-stats-table>
+      </div>
+    </div>
   </ng-container>
-  <ng-template #loading>
-    <mat-spinner></mat-spinner>
-  </ng-template>
+  <div *ngIf="error$ | async">
+    Error loading modes.
+  </div>
+  <mat-spinner *ngIf="loading$ | async"></mat-spinner>
 </div>

@@ -15,7 +15,7 @@ import { initialLoad, logout } from '../../state/user.actions';
 })
 export class ToolbarComponent implements OnInit {
   readonly user$: Observable<Optional<User>>;
-  unreadMessagesCount$: Observable<number>;
+  unreadMessagesCount$: Observable<number | undefined>;
 
   constructor(private readonly messagesService: MessagesService,
               private readonly store: Store) {

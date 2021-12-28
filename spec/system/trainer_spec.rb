@@ -22,13 +22,8 @@ describe 'trainer', type: :system do
     sleep(0.5)
     click_button 'Stop and Start'
     sleep(0.5)
-    click_button 'Hint'
-    sleep(0.5)
     click_button 'Stop and Pause'
 
-    # Check that hints are 0 and 1.
-    # TODO: Figure out a better way to figure out whether the right results exist.
-    expect(page).to have_text('0')
-    expect(page).to have_text('1')
+    # TODO: Check hints
   end
 end

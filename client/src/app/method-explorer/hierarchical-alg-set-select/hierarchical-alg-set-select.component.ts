@@ -17,26 +17,26 @@ const HIERARCHICAL_EXPAND_OPTIONS: readonly TagWithName[] = [
   styleUrls: ['./hierarchical-alg-set-select.component.css']
 })
 export class HierarchicalAlgSetSelectComponent {
-  @Input() level: HierarchicalAlgSetLevel;
+  @Input() level: HierarchicalAlgSetLevel | undefined = undefined;
 
   get hasSublevels() {
-    return this.level.hasSublevels;
+    return this.level?.hasSublevels;
   }  
   
   get isExpanded() {
-    return this.hasSublevels && this.level.isExpanded;
+    return this.hasSublevels && this.level?.isExpanded;
   }
 
   get levelName() {
-    return this.level.levelName
+    return this.level?.levelName
   }
 
   get pieceName() {
-    return this.level.piece?.name || '';
+    return this.level?.piece?.name || '';
   }
 
   get isEnabled() {
-    return this.level.isEnabled;
+    return this.level?.isEnabled;
   }
 
   get hierarchicalExpandOptions() {
@@ -44,14 +44,15 @@ export class HierarchicalAlgSetSelectComponent {
   }
 
   get uniformOptions() {
-    return this.level.uniformOptions;
+    return this.level?.uniformOptions;
   }
 
   get formGroup() {
-    return this.level.formGroup;
+    // This shall only be called if isEnabled is true and hence the level exists.
+    return this.level!.formGroup;
   }
 
   getOrCreateSublevels() {
-    return this.level.getOrCreateSublevels();
+    return this.level?.getOrCreateSublevels();
   }
 }

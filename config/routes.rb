@@ -18,7 +18,9 @@ Rails.application.routes.draw do
     resources :modes do
       resources :cases, only: [:index, :show]
       resources :results
+      resources :alg_overrides
       resources :stats, only: [:index, :show, :destroy]
+      post 'alg_overrides/create_or_update', to: 'alg_overrides#create_or_update'
     end
     resources :stat_types, only: [:index, :show]
     get 'trainer/:mode_id/random_case', to: 'trainer#random_case'

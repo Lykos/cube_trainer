@@ -30,6 +30,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
+import { OverrideAlgDialogComponent } from './override-alg-dialog/override-alg-dialog.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     ModesComponent,
     NewModeComponent,
     DeleteModeConfirmationDialogComponent,
+    OverrideAlgDialogComponent,
   ],
   imports: [
     BrowserModule,

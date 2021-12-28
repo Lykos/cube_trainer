@@ -14,7 +14,6 @@ require 'cube_trainer/letter_pair'
 class ModeType
   include ActiveModel::Model
   include CubeTrainer
-  include CubeTrainer::Training
   include PartHelper
 
   SHOW_INPUT_MODES = %i[picture name].freeze
@@ -58,7 +57,7 @@ class ModeType
   end
 
   # Takes an external errors list so it can be used for other models, too.
-  def validate_cube_size(cube_size, errors, attribute)
+  def validate_cube_size(cube_size, errors, attribute = :cube_size)
     unless cube_size <= max_cube_size
       errors.add(attribute, "has to be at most #{max_cube_size} for mode type #{name}")
     end
@@ -74,8 +73,32 @@ class ModeType
   end
 
   # Takes an external errors list so it can be used for other models, too.
-  def validate_buffer(buffer, errors, _attribute)
+  def validate_buffer(buffer, errors)
     errors.add(:buffer, "has to be a #{part_type}") unless buffer.is_a?(part_type)
+  end
+
+  # Takes an external errors list so it can be used for other models, too.
+  def validate_case_key(case_key, errors)
+    unless case_key.is_a?(TwistyPuzzles::PartCycle)
+      errors.add(
+        :case_key,
+        'has to be a part cycle'
+      ) && return
+    end
+
+    errors.add(:case_key, "has to be a #{part_type}") unless case_key.part_type == part_type
+    unless case_key.length == cycle_length
+      errors.add(
+        :case_key,
+        "has to have length #{cycle_length}"
+      )
+    end
+    errors.add(:case_key, 'cannot twist') unless case_key.twist.zero?
+  end
+
+  # TODO: Support more than 3 cycles
+  def cycle_length
+    3
   end
 
   # TODO: Refactor
@@ -109,7 +132,7 @@ class ModeType
   end
 
   # Returns a simple version for the current user that can be returned to the frontend.
-  def to_simple(user = nil)
+  def to_simple(_user = nil)
     {
       key: key,
       name: name,
@@ -121,8 +144,13 @@ class ModeType
       has_bounded_inputs: has_bounded_inputs?,
       has_memo_time: has_memo_time?,
       has_setup: has_setup?,
-      stats_types: stats_types.map(&:to_simple)
-    }.tap { |r| r[:useable_modes] = useable_modes(user) if user }
+      stats_types: stats_types.map(&:to_simple),
+      alg_sets: alg_sets.map(&:to_simple)
+    }
+  end
+
+  def alg_sets
+    AlgSet.where(mode_type: self)
   end
 
   def useable_modes(user)
@@ -224,7 +252,7 @@ class ModeType
           ModeType.new(
             key: :memo_rush,
             name: 'Memo Rush',
-            generator_class: CubeScrambles,
+            generator_class: Training::CubeScrambles,
             learner_type: :memo_rush,
             default_cube_size: 3,
             has_buffer: false,
@@ -237,7 +265,7 @@ class ModeType
           ModeType.new(
             key: :corner_commutators,
             name: 'Corner Commutators',
-            generator_class: CornerCommutators,
+            generator_class: Training::CornerCommutators,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -249,7 +277,7 @@ class ModeType
           ModeType.new(
             key: :corner_parities,
             name: 'Corner Parities',
-            generator_class: CornerParities,
+            generator_class: Training::CornerParities,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -262,7 +290,7 @@ class ModeType
           ModeType.new(
             key: :corner_twists_plus_parities,
             name: 'Corner 1 Twists + Parities',
-            generator_class: CornerTwistsPlusParities,
+            generator_class: Training::CornerTwistsPlusParities,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -274,7 +302,7 @@ class ModeType
           ModeType.new(
             key: :floating_2twists,
             name: 'Floating Corner 2 Twists',
-            generator_class: FloatingCorner2Twists,
+            generator_class: Training::FloatingCorner2Twists,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: false,
@@ -285,7 +313,7 @@ class ModeType
           ModeType.new(
             key: :corner_3twists,
             name: 'Corner 3 Twists',
-            generator_class: Corner3Twists,
+            generator_class: Training::Corner3Twists,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -297,7 +325,7 @@ class ModeType
           ModeType.new(
             key: :floating_2twists_and_corner_3twists,
             name: 'Floating Corner 2 Twists + 3 Twists',
-            generator_class: FloatingCorner2TwistsAnd3Twists,
+            generator_class: Training::FloatingCorner2TwistsAnd3Twists,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -308,7 +336,7 @@ class ModeType
           ModeType.new(
             key: :floating_2flips,
             name: 'Floating Edge 2 Flips',
-            generator_class: FloatingEdgeFlips,
+            generator_class: Training::FloatingEdgeFlips,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: false,
@@ -320,7 +348,7 @@ class ModeType
           ModeType.new(
             key: :edge_commutators,
             name: 'Edge Commutators',
-            generator_class: EdgeCommutators,
+            generator_class: Training::EdgeCommutators,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -332,7 +360,7 @@ class ModeType
           ModeType.new(
             key: :wing_commutators,
             name: 'Wing Commutators',
-            generator_class: WingCommutators,
+            generator_class: Training::WingCommutators,
             learner_type: :case_time,
             default_cube_size: 4,
             has_buffer: true,
@@ -344,7 +372,7 @@ class ModeType
           ModeType.new(
             key: :xcenter_commutators,
             name: 'X-Center Commutators',
-            generator_class: XCenterCommutators,
+            generator_class: Training::XCenterCommutators,
             learner_type: :case_time,
             default_cube_size: 4,
             has_buffer: true,
@@ -356,7 +384,7 @@ class ModeType
           ModeType.new(
             key: :tcenter_commutators,
             name: 'T-Center Commutators',
-            generator_class: TCenterCommutators,
+            generator_class: Training::TCenterCommutators,
             learner_type: :case_time,
             default_cube_size: 5,
             has_buffer: true,
@@ -364,60 +392,6 @@ class ModeType
             show_input_modes: SHOW_INPUT_MODES,
             has_bounded_inputs: true,
             letter_scheme_mode: :buffer_plus_2_parts
-          ),
-          ModeType.new(
-            key: :letters_to_word,
-            name: 'Letters To Word',
-            generator_class: LettersToWord,
-            learner_type: :word,
-            has_buffer: false,
-            has_goal_badness: true,
-            show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true
-          ),
-          ModeType.new(
-            key: :plls,
-            name: 'PLLs',
-            generator_class: Plls,
-            learner_type: :case_time,
-            default_cube_size: 3,
-            has_buffer: false,
-            has_goal_badness: true,
-            show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true
-          ),
-          ModeType.new(
-            key: :colls,
-            name: 'COLLs',
-            generator_class: Colls,
-            learner_type: :case_time,
-            default_cube_size: 3,
-            has_buffer: false,
-            has_goal_badness: true,
-            show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true
-          ),
-          ModeType.new(
-            key: :olls_plus_cp,
-            name: 'OLLs + CP',
-            generator_class: OllsPlusCp,
-            learner_type: :case_time,
-            default_cube_size: 3,
-            has_buffer: false,
-            has_goal_badness: true,
-            show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true
-          ),
-          ModeType.new(
-            key: :f2l,
-            name: 'F2l',
-            generator_class: F2l,
-            learner_type: :case_time,
-            default_cube_size: 3,
-            has_buffer: false,
-            has_goal_badness: true,
-            show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true
           )
         ].freeze
         all.each(&:validate!)

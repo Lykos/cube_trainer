@@ -1,18 +1,7 @@
-import { now } from '../../utils/instant';
-import { Duration, zeroDuration } from '../../utils/duration';
-import { Case } from '../case.model';
-import { Mode } from '../../modes/mode.model';
-import { TrainerService } from '../trainer.service';
-import { ResultsService } from '../results.service';
-import { HostListener, Component, OnDestroy, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { PartialResult } from '../partial-result.model';
-import { interval, timer } from 'rxjs';
-
-enum StopWatchState {
-  NotStarted,
-  Running,
-  Paused
-};
+import { Duration } from '../../utils/duration';
+import { StopwatchStore } from '../stopwatch.store';
+import { HostListener, Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'cube-trainer-stopwatch',
@@ -21,168 +10,91 @@ enum StopWatchState {
 })
 export class StopwatchComponent implements OnDestroy, OnInit {
   @Input()
-  mode!: Mode;
+  stopwatchStore?: StopwatchStore;
 
-  @Output()
-  private casee: EventEmitter<Case> = new EventEmitter();
+  @Input()
+  memoTime?: Duration;
 
-  @Output()
-  private resultSaved: EventEmitter<void> = new EventEmitter();
+  @Input()
+  maxHints?: number;
+
+  @Input()
+  hasStopAndStart?: boolean;
 
   @Output()
   private numHints: EventEmitter<number> = new EventEmitter();
 
-  private casee_: Case | undefined = undefined;
+  duration$: Observable<Duration> | undefined = undefined;
   private numHints_ = 0;
-  private maxHints = 0;
-  duration: Duration = zeroDuration;
-  private intervalSubscription: any = undefined;
-  private memoTimeSubscription: any = undefined;
-  private state: StopWatchState = StopWatchState.NotStarted;
-  private goAudio: HTMLAudioElement | undefined = undefined;
+  running = false;
+  loading = true;
 
-  constructor(private readonly trainerService: TrainerService,
-              private readonly resultsService: ResultsService) {}
+  private runningSubscription: any = undefined;
+  private loadingSubscription: any = undefined;
 
-  get hintsAvailable() {
-    return this.numHints_ < this.maxHints;
-  }
-
-  get running() {
-    return this.state == StopWatchState.Running;
-  }
-
-  get notStarted() {
-    return this.state == StopWatchState.NotStarted;
-  }
-
-  get partialResult(): PartialResult {
-    return {
-      numHints: this.numHints_,
-      duration: this.duration!,
-      success: true,
+  get checkedStopwatchStore(): StopwatchStore {
+    const stopwatchStore = this.stopwatchStore;
+    if (!stopwatchStore) {
+      throw new Error('stopwatchStore has to be defined');
     }
-  }
-
-  get hasSetup() {
-    return this.mode.modeType.hasSetup;
-  }
-
-  get memoTime() {
-    return this.mode.memoTime;
-  }
-
-  get isPostMemoTime() {
-    return this.running && this.memoTime && this.duration.greaterThan(this.memoTime);
-  }
-
-  onStart() {
-    if (this.hasSetup) {
-      // TODO: Handle the (unlikely) situation that the input hasn't been received yet.
-      this.startFor(this.casee_!);
-    } else {
-      this.trainerService.nextCaseWithCache(this.mode.id).subscribe(casee => this.startFor(casee));
-    }
-  }
-
-  startFor(casee: Case) {
-    this.numHints_ = 0;
-    this.numHints.emit(this.numHints_);
-    this.maxHints = casee.hints ? casee.hints.length : 0;
-    this.casee_ = casee;
-    // TODO: Make the emit location depending on hasSetup nicer.
-    if (!this.hasSetup) {
-      this.casee.emit(casee);
-    }
-    this.state = StopWatchState.Running;
-    const start = now();
-    if (this.intervalSubscription) {
-      throw 'Timer started when it was already running.';
-    }
-    this.intervalSubscription = interval(10).subscribe(() => {
-      this.duration = start.durationUntil(now());
-    });
-    if (this.memoTime) {
-      this.memoTimeSubscription = timer(this.memoTime.toMillis()).subscribe(() => {
-        this.goAudio!.play();
-      });
-    }
-  }
-
-  stopAnd(onSuccess: () => void) {
-    this.stopInterval();
-    this.state = StopWatchState.Paused;
-    this.resultsService.create(this.mode.id, this.casee_!, this.partialResult).subscribe(() => {
-      this.resultSaved.emit();
-      this.maybePrefetchCaseAnd(onSuccess);
-    });
-  }
-
-  onStopAndPause() {
-    this.stopAnd(() => {});
-  }
-
-  onStopAndStart() {
-    this.stopAnd(() => this.onStart());
-  }
-
-  onHint() {
-    if (this.hintsAvailable) {
-      ++this.numHints_;
-      this.numHints.emit(this.numHints_);
-    }
-  }
-
-  stopInterval() {
-    if (!this.intervalSubscription) {
-      return;
-    }
-    this.intervalSubscription.unsubscribe();
-    this.intervalSubscription = undefined;
-    if (this.memoTimeSubscription) {
-      this.memoTimeSubscription.unsubscribe();
-      this.memoTimeSubscription = undefined;
-    }
-  }
-
-  ngOnDestroy() {
-    this.stopInterval();
-  }
-
-  maybePrefetchCaseAnd(onSuccess: () => void) {
-    if (this.hasSetup) {
-      this.trainerService.nextCaseWithCache(this.mode.id).subscribe(casee => {
-        this.casee_ = casee;
-        // TODO: Make the emit location depending on hasSetup nicer.
-        this.casee.emit(casee);
-        onSuccess();
-      });
-    } else {
-      onSuccess();
-    }
+    return stopwatchStore;
   }
 
   ngOnInit() {
-    this.maybePrefetchCaseAnd(() => {});
-    if (this.memoTime) {
-      this.goAudio = new Audio('../../assets/audio/go.wav');
-    }
+    this.duration$ = this.checkedStopwatchStore.duration$;
+    this.runningSubscription = this.checkedStopwatchStore.running$.subscribe(r => { this.running = r; });
+    this.loadingSubscription = this.checkedStopwatchStore.loading$.subscribe(r => { this.loading = r; });
+  }
+
+  ngOnDestroy() {
+    this.runningSubscription?.unsubscribe();
+    this.loadingSubscription?.unsubscribe();
+  }
+
+  isPostMemoTime(duration: Duration) {
+    return this.memoTime && duration.greaterThan(this.memoTime);
+  }
+
+  get hintsAvailable() {
+    return this.maxHints && this.numHints_ < this.maxHints;
+  }
+
+  onStart() {
+    this.checkedStopwatchStore.start();
+    this.numHints_ = 0;
+    this.numHints.emit(0);
+  }
+
+  onStopAndPause() {
+    this.checkedStopwatchStore.stopAndPause();
+  }
+
+  onStopAndStart() {
+    this.checkedStopwatchStore.stopAndStart();
+  }
+
+  onHint() {
+    ++this.numHints_;
+    this.numHints.emit(this.numHints_);
   }
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'h') {
-      this.onHint();
-      return;
-    }
-    if (this.running) {
-      if (this.hasSetup) {
-        this.onStopAndPause();
-      } else {
-        this.onStopAndStart();
-      }
-    } else if (this.notStarted) {
-      this.onStart();
+    switch (event.key) {
+      case 'h':
+        this.onHint();
+        return;
+      case 'Enter':
+      case ' ':
+        if (this.running) {
+          if (this.hasStopAndStart) {
+            this.onStopAndStart();
+          } else {
+            this.onStopAndPause();
+          }
+        } else if (!this.loading) {
+          this.onStart();
+        }
     }
   }
 }
