@@ -16,6 +16,8 @@ class Result < ApplicationRecord
   validates :success, inclusion: [true, false]
   validates :num_hints, numericality: POSITIVE_INTEGER
   validates :case_key, presence: true
+  after_create :grant_num_results_achievements
+  delegate :user, to: :mode
 
   def to_simple
     {
@@ -45,5 +47,19 @@ class Result < ApplicationRecord
 
   def time
     time_s&.seconds
+  end
+
+  private
+
+  def grant_num_results_achievements
+    if mode.results.count >= 100000
+      user.grant_achievement_if_not_granted(:wizard)
+    elsif mode.results.count >= 10000
+      user.grant_achievement_if_not_granted(:professional)
+    elsif mode.results.count >= 1000
+      user.grant_achievement_if_not_granted(:addict)
+    elsif mode.results.count >= 100
+      user.grant_achievement_if_not_granted(:enthusiast)
+    end
   end
 end

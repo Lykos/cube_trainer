@@ -25,6 +25,6 @@ class Stat < ApplicationRecord
   end
 
   def grant_stat_creator_achievement
-    user.grant_achievement_if_not_granted(:stat_creator)
+    user.grant_achievement_if_not_granted(:statistician)
   end
 end
