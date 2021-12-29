@@ -36,7 +36,7 @@ export class TrainingSessionsEffects {
             console.log(httpResponseError.message);
             const context = {
               action: 'loading',
-              subject: 'training sessions',
+              subject: 'sessions',
             }
             const error = parseBackendActionError(context, httpResponseError);
             console.log(error);
@@ -82,7 +82,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(createSuccess),
       tap(action => {
-        this.snackBar.open(`Training session ${action.trainingSession.name} created.`, 'Close');
+        this.snackBar.open(`Session ${action.trainingSession.name} created.`, 'Close');
 	this.router.navigate([`/trainingSessions`]);
       }),
     ),

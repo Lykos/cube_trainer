@@ -173,7 +173,7 @@ export class NewTrainingSessionComponent {
   get trainingSessionTypesContext() {
     return {
       action: 'loading',
-      subject: 'training session types',
+      subject: 'session types',
     };
   }
 }

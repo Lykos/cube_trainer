@@ -2,14 +2,14 @@
 
 require 'rails_helper'
 
-describe 'new mode', type: :system do
+describe 'new training session', type: :system do
   include_context 'with user abc'
 
   before do
     driven_by(:selenium_chrome_headless)
   end
 
-  it 'allows to create a new commutator mode' do
+  it 'allows to create a new commutator training session' do
     login(user)
 
     visit '/training-sessions'
@@ -17,8 +17,8 @@ describe 'new mode', type: :system do
     click_button 'New'
 
     sleep(0.5)
-    fill_in 'Name', with: 'system test mode'
-    mat_select 'Corner Commutators', from: 'modeType'
+    fill_in 'Name', with: 'system test training session'
+    mat_select 'Corner Commutators', from: 'trainingSessionType'
     click_button 'Next'
 
     sleep(0.5)
@@ -30,7 +30,7 @@ describe 'new mode', type: :system do
     click_button 'Next'
 
     sleep(0.5)
-    mat_select 'name', from: 'showInputTrainingSession'
+    mat_select 'name', from: 'showInputMode'
     fill_in 'Goal Time per Element', with: '2.0'
     click_button 'Next'
 
@@ -39,10 +39,10 @@ describe 'new mode', type: :system do
     click_button 'Submit'
 
     sleep(1)
-    expect(page).to have_text('TrainingSession system test training_session created.')
+    expect(page).to have_text('Session system test training session created.')
   end
 
-  it 'allows to create a new memo rush mode' do
+  it 'allows to create a new memo rush training session' do
     login(user)
 
     visit '/training-sessions'
@@ -50,8 +50,8 @@ describe 'new mode', type: :system do
     click_button 'New'
 
     sleep(0.5)
-    fill_in 'Name', with: 'system test mode'
-    mat_select 'Memo Rush', from: 'modeType'
+    fill_in 'Name', with: 'system test training session'
+    mat_select 'Memo Rush', from: 'trainingSessionType'
     click_button 'Next'
 
     sleep(0.5)
@@ -69,6 +69,6 @@ describe 'new mode', type: :system do
     click_button 'Submit'
 
     sleep(1)
-    expect(page).to have_text('TrainingSession system test training_session created.')
+    expect(page).to have_text('Session system test training session created.')
   end
 end

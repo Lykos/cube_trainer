@@ -1,6 +1,6 @@
 <mat-horizontal-stepper linear #stepper>
   <mat-step [stepControl]="trainingSessionTypeGroup">
-    <ng-template matStepLabel>Choose training session type</ng-template>
+    <ng-template matStepLabel>Choose session type</ng-template>
     <form [formGroup]="trainingSessionTypeGroup">
       <mat-form-field>
         <mat-label>Name</mat-label>
@@ -9,7 +9,7 @@
           You must provide a <strong>name</strong>.
         </mat-error>
         <mat-error *ngIf="relevantInvalid(name) && name.errors && name.errors['uniqueTrainingSessionName']">
-          You already have a training session with the same <strong>name</strong>.
+          You already have a session with the same <strong>name</strong>.
         </mat-error>
       </mat-form-field>
       <ng-container *ngIf="trainingSessionTypes$ | orerror | async as trainingSessionTypesOrError; else loading">
@@ -20,7 +20,7 @@
               <mat-option *ngFor="let trainingSessionType of trainingSessionTypes" [value]="trainingSessionType"> {{trainingSessionType.name}} </mat-option>
             </mat-select>
             <mat-error *ngIf="relevantInvalid(trainingSessionTypeControl) && trainingSessionTypeControl.errors && trainingSessionTypeControl.errors['required']">
-              You must provide a <strong>training session type</strong>.
+              You must provide a <strong>session type</strong>.
             </mat-error>
           </mat-form-field>
         </ng-container>
@@ -43,13 +43,13 @@
         <mat-label>Cube Size</mat-label>
         <input matInput formControlName="cubeSize" type="number" [value]="defaultCubeSize">
         <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['required']">
-          You must provide a <strong>cube size</strong> for this training session type.
+          You must provide a <strong>cube size</strong> for this session type.
         </mat-error>
         <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['minNumber']">
-          The <strong>cube size</strong> has to be at least {{minCubeSize}} for this training session type.
+          The <strong>cube size</strong> has to be at least {{minCubeSize}} for this session type.
         </mat-error>
         <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['maxNumber']">
-          The <strong>cube size</strong> can be at most {{maxCubeSize}} for this training session type.
+          The <strong>cube size</strong> can be at most {{maxCubeSize}} for this session type.
         </mat-error>
         <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['odd']">
           The <strong>cube size</strong> has to be odd for this cube size.
@@ -64,7 +64,7 @@
           <mat-option *ngFor="let buffer of buffers" [value]="buffer"> {{buffer.name}} </mat-option>
         </mat-select>
         <mat-error *ngIf="relevantInvalid(buffer) && buffer.errors && buffer.errors['required']">
-          You must provide a <strong>buffer</strong> for this training session type.
+          You must provide a <strong>buffer</strong> for this session type.
         </mat-error>
       </mat-form-field>
       <div>
@@ -104,7 +104,7 @@
         <mat-label>Goal Time per Element</mat-label>
         <input matInput formControlName="goalBadness" type="number">
         <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors && goalBadness.errors['required']">
-          You must provide a <strong>goal badness</strong> for this training session type.
+          You must provide a <strong>goal badness</strong> for this session type.
         </mat-error>
         <mat-error *ngIf="relevantInvalid(goalBadness) && goalBadness.errors && goalBadness.errors['numeric']">
           The <strong>goal badness</strong> has to be a positive number.
@@ -114,7 +114,7 @@
         <mat-label>Memo Time in Seconds</mat-label>
         <input matInput formControlName="memoTimeS" type="number">
         <mat-error *ngIf="relevantInvalid(memoTimeS) && memoTimeS.errors && memoTimeS.errors['required']">
-          You must provide a <strong>memo time</strong> for this training session type.
+          You must provide a <strong>memo time</strong> for this session type.
         </mat-error>
         <mat-error *ngIf="relevantInvalid(memoTimeS) && memoTimeS.errors && memoTimeS.errors['numeric']">
           The <strong>memo time</strong> has to be a positive number.

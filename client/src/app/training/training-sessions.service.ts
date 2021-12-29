@@ -79,6 +79,6 @@ export class TrainingSessionsService {
   }
 
   create(trainingSession: NewTrainingSession): Observable<TrainingSession> {
-    return this.rails.post<TrainingSession>('/trainingSessions', {trainingSession}).pipe(map(parseTrainingSession));
+    return this.rails.post<TrainingSession>('/training_sessions', {trainingSession}).pipe(map(parseTrainingSession));
   }
 }
