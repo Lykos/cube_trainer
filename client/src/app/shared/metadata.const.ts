@@ -10,4 +10,5 @@ export const METADATA = {
   newIssueLink: 'https://github.com/Lykos/cube_training/issues/new',
   googleAnalyticsId: 'G-SP2ETHT13T',
   consentCookieKey: 'cookie-consent',
+  signInStoredUrlStorageKey: 'after-login-redirect',
 };

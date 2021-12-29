@@ -1,13 +1,14 @@
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { AngularTokenModule } from 'angular-token';
+import { METADATA } from '@shared/metadata.const';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { NgModule } from '@angular/core';
 import { StoreModule } from '@ngrx/store';
 import { CoreModule } from '@core/core.module';
 import { SharedModule } from '@shared/shared.module';
-import { TrainingModule } from './training/training.module';
+import { TrainingModule } from '@training/training.module';
 import { MethodExplorerModule } from './method-explorer/method-explorer.module';
 import { APP_BASE_HREF } from '@angular/common';
 // TODO: Move this to a better place
@@ -36,7 +37,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     AngularTokenModule.forRoot({
       loginField: 'email',
       signInRedirect: 'login',
-      signInStoredUrlStorageKey: 'afterLoginRedirect',
+      signInStoredUrlStorageKey: METADATA.signInStoredUrlStorageKey,
       apiBase: environment.apiPrefix,
       registerAccountCallback: `${environment.redirectProtocol}://${environment.host}/confirm_email`,
       resetPasswordCallback: `${environment.redirectProtocol}://${environment.host}/update_password`,
@@ -62,7 +63,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     }),
   ],
   providers: [
-    {provide: APP_BASE_HREF, useValue: '/'},
+    { provide: APP_BASE_HREF, useValue: '/' },
     AngularTokenModule,    
   ],
   bootstrap: [AppComponent]

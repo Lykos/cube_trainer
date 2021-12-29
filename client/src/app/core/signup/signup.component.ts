@@ -1,3 +1,5 @@
+import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
+import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../users.service';
 import { FormGroup, AbstractControl } from '@angular/forms';
@@ -5,6 +7,7 @@ import { UserFormCreator } from '../user-form-creator.service';
 import { NewUser } from '../new-user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'cube-trainer-signup',
@@ -14,6 +17,7 @@ export class SignupComponent implements OnInit {
   signupForm!: FormGroup;
 
   constructor(private readonly usersService: UsersService,
+              private readonly dialog: MatDialog,
 	      private readonly router: Router,
 	      private readonly snackBar: MatSnackBar,
 	      private readonly userFormCreator: UserFormCreator) {}
@@ -27,10 +31,20 @@ export class SignupComponent implements OnInit {
   }
 
   onSubmit() {
-    this.usersService.create(this.newUser).subscribe(r => {
-      this.snackBar.open('Signup successful!', 'Close');
-      this.router.navigate(['/login']);
-    });
+    const newUser = this.newUser;
+    this.usersService.create(newUser).subscribe(
+      () => {
+        this.snackBar.open('Signup successful!', 'Close');
+        this.router.navigate(['/login']);
+      },
+      error => {
+        const context = {
+          action: 'registering',
+          subject: newUser.name,
+        };
+        this.dialog.open(BackendActionErrorDialogComponent, { data: parseBackendActionError(context, error) });
+      }
+    );
   }
     
   get name() { return this.signupForm.get('name')!; }
