@@ -71,11 +71,11 @@ export class ModesService {
   }
 
   show(modeId: number): Observable<Mode> {
-    return this.rails.get<Mode>(`/modes/${modeId}`, {}).pipe(map(parseMode));
+    return this.rails.get<Mode>(`/training_sessions/${modeId}`, {}).pipe(map(parseMode));
   }
 
   destroy(modeId: number): Observable<void> {
-    return this.rails.delete<void>(`/modes/${modeId}`, {});
+    return this.rails.delete<void>(`/training_sessions/${modeId}`, {});
   }
 
   create(mode: NewMode): Observable<Mode> {

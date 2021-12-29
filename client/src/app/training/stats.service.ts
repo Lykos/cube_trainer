@@ -40,11 +40,11 @@ export class StatsService {
   }
   
   list(modeId: number): Observable<Stat[]> {
-    return this.rails.get<any[]>(`/modes/${modeId}/stats`, {}).pipe(
+    return this.rails.get<any[]>(`/training_sessions/${modeId}/stats`, {}).pipe(
       map(stats => stats.map(parseStat)));
   }
 
   destroy(modeId: number, statId: number): Observable<void> {
-    return this.rails.delete<void>(`/modes/${modeId}/stats/${statId}`, {});
+    return this.rails.delete<void>(`/training_sessions/${modeId}/stats/${statId}`, {});
   }
 }

@@ -36,22 +36,22 @@ export class ResultsService {
   constructor(private readonly rails: RailsService) {}
 
   list(modeId: number, offset?: number, limit?: number): Observable<Result[]> {
-    return this.rails.get<any[]>(`/modes/${modeId}/results`, {offset, limit}).pipe(
+    return this.rails.get<any[]>(`/training_sessions/${modeId}/results`, {offset, limit}).pipe(
       map(results => results.map(parseResult)));
   }
 
   destroy(modeId: number, resultId: number): Observable<void> {
-    return this.rails.delete<void>(`/modes/${modeId}/results/${resultId}`, {});
+    return this.rails.delete<void>(`/training_sessions/${modeId}/results/${resultId}`, {});
   }
 
   markDnf(modeId: number, resultId: number): Observable<Result> {
-    return this.rails.patch<Result>(`/modes/${modeId}/results/${resultId}`,
+    return this.rails.patch<Result>(`/training_sessions/${modeId}/results/${resultId}`,
                                     { result: { success: false } }).pipe(
                                       map(parseResult));
   }
 
   create(modeId: number, casee: Case, partialResult: PartialResult): Observable<Result> {
-    return this.rails.post<Result>(`/modes/${modeId}/results`,
+    return this.rails.post<Result>(`/training_sessions/${modeId}/results`,
 				   { result: createResult(casee, partialResult) }).pipe(
                                      map(parseResult));
   }
