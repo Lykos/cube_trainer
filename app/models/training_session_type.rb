@@ -9,7 +9,7 @@ require 'cube_trainer/training/letters_to_word'
 require 'cube_trainer/training/alg_sets'
 require 'cube_trainer/letter_pair'
 
-# Model for mode types. They are basic templates which users use to create their training modes.
+# Model for training_session types. They are basic templates which users use to create their training training_sessions.
 # rubocop:disable Metrics/ClassLength
 class TrainingSessionType
   include ActiveModel::Model
@@ -29,7 +29,7 @@ class TrainingSessionType
                 :has_bounded_inputs,
                 :has_goal_badness,
                 :show_input_modes,
-                :used_mode_types,
+                :used_training_session_types,
                 :has_parity_parts,
                 :has_memo_time,
                 :has_setup,
@@ -59,16 +59,16 @@ class TrainingSessionType
   # Takes an external errors list so it can be used for other models, too.
   def validate_cube_size(cube_size, errors, attribute = :cube_size)
     unless cube_size <= max_cube_size
-      errors.add(attribute, "has to be at most #{max_cube_size} for mode type #{name}")
+      errors.add(attribute, "has to be at most #{max_cube_size} for training_session type #{name}")
     end
     unless cube_size >= min_cube_size
-      errors.add(attribute, "has to be at least #{min_cube_size} for mode type #{name}")
+      errors.add(attribute, "has to be at least #{min_cube_size} for training_session type #{name}")
     end
     if cube_size.odd? && !odd_cube_size_allowed?
-      errors.add(attribute, "cannot be odd for mode type #{name}")
+      errors.add(attribute, "cannot be odd for training_session type #{name}")
     end
     if cube_size.even? && !even_cube_size_allowed? # rubocop:disable Style/GuardClause
-      errors.add(attribute, "cannot be even for mode type #{name}")
+      errors.add(attribute, "cannot be even for training_session type #{name}")
     end
   end
 
@@ -150,14 +150,14 @@ class TrainingSessionType
   end
 
   def alg_sets
-    AlgSet.where(mode_type: self)
+    AlgSet.where(training_session_type: self)
   end
 
-  def useable_modes(user)
-    used_mode_types.map do |used_mode_type|
+  def useable_training_sessions(user)
+    used_training_session_types.map do |used_training_session_type|
       {
-        modes: user.modes.find_by(mode_type: used_mode_type),
-        purpose: used_mode_type.key
+        training_sessions: user.training_sessions.find_by(training_session_type: used_training_session_type),
+        purpose: used_training_session_type.key
       }
     end
   end
@@ -229,7 +229,7 @@ class TrainingSessionType
 
     errors.add(
       :show_input_modes,
-      "has to be a subset of all show input modes #{SHOW_INPUT_MODES.inspect}"
+      "has to be a subset of all show input training_sessions #{SHOW_INPUT_MODES.inspect}"
     )
   end
 
@@ -409,7 +409,7 @@ class TrainingSessionType
   end
 
   def self.find_by!(key:)
-    find_by(key: key) || (raise ArgumentError, "Unknown mode type #{key}.")
+    find_by(key: key) || (raise ArgumentError, "Unknown training_session type #{key}.")
   end
 end
 # rubocop:enable Metrics/ClassLength

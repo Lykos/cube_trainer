@@ -50,7 +50,7 @@ module AlgLike
   private
 
   def validate_case
-    owning_set.mode_type.validate_case_key(case_key, errors) if case_key
+    owning_set.training_session_type.validate_case_key(case_key, errors) if case_key
   end
 
   def validate_buffer
@@ -68,7 +68,7 @@ module AlgLike
   def create_checker
     CubeTrainer::CommutatorChecker.new(
       part_type: case_key.part_type,
-      cube_size: owning_set.mode_type.default_cube_size
+      cube_size: owning_set.training_session_type.default_cube_size
     )
   end
 
@@ -79,7 +79,7 @@ module AlgLike
   # TODO: Make this work for other types of alg sets than commutators.
   def validate_alg
     return unless case_key.respond_to?(:part_type)
-    return unless case_key.part_type == owning_set.mode_type.part_type
+    return unless case_key.part_type == owning_set.training_session_type.part_type
 
     comm = commutator_or_nil
     errors.add(:alg, 'cannot be parsed as a commutator') && return unless comm

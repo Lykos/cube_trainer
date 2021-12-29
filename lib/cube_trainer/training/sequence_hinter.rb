@@ -112,27 +112,27 @@ module CubeTrainer
         end
       UNKNOWN_SCORE = UnknownScore.new
 
-      def initialize(cube_size, modes, hinters)
+      def initialize(cube_size, training_sessions, hinters)
         TwistyPuzzles::CubeState.check_cube_size(cube_size)
-        raise TypeError unless modes.all?(TrainingSession)
-        raise ArgumentError if modes.length != hinters.length || modes.empty?
+        raise TypeError unless training_sessions.all?(TrainingSession)
+        raise ArgumentError if training_sessions.length != hinters.length || training_sessions.empty?
 
         hinters.each do |h|
           raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints)
         end
         @cube_size = cube_size
-        @valuess = compute_valuess(modes)
+        @valuess = compute_valuess(training_sessions)
         @hinters = hinters
         @hints = {}
         @metric = :sqtm
       end
 
-      def compute_valuess(modes)
-        modes.map do |mode|
+      def compute_valuess(training_sessions)
+        training_sessions.map do |training_session|
           values = {}
           # TODO: get values for options in a more future proof way.
           result_history = ResultHistory.new(
-            mode: mode,
+            training_session: training_session,
             badness_memory: InputSampler::DEFAULT_CONFIG[:badness_memory],
             hint_seconds: InputSampler::DEFAULT_CONFIG[:hint_seconds],
             failed_seconds: InputSampler::DEFAULT_CONFIG[:failed_seconds]

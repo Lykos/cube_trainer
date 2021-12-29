@@ -14,12 +14,12 @@ module CubeTrainer
     class UnnamedAlgHintParser < HintParser
       include TwistyPuzzles
 
-      def initialize(name, input_items, mode)
+      def initialize(name, input_items, training_session)
         super()
         @name = name
         @input_items = input_items
         @mode = mode
-        @verbose = mode.verbose
+        @verbose = training_session.verbose
       end
 
       attr_reader :name, :verbose

@@ -14,7 +14,7 @@ RSpec.describe 'Stats', type: :request do
     it 'returns http success' do
       Stat.delete_all
       stat
-      get "/api/modes/#{mode.id}/stats", headers: user_headers
+      get "/api/training_sessions/#{training_session.id}/stats", headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to eq(1)
@@ -24,14 +24,14 @@ RSpec.describe 'Stats', type: :request do
     end
 
     it 'returns not found for another user' do
-      get "/api/modes/#{mode.id}/stats", headers: eve_headers
+      get "/api/training_sessions/#{training_session.id}/stats", headers: eve_headers
       expect(response).to have_http_status(:not_found)
     end
   end
 
   describe 'GET #show' do
     it 'returns http success' do
-      get "/api/modes/#{mode.id}/stats/#{stat.id}", headers: user_headers
+      get "/api/training_sessions/#{training_session.id}/stats/#{stat.id}", headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).to eq(stat.id)
@@ -39,30 +39,30 @@ RSpec.describe 'Stats', type: :request do
     end
 
     it 'returns not found for unknown stats' do
-      get "/api/modes/#{mode.id}/stats/143432332", headers: user_headers
+      get "/api/training_sessions/#{training_session.id}/stats/143432332", headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for another user' do
-      get "/api/modes/#{mode.id}/stats", headers: eve_headers
+      get "/api/training_sessions/#{training_session.id}/stats", headers: eve_headers
       expect(response).to have_http_status(:not_found)
     end
   end
 
   describe 'DELETE #destroy' do
     it 'returns http success' do
-      delete "/api/modes/#{mode.id}/stats/#{stat.id}", headers: user_headers
+      delete "/api/training_sessions/#{training_session.id}/stats/#{stat.id}", headers: user_headers
       expect(response).to have_http_status(:success)
       expect(Stat.exists?(stat.id)).to be(false)
     end
 
     it 'returns not found for unknown stats' do
-      delete "/api/modes/#{mode.id}/stats/143432332", headers: user_headers
+      delete "/api/training_sessions/#{training_session.id}/stats/143432332", headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for other users' do
-      delete "/api/modes/#{mode.id}/stats/#{stat.id}", headers: eve_headers
+      delete "/api/training_sessions/#{training_session.id}/stats/#{stat.id}", headers: eve_headers
       expect(response).to have_http_status(:not_found)
       expect(Stat.exists?(stat.id)).to be(true)
     end

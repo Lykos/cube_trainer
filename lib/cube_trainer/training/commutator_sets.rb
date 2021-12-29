@@ -32,7 +32,7 @@ module CubeTrainer
       end
 
       def non_buffer_corners
-        self.class::PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(@mode.buffer) }
+        self.class::PART_TYPE::ELEMENTS.reject { |c| c.turned_equals?(@training_session.buffer) }
       end
 
       def correctly_oriented_corners
@@ -61,7 +61,7 @@ module CubeTrainer
       PART_TYPE = TwistyPuzzles::Corner
 
       def hinter
-        @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('corner_twists', input_items, @mode)
+        @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('corner_twists', input_items, @training_session)
       end
 
       def goal_badness
@@ -69,11 +69,11 @@ module CubeTrainer
       end
 
       def part_cycle_factory
-        @part_cycle_factory ||= TwistyPuzzles::StickerCycleFactory.new(@mode.cube_size, 0)
+        @part_cycle_factory ||= TwistyPuzzles::StickerCycleFactory.new(@training_session.cube_size, 0)
       end
 
       def cube_state
-        @cube_state ||= @mode.solved_cube_state
+        @cube_state ||= @training_session.solved_cube_state
       end
 
       def generate_input_items
@@ -92,11 +92,11 @@ module CubeTrainer
     class FloatingCorner2TwistsAnd3Twists < DisjointUnionPartCycleAlgSet
       PART_TYPE = TwistyPuzzles::Corner
 
-      def initialize(mode)
+      def initialize(training_session)
         super(
-          mode,
-          FloatingCorner2Twists.new(mode),
-          Corner3Twists.new(mode)
+          training_session,
+          FloatingCorner2Twists.new(training_session),
+          Corner3Twists.new(training_session)
         )
       end
 
@@ -106,7 +106,7 @@ module CubeTrainer
 
       def buffer_coordinates
         @buffer_coordinates ||=
-          TwistyPuzzles::Coordinate.solved_positions(@mode.buffer, @mode.cube_size, 0)
+          TwistyPuzzles::Coordinate.solved_positions(@training_session.buffer, @training_session.cube_size, 0)
       end
 
       def generate_input_items
@@ -134,14 +134,14 @@ module CubeTrainer
       end
 
       def hinter
-        corner_mode = @mode.used_mode(:corner_commutators)
-        parity_mode = @mode.used_mode(:corner_parities)
-        return NoHinter.new(input_items) unless corner_mode && parity_mode
+        corner_training_session = @training_session.used_training_session(:corner_commutators)
+        parity_training_session = @training_session.used_training_session(:corner_parities)
+        return NoHinter.new(input_items) unless corner_training_session && parity_training_session
 
-        corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_mode)
-        parity_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, parity_mode)
+        corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_training_session)
+        parity_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, parity_training_session)
         CornerTwistPlusParityHinter.new(
-          corner_mode, parity_mode, corner_hinter, parity_hinter, mode
+          corner_training_session, parity_training_session, corner_hinter, parity_hinter, training_session
         )
       end
 
@@ -165,8 +165,8 @@ module CubeTrainer
         include CornerTwistSetsHelper
         include TwistyPuzzles::Utils::ArrayHelper
 
-        def initialize(corner_mode, parity_mode, corner_hinter, parity_hinter, mode)
-          super(mode.cube_size, [corner_mode, parity_mode], [corner_hinter, parity_hinter])
+        def initialize(corner_training_session, parity_training_session, corner_hinter, parity_hinter, training_session)
+          super(training_session.cube_size, [corner_training_session, parity_training_session], [corner_hinter, parity_hinter])
         end
 
         # rubocop:disable Metrics/AbcSize
@@ -201,10 +201,10 @@ module CubeTrainer
       end
 
       def hinter
-        return NoHinter.new(input_items) unless (corner_mode = @mode.used_mode(:corner_commutators))
+        return NoHinter.new(input_items) unless (corner_training_session = @training_session.used_training_session(:corner_commutators))
 
-        corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_mode)
-        Corner3TwistHinter.new(corner_mode, corner_hinter, @mode)
+        corner_hinter = CommutatorHintParser.maybe_parse_hints(PART_TYPE, corner_training_session)
+        Corner3TwistHinter.new(corner_training_session, corner_hinter, @training_session)
       end
 
       def goal_badness
@@ -213,9 +213,9 @@ module CubeTrainer
 
       # rubocop:disable Metrics/AbcSize
       def generate_input_items
-        cube_state = @mode.solved_cube_state
-        part_cycle_factory = TwistyPuzzles::StickerCycleFactory.new(@mode.cube_size, 0)
-        buffer_twist = part_cycle_factory.multi_twist([@mode.buffer])
+        cube_state = @training_session.solved_cube_state
+        part_cycle_factory = TwistyPuzzles::StickerCycleFactory.new(@training_session.cube_size, 0)
+        buffer_twist = part_cycle_factory.multi_twist([@training_session.buffer])
         1.upto(2).collect_concat do |twist_number|
           buffer_twist.apply_to(cube_state)
           non_buffer_correctly_oriented_corners.combination(2).collect_concat do |c1, c2|
@@ -234,9 +234,9 @@ module CubeTrainer
       class Corner3TwistHinter < HomogenousSequenceHinter
         include CornerTwistSetsHelper
 
-        # Note that `mode` should be the mode for corner comms, not for corner 3 twists.
-        def initialize(corner_mode, corner_hinter, mode)
-          super(mode.cube_size, corner_mode, corner_hinter)
+        # Note that `training_session` should be the training_session for corner comms, not for corner 3 twists.
+        def initialize(corner_training_session, corner_hinter, training_session)
+          super(training_session.cube_size, corner_training_session, corner_hinter)
         end
 
         def rotate_other_face_up(part)
@@ -318,7 +318,7 @@ module CubeTrainer
       PART_TYPE = TwistyPuzzles::Edge
 
       def hinter
-        @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('edge_flips', input_items, @mode)
+        @hinter ||= UnnamedAlgHintParser.maybe_parse_hints('edge_flips', input_items, @training_session)
       end
 
       def goal_badness
@@ -332,8 +332,8 @@ module CubeTrainer
       end
 
       def generate_input_items
-        cube_state = @mode.solved_cube_state
-        part_cycle_factory = TwistyPuzzles::StickerCycleFactory.new(@mode.cube_size, 0)
+        cube_state = @training_session.solved_cube_state
+        part_cycle_factory = TwistyPuzzles::StickerCycleFactory.new(@training_session.cube_size, 0)
         edge_combinations.map do |edge_pair|
           part_cycle = TwistyPuzzles::PartCycle.new(edge_pair)
           flip_sticker_cycles = part_cycle_factory.multi_twist(edge_pair)
@@ -350,7 +350,7 @@ module CubeTrainer
       end
 
       def hinter
-        @hinter ||= CommutatorHintParser.maybe_parse_hints(self.class::PART_TYPE, @mode)
+        @hinter ||= CommutatorHintParser.maybe_parse_hints(self.class::PART_TYPE, @training_session)
       end
     end
 
@@ -437,7 +437,7 @@ module CubeTrainer
 
       def hinter
         @hinter ||= self.class.hint_parser_class.maybe_parse_hints(
-          "#{buffer.to_s.downcase}_corner_parities", input_items, @mode
+          "#{buffer.to_s.downcase}_corner_parities", input_items, @training_session
         )
       end
 

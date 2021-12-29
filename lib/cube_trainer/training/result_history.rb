@@ -13,7 +13,7 @@ module CubeTrainer
       include Utils::SqlHelper
 
       def initialize(
-        mode:,
+        training_session:,
         badness_memory:,
         hint_seconds:,
         failed_seconds:,
@@ -21,7 +21,7 @@ module CubeTrainer
       )
         raise TypeError unless cached_cases.all? { |c| c.respond_to?(:case_key) }
 
-        @mode = mode
+        @training_session = training_session
         @badness_memory = badness_memory
         @hint_seconds = hint_seconds
         @failed_seconds = failed_seconds
@@ -90,7 +90,7 @@ module CubeTrainer
       def badness_averages
         @badness_averages ||=
           begin
-            result = @mode.results
+            result = @training_session.results
                           .group(:case_key)
                           .pluck(:case_key, badness_array_exp).to_h
             result.transform_values! do |badnesses|
@@ -117,7 +117,7 @@ module CubeTrainer
         return [] unless num_items.positive?
 
         # We ignore the cached cases here because they are handled at a different level.
-        @mode
+        @training_session
           .results
           .order(created_at: :desc)
           .limit(num_items)
@@ -132,7 +132,7 @@ module CubeTrainer
 
         # We ignore the cached cases here because we don't know whether they will trigger a hint.
         # TODO: Avoid having one query per item.
-        @mode
+        @training_session
           .results
           .where(case_key: item.case_key)
           .where(days_old_exp.gt(days(last_hint_age)))
@@ -147,7 +147,7 @@ module CubeTrainer
         @last_hint_age_cache ||=
           begin
             result =
-              @mode
+              @training_session
               .results
               .where(Result.arel_table[:num_hints].gt(0))
               .group(:case_key)
@@ -164,7 +164,7 @@ module CubeTrainer
         @raw_last_occurrence_age_cache ||=
           begin
             result =
-              @mode
+              @training_session
               .results
               .group(:case_key)
               .minimum(age_exp)
@@ -196,7 +196,7 @@ module CubeTrainer
         @occurrence_days_cache ||=
           begin
             result =
-              @mode
+              @training_session
               .results
               .group(:case_key)
               .distinct
@@ -215,7 +215,7 @@ module CubeTrainer
       def occurrences_cache
         @occurrences_cache ||=
           begin
-            result = @mode.results.group(:case_key).count
+            result = @training_session.results.group(:case_key).count
             result.default = 0
             @cached_cases.each { |i| result[i.case_key] += 1 }
             result.freeze

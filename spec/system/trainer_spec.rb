@@ -14,9 +14,9 @@ describe 'trainer', type: :system do
     login(user)
     sleep(0.5)
 
-    # TODO: Figure out how to identify the right button in the mode list.
+    # TODO: Figure out how to identify the right button in the training_session list.
 
-    visit "/training/#{mode.id}"
+    visit "/training/#{training_session.id}"
 
     click_button 'Start'
     sleep(0.5)

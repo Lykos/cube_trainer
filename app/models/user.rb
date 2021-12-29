@@ -11,7 +11,7 @@ class User < ApplicationRecord
   validates :name, uniqueness: true
   validates :email, uniqueness: true
 
-  has_many :modes, dependent: :destroy
+  has_many :training_sessions, dependent: :destroy
   has_many :messages, dependent: :destroy
   has_many :achievement_grants, dependent: :destroy
   has_one :color_scheme, dependent: :destroy
@@ -41,7 +41,7 @@ class User < ApplicationRecord
         letter_scheme: letter_scheme&.to_dump,
         achievement_grants: achievement_grants.map(&:to_dump),
         messages: messages.map(&:to_dump),
-        modes: modes.map(&:to_dump)
+        training_sessions: training_sessions.map(&:to_dump)
       }
     )
   end

@@ -3,7 +3,7 @@
 require 'twisty_puzzles'
 
 # Model for stats.
-# Note that it does NOT include which modes have them.
+# Note that it does NOT include which training_sessions have them.
 class StatType
   include ActiveModel::Model
   attr_accessor :key, :name, :description, :parts, :needs_bounded_inputs
@@ -31,8 +31,8 @@ class StatType
     }
   end
 
-  def stat_parts(mode)
-    parts.map { |part| part.calculate(mode) }
+  def stat_parts(training_session)
+    parts.map { |part| part.calculate(training_session) }
   end
 
   def self.time_s_expression
@@ -46,31 +46,31 @@ class StatType
 
   # Stat part that computes a value like an ao5 or the number of successes.
   class StatPart
-    def calculate(mode)
+    def calculate(training_session)
       {
         name: name,
         stat_part_type: type,
-        time_s: calculate_time_s(mode),
-        success: calculate_success(mode),
-        count: calculate_count(mode),
-        fraction: calculate_fraction(mode)
+        time_s: calculate_time_s(training_session),
+        success: calculate_success(training_session),
+        count: calculate_count(training_session),
+        fraction: calculate_fraction(training_session)
       }.compact
     end
 
-    def calculate_success(mode)
-      calculate_time_s_internal(mode)&.finite?
+    def calculate_success(training_session)
+      calculate_time_s_internal(training_session)&.finite?
     end
 
-    def calculate_time_s(mode)
-      value = calculate_time_s_internal(mode)
+    def calculate_time_s(training_session)
+      value = calculate_time_s_internal(training_session)
       value&.finite? ? value : nil
     end
 
-    def calculate_time_s_internal(mode); end
+    def calculate_time_s_internal(training_session); end
 
-    def calculate_fraction(mode); end
+    def calculate_fraction(training_session); end
 
-    def calculate_count(mode); end
+    def calculate_count(training_session); end
   end
 
   # Stat part that computes an average like ao5.
@@ -84,9 +84,9 @@ class StatType
       :time
     end
 
-    def calculate_time_s_internal(mode)
+    def calculate_time_s_internal(training_session)
       times =
-        mode
+        training_session
         .results
         .limit(@size)
         .pluck(StatType.time_s_expression)
@@ -109,9 +109,9 @@ class StatType
       :time
     end
 
-    def calculate_time_s_internal(mode)
+    def calculate_time_s_internal(training_session)
       times =
-        mode
+        training_session
         .results
         .where(Result.arel_table[:success])
         .limit(@size)
@@ -135,7 +135,7 @@ class StatType
       :fraction
     end
 
-    def calculate_fraction(mode)
+    def calculate_fraction(training_session)
       num_successes_expression =
         Arel::Nodes::Case.new(Result.arel_table[:success])
                          .when(Arel::Nodes::True.new)
@@ -143,7 +143,7 @@ class StatType
                          .else(0.0)
                          .sum
       total_expression = Result.arel_table[:success].count
-      mode
+      training_session
         .results
         .limit(@size)
         .pick(num_successes_expression / total_expression)
@@ -165,8 +165,8 @@ class StatType
       :time
     end
 
-    def calculate_time_s_internal(mode)
-      mode
+    def calculate_time_s_internal(training_session)
+      training_session
         .results
         .limit(@size)
         .pick(StatType.time_s_expression.average)
@@ -183,11 +183,11 @@ class StatType
       :count
     end
 
-    def calculate_count(mode)
+    def calculate_count(training_session)
       case_keys_seen =
-        mode.results.pluck(:case_key).uniq
+        training_session.results.pluck(:case_key).uniq
       valid_case_keys =
-        mode.cases.map(&:case_key)
+        training_session.cases.map(&:case_key)
       (case_keys_seen & valid_case_keys).length
     end
 
@@ -202,8 +202,8 @@ class StatType
       :count
     end
 
-    def calculate_count(mode)
-      mode.cases.length
+    def calculate_count(training_session)
+      training_session.cases.length
     end
 
     def name

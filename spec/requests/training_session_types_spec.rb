@@ -9,7 +9,7 @@ RSpec.describe 'TrainingSessionTypes', type: :request do
 
   describe 'GET #index' do
     it 'returns http success' do
-      get '/api/mode_types', headers: headers
+      get '/api/training_session_types', headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body).to eq_modulo_symbol_vs_string(TrainingSessionType.all.map(&:to_simple))
@@ -17,17 +17,17 @@ RSpec.describe 'TrainingSessionTypes', type: :request do
   end
 
   describe 'GET #show' do
-    let(:mode_type) { TrainingSessionType.all.sample }
+    let(:training_session_type) { TrainingSessionType.all.sample }
 
     it 'returns http success' do
-      get "/api/mode_types/#{mode_type.key}", headers: headers
+      get "/api/training_session_types/#{training_session_type.key}", headers: headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
-      expect(parsed_body).to eq_modulo_symbol_vs_string(mode_type.to_simple)
+      expect(parsed_body).to eq_modulo_symbol_vs_string(training_session_type.to_simple)
     end
 
-    it 'returns not found for unknown mode types' do
-      get '/api/mode_types/non_existing', headers: headers
+    it 'returns not found for unknown training_session types' do
+      get '/api/training_session_types/non_existing', headers: headers
       expect(response).to have_http_status(:not_found)
     end
   end

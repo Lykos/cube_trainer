@@ -23,7 +23,7 @@ describe Training::HeterogenousSequenceHinter do
   let(:hinter_left) { Training::AlgHinter.new(algname_a => case_solution_a, algname_b => case_solution_b, algname_c => case_solution_c) }
   let(:hinter_right) { Training::AlgHinter.new(algname_d => case_solution_d) }
   let(:hinters) { [hinter_left, hinter_right] }
-  let(:hinter) { FakeHeterogenousSequenceHinter.new(cube_size, [mode, mode], hinters) }
+  let(:hinter) { FakeHeterogenousSequenceHinter.new(cube_size, [training_session, training_session], hinters) }
   let(:algname_a) { SimpleAlgName.new('a') }
   let(:algname_b) { SimpleAlgName.new('b') }
   let(:algname_c) { SimpleAlgName.new('c') }
@@ -36,15 +36,15 @@ describe Training::HeterogenousSequenceHinter do
   before do
     Result.destroy_all
     5.times do |i|
-      mode.results.create!(
+      training_session.results.create!(
         created_at: Time.zone.at(i), case_key: algname_a,
         time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
       )
-      mode.results.create!(
+      training_session.results.create!(
         created_at: Time.zone.at(i), case_key: algname_b,
         time_s: 2.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
       )
-      mode.results.create!(
+      training_session.results.create!(
         created_at: Time.zone.at(i), case_key: algname_d,
         time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
       )

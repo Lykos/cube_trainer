@@ -40,7 +40,7 @@ module CubeTrainer
 
       private
 
-      def mode_type(alg_set)
+      def training_session_type(alg_set)
         TrainingSessionType.all.find do |m|
           (defined? m.generator_class::PART_TYPE) &&
             m.generator_class::PART_TYPE == alg_set.part_type
@@ -50,7 +50,7 @@ module CubeTrainer
       def extract_alg_set(alg_spreadsheet, table, counters)
         extracted_alg_set = AlgExtractor.extract_alg_set(table) || return
         alg_set = alg_spreadsheet.alg_sets.find_or_create_by!(
-          mode_type: mode_type(extracted_alg_set),
+          training_session_type: training_session_type(extracted_alg_set),
           sheet_title: table.sheet_info.title,
           buffer: extracted_alg_set.buffer
         )

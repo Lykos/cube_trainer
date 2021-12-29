@@ -88,14 +88,14 @@ module CubeTrainer
 
       # `items` are the items from which we get samples. They have to be an array of InputItem.
       #         But the case key inside InputItem can be anything.
-      # `mode` is the mode that is used to retrieve associated previous results and for all kinds
+      # `training_session` is the trainingsession that is used to retrieve associated previous results and for all kinds
       #        of options.
-      def initialize(items, mode, logger = Rails.logger)
+      def initialize(items, training_session, logger = Rails.logger)
         raise ArgumentError unless items.is_a?(Array)
         raise ArgumentError, "Invalid items #{items.inspect}." unless items.all?(InputItem)
 
         @items = items
-        @mode = mode
+        @training_session = training_session
         @logger = logger
         @config = create_config
       end
@@ -105,14 +105,14 @@ module CubeTrainer
       def create_config
         config = DEFAULT_CONFIG.dup
         config[:num_items] = items.length
-        config[:goal_badness] = @mode.goal_badness if @mode.goal_badness
-        config[:known] = @mode.known
+        config[:goal_badness] = @training_session.goal_badness if @training_session.goal_badness
+        config[:known] = @training_session.known
         config
       end
 
       def create_result_history(cached_cases)
         ResultHistory.new(
-          mode: @mode,
+          training_session: @training_session,
           badness_memory: @config[:badness_memory],
           failed_seconds: @config[:failed_seconds],
           hint_seconds: @config[:hint_seconds],

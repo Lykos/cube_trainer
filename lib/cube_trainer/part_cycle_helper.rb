@@ -22,7 +22,7 @@ module CubeTrainer
     end
 
     def buffer
-      @mode.buffer
+      @training_session.buffer
     end
 
     def part_cycles_for_part_type

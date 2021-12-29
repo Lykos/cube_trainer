@@ -9,7 +9,7 @@ RSpec.describe Alg, type: :model do
   include_context 'with alg spreadsheet'
 
   it_behaves_like 'alg_like' do
-    let(:owning_set_alg_likes) { mode.alg_overrides }
+    let(:owning_set_alg_likes) { training_session.alg_overrides }
   end
 
   let(:uf) { TwistyPuzzles::Edge.for_face_symbols(%i[U F]) }
@@ -18,7 +18,7 @@ RSpec.describe Alg, type: :model do
 
   it 'creates an alg overrider achievement' do
     user.achievement_grants.clear
-    mode.alg_overrides.create!(
+    training_session.alg_overrides.create!(
       case_key: TwistyPuzzles::PartCycle.new([uf, df, ub]),
       alg: "M' U2 M U2"
     )

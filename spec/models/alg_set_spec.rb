@@ -17,7 +17,7 @@ RSpec.describe AlgSet, type: :model do
 
   let(:alg_set) do
     alg_spreadsheet.alg_sets.create!(
-      mode_type: TrainingSessionType.find_by!(key: :edge_commutators),
+      training_session_type: TrainingSessionType.find_by!(key: :edge_commutators),
       sheet_title: 'UF',
       buffer: uf
     )

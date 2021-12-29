@@ -13,30 +13,30 @@ RSpec.describe 'Trainer', type: :request do
 
   describe 'GET #random_case' do
     it 'returns http success' do
-      get "/api/trainer/#{mode.id}/random_case", headers: user_headers
+      get "/api/trainer/#{training_session.id}/random_case", headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.keys).to contain_exactly('case_key', 'case_name', 'setup', 'alg')
     end
 
     it 'returns http success with cached ids' do
-      get "/api/trainer/#{mode.id}/random_case", headers: user_headers
+      get "/api/trainer/#{training_session.id}/random_case", headers: user_headers
       expect(response).to have_http_status(:success)
       case_key = JSON.parse(response.body)['case_key']
-      get "/api/trainer/#{mode.id}/random_case", headers: user_headers, params: { cached_case_keys: [case_key] }
+      get "/api/trainer/#{training_session.id}/random_case", headers: user_headers, params: { cached_case_keys: [case_key] }
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.keys).to contain_exactly('case_key', 'case_name', 'setup', 'alg')
       expect(parsed_body['case_key']).not_to eq(case_key)
     end
 
-    it 'returns not found for unknown modes' do
+    it 'returns not found for unknown training sessions' do
       get '/api/trainer/143432332/random_case', headers: user_headers
       expect(response).to have_http_status(:not_found)
     end
 
     it 'returns not found for other users' do
-      get "/api/trainer/#{mode.id}/random_case", headers: eve_headers
+      get "/api/trainer/#{training_session.id}/random_case", headers: eve_headers
       expect(response).to have_http_status(:not_found)
     end
   end

@@ -6,20 +6,20 @@ require 'cube_trainer/letter_pair'
 require 'pry'
 require 'ostruct'
 
-def construct_mode(mode_type)
-  mode = user.modes.find_or_initialize_by(
-    name: mode_type.to_s
+def construct_mode(training_session_type)
+  training_session = user.training_sessions.find_or_initialize_by(
+    name: training_session_type.to_s
   )
-  buffer = mode_type.has_buffer? ? mode_type.part_type::ELEMENTS.first : nil
-  mode.update(
+  buffer = training_session_type.has_buffer? ? training_session_type.part_type::ELEMENTS.first : nil
+  training_session.update(
     show_input_mode: :name,
     mode_type: mode_type,
     goal_badness: 1.0,
-    cube_size: mode_type.default_cube_size,
+    cube_size: training_session_type.default_cube_size,
     known: false,
     buffer: buffer
   )
-  mode.save!
+  training_session.save!
   mode
 end
 
@@ -40,66 +40,66 @@ xdescribe Training::StatsComputer do
   let(:other_mode_results) do
     other_modes.map.with_index do |mode, i|
       Result.create!(
-        input: mode.inputs.create!(created_at: t_2_days_ago + 100 + i, input_representation: letter_pair_b),
+        input: training_session.inputs.create!(created_at: t_2_days_ago + 100 + i, input_representation: letter_pair_b),
         time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
       )
     end
   end
   let(:fill_results) do
-    fill_letter_pairs.map.with_index { |ls, i| Result.create!(input: mode.inputs.create!(created_at: t_2_days_ago + 200 + i, input_representation: ls), time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 201 + i) }
+    fill_letter_pairs.map.with_index { |ls, i| Result.create!(input: training_session.inputs.create!(created_at: t_2_days_ago + 200 + i, input_representation: ls), time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 201 + i) }
   end
   let(:relevant_results) do
     [
       Result.create!(
-        input: mode.inputs.create!(created_at: t_10_minutes_ago, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_10_minutes_ago, input_representation: letter_pair_a),
         time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 1
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_10_minutes_ago + 2, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_10_minutes_ago + 2, input_representation: letter_pair_a),
         time_s: 2.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 3
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_10_minutes_ago + 4, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_10_minutes_ago + 4, input_representation: letter_pair_a),
         time_s: 3.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 5
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_10_minutes_ago + 6, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_10_minutes_ago + 6, input_representation: letter_pair_a),
         time_s: 4.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 7
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_10_minutes_ago + 8, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_10_minutes_ago + 8, input_representation: letter_pair_a),
         time_s: 5.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago + 9
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_10_minutes_ago - 2, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_10_minutes_ago - 2, input_representation: letter_pair_a),
         time_s: 6.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_10_minutes_ago - 1
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_2_hours_ago, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_2_hours_ago, input_representation: letter_pair_a),
         time_s: 7.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_hours_ago + 1
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_2_days_ago, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_2_days_ago, input_representation: letter_pair_a),
         time_s: 10.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 1
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_2_days_ago + 2, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_2_days_ago + 2, input_representation: letter_pair_a),
         time_s: 11.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 3
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_2_days_ago + 4, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_2_days_ago + 4, input_representation: letter_pair_a),
         time_s: 12.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 5
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_2_days_ago + 6, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_2_days_ago + 6, input_representation: letter_pair_a),
         time_s: 13.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 7
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_2_days_ago + 8, input_representation: letter_pair_a),
+        input: training_session.inputs.create!(created_at: t_2_days_ago + 8, input_representation: letter_pair_a),
         time_s: 14.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_days_ago + 9
       ),
       Result.create!(
-        input: mode.inputs.create!(created_at: t_2_hours_ago + 2, input_representation: letter_pair_b),
+        input: training_session.inputs.create!(created_at: t_2_hours_ago + 2, input_representation: letter_pair_b),
         time_s: 10.0, failed_attempts: 0, word: nil, success: true, num_hints: 0, created_at: t_2_hours_ago + 3
       )
     ]
@@ -110,7 +110,7 @@ xdescribe Training::StatsComputer do
   end
   let(:computer) do
     results
-    described_class.new(now, mode)
+    described_class.new(now, training_session)
   end
 
   xit 'computes detailed averages for all our results' do

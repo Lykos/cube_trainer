@@ -11,16 +11,16 @@ module CubeTrainer
     class PartCycleAlgSet
       include PartCycleHelper
 
-      def initialize(mode)
-        @mode = mode
+      def initialize(training_session)
+        @training_session = training_session
       end
 
       def solved_cube_state
-        @mode.solved_cube_state
+        @training_session.solved_cube_state
       end
 
       def input_sampler
-        InputSampler.new(input_items, @mode)
+        InputSampler.new(input_items, @training_session)
       end
 
       def goal_badness
@@ -34,9 +34,9 @@ module CubeTrainer
       # If restrict_parts is not nil, only commutators for those parts are used.
       # TODO: Move this to somewhere else
       def restricted_input_items
-        if @mode.restrict_parts.present?
+        if @training_session.restrict_parts.present?
           generate_input_items.select do |p|
-            p.case_key.contains_any_part?(@mode.restrict_parts)
+            p.case_key.contains_any_part?(@training_session.restrict_parts)
           end
         else
           generate_input_items
@@ -46,7 +46,7 @@ module CubeTrainer
       def input_items
         @input_items ||=
           restricted_input_items.reject do |p|
-            p.case_key.contains_any_part?(@mode.exclude_parts)
+            p.case_key.contains_any_part?(@training_session.exclude_parts)
           end
       end
 

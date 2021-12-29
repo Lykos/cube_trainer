@@ -11,10 +11,10 @@ require 'rails_helper'
 
 ITERATIONS = 300
 
-def compute_average(mode, generator)
+def compute_average(training_session, generator)
   Result.delete_all
   learner = FakeLearner.new
-  trainer = Training::Trainer.new(learner, mode, generator)
+  trainer = Training::Trainer.new(learner, training_session, generator)
   ITERATIONS.times { trainer.one_iteration }
   raise 'Not all inputs covered.' unless learner.items_learned == generator.items.length
 
@@ -29,11 +29,11 @@ describe Training::InputSampler do
   end
 
   it 'performs better than random sampling' do
-    smart_sampler = described_class.new(items, mode)
-    smart_average = compute_average(mode, smart_sampler)
+    smart_sampler = described_class.new(items, training_session)
+    smart_average = compute_average(training_session, smart_sampler)
 
     random_sampler = Training::RandomSampler.new(items)
-    random_average = compute_average(mode, random_sampler)
+    random_average = compute_average(training_session, random_sampler)
 
     expect(smart_average).to be < random_average
   end
