@@ -37,5 +37,10 @@ RSpec.describe 'Users', type: :request do
       parsed_body = JSON.parse(response.body)
       expect(User.new(parsed_body)).to eq(user)
     end
+
+    it 'returns unauthorized' do
+      get '/api/user'
+      expect(response).to have_http_status(:unauthorized)
+    end
   end
 end
