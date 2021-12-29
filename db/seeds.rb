@@ -18,3 +18,7 @@ AlgSpreadsheet.create!(
   owner: 'Daniel Lin',
   spreadsheet_id: '1yHyLJDvVbuEsoHONefUq7jAAFta9qM9wydwfSrJOZWQ'
 )
+AlgSpreadsheet.create!(
+  owner: 'Bernhard Brodowsky',
+  spreadsheet_id: '1De8iFOYe-M104gVDgtZ7kpQ_2Juq5SKC_xIsTI41SM0'
+)

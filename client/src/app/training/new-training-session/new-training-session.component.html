@@ -15,7 +15,7 @@
       <ng-container *ngIf="trainingSessionTypes$ | orerror | async as trainingSessionTypesOrError; else loading">
         <ng-container *ngIf="trainingSessionTypesOrError | value as trainingSessionTypes; else error">
           <mat-form-field>
-            <mat-label>Training Session Type</mat-label>
+            <mat-label>Session Type</mat-label>
             <mat-select formControlName="trainingSessionType">
               <mat-option *ngFor="let trainingSessionType of trainingSessionTypes" [value]="trainingSessionType"> {{trainingSessionType.name}} </mat-option>
             </mat-select>
