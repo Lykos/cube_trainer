@@ -1,6 +1,6 @@
 import { Duration } from '@utils/duration';
 import { StopwatchStore } from '../stopwatch.store';
-import { HostListener, Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { HostListener, Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -16,16 +16,9 @@ export class StopwatchComponent implements OnDestroy, OnInit {
   memoTime?: Duration;
 
   @Input()
-  maxHints?: number;
-
-  @Input()
   hasStopAndStart?: boolean;
 
-  @Output()
-  private numHints: EventEmitter<number> = new EventEmitter();
-
   duration$: Observable<Duration> | undefined = undefined;
-  private numHints_ = 0;
   running = false;
   loading = true;
 
@@ -55,14 +48,8 @@ export class StopwatchComponent implements OnDestroy, OnInit {
     return this.memoTime && duration.greaterThan(this.memoTime);
   }
 
-  get hintsAvailable() {
-    return this.maxHints && this.numHints_ < this.maxHints;
-  }
-
   onStart() {
     this.checkedStopwatchStore.start();
-    this.numHints_ = 0;
-    this.numHints.emit(0);
   }
 
   onStopAndPause() {
@@ -73,17 +60,9 @@ export class StopwatchComponent implements OnDestroy, OnInit {
     this.checkedStopwatchStore.stopAndStart();
   }
 
-  onHint() {
-    ++this.numHints_;
-    this.numHints.emit(this.numHints_);
-  }
-
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
     switch (event.key) {
-      case 'h':
-        this.onHint();
-        return;
       case 'Enter':
       case ' ':
         if (this.running) {

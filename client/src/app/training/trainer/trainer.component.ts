@@ -20,9 +20,9 @@ import { StopwatchStore } from '../stopwatch.store';
 })
 export class TrainerComponent implements OnInit, OnDestroy {
   casee?: Case;
-  numHints = 0;
   trainingSession?: TrainingSession;
   isRunning = false;
+  hintActive = false;
   loading$: Observable<boolean>;
   error$: Observable<any>;
 
@@ -30,6 +30,7 @@ export class TrainerComponent implements OnInit, OnDestroy {
   private trainingSessionId$: Observable<number>
   private trainingSessionIdSubscription: any;
   private trainingSessionSubscription: any;
+  private runningSubscription: any;
   private stopSubscription: any;
   private stopwatchLoadingSubscription: any;
 
@@ -60,8 +61,11 @@ export class TrainerComponent implements OnInit, OnDestroy {
       this.stopwatchStore.loading$.pipe(filter(l => l)),
       this.trainingSession$.pipe(map(trainingSession => trainingSession.id), distinctUntilChanged()),
     ).subscribe(([_, trainingSessionId]) => { this.prepareNextCase(trainingSessionId); })
+    this.runningSubscription = this.stopwatchStore.running$.subscribe(() => {
+      this.hintActive = false;
+    });
     this.stopSubscription = this.stopwatchStore.stop$.subscribe(duration => {
-      const partialResult: PartialResult = { numHints: this.numHints, duration, success: true };
+      const partialResult: PartialResult = { numHints: this.hintActive ? 1 : 0, duration, success: true };
       this.store.dispatch(create({ trainingSessionId: this.trainingSession!.id, casee: this.casee!, partialResult }));
     });
   }
@@ -70,6 +74,7 @@ export class TrainerComponent implements OnInit, OnDestroy {
     this.trainingSessionIdSubscription?.unsubscribe();
     this.trainingSessionSubscription?.unsubscribe();
     this.stopSubscription?.unsubscribe();
+    this.runningSubscription?.unsubscribe();
     this.stopwatchLoadingSubscription?.unsubscribe();
   }
 
@@ -81,19 +86,7 @@ export class TrainerComponent implements OnInit, OnDestroy {
     });
   }
 
-  onRunning(isRunning: boolean) {
-    this.isRunning = isRunning;
-  }
-
-  get maxHints() {
-    return this.casee?.alg ? 1 : 0;
-  }
-
   get hasStopAndStart(): boolean {
     return true;
-  }
-
-  onNumHints(numHints: number) {
-    this.numHints = numHints;
   }
 }

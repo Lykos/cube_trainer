@@ -33,6 +33,7 @@ import { TermsAndConditionsComponent } from './terms-and-conditions/terms-and-co
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { UpdatePasswordComponent } from './update-password/update-password.component';
 import { UserComponent } from './user/user.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { UserComponent } from './user/user.component';
     DisclaimerComponent,
     MaintainerNameComponent,
     GoogleAnalyticsReferenceComponent,
+    NotFoundComponent,
   ],
   imports: [
     FileSaverModule,

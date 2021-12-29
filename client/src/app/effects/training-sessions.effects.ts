@@ -32,11 +32,14 @@ export class TrainingSessionsEffects {
         this.trainingSessionsService.list().pipe(
           map(trainingSessions => initialLoadSuccess({ trainingSessions })),
           catchError(httpResponseError => {
+            console.error(httpResponseError);
+            console.log(httpResponseError.message);
             const context = {
               action: 'loading',
               subject: 'training sessions',
             }
             const error = parseBackendActionError(context, httpResponseError);
+            console.log(error);
             return of(initialLoadFailure({ error }));
           })
         )

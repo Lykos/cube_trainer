@@ -27,6 +27,7 @@ import { PrivacyPolicyComponent } from '@core/privacy-policy/privacy-policy.comp
 import { ContactComponent } from '@core/contact/contact.component';
 import { DisclaimerComponent } from '@core/disclaimer/disclaimer.component';
 import { TermsAndConditionsComponent } from '@core/terms-and-conditions/terms-and-conditions.component';
+import { NotFoundComponent } from '@core/not-found/not-found.component';
 import { RouterModule, Routes, ExtraOptions } from '@angular/router';
 import { environment } from '@environment';
 
@@ -58,6 +59,8 @@ const routes: Routes = [
   { path: 'cookie-policy', component: CookiePolicyComponent },
   { path: 'terms-and-conditions', component: TermsAndConditionsComponent },
   { path: 'disclaimer', component: DisclaimerComponent },
+  { path: '404', component: NotFoundComponent },
+  { path: '**', redirectTo: '/404' }
 ];
 
 const routerOptions: ExtraOptions = {

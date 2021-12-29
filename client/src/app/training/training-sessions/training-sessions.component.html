@@ -28,9 +28,9 @@
         <tr mat-row *matRowDef="let trainingSession; columns: columnsToDisplay"></tr>
       </table>
     </ng-container>
-    <ng-template *ngIf="error$ | async as error">
+    <ng-container *ngIf="error$ | async as error">
       <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
-    </ng-template>
+    </ng-container>
     <ng-template *ngIf="loading$ | async">
       <mat-spinner></mat-spinner>
     </ng-template>

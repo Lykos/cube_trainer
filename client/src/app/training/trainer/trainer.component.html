@@ -2,13 +2,19 @@
   <ng-container *ngIf="trainingSession">
     <div layout="row" layout-sm="column">
       <div flex *ngIf="casee">
-        <cube-trainer-trainer-input [casee]="casee" [trainingSession]="trainingSession" [numHints]="numHints"></cube-trainer-trainer-input>
+        <cube-trainer-trainer-input
+          [casee]="casee"
+          [trainingSession]="trainingSession">
+        </cube-trainer-trainer-input>
+        <cube-trainer-hint
+          [casee]="casee"
+          [trainingSession]="trainingSession"
+          [(active)]="hintActive">
+        </cube-trainer-hint>
         <cube-trainer-stopwatch
           [stopwatchStore]="stopwatchStore"
           [memoTime]="trainingSession.memoTime"
-          [maxHints]="maxHints"
-          [hasStopAndStart]="hasStopAndStart"
-          (numHints)="onNumHints($event)">
+          [hasStopAndStart]="hasStopAndStart">
         </cube-trainer-stopwatch>
       </div>
       <div flex>
@@ -19,8 +25,8 @@
       </div>
     </div>
   </ng-container>
-  <div *ngIf="error$ | async">
-    Error loading trainingSession.
+  <div *ngIf="error$ | async as error">
+    <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
   </div>
   <mat-spinner *ngIf="loading$ | async"></mat-spinner>
 </div>

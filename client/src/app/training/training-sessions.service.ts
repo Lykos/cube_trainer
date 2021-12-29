@@ -38,7 +38,7 @@ function parseTrainingSessionType(rawTrainingSessionType: any): TrainingSessionT
 function parseTrainingSession(rawTrainingSession: any): TrainingSession {
   return {
     id: rawTrainingSession.id,
-    trainingSessionType: parseTrainingSessionType(rawTrainingSession.trainingSession_type),
+    trainingSessionType: parseTrainingSessionType(rawTrainingSession.training_session_type),
     name: rawTrainingSession.name,
     known: rawTrainingSession.known,
     showInputMode: rawTrainingSession.show_input_mode,
