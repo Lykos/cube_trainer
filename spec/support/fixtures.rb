@@ -147,7 +147,10 @@ shared_context 'with result' do
   include_context 'with training session'
 
   let(:result) do
-    training_session.results.find_or_create_by!(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: 10)
+    training_session.results.find_or_create_by!(
+      case_key: CubeTrainer::LetterPair.new(%w[a b]),
+      time_s: 10
+    )
   end
 end
 

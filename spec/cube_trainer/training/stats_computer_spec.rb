@@ -6,21 +6,21 @@ require 'cube_trainer/letter_pair'
 require 'pry'
 require 'ostruct'
 
-def construct_mode(training_session_type)
+def construct_training_session(training_session_type)
   training_session = user.training_sessions.find_or_initialize_by(
     name: training_session_type.to_s
   )
   buffer = training_session_type.has_buffer? ? training_session_type.part_type::ELEMENTS.first : nil
   training_session.update(
     show_input_mode: :name,
-    mode_type: mode_type,
+    training_session_type: training_session_type,
     goal_badness: 1.0,
     cube_size: training_session_type.default_cube_size,
     known: false,
     buffer: buffer
   )
   training_session.save!
-  mode
+  training_session
 end
 
 xdescribe Training::StatsComputer do
@@ -30,15 +30,15 @@ xdescribe Training::StatsComputer do
   let(:t_10_minutes_ago) { now - 600 }
   let(:t_2_hours_ago) { now - (2 * 3600) }
   let(:t_2_days_ago) { now - (2 * 24 * 3600) }
-  let(:mode) { construct_mode(TrainingSessionType.find_by!(key: :corner_commutators)) }
+  let(:training_session) { construct_training_session(TrainingSessionType.find_by!(key: :corner_commutators)) }
   let(:letter_pair_a) { LetterPair.new(%w[a a]) }
   let(:letter_pair_b) { LetterPair.new(%w[a b]) }
   let(:letter_pair_c) { LetterPair.new(%w[a c]) }
   let(:fill_letter_pairs) { ('a'..'z').map { |l| LetterPair.new(['b', l]) } }
-  let(:other_mode_types) { TrainingSessionType.all.reject { |k| k.key == :corner_commutators || !k.has_bounded_inputs? || k.has_parity_parts? } }
-  let(:other_modes) { other_mode_types.map { |k| construct_mode(k) } }
-  let(:other_mode_results) do
-    other_modes.map.with_index do |mode, i|
+  let(:other_training_session_types) { TrainingSessionType.all.reject { |k| k.key == :corner_commutators || !k.has_bounded_inputs? || k.has_parity_parts? } }
+  let(:other_training_sessions) { other_training_session_types.map { |k| construct_training_session(k) } }
+  let(:other_training_session_results) do
+    other_training_sessions.map.with_index do |training_session, i|
       Result.create!(
         input: training_session.inputs.create!(created_at: t_2_days_ago + 100 + i, input_representation: letter_pair_b),
         time_s: 1.0, failed_attempts: 0, word: nil, success: true, num_hints: 0
@@ -106,7 +106,7 @@ xdescribe Training::StatsComputer do
   end
   let(:results) do
     Result.destroy_all
-    relevant_results + fill_results + other_mode_results
+    relevant_results + fill_results + other_training_session_results
   end
   let(:computer) do
     results

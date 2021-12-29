@@ -150,7 +150,7 @@ module CubeTrainer
         corner_parities: CornerParitiesComputer
       }.freeze
 
-      def initialize(now, training_session)
+      def initialize(now, _training_session)
         @now = now
         @mode = mode
       end

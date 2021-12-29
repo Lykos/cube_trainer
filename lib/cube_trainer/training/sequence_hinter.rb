@@ -115,7 +115,9 @@ module CubeTrainer
       def initialize(cube_size, training_sessions, hinters)
         TwistyPuzzles::CubeState.check_cube_size(cube_size)
         raise TypeError unless training_sessions.all?(TrainingSession)
-        raise ArgumentError if training_sessions.length != hinters.length || training_sessions.empty?
+        if training_sessions.length != hinters.length || training_sessions.empty?
+          raise ArgumentError
+        end
 
         hinters.each do |h|
           raise TypeError, "Got invalid hinter type #{h.class}." unless h.respond_to?(:hints)

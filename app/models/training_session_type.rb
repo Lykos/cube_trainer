@@ -9,7 +9,8 @@ require 'cube_trainer/training/letters_to_word'
 require 'cube_trainer/training/alg_sets'
 require 'cube_trainer/letter_pair'
 
-# Model for training_session types. They are basic templates which users use to create their training training_sessions.
+# Model for training session types.
+# They are basic templates which users use to create their training sessions.
 # rubocop:disable Metrics/ClassLength
 class TrainingSessionType
   include ActiveModel::Model
@@ -155,8 +156,10 @@ class TrainingSessionType
 
   def useable_training_sessions(user)
     used_training_session_types.map do |used_training_session_type|
+      training_sessions =
+        user.training_sessions.find_by(training_session_type: used_training_session_type)
       {
-        training_sessions: user.training_sessions.find_by(training_session_type: used_training_session_type),
+        training_sessions: training_sessions,
         purpose: used_training_session_type.key
       }
     end

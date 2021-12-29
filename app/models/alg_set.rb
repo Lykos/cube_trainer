@@ -42,6 +42,8 @@ class AlgSet < ApplicationRecord
   end
 
   def training_session_type_valid
-    errors.add(:training_session_type, 'has to have bounded inputs') unless training_session_type.has_bounded_inputs?
+    return if training_session_type.has_bounded_inputs?
+
+    errors.add(:training_session_type, 'has to have bounded inputs')
   end
 end

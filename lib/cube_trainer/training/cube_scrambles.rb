@@ -26,7 +26,7 @@ module CubeTrainer
         end
       end
 
-      def initialize(training_session)
+      def initialize(_training_session)
         @mode = mode
       end
 

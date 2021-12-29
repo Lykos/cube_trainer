@@ -88,8 +88,8 @@ module CubeTrainer
 
       # `items` are the items from which we get samples. They have to be an array of InputItem.
       #         But the case key inside InputItem can be anything.
-      # `training_session` is the trainingsession that is used to retrieve associated previous results and for all kinds
-      #        of options.
+      # `training_session` is the training session that is used to retrieve associated previous
+      #                    results and for all kinds of options.
       def initialize(items, training_session, logger = Rails.logger)
         raise ArgumentError unless items.is_a?(Array)
         raise ArgumentError, "Invalid items #{items.inspect}." unless items.all?(InputItem)

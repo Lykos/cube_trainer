@@ -15,7 +15,9 @@ class TrainerController < ApplicationController
   private
 
   def set_cached_cases
-    @cached_cases = @training_session.cases&.select { |c| @cached_case_case_keys.include?(c.case_key) } || []
+    @cached_cases = @training_session.cases&.select do |c|
+      @cached_case_case_keys.include?(c.case_key)
+    end || []
   end
 
   def set_cached_case_case_keys
@@ -23,6 +25,7 @@ class TrainerController < ApplicationController
   end
 
   def set_training_session
-    head :not_found unless (@training_session = current_user.training_sessions.find_by(id: params[:training_session_id]))
+    @training_session = current_user.training_sessions.find_by(id: params[:training_session_id])
+    head :not_found unless @training_session
   end
 end

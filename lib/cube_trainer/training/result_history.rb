@@ -91,8 +91,8 @@ module CubeTrainer
         @badness_averages ||=
           begin
             result = @training_session.results
-                          .group(:case_key)
-                          .pluck(:case_key, badness_array_exp).to_h
+                                      .group(:case_key)
+                                      .pluck(:case_key, badness_array_exp).to_h
             result.transform_values! do |badnesses|
               new_cube_average.push_all(badnesses[0...@badness_memory])
             end

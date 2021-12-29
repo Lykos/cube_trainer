@@ -18,7 +18,8 @@ class CasesController < ApplicationController
   private
 
   def set_training_session
-    head :not_found unless (@training_session = current_user.training_sessions.find_by(id: params[:training_session_id]))
+    @training_session = current_user.training_sessions.find_by(id: params[:training_session_id])
+    head :not_found unless @training_session
   end
 
   def set_case

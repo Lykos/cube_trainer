@@ -24,7 +24,9 @@ shared_examples 'commutator_set' do |training_session_type, buffer|
   let(:input_items) { training_session.input_items }
 
   it 'has input items if the training_session type has bounded inputs' do
-    expect(training_session.input_items).not_to be_empty if training_session_type.has_bounded_inputs?
+    if training_session_type.has_bounded_inputs?
+      expect(training_session.input_items).not_to be_empty
+    end
   end
 end
 

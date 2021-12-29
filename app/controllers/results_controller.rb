@@ -9,10 +9,10 @@ class ResultsController < ApplicationController
   # GET /api/training_sessions/1/results.json
   def index
     results = @training_session.results
-                   .order(created_at: :desc)
-                   .limit(params[:limit])
-                   .offset(params[:offset])
-                   .map(&:to_simple)
+                               .order(created_at: :desc)
+                               .limit(params[:limit])
+                               .offset(params[:offset])
+                               .map(&:to_simple)
     render json: results, status: :ok
   end
 
@@ -61,7 +61,8 @@ class ResultsController < ApplicationController
   end
 
   def set_training_session
-    head :not_found unless (@training_session = current_user.training_sessions.find_by(id: params[:training_session_id]))
+    @training_session = current_user.training_sessions.find_by(id: params[:training_session_id])
+    head :not_found unless @training_session
   end
 
   def result_params

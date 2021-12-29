@@ -6,7 +6,8 @@ class TrainingSessionsController < ApplicationController
   before_action :set_new_training_session, only: %i[create]
 
   def name_exists_for_user?
-    render json: current_user.training_sessions.exists?(name: params[:training_session_name]), status: :ok
+    render json: current_user.training_sessions.exists?(name: params[:training_session_name]),
+           status: :ok
   end
 
   # GET /api/training_sessions
@@ -51,7 +52,8 @@ class TrainingSessionsController < ApplicationController
   private
 
   def set_training_session
-    head :not_found unless (@training_session = current_user.training_sessions.find_by(id: params[:id]))
+    @training_session = current_user.training_sessions.find_by(id: params[:id])
+    head :not_found unless @training_session
   end
 
   def set_new_training_session
@@ -67,9 +69,12 @@ class TrainingSessionsController < ApplicationController
     fixed_params = params
                    .require(:training_session)
                    .permit(:name, :known, :show_input_mode, :goal_badness, :cube_size,
-                           :memo_time_s, stat_types: [], buffer: [:key], training_session_type: [:key],
-                                         alg_set: [:id])
-    fixed_params[:training_session_type] = fixed_params[:training_session_type][:key] if fixed_params[:training_session_type]
+                           :memo_time_s, stat_types: [], buffer: [:key],
+                                         training_session_type: [:key], alg_set: [:id])
+    if fixed_params[:training_session_type]
+      fixed_params[:training_session_type] =
+        fixed_params[:training_session_type][:key]
+    end
     fixed_params[:buffer] = fixed_params[:buffer][:key] if fixed_params[:buffer]
     fixed_params[:alg_set_id] = fixed_params[:alg_set][:id] if fixed_params[:alg_set]
     fixed_params.delete(:alg_set)

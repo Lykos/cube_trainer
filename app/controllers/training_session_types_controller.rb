@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Controller that allows retrieval of training_session types.
-# TrainingSession types are basic templates which users use to create their training training_sessions.
+# TrainingSession types are basic templates which users use to create their training sessions.
 class TrainingSessionTypesController < ApplicationController
   before_action :set_mode_type, only: [:show]
 

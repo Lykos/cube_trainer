@@ -12,7 +12,7 @@ module CubeTrainer
     class StatsComputer
       include Utils::MathHelper
 
-      def initialize(now, training_session)
+      def initialize(now, _training_session)
         raise TypeError unless now.is_a?(Time)
 
         @now = now

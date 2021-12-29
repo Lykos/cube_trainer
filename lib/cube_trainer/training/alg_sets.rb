@@ -14,7 +14,7 @@ module CubeTrainer
     class AlgSet
       include TwistyPuzzles::Utils::StringHelper
 
-      def initialize(training_session)
+      def initialize(_training_session)
         @mode = mode
       end
 

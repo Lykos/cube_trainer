@@ -4,23 +4,21 @@
 class AlgOverridesController < ApplicationController
   before_action :set_training_session
   before_action :set_alg_override, only: %i[show update destroy]
+  before_action :set_optional_alg_override_by_key, only: %i[create_or_update]
   before_action :set_new_alg_override, only: %i[create]
 
   # GET /api/training_sessions/1/alg_overrides.json
   def index
     alg_overrides = @training_session.alg_overrides
-                         .order(created_at: :desc)
-                         .limit(params[:limit])
-                         .offset(params[:offset])
-                         .map(&:to_simple)
+                                     .order(created_at: :desc)
+                                     .limit(params[:limit])
+                                     .offset(params[:offset])
+                                     .map(&:to_simple)
     render json: alg_overrides, status: :ok
   end
 
   # POST /api/training_sessions/1/alg_overrides/create_or_update.json
   def create_or_update
-    @alg_override = @training_session.alg_overrides.find_by(
-      case_key: InputRepresentationType.new.cast(params[:case_key])
-    )
     if @alg_override
       update
     else
@@ -63,17 +61,25 @@ class AlgOverridesController < ApplicationController
 
   private
 
+  def set_optional_alg_override_by_key
+    @alg_override = @training_session.alg_overrides.find_by(
+      case_key: InputRepresentationType.new.cast(params[:case_key])
+    )
+  end
+
   def set_new_alg_override
     @alg_override = @training_session.alg_overrides.new(alg_override_params)
     render json: @alg_override.errors, status: :bad_request unless @alg_override.valid?
   end
 
   def set_alg_override
-    head :not_found unless (@alg_override = @training_session.alg_overrides.find_by(id: params[:id]))
+    @alg_override = @training_session.alg_overrides.find_by(id: params[:id])
+    head :not_found unless @alg_override
   end
 
   def set_training_session
-    head :not_found unless (@training_session = current_user.training_sessions.find_by(id: params[:training_session_id]))
+    @training_session = current_user.training_sessions.find_by(id: params[:training_session_id])
+    head :not_found unless @training_session
   end
 
   def alg_override_params
