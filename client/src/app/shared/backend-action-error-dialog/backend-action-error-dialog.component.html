@@ -1,7 +1,11 @@
 <div>
   <h1 mat-dialog-title>{{ context.action }} {{ context.subject }} failed!</h1>
   <div mat-dialog-content>
-    <span *ngIf="!error.fieldErrors">
+    <span *ngIf="error.message">
+      {{ error.message }}
+    </span>
+    <!-- This is not an ideal case: We basically don't have any useful information to show. -->
+    <span *ngIf="!error.fieldErrors && !error.message ">
       {{ error.statusText }}
     </span>
     <ng-container *ngFor="let fieldError of error.fieldErrors">

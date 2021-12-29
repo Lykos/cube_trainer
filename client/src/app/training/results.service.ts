@@ -35,23 +35,23 @@ function createResult(casee: Case, partialResult: PartialResult) {
 export class ResultsService {
   constructor(private readonly rails: RailsService) {}
 
-  list(modeId: number, offset?: number, limit?: number): Observable<Result[]> {
-    return this.rails.get<any[]>(`/training_sessions/${modeId}/results`, {offset, limit}).pipe(
+  list(trainingSessionId: number, offset?: number, limit?: number): Observable<Result[]> {
+    return this.rails.get<any[]>(`/training_sessions/${trainingSessionId}/results`, {offset, limit}).pipe(
       map(results => results.map(parseResult)));
   }
 
-  destroy(modeId: number, resultId: number): Observable<void> {
-    return this.rails.delete<void>(`/training_sessions/${modeId}/results/${resultId}`, {});
+  destroy(trainingSessionId: number, resultId: number): Observable<void> {
+    return this.rails.delete<void>(`/training_sessions/${trainingSessionId}/results/${resultId}`, {});
   }
 
-  markDnf(modeId: number, resultId: number): Observable<Result> {
-    return this.rails.patch<Result>(`/training_sessions/${modeId}/results/${resultId}`,
+  markDnf(trainingSessionId: number, resultId: number): Observable<Result> {
+    return this.rails.patch<Result>(`/training_sessions/${trainingSessionId}/results/${resultId}`,
                                     { result: { success: false } }).pipe(
                                       map(parseResult));
   }
 
-  create(modeId: number, casee: Case, partialResult: PartialResult): Observable<Result> {
-    return this.rails.post<Result>(`/training_sessions/${modeId}/results`,
+  create(trainingSessionId: number, casee: Case, partialResult: PartialResult): Observable<Result> {
+    return this.rails.post<Result>(`/training_sessions/${trainingSessionId}/results`,
 				   { result: createResult(casee, partialResult) }).pipe(
                                      map(parseResult));
   }

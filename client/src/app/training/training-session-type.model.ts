@@ -4,7 +4,7 @@ import { StatType } from './stat-type.model';
 import { Part } from './part.model';
 import { AlgSet } from './alg-set.model';
 
-export interface ModeType {
+export interface TrainingSessionType {
   readonly key: string;
   readonly name: string;
   readonly showInputModes: ShowInputMode[];

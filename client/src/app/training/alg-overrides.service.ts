@@ -9,8 +9,8 @@ import { Observable } from 'rxjs';
 export class AlgOverridesService {
   constructor(private readonly rails: RailsService) {}
 
-  createOrUpdate(modeId: number, algOverride: AlgOverride): Observable<void> {
-    return this.rails.post<void>(`/training_sessions/${modeId}/alg_overrides/create_or_update`,
+  createOrUpdate(trainingSessionId: number, algOverride: AlgOverride): Observable<void> {
+    return this.rails.post<void>(`/training_sessions/${trainingSessionId}/alg_overrides/create_or_update`,
                                  { algOverride: { caseKey: algOverride.casee.key, alg: algOverride.alg } });
   }
 }

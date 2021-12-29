@@ -41,7 +41,7 @@ export class DeleteAccountButtonComponent implements OnInit {
     this.usersService.destroy().subscribe(r => {
       this.snackBar.open(`User ${user.name} with all its data deleted`, 'Close');
       this.usersService.logout();
-      this.router.navigate(['account_deleted']);
+      this.router.navigate(['account-deleted']);
     });
   }
 }

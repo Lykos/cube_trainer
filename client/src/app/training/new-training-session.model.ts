@@ -1,7 +1,7 @@
-import { ModeBase } from './mode-base.model';
+import { TrainingSessionBase } from './training-session-base.model';
 import { AlgSet } from './alg-set.model';
 
-export interface NewMode extends ModeBase {
+export interface NewTrainingSession extends TrainingSessionBase {
   readonly memoTimeS: number;
   readonly statTypes: string[];
   readonly algSet?: AlgSet;

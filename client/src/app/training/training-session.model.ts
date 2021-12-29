@@ -1,7 +1,7 @@
-import { ModeBase } from './mode-base.model';
+import { TrainingSessionBase } from './training-session-base.model';
 import { Duration } from '@utils/duration';
 
-export interface Mode extends ModeBase {
+export interface TrainingSession extends TrainingSessionBase {
   readonly memoTime?: Duration;
   readonly id: number;
   readonly numResults: number;

@@ -22,36 +22,36 @@ export class ResultsEffects {
     this.actions$.pipe(
       ofType(initialLoad),
       exhaustMap(action =>
-        this.resultsService.list(action.modeId).pipe(
-          map(results => initialLoadSuccess({ modeId: action.modeId, results })),
+        this.resultsService.list(action.trainingSessionId).pipe(
+          map(results => initialLoadSuccess({ trainingSessionId: action.trainingSessionId, results })),
           catchError(httpResponseError => {
             const context = {
               action: 'loading',
               subject: 'results',
             }
             const error = parseBackendActionError(context, httpResponseError);
-            return of(initialLoadFailure({ modeId: action.modeId, error }));
+            return of(initialLoadFailure({ trainingSessionId: action.trainingSessionId, error }));
           })
         )
       )
     )
   );
 
-  // Failure for initialLoad has no effect, it shows a message at the component where the modes are rendered.
+  // Failure for initialLoad has no effect, it shows a message at the component where the results are rendered.
 
   create$ = createEffect(() =>
     this.actions$.pipe(
       ofType(create),
       exhaustMap(action =>
-          this.resultsService.create(action.modeId, action.casee, action.partialResult).pipe(
-          map(result => createSuccess({ modeId: action.modeId, casee: action.casee, partialResult: action.partialResult, result })),
+          this.resultsService.create(action.trainingSessionId, action.casee, action.partialResult).pipe(
+          map(result => createSuccess({ trainingSessionId: action.trainingSessionId, casee: action.casee, partialResult: action.partialResult, result })),
           catchError(httpResponseError => {
             const context = {
               action: 'creating result',
               subject: `${action.casee.name}`,
             }
             const error = parseBackendActionError(context, httpResponseError);
-            return of(createFailure({ modeId: action.modeId, error }));
+            return of(createFailure({ trainingSessionId: action.trainingSessionId, error }));
           })
         )
       )
@@ -72,16 +72,16 @@ export class ResultsEffects {
     this.actions$.pipe(
       ofType(destroy),
       exhaustMap(action => {
-        const observables = action.results.map(result => this.resultsService.destroy(action.modeId, result.id));
+        const observables = action.results.map(result => this.resultsService.destroy(action.trainingSessionId, result.id));
         return forkJoin(observables).pipe(
-          mapTo(destroySuccess({ modeId: action.modeId, results: action.results })),
+          mapTo(destroySuccess({ trainingSessionId: action.trainingSessionId, results: action.results })),
           catchError(httpResponseError => {
             const context = {
               action: 'deleting',
               subject: `${action.results.length} results`,
             }
             const error = parseBackendActionError(context, httpResponseError);
-            return of(destroyFailure({ modeId: action.modeId, error }));
+            return of(destroyFailure({ trainingSessionId: action.trainingSessionId, error }));
           })
         )
       })
@@ -112,16 +112,16 @@ export class ResultsEffects {
     this.actions$.pipe(
       ofType(markDnf),
       exhaustMap(action => {
-        const observables = action.results.map(result => this.resultsService.markDnf(action.modeId, result.id));
+        const observables = action.results.map(result => this.resultsService.markDnf(action.trainingSessionId, result.id));
         return forkJoin(observables).pipe(
-          map(results => markDnfSuccess({ modeId: action.modeId, results })),
+          map(results => markDnfSuccess({ trainingSessionId: action.trainingSessionId, results })),
           catchError(httpResponseError => {
             const context = {
               action: 'marking as DNF',
               subject: `${action.results.length} results`,
             }
             const error = parseBackendActionError(context, httpResponseError);
-            return of(markDnfFailure({ modeId: action.modeId, error }));
+            return of(markDnfFailure({ trainingSessionId: action.trainingSessionId, error }));
           })
         )
       })

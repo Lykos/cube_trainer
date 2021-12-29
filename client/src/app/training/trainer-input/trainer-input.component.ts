@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Mode } from '../mode.model';
-import { overrideAlgClick } from '@store/modes.actions';
+import { TrainingSession } from '../training-session.model';
+import { overrideAlgClick } from '@store/training-sessions.actions';
 import { ShowInputMode } from '../show-input-mode.model';
 import { Case } from '../case.model';
 import { Store } from '@ngrx/store';
@@ -15,7 +15,7 @@ export class TrainerInputComponent {
   casee?: Case;
 
   @Input()
-  mode?: Mode;
+  trainingSession?: TrainingSession;
 
   @Input()
   numHints?: number;
@@ -27,7 +27,7 @@ export class TrainerInputComponent {
   }
 
   get puzzle() {
-    const cubeSize = this.mode?.cubeSize;
+    const cubeSize = this.trainingSession?.cubeSize;
     return cubeSize ? `${cubeSize}x${cubeSize}x${cubeSize}` : undefined;
   }
 
@@ -36,14 +36,14 @@ export class TrainerInputComponent {
   }
 
   get showImage() {
-    return this.mode && this.mode.showInputMode == ShowInputMode.Picture;
+    return this.trainingSession && this.trainingSession.showInputMode == ShowInputMode.Picture;
   }
 
   get showName() {
-    return this.mode && this.mode.showInputMode == ShowInputMode.Name;
+    return this.trainingSession && this.trainingSession.showInputMode == ShowInputMode.Name;
   }
 
   onOverride() {
-    this.mode && this.casee && this.store.dispatch(overrideAlgClick({ mode: this.mode, casee: this.casee }));
+    this.trainingSession && this.casee && this.store.dispatch(overrideAlgClick({ trainingSession: this.trainingSession, casee: this.casee }));
   }
 }

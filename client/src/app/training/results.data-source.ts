@@ -4,6 +4,7 @@ import { catchError, finalize } from 'rxjs/operators';
 import { Result } from './result.model';
 import { ResultsService } from './results.service';
 
+// TODO: Remove
 export class ResultsDataSource implements DataSource<Result> {
   private resultsSubject = new BehaviorSubject<Result[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
@@ -24,9 +25,9 @@ export class ResultsDataSource implements DataSource<Result> {
     this.loadingSubject.complete();
   }
 
-  loadResults(modeId: number, pageNumber = 0, pageSize = 100) {
+  loadResults(trainingSessionId: number, pageNumber = 0, pageSize = 100) {
     this.loadingSubject.next(true);
-    this.resultsService.list(modeId, pageNumber, pageSize).pipe(
+    this.resultsService.list(trainingSessionId, pageNumber, pageSize).pipe(
       catchError(() => of([])),
       finalize(() => this.loadingSubject.next(false))
     )

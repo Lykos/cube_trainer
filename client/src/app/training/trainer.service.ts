@@ -27,26 +27,26 @@ export class TrainerService {
 
   private readonly casesCacheMap = new Map<number, QueueCache<Case>>();
 
-  private casesCache(modeId: number) {
-    const cache = this.casesCacheMap.get(modeId);
+  private casesCache(trainingSessionId: number) {
+    const cache = this.casesCacheMap.get(trainingSessionId);
     if (cache) {
       return cache;
     }
-    const newCache = new QueueCache<Case>(cacheSize, (cachedItems: Case[]) => this.randomCase(modeId, cachedItems));
-    this.casesCacheMap.set(modeId, newCache);
+    const newCache = new QueueCache<Case>(cacheSize, (cachedItems: Case[]) => this.randomCase(trainingSessionId, cachedItems));
+    this.casesCacheMap.set(trainingSessionId, newCache);
     return newCache;
   }
 
-  nextCaseWithCache(modeId: number): Observable<Case> {
-    return this.casesCache(modeId).next();
+  nextCaseWithCache(trainingSessionId: number): Observable<Case> {
+    return this.casesCache(trainingSessionId).next();
   }
 
-  prewarmCasesCache(modeId: number) {
-    this.casesCache(modeId);
+  prewarmCasesCache(trainingSessionId: number) {
+    this.casesCache(trainingSessionId);
   }
 
-  private randomCase(modeId: number, cachedCases: Case[] = []): Observable<Case> {
+  private randomCase(trainingSessionId: number, cachedCases: Case[] = []): Observable<Case> {
     const cachedCaseKeys = cachedCases.map(i => i.key);
-    return this.rails.get<Case>(`/trainer/${modeId}/random_case`, {cachedCaseKeys}).pipe(map(parseCase));
+    return this.rails.get<Case>(`/trainer/${trainingSessionId}/random_case`, {cachedCaseKeys}).pipe(map(parseCase));
   }
 }

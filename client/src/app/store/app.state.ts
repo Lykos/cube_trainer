@@ -1,9 +1,9 @@
 import { UserState } from './user.state';
-import { ModesState } from './modes.state';
+import { TrainingSessionsState } from './training-sessions.state';
 import { ResultsState } from './results.state';
 
 export interface AppState {
   user: UserState;
-  modes: ModesState;
+  trainingSessions: TrainingSessionsState;
   results: ResultsState;
 }

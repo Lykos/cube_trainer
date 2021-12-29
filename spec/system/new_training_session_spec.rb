@@ -12,7 +12,7 @@ describe 'new mode', type: :system do
   it 'allows to create a new commutator mode' do
     login(user)
 
-    visit '/modes'
+    visit '/training-sessions'
     click_link 'Cube Trainer'
     click_button 'New'
 
@@ -45,7 +45,7 @@ describe 'new mode', type: :system do
   it 'allows to create a new memo rush mode' do
     login(user)
 
-    visit '/modes'
+    visit '/training-sessions'
     click_link 'Cube Trainer'
     click_button 'New'
 

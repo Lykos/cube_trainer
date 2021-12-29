@@ -1,24 +1,24 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { DeleteModeConfirmationDialogComponent } from '@training/delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
+import { DeleteTrainingSessionConfirmationDialogComponent } from '@training/delete-training-session-confirmation-dialog/delete-training-session-confirmation-dialog.component';
 import { OverrideAlgDialogComponent } from '@training/override-alg-dialog/override-alg-dialog.component';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ModeAndCase } from '@training/mode-and-case.model';
+import { TrainingSessionAndCase } from '@training/training-session-and-case.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, deleteClick, dontDestroy, destroy, destroySuccess, destroyFailure, overrideAlgClick, dontOverrideAlg, overrideAlg, overrideAlgSuccess, overrideAlgFailure } from '@store/modes.actions';
-import { ModesService } from '@training/modes.service';
+import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, deleteClick, dontDestroy, destroy, destroySuccess, destroyFailure, overrideAlgClick, dontOverrideAlg, overrideAlg, overrideAlgSuccess, overrideAlgFailure } from '@store/training-sessions.actions';
+import { TrainingSessionsService } from '@training/training-sessions.service';
 import { AlgOverridesService } from '@training/alg-overrides.service';
 import { Router } from '@angular/router';
 
 @Injectable()
-export class ModesEffects {
+export class TrainingSessionsEffects {
   constructor(
     private actions$: Actions,
-    private readonly modesService: ModesService,
+    private readonly trainingSessionsService: TrainingSessionsService,
     private readonly algOverridesService: AlgOverridesService,
     private readonly dialog: MatDialog,
     private readonly snackBar: MatSnackBar,
@@ -29,12 +29,12 @@ export class ModesEffects {
     this.actions$.pipe(
       ofType(initialLoad),
       exhaustMap(action =>
-        this.modesService.list().pipe(
-          map(modes => initialLoadSuccess({ modes })),
+        this.trainingSessionsService.list().pipe(
+          map(trainingSessions => initialLoadSuccess({ trainingSessions })),
           catchError(httpResponseError => {
             const context = {
               action: 'loading',
-              subject: 'modes',
+              subject: 'training sessions',
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(initialLoadFailure({ error }));
@@ -44,18 +44,18 @@ export class ModesEffects {
     )
   );
 
-  // Failure for initialLoad has no effect, it shows a message at the component where the modes are rendered.
+  // Failure for initialLoad has no effect, it shows a message at the component where the training sessions are rendered.
   
   create$ = createEffect(() =>
     this.actions$.pipe(
       ofType(create),
       exhaustMap(action =>
-        this.modesService.create(action.newMode).pipe(
-          map(mode => createSuccess({ newMode: action.newMode, mode })),
+        this.trainingSessionsService.create(action.newTrainingSession).pipe(
+          map(trainingSession => createSuccess({ newTrainingSession: action.newTrainingSession, trainingSession })),
           catchError(httpResponseError => {
             const context = {
-              action: 'creating mode',
-              subject: action.newMode.name,
+              action: 'creating',
+              subject: action.newTrainingSession.name,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(createFailure({ error }));
@@ -79,8 +79,8 @@ export class ModesEffects {
     this.actions$.pipe(
       ofType(createSuccess),
       tap(action => {
-        this.snackBar.open(`Mode ${action.mode.name} created.`, 'Close');
-	this.router.navigate([`/modes`]);
+        this.snackBar.open(`Training session ${action.trainingSession.name} created.`, 'Close');
+	this.router.navigate([`/trainingSessions`]);
       }),
     ),
     { dispatch: false }
@@ -90,9 +90,9 @@ export class ModesEffects {
     this.actions$.pipe(
       ofType(deleteClick),
       exhaustMap(action => {
-        const dialogRef = this.dialog.open(DeleteModeConfirmationDialogComponent, { data: action.mode });
+        const dialogRef = this.dialog.open(DeleteTrainingSessionConfirmationDialogComponent, { data: action.trainingSession });
         return dialogRef.afterClosed().pipe(
-          map(result => result ? destroy({ mode: action.mode }) : dontDestroy({ mode: action.mode }))
+          map(result => result ? destroy({ trainingSession: action.trainingSession }) : dontDestroy({ trainingSession: action.trainingSession }))
         );
       }),
     )
@@ -102,12 +102,12 @@ export class ModesEffects {
     this.actions$.pipe(
       ofType(destroy),
       exhaustMap(action =>
-        this.modesService.destroy(action.mode.id).pipe(
-          map(mode => destroySuccess({ mode: action.mode })),
+        this.trainingSessionsService.destroy(action.trainingSession.id).pipe(
+          map(trainingSession => destroySuccess({ trainingSession: action.trainingSession })),
           catchError(httpResponseError => {
             const context = {
-              action: 'deleting mode',
-              subject: action.mode.name,
+              action: 'deleting',
+              subject: action.trainingSession.name,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(destroyFailure({ error }));
@@ -131,8 +131,8 @@ export class ModesEffects {
     this.actions$.pipe(
       ofType(destroySuccess),
       tap(action => {
-	this.snackBar.open(`Mode ${action.mode.name} deleted.`, 'Close');
-	this.router.navigate([`/modes`]);
+	this.snackBar.open(`TrainingSession ${action.trainingSession.name} deleted.`, 'Close');
+	this.router.navigate([`/trainingSessions`]);
       }),
     ),
     { dispatch: false }
@@ -142,10 +142,10 @@ export class ModesEffects {
     this.actions$.pipe(
       ofType(overrideAlgClick),
       exhaustMap(action => {
-        const modeAndCase: ModeAndCase = { mode: action.mode, casee: action.casee };
-        const dialogRef = this.dialog.open(OverrideAlgDialogComponent, { data: modeAndCase });
+        const trainingSessionAndCase: TrainingSessionAndCase = { trainingSession: action.trainingSession, casee: action.casee };
+        const dialogRef = this.dialog.open(OverrideAlgDialogComponent, { data: trainingSessionAndCase });
         return dialogRef.afterClosed().pipe(
-          map(algOverride => algOverride ? overrideAlg({ mode: action.mode, algOverride }) : dontOverrideAlg({ mode: action.mode }))
+          map(algOverride => algOverride ? overrideAlg({ trainingSession: action.trainingSession, algOverride }) : dontOverrideAlg({ trainingSession: action.trainingSession }))
         );
       }),
     )
@@ -155,8 +155,8 @@ export class ModesEffects {
     this.actions$.pipe(
       ofType(overrideAlg),
       exhaustMap(action =>
-        this.algOverridesService.createOrUpdate(action.mode.id, action.algOverride).pipe(
-          map(mode => overrideAlgSuccess({ mode: action.mode, algOverride: action.algOverride })),
+        this.algOverridesService.createOrUpdate(action.trainingSession.id, action.algOverride).pipe(
+          map(trainingSession => overrideAlgSuccess({ trainingSession: action.trainingSession, algOverride: action.algOverride })),
           catchError(httpResponseError => {
             const context = {
               action: 'overriding alg',

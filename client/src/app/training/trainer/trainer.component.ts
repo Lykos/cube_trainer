@@ -1,15 +1,15 @@
 import { Case } from '../case.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, filter, take, shareReplay, distinctUntilChanged } from 'rxjs/operators';
-import { Mode } from '../mode.model';
+import { TrainingSession } from '../training-session.model';
 import { PartialResult } from '../partial-result.model';
 import { TrainerService } from '../trainer.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, combineLatest } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { hasValue, forceValue } from '@utils/optional';
-import { selectSelectedMode, selectInitialLoadLoading, selectInitialLoadError } from '@store/modes.selectors';
-import { initialLoad, setSelectedModeId } from '@store/modes.actions';
+import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
+import { initialLoad, setSelectedTrainingSessionId } from '@store/training-sessions.actions';
 import { create } from '@store/results.actions';
 import { StopwatchStore } from '../stopwatch.store';
 
@@ -19,17 +19,17 @@ import { StopwatchStore } from '../stopwatch.store';
   providers: [StopwatchStore],
 })
 export class TrainerComponent implements OnInit, OnDestroy {
-  casee: Case | undefined = undefined;
+  casee?: Case;
   numHints = 0;
-  mode: Mode | undefined = undefined;
+  trainingSession?: TrainingSession;
   isRunning = false;
   loading$: Observable<boolean>;
   error$: Observable<any>;
 
-  private mode$: Observable<Mode>
-  private modeId$: Observable<number>
-  private modeIdSubscription: any;
-  private modeSubscription: any;
+  private trainingSession$: Observable<TrainingSession>
+  private trainingSessionId$: Observable<number>
+  private trainingSessionIdSubscription: any;
+  private trainingSessionSubscription: any;
   private stopSubscription: any;
   private stopwatchLoadingSubscription: any;
 
@@ -37,8 +37,8 @@ export class TrainerComponent implements OnInit, OnDestroy {
               private readonly trainerService: TrainerService,
               private readonly store: Store,
               readonly stopwatchStore: StopwatchStore) {
-    this.modeId$ = activatedRoute.params.pipe(map(p => +p['modeId']));
-    this.mode$ = this.store.select(selectSelectedMode).pipe(
+    this.trainingSessionId$ = activatedRoute.params.pipe(map(p => +p['trainingSessionId']));
+    this.trainingSession$ = this.store.select(selectSelectedTrainingSession).pipe(
       filter(hasValue),
       map(forceValue),
       shareReplay(),
@@ -52,30 +52,30 @@ export class TrainerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(initialLoad());
-    this.modeIdSubscription = this.modeId$.subscribe(modeId => {
-      this.store.dispatch(setSelectedModeId({ selectedModeId: modeId }));
+    this.trainingSessionIdSubscription = this.trainingSessionId$.subscribe(trainingSessionId => {
+      this.store.dispatch(setSelectedTrainingSessionId({ selectedTrainingSessionId: trainingSessionId }));
     });
-    this.modeSubscription = this.mode$.subscribe(m => { this.mode = m; });
+    this.trainingSessionSubscription = this.trainingSession$.subscribe(m => { this.trainingSession = m; });
     this.stopwatchLoadingSubscription = combineLatest(
       this.stopwatchStore.loading$.pipe(filter(l => l)),
-      this.mode$.pipe(map(mode => mode.id), distinctUntilChanged()),
-    ).subscribe(([_, modeId]) => { this.prepareNextCase(modeId); })
+      this.trainingSession$.pipe(map(trainingSession => trainingSession.id), distinctUntilChanged()),
+    ).subscribe(([_, trainingSessionId]) => { this.prepareNextCase(trainingSessionId); })
     this.stopSubscription = this.stopwatchStore.stop$.subscribe(duration => {
       const partialResult: PartialResult = { numHints: this.numHints, duration, success: true };
-      this.store.dispatch(create({ modeId: this.mode!.id, casee: this.casee!, partialResult }));
+      this.store.dispatch(create({ trainingSessionId: this.trainingSession!.id, casee: this.casee!, partialResult }));
     });
   }
 
   ngOnDestroy() {
-    this.modeIdSubscription?.unsubscribe();
-    this.modeSubscription?.unsubscribe();
+    this.trainingSessionIdSubscription?.unsubscribe();
+    this.trainingSessionSubscription?.unsubscribe();
     this.stopSubscription?.unsubscribe();
     this.stopwatchLoadingSubscription?.unsubscribe();
   }
 
-  private prepareNextCase(modeId: number) {
+  private prepareNextCase(trainingSessionId: number) {
     this.casee = undefined;
-    this.trainerService.nextCaseWithCache(modeId).pipe(take(1)).subscribe(casee => {
+    this.trainerService.nextCaseWithCache(trainingSessionId).pipe(take(1)).subscribe(casee => {
       this.casee = casee;
       this.stopwatchStore.finishLoading();
     });

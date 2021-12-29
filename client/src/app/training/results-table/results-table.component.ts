@@ -5,8 +5,8 @@ import { PageEvent } from '@angular/material/paginator';
 import { formatDate } from '@angular/common';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { selectSelectedModeResults, selectSelectedModeNumResults, selectSelectedModeResultsOnPage, selectSelectedModeNumResultsOnPage, selectSelectedModeAnyLoading } from '@store/results.selectors';
-import { initialLoad, destroy, markDnf, setSelectedModeId, setPage } from '@store/results.actions';
+import { selectSelectedTrainingSessionResults, selectSelectedTrainingSessionNumResults, selectSelectedTrainingSessionResultsOnPage, selectSelectedTrainingSessionNumResultsOnPage, selectSelectedTrainingSessionAnyLoading } from '@store/results.selectors';
+import { initialLoad, destroy, markDnf, setSelectedTrainingSessionId, setPage } from '@store/results.actions';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -16,7 +16,7 @@ import { Store } from '@ngrx/store';
 })
 export class ResultsTableComponent implements OnInit {
   @Input()
-  modeId?: number;
+  trainingSessionId?: number;
 
   columnsToDisplay = ['select', 'case', 'time', 'numHints', 'timestamp'];
   results$: Observable<readonly Result[]>;
@@ -30,35 +30,35 @@ export class ResultsTableComponent implements OnInit {
 
   constructor(private readonly store: Store,
 	      @Inject(LOCALE_ID) private readonly locale: string) {
-    this.loading$ = this.store.select(selectSelectedModeAnyLoading);
-    this.results$ = this.store.select(selectSelectedModeResults);
-    this.resultsOnPage$ = this.store.select(selectSelectedModeResultsOnPage);
-    this.numResults$ = this.store.select(selectSelectedModeNumResults);
-    this.allSelected$ = this.store.select(selectSelectedModeNumResultsOnPage).pipe(
+    this.loading$ = this.store.select(selectSelectedTrainingSessionAnyLoading);
+    this.results$ = this.store.select(selectSelectedTrainingSessionResults);
+    this.resultsOnPage$ = this.store.select(selectSelectedTrainingSessionResultsOnPage);
+    this.numResults$ = this.store.select(selectSelectedTrainingSessionNumResults);
+    this.allSelected$ = this.store.select(selectSelectedTrainingSessionNumResultsOnPage).pipe(
       map(l => { return { value: this.selection.selected.length === l }; }),
       shareReplay(),
     );
   }
 
-  get checkedModeId(): number {
-    const modeId = this.modeId;
-    if (!modeId) {
-      throw new Error('modeId has to be defined');
+  get checkedTrainingSessionId(): number {
+    const trainingSessionId = this.trainingSessionId;
+    if (!trainingSessionId) {
+      throw new Error('trainingSessionId has to be defined');
     }
-    return modeId
+    return trainingSessionId
   }
 
   ngOnInit() {
-    this.store.dispatch(setSelectedModeId({ selectedModeId: this.checkedModeId }));
-    this.store.dispatch(initialLoad({ modeId: this.checkedModeId }));
+    this.store.dispatch(setSelectedTrainingSessionId({ selectedTrainingSessionId: this.checkedTrainingSessionId }));
+    this.store.dispatch(initialLoad({ trainingSessionId: this.checkedTrainingSessionId }));
   }
 
   onDeleteSelected() {
-    this.store.dispatch(destroy({ modeId: this.checkedModeId, results: this.selection.selected }));
+    this.store.dispatch(destroy({ trainingSessionId: this.checkedTrainingSessionId, results: this.selection.selected }));
   }
 
   onMarkSelectedDnf() {
-    this.store.dispatch(markDnf({ modeId: this.checkedModeId, results: this.selection.selected }));
+    this.store.dispatch(markDnf({ trainingSessionId: this.checkedTrainingSessionId, results: this.selection.selected }));
   }
 
   onPage(pageEvent: PageEvent) {

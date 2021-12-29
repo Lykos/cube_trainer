@@ -9,11 +9,19 @@ export function parseFieldErrors(error: object): FieldError[] {
   return fieldErrors;
 }
 
-export function parseBackendActionError(context: BackendActionContext, errorResponse: HttpErrorResponse): BackendActionError {
-  return {
-    context,
-    status: errorResponse.status,
-    statusText: errorResponse.statusText,
-    fieldErrors: parseFieldErrors(errorResponse.error),
+export function parseBackendActionError(context: BackendActionContext, error: HttpErrorResponse | Error): BackendActionError {
+  if (error instanceof HttpErrorResponse) {
+    return {
+      context,
+      status: error.status,
+      statusText: error.statusText,
+      fieldErrors: parseFieldErrors(error.error),
+    };
+  } else {
+    return {
+      context,
+      message: error.message,
+      fieldErrors: [],
+    }  
   }
 }

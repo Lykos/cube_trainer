@@ -6,36 +6,36 @@ import { isBackendActionLoading, maybeBackendActionError } from '@shared/backend
 
 export const selectResultsState = createFeatureSelector<ResultsState>('results');
 
-export const selectSelectedModeResultsState = createSelector(
+export const selectSelectedTrainingSessionResultsState = createSelector(
   selectResultsState,
-  resultsState => find(resultsState.modeResultsStates, m => m.modeId === resultsState.selectedModeId));
+  resultsState => find(resultsState.trainingSessionResultsStates, m => m.trainingSessionId === resultsState.selectedTrainingSessionId));
 
-export const selectSelectedModeResults = createSelector(
-  selectSelectedModeResultsState,
-  modeResultsState => orElse(mapOptional(modeResultsState, m => m.serverResults), []));
+export const selectSelectedTrainingSessionResults = createSelector(
+  selectSelectedTrainingSessionResultsState,
+  trainingSessionResultsState => orElse(mapOptional(trainingSessionResultsState, m => m.serverResults), []));
 
-export const selectSelectedModeNumResults = createSelector(
-  selectSelectedModeResults,
+export const selectSelectedTrainingSessionNumResults = createSelector(
+  selectSelectedTrainingSessionResults,
   results => results.length);
 
 export const selectInitialLoadError = createSelector(
-  selectSelectedModeResultsState,
+  selectSelectedTrainingSessionResultsState,
   results => flatMapOptional(results, rs => maybeBackendActionError(rs.initialLoadState)));
 
-export const selectSelectedModeResultsOnPage = createSelector(
+export const selectSelectedTrainingSessionResultsOnPage = createSelector(
   selectResultsState,
   resultsState => orElse(
-    mapOptional(find(resultsState.modeResultsStates, m => m.modeId === resultsState.selectedModeId),
+    mapOptional(find(resultsState.trainingSessionResultsStates, m => m.trainingSessionId === resultsState.selectedTrainingSessionId),
                 m => m.serverResults.slice(resultsState.pageIndex * resultsState.pageSize, (resultsState.pageSize + 1) * resultsState.pageSize)),
     []));
 
-export const selectSelectedModeNumResultsOnPage = createSelector(
+export const selectSelectedTrainingSessionNumResultsOnPage = createSelector(
   selectResultsState,
   resultsState => orElse(
-    mapOptional(find(resultsState.modeResultsStates, m => m.modeId === resultsState.selectedModeId),
+    mapOptional(find(resultsState.trainingSessionResultsStates, m => m.trainingSessionId === resultsState.selectedTrainingSessionId),
                 m => Math.max(m.serverResults.length - resultsState.pageIndex * resultsState.pageSize, resultsState.pageSize)),
     0));
 
-export const selectSelectedModeAnyLoading = createSelector(
-  selectSelectedModeResultsState,
-  modeResultsState => orElse(mapOptional(modeResultsState, m => isBackendActionLoading(m.initialLoadState) || isBackendActionLoading(m.createState) || isBackendActionLoading(m.destroyState) || isBackendActionLoading(m.markDnfState)), false));
+export const selectSelectedTrainingSessionAnyLoading = createSelector(
+  selectSelectedTrainingSessionResultsState,
+  trainingSessionResultsState => orElse(mapOptional(trainingSessionResultsState, m => isBackendActionLoading(m.initialLoadState) || isBackendActionLoading(m.createState) || isBackendActionLoading(m.destroyState) || isBackendActionLoading(m.markDnfState)), false));

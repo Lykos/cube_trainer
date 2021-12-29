@@ -1,10 +1,10 @@
 import { CdkStepperModule } from '@angular/cdk/stepper';
-import { DeleteModeConfirmationDialogComponent } from './delete-mode-confirmation-dialog/delete-mode-confirmation-dialog.component';
+import { DeleteTrainingSessionConfirmationDialogComponent } from './delete-training-session-confirmation-dialog/delete-training-session-confirmation-dialog.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { ModesComponent } from './modes/modes.component';
+import { TrainingSessionsComponent } from './training-sessions/training-sessions.component';
 import { NewColorSchemeComponent } from './new-color-scheme/new-color-scheme.component'
 import { NewLetterSchemeComponent } from './new-letter-scheme/new-letter-scheme.component'
-import { NewModeComponent } from './new-mode/new-mode.component';
+import { NewTrainingSessionComponent } from './new-training-session/new-training-session.component';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { OverrideAlgDialogComponent } from './override-alg-dialog/override-alg-dialog.component';
 import { ResultsTableComponent } from './results-table/results-table.component';
@@ -16,11 +16,11 @@ import { TrainerInputComponent } from './trainer-input/trainer-input.component';
 
 @NgModule({
   declarations: [
-    DeleteModeConfirmationDialogComponent,
-    ModesComponent,
+    DeleteTrainingSessionConfirmationDialogComponent,
+    TrainingSessionsComponent,
     NewColorSchemeComponent,
     NewLetterSchemeComponent,
-    NewModeComponent,
+    NewTrainingSessionComponent,
     OverrideAlgDialogComponent,
     ResultsTableComponent,
     StatsTableComponent,
@@ -36,13 +36,13 @@ import { TrainerInputComponent } from './trainer-input/trainer-input.component';
   exports: [
     NewColorSchemeComponent,
     NewLetterSchemeComponent,
-    NewModeComponent,
-    ModesComponent,
+    NewTrainingSessionComponent,
+    TrainingSessionsComponent,
     StatsTableComponent,
     TrainerComponent,
   ],
   entryComponents: [
-    DeleteModeConfirmationDialogComponent,
+    DeleteTrainingSessionConfirmationDialogComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,

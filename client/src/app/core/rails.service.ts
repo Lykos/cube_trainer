@@ -33,7 +33,7 @@ class UrlParameterPath {
 }
 
 function constructUrl(relativeUrl: string) {
-  return `${environment.apiPrefix}/${relativeUrl}`;
+  return `${environment.apiPrefix}${relativeUrl}`;
 }
 
 function serializeUrlParams(data: object): HttpParams {

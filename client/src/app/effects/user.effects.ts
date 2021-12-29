@@ -65,7 +65,7 @@ export class UserEffects {
         if (storedRedirectUrl) {
           localStorage.removeItem(METADATA.signInStoredUrlStorageKey);
         }
-        const redirectUrl = storedRedirectUrl || '/modes';
+        const redirectUrl = storedRedirectUrl || '/training-sessions';
         this.router.navigate([redirectUrl]);
       })
     ),
@@ -104,7 +104,7 @@ export class UserEffects {
   logoutSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(logoutSuccess),
-      tap(() => { this.router.navigate(['/logged_out']); })
+      tap(() => { this.router.navigate(['/logged-out']); })
     ),
     { dispatch: false },
   );

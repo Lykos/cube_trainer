@@ -1,18 +1,18 @@
 <div>
-  <ng-container *ngIf="mode">
+  <ng-container *ngIf="trainingSession">
     <div layout="row" layout-sm="column">
       <div flex *ngIf="casee">
-        <cube-trainer-trainer-input [casee]="casee" [mode]="mode" [numHints]="numHints"></cube-trainer-trainer-input>
+        <cube-trainer-trainer-input [casee]="casee" [trainingSession]="trainingSession" [numHints]="numHints"></cube-trainer-trainer-input>
         <cube-trainer-stopwatch
           [stopwatchStore]="stopwatchStore"
-          [memoTime]="mode.memoTime"
+          [memoTime]="trainingSession.memoTime"
           [maxHints]="maxHints"
           [hasStopAndStart]="hasStopAndStart"
           (numHints)="onNumHints($event)">
         </cube-trainer-stopwatch>
       </div>
       <div flex>
-        <cube-trainer-results-table [modeId]="mode.id"></cube-trainer-results-table>
+        <cube-trainer-results-table [trainingSessionId]="trainingSession.id"></cube-trainer-results-table>
       </div>
       <div flex>
         <cube-trainer-stats-table></cube-trainer-stats-table>
@@ -20,7 +20,7 @@
     </div>
   </ng-container>
   <div *ngIf="error$ | async">
-    Error loading modes.
+    Error loading trainingSession.
   </div>
   <mat-spinner *ngIf="loading$ | async"></mat-spinner>
 </div>

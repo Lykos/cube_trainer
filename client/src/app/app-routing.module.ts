@@ -18,8 +18,8 @@ import { LoginComponent } from '@core/login/login.component';
 import { LoggedOutComponent } from '@core/logged-out/logged-out.component';
 import { AccountDeletedComponent } from '@core/account-deleted/account-deleted.component';
 import { ConfirmEmailComponent } from '@core/confirm-email/confirm-email.component';
-import { ModesComponent } from './training/modes/modes.component';
-import { NewModeComponent } from './training/new-mode/new-mode.component';
+import { TrainingSessionsComponent } from './training/training-sessions/training-sessions.component';
+import { NewTrainingSessionComponent } from './training/new-training-session/new-training-session.component';
 import { TrainerComponent } from './training/trainer/trainer.component';
 import { AboutComponent } from '@core/about/about.component';
 import { CookiePolicyComponent } from '@core/cookie-policy/cookie-policy.component';
@@ -31,32 +31,32 @@ import { RouterModule, Routes, ExtraOptions } from '@angular/router';
 import { environment } from '@environment';
 
 const routes: Routes = [
-  { path: 'method_explorer', component: MethodExplorerComponent },
-  { path: 'confirm_email', component: ConfirmEmailComponent },
+  { path: 'method-explorer', component: MethodExplorerComponent },
+  { path: 'confirm-email', component: ConfirmEmailComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'reset_password', component: ResetPasswordComponent },
-  { path: 'update_password', component: UpdatePasswordComponent },
-  { path: 'change_password', component: ChangePasswordComponent, canActivate: [AngularTokenService] },
+  { path: 'reset-password', component: ResetPasswordComponent },
+  { path: 'update-password', component: UpdatePasswordComponent },
+  { path: 'change-password', component: ChangePasswordComponent, canActivate: [AngularTokenService] },
   { path: 'login', component: LoginComponent },
-  { path: 'logged_out', component: LoggedOutComponent },
-  { path: 'account_deleted', component: AccountDeletedComponent },
-  { path: 'modes', component: ModesComponent, canActivate: [AngularTokenService] },
+  { path: 'logged-out', component: LoggedOutComponent },
+  { path: 'account-deleted', component: AccountDeletedComponent },
+  { path: 'training-sessions', component: TrainingSessionsComponent, canActivate: [AngularTokenService] },
   { path: 'achievements', component: AchievementsComponent },
   { path: 'achievements/:achievementKey', component: AchievementComponent },
   { path: 'user', component: UserComponent, canActivate: [AngularTokenService] },
-  { path: 'edit_user', component: EditUserComponent, canActivate: [AngularTokenService] },
-  { path: 'achievement_grants', component: AchievementGrantsComponent, canActivate: [AngularTokenService] },
+  { path: 'edit-user', component: EditUserComponent, canActivate: [AngularTokenService] },
+  { path: 'achievement-grants', component: AchievementGrantsComponent, canActivate: [AngularTokenService] },
   { path: 'messages', component: MessagesComponent, canActivate: [AngularTokenService] },
   { path: 'messages/:messageId', component: MessageComponent, canActivate: [AngularTokenService] },
-  { path: 'color_schemes/new', component: NewColorSchemeComponent, canActivate: [AngularTokenService] },
-  { path: 'letter_schemes/new', component: NewLetterSchemeComponent, canActivate: [AngularTokenService] },
-  { path: 'training/new', component: NewModeComponent, canActivate: [AngularTokenService] },
-  { path: 'training/:modeId', component: TrainerComponent, canActivate: [AngularTokenService] },
+  { path: 'color-schemes/new', component: NewColorSchemeComponent, canActivate: [AngularTokenService] },
+  { path: 'letter-schemes/new', component: NewLetterSchemeComponent, canActivate: [AngularTokenService] },
+  { path: 'training/new', component: NewTrainingSessionComponent, canActivate: [AngularTokenService] },
+  { path: 'training/:trainingSessionId', component: TrainerComponent, canActivate: [AngularTokenService] },
   { path: 'about', component: AboutComponent },
-  { path: 'privacy_policy', component: PrivacyPolicyComponent },
+  { path: 'privacy-policy', component: PrivacyPolicyComponent },
   { path: 'contact', component: ContactComponent },
-  { path: 'cookie_policy', component: CookiePolicyComponent },
-  { path: 'terms_and_conditions', component: TermsAndConditionsComponent },
+  { path: 'cookie-policy', component: CookiePolicyComponent },
+  { path: 'terms-and-conditions', component: TermsAndConditionsComponent },
   { path: 'disclaimer', component: DisclaimerComponent },
 ];
 

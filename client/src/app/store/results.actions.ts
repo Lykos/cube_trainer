@@ -6,67 +6,67 @@ import { BackendActionError } from '@shared/backend-action-error.model';
 
 export const initialLoad = createAction(
   '[Results] initial load from server',
-  props<{ modeId: number }>()
+  props<{ trainingSessionId: number }>()
 );
  
 export const initialLoadSuccess = createAction(
   '[Results] initial load from server success',
-  props<{ modeId: number, results: readonly Result[] }>()
+  props<{ trainingSessionId: number, results: readonly Result[] }>()
 );
  
 export const initialLoadFailure = createAction(
   '[Results] initial load from server failure',
-  props<{ modeId: number, error: BackendActionError }>()
+  props<{ trainingSessionId: number, error: BackendActionError }>()
 );
 
 export const create = createAction(
   '[Results] create',
-  props<{ modeId: number, casee: Case, partialResult: PartialResult }>()
+  props<{ trainingSessionId: number, casee: Case, partialResult: PartialResult }>()
 );
  
 export const createSuccess = createAction(
   '[Results] create success',
-  props<{ modeId: number, casee: Case, partialResult: PartialResult, result: Result }>()
+  props<{ trainingSessionId: number, casee: Case, partialResult: PartialResult, result: Result }>()
 );
  
 export const createFailure = createAction(
   '[Results] create failure',
-  props<{ modeId: number, error: BackendActionError }>()
+  props<{ trainingSessionId: number, error: BackendActionError }>()
 );
  
 export const destroy = createAction(
   '[Results] destroy',
-  props<{ modeId: number, results: Result[] }>()
+  props<{ trainingSessionId: number, results: Result[] }>()
 );
  
 export const destroySuccess = createAction(
   '[Results] destroy success',
-  props<{ modeId: number, results: Result[] }>()
+  props<{ trainingSessionId: number, results: Result[] }>()
 );
  
 export const destroyFailure = createAction(
   '[Results] destroy failure',
-  props<{ modeId: number, error: BackendActionError }>()
+  props<{ trainingSessionId: number, error: BackendActionError }>()
 );
 
 export const markDnf = createAction(
   '[Results] mark DNF',
-  props<{ modeId: number, results: Result[] }>()
+  props<{ trainingSessionId: number, results: Result[] }>()
 );
  
 export const markDnfSuccess = createAction(
   '[Results] mark DNF success',
-  props<{ modeId: number, results: Result[] }>()
+  props<{ trainingSessionId: number, results: Result[] }>()
 );
  
 export const markDnfFailure = createAction(
   '[Results] mark DNF failure',
-  props<{ modeId: number, error: BackendActionError }>()
+  props<{ trainingSessionId: number, error: BackendActionError }>()
 );
 
-export const setSelectedModeId = createAction(
-  '[Results] set selected mode id',
-  props<{ selectedModeId: number }>()
+export const setSelectedTrainingSessionId = createAction(
+  '[Results] set selected training session id',
+  props<{ selectedTrainingSessionId: number }>()
 );
 
 export const setPage = createAction(

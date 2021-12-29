@@ -13,11 +13,11 @@ import { MethodExplorerModule } from './method-explorer/method-explorer.module';
 import { APP_BASE_HREF } from '@angular/common';
 // TODO: Move this to a better place
 import { userReducer } from '@store/user.reducer';
-import { modesReducer } from '@store/modes.reducer';
+import { trainingSessionsReducer } from '@store/training-sessions.reducer';
 import { resultsReducer } from '@store/results.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { UserEffects } from '@effects/user.effects';
-import { ModesEffects } from '@effects/modes.effects';
+import { TrainingSessionsEffects } from '@effects/training-sessions.effects';
 import { ResultsEffects } from '@effects/results.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
@@ -39,11 +39,11 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
       signInRedirect: 'login',
       signInStoredUrlStorageKey: METADATA.signInStoredUrlStorageKey,
       apiBase: environment.apiPrefix,
-      registerAccountCallback: `${environment.redirectProtocol}://${environment.host}/confirm_email`,
-      resetPasswordCallback: `${environment.redirectProtocol}://${environment.host}/update_password`,
+      registerAccountCallback: `${environment.redirectProtocol}://${environment.host}/confirm-email`,
+      resetPasswordCallback: `${environment.redirectProtocol}://${environment.host}/update-password`,
     }),
     StoreModule.forRoot(
-      { user: userReducer, modes: modesReducer, results: resultsReducer },
+      { user: userReducer, trainingSessions: trainingSessionsReducer, results: resultsReducer },
       {
         runtimeChecks: {
           strictStateImmutability: true,
@@ -55,7 +55,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
         },
       },
     ),
-    EffectsModule.forRoot([UserEffects, ModesEffects, ResultsEffects]),
+    EffectsModule.forRoot([UserEffects, TrainingSessionsEffects, ResultsEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
       logOnly: environment.production, // Restrict extension to log-only mode
