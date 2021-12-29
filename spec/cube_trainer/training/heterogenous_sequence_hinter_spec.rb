@@ -15,7 +15,7 @@ class FakeHeterogenousSequenceHinter < Training::HeterogenousSequenceHinter
 end
 
 describe Training::HeterogenousSequenceHinter do
-  include_context 'with mode'
+  include_context 'with training session'
 
   include TwistyPuzzles
 

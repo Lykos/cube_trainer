@@ -6,7 +6,7 @@ require_relative 'alg_like_shared_examples'
 RSpec.describe Alg, type: :model do
   let(:alg_set) do
     alg_spreadsheet.alg_sets.create!(
-      mode_type: ModeType.find_by!(key: :edge_commutators),
+      mode_type: TrainingSessionType.find_by!(key: :edge_commutators),
       sheet_title: 'UF',
       buffer: uf
     )

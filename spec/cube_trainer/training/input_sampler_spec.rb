@@ -22,7 +22,7 @@ def compute_average(mode, generator)
 end
 
 describe Training::InputSampler do
-  include_context 'with mode'
+  include_context 'with training session'
 
   let(:items) do
     ('a'..'c').to_a.permutation(2).map { |p| Training::InputItem.new(LetterPair.new(p)) }

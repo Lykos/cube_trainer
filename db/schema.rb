@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_27_100017) do
+ActiveRecord::Schema.define(version: 2021_12_29_095255) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,18 +25,18 @@ ActiveRecord::Schema.define(version: 2021_12_27_100017) do
   end
 
   create_table "alg_overrides", force: :cascade do |t|
-    t.bigint "mode_id", null: false
+    t.bigint "training_session_id", null: false
     t.string "case_key", null: false
     t.string "alg", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["mode_id"], name: "index_alg_overrides_on_mode_id"
+    t.index ["training_session_id"], name: "index_alg_overrides_on_training_session_id"
   end
 
   create_table "alg_sets", force: :cascade do |t|
     t.bigint "alg_spreadsheet_id", null: false
     t.string "sheet_title", null: false
-    t.string "mode_type", null: false
+    t.string "training_session_type", null: false
     t.string "buffer"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -94,32 +94,6 @@ ActiveRecord::Schema.define(version: 2021_12_27_100017) do
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
-  create_table "mode_usages", force: :cascade do |t|
-    t.bigint "mode_id", null: false
-    t.bigint "used_mode_id", null: false
-    t.index ["mode_id"], name: "index_mode_usages_on_mode_id"
-    t.index ["used_mode_id"], name: "index_mode_usages_on_used_mode_id"
-  end
-
-  create_table "modes", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "name", null: false
-    t.boolean "known", default: false, null: false
-    t.string "mode_type", null: false
-    t.string "show_input_mode", null: false
-    t.float "goal_badness"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.integer "cube_size"
-    t.string "first_parity_part"
-    t.string "second_parity_part"
-    t.float "memo_time_s"
-    t.string "buffer"
-    t.integer "alg_set_id"
-    t.index ["user_id", "name"], name: "index_modes_on_user_id_and_name", unique: true
-    t.index ["user_id"], name: "index_modes_on_user_id"
-  end
-
   create_table "results", force: :cascade do |t|
     t.float "time_s", null: false
     t.integer "failed_attempts", default: 0, null: false
@@ -130,19 +104,45 @@ ActiveRecord::Schema.define(version: 2021_12_27_100017) do
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "uploaded_at", precision: 6
     t.string "case_key", null: false
-    t.integer "mode_id", null: false
+    t.integer "training_session_id", null: false
     t.index ["case_key"], name: "index_results_on_case_key"
   end
 
   create_table "stats", force: :cascade do |t|
-    t.bigint "mode_id", null: false
+    t.bigint "training_session_id", null: false
     t.string "stat_type", null: false
     t.integer "index", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["mode_id", "index"], name: "index_stats_on_mode_id_and_index", unique: true
-    t.index ["mode_id", "stat_type"], name: "index_stats_on_mode_id_and_stat_type", unique: true
-    t.index ["mode_id"], name: "index_stats_on_mode_id"
+    t.index ["training_session_id", "index"], name: "index_stats_on_training_session_id_and_index", unique: true
+    t.index ["training_session_id", "stat_type"], name: "index_stats_on_training_session_id_and_stat_type", unique: true
+    t.index ["training_session_id"], name: "index_stats_on_training_session_id"
+  end
+
+  create_table "training_session_usages", force: :cascade do |t|
+    t.bigint "training_session_id", null: false
+    t.bigint "used_training_session_id", null: false
+    t.index ["training_session_id"], name: "index_training_session_usages_on_training_session_id"
+    t.index ["used_training_session_id"], name: "index_training_session_usages_on_used_training_session_id"
+  end
+
+  create_table "training_sessions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name", null: false
+    t.boolean "known", default: false, null: false
+    t.string "training_session_type", null: false
+    t.string "show_input_mode", null: false
+    t.float "goal_badness"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "cube_size"
+    t.string "first_parity_part"
+    t.string "second_parity_part"
+    t.float "memo_time_s"
+    t.string "buffer"
+    t.integer "alg_set_id"
+    t.index ["user_id", "name"], name: "index_training_sessions_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_training_sessions_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -178,17 +178,17 @@ ActiveRecord::Schema.define(version: 2021_12_27_100017) do
   end
 
   add_foreign_key "achievement_grants", "users"
-  add_foreign_key "alg_overrides", "modes"
+  add_foreign_key "alg_overrides", "training_sessions"
   add_foreign_key "alg_sets", "alg_spreadsheets"
   add_foreign_key "algs", "alg_sets"
   add_foreign_key "color_schemes", "users"
   add_foreign_key "letter_scheme_mappings", "letter_schemes"
   add_foreign_key "letter_schemes", "users"
   add_foreign_key "messages", "users"
-  add_foreign_key "mode_usages", "modes"
-  add_foreign_key "mode_usages", "modes", column: "used_mode_id"
-  add_foreign_key "modes", "alg_sets"
-  add_foreign_key "modes", "users"
-  add_foreign_key "results", "modes"
-  add_foreign_key "stats", "modes"
+  add_foreign_key "results", "training_sessions"
+  add_foreign_key "stats", "training_sessions"
+  add_foreign_key "training_session_usages", "training_sessions"
+  add_foreign_key "training_session_usages", "training_sessions", column: "used_training_session_id"
+  add_foreign_key "training_sessions", "alg_sets"
+  add_foreign_key "training_sessions", "users"
 end

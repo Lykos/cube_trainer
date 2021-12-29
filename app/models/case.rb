@@ -5,17 +5,17 @@
 class Case
   include ActiveModel::Model
 
-  attr_accessor :case_key, :mode, :setup, :alg, :representation
+  attr_accessor :case_key, :training_session, :setup, :alg, :representation
 
   validates :case_key, presence: true
-  validates :mode, presence: true
+  validates :training_session, presence: true
 
   def to_simple
     {
       setup: setup.to_s,
       alg: alg.to_s,
       case_key: InputRepresentationType.new.serialize(case_key),
-      case_name: mode.maybe_apply_letter_scheme(case_key).to_s
+      case_name: training_session.maybe_apply_letter_scheme(case_key).to_s
     }
   end
 end

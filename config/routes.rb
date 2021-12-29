@@ -16,7 +16,7 @@ Rails.application.routes.draw do
     resources :achievement_grants, only: [:index, :show]
     resource :user
     resource :dump, only: [:show]
-    resources :modes do
+    resources :training_sessions do
       resources :cases, only: [:index, :show]
       resources :results
       resources :alg_overrides

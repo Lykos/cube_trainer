@@ -7,13 +7,13 @@ class AlgSet < ApplicationRecord
 
   belongs_to :alg_spreadsheet
   has_many :algs, dependent: :destroy
-  attribute :mode_type, :mode_type
+  attribute :training_session_type, :training_session_type
   attribute :buffer, :part
   validates :sheet_title, presence: true
-  validates :mode_type, presence: true
-  validates :buffer, presence: true, if: -> { mode_type&.has_buffer? }
-  validate :mode_type_valid
-  delegate :part_type, to: :mode_type
+  validates :training_session_type, presence: true
+  validates :buffer, presence: true, if: -> { training_session_type&.has_buffer? }
+  validate :training_session_type_valid
+  delegate :part_type, to: :training_session_type
 
   def commutator(case_key)
     maybe_commutator = algs.find { |alg| alg.case_key == case_key }&.commutator
@@ -31,17 +31,17 @@ class AlgSet < ApplicationRecord
     }
   end
 
-  def self.for_mode_type(mode_type)
-    all.find { |a| a.mode_type == mode_type }
+  def self.for_training_session_type(training_session_type)
+    all.find { |a| a.training_session_type == training_session_type }
   end
 
   private
 
   def buffer_valid
-    mode_type.validate_buffer(buffer, errors, :buffer)
+    training_session_type.validate_buffer(buffer, errors, :buffer)
   end
 
-  def mode_type_valid
-    errors.add(:mode_type, 'has to have bounded inputs') unless mode_type.has_bounded_inputs?
+  def training_session_type_valid
+    errors.add(:training_session_type, 'has to have bounded inputs') unless training_session_type.has_bounded_inputs?
   end
 end

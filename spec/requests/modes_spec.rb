@@ -3,10 +3,10 @@
 require 'rails_helper'
 require 'requests/requests_spec_helper'
 
-RSpec.describe 'Modes', type: :request do
+RSpec.describe 'TrainingSessions', type: :request do
   include_context 'with user abc'
   include_context 'with user eve'
-  include_context 'with mode'
+  include_context 'with training session'
   include_context 'with headers'
   include_context 'with user auth headers'
   include_context 'with eve auth headers'
@@ -85,7 +85,7 @@ RSpec.describe 'Modes', type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).not_to eq(mode.id)
-      expect(Mode.find(parsed_body['id']).name).to eq('test_mode2')
+      expect(TrainingSession.find(parsed_body['id']).name).to eq('test_mode2')
     end
 
     it 'returns bad request for invalid modes' do
@@ -114,7 +114,7 @@ RSpec.describe 'Modes', type: :request do
     it 'returns unprocessable entity for invalid updates' do
       put "/api/modes/#{mode.id}", headers: user_headers, params: { mode: { name: nil } }
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(Mode.find(mode.id).goal_badness).to eq(1)
+      expect(TrainingSession.find(mode.id).goal_badness).to eq(1)
     end
 
     it 'returns not found for unknown modes' do
@@ -125,7 +125,7 @@ RSpec.describe 'Modes', type: :request do
     it 'returns not found for other users' do
       put "/api/modes/#{mode.id}", headers: eve_headers, params: { mode: { goal_badness: 2 } }
       expect(response).to have_http_status(:not_found)
-      expect(Mode.find(mode.id).goal_badness).to eq(1)
+      expect(TrainingSession.find(mode.id).goal_badness).to eq(1)
     end
   end
 
@@ -133,7 +133,7 @@ RSpec.describe 'Modes', type: :request do
     it 'returns http success' do
       delete "/api/modes/#{mode.id}", headers: user_headers
       expect(response).to have_http_status(:success)
-      expect(Mode.exists?(mode.id)).to be(false)
+      expect(TrainingSession.exists?(mode.id)).to be(false)
     end
 
     it 'returns not found for unknown modes' do
@@ -144,7 +144,7 @@ RSpec.describe 'Modes', type: :request do
     it 'returns not found for other users' do
       delete "/api/modes/#{mode.id}", headers: eve_headers
       expect(response).to have_http_status(:not_found)
-      expect(Mode.exists?(mode.id)).to be(true)
+      expect(TrainingSession.exists?(mode.id)).to be(true)
     end
   end
 end

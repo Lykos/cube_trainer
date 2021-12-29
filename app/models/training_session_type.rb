@@ -11,7 +11,7 @@ require 'cube_trainer/letter_pair'
 
 # Model for mode types. They are basic templates which users use to create their training modes.
 # rubocop:disable Metrics/ClassLength
-class ModeType
+class TrainingSessionType
   include ActiveModel::Model
   include CubeTrainer
   include PartHelper
@@ -249,7 +249,7 @@ class ModeType
     @all ||=
       begin
         all = [
-          ModeType.new(
+          TrainingSessionType.new(
             key: :memo_rush,
             name: 'Memo Rush',
             generator_class: Training::CubeScrambles,
@@ -262,7 +262,7 @@ class ModeType
             has_memo_time: true,
             has_setup: true
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :corner_commutators,
             name: 'Corner Commutators',
             generator_class: Training::CornerCommutators,
@@ -274,7 +274,7 @@ class ModeType
             letter_scheme_mode: :buffer_plus_2_parts,
             has_bounded_inputs: true
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :corner_parities,
             name: 'Corner Parities',
             generator_class: Training::CornerParities,
@@ -287,7 +287,7 @@ class ModeType
             has_bounded_inputs: true,
             has_parity_parts: true
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :corner_twists_plus_parities,
             name: 'Corner 1 Twists + Parities',
             generator_class: Training::CornerTwistsPlusParities,
@@ -299,7 +299,7 @@ class ModeType
             has_bounded_inputs: true,
             has_parity_parts: true
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :floating_2twists,
             name: 'Floating Corner 2 Twists',
             generator_class: Training::FloatingCorner2Twists,
@@ -310,7 +310,7 @@ class ModeType
             show_input_modes: SHOW_INPUT_MODES,
             has_bounded_inputs: true
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :corner_3twists,
             name: 'Corner 3 Twists',
             generator_class: Training::Corner3Twists,
@@ -322,7 +322,7 @@ class ModeType
             has_bounded_inputs: true,
             letter_scheme_mode: :buffer_plus_2_parts
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :floating_2twists_and_corner_3twists,
             name: 'Floating Corner 2 Twists + 3 Twists',
             generator_class: Training::FloatingCorner2TwistsAnd3Twists,
@@ -333,7 +333,7 @@ class ModeType
             show_input_modes: SHOW_INPUT_MODES,
             has_bounded_inputs: true
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :floating_2flips,
             name: 'Floating Edge 2 Flips',
             generator_class: Training::FloatingEdgeFlips,
@@ -345,7 +345,7 @@ class ModeType
             has_bounded_inputs: true,
             letter_scheme_mode: :simple
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :edge_commutators,
             name: 'Edge Commutators',
             generator_class: Training::EdgeCommutators,
@@ -357,7 +357,7 @@ class ModeType
             has_bounded_inputs: true,
             letter_scheme_mode: :buffer_plus_2_parts
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :wing_commutators,
             name: 'Wing Commutators',
             generator_class: Training::WingCommutators,
@@ -369,7 +369,7 @@ class ModeType
             has_bounded_inputs: true,
             letter_scheme_mode: :buffer_plus_2_parts
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :xcenter_commutators,
             name: 'X-Center Commutators',
             generator_class: Training::XCenterCommutators,
@@ -381,7 +381,7 @@ class ModeType
             has_bounded_inputs: true,
             letter_scheme_mode: :buffer_plus_2_parts
           ),
-          ModeType.new(
+          TrainingSessionType.new(
             key: :tcenter_commutators,
             name: 'T-Center Commutators',
             generator_class: Training::TCenterCommutators,

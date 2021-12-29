@@ -41,7 +41,7 @@ module CubeTrainer
       private
 
       def mode_type(alg_set)
-        ModeType.all.find do |m|
+        TrainingSessionType.all.find do |m|
           (defined? m.generator_class::PART_TYPE) &&
             m.generator_class::PART_TYPE == alg_set.part_type
         end || raise

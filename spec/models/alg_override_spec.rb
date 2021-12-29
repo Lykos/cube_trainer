@@ -4,7 +4,7 @@ require 'rails_helper'
 require_relative 'alg_like_shared_examples'
 
 RSpec.describe Alg, type: :model do
-  include_context 'with mode'
+  include_context 'with training session'
   include_context 'with user abc'
   include_context 'with alg spreadsheet'
 

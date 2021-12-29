@@ -30,12 +30,12 @@ xdescribe Training::StatsComputer do
   let(:t_10_minutes_ago) { now - 600 }
   let(:t_2_hours_ago) { now - (2 * 3600) }
   let(:t_2_days_ago) { now - (2 * 24 * 3600) }
-  let(:mode) { construct_mode(ModeType.find_by!(key: :corner_commutators)) }
+  let(:mode) { construct_mode(TrainingSessionType.find_by!(key: :corner_commutators)) }
   let(:letter_pair_a) { LetterPair.new(%w[a a]) }
   let(:letter_pair_b) { LetterPair.new(%w[a b]) }
   let(:letter_pair_c) { LetterPair.new(%w[a c]) }
   let(:fill_letter_pairs) { ('a'..'z').map { |l| LetterPair.new(['b', l]) } }
-  let(:other_mode_types) { ModeType.all.reject { |k| k.key == :corner_commutators || !k.has_bounded_inputs? || k.has_parity_parts? } }
+  let(:other_mode_types) { TrainingSessionType.all.reject { |k| k.key == :corner_commutators || !k.has_bounded_inputs? || k.has_parity_parts? } }
   let(:other_modes) { other_mode_types.map { |k| construct_mode(k) } }
   let(:other_mode_results) do
     other_modes.map.with_index do |mode, i|

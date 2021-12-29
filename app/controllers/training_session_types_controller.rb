@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # Controller that allows retrieval of mode types.
-# Mode types are basic templates which users use to create their training modes.
-class ModeTypesController < ApplicationController
+# TrainingSession types are basic templates which users use to create their training modes.
+class TrainingSessionTypesController < ApplicationController
   before_action :set_mode_type, only: [:show]
 
   # The mode types that exist are constant and public, so no authorization is required.
@@ -12,7 +12,7 @@ class ModeTypesController < ApplicationController
 
   # GET /api/mode_types
   def index
-    render json: ModeType.all.map(&:to_simple)
+    render json: TrainingSessionType.all.map(&:to_simple)
   end
 
   # GET /api/mode_types/1
@@ -23,6 +23,6 @@ class ModeTypesController < ApplicationController
   private
 
   def set_mode_type
-    head :not_found unless (@mode_type = ModeType.find_by(key: params[:id]))
+    head :not_found unless (@mode_type = TrainingSessionType.find_by(key: params[:id]))
   end
 end

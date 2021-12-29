@@ -7,7 +7,7 @@ require Rails.root.join('db/migrate/20211215010803_remove_inputs.rb')
 describe RemoveInputs, type: :migration do
   subject(:migration) { ActiveRecord::Migrator.new(action, migrations, schema_migration, version_after_action) }
 
-  include_context 'with mode'
+  include_context 'with training session'
   let(:migrations_paths) { ActiveRecord::Migrator.migrations_paths }
   let(:migrated_models) { [RemoveInputs::Input, RemoveInputs::Result] }
   let(:schema_migration) { ActiveRecord::Base.connection.schema_migration }

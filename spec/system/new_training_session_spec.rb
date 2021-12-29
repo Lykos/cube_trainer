@@ -30,7 +30,7 @@ describe 'new mode', type: :system do
     click_button 'Next'
 
     sleep(0.5)
-    mat_select 'name', from: 'showInputMode'
+    mat_select 'name', from: 'showInputTrainingSession'
     fill_in 'Goal Time per Element', with: '2.0'
     click_button 'Next'
 
@@ -39,7 +39,7 @@ describe 'new mode', type: :system do
     click_button 'Submit'
 
     sleep(1)
-    expect(page).to have_text('Mode system test mode created.')
+    expect(page).to have_text('TrainingSession system test mode created.')
   end
 
   it 'allows to create a new memo rush mode' do
@@ -69,6 +69,6 @@ describe 'new mode', type: :system do
     click_button 'Submit'
 
     sleep(1)
-    expect(page).to have_text('Mode system test mode created.')
+    expect(page).to have_text('TrainingSession system test mode created.')
   end
 end

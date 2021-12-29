@@ -72,10 +72,10 @@ shared_context 'with achievement grant' do
 end
 
 shared_context 'with stat' do
-  include_context 'with mode'
+  include_context 'with training session'
 
   let(:stat) do
-    stat = Stat.find_or_initialize_by(mode: mode, stat_type: :averages)
+    stat = Stat.find_or_initialize_by(training_session: training_session, stat_type: :averages)
     stat.update(index: 0)
     stat.save!
     stat
@@ -93,23 +93,23 @@ shared_context 'with message' do
   end
 end
 
-shared_context 'with mode' do
+shared_context 'with training session' do
   include_context 'with user abc'
 
-  let(:mode) do
-    mode = user.modes.find_or_initialize_by(
-      name: 'test_mode'
+  let(:training_session) do
+    training_session = user.training_sessions.find_or_initialize_by(
+      name: 'test_training_session'
     )
-    mode.update(
+    training_session.update(
       show_input_mode: :name,
-      mode_type: :edge_commutators,
+      training_session_type: :edge_commutators,
       buffer: TwistyPuzzles::Edge.for_face_symbols(%i[U F]),
       goal_badness: 1.0,
       cube_size: 3,
       known: false
     )
-    mode.save!
-    mode
+    training_session.save!
+    training_session
   end
 end
 
@@ -144,21 +144,21 @@ shared_context 'with letter scheme' do
 end
 
 shared_context 'with result' do
-  include_context 'with mode'
+  include_context 'with training session'
 
   let(:result) do
-    mode.results.find_or_create_by!(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: 10)
+    training_session.results.find_or_create_by!(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: 10)
   end
 end
 
 shared_context 'with alg override' do
-  include_context 'with mode'
+  include_context 'with training session'
 
   let(:alg_override) do
     uf = TwistyPuzzles::Edge.for_face_symbols(%i[U F])
     df = TwistyPuzzles::Edge.for_face_symbols(%i[D F])
     ub = TwistyPuzzles::Edge.for_face_symbols(%i[U B])
-    mode.alg_overrides.find_or_create_by!(
+    training_session.alg_overrides.find_or_create_by!(
       case_key: TwistyPuzzles::PartCycle.new([uf, df, ub]),
       alg: "[M', U2]"
     )

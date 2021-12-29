@@ -2,11 +2,11 @@
 
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
-require 'mode_type'
+require 'training_session_type'
 require 'cube_trainer/training/case_solution'
 
-# Model for training modes that the user created.
-class Mode < ApplicationRecord
+# Model for training sessions that the user created.
+class TrainingSession < ApplicationRecord
   include PartHelper
 
   has_many :results, dependent: :destroy
@@ -14,7 +14,7 @@ class Mode < ApplicationRecord
   belongs_to :user
   belongs_to :alg_set, optional: true
 
-  attribute :mode_type, :mode_type
+  attribute :training_session_type, :training_session_type
   attribute :show_input_mode, :symbol
   attribute :buffer, :part
   attr_accessor :stat_types, :verbose, :show_cube_states, :write_fixes
@@ -22,22 +22,22 @@ class Mode < ApplicationRecord
 
   before_validation :set_stats
   validates :name, presence: true, uniqueness: { scope: :user }
-  validates :mode_type, presence: true
-  validates :show_input_mode, presence: true, inclusion: ModeType::SHOW_INPUT_MODES
+  validates :training_session_type, presence: true
+  validates :show_input_mode, presence: true, inclusion: TrainingSessionType::SHOW_INPUT_MODES
   validate :show_input_mode_valid
-  validates :buffer, presence: true, if: -> { mode_type&.has_buffer? }
-  validates :cube_size, presence: true, if: -> { mode_type&.cube_size? }
-  validate :cube_size_valid, if: -> { mode_type&.cube_size? }
-  validate :buffer_valid, if: -> { mode_type&.has_buffer? }
-  validates :memo_time_s, presence: true, if: -> { mode_type&.has_memo_time? }
-  validate :memo_time_s_valid, if: -> { mode_type&.has_memo_time? }
+  validates :buffer, presence: true, if: -> { training_session_type&.has_buffer? }
+  validates :cube_size, presence: true, if: -> { training_session_type&.cube_size? }
+  validate :cube_size_valid, if: -> { training_session_type&.cube_size? }
+  validate :buffer_valid, if: -> { training_session_type&.has_buffer? }
+  validates :memo_time_s, presence: true, if: -> { training_session_type&.has_memo_time? }
+  validate :memo_time_s_valid, if: -> { training_session_type&.has_memo_time? }
   has_many :stats, dependent: :destroy
 
   # rubocop:disable Rails/HasAndBelongsToMany
-  has_and_belongs_to_many :used_modes,
-                          class_name: :Mode,
-                          join_table: :mode_usages,
-                          association_foreign_key: :used_mode_id
+  has_and_belongs_to_many :used_training_sessions,
+                          class_name: :TrainingSession,
+                          join_table: :training_session_usages,
+                          association_foreign_key: :used_training_session_id
   # rubocop:enable Rails/HasAndBelongsToMany
 
   after_create :grant_training_session_achievement
@@ -48,7 +48,7 @@ class Mode < ApplicationRecord
   end
 
   def generator
-    @generator ||= mode_type.generator_class.new(self)
+    @generator ||= training_session_type.generator_class.new(self)
   end
 
   def input_sampler
@@ -78,18 +78,18 @@ class Mode < ApplicationRecord
   def maybe_apply_letter_scheme(input_case_key)
     return input_case_key unless user.letter_scheme
 
-    mode_type.maybe_apply_letter_scheme(user.letter_scheme, input_case_key)
+    training_session_type.maybe_apply_letter_scheme(user.letter_scheme, input_case_key)
   end
 
   def picture
     show_input_mode == :picture
   end
 
-  delegate :part_type, to: :mode_type
+  delegate :part_type, to: :training_session_type
 
-  delegate :has_bounded_inputs?, to: :mode_type
+  delegate :has_bounded_inputs?, to: :training_session_type
 
-  delegate :parity_part_type, to: :mode_type
+  delegate :parity_part_type, to: :training_session_type
 
   def cases
     return unless has_bounded_inputs?
@@ -105,15 +105,15 @@ class Mode < ApplicationRecord
     color_scheme.solved_cube_state(cube_size)
   end
 
-  def used_mode(mode_type)
-    used_modes.find_by(mode_type: mode_type)
+  def used_training_session(training_session_type)
+    used_training_sessions.find_by(training_session_type: training_session_type)
   end
 
   # Returns a simple version for the current user that can be returned to the frontend.
   def to_simple
     {
       id: id,
-      mode_type: mode_type.to_simple,
+      training_session_type: training_session_type.to_simple,
       name: name,
       known: known,
       show_input_mode: show_input_mode,
@@ -155,7 +155,7 @@ class Mode < ApplicationRecord
 
   def to_case(item)
     Case.new(
-      mode: self,
+      training_session: self,
       case_key: item.case_key,
       alg: commutator(item),
       setup: setup(item)
@@ -167,18 +167,18 @@ class Mode < ApplicationRecord
   end
 
   def show_input_mode_valid
-    return unless mode_type
-    return if mode_type.show_input_modes.include?(show_input_mode)
+    return unless training_session_type
+    return if training_session_type.show_input_modes.include?(show_input_mode)
 
-    errors.add(:show_input_mode, 'has to be in show input modes of the mode type')
+    errors.add(:show_input_mode, 'has to be in show input modes of the training session type')
   end
 
   def buffer_valid
-    mode_type.validate_buffer(buffer, errors)
+    training_session_type.validate_buffer(buffer, errors)
   end
 
   def cube_size_valid
-    mode_type.validate_cube_size(cube_size, errors)
+    training_session_type.validate_cube_size(cube_size, errors)
   end
 
   def memo_time_s_valid

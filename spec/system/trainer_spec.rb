@@ -4,7 +4,7 @@ require 'rails_helper'
 
 describe 'trainer', type: :system do
   include_context 'with user abc'
-  include_context 'with mode'
+  include_context 'with training session'
 
   before do
     driven_by(:selenium_chrome_headless)

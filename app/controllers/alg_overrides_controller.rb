@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-# Controller for alg overrides that a user had for one training mode.
+# Controller for alg overrides that a user had for one training session.
 class AlgOverridesController < ApplicationController
-  before_action :set_mode
+  before_action :set_training_session
   before_action :set_alg_override, only: %i[show update destroy]
   before_action :set_new_alg_override, only: %i[create]
 
-  # GET /api/modes/1/alg_overrides.json
+  # GET /api/training_sessions/1/alg_overrides.json
   def index
-    alg_overrides = @mode.alg_overrides
+    alg_overrides = @training_session.alg_overrides
                          .order(created_at: :desc)
                          .limit(params[:limit])
                          .offset(params[:offset])
@@ -16,9 +16,9 @@ class AlgOverridesController < ApplicationController
     render json: alg_overrides, status: :ok
   end
 
-  # POST /api/modes/1/alg_overrides/create_or_update.json
+  # POST /api/training_sessions/1/alg_overrides/create_or_update.json
   def create_or_update
-    @alg_override = @mode.alg_overrides.find_by(
+    @alg_override = @training_session.alg_overrides.find_by(
       case_key: InputRepresentationType.new.cast(params[:case_key])
     )
     if @alg_override
@@ -29,7 +29,7 @@ class AlgOverridesController < ApplicationController
     end
   end
 
-  # POST /api/modes/1/alg_overrides.json
+  # POST /api/training_sessions/1/alg_overrides.json
   def create
     if @alg_override.save
       render json: @alg_override.to_simple, status: :ok
@@ -38,12 +38,12 @@ class AlgOverridesController < ApplicationController
     end
   end
 
-  # GET /api/modes/1/alg_overrides/1.json
+  # GET /api/training_sessions/1/alg_overrides/1.json
   def show
     render json: @alg_override.to_simple, status: :ok
   end
 
-  # PATCH/PUT /api/modes/1/alg_overrides/1.json
+  # PATCH/PUT /api/training_sessions/1/alg_overrides/1.json
   def update
     if @alg_override.update(alg_override_params)
       render json: @alg_override.to_simple, status: :ok
@@ -52,7 +52,7 @@ class AlgOverridesController < ApplicationController
     end
   end
 
-  # DELETE /api/modes/1/alg_overrides/1.json
+  # DELETE /api/training_sessions/1/alg_overrides/1.json
   def destroy
     if @alg_override.destroy
       head :no_content
@@ -64,16 +64,16 @@ class AlgOverridesController < ApplicationController
   private
 
   def set_new_alg_override
-    @alg_override = @mode.alg_overrides.new(alg_override_params)
+    @alg_override = @training_session.alg_overrides.new(alg_override_params)
     render json: @alg_override.errors, status: :bad_request unless @alg_override.valid?
   end
 
   def set_alg_override
-    head :not_found unless (@alg_override = @mode.alg_overrides.find_by(id: params[:id]))
+    head :not_found unless (@alg_override = @training_session.alg_overrides.find_by(id: params[:id]))
   end
 
-  def set_mode
-    head :not_found unless (@mode = current_user.modes.find_by(id: params[:mode_id]))
+  def set_training_session
+    head :not_found unless (@training_session = current_user.training_sessions.find_by(id: params[:training_session_id]))
   end
 
   def alg_override_params

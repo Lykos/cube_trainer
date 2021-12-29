@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Result, type: :model do
-  include_context 'with mode'
+  include_context 'with training session'
 
   describe '#valid?' do
     it 'returns true for a valid result' do

@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-# Controller for results that a user had for one training mode.
+# Controller for results that a user had for one training session.
 class ResultsController < ApplicationController
-  before_action :set_mode
+  before_action :set_training_session
   before_action :set_result, only: %i[show update destroy]
   before_action :set_new_result, only: %i[create]
 
-  # GET /api/modes/1/results.json
+  # GET /api/training_sessions/1/results.json
   def index
-    results = @mode.results
+    results = @training_session.results
                    .order(created_at: :desc)
                    .limit(params[:limit])
                    .offset(params[:offset])
@@ -16,7 +16,7 @@ class ResultsController < ApplicationController
     render json: results, status: :ok
   end
 
-  # POST /api/modes/1/results/1.json
+  # POST /api/training_sessions/1/results/1.json
   def create
     if !@result.valid?
       render json: @result.errors, status: :bad_request
@@ -27,12 +27,12 @@ class ResultsController < ApplicationController
     end
   end
 
-  # GET /api/modes/1/results/1.json
+  # GET /api/training_sessions/1/results/1.json
   def show
     render json: @result.to_simple, status: :ok
   end
 
-  # PATCH/PUT /api/modes/1/results/1.json
+  # PATCH/PUT /api/training_sessions/1/results/1.json
   def update
     if @result.update(result_params)
       render json: @result.to_simple, status: :ok
@@ -41,7 +41,7 @@ class ResultsController < ApplicationController
     end
   end
 
-  # DELETE /api/modes/1/results/1.json
+  # DELETE /api/training_sessions/1/results/1.json
   def destroy
     if @result.destroy
       head :no_content
@@ -53,15 +53,15 @@ class ResultsController < ApplicationController
   private
 
   def set_new_result
-    @result = @mode.results.new(result_params)
+    @result = @training_session.results.new(result_params)
   end
 
   def set_result
-    head :not_found unless (@result = @mode.results.find_by(id: params[:id]))
+    head :not_found unless (@result = @training_session.results.find_by(id: params[:id]))
   end
 
-  def set_mode
-    head :not_found unless (@mode = current_user.modes.find_by(id: params[:mode_id]))
+  def set_training_session
+    head :not_found unless (@training_session = current_user.training_sessions.find_by(id: params[:training_session_id]))
   end
 
   def result_params

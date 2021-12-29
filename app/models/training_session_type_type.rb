@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
 # Active record type for mode types.
-class ModeTypeType < ActiveRecord::Type::String
+class TrainingSessionTypeType < ActiveRecord::Type::String
   def cast(value)
     return if value.nil?
-    return value if value.is_a?(ModeType)
+    return value if value.is_a?(TrainingSessionType)
     raise TypeError unless value.is_a?(String) || value.is_a?(Symbol)
 
-    ModeType.find_by!(key: value)
+    TrainingSessionType.find_by!(key: value)
   end
 
   def serialize(value)
     return if value.nil?
 
-    value = cast(value) unless value.is_a?(ModeType)
+    value = cast(value) unless value.is_a?(TrainingSessionType)
     value.key
   end
 end

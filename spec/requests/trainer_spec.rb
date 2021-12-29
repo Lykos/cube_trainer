@@ -6,7 +6,7 @@ require 'requests/requests_spec_helper'
 RSpec.describe 'Trainer', type: :request do
   include_context 'with user abc'
   include_context 'with user eve'
-  include_context 'with mode'
+  include_context 'with training session'
   include_context 'with headers'
   include_context 'with user auth headers'
   include_context 'with eve auth headers'

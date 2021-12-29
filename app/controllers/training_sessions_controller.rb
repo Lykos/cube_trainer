@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Controller for training modes that the user created.
-class ModesController < ApplicationController
+class TrainingSessionsController < ApplicationController
   before_action :set_mode, only: %i[show update destroy]
   before_action :set_new_mode, only: %i[create]
 
