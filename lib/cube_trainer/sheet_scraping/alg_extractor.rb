@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'commutator_reverse_engineer'
-require_relative 'commutator_checker'
+require_relative 'case_reverse_engineer'
+require_relative 'case_checker'
 require_relative 'commonality_finder'
 require 'twisty_puzzles'
 
@@ -102,10 +102,9 @@ module CubeTrainer
 
       def create_checker(interpretation)
         cube_size = interpretation.part_type.exists_on_cube_size?(3) ? 3 : 5
-        CommutatorChecker.new(
+        CaseChecker.new(
           cube_size: cube_size,
           verbose: true,
-          show_cube_states: false,
           find_fixes: true
         )
       end
@@ -196,12 +195,12 @@ module CubeTrainer
 
       def reverse_engineer
         @reverse_engineer ||=
-          CommutatorReverseEngineer.new(cube_size: 3)
+          CaseReverseEngineer.new(cube_size: 3)
       end
 
       def big_cube_reverse_engineer
         @big_cube_reverse_engineer ||=
-          CommutatorReverseEngineer.new(cube_size: 5)
+          CaseReverseEngineer.new(cube_size: 5)
       end
 
       def log_final_report
@@ -220,17 +219,17 @@ module CubeTrainer
       end
 
       def maybe_part_cycle(algorithm)
-        part_cycles = reverse_engineer.find_part_cycles(algorithm)
-        return part_cycles.first if part_cycles.length == 1
+        casee = reverse_engineer.find_case(algorithm)
+        return casee.part_cycles.first if casee.part_cycles.length == 1
 
-        part_cycles = big_cube_reverse_engineer.find_part_cycles(algorithm)
-        return part_cycles.first if part_cycles.length == 1
+        casee = big_cube_reverse_engineer.find_case(algorithm)
+        return casee.part_cycles.first if casee.part_cycles.length == 1
 
         # If we have one wing cycle, we ignore that it's not center safe and
         # some equivalent centers get swapped.
-        wing_cycles = part_cycles.select { |c| c.part_type == TwistyPuzzles::Wing }
+        wing_cycles = casee.part_cycles.select { |c| c.part_type == TwistyPuzzles::Wing }
         if wing_cycles.length == 1
-          other_cycles = part_cycles - wing_cycles
+          other_cycles = casee.part_cycles - wing_cycles
           return wing_cycles[0] if other_cycles.all? { |c| equivalent_center_cycle?(c) }
         end
         nil

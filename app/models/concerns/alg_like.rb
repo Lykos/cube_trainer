@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/sheet_scraping/commutator_checker'
+require 'cube_trainer/sheet_scraping/case_checker'
 require 'twisty_puzzles'
 
 # Concern for classes that behave like and alg that solves
@@ -66,8 +66,7 @@ module AlgLike
   end
 
   def create_checker
-    CubeTrainer::CommutatorChecker.new(
-      part_type: case_key.part_type,
+    CubeTrainer::CaseChecker.new(
       cube_size: owning_set.training_session_type.default_cube_size
     )
   end

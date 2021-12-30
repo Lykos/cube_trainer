@@ -154,7 +154,7 @@ class TrainingSession < ApplicationRecord
   private
 
   def to_case(item)
-    Case.new(
+    TrainingCase.new(
       training_session: self,
       case_key: item.case_key,
       alg: commutator(item),

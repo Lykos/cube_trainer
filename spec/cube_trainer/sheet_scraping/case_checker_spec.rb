@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/sheet_scraping/commutator_checker'
+require 'cube_trainer/sheet_scraping/case_checker'
 require 'cube_trainer/training/commutator_hint_parser'
 require 'cube_trainer/letter_pair'
 require 'twisty_puzzles'
 require 'rails_helper'
 
 def cell_description(*parts)
-  Training::CommutatorHintParser::CellDescription.new('test', 0, 0, TwistyPuzzles::PartCycle.new(parts))
+  SheetScraping::AlgExtractor::CellDescription.new('test', 0, 0, TwistyPuzzles::PartCycle.new(parts))
 end
 
-describe CommutatorChecker do
+describe CaseChecker do
   include TwistyPuzzles
 
   let(:part_type) { TwistyPuzzles::Corner }

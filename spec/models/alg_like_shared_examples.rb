@@ -43,7 +43,7 @@ shared_examples 'alg_like' do
 
     it 'returns false if the case twists' do
       alg = owning_set_alg_likes.new(
-        case_key: TwistyPuzzles::PartCycle.new([uf, df, ub], 2),
+        case_key: TwistyPuzzles::PartCycle.new([uf, df, ub], 1),
         alg: "M' U2 M U2"
       )
       expect(alg).not_to be_valid

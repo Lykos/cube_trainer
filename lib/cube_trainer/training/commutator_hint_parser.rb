@@ -2,8 +2,8 @@
 
 require 'cube_trainer/training/commutator_hinter'
 require 'cube_trainer/sheet_scraping/commonality_finder'
-require 'cube_trainer/sheet_scraping/commutator_reverse_engineer'
-require 'cube_trainer/sheet_scraping/commutator_checker'
+require 'cube_trainer/sheet_scraping/case_reverse_engineer'
+require 'cube_trainer/sheet_scraping/case_checker'
 require 'cube_trainer/training/hint_parser'
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
@@ -11,7 +11,7 @@ require 'twisty_puzzles/utils'
 module CubeTrainer
   module Training
     # Stub commutator checker that just says everything is always okay.
-    class CommutatorCheckerStub
+    class CaseCheckerStub
       def initialize
         @total_algs = 0
       end
@@ -20,7 +20,7 @@ module CubeTrainer
 
       def check_alg(*_args)
         @total_algs += 1
-        CommutatorChecker::CheckAlgResult::CORRECT
+        CaseChecker::CheckAlgResult::CORRECT
       end
 
       def found_problems?
@@ -168,13 +168,11 @@ module CubeTrainer
       def checker
         @checker ||=
           if @test_comms_mode == :ignore
-            CommutatorCheckerStub.new
+            CaseCheckerStub.new
           else
-            CommutatorChecker.new(
-              part_type: @part_type,
+            CaseChecker.new(
               cube_size: @cube_size,
               verbose: @verbose,
-              show_cube_states: @show_cube_states,
               find_fixes: @verbose
             )
           end
@@ -182,7 +180,7 @@ module CubeTrainer
 
       def reverse_engineer
         @reverse_engineer ||=
-          CommutatorReverseEngineer.new(
+          CaseReverseEngineer.new(
             part_type: @part_type, buffer: @buffer,
             cube_size: @cube_size
           )

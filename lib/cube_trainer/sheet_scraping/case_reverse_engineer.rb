@@ -6,7 +6,7 @@ require 'twisty_puzzles/utils'
 
 module CubeTrainer
   # Class that figures out what cycle a given commutator alg performs.
-  class CommutatorReverseEngineer
+  class CaseReverseEngineer
     include TwistyPuzzles::Utils::ArrayHelper
 
     # TODO: Also look at different cube sizes.
@@ -77,7 +77,7 @@ module CubeTrainer
       TwistyPuzzles::PartCycle.new(parts, twist)
     end
 
-    def find_part_cycles_internal(state)
+    def find_case_internal(state)
       remaining_parts = relevant_parts
       cycles = []
 
@@ -88,15 +88,16 @@ module CubeTrainer
         cycles.push(cycle) if cycle.length > 1 || cycle.twist.positive?
       end
 
-      cycles
+      Case.new(part_cycles: cycles)
     end
 
-    def find_part_cycles(alg)
+    def find_case(alg)
       raise TypeError unless alg.is_a?(TwistyPuzzles::Algorithm)
 
-      alg.inverse.apply_temporarily_to(@state) { |s| find_part_cycles_internal(s) }
+      alg.inverse.apply_temporarily_to(@state) { |s| find_case_internal(s) }
     end
 
+    # TODO: Deprecate this
     def find_part_cycle(alg)
       raise TypeError unless alg.is_a?(TwistyPuzzles::Algorithm)
       raise ArgumentError unless @buffer

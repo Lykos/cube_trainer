@@ -378,7 +378,7 @@ GEM
       sprockets (>= 3.0.0)
     thor (1.1.0)
     trailblazer-option (0.1.2)
-    twisty_puzzles (0.0.32)
+    twisty_puzzles (0.0.33)
       colorize
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
@@ -455,7 +455,7 @@ DEPENDENCIES
   simplecov
   spring
   spring-watcher-listen (~> 2.0.0)
-  twisty_puzzles (>= 0.0.32)
+  twisty_puzzles (>= 0.0.33)
   web-console (>= 3.3.0)
   webdrivers
   wombat

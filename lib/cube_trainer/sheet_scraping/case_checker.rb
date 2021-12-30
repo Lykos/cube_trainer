@@ -2,12 +2,12 @@
 
 require 'twisty_puzzles'
 require_relative 'alg_modifications_helper'
-require_relative 'commutator_reverse_engineer'
+require_relative 'case_reverse_engineer'
 
 module CubeTrainer
   # Class that checks whether a commutator algorithm does
   # what it's supposed to do and potentially fixes broken ones.
-  class CommutatorChecker
+  class CaseChecker
     include TwistyPuzzles::CubePrintHelper
 
     # Represents one case where we found a fixed algorithm.
@@ -30,7 +30,7 @@ module CubeTrainer
       @cube_size = cube_size
       @verbose = verbose
       @find_fixes = find_fixes
-      @reverse_engineer = CommutatorReverseEngineer.new(cube_size: cube_size)
+      @reverse_engineer = CaseReverseEngineer.new(cube_size: cube_size)
       reset
     end
 
@@ -107,7 +107,7 @@ module CubeTrainer
     end
 
     def alg_solves_case(alg, part_cycle)
-      part_cycles = @reverse_engineer.find_part_cycles(alg)
+      part_cycles = @reverse_engineer.find_case(alg).part_cycles
       part_cycles.length == 1 && part_cycles.first.equivalent?(part_cycle)
     end
 

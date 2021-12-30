@@ -1,21 +1,17 @@
-# frozen_string_literal: true
-
 # Represents case that we train to get better on, e.g. one 3-cycle, one parity case,
 # one twist case, one scramble etc.
+# This represents the abstract case independent of its solution.
+# For the specific case attached to a training session with a specific solution, see TrainingCase.
 class Case
   include ActiveModel::Model
 
-  attr_accessor :case_key, :training_session, :setup, :alg, :representation
+  attr_accessor :part_cycles
 
-  validates :case_key, presence: true
-  validates :training_session, presence: true
+  def canonicalize
+    @canonicalize ||= part_cycles.map(&:canonicalize).sort
+  end
 
-  def to_simple
-    {
-      setup: setup.to_s,
-      alg: alg.to_s,
-      case_key: InputRepresentationType.new.serialize(case_key),
-      case_name: training_session.maybe_apply_letter_scheme(case_key).to_s
-    }
+  def equivalent?(other)
+    canonicalize == other.canonicalize
   end
 end

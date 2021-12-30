@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/sheet_scraping/commutator_reverse_engineer'
+require 'cube_trainer/sheet_scraping/case_reverse_engineer'
 require 'twisty_puzzles'
 
-describe CommutatorReverseEngineer do
+describe CaseReverseEngineer do
   include TwistyPuzzles
 
   context 'with additional information about the algs' do
@@ -76,42 +76,42 @@ describe CommutatorReverseEngineer do
 
       it 'finds the parts of ig' do
         alg = parse_commutator("[L', U R U']").algorithm
-        cycles = engineer.find_part_cycles(alg)
+        cycles = engineer.find_case(alg).part_cycles
         expect(cycles.length).to eq(1)
         expect(cycles[0]).to be_equivalent(TwistyPuzzles::PartCycle.new([buffer, i, g]))
       end
 
       it 'finds the parts of gi' do
         alg = parse_commutator("[U R U', L']").algorithm
-        cycles = engineer.find_part_cycles(alg)
+        cycles = engineer.find_case(alg).part_cycles
         expect(cycles.length).to eq(1)
         expect(cycles[0]).to be_equivalent(TwistyPuzzles::PartCycle.new([buffer, g, i]))
       end
 
       it 'finds the parts of tg' do
         alg = parse_commutator("[L', U R' U']").algorithm
-        cycles = engineer.find_part_cycles(alg)
+        cycles = engineer.find_case(alg).part_cycles
         expect(cycles.length).to eq(1)
         expect(cycles[0]).to be_equivalent(TwistyPuzzles::PartCycle.new([buffer, t, g]))
       end
 
       it 'finds the parts of gt' do
         alg = parse_commutator("[U R' U', L']").algorithm
-        cycles = engineer.find_part_cycles(alg)
+        cycles = engineer.find_case(alg).part_cycles
         expect(cycles.length).to eq(1)
         expect(cycles[0]).to be_equivalent(TwistyPuzzles::PartCycle.new([buffer, g, t]))
       end
 
       it 'finds the parts of it' do
         alg = parse_commutator("[D U R U' : [D', R' U R]]").algorithm
-        cycles = engineer.find_part_cycles(alg)
+        cycles = engineer.find_case(alg).part_cycles
         expect(cycles.length).to eq(1)
         expect(cycles[0]).to be_equivalent(TwistyPuzzles::PartCycle.new([buffer, i, t]))
       end
 
       it 'finds the parts of ti' do
         alg = parse_commutator("[D U R U' : [R' U R, D']]").algorithm
-        cycles = engineer.find_part_cycles(alg)
+        cycles = engineer.find_case(alg).part_cycles
         expect(cycles.length).to eq(1)
         expect(cycles[0]).to be_equivalent(TwistyPuzzles::PartCycle.new([buffer, t, i]))
       end
@@ -125,7 +125,7 @@ describe CommutatorReverseEngineer do
 
       it 'finds the parts of a simple alg' do
         alg = parse_commutator("[R' F R, S]").algorithm
-        cycles = engineer.find_part_cycles(alg)
+        cycles = engineer.find_case(alg).part_cycles
         expect(cycles.length).to eq(1)
         expect(cycles[0]).to be_equivalent(TwistyPuzzles::PartCycle.new([buffer, i, c]))
       end
