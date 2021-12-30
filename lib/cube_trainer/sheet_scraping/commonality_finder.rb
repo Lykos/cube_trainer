@@ -112,6 +112,7 @@ module CubeTrainer
         cell_part_cycle.equivalent?(interpretation_part_cycle)
     end
 
+    # Note that this is also used for columns (by using the transposed table)
     def self.find_row_interpretations(rows, buffer, axis_interpretation)
       row_interpretations =
         rows.map do |row|
@@ -133,6 +134,7 @@ module CubeTrainer
       row.filter_map(&:maybe_part_cycle).filter { |e| e.contains?(buffer) }
     end
 
+    # Note that this is also used for columns (by using the transposed table)
     def self.find_row_interpretation(row, buffer, axis_interpretation)
       parts =
         relevant_part_cycles(row, buffer).map do |e|

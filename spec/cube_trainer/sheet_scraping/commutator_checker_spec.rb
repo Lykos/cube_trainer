@@ -4,6 +4,7 @@ require 'cube_trainer/sheet_scraping/commutator_checker'
 require 'cube_trainer/training/commutator_hint_parser'
 require 'cube_trainer/letter_pair'
 require 'twisty_puzzles'
+require 'rails_helper'
 
 def cell_description(*parts)
   Training::CommutatorHintParser::CellDescription.new('test', 0, 0, TwistyPuzzles::PartCycle.new(parts))
@@ -24,7 +25,6 @@ describe CommutatorChecker do
   let(:g) { part_type.for_face_symbols(%i[F L U]) }
   let(:checker) do
     described_class.new(
-      part_type: part_type,
       cube_size: cube_size,
       verbose: false,
       find_fixes: true

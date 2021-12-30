@@ -21,7 +21,7 @@ module CubeTrainer
 
       def run
         @sheets_client.fetch_access_token!
-        AlgSpreadsheet.all.each do |alg_spreadsheet|
+        AlgSpreadsheet.all.map do |alg_spreadsheet|
           scrape_sheet(alg_spreadsheet)
         end
       end
@@ -31,14 +31,35 @@ module CubeTrainer
         tables = @sheets_client.get_tables(alg_spreadsheet.spreadsheet_id)
         Rails.logger.info "Got #{tables.length} sheets " \
                           "with a total of #{total_cells(tables)} cells."
-        counters = { updated_algs: 0, new_algs: 0, confirmed_algs: 0 }
+        counters = new_counters
         tables.map { |t| extract_alg_set(alg_spreadsheet, t, counters) }
-        Rails.logger.info "Got #{counters[:new_algs]} new algs, " \
-                          "updated #{counters[:updated_algs]} algs " \
-                          "and confirmed #{counters[:confirmed_algs]} algs."
+        log_counters(counters)
+        counters
       end
 
       private
+
+      def new_counters
+        {
+          updated_algs: 0,
+          new_algs: 0,
+          confirmed_algs: 0,
+          correct_algs: 0,
+          fixed_algs: 0,
+          unfixable_algs: 0,
+          unparseable_algs: 0
+        }
+      end
+
+      def log_counters(counters)
+        Rails.logger.info "Got #{counters[:new_algs]} new algs, " \
+                          "updated #{counters[:updated_algs]} algs " \
+                          "and confirmed #{counters[:confirmed_algs]} algs."
+        Rails.logger.info "Got #{counters[:correct_algs]} correct algs, " \
+                          "#{counters[:fixed_algs]} fixed algs " \
+                          "#{counters[:unfixable_algs]} unfixable algs " \
+                          "and #{counters[:unparseable_algs]} unparseable algs."
+      end
 
       def training_session_type(alg_set)
         TrainingSessionType.all.find do |m|
@@ -47,13 +68,25 @@ module CubeTrainer
         end || raise
       end
 
-      def extract_alg_set(alg_spreadsheet, table, counters)
-        extracted_alg_set = AlgExtractor.extract_alg_set(table) || return
-        alg_set = alg_spreadsheet.alg_sets.find_or_create_by!(
+      def add_counters(extracted_alg_set, counters)
+        counters[:correct_algs] += extracted_alg_set.algs.length
+        counters[:fixed_algs] += extracted_alg_set.fixes.length
+        counters[:unfixable_algs] += extracted_alg_set.num_unfixable
+        counters[:unparseable_algs] += extracted_alg_set.num_unparseable
+      end
+
+      def find_or_create_alg_set(alg_spreadsheet, extracted_alg_set, table)
+        alg_spreadsheet.alg_sets.find_or_create_by!(
           training_session_type: training_session_type(extracted_alg_set),
           sheet_title: table.sheet_info.title,
           buffer: extracted_alg_set.buffer
         )
+      end
+
+      def extract_alg_set(alg_spreadsheet, table, counters)
+        extracted_alg_set = AlgExtractor.extract_alg_set(table) || return
+        add_counters(extracted_alg_set, counters)
+        alg_set = find_or_create_alg_set(alg_spreadsheet, extracted_alg_set, table)
         extracted_alg_set.algs.each do |part_cycle, alg|
           save_alg(alg_set, part_cycle, alg, counters)
         end

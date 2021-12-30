@@ -2,6 +2,7 @@
 
 require 'twisty_puzzles'
 require_relative 'alg_modifications_helper'
+require_relative 'commutator_reverse_engineer'
 
 module CubeTrainer
   # Class that checks whether a commutator algorithm does
@@ -19,42 +20,26 @@ module CubeTrainer
       attr_reader :cell_description, :fixed_algorithm
     end
 
-    # rubocop:disable Metrics/ParameterLists
     def initialize(
-      part_type:,
       cube_size:,
       verbose: false,
-      show_cube_states: false,
-      find_fixes: false,
-      incarnation_index: 0
+      find_fixes: false
     )
       TwistyPuzzles::CubeState.check_cube_size(cube_size)
-      unless part_type.is_a?(Class) && part_type.ancestors.include?(TwistyPuzzles::Part)
-        raise TypeError
-      end
 
-      @part_type = part_type
       @cube_size = cube_size
       @verbose = verbose
-      @show_cube_states = show_cube_states
       @find_fixes = find_fixes
-      @incarnation_index = incarnation_index
-      init_helpers
+      @reverse_engineer = CommutatorReverseEngineer.new(cube_size: cube_size)
       reset
     end
-    # rubocop:enable Metrics/ParameterLists
 
-    def init_helpers
-      @alg_cube_state = TwistyPuzzles::ColorScheme::WCA.solved_cube_state(@cube_size)
-      @cycle_cube_state = TwistyPuzzles::ColorScheme::WCA.solved_cube_state(@cube_size)
-      @part_cycle_factory = TwistyPuzzles::StickerCycleFactory.new(@cube_size, @incarnation_index)
-    end
+    attr_reader :unfixable_algs, :error_algs
 
     def reset
       @total_algs = 0
       @broken_algs = 0
-      # Unknown by default. Only relevant if we actually search for fixes.
-      @unfixable_algs = nil
+      @unfixable_algs = 0
       @error_algs = 0
     end
 
@@ -64,10 +49,6 @@ module CubeTrainer
 
     def found_problems?
       @broken_algs.positive? || @error_algs.positive?
-    end
-
-    def construct_cycle(parts)
-      @part_cycle_factory.construct(parts)
     end
 
     # Count an alg with a parse error or something like that that is broken before the checker gets
@@ -80,7 +61,7 @@ module CubeTrainer
     def failure_report
       msg = "#{@error_algs} unparseable algs and #{@broken_algs} " \
             "incorrect algs of #{@total_algs}."
-      msg << " #{@unfixable_algs} were unfixable." if @unfixable_algs
+      msg << " #{@unfixable_algs} were unfixable." if @unfixable_algs.positive?
       msg
     end
 
@@ -88,7 +69,7 @@ module CubeTrainer
       "Parsed #{@total_algs} algs."
     end
 
-    def handle_incorrect(cell_description, commutator, alg, desired_state)
+    def handle_incorrect(cell_description, commutator, alg, part_cycle)
       if @verbose
         Rails.logger.warn "Algorithm for #{cell_description} #{commutator} " \
                           "doesn't do what it's expected to do."
@@ -97,7 +78,7 @@ module CubeTrainer
 
       # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
       if @find_fixes
-        if (fix = find_fix(commutator, desired_state))
+        if (fix = find_fix(commutator, part_cycle))
           fixes.push(Fix.new(cell_description, fix))
           Rails.logger.info "Found fix #{fix}." if @verbose
           return CheckAlgResult.new(:fix_found, fix)
@@ -125,24 +106,19 @@ module CubeTrainer
       attr_reader :result, :fix
     end
 
-    def alg_reaches_state(alg, desired_state)
-      alg.apply_temporarily_to(@alg_cube_state) { |s| s == desired_state }
+    def alg_solves_case(alg, part_cycle)
+      part_cycles = @reverse_engineer.find_part_cycles(alg)
+      part_cycles.length == 1 && part_cycles.first.equivalent?(part_cycle)
     end
 
     def check_alg(cell_description, commutator)
-      parts = cell_description.part_cycle.parts
-      # Apply alg and cycle
-      cycle = construct_cycle(parts)
-      cycle.apply_temporarily_to(@cycle_cube_state) do |cycle_state|
-        alg = commutator.algorithm
-        @total_algs += 1
-
-        # compare
-        if alg_reaches_state(alg, cycle_state)
-          CheckAlgResult::CORRECT
-        else
-          handle_incorrect(cell_description, commutator, alg, cycle_state)
-        end
+      part_cycle = cell_description.part_cycle
+      alg = commutator.algorithm
+      @total_algs += 1
+      if alg_solves_case(alg, cell_description.part_cycle)
+        CheckAlgResult::CORRECT
+      else
+        handle_incorrect(cell_description, commutator, alg, part_cycle)
       end
     end
 
@@ -150,10 +126,10 @@ module CubeTrainer
 
     include AlgModificationsHelper
 
-    def find_fix(commutator, desired_state)
+    def find_fix(commutator, part_cycle)
       commutator_modifications(commutator).each do |fix|
         fix_alg = fix.algorithm
-        return fix if alg_reaches_state(fix_alg, desired_state)
+        return fix if alg_solves_case(fix_alg, part_cycle)
       end
       nil
     end
@@ -163,16 +139,9 @@ module CubeTrainer
       return unless @verbose
 
       Rails.logger.warn "Couldn't find a fix for this alg."
-      return unless @show_cube_states
-
-      Rails.logger.info 'actual'
-      Rails.logger.info alg.apply_temporarily_to(@alg_cube_state) { |s| cube_string(s, :color) }
-      Rails.logger.info 'expected'
-      Rails.logger.info cube_string(@cycle_cube_state, :color)
     end
 
     def count_unfixable_alg
-      @unfixable_algs ||= 0
       @unfixable_algs += 1
     end
   end

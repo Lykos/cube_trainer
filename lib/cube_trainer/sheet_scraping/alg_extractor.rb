@@ -14,14 +14,16 @@ module CubeTrainer
       # Eventually gets mapped into an AlgSet model and
       # its Alg submodels after some postprocessing.
       class AlgSet
-        def initialize(part_type:, buffer:, algs:, fixes:)
+        def initialize(part_type:, buffer:, algs:, checker:)
           @part_type = part_type
           @buffer = buffer
           @algs = algs
-          @fixes = fixes
+          @fixes = checker.fixes
+          @num_unfixable = checker.unfixable_algs
+          @num_unparseable = checker.error_algs
         end
 
-        attr_reader :part_type, :buffer, :algs, :fixes
+        attr_reader :part_type, :buffer, :algs, :fixes, :num_unfixable, :num_unparseable
       end
 
       def self.extract_alg_set(table)
@@ -84,25 +86,23 @@ module CubeTrainer
           @algorithm = algorithm
         end
 
-        attr_reader :algorithm
-        attr_accessor :maybe_part_cycle
+        attr_reader :algorithm, :maybe_part_cycle
       end
 
       # Represents an erroneous entry in a commutator table.
       class ErrorEntry
         def initialize(error_message)
           @error_message = error_message
-          @maybe_part_cycle = nil
         end
 
         attr_reader :error_message
-        attr_accessor :maybe_part_cycle
+
+        def maybe_part_cycle; end
       end
 
       def create_checker(interpretation)
         cube_size = interpretation.part_type.exists_on_cube_size?(3) ? 3 : 5
         CommutatorChecker.new(
-          part_type: interpretation.part_type,
           cube_size: cube_size,
           verbose: true,
           show_cube_states: false,
@@ -119,7 +119,7 @@ module CubeTrainer
           part_type: interpretation.part_type,
           buffer: interpretation.buffer,
           algs: algs,
-          fixes: @checker.fixes
+          checker: @checker
         )
       end
 
@@ -179,7 +179,7 @@ module CubeTrainer
           row.each_with_index do |cell, col_index|
             part_cycle = interpretation.part_cycle(row_index, col_index)
             cell_description = CellDescription.new(
-              sheet_info.range, row_index, col_index,
+              sheet_info.title, row_index, col_index,
               part_cycle
             )
             process_alg_table_cell(hints, cell_description, cell)
