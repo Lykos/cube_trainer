@@ -4,6 +4,7 @@ require 'twisty_puzzles'
 
 module CubeTrainer
   module Training
+    # TODO: Deprecate
     # Represents the solution of a particular case (i.e. a situation on the cube).
     # There is always a best alg and there might be alternative algs.
     class CaseSolution

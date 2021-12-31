@@ -11,13 +11,18 @@ class AlgSet < ApplicationRecord
   validates :sheet_title, presence: true
   validates :case_set, presence: true
 
-  def commutator(case_key)
-    maybe_commutator = algs.find { |alg| alg.case_key == case_key }&.commutator
+  def commutator(casee)
+    raise TypeError unless casee.is_a?(Case)
+    raise ArgumentError unless casee.valid?
+
+    maybe_commutator = algs.find { |alg| puts alg.casee; alg.casee == casee }&.commutator
     return maybe_commutator if maybe_commutator
 
-    case_key_inverse = case_key.inverse
-    algs.find { |alg| alg.case_key == case_key_inverse }&.commutator&.inverse
+    casee_inverse = casee.inverse
+    algs.find { |alg| alg.casee == casee_inverse }&.commutator&.inverse
   end
+
+  delegate :case_name, to: :case_set
 
   def to_simple
     {

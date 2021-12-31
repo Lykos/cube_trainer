@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
+require 'twisty_puzzles/utils'
 
 # Represents case that we train to get better on, e.g. one 3-cycle, one parity case,
 # one twist case, one scramble etc.
@@ -8,10 +9,15 @@ require 'twisty_puzzles'
 # For the specific case attached to a training session with a specific solution, see TrainingCase.
 class Case
   include ActiveModel::Model
+  include TwistyPuzzles::Utils::StringHelper
 
   attr_accessor :part_cycles
 
   validate :validate_part_cycles
+
+  def to_s
+    "#{simple_class_name(self.class)}(part_cycles: [#{part_cycles.join(', ')}])"
+  end
 
   # if `ignore_same_face_center_cycles` is set,
   # center cycles that stay on the same face are ignored for comparison.
@@ -32,6 +38,21 @@ class Case
         # Return self if that's correct to avoid memoization explosion.
         self == canonicalized_case ? self : canonicalized_case
       end
+  end
+
+  def inverse
+    self.class.new(part_cycles: part_cycles.map { |c| c.inverse })
+  end
+
+  def eql?(other)
+    self.class.equal?(other.class) &&
+      part_cycles == other.part_cycles
+  end
+
+  alias == eql?
+
+  def hash
+    self.class.hash ^ part_cycles.hash
   end
 
   private

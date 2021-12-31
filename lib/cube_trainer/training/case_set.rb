@@ -68,6 +68,14 @@ module CubeTrainer
       def to_raw_data_parts_internal
         raise NotImplementedError
       end
+
+      def case_name(casee, letter_scheme: nil)
+        raise NotImplementedError
+      end
+
+      def concretization_of?(case_set)
+        case_set.is_a?(ThreeCycleSet) && case_set.part_type == @part_type
+      end
     end
 
     # An alg set with all 3 cycles of a given part type.
@@ -138,6 +146,14 @@ module CubeTrainer
 
       def to_raw_data_parts_internal
         [simple_class_name(@part_type), @buffer.to_s]
+      end
+
+      def case_name(casee, letter_scheme: nil)
+        raise ArgumentError unless casee.part_cycles.length == 1
+        raise ArgumentError unless casee.part_cycles.first.length == 3
+
+        parts = casee.part_cycles.first.parts[1..2]
+        letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
       end
 
       private

@@ -19,7 +19,6 @@ class TrainingSessionType
 
   SHOW_INPUT_MODES = %i[picture name].freeze
   MAX_SUPPORTED_CUBE_SIZE = 7
-  LETTER_SCHEME_MODES = %i[buffer_plus_2_parts simple].freeze
 
   attr_accessor :key,
                 :name,
@@ -34,7 +33,7 @@ class TrainingSessionType
                 :has_parity_parts,
                 :has_memo_time,
                 :has_setup,
-                :letter_scheme_mode
+                :case_set
 
   validates :key, presence: true
   validates :name, presence: true
@@ -44,7 +43,6 @@ class TrainingSessionType
   validate :show_input_modes_valid
   validates :default_cube_size, presence: true, if: :cube_size?
   validate :default_cube_size_valid, if: :cube_size?
-  validates :letter_scheme_mode, inclusion: LETTER_SCHEME_MODES, if: :letter_scheme_mode
 
   alias has_bounded_inputs? has_bounded_inputs
   alias has_goal_badness? has_goal_badness
@@ -100,36 +98,6 @@ class TrainingSessionType
   # TODO: Support more than 3 cycles
   def cycle_length
     3
-  end
-
-  # TODO: Refactor
-  def maybe_apply_letter_scheme(letter_scheme, case_key)
-    # TODO: Remove this backwards compatibility logic if possible.
-    return case_key if case_key.is_a?(LetterPair)
-
-    letters = letters_internal(letter_scheme, case_key)
-    return case_key if letters.any?(&:nil?)
-
-    LetterPair.new(letters)
-  end
-
-  def letters_internal(letter_scheme, case_key)
-    case letter_scheme_mode
-    when :buffer_plus_2_parts
-      raise TypeError unless case_key.is_a?(TwistyPuzzles::PartCycle)
-      raise ArgumentError unless case_key.length == 3
-
-      [
-        letter_scheme.letter(case_key.parts[1]),
-        letter_scheme.letter(case_key.parts[2])
-      ]
-    when :simple
-      raise TypeError unless case_key.is_a?(TwistyPuzzles::PartCycle)
-
-      case_key.parts.map { |p| letter_scheme.letter(p) }
-    else
-      [nil]
-    end
   end
 
   # Returns a simple version for the current user that can be returned to the frontend.
@@ -274,7 +242,7 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            letter_scheme_mode: :buffer_plus_2_parts,
+            case_set: Training::ThreeCycleSet.new(TwistyPuzzles::Corner),
             has_bounded_inputs: true
           ),
           TrainingSessionType.new(
@@ -286,7 +254,6 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            letter_scheme_mode: :buffer_plus_2_parts,
             has_bounded_inputs: true,
             has_parity_parts: true
           ),
@@ -322,8 +289,7 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true,
-            letter_scheme_mode: :buffer_plus_2_parts
+            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :floating_2twists_and_corner_3twists,
@@ -345,8 +311,7 @@ class TrainingSessionType
             has_buffer: false,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true,
-            letter_scheme_mode: :simple
+            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :edge_commutators,
@@ -357,8 +322,8 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true,
-            letter_scheme_mode: :buffer_plus_2_parts
+            case_set: Training::ThreeCycleSet.new(TwistyPuzzles::Edge),
+            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :wing_commutators,
@@ -369,8 +334,8 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true,
-            letter_scheme_mode: :buffer_plus_2_parts
+            case_set: Training::ThreeCycleSet.new(TwistyPuzzles::Wing),
+            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :xcenter_commutators,
@@ -381,8 +346,8 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true,
-            letter_scheme_mode: :buffer_plus_2_parts
+            case_set: Training::ThreeCycleSet.new(TwistyPuzzles::XCenter),
+            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :tcenter_commutators,
@@ -393,8 +358,8 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true,
-            letter_scheme_mode: :buffer_plus_2_parts
+            case_set: Training::ThreeCycleSet.new(TwistyPuzzles::TCenter),
+            has_bounded_inputs: true
           )
         ].freeze
         all.each(&:validate!)

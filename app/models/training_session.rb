@@ -4,6 +4,7 @@ require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 require 'training_session_type'
 require 'cube_trainer/training/case_solution'
+require 'cube_trainer/training/case_set'
 
 # Model for training sessions that the user created.
 class TrainingSession < ApplicationRecord
@@ -17,6 +18,7 @@ class TrainingSession < ApplicationRecord
   attribute :training_session_type, :training_session_type
   attribute :show_input_mode, :symbol
   attribute :buffer, :part
+  attribute :case_set, :concrete_case_set
   attr_accessor :stat_types, :verbose, :show_cube_states, :write_fixes
   attr_writer :test_comms_mode
 
@@ -25,7 +27,9 @@ class TrainingSession < ApplicationRecord
   validates :training_session_type, presence: true
   validates :show_input_mode, presence: true, inclusion: TrainingSessionType::SHOW_INPUT_MODES
   validate :show_input_mode_valid
+  validate :case_set_valid
   validates :buffer, presence: true, if: -> { training_session_type&.has_buffer? }
+  validates :case_set, presence: true, if: -> { training_session_type&.case_set }
   validates :cube_size, presence: true, if: -> { training_session_type&.cube_size? }
   validate :cube_size_valid, if: -> { training_session_type&.cube_size? }
   validate :buffer_valid, if: -> { training_session_type&.has_buffer? }
@@ -56,7 +60,6 @@ class TrainingSession < ApplicationRecord
   end
 
   delegate :input_items, to: :generator
-
   delegate :random_item, to: :input_sampler
 
   def random_case(cached_cases)
@@ -75,10 +78,8 @@ class TrainingSession < ApplicationRecord
     []
   end
 
-  def maybe_apply_letter_scheme(input_case_key)
-    return input_case_key unless user.letter_scheme
-
-    training_session_type.maybe_apply_letter_scheme(user.letter_scheme, input_case_key)
+  def case_name(casee)
+    return case_set.case_name(casee, letter_scheme: user.letter_scheme) unless user.letter_scheme
   end
 
   def picture
@@ -184,6 +185,18 @@ class TrainingSession < ApplicationRecord
   def memo_time_s_valid
     errors.add(:memo_time_s, 'has to be positive') unless memo_time_s.positive?
     errors.add(:memo_time_s, 'has to be below one day') unless memo_time_s < 1.day
+  end
+
+  def case_set_valid
+    return unless case_set
+
+    unless case_set.is_a?(Training::ConcreteCaseSet)
+      errors.add(:case_set, 'has to be a concrete case set')
+      return
+    end
+    return if case_set.concretization_of?(training_session_type.case_set)
+
+    errors.add(:case_set, 'has to be a concretization of the case set of the training session type')
   end
 
   def set_stats

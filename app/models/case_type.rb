@@ -28,9 +28,9 @@ class CaseType < ActiveRecord::Type::String
     return if value.nil?
     raise TypeError unless value.is_a?(Case)
 
-    parts = value.part_cycles.map(&:to_raw_data)
-    raise if parts.any? { |p| p.include?(SEPARATOR) }
+    serialized_parts = value.part_cycles.map(&:to_raw_data)
+    raise if serialized_parts.any? { |p| p.include?(SEPARATOR) }
 
-    parts.join(SEPARATOR)
+    serialized_parts.join(SEPARATOR)
   end
 end

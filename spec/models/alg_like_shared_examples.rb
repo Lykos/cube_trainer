@@ -17,7 +17,7 @@ shared_examples 'alg_like' do
   describe '#valid?' do
     it 'returns true for a valid alg' do
       alg = owning_set_alg_likes.new(
-        case_key: TwistyPuzzles::PartCycle.new([uf, df, ub]),
+        casee: Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([uf, df, ub])]),
         alg: "M' U2 M U2"
       )
       expect(alg).to be_valid
@@ -25,34 +25,34 @@ shared_examples 'alg_like' do
 
     it 'returns false if the case starts with a twisted version of the buffer' do
       alg = owning_set_alg_likes.new(
-        case_key: TwistyPuzzles::PartCycle.new([fu, df, ub]),
+        casee: Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([fu, df, ub])]),
         alg: "M' U2 M U2"
       )
       expect(alg).not_to be_valid
-      expect(alg.errors.messages[:case_key].first).to include('buffer')
+      expect(alg.errors.messages[:casee].first).to include('buffer')
     end
 
     it 'returns false if the case starts with a different piece than the buffer' do
       alg = owning_set_alg_likes.new(
-        case_key: TwistyPuzzles::PartCycle.new([df, ub, uf]),
+        casee: Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([df, ub, uf])]),
         alg: "M' U2 M U2"
       )
       expect(alg).not_to be_valid
-      expect(alg.errors.messages[:case_key].first).to include('buffer')
+      expect(alg.errors.messages[:casee].first).to include('buffer')
     end
 
     it 'returns false if the case twists' do
       alg = owning_set_alg_likes.new(
-        case_key: TwistyPuzzles::PartCycle.new([uf, df, ub], 1),
+        casee: Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([uf, df, ub], 1)]),
         alg: "M' U2 M U2"
       )
       expect(alg).not_to be_valid
-      expect(alg.errors.messages[:case_key].first).to include('twist')
+      expect(alg.errors.messages[:casee].first).to include('twist')
     end
 
     it 'returns false if the algorithm cannot be parsed' do
       alg = owning_set_alg_likes.new(
-        case_key: TwistyPuzzles::PartCycle.new([uf, ub, df]),
+        casee: Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([uf, ub, df])]),
         alg: 'asdfadsfasfd'
       )
       expect(alg).not_to be_valid
@@ -61,7 +61,7 @@ shared_examples 'alg_like' do
 
     it 'returns false if the algorithm is for a different case' do
       alg = owning_set_alg_likes.new(
-        case_key: TwistyPuzzles::PartCycle.new([uf, ub, df]),
+        casee: Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([uf, ub, df])]),
         alg: "M' U2 M U2"
       )
       expect(alg).not_to be_valid

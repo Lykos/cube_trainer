@@ -63,7 +63,7 @@ class AlgOverridesController < ApplicationController
 
   def set_optional_alg_override_by_key
     @alg_override = @training_session.alg_overrides.find_by(
-      case_key: InputRepresentationType.new.cast(params[:case_key])
+      casee: alg_override_params[:case_key]
     )
   end
 
@@ -83,8 +83,11 @@ class AlgOverridesController < ApplicationController
   end
 
   def alg_override_params
-    params.require(:alg_override).permit(
+    fixed_params = params.require(:alg_override).permit(
       :case_key, :alg
     )
+    fixed_params[:casee] = CaseType.new.cast(params[:case_key]) if fixed_params[:casee]
+    fixed_params.delete(:case_key)
+    fixed_params
   end
 end

@@ -19,7 +19,7 @@ class ConcreteCaseSetType < ActiveRecord::Type::String
 
   def serialize(value)
     return if value.nil?
-    raise TypeError unless value.is_a?(Case)
+    raise TypeError unless value.is_a?(ConcreteCaseSet)
 
     value.to_raw_data
   end

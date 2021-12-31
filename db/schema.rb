@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_31_112739) do
+ActiveRecord::Schema.define(version: 2021_12_31_134642) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -104,9 +104,9 @@ ActiveRecord::Schema.define(version: 2021_12_31_112739) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "uploaded_at", precision: 6
-    t.string "case_key", null: false
+    t.string "casee", null: false
     t.integer "training_session_id", null: false
-    t.index ["case_key"], name: "index_results_on_case_key"
+    t.index ["casee"], name: "index_results_on_casee"
   end
 
   create_table "stats", force: :cascade do |t|
@@ -142,6 +142,7 @@ ActiveRecord::Schema.define(version: 2021_12_31_112739) do
     t.float "memo_time_s"
     t.string "buffer"
     t.integer "alg_set_id"
+    t.string "case_set"
     t.index ["user_id", "name"], name: "index_training_sessions_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_training_sessions_on_user_id"
   end

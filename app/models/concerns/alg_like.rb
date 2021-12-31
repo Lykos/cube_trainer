@@ -38,7 +38,8 @@ module AlgLike
   def to_simple
     {
       id: id,
-      casee: InputRepresentationType.new.serialize(casee),
+      case_key: CaseType.new.serialize(casee),
+      case_name: owning_set.case_name(casee),
       alg: alg.to_s
     }
   end
@@ -47,6 +48,11 @@ module AlgLike
 
   def validate_case
     return unless casee
+
+    unless casee.valid?
+      errors.add(:casee, 'needs to be valid')
+      return
+    end
     return if owning_set.case_set.match?(casee)
 
     errors.add(:casee, 'does not belong to the case set of the alg set')
