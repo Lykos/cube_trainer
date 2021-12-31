@@ -35,7 +35,10 @@ module CubeTrainer
     # with the cube size as an argument that the case for that cell or nil.
     def self.interpret_table(table)
       transposed_table = table.transpose
-      table_interpretations = [3, 5].map { |cube_size| interpret_table_for_cube_size(table, transposed_table, cube_size) }
+      table_interpretations =
+        [3, 5].map do |cube_size|
+          interpret_table_for_cube_size(table, transposed_table, cube_size)
+        end
       # Note that in case of equality, the 3x3 interpretation wins due to our ordering.
       # This is intentional as we want corners to be a 3x3 set even if it works for big
       # cubes, too.
@@ -97,7 +100,9 @@ module CubeTrainer
     end
 
     def self.relevant_top_level_case_sets(casee)
+      # rubocop:disable Style/SelectByRegexp
       Training::CASE_SETS.select { |p| p.match?(casee) }
+      # rubocop:enable Style/SelectByRegexp
     end
 
     def self.best_interpretation(table_interpretations, table)

@@ -4,6 +4,12 @@ require 'twisty_puzzles/utils'
 
 module CubeTrainer
   module Training
+    # A pattern that matches cases. These can be used at multiple levels.
+    # E.g. a pattern can be used to match
+    # * all edge 3 cycles,
+    # * all edge 3 cycles with buffer UF
+    # * the concrete edge cycle UF UB DF
+    # * all two twists
     class CasePattern
       include TwistyPuzzles::Utils::StringHelper
 
@@ -12,8 +18,10 @@ module CubeTrainer
       end
     end
 
+    # A conjunction of two case patterns.
     class Conjunction < CasePattern
       def initialize(case_patterns)
+        super()
         @case_patterns = case_patterns
       end
 
@@ -30,6 +38,7 @@ module CubeTrainer
       end
     end
 
+    # A part pattern that either matches an individial part or all parts.
     class PartPattern
       include Comparable
 
@@ -46,6 +55,7 @@ module CubeTrainer
       end
     end
 
+    # A part pattern that matches all parts.
     class PartWildcard < PartPattern
       def match?(_part)
         true
@@ -72,10 +82,12 @@ module CubeTrainer
       end
     end
 
+    # A part pattern that matches a specific.
     class SpecificPart < PartPattern
       def initialize(part)
         raise TypeError unless part.is_a?(TwistyPuzzles::Part)
 
+        super()
         @part = part
       end
 
@@ -105,6 +117,8 @@ module CubeTrainer
       end
     end
 
+    # A part cycle pattern that matches part cycles of a given type and
+    # with a given set of fixed pieces.
     class PartCyclePattern
       include TwistyPuzzles::Utils::StringHelper
       include Comparable
@@ -157,7 +171,8 @@ module CubeTrainer
       end
 
       def to_s
-        "#{simple_class_name(self.class)}(#{simple_class_name(@part_type)}, [#{@part_patterns.join(', ')}], #{@twist})"
+        "#{simple_class_name(self.class)}(#{simple_class_name(@part_type)}, " \
+          "[#{@part_patterns.join(', ')}], #{@twist})"
       end
 
       private
@@ -171,8 +186,11 @@ module CubeTrainer
       end
     end
 
-    class ConcreteCasePattern < CasePattern
-      def initialize(part_cycle_patterns, ignore_same_face_center_cycles: true)
+    # A leaf case pattern (i.e. one that isn't a conjuction) that
+    # matches the given part cycle patterns.
+    class LeafCasePattern < CasePattern
+      def initialize(part_cycle_patterns, ignore_same_face_center_cycles: false)
+        super()
         @part_cycle_patterns = part_cycle_patterns
         @ignore_same_face_center_cycles = ignore_same_face_center_cycles
       end
@@ -183,21 +201,26 @@ module CubeTrainer
         raise TypeError unless casee.is_a?(Case)
         return false unless casee.part_cycles.length == @part_cycle_patterns.length
 
-        ignore = @ignore_same_face_center_cycles
-        part_cycle_groups =
-          casee.canonicalize(ignore_same_face_center_cycles: ignore).part_cycles.group_by do |c|
-            [c.part_type.name, c.length, c.twist]
-          end
-        return false unless part_cycle_groups.keys.sort == part_cycle_pattern_groups.keys.sort
+        cycle_groups = part_cycle_groups(casee)
+        return false unless cycle_groups.keys.sort == part_cycle_pattern_groups.keys.sort
 
-        part_cycle_groups.all? do |k, part_cycle_group|
+        cycle_groups.all? do |k, cycle_group|
           pattern_group = part_cycle_pattern_groups[k]
-          pattern_group_match?(pattern_group, part_cycle_group)
+          pattern_group_match?(pattern_group, cycle_group)
+        end
+      end
+
+      def part_cycle_groups(casee)
+        ignore = @ignore_same_face_center_cycles
+        casee.canonicalize(ignore_same_face_center_cycles: ignore).part_cycles.group_by do |c|
+          [c.part_type.name, c.length, c.twist]
         end
       end
 
       def eql?(other)
-        self.class.equal?(other.class) && @part_cycle_patterns.sort == other.part_cycle_patterns.sort && @ignore_same_face_center_cycles == other.ignore_same_face_center_cycles
+        self.class.equal?(other.class) &&
+          @part_cycle_patterns.sort == other.part_cycle_patterns.sort &&
+          @ignore_same_face_center_cycles == other.ignore_same_face_center_cycles
       end
 
       alias == eql?
@@ -211,12 +234,11 @@ module CubeTrainer
       end
 
       def to_s
-        "#{self.class.name.split('::').last}(#{@part_cycle_patterns.join(', ')}, #{@ignore_same_face_center_cycles})"
+        "#{self.class.name.split('::').last}(#{@part_cycle_patterns.join(', ')}, " \
+          "#{@ignore_same_face_center_cycles})"
       end
 
-      def bracketed_to_s
-        "(#{self})"
-      end
+      alias bracketed_to_s to_s
 
       private
 
@@ -238,6 +260,7 @@ module CubeTrainer
       end
     end
 
+    # A DSL that allows to create case patterns more conveniently.
     module CasePatternDsl
       def wildcard
         PartWildcard.new
@@ -252,7 +275,7 @@ module CubeTrainer
       end
 
       def case_pattern(*part_cycle_patterns)
-        ConcreteCasePattern.new(part_cycle_patterns)
+        LeafCasePattern.new(part_cycle_patterns)
       end
     end
   end

@@ -70,8 +70,10 @@ module CubeTrainer
       end
     end
 
+    # An alg set with all 3 cycles of a given part type.
     class ThreeCycleSet < AbstractCaseSet
       def initialize(part_type)
+        super()
         @pattern = case_pattern(part_cycle_pattern(part_type, wildcard, wildcard, wildcard))
         @part_type = part_type
       end
@@ -90,8 +92,10 @@ module CubeTrainer
       end
     end
 
+    # An alg set with 3 cycles with a given fixed buffer.
     class BufferedThreeCycleSet < ConcreteCaseSet
       def initialize(part_type, buffer)
+        super()
         @pattern = case_pattern(
           part_cycle_pattern(
             part_type, specific_part(buffer), wildcard,
@@ -110,13 +114,12 @@ module CubeTrainer
 
       def row_pattern(refinement_index, casee)
         raise ArgumentError if refinement_index != 0 && refinement_index != 1
-        unless casee.part_cycles.length == 1 && casee.part_cycles.first.length == 3
-          raise ArgumentError
-        end
+        raise ArgumentError unless casee.part_cycles.length == 1
+        raise ArgumentError unless casee.part_cycles.first.length == 3
 
         part_patterns = [specific_part(@buffer), wildcard, wildcard]
-        refined_part = casee.part_cycles.first.start_with(@buffer).parts[refinement_index + 1]
-        part_patterns[refinement_index + 1] = specific_part(refined_part)
+        part = refined_part(refinement_index, casee)
+        part_patterns[refinement_index + 1] = specific_part(part)
         case_pattern(part_cycle_pattern(@part_type, *part_patterns))
       end
 
@@ -135,6 +138,12 @@ module CubeTrainer
 
       def to_raw_data_parts_internal
         [simple_class_name(@part_type), @buffer.to_s]
+      end
+
+      private
+
+      def refined_part(refinement_index, casee)
+        casee.part_cycles.first.start_with(@buffer).parts[refinement_index + 1]
       end
     end
 

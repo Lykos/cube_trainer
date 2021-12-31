@@ -36,7 +36,9 @@ describe Training::CasePattern do
 
   describe '==' do
     it 'is equal to itself' do
+      # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
       expect(case_pattern == case_pattern).to eq(true)
+      # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
     end
 
     it 'is equal to an equivalent one' do
@@ -50,7 +52,9 @@ describe Training::CasePattern do
 
   describe '#hash' do
     it 'is equal to its own hash' do
+      # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
       expect(case_pattern.hash == case_pattern.hash).to eq(true)
+      # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
     end
 
     it 'is equal to the hash of an equivalent one' do

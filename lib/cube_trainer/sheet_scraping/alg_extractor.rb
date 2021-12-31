@@ -212,14 +212,12 @@ module CubeTrainer
         BLACKLIST.include?(value.downcase)
       end
 
-      # rubocop:disable Metrics/AbcSize
       def maybe_cases(algorithm)
         cases = {}
         cases[3] = reverse_engineer.find_case(algorithm)
         cases[5] = big_cube_reverse_engineer.find_case(algorithm)
         cases
       end
-      # rubocop:enable Metrics/AbcSize
 
       def parse_table_cell(cell)
         return EmptyEntry if cell.blank? || blacklisted?(cell)

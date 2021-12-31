@@ -7,7 +7,6 @@ require 'twisty_puzzles'
 
 module CubeTrainer
   # Searches all possible Skewb layers.
-  # rubocop:disable Rails/Delegate
   class SkewbLayerSearcher
     EXAMPLE_LAYER_FACE_SYMBOL = :D
     EXAMPLE_LAYER_FACE = TwistyPuzzles::Face.for_face_symbol(EXAMPLE_LAYER_FACE_SYMBOL)
@@ -225,5 +224,4 @@ module CubeTrainer
       end
     end
   end
-  # rubocop:enable Rails/Delegate
 end
