@@ -10,10 +10,10 @@ module AlgLike
   extend ActiveSupport::Concern
 
   included do
-    attribute :case_key, :input_representation
+    attribute :casee, :case
     validates :alg, presence: true
-    validates :case_key, presence: true
-    validate :validate_case, :validate_buffer, :validate_alg
+    validates :casee, presence: true
+    validate :validate_case, :validate_alg
   end
 
   # Cell description that we just make up without having an actual spreadsheet.
@@ -27,10 +27,6 @@ module AlgLike
     delegate :to_s, to: :part_cycle
   end
 
-  def buffer
-    case_key.parts.first if case_key.is_a?(TwistyPuzzles::PartCycle)
-  end
-
   def commutator
     alg && parse_commutator(alg)
   end
@@ -42,7 +38,7 @@ module AlgLike
   def to_simple
     {
       id: id,
-      case_key: InputRepresentationType.new.serialize(case_key),
+      casee: InputRepresentationType.new.serialize(casee),
       alg: alg.to_s
     }
   end
@@ -50,13 +46,9 @@ module AlgLike
   private
 
   def validate_case
-    owning_set.training_session_type.validate_case_key(case_key, errors) if case_key
-  end
+    return unless casee
 
-  def validate_buffer
-    return unless owning_set.buffer
-
-    errors.add(:case_key, 'case has an incorrect buffer') unless buffer == owning_set.buffer
+    errors.add(:casee, 'does not belong to the case set of the alg set') unless owning_set.case_set.match?(casee)
   end
 
   def commutator_or_nil
@@ -72,13 +64,13 @@ module AlgLike
   end
 
   def alg_correct?(comm)
-    create_checker.check_alg(SyntheticCellDescription.new(case_key), comm).result == :correct
+    create_checker.check_alg(SyntheticCellDescription.new(casee), comm).result == :correct
   end
 
   # TODO: Make this work for other types of alg sets than commutators.
   def validate_alg
-    return unless case_key.respond_to?(:part_type)
-    return unless case_key.part_type == owning_set.training_session_type.part_type
+    return unless casee.respond_to?(:part_type)
+    return unless casee.part_type == owning_set.training_session_type.part_type
 
     comm = commutator_or_nil
     errors.add(:alg, 'cannot be parsed as a commutator') && return unless comm

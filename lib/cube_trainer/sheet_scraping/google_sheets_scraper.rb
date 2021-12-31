@@ -61,13 +61,6 @@ module CubeTrainer
                           "and #{counters[:unparseable_algs]} unparseable algs."
       end
 
-      def training_session_type(alg_set)
-        TrainingSessionType.all.find do |m|
-          (defined? m.generator_class::PART_TYPE) &&
-            m.generator_class::PART_TYPE == alg_set.case_set.part_type
-        end || raise
-      end
-
       def add_counters(extracted_alg_set, counters)
         counters[:correct_algs] += extracted_alg_set.algs.length
         counters[:fixed_algs] += extracted_alg_set.fixes.length
@@ -77,9 +70,8 @@ module CubeTrainer
 
       def find_or_create_alg_set(alg_spreadsheet, extracted_alg_set, table)
         alg_spreadsheet.alg_sets.find_or_create_by!(
-          training_session_type: training_session_type(extracted_alg_set),
+          case_set: extracted_alg_set.case_set,
           sheet_title: table.sheet_info.title,
-          buffer: extracted_alg_set.case_set.buffer
         )
       end
 
@@ -103,13 +95,13 @@ module CubeTrainer
         existing_alg = alg_set.algs.find_by(casee: casee)
         return update_alg(existing_alg, alg, counters, is_fixed: is_fixed) if existing_alg
 
-        create_new_alg(alg_set, case_key, alg, counters, is_fixed: is_fixed)
+        create_new_alg(alg_set, casee, alg, counters, is_fixed: is_fixed)
       end
 
-      def create_new_alg(alg_set, case_key, alg, counters, is_fixed:)
+      def create_new_alg(alg_set, casee, alg, counters, is_fixed:)
         counters[:new_algs] += 1
         alg_set.algs.create!(
-          case_key: case_key,
+          casee: casee,
           alg: alg,
           is_fixed: is_fixed
         )

@@ -1,4 +1,6 @@
 require_relative 'case_pattern'
+require 'twisty_puzzles'
+require 'twisty_puzzles/utils'
 
 module CubeTrainer
   module Training
@@ -33,22 +35,33 @@ module CubeTrainer
       def fixed_parts_refinements(casee)
         raise NotImplementedError
       end
-
-      # An alg set can affect multiple part types, e.g. a parity.
-      # This is the main part type.
-      def part_type
-        raise NotImplementedError
-      end
     end
 
     class ConcreteCaseSet
+      extend TwistyPuzzles::Utils::StringHelper
       include CaseSetHelper
+      include TwistyPuzzles::Utils::StringHelper
 
-      def buffer
+      SEPARATOR = ':'
+
+      def row_pattern(refinement_index, casee)
         raise NotImplementedError
       end
 
-      def row_pattern(refinement_index, casee)
+      def to_raw_data
+        ([simple_class_name(self.class)] + to_raw_data_parts_internal).join(SEPARATOR)
+      end
+
+      def self.from_raw_data(raw_data)
+        p raw_data
+        raw_clazz, *raw_data_parts = raw_data.split(SEPARATOR)
+        clazz = CONCRETE_CASE_SET_NAME_TO_CLASS[raw_clazz]
+        raise ArgumentError, "Unknown concrete case set class #{raw_clazz}." unless clazz
+
+        clazz.from_raw_data_parts(raw_data_parts)
+      end
+
+      def to_raw_data_parts_internal
         raise NotImplementedError
       end
     end
@@ -94,8 +107,28 @@ module CubeTrainer
         part_patterns[refinement_index + 1] = specific_part(refined_part)
         case_pattern(part_cycle_pattern(@part_type, *part_patterns))
       end
+
+      def self.from_raw_data_parts(raw_data)
+        raise ArgumentError, "expected 2 parts, got #{raw_data.join(', ')}" unless raw_data.length == 2
+
+        part_type = TwistyPuzzles::PART_TYPES.find { |t| simple_class_name(t) == raw_data[0] }
+        raise ArgumentError unless part_type
+
+        buffer = part_type.parse(raw_data[1])
+        new(part_type, buffer)
+      end
+
+      def to_raw_data_parts_internal
+        [simple_class_name(@part_type), @buffer.to_s]
+      end
     end
 
     CASE_SETS = TwistyPuzzles::PART_TYPES.map { |p| ThreeCycleSet.new(p) }.freeze
+
+    class ConcreteCaseSet
+      CONCRETE_CASE_SET_CLASSES = [BufferedThreeCycleSet].freeze
+      CONCRETE_CASE_SET_NAME_TO_CLASS =
+        CONCRETE_CASE_SET_CLASSES.map { |e| [simple_class_name(e), e] }.to_h.freeze
+    end
   end
 end
