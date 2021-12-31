@@ -7,7 +7,10 @@ require 'twisty_puzzles'
 require 'rails_helper'
 
 def cell_description(*parts)
-  SheetScraping::AlgExtractor::CellDescription.new('test', 0, 0, TwistyPuzzles::PartCycle.new(parts))
+  part_patterns = parts.map { |p| Training::SpecificPart.new(p) }
+  part_cycle_patterns = [Training::PartCyclePattern.new(parts.first.class, part_patterns)]
+  case_pattern = Training::ConcreteCasePattern.new(part_cycle_patterns)
+  SheetScraping::AlgExtractor::CellDescription.new('test', 0, 0, case_pattern)
 end
 
 describe CaseChecker do

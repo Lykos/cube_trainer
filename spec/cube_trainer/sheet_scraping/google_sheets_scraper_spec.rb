@@ -74,7 +74,7 @@ describe CubeTrainer::SheetScraping::GoogleSheetsScraper do
     factory
   end
 
-  it 'parses a sheet correctly', focus: true do
+  it 'parses a sheet correctly' do
     alg_spreadsheet
     counters = described_class.new(
       credentials_factory: credentials_factory,
@@ -86,7 +86,7 @@ describe CubeTrainer::SheetScraping::GoogleSheetsScraper do
     expect(counters[:confirmed_algs]).to eq(0)
     expect(counters[:correct_algs]).to eq(9)
     expect(counters[:fixed_algs]).to eq(1)
-    expect(counters[:unfixable_algs]).to eq(1)
+    expect(counters[:unfixable_algs]).to eq(2)
     expect(counters[:unparseable_algs]).to eq(1)
 
     expect(sheets_service).to have_received(:'authorization=').with(authorizer)

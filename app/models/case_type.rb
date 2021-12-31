@@ -1,3 +1,6 @@
+require 'twisty_puzzles'
+require 'twisty_puzzles/utils'
+
 # Active record type for a case, e.g. one 3-cycle, one parity case,
 # one twist case, one scramble etc.
 # This represents the abstract case independent of its solution.
@@ -15,7 +18,7 @@ class CaseType < ActiveRecord::Type::String
     parts = value.split(SEPARATOR)
     # TODO: Get rid of this backwards compatibility logic
     parts.shift if parts.first == 'PartCycle'
-    part_cycles = parts.map { |raw_data| PartCycle.from_raw_data(raw_data) }
+    part_cycles = parts.map { |raw_data| TwistyPuzzles::PartCycle.from_raw_data(raw_data) }
     Case.new(part_cycles: part_cycles)
   end
 

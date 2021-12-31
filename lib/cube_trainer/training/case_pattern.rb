@@ -1,6 +1,10 @@
+require 'twisty_puzzles/utils'
+
 module CubeTrainer
 module Training
   class CasePattern
+    include TwistyPuzzles::Utils::StringHelper
+
     def match?(casee)
       raise NotImplementedError
     end
@@ -13,6 +17,14 @@ module Training
 
     def match?(casee)
       @case_patterns.all? { |p| p.match?(casee) }
+    end
+
+    def bracketed_to_s
+      "(#{self})"
+    end
+
+    def to_s
+      @case_patterns.map(&:bracketed_to_s).join(' & ')
     end
   end
 
@@ -53,6 +65,9 @@ module Training
       [self.class].hash
     end
 
+    def to_s
+      '*'
+    end
   end
 
   class SpecificPart < PartPattern
@@ -82,9 +97,14 @@ module Training
     def hash
       [self.class, @part.rotations.min].hash
     end
+
+    def to_s
+      @part.to_s
+    end
   end
 
   class PartCyclePattern
+    include TwistyPuzzles::Utils::StringHelper
     include Comparable
 
     def initialize(part_type, part_patterns, twist = 0)
@@ -127,6 +147,10 @@ module Training
 
     def <=>(other)
       [@part_type.name, @part_patterns, @twist] <=> [other.part_type.name, other.part_patterns, other.twist]
+    end
+
+    def to_s
+      "#{simple_class_name(self.class)}(#{simple_class_name(@part_type)}, [#{@part_patterns.join(', ')}], #{@twist})"
     end
 
     private
@@ -174,6 +198,14 @@ module Training
 
   def &(other)
     Conjunction.new([self, other])
+  end
+
+  def to_s
+    "#{self.class.name.split('::').last}(#{@part_cycle_patterns.join(', ')}, #{@ignore_same_face_center_cycles})"
+  end
+
+  def bracketed_to_s
+    "(#{self})"
   end
 
   private

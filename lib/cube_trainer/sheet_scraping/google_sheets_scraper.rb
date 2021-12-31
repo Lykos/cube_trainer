@@ -77,7 +77,6 @@ module CubeTrainer
 
       def extract_alg_set(alg_spreadsheet, table, counters)
         extracted_alg_set = AlgExtractor.extract_alg_set(table) || return
-        extracted_alg_set.algs.each { |casee, alg| puts "#{casee.part_cycles}: #{alg}" }
         add_counters(extracted_alg_set, counters)
         alg_set = find_or_create_alg_set(alg_spreadsheet, extracted_alg_set, table)
         extracted_alg_set.algs.each do |casee, alg|

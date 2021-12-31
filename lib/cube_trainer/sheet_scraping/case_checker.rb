@@ -81,7 +81,7 @@ module CubeTrainer
         if (fix = find_fix(commutator, cell_description.pattern))
           fixes.push(fix)
           Rails.logger.info "For #{cell_description} found fix #{fix}." if @verbose
-          return CheckAlgResult.new(:fix_found, casee: fix.casee, fix: fix)
+          return CheckAlgResult.new(:fix_found, casee: fix.casee, fix: fix.fixed_algorithm)
         else
           handle_unfixable_alg(alg)
         end
@@ -134,7 +134,7 @@ module CubeTrainer
       commutator_modifications(commutator).each do |fix|
         fix_alg = fix.algorithm
         if casee = alg_case_for_pattern(fix_alg, pattern)
-          Fix.new(casee, fix)
+          return Fix.new(casee, fix)
         end
       end
       nil

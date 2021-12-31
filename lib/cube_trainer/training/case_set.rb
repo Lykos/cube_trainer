@@ -53,7 +53,6 @@ module CubeTrainer
       end
 
       def self.from_raw_data(raw_data)
-        p raw_data
         raw_clazz, *raw_data_parts = raw_data.split(SEPARATOR)
         clazz = CONCRETE_CASE_SET_NAME_TO_CLASS[raw_clazz]
         raise ArgumentError, "Unknown concrete case set class #{raw_clazz}." unless clazz
