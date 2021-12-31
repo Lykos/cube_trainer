@@ -140,7 +140,7 @@ module CubeTrainer
       nil
     end
 
-    def handle_unfixable_alg(alg)
+    def handle_unfixable_alg(_alg)
       count_unfixable_alg
       return unless @verbose
 

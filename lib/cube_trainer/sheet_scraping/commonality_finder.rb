@@ -51,7 +51,11 @@ module CubeTrainer
           row_interpretations = find_row_interpretations(table, case_set, flip_axes ? 0 : 1)
           column_interpretations =
             find_row_interpretations(transposed_table, case_set, flip_axes ? 1 : 0)
-          row_interpretations, column_interpretations = column_interpretations, row_interpretations if flip_axes
+          if flip_axes
+            row_interpretations, column_interpretations =
+              column_interpretations,
+              row_interpretations
+          end
           TableInterpretation.new(
             case_set,
             row_interpretations, column_interpretations
@@ -78,7 +82,9 @@ module CubeTrainer
     end
 
     def self.relevant_case_sets(casee)
-      relevant_top_level_case_sets(casee).flat_map { |case_set| case_set.fixed_parts_refinements(casee) }
+      relevant_top_level_case_sets(casee).flat_map do |case_set|
+        case_set.fixed_parts_refinements(casee)
+      end
     end
 
     def self.relevant_top_level_case_sets(casee)

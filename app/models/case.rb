@@ -36,6 +36,7 @@ class Case
 
   def validate_part_cycles
     return if part_cycles.empty?
+
     unless part_cycles.is_a?(Array) && part_cycles.all?(TwistyPuzzles::PartCycle)
       errors.add(:part_cycles, 'have to be an array with entries of type PartCycle')
       return
@@ -46,17 +47,17 @@ class Case
   end
 
   def validate_duplicates
-    duplicate_parts = part_counts.select { |k, v| v > 1 }.keys
+    duplicate_parts = part_counts.select { |_k, v| v > 1 }.keys
     return if duplicate_parts.empty?
 
-    errors.add(:part_cycles, "cannot have duplicate parts but found #{duplicate_parts.join(' ')}") 
+    errors.add(:part_cycles, "cannot have duplicate parts but found #{duplicate_parts.join(' ')}")
   end
 
   def validate_twists
-    twisted_part_types = twist_counts.select { |k, v| v > 0 }.keys
+    twisted_part_types = twist_counts.select { |_k, v| v > 0 }.keys
     return if twisted_part_types.empty?
 
-    errors.add(:part_cycles, "twists parts don't sum up to 0 for #{twisted_part_types.join(', ')}") 
+    errors.add(:part_cycles, "twists parts don't sum up to 0 for #{twisted_part_types.join(', ')}")
   end
 
   def new_count_hash
@@ -82,7 +83,7 @@ class Case
     end
     counts
   end
-  
+
   def equivalent_center_cycle?(part_cycle)
     part_cycle.part_type.is_a?(TwistyPuzzles::MoveableCenter) && part_cycle.parts.all? do |p|
       p.face_symbol == part_cycle.first.face_symbol

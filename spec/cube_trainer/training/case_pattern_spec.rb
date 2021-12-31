@@ -31,45 +31,45 @@ describe Training::CasePattern do
   let(:other_case_pattern) { Training::CasePattern.new([other_edge_cycle_pattern, corner_cycle_pattern]) }
   let(:casee) { Case.new(part_cycles: [edge_cycle, corner_cycle]) }
   let(:other_case) { Case.new(part_cycles: [other_edge_cycle, corner_cycle]) }
-  
+
   describe '==' do
-    it 'should be equal to itself' do
+    it 'is equal to itself' do
       expect(case_pattern == case_pattern).to eq(true)
     end
 
-    it 'should be equal to an equivalent one' do
+    it 'is equal to an equivalent one' do
       expect(case_pattern == equivalent_case_pattern).to eq(true)
     end
 
-    it 'should not be equal to a different one' do
+    it 'is not equal to a different one' do
       expect(case_pattern == other_case_pattern).to eq(false)
     end
   end
 
   describe '#hash' do
-    it 'should be equal to its own hash' do
+    it 'is equal to its own hash' do
       expect(case_pattern.hash == case_pattern.hash).to eq(true)
     end
 
-    it 'should be equal to the hash of an equivalent one' do
+    it 'is equal to the hash of an equivalent one' do
       expect(case_pattern.hash == equivalent_case_pattern.hash).to eq(true)
     end
 
-    it 'should not be equal to a different one' do
+    it 'is not equal to a different one' do
       expect(case_pattern.hash == other_case_pattern.hash).to eq(false)
     end
   end
 
   describe '#match?' do
-    it 'should match a fitting case' do
+    it 'matches a fitting case' do
       expect(case_pattern.match?(casee)).to be(true)
     end
 
-    it 'should match a tricky fitting case' do
+    it 'matches a tricky fitting case' do
       expect(equivalent_case_pattern.match?(casee)).to be(true)
     end
 
-    it 'should match a fitting case' do
+    it 'matches a fitting case' do
       expect(case_pattern.match?(other_case)).to be(false)
     end
   end

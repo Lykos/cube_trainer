@@ -71,7 +71,7 @@ module CubeTrainer
       def find_or_create_alg_set(alg_spreadsheet, extracted_alg_set, table)
         alg_spreadsheet.alg_sets.find_or_create_by!(
           case_set: extracted_alg_set.case_set,
-          sheet_title: table.sheet_info.title,
+          sheet_title: table.sheet_info.title
         )
       end
 

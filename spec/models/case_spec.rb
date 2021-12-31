@@ -21,7 +21,7 @@ describe Case do
 
   describe '#valid?' do
     it 'returns true for an empty case' do
-      expect(casee()).to be_valid
+      expect(casee).to be_valid
     end
 
     it 'returns true for a valid three cycle' do

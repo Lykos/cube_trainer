@@ -220,7 +220,9 @@ module CubeTrainer
         wing_cycles = casee.part_cycles.select { |c| c.part_type == TwistyPuzzles::Wing }
         if wing_cycles.length == 1
           other_cycles = casee.part_cycles - wing_cycles
-          return Case.new(part_cycles: wing_cycles) if other_cycles.all? { |c| equivalent_center_cycle?(c) }
+          return Case.new(part_cycles: wing_cycles) if other_cycles.all? do |c|
+                                                         equivalent_center_cycle?(c)
+                                                       end
         end
         nil
       end

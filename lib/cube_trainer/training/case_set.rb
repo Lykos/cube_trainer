@@ -4,12 +4,15 @@ require 'twisty_puzzles/utils'
 
 module CubeTrainer
   module Training
+    # Helpers included for all case sets.
     module CaseSetHelper
       include CasePatternDsl
 
+      # rubocop:disable Rails/Delegate
       def match?(casee)
         pattern.match?(casee)
       end
+      # rubocop:enable Rails/Delegate
 
       def eql?(other)
         self.class.equal?(other.class) && pattern == other.pattern
@@ -26,7 +29,7 @@ module CubeTrainer
       end
     end
 
-    # A high level case set like 3-cycles.
+    # A high level case set like edge 3-cycles.
     # This is not used for training, look for `ConcreteAlgSet` for one that includes a buffer
     # and can be used for training.
     class AbstractCaseSet
@@ -37,6 +40,8 @@ module CubeTrainer
       end
     end
 
+    # A concrete case set like edge 3-cycles for buffer UF.
+    # This is used for training and parsing alg sets.
     class ConcreteCaseSet
       extend TwistyPuzzles::Utils::StringHelper
       include CaseSetHelper
@@ -79,6 +84,7 @@ module CubeTrainer
 
       def fixed_parts_refinements(casee)
         return [] unless casee.part_cycles.length == 1 && casee.part_cycles.first.length == 3
+
         buffers = casee.part_cycles.first.parts.map { |p| p.rotations.min }
         buffers.map { |b| BufferedThreeCycleSet.new(@part_type, b) }
       end
@@ -86,7 +92,12 @@ module CubeTrainer
 
     class BufferedThreeCycleSet < ConcreteCaseSet
       def initialize(part_type, buffer)
-        @pattern = case_pattern(part_cycle_pattern(part_type, specific_part(buffer), wildcard, wildcard))
+        @pattern = case_pattern(
+          part_cycle_pattern(
+            part_type, specific_part(buffer), wildcard,
+            wildcard
+          )
+        )
         @part_type = part_type
         @buffer = buffer
       end
@@ -99,7 +110,9 @@ module CubeTrainer
 
       def row_pattern(refinement_index, casee)
         raise ArgumentError if refinement_index != 0 && refinement_index != 1
-        raise ArgumentError unless casee.part_cycles.length == 1 && casee.part_cycles.first.length == 3
+        unless casee.part_cycles.length == 1 && casee.part_cycles.first.length == 3
+          raise ArgumentError
+        end
 
         part_patterns = [specific_part(@buffer), wildcard, wildcard]
         refined_part = casee.part_cycles.first.start_with(@buffer).parts[refinement_index + 1]
@@ -108,7 +121,10 @@ module CubeTrainer
       end
 
       def self.from_raw_data_parts(raw_data)
-        raise ArgumentError, "expected 2 parts, got #{raw_data.join(', ')}" unless raw_data.length == 2
+        unless raw_data.length == 2
+          raise ArgumentError,
+                "expected 2 parts, got #{raw_data.join(', ')}"
+        end
 
         part_type = TwistyPuzzles::PART_TYPES.find { |t| simple_class_name(t) == raw_data[0] }
         raise ArgumentError unless part_type
@@ -126,8 +142,10 @@ module CubeTrainer
 
     class ConcreteCaseSet
       CONCRETE_CASE_SET_CLASSES = [BufferedThreeCycleSet].freeze
+      # rubocop:disable Rails/IndexBy
       CONCRETE_CASE_SET_NAME_TO_CLASS =
         CONCRETE_CASE_SET_CLASSES.map { |e| [simple_class_name(e), e] }.to_h.freeze
+      # rubocop:enable Rails/IndexBy
     end
   end
 end

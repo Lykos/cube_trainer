@@ -22,7 +22,7 @@ class AlgSet < ApplicationRecord
   def to_simple
     {
       id: id,
-      owner: alg_spreadsheet.owner,
+      owner: alg_spreadsheet.owner
     }
   end
 
