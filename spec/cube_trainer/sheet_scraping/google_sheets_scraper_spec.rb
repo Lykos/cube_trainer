@@ -74,7 +74,7 @@ describe CubeTrainer::SheetScraping::GoogleSheetsScraper do
     factory
   end
 
-  it 'parses a sheet correctly' do
+  it 'parses a sheet correctly', focus: true do
     alg_spreadsheet
     counters = described_class.new(
       credentials_factory: credentials_factory,

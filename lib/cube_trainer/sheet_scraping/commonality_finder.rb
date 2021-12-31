@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
+require 'cube_trainer/training/case_set'
 
 module CubeTrainer
   # Helper class that figures out what rows and columns of a commutator table have in common and
@@ -8,88 +9,80 @@ module CubeTrainer
   class CommonalityFinder
     # Represents the chosen way to interpret a table of commutators.
     class TableInterpretation
-      def initialize(
-        buffer,
-        row_axis_interpretation, column_axis_interpretation,
-        row_interpretations, column_interpretations
-      )
-        unless [
-          row_axis_interpretation,
-          column_axis_interpretation
-        ].sort == AXIS_INTERPRETATIONS.first
-          raise ArgumentError
-        end
-
-        @buffer = buffer
-        @flip_parts = AXIS_INTERPRETATIONS[1] == [
-          row_axis_interpretation,
-          column_axis_interpretation
-        ]
+      def initialize(case_set, row_interpretations, column_interpretations)
+        @case_set = case_set
         @row_interpretations = row_interpretations
         @column_interpretations = column_interpretations
       end
 
-      attr_reader :buffer
-
-      def part_type
-        @buffer.class
+      def cube_size
+        # TODO
+        3
       end
 
-      def part_cycle(row_index, col_index)
+      attr_reader :case_set
+
+      def maybe_pattern(row_index, col_index)
+        return unless @case_set
+
         row_interpretation = @row_interpretations[row_index]
         column_interpretation = @column_interpretations[col_index]
         return unless row_interpretation && column_interpretation
 
-        part_cycle = TwistyPuzzles::PartCycle.new(
-          [
-            @buffer, row_interpretation,
-            column_interpretation
-          ]
-        )
-        @flip_parts ? part_cycle.inverse : part_cycle
+        row_interpretation & column_interpretation
       end
     end
 
-    AXIS_INTERPRETATIONS = [0, 1].permutation.to_a.map(&:freeze).freeze
-    EMPTY_INTERPRETATION = TableInterpretation.new(nil, 0, 1, [].freeze, [].freeze)
+    EMPTY_INTERPRETATION = TableInterpretation.new(nil, [].freeze, [].freeze)
 
-    # Table should be a 2D array where the entries have a method called maybe_part_cycle that
-    # returns a part pair of length 2 or nil.
-    def self.interpret_table(table, forced_buffer = nil)
-      found_buffer = find_buffer(table)
-      return EMPTY_INTERPRETATION unless found_buffer
+    # Table should be a 2D array where the entries have a method called maybe_case that
+    # returns a case.
+    def self.interpret_table(table)
+      case_set = find_case_set(table)
+      return EMPTY_INTERPRETATION unless case_set
 
-      interpret_table_with_buffer(table, forced_buffer || found_buffer)
+      interpret_table_with_case_set(table, case_set)
     end
 
-    def self.interpret_table_with_buffer(table, buffer)
+    def self.interpret_table_with_case_set(table, case_set)
       transposed_table = table.transpose
       table_interpretations =
-        AXIS_INTERPRETATIONS.map do |row_axis_interpretation, column_axis_interpretation|
-          row_interpretations = find_row_interpretations(table, buffer, row_axis_interpretation)
+        [true, false].map do |flip_axes|
+          row_interpretations = find_row_interpretations(table, case_set, flip_axes ? 0 : 1)
           column_interpretations =
-            find_row_interpretations(transposed_table, buffer, column_axis_interpretation)
+            find_row_interpretations(transposed_table, case_set, flip_axes ? 1 : 0)
+          row_interpretations, column_interpretations = column_interpretations, row_interpretations if flip_axes
           TableInterpretation.new(
-            buffer,
-            row_axis_interpretation, column_axis_interpretation,
+            case_set,
             row_interpretations, column_interpretations
           )
         end
       best_interpretation(table_interpretations, table)
     end
 
-    def self.find_buffer(table)
-      part_frequencies = new_counter_hash
+    def self.find_case_set(table)
+      case_set_frequencies = new_counter_hash
       table.map do |row|
         row.map do |cell|
-          count_cell_min_parts(cell, part_frequencies)
+          count_cell_case_sets(cell, case_set_frequencies)
         end
       end
-      part_frequencies.max_by { |_p, v| v }&.first
+      case_set_frequencies.max_by { |_p, v| v }&.first
     end
 
-    def self.count_cell_min_parts(cell, part_frequencies)
-      cell.maybe_part_cycle&.parts&.each { |p| part_frequencies[p.rotations.min] += 1 }
+    def self.count_cell_case_sets(cell, case_set_frequencies)
+      casee = cell.maybe_case
+      return unless casee
+
+      relevant_case_sets(casee).each { |p| case_set_frequencies[p] += 1 }
+    end
+
+    def self.relevant_case_sets(casee)
+      relevant_top_level_case_sets(casee).flat_map { |case_set| case_set.fixed_parts_refinements(casee) }
+    end
+
+    def self.relevant_top_level_case_sets(casee)
+      Training::CASE_SETS.select { |p| p.match?(casee) }
     end
 
     def self.best_interpretation(table_interpretations, table)
@@ -99,24 +92,24 @@ module CubeTrainer
     def self.interpretation_score(table_interpretation, table)
       table.map.with_index do |row, row_index|
         row.map.with_index do |cell, col_index|
-          cell_part_cycle = cell.maybe_part_cycle
-          interpretation_part_cycle = table_interpretation.part_cycle(row_index, col_index)
-          present_and_equivalent?(cell_part_cycle, interpretation_part_cycle) ? 1 : 0
+          interpretation_pattern = table_interpretation.maybe_pattern(row_index, col_index)
+          cell_case = cell.maybe_case
+          present_and_match?(interpretation_pattern, cell_case) ? 1 : 0
         end.sum
       end.sum
     end
 
-    def self.present_and_equivalent?(cell_part_cycle, interpretation_part_cycle)
-      cell_part_cycle &&
-        interpretation_part_cycle &&
-        cell_part_cycle.equivalent?(interpretation_part_cycle)
+    def self.present_and_match?(interpretation_pattern, cell_case)
+      interpretation_pattern &&
+        cell_case &&
+        interpretation_pattern.match?(cell_case)
     end
 
     # Note that this is also used for columns (by using the transposed table)
-    def self.find_row_interpretations(rows, buffer, axis_interpretation)
+    def self.find_row_interpretations(rows, case_set, axis_interpretation)
       row_interpretations =
         rows.map do |row|
-          find_row_interpretation(row, buffer, axis_interpretation)
+          find_row_interpretation(row, case_set, axis_interpretation)
         end
       # Only allow row interpretations that appear exactly once.
       counts = new_counter_hash
@@ -130,18 +123,17 @@ module CubeTrainer
       counts
     end
 
-    def self.relevant_part_cycles(row, buffer)
-      row.filter_map(&:maybe_part_cycle).filter { |e| e.contains?(buffer) }
+    def self.relevant_cases(row, case_set)
+      row.filter_map(&:maybe_case).filter { |e| case_set.match?(e) }
     end
 
     # Note that this is also used for columns (by using the transposed table)
-    def self.find_row_interpretation(row, buffer, axis_interpretation)
-      parts =
-        relevant_part_cycles(row, buffer).map do |e|
-          e.start_with(buffer).parts[axis_interpretation + 1]
-        end
+    def self.find_row_interpretation(row, case_set, axis_interpretation)
       counts = new_counter_hash
-      parts.each { |l| counts[l] += 1 }
+      relevant_cases(row, case_set).each do |e|
+        pattern = case_set.row_pattern(axis_interpretation, e)
+        counts[pattern] += 1
+      end
       max_count = counts.values.max
       keys = counts.select { |_k, v| v == max_count }.keys
       keys.length == 1 ? keys.first : nil

@@ -3,6 +3,7 @@
 require_relative 'case_reverse_engineer'
 require_relative 'case_checker'
 require_relative 'commonality_finder'
+require 'cube_trainer/training/case_pattern'
 require 'twisty_puzzles'
 
 module CubeTrainer
@@ -14,16 +15,15 @@ module CubeTrainer
       # Eventually gets mapped into an AlgSet model and
       # its Alg submodels after some postprocessing.
       class AlgSet
-        def initialize(part_type:, buffer:, algs:, checker:)
-          @part_type = part_type
-          @buffer = buffer
+        def initialize(case_set:, algs:, checker:)
+          @case_set = case_set
           @algs = algs
           @fixes = checker.fixes
           @num_unfixable = checker.unfixable_algs
           @num_unparseable = checker.error_algs
         end
 
-        attr_reader :part_type, :buffer, :algs, :fixes, :num_unfixable, :num_unparseable
+        attr_reader :case_set, :algs, :fixes, :num_unfixable, :num_unparseable
       end
 
       def self.extract_alg_set(table)
@@ -35,13 +35,12 @@ module CubeTrainer
         alg_table = parse_alg_table(add_nils_to_table(table.values))
 
         # Now figure out whether rows are the first piece or the second piece.
-        interpretation = CommonalityFinder.interpret_table(alg_table, @buffer)
-        return unless interpretation.buffer
+        interpretation = CommonalityFinder.interpret_table(alg_table)
+        return unless interpretation.case_set
 
         # Now check everything and construct the alg table.
         Rails.logger.info "Sheet #{table.sheet_info.title} is for " \
-                          "#{interpretation.part_type.name.split('::').last.downcase}s " \
-                          "with buffer #{interpretation.buffer}"
+                          "alg set #{interpretation.case_set}"
         extract_alg_set_for_interpretation(table.sheet_info, alg_table, interpretation)
       end
 
@@ -51,16 +50,16 @@ module CubeTrainer
 
       # Represents one location in a spreadsheet with all kind of indexing metadata.
       class CellDescription
-        def initialize(name, row_index, column_index, part_cycle)
-          raise TypeError unless part_cycle.nil? || part_cycle.is_a?(TwistyPuzzles::PartCycle)
+        def initialize(name, row_index, column_index, pattern)
+          raise TypeError unless pattern.nil? || pattern.is_a?(Training::CasePattern)
 
           @name = name
           @row_index = row_index
           @column_index = column_index
-          @part_cycle = part_cycle
+          @pattern = pattern
         end
 
-        attr_reader :name, :row_index, :column_index, :part_cycle
+        attr_reader :name, :row_index, :column_index, :pattern
 
         COLUMN_NAMES = ('A'..'Z').to_a
 
@@ -69,24 +68,24 @@ module CubeTrainer
         end
 
         def to_s
-          part_cycle_suffix = @part_cycle ? " #{@part_cycle}" : ''
-          "#{@name}#{part_cycle_suffix} at #{spreadsheet_index}"
+          pattern_suffix = @pattern ? " #{@pattern}" : ''
+          "#{@name}#{pattern_suffix} at #{spreadsheet_index}"
         end
       end
 
       # Represents an empty entry in a commutator table.
       class EmptyEntry
-        def self.maybe_part_cycle; end
+        def self.maybe_case; end
       end
 
       # Represents an entry with an alg in a commutator table.
       class AlgEntry
-        def initialize(part_cycle, algorithm)
-          @maybe_part_cycle = part_cycle
+        def initialize(casee, algorithm)
+          @maybe_case = casee
           @algorithm = algorithm
         end
 
-        attr_reader :algorithm, :maybe_part_cycle
+        attr_reader :algorithm, :maybe_case
       end
 
       # Represents an erroneous entry in a commutator table.
@@ -97,13 +96,12 @@ module CubeTrainer
 
         attr_reader :error_message
 
-        def maybe_part_cycle; end
+        def maybe_case; end
       end
 
       def create_checker(interpretation)
-        cube_size = interpretation.part_type.exists_on_cube_size?(3) ? 3 : 5
         CaseChecker.new(
-          cube_size: cube_size,
+          cube_size: interpretation.cube_size,
           verbose: true,
           find_fixes: true
         )
@@ -115,8 +113,7 @@ module CubeTrainer
         log_final_report
 
         AlgSet.new(
-          part_type: interpretation.part_type,
-          buffer: interpretation.buffer,
+          case_set: interpretation.case_set,
           algs: algs,
           checker: @checker
         )
@@ -152,19 +149,12 @@ module CubeTrainer
       def process_algorithm_cell(hints, cell_description, cell)
         commutator = cell.algorithm
         check_result = @checker.check_alg(cell_description, commutator)
-        hints[cell_description.part_cycle] = commutator if check_result.result == :correct
-      end
-
-      def diagonal_cycle?(part_cycle)
-        part_cycle.length == 3 &&
-          part_cycle.parts[1].turned_equals?(part_cycle.parts[2])
+        hints[check_result.casee] = commutator if check_result.correct?
       end
 
       def process_alg_table_cell(hints, cell_description, cell)
-        if cell_description.part_cycle.nil?
+        if cell_description.pattern.nil?
           process_outside_cell(cell_description, cell)
-        elsif diagonal_cycle?(cell_description.part_cycle)
-          process_diagonal_cell(cell_description, cell)
         elsif cell.is_a?(ErrorEntry)
           process_error_cell(cell_description, cell)
         elsif cell.is_a?(AlgEntry)
@@ -176,10 +166,10 @@ module CubeTrainer
         hints = {}
         alg_table.each_with_index do |row, row_index|
           row.each_with_index do |cell, col_index|
-            part_cycle = interpretation.part_cycle(row_index, col_index)
+            pattern = interpretation.maybe_pattern(row_index, col_index)
             cell_description = CellDescription.new(
               sheet_info.title, row_index, col_index,
-              part_cycle
+              pattern
             )
             process_alg_table_cell(hints, cell_description, cell)
           end
@@ -218,27 +208,21 @@ module CubeTrainer
         BLACKLIST.include?(value.downcase)
       end
 
-      def maybe_part_cycle(algorithm)
+      def maybe_case(algorithm)
         casee = reverse_engineer.find_case(algorithm)
-        return casee.part_cycles.first if casee.part_cycles.length == 1
+        return casee if casee.part_cycles.length == 1
 
         casee = big_cube_reverse_engineer.find_case(algorithm)
-        return casee.part_cycles.first if casee.part_cycles.length == 1
+        return casee if casee.part_cycles.length == 1
 
         # If we have one wing cycle, we ignore that it's not center safe and
         # some equivalent centers get swapped.
         wing_cycles = casee.part_cycles.select { |c| c.part_type == TwistyPuzzles::Wing }
         if wing_cycles.length == 1
           other_cycles = casee.part_cycles - wing_cycles
-          return wing_cycles[0] if other_cycles.all? { |c| equivalent_center_cycle?(c) }
+          return Case.new(part_cycles: wing_cycles) if other_cycles.all? { |c| equivalent_center_cycle?(c) }
         end
         nil
-      end
-
-      def equivalent_center_cycle?(part_cycle)
-        part_cycle.part_type.is_a?(TwistyPuzzles::MoveableCenter) && part_cycle.parts.all? do |p|
-          p.face_symbol == part_cycle.first.face_symbol
-        end
       end
 
       def parse_table_cell(cell)
@@ -251,7 +235,7 @@ module CubeTrainer
         # types.
         return EmptyEntry if alg.algorithm.length <= 3
 
-        AlgEntry.new(maybe_part_cycle(alg.algorithm), alg)
+        AlgEntry.new(maybe_case(alg.algorithm), alg)
       rescue TwistyPuzzles::CommutatorParseError => e
         ErrorEntry.new("Couldn't parse commutator: #{e}")
       end

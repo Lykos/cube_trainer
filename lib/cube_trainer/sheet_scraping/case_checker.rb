@@ -12,12 +12,12 @@ module CubeTrainer
 
     # Represents one case where we found a fixed algorithm.
     class Fix
-      def initialize(cell_description, fixed_algorithm)
-        @cell_description = cell_description
+      def initialize(casee, fixed_algorithm)
+        @casee = casee
         @fixed_algorithm = fixed_algorithm
       end
 
-      attr_reader :cell_description, :fixed_algorithm
+      attr_reader :casee, :fixed_algorithm
     end
 
     def initialize(
@@ -69,7 +69,7 @@ module CubeTrainer
       "Parsed #{@total_algs} algs."
     end
 
-    def handle_incorrect(cell_description, commutator, alg, part_cycle)
+    def handle_incorrect(cell_description, commutator, alg)
       if @verbose
         Rails.logger.warn "Algorithm for #{cell_description} #{commutator} " \
                           "doesn't do what it's expected to do."
@@ -78,10 +78,10 @@ module CubeTrainer
 
       # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
       if @find_fixes
-        if (fix = find_fix(commutator, part_cycle))
-          fixes.push(Fix.new(cell_description, fix))
-          Rails.logger.info "Found fix #{fix}." if @verbose
-          return CheckAlgResult.new(:fix_found, fix)
+        if (fix = find_fix(commutator, cell_description.pattern))
+          fixes.push(fix)
+          Rails.logger.info "For #{cell_description} found fix #{fix}." if @verbose
+          return CheckAlgResult.new(:fix_found, casee: fix.casee, fix: fix)
         else
           handle_unfixable_alg(alg)
         end
@@ -95,30 +95,34 @@ module CubeTrainer
     # * incorrect and we have a fix
     # * incorrect and we have no fix
     class CheckAlgResult
-      def initialize(result, fix = nil)
+      def initialize(result, fix: nil, casee: nil)
         @result = result
         @fix = fix
+        @casee = casee
       end
 
-      CORRECT = CheckAlgResult.new(:correct)
+      def correct?
+        @result == :correct
+      end
+
       UNFIXABLE = CheckAlgResult.new(:unfixable)
 
-      attr_reader :result, :fix
+      attr_reader :result, :casee, :fix
     end
 
-    def alg_solves_case(alg, part_cycle)
-      part_cycles = @reverse_engineer.find_case(alg).part_cycles
-      part_cycles.length == 1 && part_cycles.first.equivalent?(part_cycle)
+    # Returns the case if the alg solves the pattern and nil otherwise
+    def alg_case_for_pattern(alg, pattern)
+      casee = @reverse_engineer.find_case(alg)
+      pattern.match?(casee) ? casee : nil
     end
 
     def check_alg(cell_description, commutator)
-      part_cycle = cell_description.part_cycle
       alg = commutator.algorithm
       @total_algs += 1
-      if alg_solves_case(alg, cell_description.part_cycle)
-        CheckAlgResult::CORRECT
+      if casee = alg_case_for_pattern(alg, cell_description.pattern)
+        CheckAlgResult.new(:correct, casee: casee)
       else
-        handle_incorrect(cell_description, commutator, alg, part_cycle)
+        handle_incorrect(cell_description, commutator, alg)
       end
     end
 
@@ -126,10 +130,12 @@ module CubeTrainer
 
     include AlgModificationsHelper
 
-    def find_fix(commutator, part_cycle)
+    def find_fix(commutator, pattern)
       commutator_modifications(commutator).each do |fix|
         fix_alg = fix.algorithm
-        return fix if alg_solves_case(fix_alg, part_cycle)
+        if casee = alg_case_for_pattern(fix_alg, pattern)
+          Fix.new(casee, fix)
+        end
       end
       nil
     end
