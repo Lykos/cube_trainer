@@ -15,7 +15,7 @@ class Case
 
   # if `ignore_same_face_center_cycles` is set,
   # center cycles that stay on the same face are ignored for comparison.
-  def equivalent?(other, ignore_same_face_center_cycles: true)
+  def equivalent?(other, ignore_same_face_center_cycles: false)
     ignore = ignore_same_face_center_cycles
     canonicalize(ignore_same_face_center_cycles: ignore).part_cycles ==
       other.canonicalize(ignore_same_face_center_cycles: ignore).part_cycles

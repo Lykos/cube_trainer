@@ -57,6 +57,12 @@ Rails/Output:
 Rails/Exit:
   # TODO: Enable
   Enabled: false
+Rails/Delegate:
+  Exclude:
+  - 'lib/**/*.rb'
+Rails/IndexBy:
+  Exclude:
+  - 'lib/**/*.rb'
 Style/AutoResourceCleanup:
   Enabled: true
 Style/CollectionMethods:

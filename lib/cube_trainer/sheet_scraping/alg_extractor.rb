@@ -75,17 +75,21 @@ module CubeTrainer
 
       # Represents an empty entry in a commutator table.
       class EmptyEntry
-        def self.maybe_case; end
+        def self.maybe_case(_cube_size); end
       end
 
       # Represents an entry with an alg in a commutator table.
       class AlgEntry
-        def initialize(casee, algorithm)
-          @maybe_case = casee
+        def initialize(cases, algorithm)
+          @maybe_cases = cases
           @algorithm = algorithm
         end
 
-        attr_reader :algorithm, :maybe_case
+        attr_reader :algorithm, :maybe_cases
+
+        def maybe_case(cube_size)
+          @maybe_cases[cube_size]
+        end
       end
 
       # Represents an erroneous entry in a commutator table.
@@ -96,7 +100,7 @@ module CubeTrainer
 
         attr_reader :error_message
 
-        def maybe_case; end
+        def maybe_case(_cube_size); end
       end
 
       def create_checker(interpretation)
@@ -208,24 +212,14 @@ module CubeTrainer
         BLACKLIST.include?(value.downcase)
       end
 
-      def maybe_case(algorithm)
-        casee = reverse_engineer.find_case(algorithm)
-        return casee if casee.part_cycles.length == 1
-
-        casee = big_cube_reverse_engineer.find_case(algorithm)
-        return casee if casee.part_cycles.length == 1
-
-        # If we have one wing cycle, we ignore that it's not center safe and
-        # some equivalent centers get swapped.
-        wing_cycles = casee.part_cycles.select { |c| c.part_type == TwistyPuzzles::Wing }
-        if wing_cycles.length == 1
-          other_cycles = casee.part_cycles - wing_cycles
-          return Case.new(part_cycles: wing_cycles) if other_cycles.all? do |c|
-                                                         equivalent_center_cycle?(c)
-                                                       end
-        end
-        nil
+      # rubocop:disable Metrics/AbcSize
+      def maybe_cases(algorithm)
+        cases = {}
+        cases[3] = reverse_engineer.find_case(algorithm)
+        cases[5] = big_cube_reverse_engineer.find_case(algorithm)
+        cases
       end
+      # rubocop:enable Metrics/AbcSize
 
       def parse_table_cell(cell)
         return EmptyEntry if cell.blank? || blacklisted?(cell)
@@ -237,7 +231,7 @@ module CubeTrainer
         # types.
         return EmptyEntry if alg.algorithm.length <= 3
 
-        AlgEntry.new(maybe_case(alg.algorithm), alg)
+        AlgEntry.new(maybe_cases(alg.algorithm), alg)
       rescue TwistyPuzzles::CommutatorParseError => e
         ErrorEntry.new("Couldn't parse commutator: #{e}")
       end

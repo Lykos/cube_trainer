@@ -10,11 +10,9 @@ module CubeTrainer
     module CaseSetHelper
       include CasePatternDsl
 
-      # rubocop:disable Rails/Delegate
       def match?(casee)
         pattern.match?(casee)
       end
-      # rubocop:enable Rails/Delegate
 
       def eql?(other)
         self.class.equal?(other.class) && pattern == other.pattern
@@ -144,10 +142,8 @@ module CubeTrainer
 
     class ConcreteCaseSet
       CONCRETE_CASE_SET_CLASSES = [BufferedThreeCycleSet].freeze
-      # rubocop:disable Rails/IndexBy
       CONCRETE_CASE_SET_NAME_TO_CLASS =
         CONCRETE_CASE_SET_CLASSES.to_h { |e| [simple_class_name(e), e] }.freeze
-      # rubocop:enable Rails/IndexBy
     end
   end
 end

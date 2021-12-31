@@ -47,13 +47,9 @@ module AlgLike
 
   def validate_case
     return unless casee
+    return if owning_set.case_set.match?(casee)
 
-    unless owning_set.case_set.match?(casee)
-      errors.add(
-        :casee,
-        'does not belong to the case set of the alg set'
-      )
-    end
+    errors.add(:casee, 'does not belong to the case set of the alg set')
   end
 
   def commutator_or_nil

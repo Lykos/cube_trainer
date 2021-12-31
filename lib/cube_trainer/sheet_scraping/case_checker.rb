@@ -119,7 +119,7 @@ module CubeTrainer
     def check_alg(cell_description, commutator)
       alg = commutator.algorithm
       @total_algs += 1
-      if casee = alg_case_for_pattern(alg, cell_description.pattern)
+      if (casee = alg_case_for_pattern(alg, cell_description.pattern))
         CheckAlgResult.new(:correct, casee: casee)
       else
         handle_incorrect(cell_description, commutator, alg)
@@ -133,7 +133,7 @@ module CubeTrainer
     def find_fix(commutator, pattern)
       commutator_modifications(commutator).each do |fix|
         fix_alg = fix.algorithm
-        if casee = alg_case_for_pattern(fix_alg, pattern)
+        if (casee = alg_case_for_pattern(fix_alg, pattern))
           return Fix.new(casee, fix)
         end
       end
