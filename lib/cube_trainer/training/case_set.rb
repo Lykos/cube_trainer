@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'case_pattern'
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
@@ -144,7 +146,7 @@ module CubeTrainer
       CONCRETE_CASE_SET_CLASSES = [BufferedThreeCycleSet].freeze
       # rubocop:disable Rails/IndexBy
       CONCRETE_CASE_SET_NAME_TO_CLASS =
-        CONCRETE_CASE_SET_CLASSES.map { |e| [simple_class_name(e), e] }.to_h.freeze
+        CONCRETE_CASE_SET_CLASSES.to_h { |e| [simple_class_name(e), e] }.freeze
       # rubocop:enable Rails/IndexBy
     end
   end

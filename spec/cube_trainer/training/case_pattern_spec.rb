@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/training/case_pattern'
 require 'rails_helper'
 require 'twisty_puzzles'
@@ -26,9 +28,9 @@ describe Training::CasePattern do
   let(:fur_pattern) { Training::CasePattern::SpecificPart.new(fur) }
   let(:corner_cycle_pattern) { Training::CasePattern::PartCyclePattern.new(TwistyPuzzles::Corner, [ufr_pattern, wildcard, wildcard]) }
   let(:equivalent_corner_cycle_pattern) { Training::CasePattern::PartCyclePattern.new(TwistyPuzzles::Corner, [wildcard, fur_pattern, wildcard]) }
-  let(:case_pattern) { Training::CasePattern.new([edge_cycle_pattern, corner_cycle_pattern]) }
-  let(:equivalent_case_pattern) { Training::CasePattern.new([equivalent_corner_cycle_pattern, equivalent_edge_cycle_pattern]) }
-  let(:other_case_pattern) { Training::CasePattern.new([other_edge_cycle_pattern, corner_cycle_pattern]) }
+  let(:case_pattern) { described_class.new([edge_cycle_pattern, corner_cycle_pattern]) }
+  let(:equivalent_case_pattern) { described_class.new([equivalent_corner_cycle_pattern, equivalent_edge_cycle_pattern]) }
+  let(:other_case_pattern) { described_class.new([other_edge_cycle_pattern, corner_cycle_pattern]) }
   let(:casee) { Case.new(part_cycles: [edge_cycle, corner_cycle]) }
   let(:other_case) { Case.new(part_cycles: [other_edge_cycle, corner_cycle]) }
 
@@ -69,7 +71,7 @@ describe Training::CasePattern do
       expect(equivalent_case_pattern.match?(casee)).to be(true)
     end
 
-    it 'matches a fitting case' do
+    it 'does not match a non-fitting case' do
       expect(case_pattern.match?(other_case)).to be(false)
     end
   end

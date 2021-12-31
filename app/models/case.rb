@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'twisty_puzzles'
 
 # Represents case that we train to get better on, e.g. one 3-cycle, one parity case,
@@ -54,7 +56,7 @@ class Case
   end
 
   def validate_twists
-    twisted_part_types = twist_counts.select { |_k, v| v > 0 }.keys
+    twisted_part_types = twist_counts.select { |_k, v| v.positive? }.keys
     return if twisted_part_types.empty?
 
     errors.add(:part_cycles, "twists parts don't sum up to 0 for #{twisted_part_types.join(', ')}")

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'cube_trainer/training/case_set'
 
 # Active record type for a case, e.g. one 3-cycle, one parity case,
