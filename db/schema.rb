@@ -36,10 +36,11 @@ ActiveRecord::Schema.define(version: 2022_01_01_100340) do
   create_table "alg_sets", force: :cascade do |t|
     t.bigint "alg_spreadsheet_id", null: false
     t.string "sheet_title", null: false
-    t.string "training_session_type", null: false
+    t.string "training_session_type"
     t.string "buffer"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "case_set"
     t.index ["alg_spreadsheet_id"], name: "index_alg_sets_on_alg_spreadsheet_id"
   end
 
@@ -141,7 +142,6 @@ ActiveRecord::Schema.define(version: 2022_01_01_100340) do
     t.float "memo_time_s"
     t.string "buffer"
     t.integer "alg_set_id"
-    t.string "case_set"
     t.index ["user_id", "name"], name: "index_training_sessions_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_training_sessions_on_user_id"
   end
