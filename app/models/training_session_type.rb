@@ -119,7 +119,11 @@ class TrainingSessionType
   end
 
   def alg_sets
-    AlgSet.where(training_session_type: self)
+    return [] unless case_set
+
+    case_set.concretizations.flat_map do |concrete_case_set|
+      AlgSet.for_concrete_case_set(concrete_case_set)
+    end
   end
 
   def useable_training_sessions(user)

@@ -38,6 +38,10 @@ module CubeTrainer
       def fixed_parts_refinements(casee)
         raise NotImplementedError
       end
+
+      def concretizations
+        raise NotImplementedError
+      end
     end
 
     # A concrete case set like edge 3-cycles for buffer UF.
@@ -76,6 +80,22 @@ module CubeTrainer
       def concretization_of?(case_set)
         case_set.is_a?(ThreeCycleSet) && case_set.part_type == @part_type
       end
+
+      # Stricter version of `match?` that doesn't necessarily match equivalent cases.
+      # E.g. for 3 cycles, this only matches cases that start with the right buffer
+      # and doesn't match 
+      def strict_match?(casee)
+        raise NotImplementedError
+      end
+
+      # Creates an equivalent case that fulfills `strict_match?`.
+      def create_strict_matching(casee)
+        raise NotImplementedError
+      end
+
+      def default_cube_size
+        raise NotImplementedError
+      end
     end
 
     # An alg set with all 3 cycles of a given part type.
@@ -96,7 +116,15 @@ module CubeTrainer
         return [] unless casee.part_cycles.length == 1 && casee.part_cycles.first.length == 3
 
         buffers = casee.part_cycles.first.parts.map { |p| p.rotations.min }
-        buffers.map { |b| BufferedThreeCycleSet.new(@part_type, b) }
+        buffers.map { |b| concretization(b) }
+      end
+
+      def concretizations
+        @part_type::ELEMENTS.map { |b| concretization(b) }
+      end
+
+      def concretization(part)
+        BufferedThreeCycleSet.new(@part_type, b)
       end
     end
 
@@ -148,12 +176,32 @@ module CubeTrainer
         [simple_class_name(@part_type), @buffer.to_s]
       end
 
+      def strict_match?(casee)
+        return false unless casee.part_cycles.length == 1
+        return false unless casee.part_cycles.first.length == 3
+        return false unless casee.part_cycles.first.part_type == @part_type
+        return false unless match?(casee)
+
+        casee.part_cycles.first.parts.first == @buffer
+      end
+
+      def create_strict_matching(casee)
+        raise ArgumentError unless match?(casee)
+
+        Case.new(part_cycles: [casee.part_cycles.first.start_with(@buffer)])
+      end
+
       def case_name(casee, letter_scheme: nil)
         raise ArgumentError unless casee.part_cycles.length == 1
         raise ArgumentError unless casee.part_cycles.first.length == 3
 
         parts = casee.part_cycles.first.parts[1..2]
-        letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
+        name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
+        name_parts.join(' ')
+      end
+
+      def default_cube_size
+        @part_type.min_cube_size
       end
 
       private

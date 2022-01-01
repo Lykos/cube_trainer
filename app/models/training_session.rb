@@ -79,7 +79,7 @@ class TrainingSession < ApplicationRecord
   end
 
   def case_name(casee)
-    return case_set.case_name(casee, letter_scheme: user.letter_scheme) unless user.letter_scheme
+    case_set.case_name(casee, letter_scheme: user.letter_scheme)
   end
 
   def picture

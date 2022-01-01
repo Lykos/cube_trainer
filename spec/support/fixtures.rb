@@ -131,14 +131,16 @@ end
 
 shared_context 'with letter scheme' do
   include_context 'with user abc'
+  include_context 'with edges'
 
   let(:letter_scheme) do
     letter_scheme = LetterScheme.find_or_initialize_by(
       user: user
     )
-    part = TwistyPuzzles::Edge.for_face_symbols(%i[U F])
-    letter_scheme.mappings.new(part: part, letter: 'a')
     letter_scheme.save!
+    letter_scheme.mappings.create!(part: uf, letter: 'A')
+    letter_scheme.mappings.create!(part: ub, letter: 'D')
+    letter_scheme.mappings.create!(part: df, letter: 'U')
     letter_scheme
   end
 end
@@ -176,6 +178,7 @@ end
 
 shared_context 'with alg override' do
   include_context 'with training session'
+  include_context 'with case'
 
   let(:alg_override) do
     training_session.alg_overrides.find_or_create_by!(

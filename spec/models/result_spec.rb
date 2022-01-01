@@ -43,14 +43,26 @@ RSpec.describe Result, type: :model do
   describe '#to_dump' do
     it 'returns a simple hash' do
       result = training_session.results.new(casee: casee, time_s: 10)
-      expect(result.to_dump).to include(case_key: 'A B', time_s: 10, success: true)
+      expect(result.to_dump).to include(case_key: 'Edge(UF DF UB)', time_s: 10, success: true)
     end
   end
 
   describe '#to_simple' do
-    it 'returns a simple hash' do
-      result = training_session.results.new(casee: casee, time_s: 10)
-      expect(result.to_simple).to include(case_key: 'Edge(UF DF UB)', time_s: 10, success: true)
+    subject(:result) { training_session.results.new(casee: casee, time_s: 10) }
+
+    context 'if no letter scheme is defined' do
+      it 'returns a simple hash with no letter scheme applied' do
+        expect(result.to_simple).to include(case_key: 'Edge(UF DF UB)', case_name: 'DF UB', time_s: 10, success: true)
+      end
+    end
+
+    context 'if a letter scheme is defined' do
+      include_context 'with letter scheme'
+
+      it 'returns a simple hash with the letter scheme applied' do
+        letter_scheme
+        expect(result.to_simple).to include(case_key: 'Edge(UF DF UB)', case_name: 'U D', time_s: 10, success: true)
+      end
     end
   end
 

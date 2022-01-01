@@ -18,7 +18,12 @@ module CubeTrainer
         def initialize(case_set:, algs:, checker:)
           @case_set = case_set
           @algs = algs
-          @fixes = checker.fixes
+          @fixes = checker.fixes.map do |fix|
+            casee = case_set.create_strict_matching(fix.casee)
+            raise unless case_set.strict_match?(casee)
+
+            fix.with_case(casee)
+          end
           @num_unfixable = checker.unfixable_algs
           @num_unparseable = checker.error_algs
         end
@@ -150,19 +155,24 @@ module CubeTrainer
                           "#{cell.error_message}."
       end
 
-      def process_algorithm_cell(hints, cell_description, cell)
+      def process_algorithm_cell(hints, cell_description, cell, case_set)
         commutator = cell.algorithm
         check_result = @checker.check_alg(cell_description, commutator)
-        hints[check_result.casee] = commutator if check_result.correct?
+        return unless check_result.correct?
+
+        casee = case_set.create_strict_matching(check_result.casee)
+        raise unless case_set.strict_match?(casee)
+
+        hints[casee] = commutator
       end
 
-      def process_alg_table_cell(hints, cell_description, cell)
+      def process_alg_table_cell(hints, cell_description, cell, case_set)
         if cell_description.pattern.nil?
           process_outside_cell(cell_description, cell)
         elsif cell.is_a?(ErrorEntry)
           process_error_cell(cell_description, cell)
         elsif cell.is_a?(AlgEntry)
-          process_algorithm_cell(hints, cell_description, cell)
+          process_algorithm_cell(hints, cell_description, cell, case_set)
         end
       end
 
@@ -175,7 +185,7 @@ module CubeTrainer
               sheet_info.title, row_index, col_index,
               pattern
             )
-            process_alg_table_cell(hints, cell_description, cell)
+            process_alg_table_cell(hints, cell_description, cell, interpretation.case_set)
           end
         end
         hints

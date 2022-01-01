@@ -66,9 +66,12 @@ class ResultsController < ApplicationController
   end
 
   def result_params
-    params.require(:result).permit(
+    fixed_params = params.require(:result).permit(
       :case_key, :time_s, :failed_attempts, :word, :success,
       :num_hints
     )
+    fixed_params[:casee] = CaseType.new.cast(fixed_params[:case_key])
+    fixed_params.delete(:case_key)
+    fixed_params
   end
 end

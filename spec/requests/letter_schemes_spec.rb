@@ -30,20 +30,20 @@ RSpec.describe 'LetterSchemes', type: :request do
     it 'returns http success' do
       post '/api/letter_scheme', headers: eve_headers, params: {
         letter_scheme: {
-          mappings: [{ part: { key: 'Edge:UB' }, letter: 'd' }]
+          mappings: [{ part: { key: 'Edge:UB' }, letter: 'D' }]
         }
       }
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).not_to eq(letter_scheme.id)
-      expect(LetterScheme.find(parsed_body['id']).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U B]))).to eq('d')
+      expect(LetterScheme.find_by(id: parsed_body['id']).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U B]))).to eq('D')
     end
 
     it 'returns unprocessable entity if the user already has a letter scheme' do
       letter_scheme
       post '/api/letter_scheme', headers: user_headers, params: {
         letter_scheme: {
-          mappings: [{ part: { key: 'Edge:UB' }, letter: 'a' }]
+          mappings: [{ part: { key: 'Edge:UB' }, letter: 'A' }]
         }
       }
       expect(response).to have_http_status(:unprocessable_entity)
@@ -60,26 +60,41 @@ RSpec.describe 'LetterSchemes', type: :request do
   end
 
   describe 'PUT #update' do
-    it 'returns http success' do
+    it 'returns http success for an additional letter' do
       letter_scheme
-      put '/api/letter_scheme', headers: user_headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UB' }, letter: 'd' }] } }
+      put '/api/letter_scheme', headers: user_headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UB' }, letter: 'D' }] } }
       expect(response).to have_http_status(:success)
       letter_scheme.reload
-      expect(letter_scheme.letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('a')
-      expect(letter_scheme.letter(TwistyPuzzles::Edge.for_face_symbols(%i[U B]))).to eq('d')
+      expect(letter_scheme.letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('A')
+      expect(letter_scheme.letter(TwistyPuzzles::Edge.for_face_symbols(%i[U B]))).to eq('D')
+    end
+
+    it 'returns http success for updates to existing letters' do
+      letter_scheme
+      put '/api/letter_scheme', headers: user_headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UF' }, letter: 'D' }] } }
+      expect(response).to have_http_status(:success)
+      letter_scheme.reload
+      expect(letter_scheme.letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('D')
     end
 
     it 'returns unprocessable entity for invalid updates' do
       letter_scheme
       put '/api/letter_scheme', headers: user_headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UB' }, letter: 'long' }] } }
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(LetterScheme.find(letter_scheme.id).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('a')
+      expect(LetterScheme.find(letter_scheme.id).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('A')
+    end
+
+    it 'rolls back valid parts for invalid updates' do
+      letter_scheme
+      put '/api/letter_scheme', headers: user_headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UF' }, letter: 'B' }, { part: { key: 'Edge:UB' }, letter: 'long' }] } }
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(LetterScheme.find(letter_scheme.id).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('A')
     end
 
     it 'returns not found for user with no letter scheme' do
-      put '/api/letter_scheme', headers: eve_headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UB' }, letter: 'd' }] } }
+      put '/api/letter_scheme', headers: eve_headers, params: { letter_scheme: { mappings: [{ part: { key: 'Edge:UF' }, letter: 'D' }] } }
       expect(response).to have_http_status(:not_found)
-      expect(LetterScheme.find(letter_scheme.id).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('a')
+      expect(LetterScheme.find(letter_scheme.id).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))).to eq('A')
     end
   end
 

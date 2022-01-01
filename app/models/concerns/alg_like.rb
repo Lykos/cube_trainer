@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/sheet_scraping/case_checker'
+require 'cube_trainer/training/case_pattern'
 require 'twisty_puzzles'
 
 # Concern for classes that behave like and alg that solves
@@ -18,13 +19,13 @@ module AlgLike
 
   # Cell description that we just make up without having an actual spreadsheet.
   class SyntheticCellDescription
-    def initialize(part_cycle)
-      @part_cycle = part_cycle
+    def initialize(casee)
+      @pattern = CubeTrainer::Training::SpecificCasePattern.new(casee)
     end
 
-    attr_reader :part_cycle
+    attr_reader :pattern
 
-    delegate :to_s, to: :part_cycle
+    delegate :to_s, to: :pattern
   end
 
   def commutator
@@ -53,9 +54,13 @@ module AlgLike
       errors.add(:casee, 'needs to be valid')
       return
     end
-    return if owning_set.case_set.match?(casee)
+    unless owning_set.case_set.match?(casee)
+      errors.add(:casee, 'does not belong to the case set of the alg set')
+      return
+    end
+    return if owning_set.case_set.strict_match?(casee)
 
-    errors.add(:casee, 'does not belong to the case set of the alg set')
+    errors.add(:casee, 'does not have the right form for the case set of the alg set')
   end
 
   def commutator_or_nil
@@ -66,21 +71,22 @@ module AlgLike
 
   def create_checker
     CubeTrainer::CaseChecker.new(
-      cube_size: owning_set.training_session_type.default_cube_size
+      cube_size: owning_set.case_set.default_cube_size
     )
   end
 
   def alg_correct?(comm)
-    create_checker.check_alg(SyntheticCellDescription.new(casee), comm).result == :correct
+    create_checker.check_alg(SyntheticCellDescription.new(casee), comm).correct?
   end
 
-  # TODO: Make this work for other types of alg sets than commutators.
   def validate_alg
-    return unless casee.respond_to?(:part_type)
-    return unless casee.part_type == owning_set.training_session_type.part_type
+    return unless casee.is_a?(Case)
 
     comm = commutator_or_nil
-    errors.add(:alg, 'cannot be parsed as a commutator') && return unless comm
+    unless comm
+      errors.add(:alg, 'cannot be parsed as a commutator')
+      return
+    end
 
     return if alg_correct?(comm)
 

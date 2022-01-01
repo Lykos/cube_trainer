@@ -19,9 +19,10 @@ class Case
     "#{simple_class_name(self.class)}(part_cycles: [#{part_cycles.join(', ')}])"
   end
 
-  # if `ignore_same_face_center_cycles` is set,
-  # center cycles that stay on the same face are ignored for comparison.
-  def equivalent?(other, ignore_same_face_center_cycles: false)
+  # If `ignore_same_face_center_cycles` is set,
+  # center cycles that stay on the same face are ignored for comparison
+  # if there are non-center components.
+  def equivalent?(other, ignore_same_face_center_cycles: true)
     ignore = ignore_same_face_center_cycles
     canonicalize(ignore_same_face_center_cycles: ignore).part_cycles ==
       other.canonicalize(ignore_same_face_center_cycles: ignore).part_cycles
@@ -31,7 +32,7 @@ class Case
     (@canonicalize ||= {})[ignore_same_face_center_cycles] ||=
       begin
         canonicalized_cycles = part_cycles.map(&:canonicalize).sort
-        if ignore_same_face_center_cycles
+        if ignore_same_face_center_cycles && part_cycles.any? { |c| non_center_cycle?(c) }
           canonicalized_cycles.delete_if { |c| equivalent_center_cycle?(c) }
         end
         canonicalized_case = Case.new(part_cycles: canonicalized_cycles)
@@ -111,5 +112,9 @@ class Case
     part_cycle.part_type.is_a?(TwistyPuzzles::MoveableCenter) && part_cycle.parts.all? do |p|
       p.face_symbol == part_cycle.first.face_symbol
     end
+  end
+
+  def non_center_cycle?(part_cycle)
+    !part_cycle.part_type.is_a?(TwistyPuzzles::MoveableCenter)
   end
 end

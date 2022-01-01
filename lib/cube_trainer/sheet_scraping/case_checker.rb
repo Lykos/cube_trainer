@@ -18,6 +18,12 @@ module CubeTrainer
       end
 
       attr_reader :casee, :fixed_algorithm
+
+      def with_case(casee)
+        raise unless @casee.equivalent?(casee)
+
+        Fix.new(casee, @fixed_algorithm)
+      end
     end
 
     def initialize(

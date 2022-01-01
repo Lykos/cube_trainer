@@ -19,7 +19,7 @@ module CubeTrainer
         failed_seconds:,
         cached_cases: []
       )
-        raise TypeError unless cached_cases.all? { |c| c.respond_to?(:case_key) }
+        raise TypeError unless cached_cases.all? { |c| c.respond_to?(:casee) }
 
         @training_session = training_session
         @badness_memory = badness_memory
@@ -34,16 +34,16 @@ module CubeTrainer
 
       # On how many different days the item appeared.
       def occurrence_days(item)
-        occurrence_days_cache[item.case_key]
+        occurrence_days_cache[item.casee]
       end
 
       def occurrences(item)
-        occurrences_cache[item.case_key]
+        occurrences_cache[item.casee]
       end
 
       # Infinite for items that have never occurred or never got a hint.
       def last_hint_age(item)
-        last_hint_age_cache[item.case_key]
+        last_hint_age_cache[item.casee]
       end
 
       def last_hint_days_ago(item)
@@ -51,12 +51,12 @@ module CubeTrainer
       end
 
       def badness_average(item)
-        badness_averages[item.case_key]
+        badness_averages[item.casee]
       end
 
       # Infinite for items that have never occurred.
       def last_occurrence_age(item)
-        last_occurrence_age_cache[item.case_key]
+        last_occurrence_age_cache[item.casee]
       end
 
       def last_occurrence_days_ago(item)
@@ -70,29 +70,29 @@ module CubeTrainer
       # On how many different days the item appeared since the user last used a hint for it.
       def occurrence_days_since_last_hint(item)
         # TODO: Don't recalculate this per item.
-        (@occurrence_days_since_last_hint ||= {})[item.case_key] ||=
+        (@occurrence_days_since_last_hint ||= {})[item.casee] ||=
           calculate_occurrence_days_since_last_hint(item)
       end
 
-      # Returns the case_keys of the last `num_items` results (including cached cases).
-      def last_case_keys(num_items)
+      # Returns the casees of the last `num_items` results (including cached cases).
+      def last_casees(num_items)
         if @max_num_items.nil? || num_items > @max_num_items
           @max_num_items = num_items
-          @last_case_keys =
-            @cached_cases.map(&:case_key) +
-            fetch_last_case_keys(num_items - @cached_cases.length)
+          @last_casees =
+            @cached_cases.map(&:casee) +
+            fetch_last_casees(num_items - @cached_cases.length)
         end
 
-        adjusted_num_items = [num_items, @last_case_keys.length].min
-        @last_case_keys[...adjusted_num_items]
+        adjusted_num_items = [num_items, @last_casees.length].min
+        @last_casees[...adjusted_num_items]
       end
 
       def badness_averages
         @badness_averages ||=
           begin
             result = @training_session.results
-                                      .group(:case_key)
-                                      .pluck(:case_key, badness_array_exp).to_h
+                                      .group(:casee)
+                                      .pluck(:casee, badness_array_exp).to_h
             result.transform_values! do |badnesses|
               new_cube_average.push_all(badnesses[0...@badness_memory])
             end
@@ -113,7 +113,7 @@ module CubeTrainer
         array_agg(badness_exp, order: created_at.desc)
       end
 
-      def fetch_last_case_keys(num_items)
+      def fetch_last_casees(num_items)
         return [] unless num_items.positive?
 
         # We ignore the cached cases here because they are handled at a different level.
@@ -121,7 +121,7 @@ module CubeTrainer
           .results
           .order(created_at: :desc)
           .limit(num_items)
-          .pluck(:case_key)
+          .pluck(:casee)
       end
 
       # On how many different days the item appeared since the user last used a hint for it.
@@ -134,7 +134,7 @@ module CubeTrainer
         # TODO: Avoid having one query per item.
         @training_session
           .results
-          .where(case_key: item.case_key)
+          .where(casee: item.casee)
           .where(days_old_exp.gt(days(last_hint_age)))
           .count
       end
@@ -150,7 +150,7 @@ module CubeTrainer
               @training_session
               .results
               .where(Result.arel_table[:num_hints].gt(0))
-              .group(:case_key)
+              .group(:casee)
               .minimum(age_exp)
             # We ignore the cached cases here because we don't know whether they will trigger a
             # hint.
@@ -166,7 +166,7 @@ module CubeTrainer
             result =
               @training_session
               .results
-              .group(:case_key)
+              .group(:casee)
               .minimum(age_exp)
             # We ignore the cached cases here because we handle them in last_occurrence_cache.
             result.default = Float::INFINITY
@@ -178,7 +178,7 @@ module CubeTrainer
         @last_occurrence_age_cache ||=
           begin
             result = raw_last_occurrence_age_cache.dup
-            @cached_cases.each { |i| result[i.case_key] = 0 }
+            @cached_cases.each { |i| result[i.casee] = 0 }
             result.freeze
           end
       end
@@ -198,15 +198,15 @@ module CubeTrainer
             result =
               @training_session
               .results
-              .group(:case_key)
+              .group(:casee)
               .distinct
               .count(days_old_exp)
             result.default = 0
             cached_items_not_seen_today =
               @cached_cases.select do |i|
-                raw_last_occurrence_age_cache[i.case_key] > 1.day
+                raw_last_occurrence_age_cache[i.casee] > 1.day
               end
-            cached_items_not_seen_today.each { |i| result[i.case_key] += 1 }
+            cached_items_not_seen_today.each { |i| result[i.casee] += 1 }
             result.freeze
           end
       end
@@ -215,9 +215,9 @@ module CubeTrainer
       def occurrences_cache
         @occurrences_cache ||=
           begin
-            result = @training_session.results.group(:case_key).count
+            result = @training_session.results.group(:casee).count
             result.default = 0
-            @cached_cases.each { |i| result[i.case_key] += 1 }
+            @cached_cases.each { |i| result[i.casee] += 1 }
             result.freeze
           end
       end

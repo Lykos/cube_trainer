@@ -18,7 +18,7 @@ class LetterSchemesController < ApplicationController
     if !@letter_scheme.valid?
       render json: @letter_scheme.errors, status: :bad_request
     elsif @letter_scheme.save
-      render json: @letter_scheme, status: :created
+      render json: @letter_scheme.to_simple, status: :created
     else
       render json: @letter_scheme.errors, status: :unprocessable_entity
     end
@@ -26,10 +26,23 @@ class LetterSchemesController < ApplicationController
 
   # PATCH/PUT /api/letter_scheme
   def update
-    if @letter_scheme.update(letter_scheme_params)
-      render json: @letter_scheme, status: :ok
-    else
-      render json: @letter_scheme.errors, status: :unprocessable_entity
+    update_params = letter_scheme_params
+    mappings_params = update_params[:letter_scheme_mappings_attributes]
+    update_params.delete(:letter_scheme_mappings_attributes)
+    LetterScheme.transaction do
+      unless @letter_scheme.update(update_params)
+        render json: @letter_scheme.errors, status: :unprocessable_entity
+        raise ActiveRecord::Rollback
+      end
+      mappings_params.each do |mapping_params|
+        mapping = @letter_scheme.mappings.find_or_initialize_by(part: mapping_params[:part])
+        mapping.letter = mapping_params[:letter]
+        unless mapping.save
+          render json: mapping.errors, status: :unprocessable_entity
+          raise ActiveRecord::Rollback
+        end
+      end
+      render json: @letter_scheme.to_simple, status: :ok
     end
   end
 

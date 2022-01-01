@@ -15,7 +15,7 @@ class AlgSet < ApplicationRecord
     raise TypeError unless casee.is_a?(Case)
     raise ArgumentError unless casee.valid?
 
-    maybe_commutator = algs.find { |alg| puts alg.casee; alg.casee == casee }&.commutator
+    maybe_commutator = algs.find { |alg| alg.casee == casee }&.commutator
     return maybe_commutator if maybe_commutator
 
     casee_inverse = casee.inverse

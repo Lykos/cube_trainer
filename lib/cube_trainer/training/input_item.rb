@@ -6,14 +6,14 @@ module CubeTrainer
     # potentially an associated cube state.
     # TODO: Move this functionality into Input.
     class InputItem
-      def initialize(case_key, cube_state = nil)
-        @case_key = case_key
+      def initialize(casee, cube_state = nil)
+        @casee = casee
         @cube_state = cube_state
       end
 
-      # The case key of this input item. This is a short thing that is the identity of the
-      # input item. This can be a letter pair or an alg name.
-      attr_reader :case_key
+      # The case of this input item. This is a short thing that is the identity of the
+      # input item.
+      attr_reader :casee
 
       # An (optional) cube state that represents this input item.
       attr_reader :cube_state

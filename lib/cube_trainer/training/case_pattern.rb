@@ -189,7 +189,10 @@ module CubeTrainer
     # A leaf case pattern (i.e. one that isn't a conjuction) that
     # matches the given part cycle patterns.
     class LeafCasePattern < CasePattern
-      def initialize(part_cycle_patterns, ignore_same_face_center_cycles: false)
+      # If `ignore_same_face_center_cycles` is set,
+      # center cycles that stay on the same face are ignored for matching
+      # if there are non-center components.
+      def initialize(part_cycle_patterns, ignore_same_face_center_cycles: true)
         super()
         @part_cycle_patterns = part_cycle_patterns
         @ignore_same_face_center_cycles = ignore_same_face_center_cycles
@@ -260,6 +263,48 @@ module CubeTrainer
       end
     end
 
+    # A pattern that matches a specific case.
+    class SpecificCasePattern < CasePattern
+      # If `ignore_same_face_center_cycles` is set,
+      # center cycles that stay on the same face are ignored for matching
+      # if there are non-center components.
+      def initialize(casee, ignore_same_face_center_cycles: true)
+        @casee = casee
+        @ignore_same_face_center_cycles = ignore_same_face_center_cycles
+      end
+
+      attr_reader :casee
+
+      def match?(casee)
+        ignore = @ignore_same_face_center_cycles
+        @casee.equivalent?(casee, ignore_same_face_center_cycles: ignore)
+      end
+
+      def to_s
+        "#{self.class.name.split('::').last}(#{@part_cycle_patterns.join(', ')}, " \
+          "#{@ignore_same_face_center_cycles})"
+      end
+
+      alias bracketed_to_s to_s
+
+      def eql?(other)
+        self.class.equal?(other.class) &&
+          @casee.equivalent?(other.casee)
+          @ignore_same_face_center_cycles == other.ignore_same_face_center_cycles
+      end
+
+      alias == eql?
+
+      def hash
+        ignore = @ignore_same_face_center_cycles
+        [
+          self.class,
+          @casee.canonicalize(ignore_same_face_center_cycles: ignore),
+          @ignore_same_face_center_cycles
+        ].hash
+      end
+    end
+    
     # A DSL that allows to create case patterns more conveniently.
     module CasePatternDsl
       def wildcard
