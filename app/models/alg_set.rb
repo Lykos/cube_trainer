@@ -32,6 +32,6 @@ class AlgSet < ApplicationRecord
   end
 
   def self.for_concrete_case_set(case_set)
-    all.find { |a| a.case_set == case_set }
+    where(case_set: case_set)
   end
 end

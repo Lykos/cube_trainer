@@ -3,11 +3,11 @@
 require 'cube_trainer/training/fake_learner'
 require 'cube_trainer/training/trainer'
 require 'cube_trainer/training/input_item'
-require 'cube_trainer/training/commutator_sets'
-require 'cube_trainer/training/stats_computer'
+require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/letter_pair'
 require 'ostruct'
 require 'rails_helper'
+require 'twisty_puzzles'
 
 ITERATIONS = 300
 
@@ -21,12 +21,26 @@ def compute_average(training_session, generator)
   learner.average_time
 end
 
+def casee(*parts)
+  Case.new(part_cycles: [TwistyPuzzles::PartCycle.new(parts)])
+end
+
 describe Training::InputSampler do
   include_context 'with training session'
+  include_context 'with edges'
 
-  let(:items) do
-    ('a'..'c').to_a.permutation(2).map { |p| Training::InputItem.new(LetterPair.new(p)) }
+  let(:cases) do
+    [
+      casee(uf, ub, ur),
+      casee(uf, ub, ul),
+      casee(uf, ur, ub),
+      casee(uf, ur, ul),
+      casee(uf, ul, ub),
+      casee(uf, ul, ur)
+    ]
   end
+
+  let(:items) { cases.map { |c| Training::InputItem.new(c) } }
 
   it 'performs better than random sampling' do
     smart_sampler = described_class.new(items, training_session)

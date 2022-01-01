@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_31_134642) do
+ActiveRecord::Schema.define(version: 2022_01_01_100340) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,11 +36,10 @@ ActiveRecord::Schema.define(version: 2021_12_31_134642) do
   create_table "alg_sets", force: :cascade do |t|
     t.bigint "alg_spreadsheet_id", null: false
     t.string "sheet_title", null: false
-    t.string "training_session_type"
+    t.string "training_session_type", null: false
     t.string "buffer"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "case_set"
     t.index ["alg_spreadsheet_id"], name: "index_alg_sets_on_alg_spreadsheet_id"
   end
 

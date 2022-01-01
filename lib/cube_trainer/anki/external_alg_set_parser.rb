@@ -2,7 +2,6 @@
 
 require 'twisty_puzzles'
 require 'cube_trainer/anki/note_input'
-require 'cube_trainer/training/alg_hint_parser'
 require 'cube_trainer/training/case_solution'
 
 module CubeTrainer

@@ -56,6 +56,10 @@ class Case
     self.class.hash ^ part_cycles.hash
   end
 
+  def contains_any_part?(parts)
+    part_cycles.any? { |c| c.contains_any_part?(parts) }
+  end
+
   private
 
   def validate_part_cycles

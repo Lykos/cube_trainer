@@ -36,7 +36,7 @@ module CubeTrainer
       def restricted_input_items
         if @training_session.restrict_parts.present?
           generate_input_items.select do |p|
-            p.case_key.contains_any_part?(@training_session.restrict_parts)
+            p.casee.contains_any_part?(@training_session.restrict_parts)
           end
         else
           generate_input_items
@@ -46,7 +46,7 @@ module CubeTrainer
       def input_items
         @input_items ||=
           restricted_input_items.reject do |p|
-            p.case_key.contains_any_part?(@training_session.exclude_parts)
+            p.casee.contains_any_part?(@training_session.exclude_parts)
           end
       end
 

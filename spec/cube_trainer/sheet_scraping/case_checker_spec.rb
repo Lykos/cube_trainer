@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/sheet_scraping/case_checker'
-require 'cube_trainer/training/commutator_hint_parser'
-require 'cube_trainer/letter_pair'
+require 'cube_trainer/training/case_pattern'
 require 'twisty_puzzles'
 require 'rails_helper'
 

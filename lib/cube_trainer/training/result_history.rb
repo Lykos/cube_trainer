@@ -74,17 +74,17 @@ module CubeTrainer
           calculate_occurrence_days_since_last_hint(item)
       end
 
-      # Returns the casees of the last `num_items` results (including cached cases).
-      def last_casees(num_items)
+      # Returns the cases of the last `num_items` results (including cached cases).
+      def last_cases(num_items)
         if @max_num_items.nil? || num_items > @max_num_items
           @max_num_items = num_items
-          @last_casees =
+          @last_cases =
             @cached_cases.map(&:casee) +
-            fetch_last_casees(num_items - @cached_cases.length)
+            fetch_last_cases(num_items - @cached_cases.length)
         end
 
-        adjusted_num_items = [num_items, @last_casees.length].min
-        @last_casees[...adjusted_num_items]
+        adjusted_num_items = [num_items, @last_cases.length].min
+        @last_cases[...adjusted_num_items]
       end
 
       def badness_averages
@@ -113,7 +113,7 @@ module CubeTrainer
         array_agg(badness_exp, order: created_at.desc)
       end
 
-      def fetch_last_casees(num_items)
+      def fetch_last_cases(num_items)
         return [] unless num_items.positive?
 
         # We ignore the cached cases here because they are handled at a different level.

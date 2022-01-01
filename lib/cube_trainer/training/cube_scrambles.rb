@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/cube_scrambler'
-require 'cube_trainer/training/no_hinter'
 require 'cube_trainer/training/scramble'
 
 module CubeTrainer
@@ -26,16 +25,12 @@ module CubeTrainer
         end
       end
 
-      def initialize(_training_session)
-        @mode = mode
-      end
-
-      def hinter(*)
-        @hinter ||= NoHinter.new({})
+      def initialize(training_session)
+        @training_session = training_session
       end
 
       def input_sampler
-        InputSampler.new(@mode)
+        InputSampler.new(@training_session)
       end
 
       def input_items

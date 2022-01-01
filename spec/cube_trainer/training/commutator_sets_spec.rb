@@ -36,11 +36,9 @@ describe 'CommutatorSets' do
 
     describe training_session_type.generator_class do
       if training_session_type.has_buffer?
-        buffers = training_session_type.generator_class.buffers_with_hints
-        buffers.each do |buffer|
-          describe "for buffer #{buffer}" do
-            it_behaves_like 'commutator_set', training_session_type, buffer
-          end
+        buffer = training_session_type.part_type::ELEMENTS.sample
+        describe "for buffer #{buffer}" do
+          it_behaves_like 'commutator_set', training_session_type, buffer
         end
       else
         it_behaves_like 'commutator_set', training_session_type, nil

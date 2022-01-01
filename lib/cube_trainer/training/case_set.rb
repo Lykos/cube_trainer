@@ -39,7 +39,7 @@ module CubeTrainer
         raise NotImplementedError
       end
 
-      def concretizations
+      def refinement
         raise NotImplementedError
       end
     end
@@ -77,10 +77,6 @@ module CubeTrainer
         raise NotImplementedError
       end
 
-      def concretization_of?(case_set)
-        case_set.is_a?(ThreeCycleSet) && case_set.part_type == @part_type
-      end
-
       # Stricter version of `match?` that doesn't necessarily match equivalent cases.
       # E.g. for 3 cycles, this only matches cases that start with the right buffer
       # and doesn't match 
@@ -116,15 +112,19 @@ module CubeTrainer
         return [] unless casee.part_cycles.length == 1 && casee.part_cycles.first.length == 3
 
         buffers = casee.part_cycles.first.parts.map { |p| p.rotations.min }
-        buffers.map { |b| concretization(b) }
+        buffers.map { |b| refinement(b) }
       end
 
-      def concretizations
-        @part_type::ELEMENTS.map { |b| concretization(b) }
+      def has_buffer?
+        true
       end
 
-      def concretization(part)
-        BufferedThreeCycleSet.new(@part_type, b)
+      def all_refinements
+        part_type::ELEMENTS.map { |p| refinement(p) }
+      end
+
+      def refinement(part)
+        BufferedThreeCycleSet.new(@part_type, part)
       end
     end
 

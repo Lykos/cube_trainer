@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/training/disjoint_union_hinter'
 require 'cube_trainer/training/part_cycle_alg_set'
 
 module CubeTrainer
@@ -10,17 +9,6 @@ module CubeTrainer
       def initialize(training_session, *alg_sets)
         super(training_session)
         @alg_sets = alg_sets
-      end
-
-      def restricted_hinter(alg_set)
-        RestrictedHinter.new(
-          alg_set.input_items.map(&:case_key),
-          alg_set.hinter
-        )
-      end
-
-      def hinter
-        @hinter ||= DisjointUnionHinter.new(@alg_sets.map { |a| restricted_hinter(a) })
       end
 
       def generate_input_items

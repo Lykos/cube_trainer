@@ -18,7 +18,6 @@ class TrainingSession < ApplicationRecord
   attribute :training_session_type, :training_session_type
   attribute :show_input_mode, :symbol
   attribute :buffer, :part
-  attribute :case_set, :concrete_case_set
   attr_accessor :stat_types, :verbose, :show_cube_states, :write_fixes
   attr_writer :test_comms_mode
 
@@ -27,9 +26,7 @@ class TrainingSession < ApplicationRecord
   validates :training_session_type, presence: true
   validates :show_input_mode, presence: true, inclusion: TrainingSessionType::SHOW_INPUT_MODES
   validate :show_input_mode_valid
-  validate :case_set_valid
   validates :buffer, presence: true, if: -> { training_session_type&.has_buffer? }
-  validates :case_set, presence: true, if: -> { training_session_type&.case_set }
   validates :cube_size, presence: true, if: -> { training_session_type&.cube_size? }
   validate :cube_size_valid, if: -> { training_session_type&.cube_size? }
   validate :buffer_valid, if: -> { training_session_type&.has_buffer? }
@@ -66,6 +63,10 @@ class TrainingSession < ApplicationRecord
     to_case(random_item(cached_cases))
   end
 
+  def case_set
+    buffer ? training_session_type.case_set&.refinement(buffer) : training_session_type.case_set&.refinement
+  end
+
   def restrict_parts
     part_type::ELEMENTS
   end
@@ -79,7 +80,7 @@ class TrainingSession < ApplicationRecord
   end
 
   def case_name(casee)
-    case_set.case_name(casee, letter_scheme: user.letter_scheme)
+    case_set&.case_name(casee, letter_scheme: user.letter_scheme) || casee.to_s
   end
 
   def picture
@@ -157,7 +158,7 @@ class TrainingSession < ApplicationRecord
   def to_case(item)
     TrainingCase.new(
       training_session: self,
-      case_key: item.case_key,
+      casee: item.casee,
       alg: commutator(item),
       setup: setup(item)
     )
@@ -185,18 +186,6 @@ class TrainingSession < ApplicationRecord
   def memo_time_s_valid
     errors.add(:memo_time_s, 'has to be positive') unless memo_time_s.positive?
     errors.add(:memo_time_s, 'has to be below one day') unless memo_time_s < 1.day
-  end
-
-  def case_set_valid
-    return unless case_set
-
-    unless case_set.is_a?(Training::ConcreteCaseSet)
-      errors.add(:case_set, 'has to be a concrete case set')
-      return
-    end
-    return if case_set.concretization_of?(training_session_type.case_set)
-
-    errors.add(:case_set, 'has to be a concretization of the case set of the training session type')
   end
 
   def set_stats

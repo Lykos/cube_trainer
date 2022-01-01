@@ -68,6 +68,6 @@ class FakeLearner
     end
     @indices[input] = @current_index
     @current_index += 1
-    { case_key: input.case_key, time_s: stats.execute, failed_attempts: 0, word: nil }
+    { casee: input.casee, time_s: stats.execute, failed_attempts: 0, word: nil }
   end
 end

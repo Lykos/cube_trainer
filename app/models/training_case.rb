@@ -7,17 +7,31 @@
 class TrainingCase
   include ActiveModel::Model
 
-  attr_accessor :case_key, :training_session, :setup, :alg, :representation
+  attr_accessor :casee, :training_session, :setup, :alg
 
-  validates :case_key, presence: true
+  validates :casee, presence: true
   validates :training_session, presence: true
+
+  def eql?(other)
+    self.class.equal?(other.class) &&
+      @training_session.id == other.training_session.id &&
+      @casee == other.casee &&
+      @alg == other.alg &&
+      @setup == other.setup
+  end
+
+  alias == eql?
+
+  def hash
+    [self.class, @training_session.id, @case, @alg, @setup].hash
+  end
 
   def to_simple
     {
       setup: setup.to_s,
       alg: alg.to_s,
-      case_key: InputRepresentationType.new.serialize(case_key),
-      case_name: training_session.maybe_apply_letter_scheme(case_key).to_s
+      case_key: CaseType.new.serialize(casee),
+      case_name: training_session.case_name(casee)
     }
   end
 end

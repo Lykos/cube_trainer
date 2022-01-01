@@ -106,7 +106,7 @@ describe Anki::AlgSetAnkiGenerator do
     it_behaves_like 'an image storer', ['alg_asdf.jpg', 'alg_uio.jpg']
   end
 
-  context 'when using an internal alg set' do
+  xcontext 'when using an internal alg set' do
     let(:options) { internal_options }
 
     it 'generates an alg set anki deck' do

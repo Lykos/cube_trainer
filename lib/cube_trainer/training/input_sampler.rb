@@ -173,7 +173,7 @@ module CubeTrainer
         managed_sample = sampler.random_item
 
         item = managed_sample.input_item
-        @logger.debug "[#{item.case_key}] #{managed_sample.sampling_info}"
+        @logger.debug "[#{item.casee}] #{managed_sample.sampling_info}"
         item
       end
     end

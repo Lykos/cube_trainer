@@ -19,8 +19,8 @@ module CubeTrainer
       # Used to punish overly fast repetition, even for high badness.
       def too_recently?(input_item)
         @result_history
-          .last_case_keys(repetition_boundary)
-          .include?(input_item.case_key)
+          .last_cases(repetition_boundary)
+          .include?(input_item.casee)
       end
 
       # Computes an exponentially growing score based on the given badness that

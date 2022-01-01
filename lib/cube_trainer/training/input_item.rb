@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'twisty_puzzles'
+
 module CubeTrainer
   module Training
     # An input item that has a case key that will be stored and used as a key and
@@ -7,6 +9,7 @@ module CubeTrainer
     # TODO: Move this functionality into Input.
     class InputItem
       def initialize(casee, cube_state = nil)
+        casee = Case.new(part_cycles: [casee]) if casee.is_a?(TwistyPuzzles::PartCycle)
         @casee = casee
         @cube_state = cube_state
       end

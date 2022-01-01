@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/training/commutator_sets'
-require 'cube_trainer/training/commutator_hint_parser'
 require 'cube_trainer/training/cube_scrambles'
 require 'cube_trainer/training/human_word_learner'
 require 'cube_trainer/training/human_time_learner'
 require 'cube_trainer/training/letters_to_word'
-require 'cube_trainer/training/alg_sets'
 require 'cube_trainer/letter_pair'
 
 # Model for training session types.
@@ -121,7 +119,7 @@ class TrainingSessionType
   def alg_sets
     return [] unless case_set
 
-    case_set.concretizations.flat_map do |concrete_case_set|
+    case_set.all_refinements.flat_map do |concrete_case_set|
       AlgSet.for_concrete_case_set(concrete_case_set)
     end
   end

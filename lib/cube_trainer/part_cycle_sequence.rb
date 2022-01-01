@@ -10,7 +10,7 @@ module CubeTrainer
     raise if TwistyPuzzles::PartCycle::RAW_DATA_RESERVED.include?(SEPARATOR)
 
     def initialize(part_cycles)
-      raise ArgumentError unless part_cycles.all?(PartCycle)
+      raise ArgumentError unless part_cycles.all?(TwistyPuzzles::PartCycle)
 
       @part_cycles = part_cycles
     end
