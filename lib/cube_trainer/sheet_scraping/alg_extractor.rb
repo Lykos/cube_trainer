@@ -18,12 +18,13 @@ module CubeTrainer
         def initialize(case_set:, algs:, checker:)
           @case_set = case_set
           @algs = algs
-          @fixes = checker.fixes.map do |fix|
-            casee = case_set.create_strict_matching(fix.casee)
-            raise unless case_set.strict_match?(casee)
+          @fixes =
+            checker.fixes.map do |fix|
+              casee = case_set.create_strict_matching(fix.casee)
+              raise unless case_set.strict_match?(casee)
 
-            fix.with_case(casee)
-          end
+              fix.with_case(casee)
+            end
           @num_unfixable = checker.unfixable_algs
           @num_unparseable = checker.error_algs
         end

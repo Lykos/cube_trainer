@@ -269,6 +269,7 @@ module CubeTrainer
       # center cycles that stay on the same face are ignored for matching
       # if there are non-center components.
       def initialize(casee, ignore_same_face_center_cycles: true)
+        super()
         @casee = casee
         @ignore_same_face_center_cycles = ignore_same_face_center_cycles
       end
@@ -290,7 +291,7 @@ module CubeTrainer
       def eql?(other)
         self.class.equal?(other.class) &&
           @casee.equivalent?(other.casee)
-          @ignore_same_face_center_cycles == other.ignore_same_face_center_cycles
+        @ignore_same_face_center_cycles == other.ignore_same_face_center_cycles
       end
 
       alias == eql?
@@ -304,7 +305,7 @@ module CubeTrainer
         ].hash
       end
     end
-    
+
     # A DSL that allows to create case patterns more conveniently.
     module CasePatternDsl
       def wildcard

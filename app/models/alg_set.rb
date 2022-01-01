@@ -15,11 +15,10 @@ class AlgSet < ApplicationRecord
     raise TypeError unless casee.is_a?(Case)
     raise ArgumentError unless casee.valid?
 
-    maybe_commutator = algs.find { |alg| alg.casee == casee }&.commutator
+    maybe_commutator = commutator_internal(casee)
     return maybe_commutator if maybe_commutator
 
-    casee_inverse = casee.inverse
-    algs.find { |alg| alg.casee == casee_inverse }&.commutator&.inverse
+    commutator_internal(casee.inverse)&.inverse
   end
 
   delegate :case_name, to: :case_set
@@ -33,5 +32,11 @@ class AlgSet < ApplicationRecord
 
   def self.for_concrete_case_set(case_set)
     where(case_set: case_set)
+  end
+
+  private
+
+  def commutator_internal(casee)
+    algs.find { |alg| alg.casee == casee }&.commutator
   end
 end

@@ -95,7 +95,7 @@ module CubeTrainer
 
     def self.relevant_case_sets(casee)
       relevant_top_level_case_sets(casee).flat_map do |case_set|
-        case_set.fixed_parts_refinements(casee)
+        case_set.refinements_matching(casee)
       end
     end
 

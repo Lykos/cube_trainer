@@ -35,7 +35,7 @@ module CubeTrainer
     class AbstractCaseSet
       include CaseSetHelper
 
-      def fixed_parts_refinements(casee)
+      def refinements_matching(casee)
         raise NotImplementedError
       end
 
@@ -79,7 +79,7 @@ module CubeTrainer
 
       # Stricter version of `match?` that doesn't necessarily match equivalent cases.
       # E.g. for 3 cycles, this only matches cases that start with the right buffer
-      # and doesn't match 
+      # and doesn't match
       def strict_match?(casee)
         raise NotImplementedError
       end
@@ -108,15 +108,11 @@ module CubeTrainer
         "#{@part_type.name.split('::').last.downcase} 3-cycles"
       end
 
-      def fixed_parts_refinements(casee)
+      def refinements_matching(casee)
         return [] unless casee.part_cycles.length == 1 && casee.part_cycles.first.length == 3
 
         buffers = casee.part_cycles.first.parts.map { |p| p.rotations.min }
         buffers.map { |b| refinement(b) }
-      end
-
-      def has_buffer?
-        true
       end
 
       def all_refinements

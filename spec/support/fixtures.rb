@@ -102,8 +102,6 @@ shared_context 'with training session' do
     )
     training_session.show_input_mode = :name
     training_session.training_session_type = :edge_commutators
-    training_session.case_set =
-      Training::BufferedThreeCycleSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Edge.for_face_symbols(%i[U F]))
     training_session.buffer = TwistyPuzzles::Edge.for_face_symbols(%i[U F])
     training_session.goal_badness = 1.0
     training_session.cube_size = 3
@@ -160,7 +158,7 @@ shared_context 'with case' do
   let(:casee) do
     casee = Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([uf, df, ub])])
     casee.validate!
-    casee    
+    casee
   end
 end
 

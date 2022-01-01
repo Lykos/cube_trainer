@@ -50,13 +50,13 @@ RSpec.describe Result, type: :model do
   describe '#to_simple' do
     subject(:result) { training_session.results.new(casee: casee, time_s: 10) }
 
-    context 'if no letter scheme is defined' do
+    context 'when no letter scheme is defined' do
       it 'returns a simple hash with no letter scheme applied' do
         expect(result.to_simple).to include(case_key: 'Edge(UF DF UB)', case_name: 'DF UB', time_s: 10, success: true)
       end
     end
 
-    context 'if a letter scheme is defined' do
+    context 'when a letter scheme is defined' do
       include_context 'with letter scheme'
 
       it 'returns a simple hash with the letter scheme applied' do

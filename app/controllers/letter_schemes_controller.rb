@@ -30,18 +30,9 @@ class LetterSchemesController < ApplicationController
     mappings_params = update_params[:letter_scheme_mappings_attributes]
     update_params.delete(:letter_scheme_mappings_attributes)
     LetterScheme.transaction do
-      unless @letter_scheme.update(update_params)
-        render json: @letter_scheme.errors, status: :unprocessable_entity
-        raise ActiveRecord::Rollback
-      end
-      mappings_params.each do |mapping_params|
-        mapping = @letter_scheme.mappings.find_or_initialize_by(part: mapping_params[:part])
-        mapping.letter = mapping_params[:letter]
-        unless mapping.save
-          render json: mapping.errors, status: :unprocessable_entity
-          raise ActiveRecord::Rollback
-        end
-      end
+      # Note that these can render errors and throw rollback exceptions.
+      update_letter_scheme(update_params)
+      update_mappings(mappings_params)
       render json: @letter_scheme.to_simple, status: :ok
     end
   end
@@ -56,6 +47,24 @@ class LetterSchemesController < ApplicationController
   end
 
   private
+
+  def update_letter_scheme(update_params)
+    return if @letter_scheme.update(update_params)
+
+    render json: @letter_scheme.errors, status: :unprocessable_entity
+    raise ActiveRecord::Rollback
+  end
+
+  def update_mappings(mappings_params)
+    mappings_params.each do |mapping_params|
+      mapping = @letter_scheme.mappings.find_or_initialize_by(part: mapping_params[:part])
+      mapping.letter = mapping_params[:letter]
+      next if mapping.save
+
+      render json: mapping.errors, status: :unprocessable_entity
+      raise ActiveRecord::Rollback
+    end
+  end
 
   def check_no_existing_letter_scheme
     head :unprocessable_entity if current_user.letter_scheme

@@ -64,7 +64,11 @@ class TrainingSession < ApplicationRecord
   end
 
   def case_set
-    buffer ? training_session_type.case_set&.refinement(buffer) : training_session_type.case_set&.refinement
+    if buffer
+      training_session_type.case_set&.refinement(buffer)
+    else
+      training_session_type.case_set&.refinement
+    end
   end
 
   def restrict_parts

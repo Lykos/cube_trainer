@@ -31,18 +31,15 @@ class Case
   def canonicalize(ignore_same_face_center_cycles:)
     (@canonicalize ||= {})[ignore_same_face_center_cycles] ||=
       begin
-        canonicalized_cycles = part_cycles.map(&:canonicalize).sort
-        if ignore_same_face_center_cycles && part_cycles.any? { |c| non_center_cycle?(c) }
-          canonicalized_cycles.delete_if { |c| equivalent_center_cycle?(c) }
-        end
-        canonicalized_case = Case.new(part_cycles: canonicalized_cycles)
+        cycles = canonicalized_cycles(ignore_same_face_center_cycles)
+        canonicalized_case = Case.new(part_cycles: cycles)
         # Return self if that's correct to avoid memoization explosion.
         self == canonicalized_case ? self : canonicalized_case
       end
   end
 
   def inverse
-    self.class.new(part_cycles: part_cycles.map { |c| c.inverse })
+    self.class.new(part_cycles: part_cycles.map(&:inverse))
   end
 
   def eql?(other)
@@ -61,6 +58,14 @@ class Case
   end
 
   private
+
+  def canonicalized_cycles(ignore)
+    cycles = part_cycles.map(&:canonicalize).sort
+    if ignore && part_cycles.any? { |c| non_center_cycle?(c) }
+      cycles.delete_if { |c| equivalent_center_cycle?(c) }
+    end
+    cycles
+  end
 
   def validate_part_cycles
     return if part_cycles.empty?
