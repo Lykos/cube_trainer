@@ -25,6 +25,10 @@ describe('RailsService', () => {
     expect(camelCaseifyFields<any>({ some_number: 2, some_string: 'abc' })).toEqual({ someNumber: 2, someString: 'abc' });
   });
 
+  it('camel caseifies a field that is null', () => {
+    expect(camelCaseifyFields<any>({ some_null: null })).toEqual({ someNull: null });
+  });
+
   it('camel caseifies fields of a nested object', () => {
     expect(camelCaseifyFields<any>({ some_object: { some_nested_object: { some_field: 2 }, another_field: 3 } })).toEqual({ someObject: { someNestedObject: { someField: 2 }, anotherField: 3 } });
   });

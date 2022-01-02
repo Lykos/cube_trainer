@@ -3,6 +3,8 @@ import { Result } from '../result.model';
 import { Component, OnInit, Input, LOCALE_ID, Inject } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { formatDate } from '@angular/common';
+import { fromDateString, Instant } from '@utils/instant';
+import { seconds, Duration } from '@utils/duration';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { selectSelectedTrainingSessionResults, selectSelectedTrainingSessionNumResults, selectSelectedTrainingSessionResultsOnPage, selectSelectedTrainingSessionNumResultsOnPage, selectSelectedTrainingSessionAnyLoading } from '@store/results.selectors';
@@ -79,6 +81,18 @@ export class ResultsTableComponent implements OnInit {
     if (!row) {
       return `${allSelected ? 'select' : 'deselect'} all`;
     }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} result from ${formatDate(row.timestamp.toDate(), 'short', this.locale)}`;
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} result from ${formatDate(this.timestamp(row).toDate(), 'short', this.locale)}`;
+  }
+
+  duration(result: Result): Duration {
+    return seconds(result.timeS);
+  }
+
+  timestamp(result: Result): Instant {
+    return fromDateString(result.createdAt);
+  }
+
+  resultId(index: number, result: Result) {
+    return result.id;
   }
 }

@@ -10,7 +10,9 @@ export function snakeCaseToCamelCase(snakeCaseString: string): string {
 
 export function camelCaseifyFields<X>(value: any): X {
   if (typeof value === "object") {
-    if (value instanceof Array) {
+    if (value === null) {
+      return null as unknown as X;
+    } else if (Array.isArray(value)) {
       return value.map(camelCaseifyFields) as unknown as X;
     } else {
       const x: any = {};

@@ -1,7 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { Result } from '@training/result.model';
-import { TrainingCase } from '@training/training-case.model';
-import { PartialResult } from '@training/partial-result.model';
+import { NewResult } from '@training/new-result.model';
 import { BackendActionError } from '@shared/backend-action-error.model';
 
 export const initialLoad = createAction(
@@ -21,12 +20,12 @@ export const initialLoadFailure = createAction(
 
 export const create = createAction(
   '[Results] create',
-  props<{ trainingSessionId: number, trainingCase: TrainingCase, partialResult: PartialResult }>()
+  props<{ trainingSessionId: number, newResult: NewResult }>()
 );
  
 export const createSuccess = createAction(
   '[Results] create success',
-  props<{ trainingSessionId: number, trainingCase: TrainingCase, partialResult: PartialResult, result: Result }>()
+  props<{ trainingSessionId: number, result: Result }>()
 );
  
 export const createFailure = createAction(

@@ -3,8 +3,8 @@
 // This contains a specific case attached to a training session with a specific solution.
 // For the abstract case (independent of its solution), we use the key.
 export interface TrainingCase {
-  readonly key: string;
-  readonly name: string;
+  readonly caseKey: string;
+  readonly caseName: string;
   readonly alg?: string;
   readonly setup?: string;
 }

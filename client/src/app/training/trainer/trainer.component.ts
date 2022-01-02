@@ -3,12 +3,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, filter, take, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { TrainingSession } from '../training-session.model';
 import { now } from '@utils/instant';
-import { PartialResult } from '../partial-result.model';
+import { NewResult } from '../new-result.model';
 import { TrainerService } from '../trainer.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, combineLatest } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { hasValue, forceValue } from '@utils/optional';
+import { seconds } from '@utils/duration';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
 import { initialLoad, setSelectedTrainingSessionId } from '@store/training-sessions.actions';
 import { create } from '@store/results.actions';
@@ -67,8 +68,14 @@ export class TrainerComponent implements OnInit, OnDestroy {
       this.hintActive = false;
     });
     this.stopSubscription = this.stopwatchStore.stop$.subscribe(duration => {
-      const partialResult: PartialResult = { numHints: this.hintActive ? 1 : 0, duration, success: true };
-      this.store.dispatch(create({ trainingSessionId: this.trainingSession!.id, trainingCase: this.trainingCase!, partialResult }));
+      const newResult: NewResult = {
+        caseKey: this.trainingCase!.caseKey,
+        caseName: this.trainingCase!.caseName,
+        numHints: this.hintActive ? 1 : 0,
+        timeS: duration.toSeconds(),
+        success: true,
+      };
+      this.store.dispatch(create({ trainingSessionId: this.trainingSession!.id, newResult }));
     });
   }
 
@@ -88,6 +95,10 @@ export class TrainerComponent implements OnInit, OnDestroy {
     });
   }
 
+  get memoTime() {
+    const memoTimeS = this.trainingSession?.memoTimeS;
+    return memoTimeS ? seconds(memoTimeS) : undefined;
+  }
   get hasStopAndStart(): boolean {
     return true;
   }

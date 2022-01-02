@@ -34,6 +34,6 @@ export class TrainingSessionsComponent implements OnInit {
   } 
 
   routerLink(trainingSession: TrainingSession) {
-    return `/training/${trainingSession.id}`;
+    return `/training-sessions/${trainingSession.id}`;
   }
 }

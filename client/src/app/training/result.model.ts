@@ -1,9 +1,6 @@
-import { Instant } from '@utils/instant';
-import { PartialResult } from './partial-result.model';
+import { NewResult } from './new-result.model';
 
-export interface Result extends PartialResult {
+export interface Result extends NewResult {
   readonly id: number;
-  readonly timestamp: Instant;
-  readonly caseKey: string;
-  readonly caseName: string;
+  readonly createdAt: string;
 }

@@ -10,33 +10,6 @@ import { Credentials } from './credentials.model';
 import { Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import { CookieConsentService } from './cookie-consent.service';
-import { FieldMissingError, FieldTypeError } from '@shared/rails-parse-error';
-
-export function checkUser(partial: Partial<User>): User {
-  if (partial.id === undefined) {
-    throw new FieldMissingError('id', 'user', partial);
-  }
-  if (typeof partial.id !== 'number') {
-    throw new FieldTypeError('id', 'number', 'user', partial);
-  }
-  if (partial.name === undefined) {
-    throw new FieldMissingError('name', 'user', partial);
-  }
-  if (typeof partial.name !== 'string') {
-    throw new FieldTypeError('name', 'string', 'user', partial);
-  }
-  if (partial.email === undefined) {
-    throw new FieldMissingError('email', 'user', partial);
-  }
-  if (typeof partial.email !== 'string') {
-    throw new FieldTypeError('email', 'string', 'user', partial);
-  }
-  return {
-    id: partial.id,
-    name: partial.name,
-    email: partial.email,
-  };
-}
 
 @Injectable({
   providedIn: 'root',
@@ -102,7 +75,7 @@ export class UsersService {
   }
 
   show(): Observable<User> {
-    return this.rails.get<Partial<User>>('/user', {}).pipe(map(checkUser));
+    return this.rails.get<User>('/user', {});
   }
 
   destroy(): Observable<void> {

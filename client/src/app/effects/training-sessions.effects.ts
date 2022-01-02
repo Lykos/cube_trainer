@@ -80,7 +80,7 @@ export class TrainingSessionsEffects {
       ofType(createSuccess),
       tap(action => {
         this.snackBar.open(`Session ${action.trainingSession.name} created.`, 'Close');
-	this.router.navigate([`/trainingSessions`]);
+	this.router.navigate([`/training-sessions`]);
       }),
     ),
     { dispatch: false }
@@ -132,7 +132,7 @@ export class TrainingSessionsEffects {
       ofType(destroySuccess),
       tap(action => {
 	this.snackBar.open(`TrainingSession ${action.trainingSession.name} deleted.`, 'Close');
-	this.router.navigate([`/trainingSessions`]);
+	this.router.navigate([`/training-sessions`]);
       }),
     ),
     { dispatch: false }
@@ -160,7 +160,7 @@ export class TrainingSessionsEffects {
           catchError(httpResponseError => {
             const context = {
               action: 'overriding alg',
-              subject: action.algOverride.trainingCase.name,
+              subject: action.algOverride.trainingCase.caseName,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(overrideAlgFailure({ error }));
@@ -184,7 +184,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(overrideAlgSuccess),
       tap(action => {
-	this.snackBar.open(`Alg for ${action.algOverride.trainingCase.name} overriden.`, 'Close');
+	this.snackBar.open(`Alg for ${action.algOverride.trainingCase.caseName} overriden.`, 'Close');
       }),
     ),
     { dispatch: false }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TrainingSession } from './training-session.model';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { TrainingCase } from './training-case.model';
 import { Result } from './result.model';
 import { Observable } from 'rxjs';
@@ -9,8 +9,8 @@ import { WeightState } from '@utils/sampling';
 import { Store } from '@ngrx/store';
 import { selectSelectedTrainingSessionResults } from '@store/results.selectors';
 import { none, some, Optional, mapOptional, ifPresent } from '@utils/optional';
-import { Instant } from '@utils/instant';
-import { Duration, infiniteDuration, minutes } from '@utils/duration';
+import { Instant, fromDateString } from '@utils/instant';
+import { Duration, infiniteDuration, seconds, minutes } from '@utils/duration';
 import { CubeAverage } from '@utils/cube-average';
 
 const BADNESS_MEMORY = 5;
@@ -63,17 +63,19 @@ function toItemAndWeightState(state: ItemAndIntermediateWeightState): ItemAndWei
 function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: readonly Result[]): SamplingState<TrainingCase> {
   const weightStates = new Map<string, ItemAndIntermediateWeightState>();
   for (let casee of cases) {
-    weightStates.set(casee.key, { item: casee, state: initialWeightState() });
+    weightStates.set(casee.caseKey, { item: casee, state: initialWeightState() });
   }
-  for (let i = 0; i <= results.length; ++i) {
+  for (let i = 0; i < results.length; ++i) {
     const result = results[i];
+    console.log(result);
     const weightState = weightStates.get(result.caseKey)?.state;
     if (!weightState) {
       // Probably a result of a case that isn't available any more.
       continue;
     }
+    const timestamp = fromDateString(result.createdAt);
     if (result.numHints > 0 || !result.success) {
-      weightState.lastHintOrDnfInfo = some({ timestamp: result.timestamp, occurrenceDaysSince: []});
+      weightState.lastHintOrDnfInfo = some({ timestamp, occurrenceDaysSince: []});
     } else {
       ifPresent(weightState.lastHintOrDnfInfo, lastHintOrDnfInfo => {
         const daysAgo = lastHintOrDnfInfo.timestamp.durationUntil(now).toDays();
@@ -82,19 +84,19 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
         }
       });
     }
-    const daysAgo = result.timestamp.durationUntil(now).toDays();
+    const daysAgo = timestamp.durationUntil(now).toDays();
     if (weightState.occurrenceDays.length === 0 || weightState.occurrenceDays[weightState.occurrenceDays.length - 1] != daysAgo) {
       weightState.occurrenceDays.push(daysAgo);
     }
     weightState.itemsSinceLastOccurrence = Math.min(weightState.itemsSinceLastOccurrence, results.length - 1 - i);
-    weightState.durationSinceLastOccurrence = weightState.durationSinceLastOccurrence.min(result.timestamp.durationUntil(now));
+    weightState.durationSinceLastOccurrence = weightState.durationSinceLastOccurrence.min(timestamp.durationUntil(now));
     weightState.totalOccurrences += 1;
     if (!result.success) {
       weightState.badnessAverage.push(DNF_PENALTY);
     } else if (result.numHints > 0) {
       weightState.badnessAverage.push(HINT_PENALTY);
     } else {
-      weightState.badnessAverage.push(result.duration);
+      weightState.badnessAverage.push(seconds(result.timeS));
     }
   }
   const weightStateValues = [...weightStates.values()];
@@ -109,7 +111,8 @@ export class SamplingStateService {
 
   samplingState(now: Instant, trainingSession: TrainingSession): Observable<SamplingState<TrainingCase>> {
     return this.store.select(selectSelectedTrainingSessionResults).pipe(
-      map(results => toSamplingState(now, trainingSession.trainingCases, results)),
+      take(1),
+      map(results => {console.log(results); return toSamplingState(now, trainingSession.trainingCases, results); }),
     );
   }
 }
