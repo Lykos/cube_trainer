@@ -11,10 +11,13 @@ export function weightedDraw<X extends Weighted>(xs: X[]): X {
   }
   let weightIndex = Math.random() * weightSum;
   for (let x of xs) {
-    if (weightIndex < x.weight) {
+    if (x.weight === 0) {
+      continue;
+    }
+    if (weightIndex <= x.weight) {
       return x;
     }
     weightIndex -= x.weight;
   }
-  throw new Error('found no matching subsampler');
+  throw new Error('used up weight sum and did not find an item');
 }

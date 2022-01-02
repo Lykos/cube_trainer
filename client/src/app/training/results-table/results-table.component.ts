@@ -7,7 +7,7 @@ import { fromDateString, Instant } from '@utils/instant';
 import { seconds, Duration } from '@utils/duration';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { selectSelectedTrainingSessionResults, selectSelectedTrainingSessionNumResults, selectSelectedTrainingSessionResultsOnPage, selectSelectedTrainingSessionNumResultsOnPage, selectSelectedTrainingSessionAnyLoading } from '@store/results.selectors';
+import { selectSelectedTrainingSessionResults, selectSelectedTrainingSessionNumResults, selectSelectedTrainingSessionResultsOnPage, selectSelectedTrainingSessionNumResultsOnPage, selectSelectedTrainingSessionInitialLoadLoading } from '@store/results.selectors';
 import { initialLoad, destroy, markDnf, setSelectedTrainingSessionId, setPage } from '@store/results.actions';
 import { Store } from '@ngrx/store';
 
@@ -32,7 +32,7 @@ export class ResultsTableComponent implements OnInit {
 
   constructor(private readonly store: Store,
 	      @Inject(LOCALE_ID) private readonly locale: string) {
-    this.loading$ = this.store.select(selectSelectedTrainingSessionAnyLoading);
+    this.loading$ = this.store.select(selectSelectedTrainingSessionInitialLoadLoading);
     this.results$ = this.store.select(selectSelectedTrainingSessionResults);
     this.resultsOnPage$ = this.store.select(selectSelectedTrainingSessionResultsOnPage);
     this.numResults$ = this.store.select(selectSelectedTrainingSessionNumResults);

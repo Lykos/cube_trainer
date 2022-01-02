@@ -9,7 +9,7 @@ import { mapOptional, orElse } from '@utils/optional';
 import { Store } from '@ngrx/store';
 import { User } from './user.model';
 import { selectUser } from '@store/user.selectors';
-import { camelCaseifyFields } from '@utils/case';
+import { camelCaseifyFieldNames } from '@utils/case';
 
 @Injectable({
   providedIn: 'root'
@@ -54,7 +54,7 @@ export class CableService {
             subscriber.complete();
           },
           received: (x: unknown) => {
-            subscriber.next(camelCaseifyFields<X>(x));
+            subscriber.next(camelCaseifyFieldNames<X>(x));
           },
         });
         return () => {

@@ -48,9 +48,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
         runtimeChecks: {
           strictStateImmutability: true,
           strictActionImmutability: true,
-          // TODO: Enable this. Currently not enabled because Duration isn't serializable.
-          // strictStateSerializability: true,
-          // strictActionSerializability: true,
+          strictStateSerializability: true,
+          strictActionSerializability: true,
           strictActionWithinNgZone: true,
           strictActionTypeUniqueness: true,
         },

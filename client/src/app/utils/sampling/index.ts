@@ -1,4 +1,5 @@
 export * from './sampler';
+export * from './sample';
 export * from './selector';
 export * from './repeat-weighter';
 export * from './forgotten-weighter';

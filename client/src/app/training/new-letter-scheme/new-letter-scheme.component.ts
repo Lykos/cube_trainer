@@ -37,7 +37,6 @@ export class NewLetterSchemeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.letterSchemesService.destroy();
     this.partTypesService.list().subscribe((partTypes: PartType[]) => {
       this.partTypes = partTypes
       const formGroup: { [key: string]: any; } = {};

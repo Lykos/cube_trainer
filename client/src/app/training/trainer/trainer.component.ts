@@ -1,4 +1,5 @@
 import { TrainingCase } from '../training-case.model';
+import { Sample } from '@utils/sampling';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, filter, take, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { TrainingSession } from '../training-session.model';
@@ -21,7 +22,7 @@ import { StopwatchStore } from '../stopwatch.store';
   providers: [StopwatchStore],
 })
 export class TrainerComponent implements OnInit, OnDestroy {
-  trainingCase?: TrainingCase;
+  sample?: Sample<TrainingCase>;
   trainingSession?: TrainingSession;
   isRunning = false;
   hintActive = false;
@@ -69,8 +70,8 @@ export class TrainerComponent implements OnInit, OnDestroy {
     });
     this.stopSubscription = this.stopwatchStore.stop$.subscribe(duration => {
       const newResult: NewResult = {
-        caseKey: this.trainingCase!.caseKey,
-        caseName: this.trainingCase!.caseName,
+        caseKey: this.sample!.item.caseKey,
+        caseName: this.sample!.item.caseName,
         numHints: this.hintActive ? 1 : 0,
         timeS: duration.toSeconds(),
         success: true,
@@ -88,9 +89,9 @@ export class TrainerComponent implements OnInit, OnDestroy {
   }
 
   private prepareNextCase(trainingSession: TrainingSession) {
-    this.trainingCase = undefined;
-    this.trainerService.randomCase(now(), trainingSession).pipe(take(1)).subscribe(trainingCase => {
-      this.trainingCase = trainingCase;
+    this.sample = undefined;
+    this.trainerService.randomCase(now(), trainingSession).pipe(take(1)).subscribe(sample => {
+      this.sample = sample;
       this.stopwatchStore.finishLoading();
     });
   }

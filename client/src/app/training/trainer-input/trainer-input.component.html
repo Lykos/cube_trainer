@@ -1,4 +1,4 @@
-<ng-container *ngIf="showImage && setup">
+<ng-container *ngIf="showImage && setup" [matTooltip]="tooltip">
   <twisty-player
     [alg]="setup"
     [puzzle]="puzzle"
@@ -6,4 +6,9 @@
     control-panel="none">
   </twisty-player>
 </ng-container>
-<span class="trainer-input mat-elevation-z4" *ngIf="showName && trainingCase">{{trainingCase.caseName}}</span>
+<span
+  [matTooltip]="tooltip"
+  class="trainer-input mat-elevation-z4"
+  *ngIf="showName && sample">
+  {{sample.item.caseName}}
+</span>

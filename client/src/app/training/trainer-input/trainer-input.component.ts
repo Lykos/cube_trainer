@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Sample } from '@utils/sampling';
 import { TrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
 import { TrainingCase } from '../training-case.model';
@@ -10,13 +11,13 @@ import { TrainingCase } from '../training-case.model';
 })
 export class TrainerInputComponent {
   @Input()
-  trainingCase?: TrainingCase;
+  sample?: Sample<TrainingCase>;
 
   @Input()
   trainingSession?: TrainingSession;
 
   get setup() {
-    return this.trainingCase?.setup;
+    return this.sample?.item?.setup;
   }
 
   get puzzle() {
@@ -30,5 +31,12 @@ export class TrainerInputComponent {
 
   get showName() {
     return this.trainingSession && this.trainingSession.showInputMode == ShowInputMode.Name;
+  }
+
+  get tooltip() {
+    if (!this.sample) {
+      return '';
+    }
+    return `Item was chosen by sampling strategy ${this.sample.samplerName}`;
   }
 }

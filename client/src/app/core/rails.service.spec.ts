@@ -112,6 +112,12 @@ describe('RailsService', () => {
     req.flush('successful');
   });
 
+
+  it('should raise on nested arrays', () => {
+    const params = {array: [[2]]};
+    expect(() => { railsService.get('/stuff', params); }).toThrow();
+  });
+
   it('should return objects with camel caseified fields', () => {
     railsService.get('/stuff', {}).subscribe((result) => { expect(result).toEqual({ someNumber: 2, someString: 'abc' }); })
 

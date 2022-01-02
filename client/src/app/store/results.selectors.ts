@@ -36,6 +36,10 @@ export const selectSelectedTrainingSessionNumResultsOnPage = createSelector(
                 m => Math.max(m.serverResults.length - resultsState.pageIndex * resultsState.pageSize, resultsState.pageSize)),
     0));
 
+export const selectSelectedTrainingSessionInitialLoadLoading = createSelector(
+  selectSelectedTrainingSessionResultsState,
+  trainingSessionResultsState => orElse(mapOptional(trainingSessionResultsState, m => isBackendActionLoading(m.initialLoadState)), false));
+
 export const selectSelectedTrainingSessionAnyLoading = createSelector(
   selectSelectedTrainingSessionResultsState,
   trainingSessionResultsState => orElse(mapOptional(trainingSessionResultsState, m => isBackendActionLoading(m.initialLoadState) || isBackendActionLoading(m.createState) || isBackendActionLoading(m.destroyState) || isBackendActionLoading(m.markDnfState)), false));

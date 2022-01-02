@@ -1,4 +1,5 @@
 import { SamplingState } from './sampling-state';
+import { Sample } from './sample';
 
 export interface Sampler {
   // Whether this sampler is ready to deliver samples.
@@ -7,5 +8,5 @@ export interface Sampler {
 
   // Get the next sample.
   // Throws a SamplingError if it is not ready.
-  sample<X>(state: SamplingState<X>): X;
+  sample<X>(state: SamplingState<X>): Sample<X>;
 }

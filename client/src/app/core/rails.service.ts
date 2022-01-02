@@ -1,8 +1,8 @@
-import { camelCaseToSnakeCase, camelCaseifyFields } from '@utils/case';
+import { camelCaseToSnakeCase, camelCaseifyFieldNames, snakeCaseifyFieldNames } from '@utils/case';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { environment } from '@environment';
 
 class UrlParameterPath {
@@ -19,6 +19,9 @@ class UrlParameterPath {
   }
 
   withArraySegment() {
+    if (this.path.includes('')) {
+      throw Error('Nested arrays do not work in URL params');
+    }
     const extendedPath: string[] = Object.assign([], this.path);
     extendedPath.push('');
     return new UrlParameterPath(this.root, extendedPath);
@@ -49,7 +52,7 @@ function serializeUrlParamsPart(value: any, path: UrlParameterPath, partsAccumul
   if (value === undefined || value === null) {
     return;
   } else if (typeof value === "object") {
-    if (value instanceof Array) {
+    if (Array.isArray(value)) {
       for (let subValue of value) {
         serializeUrlParamsPart(subValue, path.withArraySegment(), partsAccumulator);
       }
@@ -64,16 +67,21 @@ function serializeUrlParamsPart(value: any, path: UrlParameterPath, partsAccumul
 }
 
 // The precise type is actually important to choose the right override of the HttpClient.
-const paramLessOptions: { observe: 'body', responseType: 'json' } = {
-  observe: 'body',
-  responseType: 'json',
+const commonOptions = {
+  observe: 'body' as const,
+  responseType: 'json' as const,
 };
 
+const jsonContentOptions = {
+  ...commonOptions,
+  headers: new HttpHeaders().set('Content-Type', 'application/json'),
+}
+
 // The precise return type is actually important to choose the right override of the HttpClient.
-function createOptions(data: object): { observe: 'body', responseType: 'json', params: HttpParams } {
+function createOptions(data: object) {
   const params = serializeUrlParams(data);
   return {
-    ...paramLessOptions,
+    ...commonOptions,
     params,
   };
 }
@@ -84,24 +92,25 @@ function createOptions(data: object): { observe: 'body', responseType: 'json', p
 export class RailsService {
   constructor(private readonly http: HttpClient) {}
 
+  // Note that data cannot contain nested arrays.
   get<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.get<unknown>(constructUrl(relativeUrl), createOptions(data)).pipe(map(x => camelCaseifyFields<X>(x)));
+    return this.http.get<unknown>(constructUrl(relativeUrl), createOptions(data)).pipe(map(x => camelCaseifyFieldNames<X>(x)));
   }
 
   post<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.post<unknown>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions).pipe(map(x => camelCaseifyFields<X>(x)));
+    return this.http.post<unknown>(constructUrl(relativeUrl), snakeCaseifyFieldNames(data), jsonContentOptions).pipe(map(x => camelCaseifyFieldNames<X>(x)));
   }
 
   put<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.put<unknown>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions).pipe(map(x => camelCaseifyFields<X>(x)));
+    return this.http.put<unknown>(constructUrl(relativeUrl), snakeCaseifyFieldNames(data), jsonContentOptions).pipe(map(x => camelCaseifyFieldNames<X>(x)));
   }
 
   patch<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.patch<unknown>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions).pipe(map(x => camelCaseifyFields<X>(x)));
+    return this.http.patch<unknown>(constructUrl(relativeUrl), snakeCaseifyFieldNames(data), jsonContentOptions).pipe(map(x => camelCaseifyFieldNames<X>(x)));
   }
 
   delete<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.delete<unknown>(constructUrl(relativeUrl), createOptions(data)).pipe(map(x => camelCaseifyFields<X>(x)));
+    return this.http.delete<unknown>(constructUrl(relativeUrl), createOptions(data)).pipe(map(x => camelCaseifyFieldNames<X>(x)));
   }
 
   getBlob(relativeUrl: string): Observable<Blob> {

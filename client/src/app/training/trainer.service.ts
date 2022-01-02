@@ -4,6 +4,7 @@ import { TrainingSession } from './training-session.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SamplerFactory } from './sampler-factory.service';
+import { Sample } from '@utils/sampling';
 import { SamplingStateService } from './sampling-state.service';
 import { Instant } from '@utils/instant';
 
@@ -14,7 +15,7 @@ export class TrainerService {
   constructor(private readonly samplerFactory: SamplerFactory,
               private readonly samplingStateService: SamplingStateService) {}
 
-  randomCase(now: Instant, trainingSession: TrainingSession): Observable<TrainingCase> {
+  randomCase(now: Instant, trainingSession: TrainingSession): Observable<Sample<TrainingCase>> {
     const sampler = this.samplerFactory.sampler(trainingSession);
     return this.samplingStateService.samplingState(now, trainingSession).pipe(
       map(state => sampler.sample(state)),

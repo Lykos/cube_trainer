@@ -67,7 +67,6 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
   }
   for (let i = 0; i < results.length; ++i) {
     const result = results[i];
-    console.log(result);
     const weightState = weightStates.get(result.caseKey)?.state;
     if (!weightState) {
       // Probably a result of a case that isn't available any more.
@@ -88,7 +87,7 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
     if (weightState.occurrenceDays.length === 0 || weightState.occurrenceDays[weightState.occurrenceDays.length - 1] != daysAgo) {
       weightState.occurrenceDays.push(daysAgo);
     }
-    weightState.itemsSinceLastOccurrence = Math.min(weightState.itemsSinceLastOccurrence, results.length - 1 - i);
+    weightState.itemsSinceLastOccurrence = Math.min(weightState.itemsSinceLastOccurrence, i);
     weightState.durationSinceLastOccurrence = weightState.durationSinceLastOccurrence.min(timestamp.durationUntil(now));
     weightState.totalOccurrences += 1;
     if (!result.success) {
@@ -112,7 +111,7 @@ export class SamplingStateService {
   samplingState(now: Instant, trainingSession: TrainingSession): Observable<SamplingState<TrainingCase>> {
     return this.store.select(selectSelectedTrainingSessionResults).pipe(
       take(1),
-      map(results => {console.log(results); return toSamplingState(now, trainingSession.trainingCases, results); }),
+      map(results => toSamplingState(now, trainingSession.trainingCases, results)),
     );
   }
 }

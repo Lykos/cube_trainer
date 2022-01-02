@@ -1,4 +1,4 @@
-import { camelCaseToSnakeCase, snakeCaseToCamelCase, camelCaseifyFields } from './case';
+import { camelCaseToSnakeCase, snakeCaseToCamelCase, camelCaseifyFieldNames, snakeCaseifyFieldNames } from './case';
 
 describe('RailsService', () => {
   it('snake caseifies a simple example', () => {
@@ -22,18 +22,34 @@ describe('RailsService', () => {
   });
 
   it('camel caseifies fields of an object', () => {
-    expect(camelCaseifyFields<any>({ some_number: 2, some_string: 'abc' })).toEqual({ someNumber: 2, someString: 'abc' });
+    expect(camelCaseifyFieldNames<any>({ some_number: 2, some_string: 'abc' })).toEqual({ someNumber: 2, someString: 'abc' });
   });
 
   it('camel caseifies a field that is null', () => {
-    expect(camelCaseifyFields<any>({ some_null: null })).toEqual({ someNull: null });
+    expect(camelCaseifyFieldNames<any>({ some_null: null })).toEqual({ someNull: null });
   });
 
   it('camel caseifies fields of a nested object', () => {
-    expect(camelCaseifyFields<any>({ some_object: { some_nested_object: { some_field: 2 }, another_field: 3 } })).toEqual({ someObject: { someNestedObject: { someField: 2 }, anotherField: 3 } });
+    expect(camelCaseifyFieldNames<any>({ some_object: { some_nested_object: { some_field: 2 }, another_field: 3 } })).toEqual({ someObject: { someNestedObject: { someField: 2 }, anotherField: 3 } });
   });
 
-  it('camel caseifies fields of an object', () => {
-    expect(camelCaseifyFields<any>({ some_array: [{ some_field: 12}] })).toEqual({ someArray: [{ someField: 12 }] });
+  it('camel caseifies fields of an object in an array', () => {
+    expect(camelCaseifyFieldNames<any>({ some_array: [{ some_field: 12}] })).toEqual({ someArray: [{ someField: 12 }] });
+  });
+
+  it('snake caseifies fields of an object', () => {
+    expect(snakeCaseifyFieldNames<any>({ someNumber: 2, someString: 'abc' })).toEqual({ some_number: 2, some_string: 'abc' });
+  });
+
+  it('snake caseifies a field that is null', () => {
+    expect(snakeCaseifyFieldNames<any>({ someNull: null })).toEqual({ some_null: null });
+  });
+
+  it('snake caseifies fields of a nested object', () => {
+    expect(snakeCaseifyFieldNames<any>({ someObject: { someNestedObject: { someField: 2 }, anotherField: 3 } })).toEqual({ some_object: { some_nested_object: { some_field: 2 }, another_field: 3 } });
+  });
+
+  it('snake caseifies fields of an object in an array', () => {
+    expect(snakeCaseifyFieldNames<any>({ someArray: [{ someField: 12}] })).toEqual({ some_array: [{ some_field: 12 }] });
   });
 });
