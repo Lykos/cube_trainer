@@ -65,7 +65,7 @@ describe('RailsService', () => {
     req.flush('successful');
   });
 
-  it('should make an get call with inner object URL parameters', () => {
+  it('should make an get call with nested object URL parameters', () => {
     const params = {
       someObject: {
 	someInnerObject: {
@@ -110,5 +110,38 @@ describe('RailsService', () => {
     expect(req.request.responseType).toEqual('json');
     expect(req.request.params.toString()).toEqual('some_object_array%5B%5D%5Bc%5D=12');
     req.flush('successful');
+  });
+
+  it('should return objects with camel caseified fields', () => {
+    railsService.get('/stuff', {}).subscribe((result) => { expect(result).toEqual({ someNumber: 2, someString: 'abc' }); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff`);
+    expect(req.request.method).toEqual(HttpVerb.Get);
+    expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
+    expect(req.request.responseType).toEqual('json');
+    expect(req.request.params.toString()).toEqual('');
+    req.flush({ some_number: 2, some_string: 'abc' });
+  });
+
+  it('should return objects with camel caseified nested fields', () => {
+    railsService.get('/stuff', {}).subscribe((result) => { expect(result).toEqual({ someObject: { someNestedObject: { someField: 2 }, anotherField: 3 } }); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff`);
+    expect(req.request.method).toEqual(HttpVerb.Get);
+    expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
+    expect(req.request.responseType).toEqual('json');
+    expect(req.request.params.toString()).toEqual('');
+    req.flush({ some_object: { some_nested_object: { some_field: 2 }, another_field: 3 } });
+  });
+
+  it('should return objects with camel caseified object array fields', () => {
+    railsService.get('/stuff', {}).subscribe((result) => { expect(result).toEqual({ someArray: [{ someField: 12 }] }); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff`);
+    expect(req.request.method).toEqual(HttpVerb.Get);
+    expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
+    expect(req.request.responseType).toEqual('json');
+    expect(req.request.params.toString()).toEqual('');
+    req.flush({ some_array: [{ some_field: 12}] });
   });
 });

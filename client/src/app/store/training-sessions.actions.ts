@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { TrainingSession } from '@training/training-session.model';
-import { Case } from '@training/case.model';
+import { TrainingCase } from '@training/training-case.model';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { AlgOverride } from '@training/alg-override.model';
 import { NewTrainingSession } from '@training/new-training-session.model';
@@ -66,7 +66,7 @@ export const setSelectedTrainingSessionId = createAction(
 
 export const overrideAlgClick = createAction(
   '[TrainingSessions] override alg click',
-  props<{ trainingSession: TrainingSession, casee: Case }>()
+  props<{ trainingSession: TrainingSession, trainingCase: TrainingCase }>()
 );
 
 export const dontOverrideAlg = createAction(

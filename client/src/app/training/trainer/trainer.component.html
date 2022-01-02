@@ -1,13 +1,13 @@
 <div>
   <ng-container *ngIf="trainingSession">
     <div layout="row" layout-sm="column">
-      <div flex *ngIf="casee">
+      <div flex *ngIf="trainingCase">
         <cube-trainer-trainer-input
-          [casee]="casee"
+          [trainingCase]="trainingCase"
           [trainingSession]="trainingSession">
         </cube-trainer-trainer-input>
         <cube-trainer-hint
-          [casee]="casee"
+          [trainingCase]="trainingCase"
           [trainingSession]="trainingSession"
           [(active)]="hintActive">
         </cube-trainer-hint>

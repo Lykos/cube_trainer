@@ -1,6 +1,6 @@
 import { seconds, minutes, hours, days } from './duration';
 
-fdescribe('Duration', () => {
+describe('Duration', () => {
   it('should support toString', () => {
     expect(seconds(3).toString()).toEqual('3');
     expect(seconds(3.1).toString()).toEqual('3.1');

@@ -7,13 +7,13 @@ import { AlgSet } from './alg-set.model';
 export interface TrainingSessionType {
   readonly key: string;
   readonly name: string;
-  readonly showInputModes: ShowInputMode[];
+  readonly showInputModes: readonly ShowInputMode[];
   readonly hasBoundedInputs: boolean;
   readonly cubeSizeSpec?: CubeSizeSpec;
   readonly hasGoalBadness: boolean;
   readonly hasMemoTime: boolean;
   readonly hasSetup: boolean;
-  readonly buffers: Part[];
-  readonly statsTypes: StatType[];
-  readonly algSets: AlgSet[];
+  readonly buffers: readonly Part[];
+  readonly statsTypes: readonly StatType[];
+  readonly algSets: readonly AlgSet[];
 }

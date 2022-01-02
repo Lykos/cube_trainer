@@ -43,12 +43,12 @@ export class ResultsEffects {
     this.actions$.pipe(
       ofType(create),
       exhaustMap(action =>
-          this.resultsService.create(action.trainingSessionId, action.casee, action.partialResult).pipe(
-          map(result => createSuccess({ trainingSessionId: action.trainingSessionId, casee: action.casee, partialResult: action.partialResult, result })),
+          this.resultsService.create(action.trainingSessionId, action.trainingCase, action.partialResult).pipe(
+          map(result => createSuccess({ trainingSessionId: action.trainingSessionId, trainingCase: action.trainingCase, partialResult: action.partialResult, result })),
           catchError(httpResponseError => {
             const context = {
               action: 'creating result',
-              subject: `${action.casee.name}`,
+              subject: `${action.trainingCase.name}`,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(createFailure({ trainingSessionId: action.trainingSessionId, error }));

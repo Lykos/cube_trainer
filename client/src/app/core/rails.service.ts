@@ -1,6 +1,7 @@
-import { camelCaseToSnakeCase } from '@utils/case';
+import { camelCaseToSnakeCase, camelCaseifyFields } from '@utils/case';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '@environment';
 
@@ -84,27 +85,23 @@ export class RailsService {
   constructor(private readonly http: HttpClient) {}
 
   get<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.get<X>(constructUrl(relativeUrl), createOptions(data));
+    return this.http.get<unknown>(constructUrl(relativeUrl), createOptions(data)).pipe(map(x => camelCaseifyFields<X>(x)));
   }
 
   post<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.post<X>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions);
+    return this.http.post<unknown>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions).pipe(map(x => camelCaseifyFields<X>(x)));
   }
 
   put<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.put<X>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions);
+    return this.http.put<unknown>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions).pipe(map(x => camelCaseifyFields<X>(x)));
   }
 
   patch<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.patch<X>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions);
+    return this.http.patch<unknown>(constructUrl(relativeUrl), serializeUrlParams(data), paramLessOptions).pipe(map(x => camelCaseifyFields<X>(x)));
   }
 
   delete<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.delete<X>(constructUrl(relativeUrl), createOptions(data));
-  }
-
-  head<X>(relativeUrl: string, data: object): Observable<X> {
-    return this.http.head<X>(constructUrl(relativeUrl), createOptions(data));
+    return this.http.delete<unknown>(constructUrl(relativeUrl), createOptions(data)).pipe(map(x => camelCaseifyFields<X>(x)));
   }
 
   getBlob(relativeUrl: string): Observable<Blob> {

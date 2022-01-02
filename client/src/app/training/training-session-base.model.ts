@@ -9,6 +9,5 @@ export interface TrainingSessionBase {
   readonly showInputMode: ShowInputMode;
   readonly buffer?: Part;
   readonly goalBadness?: number;
-  readonly memoTimeS?: number;
   readonly cubeSize?: number;
 }

@@ -1,7 +1,8 @@
-import { Case } from '../case.model';
+import { TrainingCase } from '../training-case.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, filter, take, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { TrainingSession } from '../training-session.model';
+import { now } from '@utils/instant';
 import { PartialResult } from '../partial-result.model';
 import { TrainerService } from '../trainer.service';
 import { ActivatedRoute } from '@angular/router';
@@ -19,7 +20,7 @@ import { StopwatchStore } from '../stopwatch.store';
   providers: [StopwatchStore],
 })
 export class TrainerComponent implements OnInit, OnDestroy {
-  casee?: Case;
+  trainingCase?: TrainingCase;
   trainingSession?: TrainingSession;
   isRunning = false;
   hintActive = false;
@@ -40,6 +41,7 @@ export class TrainerComponent implements OnInit, OnDestroy {
               readonly stopwatchStore: StopwatchStore) {
     this.trainingSessionId$ = activatedRoute.params.pipe(map(p => +p['trainingSessionId']));
     this.trainingSession$ = this.store.select(selectSelectedTrainingSession).pipe(
+      distinctUntilChanged(),
       filter(hasValue),
       map(forceValue),
       shareReplay(),
@@ -59,14 +61,14 @@ export class TrainerComponent implements OnInit, OnDestroy {
     this.trainingSessionSubscription = this.trainingSession$.subscribe(m => { this.trainingSession = m; });
     this.stopwatchLoadingSubscription = combineLatest(
       this.stopwatchStore.loading$.pipe(filter(l => l)),
-      this.trainingSession$.pipe(map(trainingSession => trainingSession.id), distinctUntilChanged()),
-    ).subscribe(([_, trainingSessionId]) => { this.prepareNextCase(trainingSessionId); })
+      this.trainingSession$,
+    ).subscribe(([_, trainingSession]) => { this.prepareNextCase(trainingSession); })
     this.runningSubscription = this.stopwatchStore.running$.subscribe(() => {
       this.hintActive = false;
     });
     this.stopSubscription = this.stopwatchStore.stop$.subscribe(duration => {
       const partialResult: PartialResult = { numHints: this.hintActive ? 1 : 0, duration, success: true };
-      this.store.dispatch(create({ trainingSessionId: this.trainingSession!.id, casee: this.casee!, partialResult }));
+      this.store.dispatch(create({ trainingSessionId: this.trainingSession!.id, trainingCase: this.trainingCase!, partialResult }));
     });
   }
 
@@ -78,10 +80,10 @@ export class TrainerComponent implements OnInit, OnDestroy {
     this.stopwatchLoadingSubscription?.unsubscribe();
   }
 
-  private prepareNextCase(trainingSessionId: number) {
-    this.casee = undefined;
-    this.trainerService.nextCaseWithCache(trainingSessionId).pipe(take(1)).subscribe(casee => {
-      this.casee = casee;
+  private prepareNextCase(trainingSession: TrainingSession) {
+    this.trainingCase = undefined;
+    this.trainerService.randomCase(now(), trainingSession).pipe(take(1)).subscribe(trainingCase => {
+      this.trainingCase = trainingCase;
       this.stopwatchStore.finishLoading();
     });
   }

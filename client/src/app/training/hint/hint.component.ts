@@ -1,7 +1,7 @@
 import { HostListener, Component, Input, Output, EventEmitter } from '@angular/core';
 import { TrainingSession } from '../training-session.model';
 import { overrideAlgClick } from '@store/training-sessions.actions';
-import { Case } from '../case.model';
+import { TrainingCase } from '../training-case.model';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -11,7 +11,7 @@ import { Store } from '@ngrx/store';
 })
 export class HintComponent {
   @Input()
-  casee?: Case;
+  trainingCase?: TrainingCase;
 
   @Input()
   trainingSession?: TrainingSession;
@@ -25,7 +25,7 @@ export class HintComponent {
   constructor(private readonly store: Store) {}
 
   get alg() {
-    return this.casee?.alg;
+    return this.trainingCase?.alg;
   }
 
   onHint() {
@@ -42,6 +42,6 @@ export class HintComponent {
   }
 
   onOverride() {
-    this.trainingSession && this.casee && this.store.dispatch(overrideAlgClick({ trainingSession: this.trainingSession, casee: this.casee }));
+    this.trainingSession && this.trainingCase && this.store.dispatch(overrideAlgClick({ trainingSession: this.trainingSession, trainingCase: this.trainingCase }));
   }
 }

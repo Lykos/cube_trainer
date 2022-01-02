@@ -145,7 +145,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(overrideAlgClick),
       exhaustMap(action => {
-        const trainingSessionAndCase: TrainingSessionAndCase = { trainingSession: action.trainingSession, casee: action.casee };
+        const trainingSessionAndCase: TrainingSessionAndCase = { trainingSession: action.trainingSession, trainingCase: action.trainingCase };
         const dialogRef = this.dialog.open(OverrideAlgDialogComponent, { data: trainingSessionAndCase });
         return dialogRef.afterClosed().pipe(
           map(algOverride => algOverride ? overrideAlg({ trainingSession: action.trainingSession, algOverride }) : dontOverrideAlg({ trainingSession: action.trainingSession }))
@@ -163,7 +163,7 @@ export class TrainingSessionsEffects {
           catchError(httpResponseError => {
             const context = {
               action: 'overriding alg',
-              subject: action.algOverride.casee.name,
+              subject: action.algOverride.trainingCase.name,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(overrideAlgFailure({ error }));
@@ -187,7 +187,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(overrideAlgSuccess),
       tap(action => {
-	this.snackBar.open(`Alg for ${action.algOverride.casee.name} overriden.`, 'Close');
+	this.snackBar.open(`Alg for ${action.algOverride.trainingCase.name} overriden.`, 'Close');
       }),
     ),
     { dispatch: false }

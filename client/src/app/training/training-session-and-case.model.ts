@@ -1,7 +1,7 @@
 import { TrainingSession } from './training-session.model';
-import { Case } from './case.model';
+import { TrainingCase } from './training-case.model';
 
 export interface TrainingSessionAndCase {
   readonly trainingSession: TrainingSession;
-  readonly casee: Case;
+  readonly trainingCase: TrainingCase;
 }

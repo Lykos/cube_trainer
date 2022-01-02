@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { TrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
-import { Case } from '../case.model';
+import { TrainingCase } from '../training-case.model';
 
 @Component({
   selector: 'cube-trainer-trainer-input',
@@ -10,13 +10,13 @@ import { Case } from '../case.model';
 })
 export class TrainerInputComponent {
   @Input()
-  casee?: Case;
+  trainingCase?: TrainingCase;
 
   @Input()
   trainingSession?: TrainingSession;
 
   get setup() {
-    return this.casee?.setup;
+    return this.trainingCase?.setup;
   }
 
   get puzzle() {

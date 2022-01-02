@@ -17,12 +17,12 @@ export class OverrideAlgDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) trainingSessionAndCase: TrainingSessionAndCase) {
     this.algOverride = {
-      casee: trainingSessionAndCase.casee,
+      trainingCase: trainingSessionAndCase.trainingCase,
       alg: ''
     };
   }
 
-  get casee() {
-    return this.algOverride.casee;
+  get trainingCase() {
+    return this.algOverride.trainingCase;
   }
 }
