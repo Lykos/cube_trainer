@@ -10,14 +10,20 @@ import { Store } from '@ngrx/store';
 import { selectSelectedTrainingSessionResults } from '@store/results.selectors';
 import { none, some, Optional, mapOptional, ifPresent } from '@utils/optional';
 import { Instant } from '@utils/instant';
-import { Duration, infiniteDuration } from '@utils/duration';
+import { Duration, infiniteDuration, minutes } from '@utils/duration';
+import { CubeAverage } from '@utils/cube-average';
+
+const BADNESS_MEMORY = 5;
+const DNF_PENALTY = minutes(1);
+const HINT_PENALTY = minutes(1);
 
 interface IntermediateWeightState {
   itemsSinceLastOccurrence: number;
   durationSinceLastOccurrence: Duration;
-  occurrenceDays: number[];
+  readonly occurrenceDays: number[];
   totalOccurrences: number;
-  lastHintInfo: Optional<{ timestamp: Instant, occurrenceDaysSince: number[] }>;
+  lastHintOrDnfInfo: Optional<{ timestamp: Instant, occurrenceDaysSince: number[] }>;
+  readonly badnessAverage: CubeAverage;
 }
 
 function initialWeightState(): IntermediateWeightState {
@@ -25,8 +31,9 @@ function initialWeightState(): IntermediateWeightState {
     itemsSinceLastOccurrence: Infinity,
     durationSinceLastOccurrence: infiniteDuration,
     occurrenceDays: [],
-    lastHintInfo: none,
+    lastHintOrDnfInfo: none,
     totalOccurrences: 0,
+    badnessAverage: new CubeAverage(BADNESS_MEMORY),
   }
 }
 
@@ -41,7 +48,8 @@ function toWeightState(state: IntermediateWeightState): WeightState {
     durationSinceLastOccurrence: state.durationSinceLastOccurrence,
     occurrenceDays: state.occurrenceDays.length,
     totalOccurrences: state.totalOccurrences,
-    occurrenceDaysSinceLastHint: mapOptional(state.lastHintInfo, l => l.occurrenceDaysSince.length),
+    occurrenceDaysSinceLastHintOrDnf: mapOptional(state.lastHintOrDnfInfo, l => l.occurrenceDaysSince.length),
+    badnessAverage: state.badnessAverage.average(),
   };
 }
 
@@ -64,13 +72,13 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
       // Probably a result of a case that isn't available any more.
       continue;
     }
-    if (result.numHints > 0) {
-      weightState.lastHintInfo = some({ timestamp: result.timestamp, occurrenceDaysSince: []});
+    if (result.numHints > 0 || !result.success) {
+      weightState.lastHintOrDnfInfo = some({ timestamp: result.timestamp, occurrenceDaysSince: []});
     } else {
-      ifPresent(weightState.lastHintInfo, lastHintInfo => {
-        const daysAgo = lastHintInfo.timestamp.durationUntil(now).toDays();
-        if (lastHintInfo.occurrenceDaysSince.length === 0 || lastHintInfo.occurrenceDaysSince[lastHintInfo.occurrenceDaysSince.length - 1] != daysAgo) {
-          lastHintInfo.occurrenceDaysSince.push(daysAgo);
+      ifPresent(weightState.lastHintOrDnfInfo, lastHintOrDnfInfo => {
+        const daysAgo = lastHintOrDnfInfo.timestamp.durationUntil(now).toDays();
+        if (lastHintOrDnfInfo.occurrenceDaysSince.length === 0 || lastHintOrDnfInfo.occurrenceDaysSince[lastHintOrDnfInfo.occurrenceDaysSince.length - 1] != daysAgo) {
+          lastHintOrDnfInfo.occurrenceDaysSince.push(daysAgo);
         }
       });
     }
@@ -81,6 +89,13 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
     weightState.itemsSinceLastOccurrence = Math.min(weightState.itemsSinceLastOccurrence, results.length - 1 - i);
     weightState.durationSinceLastOccurrence = weightState.durationSinceLastOccurrence.min(result.timestamp.durationUntil(now));
     weightState.totalOccurrences += 1;
+    if (!result.success) {
+      weightState.badnessAverage.push(DNF_PENALTY);
+    } else if (result.numHints > 0) {
+      weightState.badnessAverage.push(HINT_PENALTY);
+    } else {
+      weightState.badnessAverage.push(result.duration);
+    }
   }
   const weightStateValues = [...weightStates.values()];
   return { weightStates: weightStateValues.map(toItemAndWeightState) };

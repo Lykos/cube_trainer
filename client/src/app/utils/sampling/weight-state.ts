@@ -8,5 +8,6 @@ export interface WeightState {
   readonly itemsSinceLastOccurrence: number;
   readonly durationSinceLastOccurrence: Duration;
   readonly occurrenceDays: number;
-  readonly occurrenceDaysSinceLastHint: Optional<number>;
+  readonly occurrenceDaysSinceLastHintOrDnf: Optional<number>;
+  readonly badnessAverage: Optional<Duration>;
 }

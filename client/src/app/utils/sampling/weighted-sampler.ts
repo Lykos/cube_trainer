@@ -5,8 +5,10 @@ import { WeightState } from './weight-state';
 import { SamplingError } from './sampling-error';
 import { weightedDraw } from './weighted-draw';
 
-function isRecent(state: WeightState, recencyThreshold: number) {
-  return state.itemsSinceLastOccurrence < recencyThreshold;
+function isRecent<X>(samplingState: SamplingState<X>, weightState: WeightState, recencyThreshold: number) {
+  // In case of very few total items, we have to soften the recency threshold.
+  const adjustedRecencyThreshold = Math.min(Math.floor(samplingState.weightStates.length / 2), recencyThreshold);
+  return weightState.itemsSinceLastOccurrence < adjustedRecencyThreshold;
 }
 
 // A simple sampler (i.e. it is not a combination of other samplers) that ignores
@@ -16,12 +18,12 @@ export class WeightedSampler implements Sampler {
               private readonly recencyThreshold: number) {}  
 
   ready<X>(state: SamplingState<X>) {
-    return state.weightStates.some(w => !isRecent(w.state, this.recencyThreshold) && this.weighter.weight(w.state) > 0);
+    return state.weightStates.some(w => !isRecent(state, w.state, this.recencyThreshold) && this.weighter.weight(w.state) > 0);
   }
 
   sample<X>(state: SamplingState<X>) {
     const weightedItems = state.weightStates
-      .filter(s => !isRecent(s.state, this.recencyThreshold))
+      .filter(s => !isRecent(state, s.state, this.recencyThreshold))
       .map(s => ({ item: s.item, weight: this.weighter.weight(s.state) }))
       .filter(s => s.weight > 0);
     if (weightedItems.length === 0) {

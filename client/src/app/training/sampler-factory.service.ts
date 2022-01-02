@@ -1,31 +1,51 @@
 import { Injectable } from '@angular/core';
-import { Sampler, NewSampler, CombinedSampler, RepeatWeighter, RevisitWeighter, ForgottenWeighter, WeightedSampler, PrioritizedSampler } from '@utils/sampling';
+import { Sampler, NewSampler, CombinedSampler, RepeatWeighter, RevisitWeighter, ForgottenWeighter, BadnessWeighter, ManyItemsNotSeenWeighter, WeightedSampler, PrioritizedSampler } from '@utils/sampling';
 import { TrainingSession } from './training-session.model';
+import { seconds, Duration } from '@utils/duration';
 
 interface SamplingConfig {
   readonly revisitNewItems: boolean;
+  readonly goalBadness: Duration,
+  readonly badnessBase: number,
   readonly newItemsWeight: number;
+  readonly badItemsWeight: number;
+  readonly longNotSeenItemsWeight: number;
   readonly forgottenExponentialBackoffBase: number;
   readonly repeatExponentialBackoffBase: number;
   readonly revisitExponentialBackoffBase: number;
   readonly recencyThreshold: number;
+  readonly forgottenRepetitions: number;
+  readonly manyItemsNotSeenExponent: number;
 }
 
-// TODO: Read this from the training session.
-const samplingConfig: SamplingConfig = {
-  revisitNewItems: true,
-  newItemsWeight: 1,
-  forgottenExponentialBackoffBase: 2,
-  repeatExponentialBackoffBase: 2,
-  revisitExponentialBackoffBase: 2,
-  recencyThreshold: 2,
+function samplingConfig(trainingSession: TrainingSession): SamplingConfig {
+  if (trainingSession.goalBadness === undefined) {
+    throw new Error('goalBadness is undefined even though we need it for this training session');
+  }
+  // TODO: Read everything from the training session.
+  return {
+    revisitNewItems: !trainingSession.known,
+    goalBadness: seconds(trainingSession.goalBadness),
+    badnessBase: 10,
+    newItemsWeight: 1,
+    badItemsWeight: 8,
+    longNotSeenItemsWeight: 1,
+    forgottenExponentialBackoffBase: 2,
+    repeatExponentialBackoffBase: 2,
+    revisitExponentialBackoffBase: 2,
+    recencyThreshold: 4,
+    forgottenRepetitions: 5,
+    manyItemsNotSeenExponent: 2,
+  };
 }
 
 function createSampler(config: SamplingConfig) {
   const sampler = new PrioritizedSampler([
-    new WeightedSampler(new ForgottenWeighter(config.forgottenExponentialBackoffBase), config.recencyThreshold),
+    new WeightedSampler(new ForgottenWeighter(config.forgottenExponentialBackoffBase, config.forgottenRepetitions), config.recencyThreshold),
     new CombinedSampler([
       { weight: config.newItemsWeight, sampler: new NewSampler() },
+      { weight: config.badItemsWeight, sampler: new WeightedSampler(new BadnessWeighter(config.goalBadness, config.badnessBase), config.recencyThreshold) },
+      { weight: config.longNotSeenItemsWeight, sampler: new WeightedSampler(new ManyItemsNotSeenWeighter(config.manyItemsNotSeenExponent), config.recencyThreshold) },
     ]),
   ]);
   if (!config.revisitNewItems) {
@@ -49,7 +69,7 @@ export class SamplerFactory {
     if (existingSampler) {
       return existingSampler;
     }
-    const newSampler = createSampler(samplingConfig);
+    const newSampler = createSampler(samplingConfig(trainingSession));
     this.samplers.set(trainingSession.id, newSampler);
     return newSampler;
   }

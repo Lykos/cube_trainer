@@ -2,6 +2,8 @@ export * from './sampler';
 export * from './selector';
 export * from './repeat-weighter';
 export * from './forgotten-weighter';
+export * from './many-items-not-seen-weighter';
+export * from './badness-weighter';
 export * from './revisit-weighter';
 export * from './new-sampler';
 export * from './weighted-sampler';

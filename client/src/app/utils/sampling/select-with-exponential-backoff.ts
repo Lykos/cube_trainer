@@ -24,8 +24,12 @@ function repetitionIndex(exponentialBackoffBase: number, totalOccurrences: numbe
 //   occurrence of this item.
 // * If totalOccurrences represents the total number of different days an item occurred on,
 //   moreRecentOtherOccurrences has to be the number of days since the last occurrence of this item
-export function selectWithExponentialBackoff(exponentialBackoffBase: number, totalOccurrences: number, moreRecentOtherOccurrences: number): boolean {
-  if (totalOccurrences === 0) {
+export function selectWithExponentialBackoff(
+  exponentialBackoffBase: number,
+  totalOccurrences: number,
+  moreRecentOtherOccurrences: number,
+  maxOccurrences: number = Infinity): boolean {
+  if (totalOccurrences === 0 || totalOccurrences > maxOccurrences) {
     return false;
   }
   const index = repetitionIndex(exponentialBackoffBase, totalOccurrences);

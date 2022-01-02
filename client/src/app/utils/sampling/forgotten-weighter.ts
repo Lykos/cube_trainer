@@ -4,15 +4,21 @@ import { selectWithExponentialBackoff } from './select-with-exponential-backoff'
 import { orElse, mapOptional } from '../optional';
 
 export class ForgottenWeighter extends Selector {
-  constructor(private readonly exponentialBackoffBase: number) {
+  constructor(private readonly exponentialBackoffBase: number,
+              private readonly forgottenRepetitions: number) {
     super();
   }
 
   select(state: WeightState) {
     return orElse(
       mapOptional(
-        state.occurrenceDaysSinceLastHint,
-        occurrenceDaysSinceLastHint => selectWithExponentialBackoff(this.exponentialBackoffBase, occurrenceDaysSinceLastHint, state.durationSinceLastOccurrence.toDays())
+        state.occurrenceDaysSinceLastHintOrDnf,
+        occurrenceDaysSince => selectWithExponentialBackoff(
+          this.exponentialBackoffBase,
+          occurrenceDaysSince,
+          state.durationSinceLastOccurrence.toDays(),
+          this.forgottenRepetitions,
+        )
       ),
       false);
   }
