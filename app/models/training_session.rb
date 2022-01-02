@@ -60,7 +60,7 @@ class TrainingSession < ApplicationRecord
   delegate :random_item, to: :input_sampler
 
   def random_case(cached_cases)
-    to_case(random_item(cached_cases))
+    to_training_case(random_item(cached_cases))
   end
 
   def case_set
@@ -98,10 +98,10 @@ class TrainingSession < ApplicationRecord
 
   delegate :parity_part_type, to: :training_session_type
 
-  def cases
+  def training_cases
     return unless has_bounded_inputs?
 
-    @cases ||= generator.input_items.map { |item| to_case(item) }
+    @training_cases ||= generator.input_items.map { |item| to_training_case(item) }
   end
 
   def color_scheme
@@ -128,7 +128,8 @@ class TrainingSession < ApplicationRecord
       goal_badness: goal_badness,
       memo_time_s: memo_time_s,
       cube_size: cube_size,
-      num_results: results.count
+      num_results: results.count,
+      training_cases: training_cases.map(&:to_simple)
     }
   end
 
@@ -142,11 +143,11 @@ class TrainingSession < ApplicationRecord
   end
 
   def commutator_override(input)
-    alg_overrides.find { |alg| alg.case_key == input.case_key }&.commutator
+    alg_overrides.find { |alg| alg.casee == input.casee }&.commutator
   end
 
   def commutator(input)
-    commutator_override(input) || alg_set&.commutator(input.case_key)
+    commutator_override(input) || alg_set&.commutator(input.casee)
   end
 
   def algorithm(input)
@@ -160,7 +161,7 @@ class TrainingSession < ApplicationRecord
 
   private
 
-  def to_case(item)
+  def to_training_case(item)
     TrainingCase.new(
       training_session: self,
       casee: item.casee,

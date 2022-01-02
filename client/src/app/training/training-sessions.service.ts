@@ -12,8 +12,8 @@ import { TrainingSessionType } from './training-session-type.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { seconds } from '@utils/duration';
-import { RailsParseError, FieldMissingError, FieldTypeError } from '@shared/rails-parse-error';
-import { checkArrayElementTypes } from '@shared/rails-parse-error-checker';
+import { RailsParseError, FieldMissingError, FieldTypeError, ArrayTypeError } from '@shared/rails-parse-error';
+import { checkObjectType, checkArrayElementTypes, checkFieldArrayElementTypes } from '@shared/rails-parse-error-checker';
 
 interface RawTrainingCase {
   readonly caseKey?: unknown;
@@ -178,6 +178,7 @@ export interface RawTrainingSessionType {
 }
 
 function parseTrainingSessionType(trainingSessionType: RawTrainingSessionType): TrainingSessionType {
+  checkObjectType('training session type', trainingSessionType);
   if (trainingSessionType.key === undefined) {
     throw new FieldMissingError('key', 'training session type', trainingSessionType);
   }
@@ -196,7 +197,7 @@ function parseTrainingSessionType(trainingSessionType: RawTrainingSessionType): 
   if (!Array.isArray(trainingSessionType.showInputModes)) {
     throw new FieldTypeError('showInputModes', 'array', 'training session type', trainingSessionType);
   }
-  checkArrayElementTypes('showInputModes', 'string', 'training session type', trainingSessionType, trainingSessionType.showInputModes);
+  checkFieldArrayElementTypes('showInputModes', 'string', 'training session type', trainingSessionType, trainingSessionType.showInputModes);
   if (trainingSessionType.hasBoundedInputs === undefined) {
     throw new FieldMissingError('hasBoundedInputs', 'training session type', trainingSessionType);
   }
@@ -230,14 +231,14 @@ function parseTrainingSessionType(trainingSessionType: RawTrainingSessionType): 
   if (!Array.isArray(trainingSessionType.buffers)) {
     throw new FieldTypeError('buffers', 'array', 'training session type', trainingSessionType);
   }
-  checkArrayElementTypes('buffers', 'object', 'training session type', trainingSessionType, trainingSessionType.buffers);
+  checkFieldArrayElementTypes('buffers', 'object', 'training session type', trainingSessionType, trainingSessionType.buffers);
   if (trainingSessionType.statsTypes === undefined) {
     throw new FieldMissingError('statsTypes', 'training session type', trainingSessionType);
   }
   if (!Array.isArray(trainingSessionType.statsTypes)) {
     throw new FieldTypeError('statsTypes', 'array', 'training session type', trainingSessionType);
   }
-  checkArrayElementTypes('statsTypes', 'object', 'training session type', trainingSessionType, trainingSessionType.statsTypes);
+  checkFieldArrayElementTypes('statsTypes', 'object', 'training session type', trainingSessionType, trainingSessionType.statsTypes);
   if (trainingSessionType.statsTypes.some(i => typeof i !== 'object')) {
     throw new Error(`Field statsTypes contains elements not of type object in training session type ${JSON.stringify(trainingSessionType)}`);
   }
@@ -247,7 +248,7 @@ function parseTrainingSessionType(trainingSessionType: RawTrainingSessionType): 
   if (!Array.isArray(trainingSessionType.algSets)) {
     throw new FieldTypeError('algSets', 'array', 'training session type', trainingSessionType);
   }
-  checkArrayElementTypes('algSets', 'object', 'training session type', trainingSessionType, trainingSessionType.algSets);
+  checkFieldArrayElementTypes('algSets', 'object', 'training session type', trainingSessionType, trainingSessionType.algSets);
   const cubeSizeSpec = trainingSessionType.cubeSizeSpec ? checkCubeSizeSpec(trainingSessionType.cubeSizeSpec) : undefined;
   return {
     key: trainingSessionType.key,
@@ -279,6 +280,7 @@ interface RawTrainingSession {
 }
 
 function parseTrainingSession(trainingSession: RawTrainingSession): TrainingSession {
+  checkObjectType('training session', trainingSession);
   if (trainingSession.id === undefined) {
     throw new FieldMissingError('id', 'training session', trainingSession);
   }
@@ -333,7 +335,7 @@ function parseTrainingSession(trainingSession: RawTrainingSession): TrainingSess
   if (!Array.isArray(trainingSession.trainingCases)) {
     throw new FieldTypeError('trainingCases', 'array', 'training session', trainingSession);
   }
-  checkArrayElementTypes('trainingCases', 'object', 'training session', trainingSession, trainingSession.trainingCases);
+  checkFieldArrayElementTypes('trainingCases', 'object', 'training session', trainingSession, trainingSession.trainingCases);
   return {
     id: trainingSession.id,
     trainingSessionType: parseTrainingSessionType(trainingSession.trainingSessionType as Partial<TrainingSessionType>),
@@ -347,6 +349,14 @@ function parseTrainingSession(trainingSession: RawTrainingSession): TrainingSess
     numResults: trainingSession.numResults,
     trainingCases: trainingSession.trainingCases.map(parseTrainingCase),
   };
+}
+
+function parseTrainingSessions(trainingSessions: unknown): TrainingSession[] {
+  if (!Array.isArray(trainingSessions)) {
+    throw new ArrayTypeError('training sessions', trainingSessions);
+  }
+  checkArrayElementTypes('object', 'training sessions', trainingSessions);
+  return trainingSessions.map(parseTrainingSession);
 }
 
 @Injectable({
@@ -366,7 +376,7 @@ export class TrainingSessionsService {
 
   list(): Observable<TrainingSession[]> {
     return this.rails.get<TrainingSession[]>('/training_sessions', {}).pipe(
-      map(trainingSessions => trainingSessions.map(parseTrainingSession)));
+      map(parseTrainingSessions));
   }
 
   show(trainingSessionId: number): Observable<TrainingSession> {
