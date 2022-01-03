@@ -50,16 +50,7 @@ class TrainingSession < ApplicationRecord
     @generator ||= training_session_type.generator_class.new(self)
   end
 
-  def input_sampler
-    @input_sampler ||= generator.input_sampler
-  end
-
   delegate :input_items, to: :generator
-  delegate :random_item, to: :input_sampler
-
-  def random_case(cached_cases)
-    to_training_case(random_item(cached_cases))
-  end
 
   def case_set
     @case_set ||=

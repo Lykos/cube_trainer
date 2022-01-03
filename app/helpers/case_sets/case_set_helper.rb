@@ -1,9 +1,13 @@
+# frozen_string_literal: true
+
 require 'case_pattern/case_pattern'
+require 'twisty_puzzles'
 
 module CaseSets
   # Helpers included for all case sets.
   module CaseSetHelper
     include CasePattern::CasePatternDsl
+    include TwistyPuzzles::Utils::StringHelper
 
     delegate :match?, to: :pattern
 

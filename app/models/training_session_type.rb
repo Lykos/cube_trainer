@@ -280,23 +280,13 @@ class TrainingSessionType
             has_buffer: false,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
+            case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Corner),
             has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :corner_3twists,
             name: 'Corner 3 Twists',
             generator_class: Training::Corner3Twists,
-            learner_type: :case_time,
-            default_cube_size: 3,
-            has_buffer: true,
-            has_goal_badness: true,
-            show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true
-          ),
-          TrainingSessionType.new(
-            key: :floating_2twists_and_corner_3twists,
-            name: 'Floating Corner 2 Twists + 3 Twists',
-            generator_class: Training::FloatingCorner2TwistsAnd3Twists,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -313,6 +303,7 @@ class TrainingSessionType
             has_buffer: false,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
+            case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Edge),
             has_bounded_inputs: true
           ),
           TrainingSessionType.new(

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CaseSets
   # A concrete case set like edge 3-cycles for buffer UF.
   # This is used for training and parsing alg sets.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'twisty_puzzles'
 
 module CaseSets
@@ -16,12 +18,36 @@ module CaseSets
       raise NotImplementedError
     end
 
+    # If `buffer?` returns true, this is defined.
+    def buffer_part_type
+      raise NotImplementedError
+    end
+
     def buffer?
       raise NotImplementedError
     end
 
+    def self.parity_sets
+      [
+        ParitySet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge),
+        ParitySet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner),
+      ]
+    end
+
+    def self.three_cycle_sets
+      TwistyPuzzles::PART_TYPES.map { |p| ThreeCycleSet.new(p) }
+    end
+
+    def self.twistable_part_types
+      [TwistyPuzzles::Corner, TwistyPuzzles::Edge, TwistyPuzzles::Midge]
+    end
+
+    def self.floating_two_twist_sets
+      twistable_part_types.map { |p| AbstractFloatingTwoTwistSet.new(p) }
+    end
+
     def self.all
-      @all ||= TwistyPuzzles::PART_TYPES.map { |p| ThreeCycleSet.new(p) }.freeze
+      @all ||= (three_cycle_sets + floating_two_twist_sets).freeze
     end
   end
 end

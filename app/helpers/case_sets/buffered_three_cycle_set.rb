@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'twisty_puzzles/utils'
 
 module CaseSets
   # An alg set with 3 cycles with a given fixed buffer.
@@ -21,7 +20,7 @@ module CaseSets
     attr_reader :part_type, :buffer, :pattern
 
     def to_s
-      "#{@part_type.name.split('::').last.downcase} 3-cycles for buffer #{@buffer}"
+      "#{simple_class_name(@part_type).downcase} 3-cycles for buffer #{@buffer}"
     end
 
     def row_pattern(refinement_index, casee)
@@ -81,7 +80,8 @@ module CaseSets
     end
 
     def cases
-      
+      part_permutations = @part_type::ELEMENTS.permutation(2).select { |a, b| !a.turned_equals?(b) && !a.turned_equals?(buffer) && !b.turned_equals?(buffer) }
+      part_permutations.map { |parts| Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([@buffer] + parts)]) }        
     end
 
     private
