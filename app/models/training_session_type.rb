@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/training/commutator_sets'
 require 'cube_trainer/training/cube_scrambles'
 require 'cube_trainer/training/human_word_learner'
 require 'cube_trainer/training/human_time_learner'
@@ -20,7 +19,6 @@ class TrainingSessionType
 
   attr_accessor :key,
                 :name,
-                :generator_class,
                 :learner_type,
                 :default_cube_size,
                 :has_buffer,
@@ -35,7 +33,6 @@ class TrainingSessionType
 
   validates :key, presence: true
   validates :name, presence: true
-  validates :generator_class, presence: true
   validates :learner_type, presence: true
   validates :show_input_modes, presence: true
   validate :show_input_modes_valid
@@ -182,14 +179,10 @@ class TrainingSessionType
   end
 
   def part_type
-    generator_class.const_defined?(:PART_TYPE) ? generator_class::PART_TYPE : nil
+    case_set&.buffer_part_type
   end
 
   alias cube_size? part_type
-
-  def parity_part_type
-    generator_class.const_defined?(:PARITY_PART_TYPE) ? generator_class::PARITY_PART_TYPE : nil
-  end
 
   def buffers
     return unless has_buffer?
@@ -225,7 +218,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :memo_rush,
             name: 'Memo Rush',
-            generator_class: Training::CubeScrambles,
             learner_type: :memo_rush,
             default_cube_size: 3,
             has_buffer: false,
@@ -238,7 +230,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :corner_commutators,
             name: 'Corner Commutators',
-            generator_class: Training::CornerCommutators,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -250,7 +241,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :corner_parities,
             name: 'Corner Parities',
-            generator_class: Training::CornerParities,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -262,7 +252,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :corner_twists_plus_parities,
             name: 'Corner 1 Twists + Parities',
-            generator_class: Training::CornerTwistsPlusParities,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -274,7 +263,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :floating_2twists,
             name: 'Floating Corner 2 Twists',
-            generator_class: Training::FloatingCorner2Twists,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: false,
@@ -286,7 +274,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :corner_3twists,
             name: 'Corner 3 Twists',
-            generator_class: Training::Corner3Twists,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -297,7 +284,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :floating_2flips,
             name: 'Floating Edge 2 Flips',
-            generator_class: Training::FloatingEdgeFlips,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: false,
@@ -309,7 +295,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :edge_commutators,
             name: 'Edge Commutators',
-            generator_class: Training::EdgeCommutators,
             learner_type: :case_time,
             default_cube_size: 3,
             has_buffer: true,
@@ -321,7 +306,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :wing_commutators,
             name: 'Wing Commutators',
-            generator_class: Training::WingCommutators,
             learner_type: :case_time,
             default_cube_size: 4,
             has_buffer: true,
@@ -333,7 +317,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :xcenter_commutators,
             name: 'X-Center Commutators',
-            generator_class: Training::XCenterCommutators,
             learner_type: :case_time,
             default_cube_size: 4,
             has_buffer: true,
@@ -345,7 +328,6 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :tcenter_commutators,
             name: 'T-Center Commutators',
-            generator_class: Training::TCenterCommutators,
             learner_type: :case_time,
             default_cube_size: 5,
             has_buffer: true,
