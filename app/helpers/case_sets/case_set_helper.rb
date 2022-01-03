@@ -5,22 +5,20 @@ module CaseSets
   module CaseSetHelper
     include CasePattern::CasePatternDsl
 
-      def match?(casee)
-        pattern.match?(casee)
-      end
+    delegate :match?, to: :pattern
 
-      def eql?(other)
-        self.class.equal?(other.class) && pattern == other.pattern
-      end
-
-      alias == eql?
-
-      def hash
-        [self.class, pattern].hash
-      end
-
-      def pattern
-        raise NotImplementedError
-      end
+    def eql?(other)
+      self.class.equal?(other.class) && pattern == other.pattern
     end
+
+    alias == eql?
+
+    def hash
+      [self.class, pattern].hash
+    end
+
+    def pattern
+      raise NotImplementedError
+    end
+  end
 end
