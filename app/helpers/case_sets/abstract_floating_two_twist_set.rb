@@ -17,7 +17,7 @@ module CaseSets
     delegate :pattern, to: :refinement
 
     def to_s
-      "#{simple_class_name(@part_type).downcase} floating 2-twists"
+      "floating #{simple_class_name(@part_type).downcase} 2-twists"
     end
 
     def refinements_matching(casee)

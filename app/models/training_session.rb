@@ -50,8 +50,6 @@ class TrainingSession < ApplicationRecord
     @generator ||= training_session_type.generator_class.new(self)
   end
 
-  delegate :input_items, to: :generator
-
   def case_set
     @case_set ||=
       if buffer
@@ -90,7 +88,7 @@ class TrainingSession < ApplicationRecord
   def training_cases
     return unless has_bounded_inputs?
 
-    @training_cases ||= generator.input_items.map { |item| to_training_case(item) }
+    @training_cases ||= case_set.cases.map { |c| to_training_case(c) }
   end
 
   def color_scheme
@@ -131,31 +129,31 @@ class TrainingSession < ApplicationRecord
     )
   end
 
-  def commutator_override(input)
-    alg_overrides.find { |alg| alg.casee == input.casee }&.commutator
+  def commutator_override(casee)
+    alg_overrides.find { |alg| alg.casee == casee }&.commutator
   end
 
-  def commutator(input)
-    commutator_override(input) || alg_set&.commutator(input.casee)
+  def commutator(casee)
+    commutator_override(casee) || alg_set&.commutator(casee)
   end
 
-  def algorithm(input)
-    commutator(input)&.algorithm
+  def algorithm(casee)
+    commutator(casee)&.algorithm
   end
 
-  def setup(input)
-    alg_setup = algorithm(input)&.inverse
+  def setup(casee)
+    alg_setup = algorithm(casee)&.inverse
     color_scheme.setup + alg_setup if alg_setup
   end
 
   private
 
-  def to_training_case(item)
+  def to_training_case(casee)
     TrainingCase.new(
       training_session: self,
-      casee: item.casee,
-      alg: commutator(item),
-      setup: setup(item)
+      casee: casee,
+      alg: commutator(casee),
+      setup: setup(casee)
     )
   end
 

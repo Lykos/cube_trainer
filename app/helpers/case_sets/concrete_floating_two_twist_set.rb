@@ -19,7 +19,7 @@ module CaseSets
     attr_reader :part_type, :pattern
 
     def to_s
-      "#{simple_class_name(@part_type).downcase} 3-cycles for buffer #{@buffer}"
+      "floating #{simple_class_name(@part_type).downcase} 2-cycles"
     end
 
     def row_pattern(refinement_index, casee)
@@ -61,7 +61,7 @@ module CaseSets
     end
 
     def case_name(casee, letter_scheme: nil)
-      raise ArgumentError unless casee.part_cycles.length == 2
+      raise ArgumentError, "#{casee} is not a floating 2-twist case" unless casee.part_cycles.length == 2
       raise ArgumentError unless casee.part_cycles.all? { |c| c.part_type == @part_type && c.length == 1 && c.twist > 0 }
 
       parts = casee.part_cycles.map { |c| c.parts.first }
@@ -75,7 +75,14 @@ module CaseSets
 
     def cases
       part_permutations = @part_type::ELEMENTS.permutation(2).select { |a, b| !a.turned_equals?(b) }
-      part_permutations.map { |parts| Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([@buffer] + parts)]) }        
+      part_permutations.map do |parts|
+        Case.new(
+          part_cycles: [
+            TwistyPuzzles::PartCycle.new([parts[0]], 1),
+            TwistyPuzzles::PartCycle.new([parts[0]], inverse_twist(1))
+          ]
+        )
+      end
     end
 
     private
