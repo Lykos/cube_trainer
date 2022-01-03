@@ -2,7 +2,6 @@
 
 require 'rails_helper'
 require 'twisty_puzzles'
-require 'cube_trainer/training/case_set'
 
 def create_case(*parts)
   casee = Case.new(part_cycles: [TwistyPuzzles::PartCycle.new(parts)])
@@ -26,7 +25,7 @@ RSpec.describe AlgSet, type: :model do
     alg_spreadsheet.alg_sets.create!(
       training_session_type: TrainingSessionType.find_by!(key: :edge_commutators),
       sheet_title: 'UF',
-      case_set: Training::BufferedThreeCycleSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Edge.for_face_symbols(%i[U F]))
+      case_set: CaseSets::BufferedThreeCycleSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Edge.for_face_symbols(%i[U F]))
     )
   end
 

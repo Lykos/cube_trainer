@@ -3,8 +3,6 @@
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 require 'training_session_type'
-require 'cube_trainer/training/case_solution'
-require 'cube_trainer/training/case_set'
 
 # Model for training sessions that the user created.
 class TrainingSession < ApplicationRecord
@@ -129,7 +127,7 @@ class TrainingSession < ApplicationRecord
       memo_time_s: memo_time_s,
       cube_size: cube_size,
       num_results: results.count,
-      training_cases: training_cases.map(&:to_simple)
+      training_cases: training_cases&.map(&:to_simple)
     }
   end
 

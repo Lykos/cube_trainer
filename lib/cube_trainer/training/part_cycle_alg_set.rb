@@ -2,7 +2,6 @@
 
 require 'cube_trainer/part_cycle_helper'
 require 'cube_trainer/buffer_helper'
-require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/training/input_item'
 
 module CubeTrainer
@@ -17,10 +16,6 @@ module CubeTrainer
 
       def solved_cube_state
         @training_session.solved_cube_state
-      end
-
-      def input_sampler
-        InputSampler.new(input_items, @training_session)
       end
 
       def goal_badness

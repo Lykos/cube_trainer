@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'cube_trainer/training/case_set'
 
 module CubeTrainer
   # Helper class that figures out what rows and columns of a commutator table have in common and
@@ -101,7 +100,7 @@ module CubeTrainer
 
     def self.relevant_top_level_case_sets(casee)
       # rubocop:disable Style/SelectByRegexp
-      Training::CASE_SETS.select { |p| p.match?(casee) }
+      CaseSets::AbstractCaseSet.all.select { |p| p.match?(casee) }
       # rubocop:enable Style/SelectByRegexp
     end
 

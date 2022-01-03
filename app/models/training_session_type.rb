@@ -244,7 +244,7 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: Training::ThreeCycleSet.new(TwistyPuzzles::Corner),
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Corner),
             has_bounded_inputs: true
           ),
           TrainingSessionType.new(
@@ -324,7 +324,7 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: Training::ThreeCycleSet.new(TwistyPuzzles::Edge),
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Edge),
             has_bounded_inputs: true
           ),
           TrainingSessionType.new(
@@ -336,7 +336,7 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: Training::ThreeCycleSet.new(TwistyPuzzles::Wing),
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Wing),
             has_bounded_inputs: true
           ),
           TrainingSessionType.new(
@@ -348,7 +348,7 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: Training::ThreeCycleSet.new(TwistyPuzzles::XCenter),
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::XCenter),
             has_bounded_inputs: true
           ),
           TrainingSessionType.new(
@@ -360,7 +360,7 @@ class TrainingSessionType
             has_buffer: true,
             has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: Training::ThreeCycleSet.new(TwistyPuzzles::TCenter),
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::TCenter),
             has_bounded_inputs: true
           )
         ].freeze

@@ -1,99 +1,9 @@
 # frozen_string_literal: true
 
-require_relative 'case_pattern'
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 
-module CubeTrainer
-  module Training
-    # Helpers included for all case sets.
-    module CaseSetHelper
-      include CasePatternDsl
-
-      def match?(casee)
-        pattern.match?(casee)
-      end
-
-      def eql?(other)
-        self.class.equal?(other.class) && pattern == other.pattern
-      end
-
-      alias == eql?
-
-      def hash
-        [self.class, pattern].hash
-      end
-
-      def pattern
-        raise NotImplementedError
-      end
-    end
-
-    # A high level case set like edge 3-cycles.
-    # This is not used for training, look for `ConcreteAlgSet` for one that includes a buffer
-    # and can be used for training.
-    class AbstractCaseSet
-      include CaseSetHelper
-
-      def refinements_matching(casee)
-        raise NotImplementedError
-      end
-
-      def refinement
-        raise NotImplementedError
-      end
-    end
-
-    # A concrete case set like edge 3-cycles for buffer UF.
-    # This is used for training and parsing alg sets.
-    class ConcreteCaseSet
-      extend TwistyPuzzles::Utils::StringHelper
-      include CaseSetHelper
-      include TwistyPuzzles::Utils::StringHelper
-
-      SEPARATOR = ':'
-
-      def row_pattern(refinement_index, casee)
-        raise NotImplementedError
-      end
-
-      def to_raw_data
-        ([simple_class_name(self.class)] + to_raw_data_parts_internal).join(SEPARATOR)
-      end
-
-      def self.from_raw_data(raw_data)
-        raw_clazz, *raw_data_parts = raw_data.split(SEPARATOR)
-        clazz = CONCRETE_CASE_SET_NAME_TO_CLASS[raw_clazz]
-        raise ArgumentError, "Unknown concrete case set class #{raw_clazz}." unless clazz
-
-        clazz.from_raw_data_parts(raw_data_parts)
-      end
-
-      def to_raw_data_parts_internal
-        raise NotImplementedError
-      end
-
-      def case_name(casee, letter_scheme: nil)
-        raise NotImplementedError
-      end
-
-      # Stricter version of `match?` that doesn't necessarily match equivalent cases.
-      # E.g. for 3 cycles, this only matches cases that start with the right buffer
-      # and doesn't match
-      def strict_match?(casee)
-        raise NotImplementedError
-      end
-
-      # Creates an equivalent case that fulfills `strict_match?`.
-      def create_strict_matching(casee)
-        raise NotImplementedError
-      end
-
-      def default_cube_size
-        raise NotImplementedError
-      end
-    end
-
+module CaseSets
     # An alg set with all 3 cycles of a given part type.
     class ThreeCycleSet < AbstractCaseSet
       def initialize(part_type)
@@ -214,5 +124,4 @@ module CubeTrainer
       CONCRETE_CASE_SET_NAME_TO_CLASS =
         CONCRETE_CASE_SET_CLASSES.to_h { |e| [simple_class_name(e), e] }.freeze
     end
-  end
 end

@@ -17,15 +17,12 @@ Rails.application.routes.draw do
     resource :user
     resource :dump, only: [:show]
     resources :training_sessions do
-      resources :cases, only: [:index, :show]
       resources :results
       resources :alg_overrides
       resources :stats, only: [:index, :show, :destroy]
       post 'alg_overrides/create_or_update', to: 'alg_overrides#create_or_update'
     end
     resources :stat_types, only: [:index, :show]
-    get 'trainer/:training_session_id/random_case', to: 'trainer#random_case'
-    get 'trainer/:training_session_id/inputs/:input_id/image/:img_side', to: 'cube_images#show'
     resources :part_types, only: [:index]
   end
   # We don't need this in development because we use a separate server for the frontend via `npm start`.

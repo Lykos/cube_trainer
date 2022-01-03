@@ -3,7 +3,6 @@
 require_relative 'case_reverse_engineer'
 require_relative 'case_checker'
 require_relative 'commonality_finder'
-require 'cube_trainer/training/case_pattern'
 require 'twisty_puzzles'
 
 module CubeTrainer
@@ -57,7 +56,7 @@ module CubeTrainer
       # Represents one location in a spreadsheet with all kind of indexing metadata.
       class CellDescription
         def initialize(name, row_index, column_index, pattern)
-          raise TypeError unless pattern.nil? || pattern.is_a?(Training::CasePattern)
+          raise TypeError unless pattern.nil? || pattern.is_a?(CasePattern::CasePattern)
 
           @name = name
           @row_index = row_index

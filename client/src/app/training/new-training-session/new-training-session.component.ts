@@ -137,6 +137,7 @@ export class NewTrainingSessionComponent {
     if (!buffer) {
       return [];
     }
+    console.log(trainingSessionType.algSets);
     return trainingSessionType.algSets.filter(a => a.buffer.key === buffer.key);
   }
 

@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/sheet_scraping/case_checker'
-require 'cube_trainer/training/case_pattern'
 require 'twisty_puzzles'
 require 'rails_helper'
 
 def cell_description(*parts)
-  part_patterns = parts.map { |p| Training::SpecificPart.new(p) }
-  part_cycle_patterns = [Training::PartCyclePattern.new(parts.first.class, part_patterns)]
-  case_pattern = Training::LeafCasePattern.new(part_cycle_patterns)
+  part_patterns = parts.map { |p| CasePattern::SpecificPart.new(p) }
+  part_cycle_patterns = [CasePattern::PartCyclePattern.new(parts.first.class, part_patterns)]
+  case_pattern = CasePattern::LeafCasePattern.new(part_cycle_patterns)
   SheetScraping::AlgExtractor::CellDescription.new('test', 0, 0, case_pattern)
 end
 

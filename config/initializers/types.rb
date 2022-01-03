@@ -5,7 +5,7 @@ require 'achievement_type'
 require 'stat_type_type'
 require 'part_type'
 require 'case_type'
-require 'concrete_case_set_type'
+require 'case_sets/concrete_case_set_type'
 
 ActiveRecord::Type.register(:symbol, SymbolType)
 ActiveRecord::Type.register(:input_representation, InputRepresentationType)

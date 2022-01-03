@@ -24,9 +24,11 @@ class AlgSet < ApplicationRecord
   delegate :case_name, to: :case_set
 
   def to_simple
+    logger.info '#to_simple'
     {
       id: id,
-      owner: alg_spreadsheet.owner
+      owner: alg_spreadsheet.owner,
+      buffer: part_to_simple(case_set.buffer)
     }
   end
 

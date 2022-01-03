@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/training/case_pattern'
 require 'rails_helper'
 require 'twisty_puzzles'
 
-describe Training::CasePattern do
+describe CasePattern::CasePattern do
   let(:uf) { TwistyPuzzles::Edge.for_face_symbols(%i[U F]) }
   let(:fu) { TwistyPuzzles::Edge.for_face_symbols(%i[F U]) }
   let(:df) { TwistyPuzzles::Edge.for_face_symbols(%i[D F]) }
@@ -12,25 +11,25 @@ describe Training::CasePattern do
   let(:ur) { TwistyPuzzles::Edge.for_face_symbols(%i[U R]) }
   let(:edge_cycle) { TwistyPuzzles::PartCycle.new([uf, df, ub]) }
   let(:other_edge_cycle) { TwistyPuzzles::PartCycle.new([ub, df, ur]) }
-  let(:uf_pattern) { Training::SpecificPart.new(uf) }
-  let(:fu_pattern) { Training::SpecificPart.new(fu) }
-  let(:ub_pattern) { Training::SpecificPart.new(ub) }
-  let(:wildcard) { Training::PartWildcard.new }
-  let(:edge_cycle_pattern) { Training::PartCyclePattern.new(TwistyPuzzles::Edge, [uf_pattern, wildcard, wildcard]) }
-  let(:equivalent_edge_cycle_pattern) { Training::PartCyclePattern.new(TwistyPuzzles::Edge, [wildcard, fu_pattern, wildcard]) }
-  let(:other_edge_cycle_pattern) { Training::PartCyclePattern.new(TwistyPuzzles::Edge, [ub_pattern, wildcard, wildcard]) }
+  let(:uf_pattern) { CasePattern::SpecificPart.new(uf) }
+  let(:fu_pattern) { CasePattern::SpecificPart.new(fu) }
+  let(:ub_pattern) { CasePattern::SpecificPart.new(ub) }
+  let(:wildcard) { CasePattern::PartWildcard.new }
+  let(:edge_cycle_pattern) { CasePattern::PartCyclePattern.new(TwistyPuzzles::Edge, [uf_pattern, wildcard, wildcard]) }
+  let(:equivalent_edge_cycle_pattern) { CasePattern::PartCyclePattern.new(TwistyPuzzles::Edge, [wildcard, fu_pattern, wildcard]) }
+  let(:other_edge_cycle_pattern) { CasePattern::PartCyclePattern.new(TwistyPuzzles::Edge, [ub_pattern, wildcard, wildcard]) }
   let(:ufr) { TwistyPuzzles::Corner.for_face_symbols(%i[U R F]) }
   let(:fur) { TwistyPuzzles::Corner.for_face_symbols(%i[F U R]) }
   let(:ubl) { TwistyPuzzles::Corner.for_face_symbols(%i[U B L]) }
   let(:ufl) { TwistyPuzzles::Corner.for_face_symbols(%i[U F L]) }
   let(:corner_cycle) { TwistyPuzzles::PartCycle.new([ufr, ubl, ufl]) }
-  let(:ufr_pattern) { Training::SpecificPart.new(ufr) }
-  let(:fur_pattern) { Training::SpecificPart.new(fur) }
-  let(:corner_cycle_pattern) { Training::PartCyclePattern.new(TwistyPuzzles::Corner, [ufr_pattern, wildcard, wildcard]) }
-  let(:equivalent_corner_cycle_pattern) { Training::PartCyclePattern.new(TwistyPuzzles::Corner, [wildcard, fur_pattern, wildcard]) }
-  let(:case_pattern) { Training::LeafCasePattern.new([edge_cycle_pattern, corner_cycle_pattern]) }
-  let(:equivalent_case_pattern) { Training::LeafCasePattern.new([equivalent_corner_cycle_pattern, equivalent_edge_cycle_pattern]) }
-  let(:other_case_pattern) { Training::LeafCasePattern.new([other_edge_cycle_pattern, corner_cycle_pattern]) }
+  let(:ufr_pattern) { CasePattern::SpecificPart.new(ufr) }
+  let(:fur_pattern) { CasePattern::SpecificPart.new(fur) }
+  let(:corner_cycle_pattern) { CasePattern::PartCyclePattern.new(TwistyPuzzles::Corner, [ufr_pattern, wildcard, wildcard]) }
+  let(:equivalent_corner_cycle_pattern) { CasePattern::PartCyclePattern.new(TwistyPuzzles::Corner, [wildcard, fur_pattern, wildcard]) }
+  let(:case_pattern) { CasePattern::LeafCasePattern.new([edge_cycle_pattern, corner_cycle_pattern]) }
+  let(:equivalent_case_pattern) { CasePattern::LeafCasePattern.new([equivalent_corner_cycle_pattern, equivalent_edge_cycle_pattern]) }
+  let(:other_case_pattern) { CasePattern::LeafCasePattern.new([other_edge_cycle_pattern, corner_cycle_pattern]) }
   let(:casee) { Case.new(part_cycles: [edge_cycle, corner_cycle]) }
   let(:other_case) { Case.new(part_cycles: [other_edge_cycle, corner_cycle]) }
 

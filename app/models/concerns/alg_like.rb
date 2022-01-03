@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/sheet_scraping/case_checker'
-require 'cube_trainer/training/case_pattern'
 require 'twisty_puzzles'
 
 # Concern for classes that behave like and alg that solves
@@ -20,7 +19,7 @@ module AlgLike
   # Cell description that we just make up without having an actual spreadsheet.
   class SyntheticCellDescription
     def initialize(casee)
-      @pattern = CubeTrainer::Training::SpecificCasePattern.new(casee)
+      @pattern = CasePattern::SpecificCasePattern.new(casee)
     end
 
     attr_reader :pattern

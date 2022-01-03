@@ -2,8 +2,7 @@
 
 require 'twisty_puzzles/utils'
 
-module CubeTrainer
-  module Training
+module CasePattern
     # A pattern that matches cases. These can be used at multiple levels.
     # E.g. a pattern can be used to match
     # * all edge 3 cycles,
@@ -324,5 +323,4 @@ module CubeTrainer
         LeafCasePattern.new(part_cycle_patterns)
       end
     end
-  end
 end

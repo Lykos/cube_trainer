@@ -16,7 +16,7 @@ describe 'trainer', type: :system do
 
     # TODO: Figure out how to identify the right button in the training_session list.
 
-    visit "/training/#{training_session.id}"
+    visit "/training-sessions/#{training_session.id}"
 
     click_button 'Start'
     sleep(0.5)

@@ -3,7 +3,6 @@
 require 'cube_trainer/part_cycle_helper'
 require 'cube_trainer/part_cycle_sequence'
 require 'cube_trainer/training/disjoint_union_part_cycle_alg_set'
-require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/training/part_cycle_alg_set'
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
