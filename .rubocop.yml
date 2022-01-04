@@ -38,6 +38,7 @@ Metrics/BlockLength:
   Exclude:
   - 'spec/**/*_spec.rb'
   - 'Gemfile'
+  - 'lib/tasks/*.rake'
 Style/MultilineBlockChain:
   Exclude:
   - 'spec/**/*_spec.rb'

@@ -21,16 +21,13 @@ module CaseSets
     attr_reader :buffer_part_type, :parity_part_type, :buffer, :pattern
 
     def to_s
-      "#{simple_class_name(@buffer_part_type).downcase} #{simple_class_name(@parity_part_type).downcase} parities for buffer #{@buffer}"
+      "#{simple_class_name(@buffer_part_type).downcase} " \
+      "#{simple_class_name(@parity_part_type).downcase} parities for buffer #{@buffer}"
     end
 
     def row_pattern(refinement_index, casee)
       raise ArgumentError if refinement_index != 0 && refinement_index != 1
-      raise ArgumentError unless casee.part_cycles.length == 2
-      raise ArgumentError unless casee.part_cycles.all? do |c|
-                                   (c.part_type == @buffer_part_type || c.part_type == @parity_part_type) && c.length == 2
-                                 end
-      raise ArgumentError if casee.part_cycles.first.part_type == casee.part_cycles.last.part_type
+      raise ArgumentError unless match?(casee)
 
       # We only refine in one direction, in the other direction we just allow a wildcard for
       # the swap that it does for the parity part

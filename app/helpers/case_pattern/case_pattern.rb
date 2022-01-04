@@ -120,6 +120,7 @@ module CasePattern
     end
   end
 
+  # A pattern that matches either individual twists or all unsolved twists.
   class TwistPattern
     include Comparable
 
@@ -132,11 +133,13 @@ module CasePattern
     end
   end
 
+  # A pattern that matches an individual twists.
   class SpecificTwist < TwistPattern
     def initialize(twist)
       raise TypeError unless twist.is_a?(Integer)
       raise ArgumentError if twist.negative?
 
+      super()
       @twist = twist
     end
 
@@ -168,6 +171,7 @@ module CasePattern
     end
   end
 
+  # A pattern that matches all unsolved twists.
   class AnyUnsolvedTwist < TwistPattern
     def match?(twist)
       twist.positive?
