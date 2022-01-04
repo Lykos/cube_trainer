@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/training/cube_scrambles'
 require 'cube_trainer/training/human_word_learner'
 require 'cube_trainer/training/human_time_learner'
-require 'cube_trainer/training/letters_to_word'
-require 'cube_trainer/letter_pair'
 
 # Model for training session types.
 # They are basic templates which users use to create their training sessions.
@@ -15,39 +12,48 @@ class TrainingSessionType
   include PartHelper
 
   SHOW_INPUT_MODES = %i[picture name].freeze
+  MIN_SUPPORTED_CUBE_SIZE = 2
   MAX_SUPPORTED_CUBE_SIZE = 7
 
   attr_accessor :key,
                 :name,
                 :learner_type,
                 :default_cube_size,
-                :has_buffer,
-                :has_bounded_inputs,
-                :has_goal_badness,
                 :show_input_modes,
                 :used_training_session_types,
-                :has_parity_parts,
-                :has_memo_time,
-                :has_setup,
-                :case_set
+                :memo_time,
+                :case_set,
+                :setup
 
   validates :key, presence: true
   validates :name, presence: true
   validates :learner_type, presence: true
   validates :show_input_modes, presence: true
   validate :show_input_modes_valid
-  validates :default_cube_size, presence: true, if: :cube_size?
-  validate :default_cube_size_valid, if: :cube_size?
 
-  alias has_bounded_inputs? has_bounded_inputs
-  alias has_goal_badness? has_goal_badness
-  alias has_buffer? has_buffer
-  alias has_parity_parts? has_parity_parts
-  alias has_memo_time? has_memo_time
-  alias has_setup? has_setup
+  alias memo_time? memo_time
+  alias setup? setup
 
   def default_cube_size_valid
     validate_cube_size(default_cube_size, errors, :default_cube_size)
+  end
+
+  def bounded_inputs?
+    !!case_set
+  end
+
+  alias goal_badness? bounded_inputs?
+
+  def buffer?
+    case_set&.buffer?
+  end
+
+  def parity_parts?
+    case_set&.parity_parts?
+  end
+
+  def parity_part_type
+    parity_parts? && case_set.parity_part_type
   end
 
   # Takes an external errors list so it can be used for other models, too.
@@ -68,46 +74,22 @@ class TrainingSessionType
 
   # Takes an external errors list so it can be used for other models, too.
   def validate_buffer(buffer, errors)
-    errors.add(:buffer, "has to be a #{part_type}") unless buffer.is_a?(part_type)
-  end
-
-  # Takes an external errors list so it can be used for other models, too.
-  def validate_case_key(case_key, errors)
-    unless case_key.is_a?(TwistyPuzzles::PartCycle)
-      errors.add(
-        :case_key,
-        'has to be a part cycle'
-      ) && return
-    end
-
-    errors.add(:case_key, "has to be a #{part_type}") unless case_key.part_type == part_type
-    unless case_key.length == cycle_length
-      errors.add(
-        :case_key,
-        "has to have length #{cycle_length}"
-      )
-    end
-    errors.add(:case_key, 'cannot twist') unless case_key.twist.zero?
-  end
-
-  # TODO: Support more than 3 cycles
-  def cycle_length
-    3
+    errors.add(:buffer, "has to be a #{buffer_part_type}") unless buffer.is_a?(buffer_part_type)
   end
 
   # Returns a simple version for the current user that can be returned to the frontend.
-  def to_simple(_user = nil)
+  def to_simple
     {
       key: key,
       name: name,
       learner_type: learner_type,
       cube_size_spec: cube_size_spec,
-      has_goal_badness: has_goal_badness?,
+      has_goal_badness: goal_badness?,
       show_input_modes: show_input_modes,
       buffers: buffers&.map { |p| part_to_simple(p) },
-      has_bounded_inputs: has_bounded_inputs?,
-      has_memo_time: has_memo_time?,
-      has_setup: has_setup?,
+      has_bounded_inputs: bounded_inputs?,
+      has_memo_time: memo_time?,
+      has_setup: setup?,
       stats_types: stats_types.map(&:to_simple),
       alg_sets: alg_sets.map(&:to_simple)
     }
@@ -132,9 +114,23 @@ class TrainingSessionType
     end
   end
 
-  def cube_size_spec
-    return unless cube_size?
+  def min_cube_size
+    case_set ? [MIN_SUPPORTED_CUBE_SIZE, case_set.min_cube_size].max : MIN_SUPPORTED_CUBE_SIZE
+  end
 
+  def max_cube_size
+    case_set ? [MAX_SUPPORTED_CUBE_SIZE, case_set.min_cube_size].min : MAX_SUPPORTED_CUBE_SIZE
+  end
+
+  def even_cube_size_allowed?
+    case_set ? case_set.even_cube_size_allowed? : true
+  end
+
+  def odd_cube_size_allowed?
+    case_set ? case_set.odd_cube_size_allowed? : true
+  end
+
+  def cube_size_spec
     {
       default: default_cube_size,
       min: min_cube_size,
@@ -144,50 +140,14 @@ class TrainingSessionType
     }
   end
 
-  def min_cube_size
-    parity_part_type_min_cube_size =
-      parity_part_type ? parity_part_type.min_cube_size : -Float::INFINITY
-
-    maximal_min_cube_size = [part_type.min_cube_size, parity_part_type_min_cube_size].max
-    wrong_parity?(maximal_min_cube_size) ? maximal_min_cube_size + 1 : maximal_min_cube_size
-  end
-
-  def max_cube_size
-    parity_part_type_max_cube_size =
-      parity_part_type ? parity_part_type.max_cube_size : Float::INFINITY
-
-    minimal_max_cube_size = [
-      part_type.max_cube_size,
-      parity_part_type_max_cube_size,
-      MAX_SUPPORTED_CUBE_SIZE
-    ].min
-    wrong_parity?(minimal_max_cube_size) ? minimal_max_cube_size - 1 : minimal_max_cube_size
-  end
-
-  def wrong_parity?(cube_size)
-    (cube_size.even? && !even_cube_size_allowed?) || (cube_size.odd? && !odd_cube_size_allowed?)
-  end
-
-  def odd_cube_size_allowed?
-    part_type.exists_on_odd_cube_sizes? &&
-      (parity_part_type.nil? || parity_part_type.exists_on_odd_cube_sizes?)
-  end
-
-  def even_cube_size_allowed?
-    part_type.exists_on_even_cube_sizes? &&
-      (parity_part_type.nil? || parity_part_type.exists_on_even_cube_sizes?)
-  end
-
-  def part_type
+  def buffer_part_type
     case_set&.buffer_part_type
   end
 
-  alias cube_size? part_type
-
   def buffers
-    return unless has_buffer?
+    return unless buffer?
 
-    part_type::ELEMENTS
+    buffer_part_type::ELEMENTS
   end
 
   def show_input_modes_valid
@@ -201,13 +161,13 @@ class TrainingSessionType
 
   # TODO: Remove once we don't rely on heavy caching for pictures.
   def show_input_mode_picture_for_bounded_input
-    return unless show_input_modes.include?(:picture) && has_bounded_inputs?
+    return unless show_input_modes.include?(:picture) && bounded_inputs?
 
     errors.add(:show_input_modes, 'cannot be :picture for unbounded inputs')
   end
 
   def stats_types
-    StatType::ALL.select { |s| has_bounded_inputs? || !s.needs_bounded_inputs? }
+    StatType::ALL.select { |s| bounded_inputs? || !s.needs_bounded_inputs? }
   end
 
   # rubocop:disable Metrics/MethodLength
@@ -220,121 +180,97 @@ class TrainingSessionType
             name: 'Memo Rush',
             learner_type: :memo_rush,
             default_cube_size: 3,
-            has_buffer: false,
-            has_goal_badness: false,
             show_input_modes: [:name],
-            has_bounded_inputs: false,
-            has_memo_time: true,
-            has_setup: true
+            memo_time: true,
+            setup: true
           ),
           TrainingSessionType.new(
             key: :corner_commutators,
             name: 'Corner Commutators',
             learner_type: :case_time,
             default_cube_size: 3,
-            has_buffer: true,
-            has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Corner),
-            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :corner_parities,
             name: 'Corner Parities',
             learner_type: :case_time,
             default_cube_size: 3,
-            has_buffer: true,
-            has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true,
-            has_parity_parts: true
+            case_set: CaseSets::ParitySet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge),
+          ),
+          TrainingSessionType.new(
+            key: :edge_parities,
+            name: 'Edge Parities',
+            learner_type: :case_time,
+            default_cube_size: 3,
+            show_input_modes: SHOW_INPUT_MODES,
+            case_set: CaseSets::ParitySet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner),
           ),
           TrainingSessionType.new(
             key: :corner_twists_plus_parities,
             name: 'Corner 1 Twists + Parities',
             learner_type: :case_time,
             default_cube_size: 3,
-            has_buffer: true,
-            has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true,
-            has_parity_parts: true
+            case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge),
+          ),
+          TrainingSessionType.new(
+            key: :edge_flips_plus_parities,
+            name: 'Edge 1 Flips + Parities',
+            learner_type: :case_time,
+            default_cube_size: 3,
+            show_input_modes: SHOW_INPUT_MODES,
+            case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner),
           ),
           TrainingSessionType.new(
             key: :floating_2twists,
             name: 'Floating Corner 2 Twists',
             learner_type: :case_time,
             default_cube_size: 3,
-            has_buffer: false,
-            has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
             case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Corner),
-            has_bounded_inputs: true
-          ),
-          TrainingSessionType.new(
-            key: :corner_3twists,
-            name: 'Corner 3 Twists',
-            learner_type: :case_time,
-            default_cube_size: 3,
-            has_buffer: true,
-            has_goal_badness: true,
-            show_input_modes: SHOW_INPUT_MODES,
-            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :floating_2flips,
             name: 'Floating Edge 2 Flips',
             learner_type: :case_time,
             default_cube_size: 3,
-            has_buffer: false,
-            has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
             case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Edge),
-            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :edge_commutators,
             name: 'Edge Commutators',
             learner_type: :case_time,
             default_cube_size: 3,
-            has_buffer: true,
-            has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Edge),
-            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :wing_commutators,
             name: 'Wing Commutators',
             learner_type: :case_time,
             default_cube_size: 4,
-            has_buffer: true,
-            has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Wing),
-            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :xcenter_commutators,
             name: 'X-Center Commutators',
             learner_type: :case_time,
             default_cube_size: 4,
-            has_buffer: true,
-            has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::XCenter),
-            has_bounded_inputs: true
           ),
           TrainingSessionType.new(
             key: :tcenter_commutators,
             name: 'T-Center Commutators',
             learner_type: :case_time,
             default_cube_size: 5,
-            has_buffer: true,
-            has_goal_badness: true,
             show_input_modes: SHOW_INPUT_MODES,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::TCenter),
-            has_bounded_inputs: true
           )
         ].freeze
         all.each(&:validate!)

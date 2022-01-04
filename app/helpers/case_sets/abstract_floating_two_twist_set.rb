@@ -30,8 +30,8 @@ module CaseSets
       [refinement]
     end
 
-    def buffer?
-      false
+    def part_types
+      [part_type]
     end
   end
 end

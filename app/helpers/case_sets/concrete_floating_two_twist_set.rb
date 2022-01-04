@@ -11,8 +11,8 @@ module CaseSets
       @part_type = part_type
       @pattern =
         case_pattern(
-          part_cycle_pattern(part_type, wildcard, twist: 1),
-          part_cycle_pattern(part_type, wildcard, twist: inverse_twist(1))
+          part_cycle_pattern(part_type, wildcard, twist: specific_twist(1)),
+          part_cycle_pattern(part_type, wildcard, twist: specific_twist(inverse_twist(1)))
         )
     end
 

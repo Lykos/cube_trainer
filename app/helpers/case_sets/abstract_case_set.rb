@@ -18,19 +18,61 @@ module CaseSets
       raise NotImplementedError
     end
 
-    # If `buffer?` returns true, this is defined.
-    def buffer_part_type
+    # Returns true iff this case set has a buffer.
+    def buffer?
+      defined?(buffer_part_type)
+    end
+
+    # Returns true iff this case set has parity parts (of a different type than the buffer)
+    def parity_parts?
+      defined?(parity_part_type)
+    end
+
+    def part_types
       raise NotImplementedError
     end
 
-    def buffer?
-      raise NotImplementedError
+    def min_cube_size
+      candidate = part_types.map { |p| p.min_cube_size }.max
+
+      return candidate if part_types.all? { |p| p.exists_on_cube_size?(candidate) }
+
+      candidate += 1
+      return candidate if part_types.all? { |p| p.exists_on_cube_size?(candidate) }
+
+      raise
+    end
+
+    def max_cube_size
+      candidate = part_types.map { |p| p.max_cube_size }.min
+
+      return candidate if part_types.all? { |p| p.exists_on_cube_size?(candidate) }
+
+      candidate -= 1
+      return candidate if part_types.all? { |p| p.exists_on_cube_size?(candidate) }
+
+      raise
+    end
+
+    def odd_cube_size_allowed?
+      part_types.all? { |p| p.exists_on_odd_cube_sizes? }
+    end
+
+    def even_cube_size_allowed?
+      part_types.all? { |p| p.exists_on_even_cube_sizes? }
     end
 
     def self.parity_sets
       [
         ParitySet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge),
-        ParitySet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner),
+        ParitySet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner)
+      ]
+    end
+
+    def self.parity_twist_sets
+      [
+        ParityTwistSet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge),
+        ParityTwistSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner)
       ]
     end
 
@@ -47,7 +89,7 @@ module CaseSets
     end
 
     def self.all
-      @all ||= (three_cycle_sets + floating_two_twist_sets).freeze
+      @all ||= (three_cycle_sets + floating_two_twist_sets + parity_sets).freeze
     end
   end
 end

@@ -23,7 +23,7 @@ module CasePattern
       super()
       @case_patterns = case_patterns
     end
-
+    
     def match?(casee)
       @case_patterns.all? { |p| p.match?(casee) }
     end
@@ -41,14 +41,14 @@ module CasePattern
   class PartPattern
     include Comparable
 
-    def <=>(other)
-      raise NotImplementedError
-    end
-
     def part
       raise NotImplementedError
     end
 
+    def <=>(other)
+      raise NotImplementedError
+    end
+    
     def match?(part)
       raise NotImplementedError
     end
@@ -63,9 +63,11 @@ module CasePattern
     def part; end
 
     def <=>(other)
-      [self.class.name] <=> [other.class.name]
-    end
+      return 0 if self.class.equal?(other.class)
 
+      return 1
+    end
+    
     def eql?(other)
       self.class.equal?(other.class)
     end
@@ -96,13 +98,15 @@ module CasePattern
       @part.turned_equals?(part)
     end
 
-    def <=>(other)
-      [self.class.name, @part] <=> [other.class.name, part]
-    end
-
     def eql?(other)
       self.class.equal?(other.class) &&
         @part.turned_equals?(other.part)
+    end
+
+    def <=>(other)
+      return -1 unless self.class.equal?(other.class)
+
+      @part.rotations.min <=> other.part.rotations.min
     end
 
     alias == eql?
@@ -116,17 +120,90 @@ module CasePattern
     end
   end
 
+  class TwistPattern
+    include Comparable
+
+    def <=>(other)
+      raise NotImplementedError
+    end
+    
+    def match?(twist)
+      raise NotImplementedError
+    end
+  end
+
+  class SpecificTwist < TwistPattern
+    def initialize(twist)
+      raise TypeError unless twist.is_a?(Integer)
+      raise ArgumentError if twist.negative?
+
+      @twist = twist
+    end
+
+    attr_reader :twist
+
+    def match?(twist)
+      @twist == twist
+    end
+
+    def <=>(other)
+      return -1 unless self.class.equal?(other.class)
+
+      @twist <=> other.twist
+    end
+
+    def eql?(other)
+      self.class.equal?(other.class) &&
+        @twist == other.twist
+    end
+
+    alias == eql?
+
+    def hash
+      [self.class, @twist].hash
+    end
+
+    def to_s
+      @twist.to_s
+    end
+  end
+
+  class AnyUnsolvedTwist < TwistPattern
+    def match?(twist)
+      twist > 0
+    end
+
+    def <=>(other)
+      return 0 if self.class.equal?(other.class)
+
+      return 1
+    end
+
+    def eql?(other)
+      self.class.equal?(other.class)
+    end
+
+    alias == eql?
+
+    def hash
+       [self.class].hash
+    end
+
+    def to_s
+      "any unsolved"
+    end
+  end
+
   # A part cycle pattern that matches part cycles of a given type and
   # with a given set of fixed pieces.
   class PartCyclePattern
     include TwistyPuzzles::Utils::StringHelper
     include Comparable
 
-    def initialize(part_type, part_patterns, twist = 0)
+    def initialize(part_type, part_patterns, twist = SpecificTwist.new(0))
       raise TypeError unless part_type.is_a?(Class)
       raise TypeError unless part_patterns.is_a?(Array) && part_patterns.all?(PartPattern)
-      raise TypeError unless twist.is_a?(Integer)
-      raise ArgumentError if twist.negative? || twist >= part_type::ELEMENTS.first.rotations.length
+      raise TypeError unless twist.is_a?(TwistPattern)
 
       @part_type = part_type
       @part_patterns = part_patterns
@@ -140,13 +217,13 @@ module CasePattern
 
       part_cycle.part_type == @part_type &&
         part_patterns_match?(part_cycle) &&
-        part_cycle.twist == @twist
+        @twist.match?(part_cycle.twist)
     end
 
     def eql?(other)
       self.class.equal?(other.class) &&
         @part_type == other.part_type &&
-        @part_patterns.sort == other.part_patterns.sort &&
+        min_part_patterns_rotation == other.min_part_patterns_rotation &&
         @twist == other.twist
     end
 
@@ -157,14 +234,11 @@ module CasePattern
     alias == eql?
 
     def hash
-      [self.class, @part_type, @part_patterns.sort, @twist].hash
+      [self.class, @part_type, min_part_patterns_rotation, @twist].hash
     end
 
     def <=>(other)
-      [
-        @part_type.name, @part_patterns,
-        @twist
-      ] <=> [other.part_type.name, other.part_patterns, other.twist]
+      [@part_type.name, min_part_patterns_rotation, @twist] <=> [other.part_type.name, other.min_part_patterns_rotation, other.twist]
     end
 
     def to_s
@@ -172,13 +246,21 @@ module CasePattern
         "[#{@part_patterns.join(', ')}], #{@twist})"
     end
 
+    def min_part_patterns_rotation
+      @min_part_patterns_rotation ||= part_patterns_rotations.min
+    end
+
     private
+
+    def part_patterns_rotations
+      @part_patterns_rotations ||= (0...@part_patterns.length).map { |r| @part_patterns.rotate(r) }
+    end
 
     def part_patterns_match?(part_cycle)
       return false unless part_cycle.length == @part_patterns.length
 
-      (0...@part_patterns.length).any? do |r|
-        @part_patterns.rotate(r).zip(part_cycle.parts).all? { |p, q| p.match?(q) }
+      part_patterns_rotations.any? do |r|
+        r.zip(part_cycle.parts).all? { |p, q| p.match?(q) }
       end
     end
   end
@@ -213,7 +295,7 @@ module CasePattern
     def part_cycle_groups(casee)
       ignore = @ignore_same_face_center_cycles
       casee.canonicalize(ignore_same_face_center_cycles: ignore).part_cycles.group_by do |c|
-        [c.part_type.name, c.length, c.twist]
+        [c.part_type.name, c.length]
       end
     end
 
@@ -245,7 +327,7 @@ module CasePattern
     def part_cycle_pattern_groups
       @part_cycle_pattern_groups ||=
         part_cycle_patterns.group_by do |p|
-          [p.part_type.name, p.length, p.twist]
+          [p.part_type.name, p.length]
         end
     end
 
@@ -313,12 +395,21 @@ module CasePattern
       SpecificPart.new(part)
     end
 
-    def part_cycle_pattern(part_type, *part_patterns, twist: 0)
+    def part_cycle_pattern(part_type, *part_patterns, twist: SpecificTwist.new(0))
       PartCyclePattern.new(part_type, part_patterns, twist)
     end
 
     def case_pattern(*part_cycle_patterns)
       LeafCasePattern.new(part_cycle_patterns)
     end
+
+    def specific_twist(twist)
+      SpecificTwist.new(twist)
+    end
+
+    def any_unsolved_twist
+      AnyUnsolvedTwist.new
+    end
+
   end
 end

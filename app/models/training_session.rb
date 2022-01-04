@@ -24,12 +24,12 @@ class TrainingSession < ApplicationRecord
   validates :training_session_type, presence: true
   validates :show_input_mode, presence: true, inclusion: TrainingSessionType::SHOW_INPUT_MODES
   validate :show_input_mode_valid
-  validates :buffer, presence: true, if: -> { training_session_type&.has_buffer? }
-  validates :cube_size, presence: true, if: -> { training_session_type&.cube_size? }
-  validate :cube_size_valid, if: -> { training_session_type&.cube_size? }
-  validate :buffer_valid, if: -> { training_session_type&.has_buffer? }
-  validates :memo_time_s, presence: true, if: -> { training_session_type&.has_memo_time? }
-  validate :memo_time_s_valid, if: -> { training_session_type&.has_memo_time? }
+  validates :buffer, presence: true, if: -> { training_session_type&.buffer? }
+  validates :cube_size, presence: true
+  validate :cube_size_valid
+  validate :buffer_valid, if: -> { training_session_type&.buffer? }
+  validates :memo_time_s, presence: true, if: -> { training_session_type&.memo_time? }
+  validate :memo_time_s_valid, if: -> { training_session_type&.memo_time? }
   has_many :stats, dependent: :destroy
 
   # rubocop:disable Rails/HasAndBelongsToMany
@@ -41,15 +41,6 @@ class TrainingSession < ApplicationRecord
 
   after_create :grant_training_session_achievement
 
-  # TODO: deprecate
-  def test_comm_modes
-    :fail
-  end
-
-  def generator
-    @generator ||= training_session_type.generator_class.new(self)
-  end
-
   def case_set
     @case_set ||=
       if buffer
@@ -57,10 +48,6 @@ class TrainingSession < ApplicationRecord
       else
         training_session_type.case_set&.refinement
       end
-  end
-
-  def restrict_parts
-    part_type::ELEMENTS
   end
 
   def test_comms_mode
@@ -79,14 +66,10 @@ class TrainingSession < ApplicationRecord
     show_input_mode == :picture
   end
 
-  delegate :part_type, to: :training_session_type
-
-  delegate :has_bounded_inputs?, to: :training_session_type
-
-  delegate :parity_part_type, to: :training_session_type
+  delegate :bounded_inputs?, to: :training_session_type
 
   def training_cases
-    return unless has_bounded_inputs?
+    return unless bounded_inputs?
 
     @training_cases ||= case_set.cases.map { |c| to_training_case(c) }
   end

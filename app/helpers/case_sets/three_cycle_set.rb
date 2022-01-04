@@ -32,8 +32,8 @@ module CaseSets
       BufferedThreeCycleSet.new(@part_type, part)
     end
 
-    def buffer?
-      true
+    def part_types
+      [@part_type]
     end
   end
 end
