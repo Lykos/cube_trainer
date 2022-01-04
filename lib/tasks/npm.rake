@@ -17,7 +17,7 @@ namespace :npm do
   end
 
   desc 'Run npm test_ci for continuous integration (i.e. only one run without autowatch).'
-  task test: :environment do
+  task test_ci: :environment do
     system('npm run test_ci')
   end
 

@@ -19,6 +19,7 @@
     "build_development": "ng build --configuration development",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test_ci": "ng test --karma-config client/karma-ci.conf.js",
     "lint": "ng lint"
   },
   "dependencies": {

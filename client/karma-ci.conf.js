@@ -24,14 +24,6 @@ module.exports = function (config) {
     jasmineHtmlReporter: {
       suppressAll: true // removes the duplicated traces
     },
-    coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/cube-trainer'),
-      subdir: '.',
-      reporters: [
-        { type: 'html' },
-        { type: 'text-summary' }
-      ]
-    },
     browserConsoleLogOptions: {
       terminal: true,
       level: ""
@@ -40,9 +32,9 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['Chrome'],
-    singleRun: false,
-    restartOnFileChange: true
+    autoWatch: false,
+    browsers: ['ChromeHeadless'],
+    singleRun: true,
+    restartOnFileChange: false
   });
 };
