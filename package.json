@@ -20,7 +20,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test_ci": "ng test --karma-config client/karma-ci.conf.js",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "postinstall": "patch-package",
+    "heroku-postbuild": "patch-package"
   },
   "dependencies": {
     "@angular/animations": "^13.0.2",
@@ -49,6 +51,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "^13.0.0",
     "@angular-devkit/build-angular": "~13.0.1",
     "@angular-eslint/builder": "12.6.1",
     "@angular-eslint/eslint-plugin": "12.6.1",
@@ -77,6 +80,7 @@
     "karma-jasmine-html-reporter": "~1.7.0",
     "karma-mocha": "^2.0.1",
     "mocha": "^9.1.3",
+    "patch-package": "^6.4.7",
     "typescript": "~4.4.4"
   }
 }
