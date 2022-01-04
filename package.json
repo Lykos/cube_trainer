@@ -36,7 +36,7 @@
     "@ngrx/effects": "^13.0.2",
     "@ngrx/store": "^13.0.2",
     "@ngrx/store-devtools": "^13.0.2",
-    "@rails/ujs": "^6.1.4",
+    "@rails/ujs": "^7.0.0",
     "@rxweb/reactive-form-validators": "^2.1.6",
     "actioncable": "^5.2.6",
     "angular-token": "^7.0.1",
