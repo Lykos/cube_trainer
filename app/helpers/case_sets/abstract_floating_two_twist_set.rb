@@ -23,7 +23,7 @@ module CaseSets
 
     def refinements_matching(casee)
       return [] unless casee.part_cycles.length == 2 && casee.part_cycles.all? do |c|
-                         c.length == 1 && c.twist > 0 && c.part_type == part_type
+                         c.length == 1 && c.twist.positive? && c.part_type == part_type
                        end
 
       [refinement]

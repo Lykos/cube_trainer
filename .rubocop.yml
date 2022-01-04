@@ -21,6 +21,8 @@ AllCops:
   # TODO: Clean up and remove some of the folowing
   - 'config/**/*'
   - 'db/migrate/*'
+Rails/HelperInstanceVariable:
+  Enabled: false
 Layout/LineLength:
   Max: 100
   # TODO: This is temporary

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'case_sets/abstract_case_set'
 require 'case_sets/concrete_case_set'
@@ -10,8 +12,8 @@ end
 
 describe CaseSets::ConcreteCaseSet do
   let(:concrete_case_sets) do
-    with_buffer = CaseSets::AbstractCaseSet.all.select { |c| c.buffer? }
-    without_buffer = CaseSets::AbstractCaseSet.all.reject { |c| c.buffer? }
+    with_buffer = CaseSets::AbstractCaseSet.all.select(&:buffer?)
+    without_buffer = CaseSets::AbstractCaseSet.all.reject(&:buffer?)
     without_buffer_refinements = without_buffer.map(&:refinement)
     with_buffer_refinements = with_buffer.map { |c| c.refinement(c.buffer_part_type::ELEMENTS.first) }
     with_buffer_refinements + without_buffer_refinements
@@ -23,7 +25,7 @@ describe CaseSets::ConcreteCaseSet do
     end
   end
 
-  it 'produces strict matching cases' do
+  it 'produces cases' do
     concrete_case_sets.each do |r|
       expect(r.cases.all?(Case)).to be(true)
     end

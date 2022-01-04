@@ -26,7 +26,7 @@ module CaseSets
       raise ArgumentError if refinement_index != 0 && refinement_index != 1
       raise ArgumentError unless casee.part_cycles.length == 2
       raise ArgumentError unless casee.part_cycles.all? do |c|
-                                   c.part_type == @part_type && c.length == 1 && c.twist > 0
+                                   c.part_type == @part_type && c.length == 1 && c.twist.positive?
                                  end
 
       desired_twist = [1, inverse_twist(1)][refinement_index]
@@ -71,7 +71,7 @@ module CaseSets
               "#{casee} is not a floating 2-twist case"
       end
       raise ArgumentError unless casee.part_cycles.all? do |c|
-                                   c.part_type == @part_type && c.length == 1 && c.twist > 0
+                                   c.part_type == @part_type && c.length == 1 && c.twist.positive?
                                  end
 
       parts = casee.part_cycles.map { |c| c.parts.first }
@@ -84,7 +84,7 @@ module CaseSets
     end
 
     def cases
-      part_permutations = @part_type::ELEMENTS.permutation(2).select { |a, b| !a.turned_equals?(b) }
+      part_permutations = @part_type::ELEMENTS.permutation(2).reject { |a, b| a.turned_equals?(b) }
       part_permutations.map do |parts|
         Case.new(
           part_cycles: [

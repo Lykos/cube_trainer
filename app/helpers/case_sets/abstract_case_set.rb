@@ -33,7 +33,7 @@ module CaseSets
     end
 
     def min_cube_size
-      candidate = part_types.map { |p| p.min_cube_size }.max
+      candidate = part_types.map(&:min_cube_size).max
 
       return candidate if part_types.all? { |p| p.exists_on_cube_size?(candidate) }
 
@@ -44,7 +44,7 @@ module CaseSets
     end
 
     def max_cube_size
-      candidate = part_types.map { |p| p.max_cube_size }.min
+      candidate = part_types.map(&:max_cube_size).min
 
       return candidate if candidate.infinite?
       return candidate if part_types.all? { |p| p.exists_on_cube_size?(candidate) }
@@ -56,11 +56,11 @@ module CaseSets
     end
 
     def odd_cube_size_allowed?
-      part_types.all? { |p| p.exists_on_odd_cube_sizes? }
+      part_types.all?(&:exists_on_odd_cube_sizes?)
     end
 
     def even_cube_size_allowed?
-      part_types.all? { |p| p.exists_on_even_cube_sizes? }
+      part_types.all?(&:exists_on_even_cube_sizes?)
     end
 
     def self.parity_sets

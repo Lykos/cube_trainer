@@ -170,7 +170,7 @@ module CasePattern
 
   class AnyUnsolvedTwist < TwistPattern
     def match?(twist)
-      twist > 0
+      twist.positive?
     end
 
     def <=>(other)

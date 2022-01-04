@@ -129,7 +129,7 @@ module CaseSets
     end
 
     def cases
-      other_parts = @buffer_part_type::ELEMENTS.select { |a| !a.turned_equals?(@buffer) }
+      other_parts = @buffer_part_type::ELEMENTS.reject { |a| a.turned_equals?(@buffer) }
       other_parts.map do |p|
         Case.new(
           part_cycles: [
