@@ -11,24 +11,25 @@ class TrainingSessionType
   include CubeTrainer
   include PartHelper
 
-  SHOW_INPUT_MODES = %i[picture name].freeze
+  SHOW_INPUT_MODES = %i[picture name scramble].freeze
+  GENERATOR_TYPES = %i[case scramble].freeze
   MIN_SUPPORTED_CUBE_SIZE = 2
   MAX_SUPPORTED_CUBE_SIZE = 7
 
   attr_accessor :key,
                 :name,
-                :learner_type,
                 :default_cube_size,
                 :show_input_modes,
                 :used_training_session_types,
                 :memo_time,
                 :case_set,
-                :setup
+                :setup,
+                :generator_type
 
   validates :key, presence: true
   validates :name, presence: true
-  validates :learner_type, presence: true
   validates :show_input_modes, presence: true
+  validates :generator_type, presence: true, inclusion: GENERATOR_TYPES
   validate :show_input_modes_valid
 
   alias memo_time? memo_time
@@ -179,98 +180,86 @@ class TrainingSessionType
           TrainingSessionType.new(
             key: :memo_rush,
             name: 'Memo Rush',
-            learner_type: :memo_rush,
             default_cube_size: 3,
-            show_input_modes: [:name],
+            show_input_modes: [:scramble],
             memo_time: true,
             setup: true
           ),
           TrainingSessionType.new(
             key: :corner_commutators,
             name: 'Corner Commutators',
-            learner_type: :case_time,
             default_cube_size: 3,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :corner_parities,
             name: 'Corner Parities',
-            learner_type: :case_time,
             default_cube_size: 3,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::ParitySet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :edge_parities,
             name: 'Edge Parities',
-            learner_type: :case_time,
             default_cube_size: 3,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::ParitySet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :corner_twists_plus_parities,
             name: 'Corner 1 Twists + Parities',
-            learner_type: :case_time,
             default_cube_size: 3,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :edge_flips_plus_parities,
             name: 'Edge 1 Flips + Parities',
-            learner_type: :case_time,
             default_cube_size: 3,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :floating_2twists,
             name: 'Floating Corner 2 Twists',
-            learner_type: :case_time,
             default_cube_size: 3,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :floating_2flips,
             name: 'Floating Edge 2 Flips',
-            learner_type: :case_time,
             default_cube_size: 3,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :edge_commutators,
             name: 'Edge Commutators',
-            learner_type: :case_time,
             default_cube_size: 3,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :wing_commutators,
             name: 'Wing Commutators',
-            learner_type: :case_time,
             default_cube_size: 4,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Wing)
           ),
           TrainingSessionType.new(
             key: :xcenter_commutators,
             name: 'X-Center Commutators',
-            learner_type: :case_time,
             default_cube_size: 4,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::XCenter)
           ),
           TrainingSessionType.new(
             key: :tcenter_commutators,
             name: 'T-Center Commutators',
-            learner_type: :case_time,
             default_cube_size: 5,
-            show_input_modes: SHOW_INPUT_MODES,
+            show_input_modes: %i[picture name],
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::TCenter)
           )
         ].freeze

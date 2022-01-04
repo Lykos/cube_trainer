@@ -1,5 +1,6 @@
 import { TrainingCase } from '../training-case.model';
 import { Sample } from '@utils/sampling';
+import { GeneratorType } from '../generator-type.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, filter, take, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { TrainingSession } from '../training-session.model';
@@ -15,6 +16,7 @@ import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialL
 import { initialLoad, setSelectedTrainingSessionId } from '@store/training-sessions.actions';
 import { create } from '@store/results.actions';
 import { StopwatchStore } from '../stopwatch.store';
+import { Alg } from 'cubing/alg'
 
 @Component({
   selector: 'cube-trainer-trainer',
@@ -23,6 +25,7 @@ import { StopwatchStore } from '../stopwatch.store';
 })
 export class TrainerComponent implements OnInit, OnDestroy {
   sample?: Sample<TrainingCase>;
+  scramble?: Alg;
   trainingSession?: TrainingSession;
   isRunning = false;
   hintActive = false;
@@ -70,8 +73,8 @@ export class TrainerComponent implements OnInit, OnDestroy {
     });
     this.stopSubscription = this.stopwatchStore.stop$.subscribe(duration => {
       const newResult: NewResult = {
-        caseKey: this.sample!.item.caseKey,
-        caseName: this.sample!.item.caseName,
+        caseKey: this.scramble?.toString() || this.sample!.item.caseKey,
+        caseName: this.scramble?.toString() || this.sample!.item.caseName,
         numHints: this.hintActive ? 1 : 0,
         timeS: duration.toSeconds(),
         success: true,
@@ -90,10 +93,21 @@ export class TrainerComponent implements OnInit, OnDestroy {
 
   private prepareNextCase(trainingSession: TrainingSession) {
     this.sample = undefined;
-    this.trainerService.randomCase(now(), trainingSession).pipe(take(1)).subscribe(sample => {
-      this.sample = sample;
-      this.stopwatchStore.finishLoading();
-    });
+    this.scramble = undefined;
+    switch (trainingSession.trainingSessionType.generatorType) {
+      case GeneratorType.Case:
+        this.trainerService.randomCase(now(), trainingSession).pipe(take(1)).subscribe(sample => {
+          this.sample = sample;
+          this.stopwatchStore.finishLoading();
+        });
+        break;
+      case GeneratorType.Scramble:
+        this.trainerService.randomScramble(now(), trainingSession).pipe(take(1)).subscribe(scramble => {
+          this.scramble = scramble;
+          this.stopwatchStore.finishLoading();
+        });
+        break;
+    }
   }
 
   get memoTime() {

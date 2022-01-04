@@ -3,6 +3,7 @@ import { Sample } from '@utils/sampling';
 import { TrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
 import { TrainingCase } from '../training-case.model';
+import { Alg } from 'cubing/alg';
 
 @Component({
   selector: 'cube-trainer-trainer-input',
@@ -12,6 +13,9 @@ import { TrainingCase } from '../training-case.model';
 export class TrainerInputComponent {
   @Input()
   sample?: Sample<TrainingCase>;
+
+  @Input()
+  scramble?: Alg;
 
   @Input()
   trainingSession?: TrainingSession;
@@ -33,7 +37,11 @@ export class TrainerInputComponent {
     return this.trainingSession && this.trainingSession.showInputMode == ShowInputMode.Name;
   }
 
-  get tooltip() {
+  get showScramble() {
+    return this.trainingSession && this.trainingSession.showInputMode == ShowInputMode.Scramble;
+  }
+
+  get sampleTooltip() {
     if (!this.sample) {
       return '';
     }
