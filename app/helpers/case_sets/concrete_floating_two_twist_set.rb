@@ -24,10 +24,7 @@ module CaseSets
 
     def row_pattern(refinement_index, casee)
       raise ArgumentError if refinement_index != 0 && refinement_index != 1
-      raise ArgumentError unless casee.part_cycles.length == 2
-      raise ArgumentError unless casee.part_cycles.all? do |c|
-                                   c.part_type == @part_type && c.length == 1 && c.twist.positive?
-                                 end
+      raise ArgumentError unless match?(casee)
 
       desired_twist = [1, inverse_twist(1)][refinement_index]
       other_twist = inverse_twist(desired_twist)
@@ -66,13 +63,7 @@ module CaseSets
     end
 
     def case_name(casee, letter_scheme: nil)
-      unless casee.part_cycles.length == 2
-        raise ArgumentError,
-              "#{casee} is not a floating 2-twist case"
-      end
-      raise ArgumentError unless casee.part_cycles.all? do |c|
-                                   c.part_type == @part_type && c.length == 1 && c.twist.positive?
-                                 end
+      raise ArgumentError unless match?(casee)
 
       parts = casee.part_cycles.map { |c| c.parts.first }
       name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts

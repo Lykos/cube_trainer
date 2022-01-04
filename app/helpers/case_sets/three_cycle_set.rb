@@ -18,9 +18,8 @@ module CaseSets
     end
 
     def refinements_matching(casee)
-      unless casee.part_cycles.length == 1 && casee.part_cycles.first.length == 3 && casee.part_cycles.first.part_type == @part_type
-        return []
-      end
+      return [] unless casee.part_cycles.length == 1
+      return [] unless match?(casee)
 
       buffers = casee.part_cycles.first.parts.map { |p| p.rotations.min }
       buffers.map { |b| refinement(b) }

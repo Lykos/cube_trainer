@@ -170,6 +170,7 @@ class TrainingSessionType
     StatType::ALL.select { |s| bounded_inputs? || !s.needs_bounded_inputs? }
   end
 
+  # rubocop:disable Metrics/AbcSize
   # rubocop:disable Metrics/MethodLength
   def self.all
     @all ||=
@@ -278,6 +279,7 @@ class TrainingSessionType
       end
   end
   # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/AbcSize
 
   def self.by_key
     @by_key ||= all.index_by(&:key).freeze

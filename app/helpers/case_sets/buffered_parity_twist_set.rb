@@ -7,50 +7,34 @@ module CaseSets
   class BufferedParityTwistSet < ConcreteCaseSet
     def initialize(buffer_part_type, parity_part_type, buffer)
       super()
-      @pattern = case_pattern(
-        part_cycle_pattern(
-          buffer_part_type, specific_part(buffer), wildcard, twist: any_unsolved_twist
-        ),
-        part_cycle_pattern(
-          buffer_part_type, wildcard, twist: any_unsolved_twist
-        ),
-        part_cycle_pattern(parity_part_type, wildcard, wildcard)
-      )
       @buffer_part_type = buffer_part_type
       @parity_part_type = parity_part_type
       @buffer = buffer
+      @pattern = create_case_pattern(
+        part_cycle_pattern(
+          buffer_part_type, specific_part(buffer), wildcard, twist: any_unsolved_twist
+        )
+      )
     end
 
     attr_reader :buffer_part_type, :parity_part_type, :buffer, :pattern
 
     def to_s
-      "#{simple_class_name(@buffer_part_type).downcase} #{simple_class_name(@parity_part_type).downcase} parity twists for buffer #{@buffer}"
+      "#{simple_class_name(@buffer_part_type).downcase} " \
+        "#{simple_class_name(@parity_part_type).downcase} parity twists for buffer #{@buffer}"
     end
 
     def row_pattern(refinement_index, casee)
       raise ArgumentError if refinement_index != 0 && refinement_index != 1
-      raise ArgumentError unless casee.part_cycles.length == 3
-      raise ArgumentError unless casee.part_cycles.all? do |c|
-                                   (c.part_type == @buffer_part_type || c.part_type == @parity_part_type) && c.length == 2
-                                 end
+      raise ArgumentError unless match?(casee)
 
       # We only refine in one direction, in the other direction we just allow a wildcard for
       # the swap that it does for the parity part
       return @pattern if refinement_index == 1
 
-      cycle = casee.part_cycles.find { |c| c.length == 2 && c.part_type == @buffer_part_type }
-      raise ArgumentError unless cycle.any? { |p| p.turned_equal?(@buffer) }
-
-      other_part = cycle.find { |p| !p.turned_equal?(@buffer) }
-      raise ArgumentError unless other_part
-
-      part_patterns = [specific_part(@buffer), specific_part(other_part)]
-      case_pattern(
-        part_cycle_pattern(@part_type, *part_patterns, twist: any_unsolved_twist),
-        part_cycle_pattern(
-          buffer_part_type, wildcard, twist: any_unsolved_twist
-        ),
-        part_cycle_pattern(parity_part_type, wildcard, wildcard)
+      part_patterns = [specific_part(@buffer), specific_part(swap_part(casee))]
+      create_case_pattern(
+        part_cycle_pattern(@part_type, *part_patterns, twist: any_unsolved_twist)
       )
     end
 
@@ -86,35 +70,58 @@ module CaseSets
     def create_strict_matching(casee)
       raise ArgumentError unless match?(casee)
 
-      buffer_cyclee = buffer_cycle(casee)
-      twist_cyclee = twist_cycle(casee)
-      parity_cyclee = parity_cycle(casee)
-      raise ArgumentError unless buffer_cyclee && twist_cyclee && parity_cyclee
-
-      Case.new(part_cycles: [buffer_cyclee.start_with(@buffer), twist_cyclee, parity_cyclee])
+      Case.new(
+        part_cycles: [
+          buffer_cycle(casee).start_with(@buffer), twist_cyclee(casee),
+          parity_cyclee(casee)
+        ]
+      )
     end
 
     def case_name(casee, letter_scheme: nil)
       raise ArgumentError unless match?(casee)
-      raise ArgumentError unless buffer_cycle && twist_cycle && parity_cycle
 
-      parts = [buffer_cycle.parts[1]] + parity_cycle.parts + twist_cycle.parts
+      parts = [buffer_cycle(casee).parts[1]] + parity_cycle(casee).parts + twist_cycle(casee).parts
       name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
       "#{name_parts[0]} (#{name_parts[1]} ⟷ #{name_parts[2]}, #{name_parts[3]})"
     end
 
     def default_cube_size
       candidate = [@buffer_part_type.min_cube_size, @parity_part_type.min_cube_size].max
-      if @buffer_part_type.exists_on_cube_size?(candidate) && @parity_part_type.exists_on_cube_size?(candidate)
+      if @buffer_part_type.exists_on_cube_size?(candidate) &&
+         @parity_part_type.exists_on_cube_size?(candidate)
         return candidate
       end
 
       candidate += 1
-      if @buffer_part_type.exists_on_cube_size?(candidate) && @parity_part_type.exists_on_cube_size?(candidate)
+      if @buffer_part_type.exists_on_cube_size?(candidate) &&
+         @parity_part_type.exists_on_cube_size?(candidate)
         return candidate
       end
 
       raise
+    end
+
+    def cases
+      part_permutations =
+        @part_type::ELEMENTS.permutation(2).select do |a, b|
+          !a.turned_equals?(b) && !a.turned_equals?(buffer) && !b.turned_equals?(buffer)
+        end
+      part_permutations.flat_map do |swap_part, twist_part|
+        twists.map { |twist| create_case(swap_part, twist_part, twist) }
+      end
+    end
+
+    private
+
+    def create_case(swap_part, twist_part, twist)
+      Case.new(
+        part_cycles: [
+          TwistyPuzzles::PartCycle.new([@buffer, swap_part], inverse_twist(twist)),
+          TwistyPuzzles::PartCycle.new([twist_part], twist),
+          TwistyPuzzles::PartCycle.new(default_parity_parts)
+        ]
+      )
     end
 
     # Returns parity parts adjacent to the buffer.
@@ -131,25 +138,19 @@ module CaseSets
       best_candidates[0..1]
     end
 
-    def cases
-      part_permutations =
-        @part_type::ELEMENTS.permutation(2).select do |a, b|
-          !a.turned_equals?(b) && !a.turned_equals?(buffer) && !b.turned_equals?(buffer)
-        end
-      part_permutations.flat_map do |swap_part, _twist_part|
-        twists.map do |twist|
-          Case.new(
-            part_cycles: [
-              TwistyPuzzles::PartCycle.new([@buffer, swap_part], inverse_twist(twist)),
-              TwistyPuzzles::PartCycle.new([swap_part], twist),
-              TwistyPuzzles::PartCycle.new(default_parity_parts)
-            ]
-          )
-        end
-      end
+    def create_case_pattern(buffer_cycle_pattern)
+      case_pattern(
+        buffer_cycle_pattern,
+        part_cycle_pattern(
+          buffer_part_type, wildcard, twist: any_unsolved_twist
+        ),
+        part_cycle_pattern(parity_part_type, wildcard, wildcard)
+      )
     end
 
-    private
+    def swap_part(casee)
+      buffer_cycle(casee).find { |p| !p.turned_equal?(@buffer) }
+    end
 
     def buffer_cycle(casee)
       casee.part_cycles.find { |c| c.length == 2 && c.part_type == @buffer_part_type }

@@ -23,7 +23,8 @@ module CaseSets
     attr_reader :buffer_part_type, :parity_part_type, :pattern
 
     def to_s
-      "#{simple_class_name(@buffer_part_type).downcase} #{simple_class_name(@parity_part_type).downcase} parity twists"
+      "#{simple_class_name(@buffer_part_type).downcase} " \
+        "#{simple_class_name(@parity_part_type).downcase} parity twists"
     end
 
     def refinements_matching(casee)

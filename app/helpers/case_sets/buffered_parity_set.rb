@@ -7,22 +7,21 @@ module CaseSets
   class BufferedParitySet < ConcreteCaseSet
     def initialize(buffer_part_type, parity_part_type, buffer)
       super()
-      @pattern = case_pattern(
-        part_cycle_pattern(
-          buffer_part_type, specific_part(buffer), wildcard
-        ),
-        part_cycle_pattern(parity_part_type, wildcard, wildcard)
-      )
       @buffer_part_type = buffer_part_type
       @parity_part_type = parity_part_type
       @buffer = buffer
+      @pattern = create_case_pattern(
+        part_cycle_pattern(
+          buffer_part_type, specific_part(buffer), wildcard
+        )
+      )
     end
 
     attr_reader :buffer_part_type, :parity_part_type, :buffer, :pattern
 
     def to_s
       "#{simple_class_name(@buffer_part_type).downcase} " \
-      "#{simple_class_name(@parity_part_type).downcase} parities for buffer #{@buffer}"
+        "#{simple_class_name(@parity_part_type).downcase} parities for buffer #{@buffer}"
     end
 
     def row_pattern(refinement_index, casee)
@@ -33,16 +32,9 @@ module CaseSets
       # the swap that it does for the parity part
       return @pattern if refinement_index == 1
 
-      cycle = casee.part_cycles.find { |c| c.part_type == @buffer_part_type }
-      raise ArgumentError unless cycle.any? { |p| p.turned_equal?(@buffer) }
-
-      other_part = cycle.find { |p| !p.turned_equal?(@buffer) }
-      raise ArgumentError unless other_part
-
-      part_patterns = [specific_part(@buffer), specific_part(other_part)]
-      case_pattern(
-        part_cycle_pattern(@part_type, *part_patterns),
-        part_cycle_pattern(parity_part_type, wildcard, wildcard)
+      part_patterns = [specific_part(@buffer), specific_part(swap_part(casee))]
+      create_case_pattern(
+        part_cycle_pattern(@part_type, *part_patterns)
       )
     end
 
@@ -78,33 +70,27 @@ module CaseSets
     def create_strict_matching(casee)
       raise ArgumentError, "#{casee} doesn't belong to #{self}" unless match?(casee)
 
-      buffer_cyclee = buffer_cycle(casee)
-      parity_cyclee = parity_cycle(casee)
-      raise ArgumentError unless buffer_cyclee && parity_cyclee
-
-      Case.new(part_cycles: [buffer_cyclee.start_with(@buffer), parity_cyclee])
+      Case.new(part_cycles: [buffer_cycle(casee).start_with(@buffer), parity_cycle(casee)])
     end
 
     def case_name(casee, letter_scheme: nil)
       raise ArgumentError unless match?(casee)
 
-      buffer_cycle = casee.part_cycles.find { |c| c.part_type == @buffer_part_type }
-      parity_cycle = casee.part_cycles.find { |c| c.part_type == @parity_part_type }
-      raise ArgumentError unless buffer_cycle && parity_cycle
-
-      parts = [buffer_cycle.parts[1]] + parity_cycle.parts
+      parts = [buffer_cycle(casee).parts[1]] + parity_cycle(casee).parts
       name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
       "#{name_parts[0]} (#{name_parts[1]} ⟷ #{name_parts[2]})"
     end
 
     def default_cube_size
       candidate = [@buffer_part_type.min_cube_size, @parity_part_type.min_cube_size].max
-      if @buffer_part_type.exists_on_cube_size?(candidate) && @parity_part_type.exists_on_cube_size?(candidate)
+      if @buffer_part_type.exists_on_cube_size?(candidate) &&
+         @parity_part_type.exists_on_cube_size?(candidate)
         return candidate
       end
 
       candidate += 1
-      if @buffer_part_type.exists_on_cube_size?(candidate) && @parity_part_type.exists_on_cube_size?(candidate)
+      if @buffer_part_type.exists_on_cube_size?(candidate) &&
+         @parity_part_type.exists_on_cube_size?(candidate)
         return candidate
       end
 
@@ -138,6 +124,17 @@ module CaseSets
     end
 
     private
+
+    def create_case_pattern(buffer_cycle_pattern)
+      case_pattern(
+        buffer_cycle_pattern,
+        part_cycle_pattern(parity_part_type, wildcard, wildcard)
+      )
+    end
+
+    def swap_part(casee)
+      buffer_cycle(casee).find { |p| !p.turned_equal?(@buffer) }
+    end
 
     def buffer_cycle(casee)
       casee.part_cycles.find { |c| c.length == 2 && c.part_type == @buffer_part_type }
