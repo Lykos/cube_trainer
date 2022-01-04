@@ -55,6 +55,7 @@ describe 'new training session', type: :system do
     click_button 'Next'
 
     sleep(0.5)
+    fill_in 'Cube Size', with: '3'
     click_button 'Next'
 
     sleep(0.5)

@@ -119,7 +119,7 @@ class TrainingSessionType
   end
 
   def max_cube_size
-    case_set ? [MAX_SUPPORTED_CUBE_SIZE, case_set.min_cube_size].min : MAX_SUPPORTED_CUBE_SIZE
+    case_set ? [MAX_SUPPORTED_CUBE_SIZE, case_set.max_cube_size].min : MAX_SUPPORTED_CUBE_SIZE
   end
 
   def even_cube_size_allowed?

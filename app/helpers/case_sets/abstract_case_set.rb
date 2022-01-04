@@ -46,6 +46,7 @@ module CaseSets
     def max_cube_size
       candidate = part_types.map { |p| p.max_cube_size }.min
 
+      return candidate if candidate.infinite?
       return candidate if part_types.all? { |p| p.exists_on_cube_size?(candidate) }
 
       candidate -= 1
