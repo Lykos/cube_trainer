@@ -190,7 +190,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 3,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Corner),
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :corner_parities,
@@ -198,7 +198,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 3,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::ParitySet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge),
+            case_set: CaseSets::ParitySet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :edge_parities,
@@ -206,7 +206,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 3,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::ParitySet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner),
+            case_set: CaseSets::ParitySet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :corner_twists_plus_parities,
@@ -214,7 +214,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 3,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge),
+            case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :edge_flips_plus_parities,
@@ -222,7 +222,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 3,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner),
+            case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :floating_2twists,
@@ -230,7 +230,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 3,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Corner),
+            case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :floating_2flips,
@@ -238,7 +238,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 3,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Edge),
+            case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :edge_commutators,
@@ -246,7 +246,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 3,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Edge),
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :wing_commutators,
@@ -254,7 +254,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 4,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Wing),
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Wing)
           ),
           TrainingSessionType.new(
             key: :xcenter_commutators,
@@ -262,7 +262,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 4,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::XCenter),
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::XCenter)
           ),
           TrainingSessionType.new(
             key: :tcenter_commutators,
@@ -270,7 +270,7 @@ class TrainingSessionType
             learner_type: :case_time,
             default_cube_size: 5,
             show_input_modes: SHOW_INPUT_MODES,
-            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::TCenter),
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::TCenter)
           )
         ].freeze
         all.each(&:validate!)

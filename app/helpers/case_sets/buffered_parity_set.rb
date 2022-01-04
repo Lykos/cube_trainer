@@ -9,9 +9,9 @@ module CaseSets
       super()
       @pattern = case_pattern(
         part_cycle_pattern(
-          buffer_part_type, specific_part(buffer), wildcard,
+          buffer_part_type, specific_part(buffer), wildcard
         ),
-        part_cycle_pattern(parity_part_type, wildcard, wildcard),
+        part_cycle_pattern(parity_part_type, wildcard, wildcard)
       )
       @buffer_part_type = buffer_part_type
       @parity_part_type = parity_part_type
@@ -27,7 +27,9 @@ module CaseSets
     def row_pattern(refinement_index, casee)
       raise ArgumentError if refinement_index != 0 && refinement_index != 1
       raise ArgumentError unless casee.part_cycles.length == 2
-      raise ArgumentError unless casee.part_cycles.all? { |c| (c.part_type == @buffer_part_type || c.part_type == @parity_part_type) && c.length == 2 }
+      raise ArgumentError unless casee.part_cycles.all? do |c|
+                                   (c.part_type == @buffer_part_type || c.part_type == @parity_part_type) && c.length == 2
+                                 end
       raise ArgumentError if casee.part_cycles.first.part_type == casee.part_cycles.last.part_type
 
       # We only refine in one direction, in the other direction we just allow a wildcard for
@@ -103,18 +105,26 @@ module CaseSets
       if @buffer_part_type.exists_on_cube_size?(candidate) && @parity_part_type.exists_on_cube_size?(candidate)
         return candidate
       end
+
       candidate += 1
       if @buffer_part_type.exists_on_cube_size?(candidate) && @parity_part_type.exists_on_cube_size?(candidate)
         return candidate
       end
+
       raise
     end
 
     # Returns parity parts adjacent to the buffer.
     def default_parity_parts
-      candidates = @parity_part_type::ELEMENTS.select { |c| c.face_symbols.first == @buffer.face_symbols.first }
+      candidates =
+        @parity_part_type::ELEMENTS.select do |c|
+          c.face_symbols.first == @buffer.face_symbols.first
+        end
       max_intersection = candidates.map { |c| (c.face_symbols & @buffer.face_symbols).length }.max
-      best_candidates = candidates.select { |c| (c.face_symbols & @buffer.face_symbols).length == max_intersection }
+      best_candidates =
+        candidates.select do |c|
+          (c.face_symbols & @buffer.face_symbols).length == max_intersection
+        end
       best_candidates[0..1]
     end
 
@@ -131,7 +141,6 @@ module CaseSets
     end
 
     private
-
 
     def buffer_cycle(casee)
       casee.part_cycles.find { |c| c.length == 2 && c.part_type == @buffer_part_type }

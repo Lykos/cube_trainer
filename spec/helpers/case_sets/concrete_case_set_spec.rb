@@ -3,15 +3,15 @@ require 'case_sets/abstract_case_set'
 require 'case_sets/concrete_case_set'
 
 class StubLetterScheme
-  def letter(part)
+  def letter(_part)
     'A'
   end
 end
 
-describe CaseSets::AbstractCaseSet do
+describe CaseSets::ConcreteCaseSet do
   let(:concrete_case_sets) do
-    with_buffer = described_class.all.select { |c| c.buffer? }
-    without_buffer = described_class.all.reject { |c| c.buffer? }
+    with_buffer = CaseSets::AbstractCaseSet.all.select { |c| c.buffer? }
+    without_buffer = CaseSets::AbstractCaseSet.all.reject { |c| c.buffer? }
     without_buffer_refinements = without_buffer.map(&:refinement)
     with_buffer_refinements = with_buffer.map { |c| c.refinement(c.buffer_part_type::ELEMENTS.first) }
     with_buffer_refinements + without_buffer_refinements

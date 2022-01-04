@@ -23,7 +23,7 @@ module CasePattern
       super()
       @case_patterns = case_patterns
     end
-    
+
     def match?(casee)
       @case_patterns.all? { |p| p.match?(casee) }
     end
@@ -48,7 +48,7 @@ module CasePattern
     def <=>(other)
       raise NotImplementedError
     end
-    
+
     def match?(part)
       raise NotImplementedError
     end
@@ -63,11 +63,11 @@ module CasePattern
     def part; end
 
     def <=>(other)
-      return 0 if self.class.equal?(other.class)
+      return 0 if instance_of?(other.class)
 
-      return 1
+      1
     end
-    
+
     def eql?(other)
       self.class.equal?(other.class)
     end
@@ -104,7 +104,7 @@ module CasePattern
     end
 
     def <=>(other)
-      return -1 unless self.class.equal?(other.class)
+      return -1 unless instance_of?(other.class)
 
       @part.rotations.min <=> other.part.rotations.min
     end
@@ -126,7 +126,7 @@ module CasePattern
     def <=>(other)
       raise NotImplementedError
     end
-    
+
     def match?(twist)
       raise NotImplementedError
     end
@@ -147,7 +147,7 @@ module CasePattern
     end
 
     def <=>(other)
-      return -1 unless self.class.equal?(other.class)
+      return -1 unless instance_of?(other.class)
 
       @twist <=> other.twist
     end
@@ -174,9 +174,9 @@ module CasePattern
     end
 
     def <=>(other)
-      return 0 if self.class.equal?(other.class)
+      return 0 if instance_of?(other.class)
 
-      return 1
+      1
     end
 
     def eql?(other)
@@ -186,11 +186,11 @@ module CasePattern
     alias == eql?
 
     def hash
-       [self.class].hash
+      [self.class].hash
     end
 
     def to_s
-      "any unsolved"
+      'any unsolved'
     end
   end
 
@@ -238,7 +238,10 @@ module CasePattern
     end
 
     def <=>(other)
-      [@part_type.name, min_part_patterns_rotation, @twist] <=> [other.part_type.name, other.min_part_patterns_rotation, other.twist]
+      [
+        @part_type.name, min_part_patterns_rotation,
+        @twist
+      ] <=> [other.part_type.name, other.min_part_patterns_rotation, other.twist]
     end
 
     def to_s
@@ -410,6 +413,5 @@ module CasePattern
     def any_unsolved_twist
       AnyUnsolvedTwist.new
     end
-
   end
 end

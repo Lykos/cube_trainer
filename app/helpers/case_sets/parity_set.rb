@@ -13,7 +13,7 @@ module CaseSets
       @pattern =
         case_pattern(
           part_cycle_pattern(buffer_part_type, wildcard, wildcard),
-          part_cycle_pattern(parity_part_type, wildcard, wildcard),
+          part_cycle_pattern(parity_part_type, wildcard, wildcard)
         )
     end
 

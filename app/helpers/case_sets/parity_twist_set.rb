@@ -16,7 +16,7 @@ module CaseSets
           part_cycle_pattern(
             buffer_part_type, wildcard, twist: any_unsolved_twist
           ),
-          part_cycle_pattern(parity_part_type, wildcard, wildcard),
+          part_cycle_pattern(parity_part_type, wildcard, wildcard)
         )
     end
 
@@ -29,7 +29,10 @@ module CaseSets
     def refinements_matching(casee)
       return [] unless match?(casee)
 
-      buffer_cycle = casee.part_cycles.find { |c| c.length == 2 && c.part_type == @buffer_part_type }
+      buffer_cycle =
+        casee.part_cycles.find do |c|
+          c.length == 2 && c.part_type == @buffer_part_type
+        end
       buffers = buffer_cycle.parts.map { |p| p.rotations.min }
       buffers.map { |b| refinement(b) }
     end

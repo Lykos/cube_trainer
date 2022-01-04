@@ -80,8 +80,13 @@ module CaseSets
     end
 
     def cases
-      part_permutations = @part_type::ELEMENTS.permutation(2).select { |a, b| !a.turned_equals?(b) && !a.turned_equals?(buffer) && !b.turned_equals?(buffer) }
-      part_permutations.map { |parts| Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([@buffer] + parts)]) }        
+      part_permutations =
+        @part_type::ELEMENTS.permutation(2).select do |a, b|
+          !a.turned_equals?(b) && !a.turned_equals?(buffer) && !b.turned_equals?(buffer)
+        end
+      part_permutations.map do |parts|
+        Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([@buffer] + parts)])
+      end
     end
 
     private

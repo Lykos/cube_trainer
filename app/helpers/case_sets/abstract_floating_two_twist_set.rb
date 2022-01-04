@@ -13,6 +13,7 @@ module CaseSets
     end
 
     attr_reader :refinement
+
     delegate :part_type, to: :refinement
     delegate :pattern, to: :refinement
 
@@ -21,7 +22,9 @@ module CaseSets
     end
 
     def refinements_matching(casee)
-      return [] unless casee.part_cycles.length == 2 && casee.part_cycles.all? { |c| c.length == 1 && c.twist > 0 && c.part_type == part_type }
+      return [] unless casee.part_cycles.length == 2 && casee.part_cycles.all? do |c|
+                         c.length == 1 && c.twist > 0 && c.part_type == part_type
+                       end
 
       [refinement]
     end
