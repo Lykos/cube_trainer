@@ -18,6 +18,7 @@ describe 'new letter scheme', type: :system do
 
     sleep(0.5)
     fill_in 'ULB', with: 'A'
+    fill_in 'URF', with: 'B'
 
     sleep(0.5)
     click_button 'Submit'

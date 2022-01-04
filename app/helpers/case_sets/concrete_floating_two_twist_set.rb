@@ -79,7 +79,7 @@ module CaseSets
         Case.new(
           part_cycles: [
             TwistyPuzzles::PartCycle.new([parts[0]], 1),
-            TwistyPuzzles::PartCycle.new([parts[0]], inverse_twist(1))
+            TwistyPuzzles::PartCycle.new([parts[1]], inverse_twist(1))
           ]
         )
       end
