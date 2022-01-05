@@ -30,6 +30,7 @@ import { TermsAndConditionsComponent } from '@core/terms-and-conditions/terms-an
 import { NotFoundComponent } from '@core/not-found/not-found.component';
 import { RouterModule, Routes, ExtraOptions } from '@angular/router';
 import { environment } from '@environment';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 const routes: Routes = [
   { path: 'method-explorer', component: MethodExplorerComponent },
@@ -70,7 +71,10 @@ const routerOptions: ExtraOptions = {
 };
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, routerOptions)],
+  imports: [
+    RouterModule.forRoot(routes, routerOptions),
+    StoreRouterConnectingModule.forRoot(),
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
