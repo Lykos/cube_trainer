@@ -1,17 +1,19 @@
 <div>
   <ng-container *ngIf="trainingSession">
     <div layout="row" layout-sm="column">
-      <div flex *ngIf="sample">
+      <div flex *ngIf="scramble || sample">
         <cube-trainer-trainer-input
           [sample]="sample"
           [scramble]="scramble"
           [trainingSession]="trainingSession">
         </cube-trainer-trainer-input>
-        <cube-trainer-hint
-          [trainingCase]="sample.item"
-          [trainingSession]="trainingSession"
-          [(active)]="hintActive">
-        </cube-trainer-hint>
+        <ng-container *ngIf="sample">
+          <cube-trainer-hint
+            [trainingCase]="sample.item"
+            [trainingSession]="trainingSession"
+            [(active)]="hintActive">
+          </cube-trainer-hint>
+        </ng-container>
         <cube-trainer-stopwatch
           [stopwatchStore]="stopwatchStore"
           [memoTime]="memoTime"

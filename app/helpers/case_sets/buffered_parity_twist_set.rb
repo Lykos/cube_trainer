@@ -104,7 +104,7 @@ module CaseSets
 
     def cases
       part_permutations =
-        @part_type::ELEMENTS.permutation(2).select do |a, b|
+        @buffer_part_type::ELEMENTS.permutation(2).select do |a, b|
           !a.turned_equals?(b) && !a.turned_equals?(buffer) && !b.turned_equals?(buffer)
         end
       part_permutations.flat_map do |swap_part, twist_part|
@@ -165,11 +165,11 @@ module CaseSets
     end
 
     def twists
-      (1...@part_type::ELEMENTS.first.rotations.length)
+      (1...@parity_part_type::ELEMENTS.first.rotations.length)
     end
 
     def inverse_twist(twist)
-      @part_type::ELEMENTS.first.rotations.length - twist
+      @parity_part_type::ELEMENTS.first.rotations.length - twist
     end
 
     def refined_part(refinement_index, casee)

@@ -14,7 +14,6 @@ export interface TrainingSessionType {
   readonly cubeSizeSpec?: CubeSizeSpec;
   readonly hasGoalBadness: boolean;
   readonly hasMemoTime: boolean;
-  readonly hasSetup: boolean;
   readonly buffers: readonly Part[];
   readonly statsTypes: readonly StatType[];
   readonly algSets: readonly AlgSet[];

@@ -4,6 +4,9 @@ import { GeneratorType } from '../generator-type.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, filter, take, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { TrainingSession } from '../training-session.model';
+import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
+import { parseBackendActionError } from '@shared/parse-backend-action-error';
+import { MatDialog } from '@angular/material/dialog';
 import { now } from '@utils/instant';
 import { NewResult } from '../new-result.model';
 import { TrainerService } from '../trainer.service';
@@ -42,6 +45,7 @@ export class TrainerComponent implements OnInit, OnDestroy {
 
   constructor(activatedRoute: ActivatedRoute,
               private readonly trainerService: TrainerService,
+              private readonly dialog: MatDialog,
               private readonly store: Store,
               readonly stopwatchStore: StopwatchStore) {
     this.trainingSessionId$ = activatedRoute.params.pipe(map(p => +p['trainingSessionId']));
@@ -96,16 +100,32 @@ export class TrainerComponent implements OnInit, OnDestroy {
     this.scramble = undefined;
     switch (trainingSession.trainingSessionType.generatorType) {
       case GeneratorType.Case:
-        this.trainerService.randomCase(now(), trainingSession).pipe(take(1)).subscribe(sample => {
-          this.sample = sample;
-          this.stopwatchStore.finishLoading();
-        });
+        this.trainerService.randomCase(now(), trainingSession).pipe(take(1)).subscribe(
+          sample => {
+            this.sample = sample;
+            this.stopwatchStore.finishLoading();
+          },
+          (error) => {
+            const context = {
+              subject: 'case',
+              action: 'selecting',
+            };
+            this.dialog.open(BackendActionErrorDialogComponent, { data: parseBackendActionError(context, error) });
+          });
         break;
       case GeneratorType.Scramble:
-        this.trainerService.randomScramble(now(), trainingSession).pipe(take(1)).subscribe(scramble => {
-          this.scramble = scramble;
-          this.stopwatchStore.finishLoading();
-        });
+        this.trainerService.randomScramble(now(), trainingSession).pipe(take(1)).subscribe(
+          scramble => {
+            this.scramble = scramble;
+            this.stopwatchStore.finishLoading();
+          },
+          (error) => {
+            const context = {
+              subject: 'scramble',
+              action: 'generating',
+            };
+            this.dialog.open(BackendActionErrorDialogComponent, { data: parseBackendActionError(context, error) });
+          });
         break;
     }
   }

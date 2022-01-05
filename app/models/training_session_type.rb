@@ -12,7 +12,6 @@ class TrainingSessionType
   include PartHelper
 
   SHOW_INPUT_MODES = %i[picture name scramble].freeze
-  GENERATOR_TYPES = %i[case scramble].freeze
   MIN_SUPPORTED_CUBE_SIZE = 2
   MAX_SUPPORTED_CUBE_SIZE = 7
 
@@ -22,18 +21,14 @@ class TrainingSessionType
                 :show_input_modes,
                 :used_training_session_types,
                 :memo_time,
-                :case_set,
-                :setup,
-                :generator_type
+                :case_set
 
   validates :key, presence: true
   validates :name, presence: true
   validates :show_input_modes, presence: true
-  validates :generator_type, presence: true, inclusion: GENERATOR_TYPES
   validate :show_input_modes_valid
 
   alias memo_time? memo_time
-  alias setup? setup
 
   def default_cube_size_valid
     validate_cube_size(default_cube_size, errors, :default_cube_size)
@@ -83,14 +78,13 @@ class TrainingSessionType
     {
       key: key,
       name: name,
-      learner_type: learner_type,
+      generator_type: generator_type,
       cube_size_spec: cube_size_spec,
       has_goal_badness: goal_badness?,
       show_input_modes: show_input_modes,
       buffers: buffers&.map { |p| part_to_simple(p) },
       has_bounded_inputs: bounded_inputs?,
       has_memo_time: memo_time?,
-      has_setup: setup?,
       stats_types: stats_types.map(&:to_simple),
       alg_sets: alg_sets.map(&:to_simple)
     }
@@ -171,6 +165,14 @@ class TrainingSessionType
     StatType::ALL.select { |s| bounded_inputs? || !s.needs_bounded_inputs? }
   end
 
+  def generator_type
+    bounded_inputs? ? :case : :scramble
+  end
+
+  def show_input_modes
+    bounded_inputs? ? %i[picture name] : [:scramble]
+  end
+
   # rubocop:disable Metrics/AbcSize
   # rubocop:disable Metrics/MethodLength
   def self.all
@@ -181,9 +183,7 @@ class TrainingSessionType
             key: :memo_rush,
             name: 'Memo Rush',
             default_cube_size: 3,
-            show_input_modes: [:scramble],
             memo_time: true,
-            setup: true
           ),
           TrainingSessionType.new(
             key: :corner_commutators,

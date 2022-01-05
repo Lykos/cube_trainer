@@ -34,9 +34,9 @@ export class TrainerService {
       throw new Error('Cube size needs to be defined to determine the cube event.');
     }
     if (n >= 3 && n <= 5) {
-      return "${n}${n}${n}bld"
+      return `${n}${n}${n}bf`
     } else {
-      return "${n}${n}${n}"
+      return `${n}${n}${n}"`
     }
   }
 }
