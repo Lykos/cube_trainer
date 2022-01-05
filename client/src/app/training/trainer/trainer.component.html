@@ -28,8 +28,8 @@
       </div>
     </div>
   </ng-container>
-  <div *ngIf="error$ | async as error">
+  <div id="initialLoadError" *ngIf="error$ | async as error">
     <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
   </div>
-  <mat-spinner *ngIf="loading$ | async"></mat-spinner>
+  <mat-spinner id="initialLoadLoading" *ngIf="loading$ | async"></mat-spinner>
 </div>
