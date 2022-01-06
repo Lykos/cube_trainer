@@ -41,7 +41,7 @@
     "actioncable": "^5.2.6",
     "angular-token": "^7.0.1",
     "file-saver": "^2.0.5",
-    "ngx-cookie-service": "^13.0.1",
+    "ngx-cookie-service": "^13.1.2",
     "ngx-filesaver": "^13.0.0",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
