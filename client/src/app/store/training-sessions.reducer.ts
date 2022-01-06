@@ -1,16 +1,22 @@
 import { createReducer, on } from '@ngrx/store';
 import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, overrideAlg, overrideAlgSuccess, overrideAlgFailure, setSelectedTrainingSessionId } from './training-sessions.actions';
 import { TrainingSessionsState } from './training-sessions.state';
+import { TrainingSession } from '@training/training-session.model';
 import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
+import { EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 
-const initialTrainingSessionsState: TrainingSessionsState = {
-  serverTrainingSessions: [],
+const adapter: EntityAdapter<TrainingSession> = createEntityAdapter<TrainingSession>({
+  selectId: s => s.id,
+  sortComparer: (s, t) => s.name.localeCompare(t.name),
+});
+
+const initialTrainingSessionsState: TrainingSessionsState = adapter.getInitialState({
   initialLoadState: backendActionNotStartedState,
   createState: backendActionNotStartedState,
   destroyState: backendActionNotStartedState,
   overrideAlgState: backendActionNotStartedState,
   selectedTrainingSessionId: 0,
-};
+});
 
 export const trainingSessionsReducer = createReducer(
   initialTrainingSessionsState,
@@ -27,7 +33,7 @@ export const trainingSessionsReducer = createReducer(
     return { ...trainingSessionState, createState: backendActionLoadingState };
   }),
   on(createSuccess, (trainingSessionState, { trainingSession, newTrainingSession }) => {
-    return { ...trainingSessionState, serverTrainingSessions: trainingSessionState.serverTrainingSessions.concat([trainingSession]), createState: backendActionSuccessState };
+    return adapter.addOne(trainingSession, { ...trainingSessionState, createState: backendActionSuccessState });
   }),
   on(createFailure, (trainingSessionState, { error }) => {
     return { ...trainingSessionState, createError: backendActionFailureState(error) };
@@ -36,7 +42,7 @@ export const trainingSessionsReducer = createReducer(
     return { ...trainingSessionState, destroyState: backendActionLoadingState };
   }),
   on(destroySuccess, (trainingSessionState, { trainingSession }) => {
-    return { ...trainingSessionState, serverTrainingSessions: trainingSessionState.serverTrainingSessions.filter(m => m.id !== trainingSession.id), destroyState: backendActionSuccessState };
+    return adapter.removeOne(trainingSession.id, { ...trainingSessionState, destroyState: backendActionSuccessState });
   }),
   on(destroyFailure, (trainingSessionState, { error }) => {
     return { ...trainingSessionState, destroyState: backendActionFailureState(error) };
@@ -54,3 +60,8 @@ export const trainingSessionsReducer = createReducer(
     return { ...trainingSessionState, selectedTrainingSessionId };
   }),
 )
+
+const selectors = adapter.getSelectors();
+
+export const selectTrainingSessionEntities = selectors.selectEntities;
+export const selectAllTrainingSessions = selectors.selectAll;

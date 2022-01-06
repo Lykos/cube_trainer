@@ -1,11 +1,8 @@
 import { TrainingSession } from '@training/training-session.model';
 import { BackendActionState } from '@shared/backend-action-state.model';
+import { EntityState } from '@ngrx/entity';
 
-export interface TrainingSessionsState {
-  // TrainingSessions that are stored on the backend server.
-  // In normal conditions, this contains all trainingSessions except for the ones that were just created and not sent yet.
-  readonly serverTrainingSessions: readonly TrainingSession[];
-
+export interface TrainingSessionsState extends EntityState<TrainingSession> {
   readonly initialLoadState: BackendActionState;
   readonly createState: BackendActionState;
   readonly destroyState: BackendActionState;

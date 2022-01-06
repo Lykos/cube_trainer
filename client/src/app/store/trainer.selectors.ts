@@ -70,4 +70,5 @@ export const selectResultsTotalOnPage = createSelector(
 
 export const selectInitialLoadLoading = createSelector(
   selectResultsState,
-  maybeRs => orElse(mapOptional(maybeRs, rs => isBackendActionLoading(rs.initialLoadState)), false));
+  maybeRs => orElse(mapOptional(maybeRs, rs => isBackendActionLoading(rs.initialLoadState)), false),
+);

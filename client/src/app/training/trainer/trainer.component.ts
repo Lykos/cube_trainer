@@ -10,7 +10,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { now } from '@utils/instant';
 import { NewResult } from '../new-result.model';
 import { TrainerService } from '../trainer.service';
-import { ActivatedRoute } from '@angular/router';
 import { Observable, combineLatest } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { hasValue, forceValue } from '@utils/optional';
@@ -41,8 +40,7 @@ export class TrainerComponent implements OnInit, OnDestroy {
   private stopSubscription: any;
   private stopwatchLoadingSubscription: any;
 
-  constructor(activatedRoute: ActivatedRoute,
-              private readonly trainerService: TrainerService,
+  constructor(private readonly trainerService: TrainerService,
               private readonly dialog: MatDialog,
               private readonly store: Store,
               readonly stopwatchStore: StopwatchStore) {
