@@ -7,8 +7,9 @@ import { fromDateString, Instant } from '@utils/instant';
 import { seconds, Duration } from '@utils/duration';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { selectSelectedTrainingSessionResults, selectSelectedTrainingSessionNumResults, selectSelectedTrainingSessionResultsOnPage, selectSelectedTrainingSessionNumResultsOnPage, selectSelectedTrainingSessionInitialLoadLoading } from '@store/results.selectors';
-import { initialLoad, destroy, markDnf, setSelectedTrainingSessionId, setPage } from '@store/results.actions';
+import { forceValue } from '@utils/optional';
+import { selectResults, selectResultsTotal, selectResultsOnPage, selectResultsTotalOnPage, selectInitialLoadLoading } from '@store/trainer.selectors';
+import { initialLoad, destroy, markDnf, setPage } from '@store/trainer.actions';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -32,12 +33,12 @@ export class ResultsTableComponent implements OnInit {
 
   constructor(private readonly store: Store,
 	      @Inject(LOCALE_ID) private readonly locale: string) {
-    this.loading$ = this.store.select(selectSelectedTrainingSessionInitialLoadLoading);
-    this.results$ = this.store.select(selectSelectedTrainingSessionResults);
-    this.resultsOnPage$ = this.store.select(selectSelectedTrainingSessionResultsOnPage);
-    this.numResults$ = this.store.select(selectSelectedTrainingSessionNumResults);
-    this.allSelected$ = this.store.select(selectSelectedTrainingSessionNumResultsOnPage).pipe(
-      map(l => { return { value: this.selection.selected.length === l }; }),
+    this.loading$ = this.store.select(selectInitialLoadLoading);
+    this.results$ = this.store.select(selectResults).pipe(map(forceValue));
+    this.resultsOnPage$ = this.store.select(selectResultsOnPage).pipe(map(forceValue));
+    this.numResults$ = this.store.select(selectResultsTotal).pipe(map(forceValue));
+    this.allSelected$ = this.store.select(selectResultsTotalOnPage).pipe(
+      map(l => { return { value: this.selection.selected.length === forceValue(l) }; }),
       shareReplay(),
     );
   }
@@ -51,16 +52,15 @@ export class ResultsTableComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.dispatch(setSelectedTrainingSessionId({ selectedTrainingSessionId: this.checkedTrainingSessionId }));
     this.store.dispatch(initialLoad({ trainingSessionId: this.checkedTrainingSessionId }));
   }
 
   onDeleteSelected() {
-    this.store.dispatch(destroy({ trainingSessionId: this.checkedTrainingSessionId, results: this.selection.selected }));
+    this.store.dispatch(destroy({ trainingSessionId: this.checkedTrainingSessionId, resultIds: this.selection.selected.map(r => r.id) }));
   }
 
   onMarkSelectedDnf() {
-    this.store.dispatch(markDnf({ trainingSessionId: this.checkedTrainingSessionId, results: this.selection.selected }));
+    this.store.dispatch(markDnf({ trainingSessionId: this.checkedTrainingSessionId, resultIds: this.selection.selected.map(r => r.id) }));
   }
 
   onPage(pageEvent: PageEvent) {

@@ -4,71 +4,66 @@ import { NewResult } from '@training/new-result.model';
 import { BackendActionError } from '@shared/backend-action-error.model';
 
 export const initialLoad = createAction(
-  '[Results] initial load from server',
+  '[Trainer] initial load from server',
   props<{ trainingSessionId: number }>()
 );
  
 export const initialLoadSuccess = createAction(
-  '[Results] initial load from server success',
+  '[Trainer] initial load from server success',
   props<{ trainingSessionId: number, results: readonly Result[] }>()
 );
  
 export const initialLoadFailure = createAction(
-  '[Results] initial load from server failure',
+  '[Trainer] initial load from server failure',
   props<{ trainingSessionId: number, error: BackendActionError }>()
 );
 
 export const create = createAction(
-  '[Results] create',
+  '[Trainer] create',
   props<{ trainingSessionId: number, newResult: NewResult }>()
 );
  
 export const createSuccess = createAction(
-  '[Results] create success',
+  '[Trainer] create success',
   props<{ trainingSessionId: number, result: Result }>()
 );
  
 export const createFailure = createAction(
-  '[Results] create failure',
+  '[Trainer] create failure',
   props<{ trainingSessionId: number, error: BackendActionError }>()
 );
  
 export const destroy = createAction(
-  '[Results] destroy',
-  props<{ trainingSessionId: number, results: Result[] }>()
+  '[Trainer] destroy',
+  props<{ trainingSessionId: number, resultIds: readonly number[] }>()
 );
  
 export const destroySuccess = createAction(
-  '[Results] destroy success',
-  props<{ trainingSessionId: number, results: Result[] }>()
+  '[Trainer] destroy success',
+  props<{ trainingSessionId: number, resultIds: readonly number[] }>()
 );
  
 export const destroyFailure = createAction(
-  '[Results] destroy failure',
+  '[Trainer] destroy failure',
   props<{ trainingSessionId: number, error: BackendActionError }>()
 );
 
 export const markDnf = createAction(
-  '[Results] mark DNF',
-  props<{ trainingSessionId: number, results: Result[] }>()
+  '[Trainer] mark DNF',
+  props<{ trainingSessionId: number, resultIds: readonly number[] }>()
 );
  
 export const markDnfSuccess = createAction(
-  '[Results] mark DNF success',
-  props<{ trainingSessionId: number, results: Result[] }>()
+  '[Trainer] mark DNF success',
+  props<{ trainingSessionId: number, resultIds: readonly number[] }>()
 );
  
 export const markDnfFailure = createAction(
-  '[Results] mark DNF failure',
+  '[Trainer] mark DNF failure',
   props<{ trainingSessionId: number, error: BackendActionError }>()
 );
 
-export const setSelectedTrainingSessionId = createAction(
-  '[Results] set selected training session id',
-  props<{ selectedTrainingSessionId: number }>()
-);
-
 export const setPage = createAction(
-  '[Results] set page',
+  '[Trainer] set page',
   props<{ pageIndex: number, pageSize: number }>()
 );

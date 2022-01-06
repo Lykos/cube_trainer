@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
 import { SamplingState, ItemAndWeightState } from '@utils/sampling';
 import { WeightState } from '@utils/sampling';
 import { Store } from '@ngrx/store';
-import { selectSelectedTrainingSessionResults } from '@store/results.selectors';
-import { none, some, Optional, mapOptional, ifPresent } from '@utils/optional';
+import { selectResults } from '@store/trainer.selectors';
+import { none, some, Optional, mapOptional, ifPresent, forceValue } from '@utils/optional';
 import { Instant, fromDateString } from '@utils/instant';
 import { Duration, infiniteDuration, seconds, minutes } from '@utils/duration';
 import { CubeAverage } from '@utils/cube-average';
@@ -109,9 +109,9 @@ export class SamplingStateService {
   constructor(private readonly store: Store) {}
 
   samplingState(now: Instant, trainingSession: TrainingSession): Observable<SamplingState<TrainingCase>> {
-    return this.store.select(selectSelectedTrainingSessionResults).pipe(
+    return this.store.select(selectResults).pipe(
       take(1),
-      map(results => toSamplingState(now, trainingSession.trainingCases, results)),
+      map(results => toSamplingState(now, trainingSession.trainingCases, forceValue(results))),
     );
   }
 }

@@ -16,8 +16,8 @@ import { Store } from '@ngrx/store';
 import { hasValue, forceValue } from '@utils/optional';
 import { seconds } from '@utils/duration';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
-import { initialLoad, setSelectedTrainingSessionId } from '@store/training-sessions.actions';
-import { create } from '@store/results.actions';
+import { initialLoad } from '@store/training-sessions.actions';
+import { create } from '@store/trainer.actions';
 import { StopwatchStore } from '../stopwatch.store';
 import { Alg } from 'cubing/alg'
 
@@ -36,8 +36,6 @@ export class TrainerComponent implements OnInit, OnDestroy {
   error$: Observable<any>;
 
   private trainingSession$: Observable<TrainingSession>
-  private trainingSessionId$: Observable<number>
-  private trainingSessionIdSubscription: any;
   private trainingSessionSubscription: any;
   private runningSubscription: any;
   private stopSubscription: any;
@@ -48,7 +46,6 @@ export class TrainerComponent implements OnInit, OnDestroy {
               private readonly dialog: MatDialog,
               private readonly store: Store,
               readonly stopwatchStore: StopwatchStore) {
-    this.trainingSessionId$ = activatedRoute.params.pipe(map(p => +p['trainingSessionId']));
     this.trainingSession$ = this.store.select(selectSelectedTrainingSession).pipe(
       distinctUntilChanged(),
       filter(hasValue),
@@ -64,9 +61,6 @@ export class TrainerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store.dispatch(initialLoad());
-    this.trainingSessionIdSubscription = this.trainingSessionId$.subscribe(trainingSessionId => {
-      this.store.dispatch(setSelectedTrainingSessionId({ selectedTrainingSessionId: trainingSessionId }));
-    });
     this.trainingSessionSubscription = this.trainingSession$.subscribe(m => { this.trainingSession = m; });
     this.stopwatchLoadingSubscription = combineLatest(
       this.stopwatchStore.loading$.pipe(filter(l => l)),
@@ -88,7 +82,6 @@ export class TrainerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.trainingSessionIdSubscription?.unsubscribe();
     this.trainingSessionSubscription?.unsubscribe();
     this.stopSubscription?.unsubscribe();
     this.runningSubscription?.unsubscribe();

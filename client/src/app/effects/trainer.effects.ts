@@ -3,14 +3,14 @@ import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of, forkJoin } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, map, tap, mapTo } from 'rxjs/operators';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, markDnf, markDnfSuccess, markDnfFailure } from '@store/results.actions';
+import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, markDnf, markDnfSuccess, markDnfFailure } from '@store/trainer.actions';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { ResultsService } from '@training/results.service';
 import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Injectable()
-export class ResultsEffects {
+export class TrainerEffects {
   constructor(
     private actions$: Actions,
     private readonly resultsService: ResultsService,
@@ -72,13 +72,13 @@ export class ResultsEffects {
     this.actions$.pipe(
       ofType(destroy),
       exhaustMap(action => {
-        const observables = action.results.map(result => this.resultsService.destroy(action.trainingSessionId, result.id));
+        const observables = action.resultIds.map(resultId => this.resultsService.destroy(action.trainingSessionId, resultId));
         return forkJoin(observables).pipe(
-          mapTo(destroySuccess({ trainingSessionId: action.trainingSessionId, results: action.results })),
+          mapTo(destroySuccess({ trainingSessionId: action.trainingSessionId, resultIds: action.resultIds })),
           catchError(httpResponseError => {
             const context = {
               action: 'deleting',
-              subject: `${action.results.length} results`,
+              subject: `${action.resultIds.length} results`,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(destroyFailure({ trainingSessionId: action.trainingSessionId, error }));
@@ -102,7 +102,7 @@ export class ResultsEffects {
     this.actions$.pipe(
       ofType(destroySuccess),
       tap(action => {
-	this.snackBar.open(`Deleted ${action.results.length} results.`, 'Close');
+	this.snackBar.open(`Deleted ${action.resultIds.length} results.`, 'Close');
       }),
     ),
     { dispatch: false }
@@ -112,13 +112,13 @@ export class ResultsEffects {
     this.actions$.pipe(
       ofType(markDnf),
       exhaustMap(action => {
-        const observables = action.results.map(result => this.resultsService.markDnf(action.trainingSessionId, result.id));
+        const observables = action.resultIds.map(resultId => this.resultsService.markDnf(action.trainingSessionId, resultId));
         return forkJoin(observables).pipe(
-          map(results => markDnfSuccess({ trainingSessionId: action.trainingSessionId, results })),
+          map(results => markDnfSuccess({ trainingSessionId: action.trainingSessionId, resultIds: results.map(r => r.id) })),
           catchError(httpResponseError => {
             const context = {
               action: 'marking as DNF',
-              subject: `${action.results.length} results`,
+              subject: `${action.resultIds.length} results`,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(markDnfFailure({ trainingSessionId: action.trainingSessionId, error }));
@@ -142,7 +142,7 @@ export class ResultsEffects {
     this.actions$.pipe(
       ofType(markDnfSuccess),
       tap(action => {
-	this.snackBar.open(`Marked ${action.results.length} results as DNF.`, 'Close');
+	this.snackBar.open(`Marked ${action.resultIds.length} results as DNF.`, 'Close');
       }),
     ),
     { dispatch: false }
