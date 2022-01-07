@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { TrainingCase } from './training-case.model';
 import { TrainingSession } from './training-session.model';
-import { Observable, from } from 'rxjs';
+import { GeneratorType } from './generator-type.model';
+import { ScrambleOrSample, scramble, sample } from './scramble-or-sample.model';
+import { Result } from './result.model';
+import { Observable, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SamplerFactory } from './sampler-factory.service';
 import { Sample } from '@utils/sampling';
@@ -17,15 +20,26 @@ export class TrainerService {
   constructor(private readonly samplerFactory: SamplerFactory,
               private readonly samplingStateService: SamplingStateService) {}
 
+  randomScrambleOrSample(now: Instant, trainingSession: TrainingSession, results: readonly Result[]): Observable<ScrambleOrSample> {
+    const generatorType = trainingSession.trainingSessionType.generatorType;
+    switch (generatorType) {
+      case GeneratorType.Scramble:
+        return this.randomScramble(now, trainingSession).pipe(map(scramble));
+      case GeneratorType.Case:
+        return this.randomTrainingCase(now, trainingSession, results).pipe(map(sample));
+      default:
+        throw new Error(`Unknown generator type ${generatorType}`);
+    }
+  }
+  
   randomScramble(now: Instant, trainingSession: TrainingSession): Observable<Alg> {
     return from(randomScrambleForEvent(this.cubeEvent(trainingSession)));
   }
 
-  randomCase(now: Instant, trainingSession: TrainingSession): Observable<Sample<TrainingCase>> {    
+  randomTrainingCase(now: Instant, trainingSession: TrainingSession, results: readonly Result[]): Observable<Sample<TrainingCase>> {    
     const sampler = this.samplerFactory.sampler(trainingSession);
-    return this.samplingStateService.samplingState(now, trainingSession).pipe(
-      map(state => sampler.sample(state)),
-    );
+    const samplingState = this.samplingStateService.samplingState(now, trainingSession, results);
+    return of(sampler.sample(samplingState));
   }
 
   private cubeEvent(trainingSession: TrainingSession) {

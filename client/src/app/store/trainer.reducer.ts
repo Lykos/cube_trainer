@@ -1,10 +1,31 @@
 import { createReducer, on } from '@ngrx/store';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, markDnf, markDnfSuccess, markDnfFailure, setPage } from '@store/trainer.actions';
+import {
+  initialLoad,
+  initialLoadSuccess,
+  initialLoadFailure,
+  create,
+  createSuccess,
+  createFailure,
+  destroy,
+  destroySuccess,
+  destroyFailure,
+  markDnf,
+  markDnfSuccess,
+  markDnfFailure,
+  loadNextCase,
+  loadNextCaseSuccess,
+  loadNextCaseFailure,
+  setPage,
+  startStopwatch,
+  stopStopwatch,
+  showHint,
+} from '@store/trainer.actions';
 import { Result } from '@training/result.model';
-import { TrainerState, ResultsState, StopwatchState } from './trainer.state';
+import { TrainerState, ResultsState, StopwatchState, notStartedStopwatchState, runningStopwatchState, stoppedStopwatchState } from './trainer.state';
 import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
 import { EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import { fromDateString } from '@utils/instant';
+import { none, some } from '@utils/optional';
 
 const resultsAdapter: EntityAdapter<Result> = createEntityAdapter<Result>({
   selectId: s => s.id,
@@ -20,11 +41,10 @@ const initialPageState = {
   pageSize: 100,
 }
 
-const initialStopwatchState = StopwatchState.NotStarted;
+const initialStopwatchState: StopwatchState = notStartedStopwatchState;
 
 const initialTrainerState: TrainerState = trainerAdapter.getInitialState({
   pageState: initialPageState,
-  stopwatchState: initialStopwatchState,
 });
 
 export const trainerReducer = createReducer(
@@ -37,6 +57,9 @@ export const trainerReducer = createReducer(
       destroyState: backendActionNotStartedState,
       markDnfState: backendActionNotStartedState,
       loadNextCaseState: backendActionNotStartedState,
+      nextCase: none,
+      stopwatchState: initialStopwatchState,
+      hintActive: false,
     });
     return trainerAdapter.upsertOne(initialResultsState, trainerState);
   }),
@@ -112,8 +135,44 @@ export const trainerReducer = createReducer(
       changes: { markDnfState: backendActionFailureState(error) },
     }, trainerState);
   }),
+  on(loadNextCase, (trainerState, { trainingSessionId }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { loadNextCaseState: backendActionLoadingState },
+    }, trainerState);
+  }),
+  on(loadNextCaseSuccess, (trainerState, { trainingSessionId, nextCase }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { nextCase: some(nextCase), loadNextCaseState: backendActionSuccessState },
+    }, trainerState);
+  }),
+  on(loadNextCaseFailure, (trainerState, { trainingSessionId, error }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { loadNextCaseState: backendActionFailureState(error) },
+    }, trainerState);
+  }),
   on(setPage, (trainerState, { pageIndex, pageSize }) => {
     return { ...trainerState, pageState: { pageIndex, pageSize } };
+  }),
+  on(startStopwatch, (trainerState, { trainingSessionId, startUnixMillis }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { stopwatchState: runningStopwatchState(startUnixMillis), hintActive: false }
+    }, trainerState);
+  }),
+  on(stopStopwatch, (trainerState, { trainingSessionId, durationMillis }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { stopwatchState: stoppedStopwatchState(durationMillis) }
+    }, trainerState);
+  }),
+  on(showHint, (trainerState, { trainingSessionId }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { hintActive: true }
+    }, trainerState);
   }),
 )
 
@@ -121,5 +180,6 @@ const trainerSelectors = trainerAdapter.getSelectors();
 const resultsSelectors = resultsAdapter.getSelectors();
 
 export const selectTrainerEntities = trainerSelectors.selectEntities;
+export const selectTrainerAll = trainerSelectors.selectAll;
 export const selectAllResults = resultsSelectors.selectAll;
 export const selectResultsTotal = resultsSelectors.selectTotal;

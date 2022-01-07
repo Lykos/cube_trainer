@@ -1,14 +1,10 @@
 import { Injectable } from '@angular/core';
 import { TrainingSession } from './training-session.model';
-import { map, take } from 'rxjs/operators';
 import { TrainingCase } from './training-case.model';
 import { Result } from './result.model';
-import { Observable } from 'rxjs';
 import { SamplingState, ItemAndWeightState } from '@utils/sampling';
 import { WeightState } from '@utils/sampling';
-import { Store } from '@ngrx/store';
-import { selectResults } from '@store/trainer.selectors';
-import { none, some, Optional, mapOptional, ifPresent, forceValue } from '@utils/optional';
+import { none, some, Optional, mapOptional, ifPresent } from '@utils/optional';
 import { Instant, fromDateString } from '@utils/instant';
 import { Duration, infiniteDuration, seconds, minutes } from '@utils/duration';
 import { CubeAverage } from '@utils/cube-average';
@@ -106,12 +102,7 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
   providedIn: 'root',
 })
 export class SamplingStateService {
-  constructor(private readonly store: Store) {}
-
-  samplingState(now: Instant, trainingSession: TrainingSession): Observable<SamplingState<TrainingCase>> {
-    return this.store.select(selectResults).pipe(
-      take(1),
-      map(results => toSamplingState(now, trainingSession.trainingCases, forceValue(results))),
-    );
+  samplingState(now: Instant, trainingSession: TrainingSession, results: readonly Result[]): SamplingState<TrainingCase> {
+    return toSamplingState(now, trainingSession.trainingCases, results);
   }
 }

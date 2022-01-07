@@ -33,6 +33,18 @@ export function isBackendActionLoading(state: BackendActionState): state is Back
   return state.tag === 'loading';
 }
 
+export function isBackendActionNotStarted(state: BackendActionState): state is BackendActionNotStartedState {
+  return state.tag === 'not started';
+}
+
+export function isBackendActionSuccess(state: BackendActionState): state is BackendActionSuccessState {
+  return state.tag === 'success';
+}
+
+export function isBackendActionFailure(state: BackendActionState): state is BackendActionFailureState {
+  return state.tag === 'failure';
+}
+
 export function maybeBackendActionError(state: BackendActionState): Optional<BackendActionError> {
   return state.tag === 'failure' ? some(state.error) : none;
 }

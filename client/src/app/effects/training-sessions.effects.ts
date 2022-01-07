@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, ofType, createEffect } from '@ngrx/effects';
+import { Actions, ofType, concatLatestFrom, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { DeleteTrainingSessionConfirmationDialogComponent } from '@training/delete-training-session-confirmation-dialog/delete-training-session-confirmation-dialog.component';
 import { OverrideAlgDialogComponent } from '@training/override-alg-dialog/override-alg-dialog.component';
@@ -8,16 +8,37 @@ import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-
 import { MatDialog } from '@angular/material/dialog';
 import { TrainingSessionAndCase } from '@training/training-session-and-case.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, deleteClick, dontDestroy, destroy, destroySuccess, destroyFailure, overrideAlgClick, dontOverrideAlg, overrideAlg, overrideAlgSuccess, overrideAlgFailure } from '@store/training-sessions.actions';
+import { catchError, exhaustMap, switchMap, map, tap } from 'rxjs/operators';
+import {
+  initialLoad,
+  initialLoadNop,
+  initialLoadSuccess,
+  initialLoadFailure,
+  create,
+  createSuccess,
+  createFailure,
+  deleteClick,
+  dontDestroy,
+  destroy,
+  destroySuccess,
+  destroyFailure,
+  overrideAlgClick,
+  dontOverrideAlg,
+  overrideAlg,
+  overrideAlgSuccess,
+  overrideAlgFailure
+} from '@store/training-sessions.actions';
+import { selectIsInitialLoadFailureOrNotStarted } from '@store/training-sessions.selectors';
 import { TrainingSessionsService } from '@training/training-sessions.service';
 import { AlgOverridesService } from '@training/alg-overrides.service';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 
 @Injectable()
 export class TrainingSessionsEffects {
   constructor(
-    private actions$: Actions,
+    private readonly actions$: Actions,
+    private readonly store: Store,
     private readonly trainingSessionsService: TrainingSessionsService,
     private readonly algOverridesService: AlgOverridesService,
     private readonly dialog: MatDialog,
@@ -28,8 +49,12 @@ export class TrainingSessionsEffects {
   initialLoad$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initialLoad),
-      exhaustMap(action =>
-        this.trainingSessionsService.list().pipe(
+      concatLatestFrom(() => this.store.select(selectIsInitialLoadFailureOrNotStarted)),
+      switchMap(([action, initialLoadNecessary]) => {
+        if (!initialLoadNecessary) {
+          return of(initialLoadNop());
+        }
+        return this.trainingSessionsService.list().pipe(
           map(trainingSessions => initialLoadSuccess({ trainingSessions })),
           catchError(httpResponseError => {
             const context = {
@@ -40,7 +65,7 @@ export class TrainingSessionsEffects {
             return of(initialLoadFailure({ error }));
           })
         )
-      )
+      })
     )
   );
 

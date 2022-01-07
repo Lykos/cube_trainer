@@ -1,6 +1,7 @@
-import { HostListener, Component, Input, Output, EventEmitter } from '@angular/core';
+import { HostListener, Component, Input } from '@angular/core';
 import { TrainingSession } from '../training-session.model';
 import { overrideAlgClick } from '@store/training-sessions.actions';
+import { showHint } from '@store/trainer.actions';
 import { TrainingCase } from '../training-case.model';
 import { Store } from '@ngrx/store';
 
@@ -19,9 +20,6 @@ export class HintComponent {
   @Input()
   active = false;
 
-  @Output()
-  activeChange = new EventEmitter<boolean>();
-
   constructor(private readonly store: Store) {}
 
   get alg() {
@@ -29,8 +27,7 @@ export class HintComponent {
   }
 
   onHint() {
-    this.active = true;
-    this.activeChange.emit(true);
+    this.store.dispatch(showHint({ trainingSessionId: this.trainingSession!.id }));
   }
 
   @HostListener('window:keydown', ['$event'])

@@ -5,8 +5,8 @@ import {
   selectTrainingSessionEntities as selectTrainingSessionEntitiesFunction,
   selectAllTrainingSessions as selectAllTrainingSessionsFunction,
 } from './training-sessions.reducer';
-import { isBackendActionLoading, maybeBackendActionError } from '@shared/backend-action-state.model';
-import { ofNull } from '@utils/optional';
+import { isBackendActionLoading, isBackendActionFailure, isBackendActionNotStarted, maybeBackendActionError } from '@shared/backend-action-state.model';
+import { flatMapOptional, ofNull } from '@utils/optional';
 
 export const selectTrainingSessionsState = createFeatureSelector<TrainingSessionsState>('trainingSessions');
 
@@ -17,17 +17,22 @@ export const selectTrainingSessions = createSelector(
 
 export const selectInitialLoadLoading = createSelector(
   selectTrainingSessionsState,
-  trainingSessionsState => isBackendActionLoading(trainingSessionsState.initialLoadState),
+  state => isBackendActionLoading(state.initialLoadState),
 );
 
 export const selectInitialLoadOrDestroyLoading = createSelector(
   selectTrainingSessionsState,
-  trainingSessionsState => isBackendActionLoading(trainingSessionsState.initialLoadState) || isBackendActionLoading(trainingSessionsState.destroyState),
+  state => isBackendActionLoading(state.initialLoadState) || isBackendActionLoading(state.destroyState),
 );
 
 export const selectInitialLoadError = createSelector(
   selectTrainingSessionsState,
-  trainingSessionsState => maybeBackendActionError(trainingSessionsState.initialLoadState),
+  state => maybeBackendActionError(state.initialLoadState),
+);
+
+export const selectIsInitialLoadFailureOrNotStarted = createSelector(
+  selectTrainingSessionsState,
+  state => isBackendActionFailure(state.initialLoadState) || isBackendActionNotStarted(state.initialLoadState),
 );
 
 const selectTrainingSessionEntities = createSelector(
@@ -38,6 +43,5 @@ const selectTrainingSessionEntities = createSelector(
 export const selectSelectedTrainingSession = createSelector(
   selectTrainingSessionEntities,
   selectSelectedTrainingSessionId,
-  (entities, id) => { console.log('id', id, 'entities', entities); return ofNull(id ? entities[id] : undefined) },
+  (entities, maybeId) => flatMapOptional(maybeId, id => ofNull(entities[id])),
 );
-

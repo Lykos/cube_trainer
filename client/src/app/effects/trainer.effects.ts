@@ -1,28 +1,91 @@
 import { Injectable } from '@angular/core';
-import { Actions, ofType, createEffect } from '@ngrx/effects';
+import { Actions, ofType, concatLatestFrom, createEffect } from '@ngrx/effects';
 import { of, forkJoin } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, exhaustMap, map, tap, mapTo } from 'rxjs/operators';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, markDnf, markDnfSuccess, markDnfFailure } from '@store/trainer.actions';
+import { catchError, exhaustMap, switchMap, filter, flatMap, map, tap, mapTo } from 'rxjs/operators';
+import { millis } from '@utils/duration';
+import {
+  initialLoadSelected,
+  initialLoad,
+  initialLoadNop,
+  initialLoadSuccess,
+  initialLoadFailure,
+  create,
+  createSuccess,
+  createFailure,
+  destroy,
+  destroySuccess,
+  destroyFailure,
+  markDnf,
+  markDnfSuccess,
+  markDnfFailure,
+  loadSelectedNextCase,
+  loadNextCase,
+  loadNextCaseNop,
+  loadNextCaseSuccess,
+  loadNextCaseFailure,
+  stopStopwatch,
+} from '@store/trainer.actions';
+import { initialLoad as trainingSessionsInitialLoad } from '@store/training-sessions.actions';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { ResultsService } from '@training/results.service';
+import { NewResult } from '@training/new-result.model';
+import { TrainerService } from '@training/trainer.service';
 import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Store } from '@ngrx/store';
+import { hasValue, forceValue } from '@utils/optional';
+import { now } from '@utils/instant';
+import { selectTrainingSessionAndResultsAndNextCaseNecessaryById, selectIsInitialLoadFailureOrNotStartedById, selectNextCaseAndHintActiveById } from '@store/trainer.selectors';
+import { selectSelectedTrainingSessionId } from '@store/router.selectors';
+import { ScrambleOrSample } from '@training/scramble-or-sample.model';
+
+function caseName(scrambleOrSample: ScrambleOrSample) {
+  switch (scrambleOrSample.tag) {
+    case 'scramble':
+      return scrambleOrSample.scramble.toString();
+    case 'sample':
+      return scrambleOrSample.sample.item.caseName;
+  }
+}
+
+function caseKey(scrambleOrSample: ScrambleOrSample) {
+  switch (scrambleOrSample.tag) {
+    case 'scramble':
+      return scrambleOrSample.scramble.toString();
+    case 'sample':
+      return scrambleOrSample.sample.item.caseKey;
+  }
+}
 
 @Injectable()
 export class TrainerEffects {
   constructor(
-    private actions$: Actions,
+    private readonly actions$: Actions,
+    private readonly store: Store,
     private readonly resultsService: ResultsService,
+    private readonly trainerService: TrainerService,
     private readonly dialog: MatDialog,
     private readonly snackBar: MatSnackBar,
   ) {}
 
+  initialLoadSelected$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(initialLoadSelected),
+      concatLatestFrom(() => this.store.select(selectSelectedTrainingSessionId).pipe(filter(hasValue), map(forceValue))),
+      map(([action, trainingSessionId]) => initialLoad({ trainingSessionId })),
+    )
+  );
+
   initialLoad$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initialLoad),
-      exhaustMap(action =>
-        this.resultsService.list(action.trainingSessionId).pipe(
+      concatLatestFrom(() => this.store.select(selectIsInitialLoadFailureOrNotStartedById)),
+      switchMap(([action, initialLoadNecessaryById]) => {
+        if (!initialLoadNecessaryById.get(action.trainingSessionId)) {
+          return of(initialLoadNop({ trainingSessionId: action.trainingSessionId }));
+        }
+        return this.resultsService.list(action.trainingSessionId).pipe(
           map(results => initialLoadSuccess({ trainingSessionId: action.trainingSessionId, results })),
           catchError(httpResponseError => {
             const context = {
@@ -32,8 +95,18 @@ export class TrainerEffects {
             const error = parseBackendActionError(context, httpResponseError);
             return of(initialLoadFailure({ trainingSessionId: action.trainingSessionId, error }));
           })
-        )
-      )
+        );
+      })
+    )
+  );
+
+  initialLoadSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(initialLoadSuccess),
+      flatMap(action => of(
+        trainingSessionsInitialLoad(),
+        loadNextCase({ trainingSessionId: action.trainingSessionId })
+      )),
     )
   );
 
@@ -146,5 +219,70 @@ export class TrainerEffects {
       }),
     ),
     { dispatch: false }
+  );
+
+  loadSelectedNextCase$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadSelectedNextCase),
+      concatLatestFrom(() => this.store.select(selectSelectedTrainingSessionId).pipe(filter(hasValue), map(forceValue))),
+      map(([action, trainingSessionId]) => loadNextCase({ trainingSessionId })),
+    )
+  );
+
+  loadNextCase$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadNextCase),
+      concatLatestFrom(() => this.store.select(selectTrainingSessionAndResultsAndNextCaseNecessaryById).pipe(filter(hasValue), map(forceValue))),
+      switchMap(([action, lolMap]) => {
+        const { trainingSession, results, nextCaseNecessary } = lolMap.get(action.trainingSessionId)!;
+        if (!nextCaseNecessary) {
+          return of(loadNextCaseNop({ trainingSessionId: action.trainingSessionId }));
+        }
+        return this.trainerService.randomScrambleOrSample(now(), trainingSession, results).pipe(
+          map(nextCase => loadNextCaseSuccess({ trainingSessionId: action.trainingSessionId, nextCase })),
+          catchError(httpResponseError => {
+            const context = {
+              action: 'selecting',
+              subject: 'next scramble or sample',
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(loadNextCaseFailure({ trainingSessionId: action.trainingSessionId, error }));
+          })
+        )
+      })
+    )
+  );
+
+  loadNextCaseFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadNextCaseFailure),
+      tap(action => {
+        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
+      }),
+    ),
+    { dispatch: false }
+  );
+
+  stopStopwatch$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(stopStopwatch),
+      concatLatestFrom(() => this.store.select(selectNextCaseAndHintActiveById)),
+      flatMap(([action, lolMap]) => {
+        const { nextCase, hintActive } = lolMap.get(action.trainingSessionId)!;
+        const scrambleOrSample = forceValue(nextCase);
+        const duration = millis(action.durationMillis);
+        const newResult: NewResult = {
+          caseKey: caseKey(scrambleOrSample),
+          caseName: caseName(scrambleOrSample),
+          numHints: hintActive ? 1 : 0,
+          timeS: duration.toSeconds(),
+          success: true,
+        };
+        return of(
+          create({ trainingSessionId: action.trainingSessionId, newResult }),
+          loadNextCase({ trainingSessionId: action.trainingSessionId })
+        );
+      }),
+    )
   );
 }

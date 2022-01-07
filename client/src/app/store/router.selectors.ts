@@ -1,4 +1,6 @@
+import { createSelector } from '@ngrx/store';
 import { getSelectors } from '@ngrx/router-store';
+import { ofNull } from '@utils/optional';
  
 export const {
   selectCurrentRoute, // select the current route
@@ -11,4 +13,7 @@ export const {
   selectUrl, // select the current url
 } = getSelectors();
 
-export const selectSelectedTrainingSessionId = selectRouteParam('trainingSessionId');
+export const selectSelectedTrainingSessionId = createSelector(
+  selectRouteParam('trainingSessionId'),
+  id => ofNull(id === undefined ? undefined : +id),
+);

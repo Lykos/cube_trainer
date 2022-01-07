@@ -9,6 +9,10 @@ export const initialLoad = createAction(
   '[TrainingSessions] initial load from server'
 );
  
+export const initialLoadNop = createAction(
+  '[TrainingSessions] initial load from server nop'
+);
+ 
 export const initialLoadSuccess = createAction(
   '[TrainingSessions] initial load from server success',
   props<{ trainingSessions: readonly TrainingSession[] }>()
