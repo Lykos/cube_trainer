@@ -19,38 +19,42 @@ describe CaseSets::ConcreteCaseSet do
     with_buffer_refinements + without_buffer_refinements
   end
 
-  it 'produces non-empty cases' do
-    concrete_case_sets.each do |r|
-      expect(r.cases).not_to be_empty
-    end
-  end
-
-  it 'produces cases' do
-    concrete_case_sets.each do |r|
-      expect(r.cases.all?(Case)).to be(true)
-    end
-  end
-
-  it 'produces strict matching cases' do
-    concrete_case_sets.each do |r|
-      r.cases.each do |c|
-        expect(r.strict_match?(c)).to be(true)
+  concrete_case_sets.each do |concrete_case_set|
+    describe concrete_case_set do
+      it 'can be found by name' do
+        class_name = ConcreteCaseSet.simple_class_name(concrete_case_set)
+        expect(ConcreteCaseSet.class_by_name(class_name)).to eq(concrete_case_set)
       end
-    end
-  end
 
-  it 'produces case names with a letter scheme' do
-    concrete_case_sets.each do |r|
-      r.cases.each do |c|
-        expect(r.case_name(c, letter_scheme: StubLetterScheme.new)).to be_a(String)
+      it 'can be serialized and deserialized' do
+        serialized = concrete_case_set.to_raw_data
+        expect(ConcreteCaseSet.from_raw_data(serialized)).to eq(concrete_case_set)
       end
-    end
-  end
 
-  it 'produces case names without a letter scheme' do
-    concrete_case_sets.each do |r|
-      r.cases.each do |c|
-        expect(r.case_name(c)).to be_a(String)
+      it 'produces non-empty cases' do
+        expect(concrete_case_set.cases).not_to be_empty
+      end
+
+      it 'produces cases' do
+        expect(concrete_case_set.cases.all?(Case)).to be(true)
+      end
+
+      it 'produces strict matching cases' do
+        concrete_case_set.cases.each do |c|
+          expect(concrete_case_set.strict_match?(c)).to be(true)
+        end
+      end
+
+      it 'produces case names with a letter scheme' do
+        concrete_case_set.cases.each do |c|
+          expect(concrete_case_set.case_name(c, letter_scheme: StubLetterScheme.new)).to be_a(String)
+        end
+      end
+
+      it 'produces case names without a letter scheme' do
+        concrete_case_set.cases.each do |c|
+          expect(concrete_case_set.case_name(c)).to be_a(String)
+        end
       end
     end
   end

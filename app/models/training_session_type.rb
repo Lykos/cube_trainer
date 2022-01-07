@@ -93,9 +93,7 @@ class TrainingSessionType
   def alg_sets
     return [] unless case_set
 
-    case_set.all_refinements.flat_map do |concrete_case_set|
-      AlgSet.for_concrete_case_set(concrete_case_set)
-    end
+    AlgSet.for_concrete_case_sets(case_set.all_refinements)
   end
 
   def useable_training_sessions(user)

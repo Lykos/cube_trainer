@@ -36,7 +36,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { hasValue, forceValue } from '@utils/optional';
 import { now } from '@utils/instant';
-import { selectTrainingSessionAndResultsAndNextCaseNecessaryById, selectIsInitialLoadFailureOrNotStartedById, selectNextCaseAndHintActiveById } from '@store/trainer.selectors';
+import { selectTrainingSessionAndResultsAndNextCaseNecessaryById, selectIsInitialLoadNecessaryById, selectNextCaseAndHintActiveById } from '@store/trainer.selectors';
 import { selectSelectedTrainingSessionId } from '@store/router.selectors';
 import { ScrambleOrSample } from '@training/scramble-or-sample.model';
 
@@ -80,10 +80,10 @@ export class TrainerEffects {
   initialLoad$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initialLoad),
-      concatLatestFrom(() => this.store.select(selectIsInitialLoadFailureOrNotStartedById)),
+      concatLatestFrom(() => this.store.select(selectIsInitialLoadNecessaryById)),
       switchMap(([action, initialLoadNecessaryById]) => {
         if (!initialLoadNecessaryById.get(action.trainingSessionId)) {
-          return of(initialLoadNop({ trainingSessionId: action.trainingSessionId }));
+          of(initialLoadNop({ trainingSessionId: action.trainingSessionId }));
         }
         return this.resultsService.list(action.trainingSessionId).pipe(
           map(results => initialLoadSuccess({ trainingSessionId: action.trainingSessionId, results })),

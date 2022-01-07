@@ -24,7 +24,6 @@ class AlgSet < ApplicationRecord
   delegate :case_name, to: :case_set
 
   def to_simple
-    logger.info '#to_simple'
     {
       id: id,
       owner: alg_spreadsheet.owner,
@@ -32,13 +31,17 @@ class AlgSet < ApplicationRecord
     }
   end
 
-  def self.for_concrete_case_set(case_set)
-    where(case_set: case_set)
+  def self.for_concrete_case_sets(case_sets)
+    where(case_set: case_sets)
   end
 
   private
 
+  def alg_map
+    @alg_map ||= algs.index_by { |alg| alg.casee }
+  end
+
   def commutator_internal(casee)
-    algs.find { |alg| alg.casee == casee }&.commutator
+    alg_map[casee]&.commutator
   end
 end

@@ -4,11 +4,11 @@ module CaseSets
   # A concrete case set like edge 3-cycles for buffer UF.
   # This is used for training and parsing alg sets.
   class ConcreteCaseSet
-    def self.concrete_case_set_class_by_name(name)
-      @concrete_case_set_classes_by_name ||= [BufferedThreeCycleSet].index_by do |e|
+    def self.class_by_name(name)
+      @classes_by_name ||= [BufferedThreeCycleSet, BufferedParitySet, BufferedParityTwistSet, ConcreteFloatingTwoTwistSet].index_by do |e|
         simple_class_name(e)
       end.freeze
-      @concrete_case_set_classes_by_name[name]
+      @classes_by_name[name]
     end
 
     extend TwistyPuzzles::Utils::StringHelper
@@ -31,8 +31,8 @@ module CaseSets
 
     def self.from_raw_data(raw_data)
       raw_clazz, *raw_data_parts = raw_data.split(SEPARATOR)
-      clazz = concrete_case_set_class_by_name(raw_clazz)
-      raise ArgumentError, "Unknown concrete case set class #{raw_clazz}." unless clazz
+      clazz = class_by_name(raw_clazz)
+      raise ArgumentError, "Unknown concrete case set class #{raw_clazz}" unless clazz
 
       clazz.from_raw_data_parts(raw_data_parts)
     end

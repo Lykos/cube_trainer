@@ -52,7 +52,7 @@ export class TrainingSessionsEffects {
       concatLatestFrom(() => this.store.select(selectIsInitialLoadFailureOrNotStarted)),
       switchMap(([action, initialLoadNecessary]) => {
         if (!initialLoadNecessary) {
-          return of(initialLoadNop());
+          of(initialLoadNop());
         }
         return this.trainingSessionsService.list().pipe(
           map(trainingSessions => initialLoadSuccess({ trainingSessions })),

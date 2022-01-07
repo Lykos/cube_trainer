@@ -26,7 +26,7 @@ const selectTrainerAll = createSelector(
   selectTrainerAllFunction,
 );
 
-export const selectIsInitialLoadFailureOrNotStartedById = createSelector(
+export const selectIsInitialLoadNecessaryById = createSelector(
   selectTrainerAll,
   trainerAll => {
     const map = new Map<number, boolean>();
@@ -68,6 +68,9 @@ export const selectTrainingSessionAndResultsAndNextCaseNecessaryById: MemoizedSe
   selectTrainingSessionEntities,
   selectTrainerAll,
   (trainingSessionEntities, trainerAll) => {
+    if (!trainingSessionEntities) {
+      return none;
+    }
     const map = new Map<number, TrainingSessionAndResultsAndNextCaseNecessary>();
     for (let resultsState of trainerAll) {
       const trainingSessionId = resultsState.trainingSessionId
