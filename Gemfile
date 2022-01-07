@@ -55,7 +55,7 @@ end
 
 group :development, :production do
   # Use Puma as the app server
-  gem 'puma', '~> 4.3'
+  gem 'puma', '~> 5.5'
 
   # Pry is needed to inspect the production state via rails console.
   gem 'pry'
@@ -74,7 +74,7 @@ group :development do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
 
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
-  gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'listen', '>= 3.0.5', '< 3.8'
   gem 'web-console', '>= 3.3.0'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
@@ -84,7 +84,7 @@ group :development do
 end
 
 group :rubocop do
-  gem 'rubocop', '~> 1.23', require: false
+  gem 'rubocop', '~> 1.24', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rake', require: false
