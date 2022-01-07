@@ -32,7 +32,7 @@ class AlgSet < ApplicationRecord
   end
 
   def self.for_concrete_case_sets(case_sets)
-    where(case_set: case_sets)
+    where(case_set: case_sets).preload(:alg_spreadsheet)
   end
 
   private

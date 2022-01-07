@@ -87,7 +87,8 @@ class TrainingSession < ApplicationRecord
   end
 
   # Returns a simple version for the current user that can be returned to the frontend.
-  def to_simple
+  def to_simple(simple_training_session_type = training_session_type.to_simple)
+    raise TypeError unless simple_training_session_type.is_a?(Hash)
     {
       id: id,
       training_session_type: training_session_type.to_simple,
@@ -103,13 +104,30 @@ class TrainingSession < ApplicationRecord
     }
   end
 
+  def self.find_by_user_with_preloads(user)
+    user.training_sessions.preload(:alg_set, :alg_overrides)
+  end
+
+  # More efficient bulk `#to_simple`.
+  def self.multi_to_simple(training_sessions)
+    simple_training_session_types = TrainingSessionType.multi_to_simple(training_sessions.map(&:training_session_type)).index_by { |t| t[:key] }
+    training_sessions.map { |t| t.to_simple(simple_training_session_types[t.training_session_type.key]) }
+  end
+
   def to_dump
-    to_simple.merge!(
-      {
-        results: results.map(&:to_dump),
-        stats: stats.map(&:to_dump)
-      }
-    )
+    {
+      training_session_type_key: training_session_type.key,
+      name: name,
+      known: known,
+      show_input_mode: show_input_mode,
+      buffer: PartType.new.serialize(buffer),
+      goal_badness: goal_badness,
+      memo_time_s: memo_time_s,
+      cube_size: cube_size,
+      results: results.map(&:to_dump),
+      stats: stats.map(&:to_dump),
+      alg_overrides: alg_overrides.map(&:to_dump)
+    }
   end
 
   def commutator_override(casee)

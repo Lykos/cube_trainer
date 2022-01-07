@@ -12,7 +12,7 @@ class TrainingSessionTypesController < ApplicationController
 
   # GET /api/mode_types
   def index
-    render json: TrainingSessionType.all.map(&:to_simple)
+    render json: TrainingSessionType.multi_to_simple(TrainingSessionType.all)
   end
 
   # GET /api/mode_types/1

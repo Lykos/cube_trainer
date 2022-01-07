@@ -12,7 +12,7 @@ class TrainingSessionsController < ApplicationController
 
   # GET /api/training_sessions
   def index
-    render json: current_user.training_sessions.map(&:to_simple)
+    render json: TrainingSession.multi_to_simple(TrainingSession.find_by_user_with_preloads(current_user))
   end
 
   # GET /api/training_sessions/1
