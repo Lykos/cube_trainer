@@ -20,6 +20,7 @@ import { UserEffects } from '@effects/user.effects';
 import { TrainingSessionsEffects } from '@effects/training-sessions.effects';
 import { TrainerEffects } from '@effects/trainer.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,12 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
       resetPasswordCallback: `${environment.redirectProtocol}://${environment.host}/update-password`,
     }),
     StoreModule.forRoot(
-      { user: userReducer, trainingSessions: trainingSessionsReducer, trainer: trainerReducer },
+      {
+        user: userReducer,
+        trainingSessions: trainingSessionsReducer,
+        trainer: trainerReducer,
+        router: routerReducer,
+      },
       {
         runtimeChecks: {
           strictStateImmutability: true,
@@ -55,6 +61,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
         },
       },
     ),
+    StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot([UserEffects, TrainingSessionsEffects, TrainerEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states

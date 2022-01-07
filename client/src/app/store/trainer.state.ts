@@ -10,9 +10,21 @@ export interface ResultsState extends EntityState<Result> {
   readonly createState: BackendActionState;
   readonly destroyState: BackendActionState;
   readonly markDnfState: BackendActionState;
+  readonly loadNextCaseState: BackendActionState;
+}
+
+export interface PageState {
+  readonly pageSize: number;
+  readonly pageIndex: number;
+}
+
+export enum StopwatchState {
+  NotStarted = 'NotStarted',
+  Running = 'Running',
+  Stopped = 'Stopped',
 }
 
 export interface TrainerState extends EntityState<ResultsState> {
-  pageSize: number;
-  pageIndex: number;
+  pageState: PageState;
+  stopwatchState: StopwatchState;
 }

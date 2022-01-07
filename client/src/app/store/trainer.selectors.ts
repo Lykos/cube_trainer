@@ -5,7 +5,7 @@ import {
   selectAllResults as selectAllResultsFunction,
   selectResultsTotal as selectResultsTotalFunction,
 } from './trainer.reducer';
-import { selectRouteParam } from './router.selectors';
+import { selectSelectedTrainingSessionId } from './router.selectors';
 import { orElse, mapOptional, flatMapOptional, ofNull } from '@utils/optional';
 import { isBackendActionLoading, maybeBackendActionError } from '@shared/backend-action-state.model';
 
@@ -16,21 +16,24 @@ const selectTrainerEntities = createSelector(
   selectTrainerEntitiesFunction,
 );
 
-const selectSelectedTrainingSessionId = selectRouteParam('trainingSessionId');
-
 export const selectResultsState = createSelector(
   selectTrainerEntities,
   selectSelectedTrainingSessionId,
   (entities, id) => ofNull(id ? entities[id] : undefined),
 );
 
-export const selectPageIndex = createSelector(
+export const selectPageState = createSelector(
   selectTrainerState,
+  s => s.pageState,
+);
+
+export const selectPageIndex = createSelector(
+  selectPageState,
   s => s.pageIndex,
 );
 
 export const selectPageSize = createSelector(
-  selectTrainerState,
+  selectPageState,
   s => s.pageSize,
 );
 

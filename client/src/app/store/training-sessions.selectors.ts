@@ -1,6 +1,6 @@
 import { createSelector, createFeatureSelector } from '@ngrx/store';
 import { TrainingSessionsState } from './training-sessions.state';
-import { selectRouteParam } from './router.selectors';
+import { selectSelectedTrainingSessionId } from './router.selectors';
 import {
   selectTrainingSessionEntities as selectTrainingSessionEntitiesFunction,
   selectAllTrainingSessions as selectAllTrainingSessionsFunction,
@@ -17,17 +17,18 @@ export const selectTrainingSessions = createSelector(
 
 export const selectInitialLoadLoading = createSelector(
   selectTrainingSessionsState,
-  trainingSessionsState => isBackendActionLoading(trainingSessionsState.initialLoadState));
+  trainingSessionsState => isBackendActionLoading(trainingSessionsState.initialLoadState),
+);
 
 export const selectInitialLoadOrDestroyLoading = createSelector(
   selectTrainingSessionsState,
-  trainingSessionsState => isBackendActionLoading(trainingSessionsState.initialLoadState) || isBackendActionLoading(trainingSessionsState.destroyState));
+  trainingSessionsState => isBackendActionLoading(trainingSessionsState.initialLoadState) || isBackendActionLoading(trainingSessionsState.destroyState),
+);
 
 export const selectInitialLoadError = createSelector(
   selectTrainingSessionsState,
-  trainingSessionsState => maybeBackendActionError(trainingSessionsState.initialLoadState));
-
-const selectSelectedTrainingSessionId = selectRouteParam('trainingSessionId');
+  trainingSessionsState => maybeBackendActionError(trainingSessionsState.initialLoadState),
+);
 
 const selectTrainingSessionEntities = createSelector(
   selectTrainingSessionsState,
@@ -37,6 +38,6 @@ const selectTrainingSessionEntities = createSelector(
 export const selectSelectedTrainingSession = createSelector(
   selectTrainingSessionEntities,
   selectSelectedTrainingSessionId,
-  (entities, id) => ofNull(id ? entities[id] : undefined),
+  (entities, id) => { console.log('id', id, 'entities', entities); return ofNull(id ? entities[id] : undefined) },
 );
 

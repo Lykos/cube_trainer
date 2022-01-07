@@ -10,3 +10,5 @@ export const {
   selectRouteData, // select the current route data
   selectUrl, // select the current url
 } = getSelectors();
+
+export const selectSelectedTrainingSessionId = selectRouteParam('trainingSessionId');

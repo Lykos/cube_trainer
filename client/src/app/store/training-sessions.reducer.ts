@@ -24,7 +24,7 @@ export const trainingSessionsReducer = createReducer(
     return { ...trainingSessionState, initialLoadState: backendActionLoadingState };
   }),
   on(initialLoadSuccess, (trainingSessionState, { trainingSessions }) => {
-    return { ...trainingSessionState, serverTrainingSessions: trainingSessions, initialLoadState: backendActionSuccessState };
+    return adapter.setAll(trainingSessions.map(t => t), { ...trainingSessionState, initialLoadState: backendActionSuccessState });
   }),
   on(initialLoadFailure, (trainingSessionState, { error }) => {
     return { ...trainingSessionState, initialLoadState: backendActionFailureState(error) };

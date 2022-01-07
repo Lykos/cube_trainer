@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, markDnf, markDnfSuccess, markDnfFailure, setPage } from '@store/trainer.actions';
 import { Result } from '@training/result.model';
-import { TrainerState, ResultsState } from './trainer.state';
+import { TrainerState, ResultsState, StopwatchState } from './trainer.state';
 import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
 import { EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import { fromDateString } from '@utils/instant';
@@ -15,9 +15,16 @@ const trainerAdapter: EntityAdapter<ResultsState> = createEntityAdapter<ResultsS
   selectId: s => s.trainingSessionId,
 });
 
-const initialTrainerState: TrainerState = trainerAdapter.getInitialState({
+const initialPageState = {
   pageIndex: 0,
   pageSize: 100,
+}
+
+const initialStopwatchState = StopwatchState.NotStarted;
+
+const initialTrainerState: TrainerState = trainerAdapter.getInitialState({
+  pageState: initialPageState,
+  stopwatchState: initialStopwatchState,
 });
 
 export const trainerReducer = createReducer(
@@ -29,6 +36,7 @@ export const trainerReducer = createReducer(
       createState: backendActionNotStartedState,
       destroyState: backendActionNotStartedState,
       markDnfState: backendActionNotStartedState,
+      loadNextCaseState: backendActionNotStartedState,
     });
     return trainerAdapter.upsertOne(initialResultsState, trainerState);
   }),
@@ -105,7 +113,7 @@ export const trainerReducer = createReducer(
     }, trainerState);
   }),
   on(setPage, (trainerState, { pageIndex, pageSize }) => {
-    return { ...trainerState, pageIndex, pageSize };
+    return { ...trainerState, pageState: { pageIndex, pageSize } };
   }),
 )
 
