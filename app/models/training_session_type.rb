@@ -74,7 +74,8 @@ class TrainingSessionType
   end
 
   # Returns a simple version for the current user that can be returned to the frontend.
-  def to_simple
+  def to_simple(simple_alg_sets = alg_sets.map(&:to_simple))
+    raise TypeError unless simple_alg_sets.is_a?(Array) && simple_alg_sets.all?(Hash)
     {
       key: key,
       name: name,
@@ -86,16 +87,28 @@ class TrainingSessionType
       has_bounded_inputs: bounded_inputs?,
       has_memo_time: memo_time?,
       stats_types: stats_types.map(&:to_simple),
-      alg_sets: alg_sets.map(&:to_simple)
+      alg_sets: simple_alg_sets
     }
+  end
+
+  # More efficient bulk `#to_simple`.
+  def self.multi_to_simple(training_session_types)
+    concrete_case_sets = training_session_types.flat_map { |t| t.case_set.all_refinements }.uniq
+    alg_sets = AlgSet.for_concrete_case_sets(concrete_case_sets).index_by { |a| a.case_set }.transform_values { |a| a.to_simple }
+    training_session_types.map do |t|
+      simple_alg_sets = t.concrete_case_sets.map { |c| alg_sets[c] }
+      t.to_simple(simple_alg_sets)
+    end
+  end
+
+  def concrete_case_sets
+    case_set.all_refinements
   end
 
   def alg_sets
     return [] unless case_set
 
-    case_set.all_refinements.flat_map do |concrete_case_set|
-      AlgSet.for_concrete_case_set(concrete_case_set)
-    end
+    AlgSet.for_concrete_case_sets(concrete_case_sets)
   end
 
   def useable_training_sessions(user)

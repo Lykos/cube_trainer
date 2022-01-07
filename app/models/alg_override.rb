@@ -14,4 +14,12 @@ class AlgOverride < ApplicationRecord
   def grant_alg_overrider_achievement
     user.grant_achievement_if_not_granted(:alg_overrider)
   end
+
+  def to_dump
+    {
+      id: id,
+      case_key: CaseType.new.serialize(casee),
+      alg: alg.to_s
+    }
+  end
 end

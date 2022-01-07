@@ -6,6 +6,7 @@ class UsersController < ApplicationController
   # hence we can't require the user to already be signed in.
   skip_before_action :authenticate_user!, only: %i[name_or_email_exists?]
 
+  # TODO: Deprecate
   # GET /api/name_or_email_exists
   def name_or_email_exists?
     name_or_email = params[:name_or_email]
@@ -13,6 +14,7 @@ class UsersController < ApplicationController
     render json: exists, status: :ok
   end
 
+  # TODO: Deprecate
   # GET /api/user
   def show
     render json: current_user, status: :ok
