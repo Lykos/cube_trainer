@@ -3,10 +3,10 @@
   <div class="stopwatch-time" [ngClass]="{'post-memo-time': running && isPostMemoTime}"> {{displayedDuration | duration}} </div>
   <div>
     <ng-container *ngIf="running">
-      <button mat-raised-button *ngIf="hasStopAndStart" color="primary" (click)="onStopAndStart()">
+      <button mat-raised-button id="stopwatch-stop-and-start" *ngIf="hasStopAndStart" color="primary" (click)="onStopAndStart()">
         Stop and Start
       </button>
-      <button mat-raised-button color="primary" (click)="onStopAndPause()">
+      <button mat-raised-button id="stopwatch-stop-and-pause" color="primary" (click)="onStopAndPause()">
         <ng-container *ngIf="hasStopAndStart">
           Stop and Pause
         </ng-container>
@@ -16,10 +16,10 @@
       </button>
     </ng-container>
     <ng-container *ngIf="!running">
-      <button mat-raised-button *ngIf="startReady" color="primary" (click)="onStart()">
+      <button mat-raised-button id="stopwatch-start" *ngIf="startReady" color="primary" (click)="onStart()">
         Start
       </button>
-      <mat-spinner *ngIf="!startReady"></mat-spinner>
+      <mat-spinner id="stopwatch-loading" *ngIf="!startReady"></mat-spinner>
     </ng-container>
   </div>
 </div>
