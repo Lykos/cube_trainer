@@ -16,7 +16,7 @@ import { GeneratorType } from '../generator-type.model';import { MatProgressSpin
 const trainingSessionType: TrainingSessionType = {
   key: 'test session type key',
   name: 'test session type name',
-  showInputModes: [ShowInputMode.Name, ShowInputMode.Picture],
+  showInputModes: [ShowInputMode.Scramble],
   generatorType: GeneratorType.Scramble,
   hasGoalBadness: false,
   hasBoundedInputs: false,
@@ -33,7 +33,8 @@ const trainingSession: TrainingSession = {
   numResults: 0,
   known: false,
   showInputMode: ShowInputMode.Scramble,
-  trainingSessionType
+  trainingSessionType,
+  memoTimeS: 2,
 };
 
 const now = fromDateString('2021-01-01');
@@ -124,6 +125,25 @@ describe('TrainerStopwatchComponent', () => {
     expect(compiled.querySelector('#stopwatch-start')).toBeFalsy();
     expect(compiled.querySelector('#stopwatch-stop-and-start')).toBeFalsy();
     expect(compiled.querySelector('#stopwatch-stop-and-pause')).toBeTruthy();
+  });
+
+  it('should give a visual cue when the memo time is reached', () => {
+    const start = now;
+    store.overrideSelector(selectStopwatchState, runningStopwatchState(start.toUnixMillis()));
+    store.overrideSelector(selectStopwatchRunning, true);
+    store.overrideSelector(selectNextCaseReady, false);
+    const fixture = TestBed.createComponent(TrainerStopwatchComponent);
+    fixture.componentInstance.trainingSession = trainingSession;
+    fixture.detectChanges();
+    jasmine.clock().tick(2000);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.post-memo-time')).toBeFalsy();
+
+    jasmine.clock().tick(10);
+    fixture.detectChanges();
+    expect(compiled.querySelector('.post-memo-time')).toBeTruthy();
   });
 
   it('should dispatch the start event when started', () => {
