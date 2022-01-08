@@ -2,18 +2,22 @@
   <ng-container *ngIf="trainingSession">
     <div layout="row" layout-sm="column">
       <div flex *ngIf="scrambleOrSample$ | async as scrambleOrSample">
-        <cube-trainer-trainer-input
-          [scrambleOrSample]="scrambleOrSample"
-          [trainingSession]="trainingSession">
-        </cube-trainer-trainer-input>
+        <div id="trainer-input">
+          <cube-trainer-trainer-input
+            [scrambleOrSample]="scrambleOrSample"
+            [trainingSession]="trainingSession">
+          </cube-trainer-trainer-input>
+        </div>
         <ng-container *ngIf="scrambleOrSample.tag === 'sample'">
           <cube-trainer-hint
             [trainingCase]="scrambleOrSample.sample.item"
             [trainingSession]="trainingSession">
           </cube-trainer-hint>
         </ng-container>
-        <cube-trainer-trainer-stopwatch [trainingSession]="trainingSession">
-        </cube-trainer-trainer-stopwatch>
+        <div id="trainer-stopwatch">
+          <cube-trainer-trainer-stopwatch [trainingSession]="trainingSession">
+          </cube-trainer-trainer-stopwatch>
+        </div>
       </div>
       <div flex>
         <cube-trainer-results-table [trainingSessionId]="trainingSession.id"></cube-trainer-results-table>
