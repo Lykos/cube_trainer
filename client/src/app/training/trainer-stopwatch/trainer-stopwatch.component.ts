@@ -3,8 +3,8 @@ import { Duration, zeroDuration, millis, seconds } from '@utils/duration';
 import { fromUnixMillis, now } from '@utils/instant';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { selectStopwatchState, selectStopwatchRunning, selectNextCaseReady } from '@store/trainer.selectors';
-import { startStopwatch, stopStopwatch, stopAndStartStopwatch } from '@store/trainer.actions';
-import { Observable, interval, of } from 'rxjs';
+import { startStopwatch, stopAndPauseStopwatch, stopAndStartStopwatch } from '@store/trainer.actions';
+import { Observable, interval, of, Subscription } from 'rxjs';
 import { TrainingSession } from '../training-session.model';
 import { map, switchMap } from 'rxjs/operators';
 import { Store } from '@ngrx/store'
@@ -25,8 +25,8 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   running: boolean | undefined;
   nextCaseReady: boolean | undefined;
 
-  runningSubscription: { unsubscribe: () => void } | undefined;
-  nextCaseReadySubscription: { unsubscribe: () => void } | undefined;
+  runningSubscription: Subscription | undefined;
+  nextCaseReadySubscription: Subscription | undefined;
   
   constructor(private readonly store: Store) {
     this.duration$ = this.store.select(selectStopwatchState).pipe(
@@ -62,7 +62,7 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   }
 
   onStopAndPause() {
-    this.store.dispatch(stopStopwatch(this.stopProps));
+    this.store.dispatch(stopAndPauseStopwatch(this.stopProps));
   }
 
   onStopAndStart() {

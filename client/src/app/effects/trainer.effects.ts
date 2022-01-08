@@ -27,6 +27,7 @@ import {
   loadNextCaseFailure,
   startStopwatch,
   stopAndStartStopwatch,
+  stopAndPauseStopwatch,
   stopStopwatch,
   stopStopwatchSuccess,
   stopStopwatchFailure,
@@ -123,8 +124,6 @@ export class TrainerEffects {
     )
   );
 
-  // Failure for initialLoadResults has no effect, it shows a message at the component where the results are rendered.
-
   create$ = createEffect(() =>
     this.actions$.pipe(
       ofType(create),
@@ -142,16 +141,6 @@ export class TrainerEffects {
         )
       )
     )
-  );
-
-  createFailure$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(createFailure),
-      tap(action => {
-        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
-      }),
-    ),
-    { dispatch: false }
   );
 
   destroy$ = createEffect(() =>
@@ -172,16 +161,6 @@ export class TrainerEffects {
         )
       })
     )
-  );
-
-  destroyFailure$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(destroyFailure),
-      tap(action => {
-        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
-      }),
-    ),
-    { dispatch: false }
   );
 
   destroySuccess$ = createEffect(() =>
@@ -212,16 +191,6 @@ export class TrainerEffects {
         )
       })
     )
-  );
-
-  markDnfFailure$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(markDnfFailure),
-      tap(action => {
-        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
-      }),
-    ),
-    { dispatch: false }
   );
 
   markDnfSuccess$ = createEffect(() =>
@@ -274,20 +243,10 @@ export class TrainerEffects {
     )
   );
 
-  loadNextCaseFailure$ = createEffect(() =>
+  stopAndXXXStopwatch$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(loadNextCaseFailure),
-      tap(action => {
-        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
-      }),
-    ),
-    { dispatch: false }
-  );
-
-  stopAndStartStopwatch$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(stopAndStartStopwatch),
-      map(action => stopAndStartStopwatch({ trainingSessionId: action.trainingSessionId, stopUnixMillis: action.stopUnixMillis })),
+      ofType(stopAndStartStopwatch, stopAndPauseStopwatch),
+      map(action => stopStopwatch({ trainingSessionId: action.trainingSessionId, stopUnixMillis: action.stopUnixMillis })),
     )
   );
 
@@ -307,16 +266,6 @@ export class TrainerEffects {
         return stopStopwatchSuccess({ trainingSessionId: action.trainingSessionId, durationMillis: duration.toMillis() })
       }),
     ),
-  );
-
-  stopStopwatchFailure$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(stopStopwatchFailure),
-      tap(action => {
-        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
-      }),
-    ),
-    { dispatch: false }
   );
 
   stopStopwatchSuccess$ = createEffect(() =>
@@ -340,5 +289,17 @@ export class TrainerEffects {
         );
       }),
     )
+  );
+
+  failure$ = createEffect(() =>
+    this.actions$.pipe(
+      // Failure for initialLoadResults has no here effect,
+      // it shows a message at the component where the results are rendered.
+      ofType(createFailure, destroyFailure, markDnfFailure, loadNextCaseFailure, stopStopwatchFailure),
+      tap(action => {
+        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
+      }),
+    ),
+    { dispatch: false }
   );
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, filter, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { TrainingSession } from '../training-session.model';
 import { ScrambleOrSample } from '../scramble-or-sample.model';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { hasValue, forceValue } from '@utils/optional';
 import { BackendActionError } from '@shared/backend-action-error.model';
@@ -22,7 +22,7 @@ export class TrainerComponent implements OnInit, OnDestroy {
   error$: Observable<BackendActionError>;
 
   private trainingSession$: Observable<TrainingSession>
-  private trainingSessionSubscription: any;
+  private trainingSessionSubscription: Subscription | undefined;
 
   constructor(private readonly store: Store) {
     this.trainingSession$ = this.store.select(selectSelectedTrainingSession).pipe(

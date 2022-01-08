@@ -113,6 +113,11 @@ export const stopAndStartStopwatch = createAction(
   props<{ trainingSessionId: number, stopUnixMillis: number }>()
 );
 
+export const stopAndPauseStopwatch = createAction(
+  '[Trainer] stop stopwatch and do not start again once the next case is loaded',
+  props<{ trainingSessionId: number, stopUnixMillis: number }>()
+);
+
 export const stopStopwatch = createAction(
   '[Trainer] stop stopwatch',
   props<{ trainingSessionId: number, stopUnixMillis: number }>()

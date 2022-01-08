@@ -17,6 +17,7 @@ import {
   loadNextCaseFailure,
   setPage,
   stopAndStartStopwatch,
+  stopAndPauseStopwatch,
   startStopwatch,
   stopStopwatchSuccess,
   showHint,
@@ -164,6 +165,14 @@ export const trainerReducer = createReducer(
     return trainerAdapter.updateOne({
       id: trainingSessionId,
       changes: { startAfterLoading: true }
+    }, trainerState);
+  }),
+  // Note that stopAndPauseStopwatch immediately triggers a stopStopwatch,
+  // so we don't have to take care of the regular stopping logic.
+  on(stopAndPauseStopwatch, (trainerState, { trainingSessionId }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { startAfterLoading: false }
     }, trainerState);
   }),
   on(startStopwatch, (trainerState, { trainingSessionId, startUnixMillis }) => {
