@@ -93,16 +93,16 @@ class TrainingSessionType
 
   # More efficient bulk `#to_simple`.
   def self.multi_to_simple(training_session_types)
-    concrete_case_sets = training_session_types.flat_map { |t| t.case_set.all_refinements }.uniq
+    concrete_case_sets = training_session_types.flat_map { |t| t.concrete_case_sets }.uniq
     alg_sets = AlgSet.for_concrete_case_sets(concrete_case_sets).index_by { |a| a.case_set }.transform_values { |a| a.to_simple }
     training_session_types.map do |t|
-      simple_alg_sets = t.concrete_case_sets.map { |c| alg_sets[c] }
+      simple_alg_sets = t.concrete_case_sets.flat_map { |c| alg_sets[c] || [] }
       t.to_simple(simple_alg_sets)
     end
   end
 
   def concrete_case_sets
-    case_set.all_refinements
+    case_set&.all_refinements || []
   end
 
   def alg_sets

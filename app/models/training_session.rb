@@ -91,7 +91,7 @@ class TrainingSession < ApplicationRecord
     raise TypeError unless simple_training_session_type.is_a?(Hash)
     {
       id: id,
-      training_session_type: training_session_type.to_simple,
+      training_session_type: simple_training_session_type,
       name: name,
       known: known,
       show_input_mode: show_input_mode,
