@@ -4,6 +4,9 @@ import { overrideAlgClick } from '@store/training-sessions.actions';
 import { showHint } from '@store/trainer.actions';
 import { TrainingCase } from '../training-case.model';
 import { Store } from '@ngrx/store';
+import { selectHintActive } from '@store/trainer.selectors';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-hint',
@@ -17,10 +20,11 @@ export class HintComponent {
   @Input()
   trainingSession?: TrainingSession;
 
-  @Input()
-  active = false;
+  active$: Observable<{ value: boolean }>;
 
-  constructor(private readonly store: Store) {}
+  constructor(private readonly store: Store) {
+    this.active$ = this.store.select(selectHintActive).pipe(map(value => ({ value })));
+  }
 
   get alg() {
     return this.trainingCase?.alg;

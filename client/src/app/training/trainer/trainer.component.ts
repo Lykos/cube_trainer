@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { map, filter, shareReplay, distinctUntilChanged } from 'rxjs/operators';
+import { map, filter, distinctUntilChanged } from 'rxjs/operators';
 import { TrainingSession } from '../training-session.model';
 import { ScrambleOrSample } from '../scramble-or-sample.model';
 import { Observable, Subscription } from 'rxjs';
@@ -8,7 +8,7 @@ import { hasValue, forceValue } from '@utils/optional';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
 import { initialLoadSelected } from '@store/trainer.actions';
-import { selectNextCase, selectHintActive } from '@store/trainer.selectors';
+import { selectNextCase } from '@store/trainer.selectors';
 
 @Component({
   selector: 'cube-trainer-trainer',
@@ -18,7 +18,6 @@ export class TrainerComponent implements OnInit, OnDestroy {
   trainingSession?: TrainingSession;
   loading$: Observable<boolean>;
   scrambleOrSample$: Observable<ScrambleOrSample>;
-  hintActive$: Observable<{ value: boolean }>;
   error$: Observable<BackendActionError>;
 
   private trainingSession$: Observable<TrainingSession>
@@ -29,11 +28,9 @@ export class TrainerComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       filter(hasValue),
       map(forceValue),
-      shareReplay(),
     );
     this.loading$ = this.store.select(selectInitialLoadLoading);
     this.scrambleOrSample$ = this.store.select(selectNextCase).pipe(filter(hasValue), map(forceValue));
-    this.hintActive$ = this.store.select(selectHintActive).pipe(map(value => ({ value })));
     this.error$ = this.store.select(selectInitialLoadError).pipe(
       filter(hasValue),
       map(forceValue),

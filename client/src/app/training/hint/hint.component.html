@@ -1,11 +1,13 @@
 <div *ngIf="alg">
-  <div *ngIf="active">
-    <span class="alg">{{alg}}</span>
-    <button mat-raised-button color="primary" (click)="onOverride()">
-      Override
+  <ng-container *ngIf="active$ | async as active">
+    <div *ngIf="active.value">
+      <span class="alg">{{alg}}</span>
+      <button mat-raised-button color="primary" (click)="onOverride()">
+        Override
+      </button>
+    </div>
+    <button mat-raised-button color="primary" *ngIf="!active.value" (click)="onHint()">
+      Hint
     </button>
-  </div>
-  <button mat-raised-button color="primary" *ngIf="!active" (click)="onHint()">
-    Hint
-  </button>
+  </ng-container>
 </div>

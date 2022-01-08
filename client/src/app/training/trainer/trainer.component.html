@@ -7,13 +7,10 @@
           [trainingSession]="trainingSession">
         </cube-trainer-trainer-input>
         <ng-container *ngIf="scrambleOrSample.tag === 'sample'">
-          <ng-container *ngIf="hintActive$ | async as hintActive">
-            <cube-trainer-hint
-              [trainingCase]="scrambleOrSample.sample.item"
-              [trainingSession]="trainingSession"
-              [active]="hintActive.value">
-            </cube-trainer-hint>
-          </ng-container>
+          <cube-trainer-hint
+            [trainingCase]="scrambleOrSample.sample.item"
+            [trainingSession]="trainingSession">
+          </cube-trainer-hint>
         </ng-container>
         <cube-trainer-trainer-stopwatch [trainingSession]="trainingSession">
         </cube-trainer-trainer-stopwatch>
