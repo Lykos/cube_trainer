@@ -1,5 +1,22 @@
 import { createReducer, on } from '@ngrx/store';
-import { initialLoad, initialLoadSuccess, initialLoadFailure, create, createSuccess, createFailure, destroy, destroySuccess, destroyFailure, overrideAlg, overrideAlgSuccess, overrideAlgFailure, setSelectedTrainingSessionId } from './training-sessions.actions';
+import {
+  initialLoad,
+  initialLoadSuccess,
+  initialLoadFailure,
+  loadOne,
+  loadOneSuccess,
+  loadOneFailure,
+  create,
+  createSuccess,
+  createFailure,
+  destroy,
+  destroySuccess,
+  destroyFailure,
+  overrideAlg,
+  overrideAlgSuccess,
+  overrideAlgFailure,
+  setSelectedTrainingSessionId,
+} from './training-sessions.actions';
 import { TrainingSessionsState } from './training-sessions.state';
 import { TrainingSession } from '@training/training-session.model';
 import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
@@ -15,6 +32,7 @@ const initialTrainingSessionsState: TrainingSessionsState = adapter.getInitialSt
   createState: backendActionNotStartedState,
   destroyState: backendActionNotStartedState,
   overrideAlgState: backendActionNotStartedState,
+  loadOneState: backendActionNotStartedState,
   selectedTrainingSessionId: 0,
 });
 
@@ -28,6 +46,15 @@ export const trainingSessionsReducer = createReducer(
   }),
   on(initialLoadFailure, (trainingSessionState, { error }) => {
     return { ...trainingSessionState, initialLoadState: backendActionFailureState(error) };
+  }),
+  on(loadOne, (trainingSessionState) => {
+    return { ...trainingSessionState, loadOneState: backendActionLoadingState };
+  }),
+  on(loadOneSuccess, (trainingSessionState, { trainingSession }) => {
+    return adapter.upsertOne(trainingSession, { ...trainingSessionState, loadOneState: backendActionSuccessState });
+  }),
+  on(loadOneFailure, (trainingSessionState, { error }) => {
+    return { ...trainingSessionState, loadOneState: backendActionFailureState(error) };
   }),
   on(create, (trainingSessionState, { newTrainingSession }) => {
     return { ...trainingSessionState, createState: backendActionLoadingState };

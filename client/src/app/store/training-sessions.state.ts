@@ -7,6 +7,7 @@ export interface TrainingSessionsState extends EntityState<TrainingSession> {
   readonly createState: BackendActionState;
   readonly destroyState: BackendActionState;
   readonly overrideAlgState: BackendActionState;
+  readonly loadOneState: BackendActionState;
 
   readonly selectedTrainingSessionId: number;
 }

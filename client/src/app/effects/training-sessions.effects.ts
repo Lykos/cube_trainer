@@ -14,6 +14,9 @@ import {
   initialLoadNop,
   initialLoadSuccess,
   initialLoadFailure,
+  loadOne,
+  loadOneSuccess,
+  loadOneFailure,
   create,
   createSuccess,
   createFailure,
@@ -52,6 +55,7 @@ export class TrainingSessionsEffects {
       concatLatestFrom(() => this.store.select(selectIsInitialLoadFailureOrNotStarted)),
       switchMap(([action, initialLoadNecessary]) => {
         if (!initialLoadNecessary) {
+          // TODO: If it's recent, return this.
           of(initialLoadNop());
         }
         return this.trainingSessionsService.list().pipe(
@@ -70,6 +74,37 @@ export class TrainingSessionsEffects {
   );
 
   // Failure for initialLoad has no effect, it shows a message at the component where the training sessions are rendered.
+
+  loadOne$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadOne),
+      switchMap(action => {
+        // TODO: If it was done recently, return this.
+        return this.trainingSessionsService.show(action.trainingSessionId).pipe(
+          map(trainingSession => loadOneSuccess({ trainingSession })),
+          catchError(httpResponseError => {
+            const context = {
+              action: 'loading',
+              subject: 'session',
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(loadOneFailure({ error }));
+          })
+        )
+      })
+    )
+  );
+
+
+  loadOneFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadOneFailure),
+      tap(action => {
+        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
+      }),
+    ),
+    { dispatch: false }
+  );
   
   create$ = createEffect(() =>
     this.actions$.pipe(

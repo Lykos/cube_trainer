@@ -69,6 +69,7 @@ export const selectTrainingSessionAndResultsAndNextCaseNecessaryById: MemoizedSe
   selectTrainerAll,
   (trainingSessionEntities, trainerAll) => {
     if (!trainingSessionEntities) {
+      console.log('no training session entities');
       return none;
     }
     const map = new Map<number, TrainingSessionAndResultsAndNextCaseNecessary>();
@@ -76,6 +77,7 @@ export const selectTrainingSessionAndResultsAndNextCaseNecessaryById: MemoizedSe
       const trainingSessionId = resultsState.trainingSessionId
       const trainingSession = trainingSessionEntities[trainingSessionId];
       if (!trainingSession) {
+        console.log(`no training session ${trainingSessionId}`);
         return none;
       }
       const results = selectAllResultsFunction(resultsState);

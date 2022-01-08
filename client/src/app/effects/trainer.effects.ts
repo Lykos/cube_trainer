@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, concatLatestFrom, createEffect } from '@ngrx/effects';
-import { of, forkJoin } from 'rxjs';
+import { of, forkJoin, merge } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, switchMap, filter, flatMap, map, tap, mapTo } from 'rxjs/operators';
 import { millis } from '@utils/duration';
@@ -26,7 +26,7 @@ import {
   loadNextCaseFailure,
   stopStopwatch,
 } from '@store/trainer.actions';
-import { initialLoad as trainingSessionsInitialLoad } from '@store/training-sessions.actions';
+import { loadOne } from '@store/training-sessions.actions';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { ResultsService } from '@training/results.service';
 import { NewResult } from '@training/new-result.model';
@@ -83,9 +83,11 @@ export class TrainerEffects {
       concatLatestFrom(() => this.store.select(selectIsInitialLoadNecessaryById)),
       switchMap(([action, initialLoadNecessaryById]) => {
         if (!initialLoadNecessaryById.get(action.trainingSessionId)) {
+          // TODO: If it's recent, return this.
           of(initialLoadNop({ trainingSessionId: action.trainingSessionId }));
         }
-        return this.resultsService.list(action.trainingSessionId).pipe(
+        const loadTrainingSession = of(loadOne({ trainingSessionId: action.trainingSessionId }));
+        const loadResults = this.resultsService.list(action.trainingSessionId).pipe(
           map(results => initialLoadSuccess({ trainingSessionId: action.trainingSessionId, results })),
           catchError(httpResponseError => {
             const context = {
@@ -96,6 +98,7 @@ export class TrainerEffects {
             return of(initialLoadFailure({ trainingSessionId: action.trainingSessionId, error }));
           })
         );
+        return merge(loadTrainingSession, loadResults);
       })
     )
   );
@@ -103,10 +106,7 @@ export class TrainerEffects {
   initialLoadSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initialLoadSuccess),
-      flatMap(action => of(
-        trainingSessionsInitialLoad(),
-        loadNextCase({ trainingSessionId: action.trainingSessionId })
-      )),
+      flatMap(action => of(loadNextCase({ trainingSessionId: action.trainingSessionId }))),
     )
   );
 

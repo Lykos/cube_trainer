@@ -23,6 +23,21 @@ export const initialLoadFailure = createAction(
   props<{ error: BackendActionError }>()
 );
 
+export const loadOne = createAction(
+  '[TrainingSessions] load one from server',
+  props<{ trainingSessionId: number }>()
+);
+  
+export const loadOneSuccess = createAction(
+  '[TrainingSessions] load one from server success',
+  props<{ trainingSession: TrainingSession }>()
+);
+ 
+export const loadOneFailure = createAction(
+  '[TrainingSessions] load one from server failure',
+  props<{ error: BackendActionError }>()
+);
+
 export const create = createAction(
   '[TrainingSessions] create',
   props<{ newTrainingSession: NewTrainingSession }>()
