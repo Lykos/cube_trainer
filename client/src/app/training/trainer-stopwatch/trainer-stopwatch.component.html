@@ -1,0 +1,10 @@
+<cube-trainer-stopwatch
+  [duration]="duration$ | async"
+  [startReady]="nextCaseReady"
+  [running]="running"
+  [memoTime]="memoTime"
+  [hasStopAndStart]="hasStopAndStart"
+  (start)="onStart"
+  (stopAndPause)="onStopAndPause"
+  (stopAndStart)="onStopAndStart">
+</cube-trainer-stopwatch>

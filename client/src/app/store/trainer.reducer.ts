@@ -1,8 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
 import {
-  initialLoad,
-  initialLoadSuccess,
-  initialLoadFailure,
+  initialLoadResults,
+  initialLoadResultsSuccess,
+  initialLoadResultsFailure,
   create,
   createSuccess,
   createFailure,
@@ -16,8 +16,9 @@ import {
   loadNextCaseSuccess,
   loadNextCaseFailure,
   setPage,
+  stopAndStartStopwatch,
   startStopwatch,
-  stopStopwatch,
+  stopStopwatchSuccess,
   showHint,
 } from '@store/trainer.actions';
 import { Result } from '@training/result.model';
@@ -49,10 +50,10 @@ const initialTrainerState: TrainerState = trainerAdapter.getInitialState({
 
 export const trainerReducer = createReducer(
   initialTrainerState,
-  on(initialLoad, (trainerState, { trainingSessionId }) => {
+  on(initialLoadResults, (trainerState, { trainingSessionId }) => {
     const initialResultsState = resultsAdapter.getInitialState({
       trainingSessionId,
-      initialLoadState: backendActionLoadingState,
+      initialLoadResultsState: backendActionLoadingState,
       createState: backendActionNotStartedState,
       destroyState: backendActionNotStartedState,
       markDnfState: backendActionNotStartedState,
@@ -60,19 +61,20 @@ export const trainerReducer = createReducer(
       nextCase: none,
       stopwatchState: initialStopwatchState,
       hintActive: false,
+      startAfterLoading: false,
     });
     return trainerAdapter.upsertOne(initialResultsState, trainerState);
   }),
-  on(initialLoadSuccess, (trainerState, { trainingSessionId, results }) => {
+  on(initialLoadResultsSuccess, (trainerState, { trainingSessionId, results }) => {
     return trainerAdapter.mapOne({
       id: trainingSessionId,
-      map: resultsState => resultsAdapter.setAll(results.map(r => r), { ...resultsState, initialLoadState: backendActionSuccessState }),
+      map: resultsState => resultsAdapter.setAll(results.map(r => r), { ...resultsState, initialLoadResultsState: backendActionSuccessState }),
     }, trainerState);
   }),
-  on(initialLoadFailure, (trainerState, { trainingSessionId, error }) => {
+  on(initialLoadResultsFailure, (trainerState, { trainingSessionId, error }) => {
     return trainerAdapter.updateOne({
       id: trainingSessionId,
-      changes: { initialLoadState: backendActionFailureState(error) }
+      changes: { initialLoadResultsState: backendActionFailureState(error) }
     }, trainerState);
   }),
   on(create, (trainerState, { trainingSessionId }) => {
@@ -156,13 +158,21 @@ export const trainerReducer = createReducer(
   on(setPage, (trainerState, { pageIndex, pageSize }) => {
     return { ...trainerState, pageState: { pageIndex, pageSize } };
   }),
+  // Note that stopAndStartStopwatch immediately triggers a stopStopwatch,
+  // so we don't have to take care of the regular stopping logic.
+  on(stopAndStartStopwatch, (trainerState, { trainingSessionId }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { startAfterLoading: true }
+    }, trainerState);
+  }),
   on(startStopwatch, (trainerState, { trainingSessionId, startUnixMillis }) => {
     return trainerAdapter.updateOne({
       id: trainingSessionId,
       changes: { stopwatchState: runningStopwatchState(startUnixMillis), hintActive: false }
     }, trainerState);
   }),
-  on(stopStopwatch, (trainerState, { trainingSessionId, durationMillis }) => {
+  on(stopStopwatchSuccess, (trainerState, { trainingSessionId, durationMillis }) => {
     return trainerAdapter.updateOne({
       id: trainingSessionId,
       changes: { stopwatchState: stoppedStopwatchState(durationMillis) }

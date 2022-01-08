@@ -1,9 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Sample } from '@utils/sampling';
 import { TrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
-import { TrainingCase } from '../training-case.model';
-import { Alg } from 'cubing/alg';
+import { ScrambleOrSample, isScramble, isSample } from '../scramble-or-sample.model';
 
 @Component({
   selector: 'cube-trainer-trainer-input',
@@ -12,13 +10,20 @@ import { Alg } from 'cubing/alg';
 })
 export class TrainerInputComponent {
   @Input()
-  sample?: Sample<TrainingCase>;
-
-  @Input()
-  scramble?: Alg;
+  scrambleOrSample?: ScrambleOrSample;
 
   @Input()
   trainingSession?: TrainingSession;
+
+  get scramble() {
+    const scrambleOrSample = this.scrambleOrSample;
+    return scrambleOrSample && isScramble(scrambleOrSample) ? scrambleOrSample.scramble : undefined;
+  }
+
+  get sample() {
+    const scrambleOrSample = this.scrambleOrSample;
+    return scrambleOrSample && isSample(scrambleOrSample) ? scrambleOrSample.sample : undefined;
+  }
 
   get setup() {
     return this.sample?.item?.setup;

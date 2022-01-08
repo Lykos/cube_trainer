@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType, concatLatestFrom, createEffect } from '@ngrx/effects';
-import { of, forkJoin, merge } from 'rxjs';
+import { of, forkJoin } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, switchMap, filter, flatMap, map, tap, mapTo } from 'rxjs/operators';
 import { millis } from '@utils/duration';
+import { isRunning } from '@store/trainer.state';
 import {
   initialLoadSelected,
   initialLoad,
-  initialLoadNop,
-  initialLoadSuccess,
-  initialLoadFailure,
+  initialLoadResults,
+  initialLoadResultsNop,
+  initialLoadResultsSuccess,
+  initialLoadResultsFailure,
   create,
   createSuccess,
   createFailure,
@@ -21,10 +23,13 @@ import {
   markDnfFailure,
   loadSelectedNextCase,
   loadNextCase,
-  loadNextCaseNop,
   loadNextCaseSuccess,
   loadNextCaseFailure,
+  startStopwatch,
+  stopAndStartStopwatch,
   stopStopwatch,
+  stopStopwatchSuccess,
+  stopStopwatchFailure,
 } from '@store/trainer.actions';
 import { loadOne } from '@store/training-sessions.actions';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
@@ -35,8 +40,8 @@ import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { hasValue, forceValue } from '@utils/optional';
-import { now } from '@utils/instant';
-import { selectTrainingSessionAndResultsAndNextCaseNecessaryById, selectIsInitialLoadNecessaryById, selectNextCaseAndHintActiveById } from '@store/trainer.selectors';
+import { now, fromUnixMillis } from '@utils/instant';
+import { selectTrainingSessionAndResultsById, selectIsInitialLoadNecessaryById, selectNextCaseAndHintActiveById, selectStopwatchState, selectStartAfterLoading } from '@store/trainer.selectors';
 import { selectSelectedTrainingSessionId } from '@store/router.selectors';
 import { ScrambleOrSample } from '@training/scramble-or-sample.model';
 
@@ -80,37 +85,45 @@ export class TrainerEffects {
   initialLoad$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initialLoad),
+      switchMap(action => of(
+        initialLoadResults({ trainingSessionId: action.trainingSessionId }),
+        loadOne({ trainingSessionId: action.trainingSessionId }),
+      )),
+    )
+  );
+
+  initialLoadResults$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(initialLoadResults),
       concatLatestFrom(() => this.store.select(selectIsInitialLoadNecessaryById)),
       switchMap(([action, initialLoadNecessaryById]) => {
         if (!initialLoadNecessaryById.get(action.trainingSessionId)) {
           // TODO: If it's recent, return this.
-          of(initialLoadNop({ trainingSessionId: action.trainingSessionId }));
+          of(initialLoadResultsNop({ trainingSessionId: action.trainingSessionId }));
         }
-        const loadTrainingSession = of(loadOne({ trainingSessionId: action.trainingSessionId }));
-        const loadResults = this.resultsService.list(action.trainingSessionId).pipe(
-          map(results => initialLoadSuccess({ trainingSessionId: action.trainingSessionId, results })),
+        return this.resultsService.list(action.trainingSessionId).pipe(
+          map(results => initialLoadResultsSuccess({ trainingSessionId: action.trainingSessionId, results })),
           catchError(httpResponseError => {
             const context = {
               action: 'loading',
               subject: 'results',
             }
             const error = parseBackendActionError(context, httpResponseError);
-            return of(initialLoadFailure({ trainingSessionId: action.trainingSessionId, error }));
+            return of(initialLoadResultsFailure({ trainingSessionId: action.trainingSessionId, error }));
           })
         );
-        return merge(loadTrainingSession, loadResults);
       })
     )
   );
 
-  initialLoadSuccess$ = createEffect(() =>
+  initialLoadResultsSuccess$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(initialLoadSuccess),
-      flatMap(action => of(loadNextCase({ trainingSessionId: action.trainingSessionId }))),
+      ofType(initialLoadResultsSuccess),
+      map(action => loadNextCase({ trainingSessionId: action.trainingSessionId })),
     )
   );
 
-  // Failure for initialLoad has no effect, it shows a message at the component where the results are rendered.
+  // Failure for initialLoadResults has no effect, it shows a message at the component where the results are rendered.
 
   create$ = createEffect(() =>
     this.actions$.pipe(
@@ -232,24 +245,32 @@ export class TrainerEffects {
   loadNextCase$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadNextCase),
-      concatLatestFrom(() => this.store.select(selectTrainingSessionAndResultsAndNextCaseNecessaryById).pipe(filter(hasValue), map(forceValue))),
+      concatLatestFrom(() => this.store.select(selectTrainingSessionAndResultsById).pipe(filter(hasValue), map(forceValue))),
       switchMap(([action, lolMap]) => {
-        const { trainingSession, results, nextCaseNecessary } = lolMap.get(action.trainingSessionId)!;
-        if (!nextCaseNecessary) {
-          return of(loadNextCaseNop({ trainingSessionId: action.trainingSessionId }));
-        }
+        const { trainingSession, results } = lolMap.get(action.trainingSessionId)!;
         return this.trainerService.randomScrambleOrSample(now(), trainingSession, results).pipe(
           map(nextCase => loadNextCaseSuccess({ trainingSessionId: action.trainingSessionId, nextCase })),
           catchError(httpResponseError => {
-            const context = {
-              action: 'selecting',
-              subject: 'next scramble or sample',
-            }
+            const context = { action: 'selecting', subject: 'next scramble or sample' };
             const error = parseBackendActionError(context, httpResponseError);
             return of(loadNextCaseFailure({ trainingSessionId: action.trainingSessionId, error }));
           })
         )
       })
+    )
+  );
+
+
+  loadNextCaseSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadNextCaseSuccess),
+      concatLatestFrom(() => this.store.select(selectStartAfterLoading)),
+      switchMap(([action, startAfterLoading]) => {
+        if (!startAfterLoading) {
+          return of();
+        }
+        return of(startStopwatch({ trainingSessionId: action.trainingSessionId, startUnixMillis: now().toUnixMillis() }));
+      }),
     )
   );
 
@@ -263,9 +284,44 @@ export class TrainerEffects {
     { dispatch: false }
   );
 
+  stopAndStartStopwatch$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(stopAndStartStopwatch),
+      map(action => stopAndStartStopwatch({ trainingSessionId: action.trainingSessionId, stopUnixMillis: action.stopUnixMillis })),
+    )
+  );
+
   stopStopwatch$ = createEffect(() =>
     this.actions$.pipe(
       ofType(stopStopwatch),
+      concatLatestFrom(() => this.store.select(selectStopwatchState)),
+      map(([action, state]) => {
+        if (!isRunning(state)) {
+          const context = { action: 'stopping', subject: 'stopwatch' };
+          const error = parseBackendActionError(context, new Error('Cannot stop a stopwatch that is not running'));
+          return stopStopwatchFailure({ trainingSessionId: action.trainingSessionId, error });
+        }
+        const start = fromUnixMillis(state.startUnixMillis);
+        const stop = fromUnixMillis(action.stopUnixMillis);
+        const duration = stop.minusInstant(start);
+        return stopStopwatchSuccess({ trainingSessionId: action.trainingSessionId, durationMillis: duration.toMillis() })
+      }),
+    ),
+  );
+
+  stopStopwatchFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(stopStopwatchFailure),
+      tap(action => {
+        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
+      }),
+    ),
+    { dispatch: false }
+  );
+
+  stopStopwatchSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(stopStopwatchSuccess),
       concatLatestFrom(() => this.store.select(selectNextCaseAndHintActiveById)),
       flatMap(([action, lolMap]) => {
         const { nextCase, hintActive } = lolMap.get(action.trainingSessionId)!;

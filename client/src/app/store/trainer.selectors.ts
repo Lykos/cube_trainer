@@ -1,5 +1,5 @@
 import { createSelector, MemoizedSelector, createFeatureSelector } from '@ngrx/store';
-import { TrainerState } from './trainer.state';
+import { TrainerState, notStartedStopwatchState, isRunning } from './trainer.state';
 import { TrainingSession } from '@training/training-session.model';
 import { Result } from '@training/result.model';
 import { ScrambleOrSample } from '@training/scramble-or-sample.model';
@@ -10,8 +10,8 @@ import {
   selectResultsTotal as selectResultsTotalFunction,
 } from './trainer.reducer';
 import { selectSelectedTrainingSessionId } from './router.selectors';
-import { selectTrainingSessionEntities } from './training-sessions.reducer';
-import { Optional, orElse, mapOptional, flatMapOptional, ofNull, some, none } from '@utils/optional';
+import { selectTrainingSessionEntities } from './training-sessions.selectors';
+import { Optional, orElse, mapOptional, flatMapOptional, ofNull, some, none, hasValue } from '@utils/optional';
 import { isBackendActionLoading, isBackendActionFailure, isBackendActionNotStarted, maybeBackendActionError } from '@shared/backend-action-state.model';
 
 export const selectTrainerState = createFeatureSelector<TrainerState>('trainer');
@@ -32,8 +32,8 @@ export const selectIsInitialLoadNecessaryById = createSelector(
     const map = new Map<number, boolean>();
     for (let resultsState of trainerAll) {
       const answer =
-        isBackendActionFailure(resultsState.initialLoadState) ||
-        isBackendActionNotStarted(resultsState.initialLoadState);
+        isBackendActionFailure(resultsState.initialLoadResultsState) ||
+        isBackendActionNotStarted(resultsState.initialLoadResultsState);
       map.set(resultsState.trainingSessionId, answer);
     }
     return map;
@@ -58,33 +58,27 @@ export const selectNextCaseAndHintActiveById = createSelector(
   },
 );
 
-interface TrainingSessionAndResultsAndNextCaseNecessary {
+interface TrainingSessionAndResults {
   readonly trainingSession: TrainingSession;
   readonly results: readonly Result[];
-  readonly nextCaseNecessary: boolean;
 };
 
-export const selectTrainingSessionAndResultsAndNextCaseNecessaryById: MemoizedSelector<any, Optional<Map<number, TrainingSessionAndResultsAndNextCaseNecessary>>> = createSelector(
+export const selectTrainingSessionAndResultsById: MemoizedSelector<any, Optional<Map<number, TrainingSessionAndResults>>> = createSelector(
   selectTrainingSessionEntities,
   selectTrainerAll,
   (trainingSessionEntities, trainerAll) => {
     if (!trainingSessionEntities) {
-      console.log('no training session entities');
       return none;
     }
-    const map = new Map<number, TrainingSessionAndResultsAndNextCaseNecessary>();
+    const map = new Map<number, TrainingSessionAndResults>();
     for (let resultsState of trainerAll) {
       const trainingSessionId = resultsState.trainingSessionId
       const trainingSession = trainingSessionEntities[trainingSessionId];
       if (!trainingSession) {
-        console.log(`no training session ${trainingSessionId}`);
         return none;
       }
       const results = selectAllResultsFunction(resultsState);
-      const nextCaseNecessary =
-        isBackendActionFailure(resultsState.initialLoadState) ||
-        isBackendActionNotStarted(resultsState.initialLoadState);
-      map.set(trainingSessionId, { trainingSession, results, nextCaseNecessary });
+      map.set(trainingSessionId, { trainingSession, results });
     }
     return some(map);
   },
@@ -121,7 +115,7 @@ export const selectResultsTotal = createSelector(
 
 export const selectInitialLoadError = createSelector(
   selectResultsState,
-  maybeRs => flatMapOptional(maybeRs, rs => maybeBackendActionError(rs.initialLoadState)));
+  maybeRs => flatMapOptional(maybeRs, rs => maybeBackendActionError(rs.initialLoadResultsState)));
 
 export const selectResultsOnPage = createSelector(
   selectResults,
@@ -147,7 +141,7 @@ export const selectResultsTotalOnPage = createSelector(
 
 export const selectInitialLoadLoading = createSelector(
   selectResultsState,
-  maybeRs => orElse(mapOptional(maybeRs, rs => isBackendActionLoading(rs.initialLoadState)), false),
+  maybeRs => orElse(mapOptional(maybeRs, rs => isBackendActionLoading(rs.initialLoadResultsState)), false),
 );
 
 export const selectNextCase = createSelector(
@@ -155,7 +149,27 @@ export const selectNextCase = createSelector(
   maybeRs => flatMapOptional(maybeRs, rs => rs.nextCase),
 );
 
+export const selectNextCaseReady = createSelector(
+  selectNextCase,
+  hasValue,
+);
+
 export const selectHintActive = createSelector(
   selectResultsState,
   maybeRs => orElse(mapOptional(maybeRs, rs => rs.hintActive), false),
+);
+
+export const selectStartAfterLoading = createSelector(
+  selectResultsState,
+  maybeRs => orElse(mapOptional(maybeRs, rs => rs.startAfterLoading), false),
+);
+
+export const selectStopwatchState = createSelector(
+  selectResultsState,
+  maybeRs => orElse(mapOptional(maybeRs, rs => rs.stopwatchState), notStartedStopwatchState),
+);
+
+export const selectStopwatchRunning = createSelector(
+  selectStopwatchState,
+  isRunning,
 );

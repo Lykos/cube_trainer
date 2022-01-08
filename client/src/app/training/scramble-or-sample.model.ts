@@ -27,3 +27,11 @@ export function sample(trainingCaseSample: Sample<TrainingCase>): TrainingCaseSa
 }
 
 export type ScrambleOrSample = Scramble | TrainingCaseSample;
+
+export function isScramble(scrambleOrSample: ScrambleOrSample): scrambleOrSample is Scramble {
+  return scrambleOrSample.tag === 'scramble';
+}
+
+export function isSample(scrambleOrSample: ScrambleOrSample): scrambleOrSample is TrainingCaseSample {
+  return scrambleOrSample.tag === 'sample';
+}

@@ -1,4 +1,3 @@
-import { GeneratorType } from '../generator-type.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, filter, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { TrainingSession } from '../training-session.model';
@@ -6,7 +5,6 @@ import { ScrambleOrSample } from '../scramble-or-sample.model';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { hasValue, forceValue } from '@utils/optional';
-import { seconds } from '@utils/duration';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
 import { initialLoadSelected } from '@store/trainer.actions';
@@ -49,14 +47,5 @@ export class TrainerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.trainingSessionSubscription?.unsubscribe();
-  }
-
-  get memoTime() {
-    const memoTimeS = this.trainingSession?.memoTimeS;
-    return memoTimeS ? seconds(memoTimeS) : undefined;
-  }
-
-  get hasStopAndStart(): boolean {
-    return this.trainingSession?.trainingSessionType?.generatorType === GeneratorType.Case;
   }
 }

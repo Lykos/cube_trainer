@@ -5,26 +5,31 @@ import { ScrambleOrSample } from '@training/scramble-or-sample.model';
 import { BackendActionError } from '@shared/backend-action-error.model';
 
 export const initialLoadSelected = createAction(
-  '[Trainer] initial load results of selected training session from server'
+  '[Trainer] initial load everything the trainer needs for the selected training session from server'
 );
  
 export const initialLoad = createAction(
-  '[Trainer] initial load from server',
+  '[Trainer] initial load everything the trainer needs from server',
+  props<{ trainingSessionId: number }>()
+);
+
+export const initialLoadResults = createAction(
+  '[Trainer] initial load results from server',
   props<{ trainingSessionId: number }>()
 );
  
-export const initialLoadNop = createAction(
-  '[Trainer] initial load from server nop',
+export const initialLoadResultsNop = createAction(
+  '[Trainer] initial load results from server nop',
   props<{ trainingSessionId: number }>()
 );
  
-export const initialLoadSuccess = createAction(
-  '[Trainer] initial load from server success',
+export const initialLoadResultsSuccess = createAction(
+  '[Trainer] initial load results from server success',
   props<{ trainingSessionId: number, results: readonly Result[] }>()
 );
  
-export const initialLoadFailure = createAction(
-  '[Trainer] initial load from server failure',
+export const initialLoadResultsFailure = createAction(
+  '[Trainer] initial load results from server failure',
   props<{ trainingSessionId: number, error: BackendActionError }>()
 );
 
@@ -79,17 +84,12 @@ export const setPage = createAction(
 );
 
 export const loadSelectedNextCase = createAction(
-  '[Trainer] load next case of selected training session',
+  '[Trainer] load next case for the selected training session',
   props<{ trainingSessionId: number }>()
 );
  
 export const loadNextCase = createAction(
   '[Trainer] load next case',
-  props<{ trainingSessionId: number }>()
-);
- 
-export const loadNextCaseNop = createAction(
-  '[Trainer] load next case nop',
   props<{ trainingSessionId: number }>()
 );
  
@@ -108,9 +108,24 @@ export const startStopwatch = createAction(
   props<{ trainingSessionId: number, startUnixMillis: number }>()
 );
 
+export const stopAndStartStopwatch = createAction(
+  '[Trainer] stop stopwatch and start again once the next case is loaded',
+  props<{ trainingSessionId: number, stopUnixMillis: number }>()
+);
+
 export const stopStopwatch = createAction(
   '[Trainer] stop stopwatch',
+  props<{ trainingSessionId: number, stopUnixMillis: number }>()
+);
+
+export const stopStopwatchSuccess = createAction(
+  '[Trainer] stop stopwatch success',
   props<{ trainingSessionId: number, durationMillis: number }>()
+);
+
+export const stopStopwatchFailure = createAction(
+  '[Trainer] stop stopwatch failure',
+  props<{ trainingSessionId: number, error: BackendActionError }>()
 );
 
 export const showHint = createAction(

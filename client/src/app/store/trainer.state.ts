@@ -8,7 +8,7 @@ import { Optional } from '@utils/optional';
 export interface ResultsState extends EntityState<Result> {
   readonly trainingSessionId: number;
 
-  readonly initialLoadState: BackendActionState;
+  readonly initialLoadResultsState: BackendActionState;
   readonly createState: BackendActionState;
   readonly destroyState: BackendActionState;
   readonly markDnfState: BackendActionState;
@@ -17,6 +17,7 @@ export interface ResultsState extends EntityState<Result> {
   readonly stopwatchState: StopwatchState;
   readonly hintActive: boolean;
   readonly nextCase: Optional<ScrambleOrSample>;
+  readonly startAfterLoading: boolean;
 }
 
 export interface PageState {
@@ -57,6 +58,18 @@ export function stoppedStopwatchState(durationMillis: number): StoppedStopwatchS
 }
 
 export type StopwatchState = NotStartedStopwatchState | RunningStopwatchState | StoppedStopwatchState;
+
+export function isNotStarted(stopwatchState: StopwatchState): stopwatchState is NotStartedStopwatchState {
+  return stopwatchState.tag === 'not started';
+}
+
+export function isRunning(stopwatchState: StopwatchState): stopwatchState is RunningStopwatchState {
+  return stopwatchState.tag === 'running';
+}
+
+export function isStopped(stopwatchState: StopwatchState): stopwatchState is StoppedStopwatchState {
+  return stopwatchState.tag === 'stopped';
+}
 
 export interface TrainerState extends EntityState<ResultsState> {
   readonly pageState: PageState;

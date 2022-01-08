@@ -35,9 +35,9 @@ export const selectIsInitialLoadFailureOrNotStarted = createSelector(
   state => isBackendActionFailure(state.initialLoadState) || isBackendActionNotStarted(state.initialLoadState),
 );
 
-const selectTrainingSessionEntities = createSelector(
+export const selectTrainingSessionEntities = createSelector(
   selectTrainingSessionsState,
-  selectTrainingSessionEntitiesFunction,
+  e => selectTrainingSessionEntitiesFunction(e),
 );
 
 export const selectSelectedTrainingSession = createSelector(

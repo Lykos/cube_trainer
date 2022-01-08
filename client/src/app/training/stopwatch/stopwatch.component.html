@@ -1,8 +1,6 @@
 <div class="stopwatch">
   <h2>Time</h2>
-  <ng-container *ngIf="duration$ | async as duration">
-    <div class="stopwatch-time" [ngClass]="{'post-memo-time': running && isPostMemoTime(duration)}"> {{duration | duration}} </div>
-  </ng-container>
+  <div class="stopwatch-time" [ngClass]="{'post-memo-time': running && isPostMemoTime}"> {{displayedDuration | duration}} </div>
   <div>
     <ng-container *ngIf="running">
       <button mat-raised-button *ngIf="hasStopAndStart" color="primary" (click)="onStopAndStart()">
@@ -18,10 +16,10 @@
       </button>
     </ng-container>
     <ng-container *ngIf="!running">
-      <button mat-raised-button *ngIf="!loading" color="primary" (click)="onStart()">
+      <button mat-raised-button *ngIf="startReady" color="primary" (click)="onStart()">
         Start
       </button>
-      <mat-spinner *ngIf="loading"></mat-spinner>
+      <mat-spinner *ngIf="!startReady"></mat-spinner>
     </ng-container>
   </div>
 </div>

@@ -8,6 +8,10 @@ export class Instant {
     return this.rep.toMillis();
   }
 
+  toUnixSeconds() {
+    return this.rep.toSeconds();
+  }
+
   plus(that: Duration) {
     return new Instant(this.rep.plus(that));
   }
@@ -72,6 +76,10 @@ export class Instant {
 
 export function fromUnixSeconds(n: number): Instant {
   return new Instant(seconds(n));
+}
+
+export function fromUnixMillis(n: number): Instant {
+  return new Instant(millis(n));
 }
 
 export function fromDate(date: Date): Instant {

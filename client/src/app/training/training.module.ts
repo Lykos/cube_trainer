@@ -10,10 +10,11 @@ import { OverrideAlgDialogComponent } from './override-alg-dialog/override-alg-d
 import { ResultsTableComponent } from './results-table/results-table.component';
 import { SharedModule } from '@shared/shared.module';
 import { StatsTableComponent } from './stats-table/stats-table.component';
-import { StopwatchComponent } from './stopwatch/stopwatch.component';
+import { TrainerStopwatchComponent } from './trainer-stopwatch/trainer-stopwatch.component';
 import { TrainerComponent } from './trainer/trainer.component';
 import { TrainerInputComponent } from './trainer-input/trainer-input.component';
 import { HintComponent } from './hint/hint.component';
+import { StopwatchComponent } from './stopwatch/stopwatch.component';
 
 @NgModule({
   declarations: [
@@ -25,10 +26,11 @@ import { HintComponent } from './hint/hint.component';
     OverrideAlgDialogComponent,
     ResultsTableComponent,
     StatsTableComponent,
-    StopwatchComponent,
+    TrainerStopwatchComponent,
     TrainerComponent,
     TrainerInputComponent,
     HintComponent,
+    StopwatchComponent,
   ],
   imports: [
     CdkStepperModule,
