@@ -18,14 +18,15 @@
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "customWebpackConfig": {
-              "path": "./builder-webpack.config.js",
+              "path": "client/builder-webpack.config.js",
               "mergeStrategies": {
                   "output": "append",
                   "target": "replace",
                   "externals": "append",
                   "module.rules": "prepend"
               }
-            },            "outputPath": "./public",
+            },
+            "outputPath": "./public",
             "index": "client/src/index.html",
             "main": "client/src/main.ts",
             "polyfills": "client/src/polyfills.ts",
@@ -78,7 +79,7 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
            "customWebpackConfig": {
-             "path": "./builder-webpack.config.js",
+             "path": "client/builder-webpack.config.js",
              "mergeStrategies": {
                "output": "append",
                "target": "replace",
