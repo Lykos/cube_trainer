@@ -18,7 +18,7 @@ describe 'trainer', type: :system do
 
     visit "/training-sessions/#{training_session.id}"
 
-    sleep(4)
+    sleep(5)
     click_button 'Start'
     sleep(0.5)
     click_button 'Stop and Start'
