@@ -6,7 +6,7 @@ import { formatDate } from '@angular/common';
 import { fromDateString, Instant } from '@utils/instant';
 import { seconds, Duration } from '@utils/duration';
 import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { forceValue } from '@utils/optional';
 import { selectResults, selectResultsTotal, selectResultsOnPage, selectResultsTotalOnPage, selectInitialLoadLoading } from '@store/trainer.selectors';
 import { destroy, markDnf, setPage } from '@store/trainer.actions';
@@ -39,7 +39,6 @@ export class ResultsTableComponent {
     this.numResults$ = this.store.select(selectResultsTotal).pipe(map(forceValue));
     this.allSelected$ = this.store.select(selectResultsTotalOnPage).pipe(
       map(l => { return { value: this.selection.selected.length === forceValue(l) }; }),
-      shareReplay(),
     );
   }
 

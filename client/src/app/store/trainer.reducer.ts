@@ -52,7 +52,6 @@ const initialTrainerState: TrainerState = trainerAdapter.getInitialState({
 export const trainerReducer = createReducer(
   initialTrainerState,
   on(initialLoadResults, (trainerState, { trainingSessionId }) => {
-    console.log('creating initial state for', trainingSessionId);
     const initialResultsState = resultsAdapter.getInitialState({
       trainingSessionId,
       initialLoadResultsState: backendActionLoadingState,

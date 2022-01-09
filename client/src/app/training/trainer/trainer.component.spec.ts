@@ -117,7 +117,7 @@ describe('TrainerComponent', () => {
     const fixture = TestBed.createComponent(TrainerComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('#initialLoadLoading')).toBeTruthy();
+    expect(compiled.querySelector('#initial-load-loading')).toBeTruthy();
   });
 
   it('should display an error if initial loading failed', () => {
@@ -128,7 +128,7 @@ describe('TrainerComponent', () => {
     const fixture = TestBed.createComponent(TrainerComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('#initialLoadError')?.textContent).toContain('stuff went wrong');
+    expect(compiled.querySelector('#initial-load-error')?.textContent).toContain('stuff went wrong');
   });
 
   it('should display the input and stopwatch if a case was loaded', () => {

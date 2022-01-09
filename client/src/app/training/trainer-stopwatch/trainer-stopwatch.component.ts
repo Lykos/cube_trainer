@@ -6,7 +6,7 @@ import { selectStopwatchState, selectStopwatchRunning, selectNextCaseReady } fro
 import { startStopwatch, stopAndPauseStopwatch, stopAndStartStopwatch } from '@store/trainer.actions';
 import { Observable, interval, of, Subscription } from 'rxjs';
 import { TrainingSession } from '../training-session.model';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { Store } from '@ngrx/store'
 
 @Component({
@@ -29,10 +29,8 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   nextCaseReadySubscription: Subscription | undefined;
   
   constructor(private readonly store: Store) {
-    console.log('trainer stopwatch constructor');
     this.duration$ = this.store.select(selectStopwatchState).pipe(
       switchMap(state => {
-        console.log('stopwatch state', state);
         switch (state.tag) {
           case 'not started':
             return of(zeroDuration);
@@ -40,18 +38,16 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
             return of(millis(state.durationMillis));
           case 'running': {
             const start = fromUnixMillis(state.startUnixMillis);
-            console.log('start', start);
-            return interval(10).pipe(map(() => { console.log('now', now()); return now().minusInstant(start); }));
+            return interval(10).pipe(map(() => now().minusInstant(start)));
           }
         }
       }),
     );
     this.running$ = this.store.select(selectStopwatchRunning);
-    this.nextCaseReady$ = this.store.select(selectNextCaseReady).pipe(tap(r => { console.log('ready', r); }));
+    this.nextCaseReady$ = this.store.select(selectNextCaseReady);
   }
 
   ngOnInit() {
-    console.log('trainer stopwatch ngInit');
     this.runningSubscription = this.running$.subscribe(running => { this.running = running; });
     this.nextCaseReadySubscription = this.nextCaseReady$.subscribe(nextCaseReady => { this.nextCaseReady = nextCaseReady; });
   }
@@ -62,17 +58,14 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   }
 
   onStart() {
-    console.log('onStart');
     this.store.dispatch(startStopwatch({ trainingSessionId: this.trainingSession!.id, startUnixMillis: now().toUnixMillis() }));
   }
 
   onStopAndPause() {
-    console.log('onStopAndPause');
     this.store.dispatch(stopAndPauseStopwatch(this.stopProps));
   }
 
   onStopAndStart() {
-    console.log('onStopAndStart');
     this.store.dispatch(stopAndStartStopwatch(this.stopProps));
   }
 

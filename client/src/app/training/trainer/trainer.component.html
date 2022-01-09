@@ -19,7 +19,7 @@
           </cube-trainer-trainer-stopwatch>
         </div>
       </div>
-      <div flex>
+      <div id="results-table" flex>
         <cube-trainer-results-table [trainingSessionId]="trainingSession.id"></cube-trainer-results-table>
       </div>
       <div flex>
@@ -27,8 +27,8 @@
       </div>
     </div>
   </ng-container>
-  <div id="initialLoadError" *ngIf="error$ | async as error">
+  <div id="initial-load-error" *ngIf="error$ | async as error">
     <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
   </div>
-  <mat-spinner id="initialLoadLoading" *ngIf="loading$ | async"></mat-spinner>
+  <mat-spinner id="initial-load-loading" *ngIf="loading$ | async"></mat-spinner>
 </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { tap, map, filter, distinctUntilChanged } from 'rxjs/operators';
+import { map, filter, distinctUntilChanged } from 'rxjs/operators';
 import { TrainingSession } from '../training-session.model';
 import { ScrambleOrSample } from '../scramble-or-sample.model';
 import { Observable, Subscription } from 'rxjs';
@@ -24,15 +24,13 @@ export class TrainerComponent implements OnInit, OnDestroy {
   private trainingSessionSubscription: Subscription | undefined;
 
   constructor(private readonly store: Store) {
-    console.log('trainer constructor');
     this.trainingSession$ = this.store.select(selectSelectedTrainingSession).pipe(
-      tap(s => { console.log('training session', s); }),
       distinctUntilChanged(),
       filter(hasValue),
       map(forceValue),
     );
     this.loading$ = this.store.select(selectInitialLoadLoading);
-    this.scrambleOrSample$ = this.store.select(selectNextCase).pipe(tap(r => { console.log('nextCase', r); }), filter(hasValue), map(forceValue));
+    this.scrambleOrSample$ = this.store.select(selectNextCase).pipe(filter(hasValue), map(forceValue));
     this.error$ = this.store.select(selectInitialLoadError).pipe(
       filter(hasValue),
       map(forceValue),
@@ -40,7 +38,6 @@ export class TrainerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log('trainer ngInit');
     this.store.dispatch(initialLoadSelected());
     this.trainingSessionSubscription = this.trainingSession$.subscribe(m => { this.trainingSession = m; });
   }
