@@ -34,7 +34,7 @@ module CaseSets
 
       part_patterns = [specific_part(@buffer), specific_part(swap_part(casee))]
       create_case_pattern(
-        part_cycle_pattern(@part_type, *part_patterns)
+        part_cycle_pattern(@buffer_part_type, *part_patterns)
       )
     end
 
@@ -133,7 +133,7 @@ module CaseSets
     end
 
     def swap_part(casee)
-      buffer_cycle(casee).parts.find { |p| !p.turned_equal?(@buffer) }
+      buffer_cycle(casee).parts.find { |p| !p.turned_equals?(@buffer) }
     end
 
     def buffer_cycle(casee)

@@ -205,7 +205,7 @@ module CasePattern
     include Comparable
 
     def initialize(part_type, part_patterns, twist = SpecificTwist.new(0))
-      raise TypeError unless part_type.is_a?(Class)
+      raise TypeError, "Got #{part_type} instead of a part type." unless part_type.is_a?(Class)
       raise TypeError unless part_patterns.is_a?(Array) && part_patterns.all?(PartPattern)
       raise TypeError unless twist.is_a?(TwistPattern)
 
