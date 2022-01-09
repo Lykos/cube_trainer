@@ -18,15 +18,16 @@ describe CaseSets::ConcreteCaseSet do
   concrete_case_sets = with_buffer_refinements + without_buffer_refinements
 
   concrete_case_sets.each do |concrete_case_set|
+    # rubocop:disable RSpec/DescribedClass
     describe concrete_case_set do
       it 'can be found by name' do
-        class_name = described_class.simple_class_name(concrete_case_set.class)
-        expect(described_class.class_by_name(class_name)).to eq(concrete_case_set.class)
+        class_name = CaseSets::ConcreteCaseSet.simple_class_name(concrete_case_set.class)
+        expect(CaseSets::ConcreteCaseSet.class_by_name(class_name)).to eq(concrete_case_set.class)
       end
 
       it 'can be serialized and deserialized' do
         serialized = concrete_case_set.to_raw_data
-        expect(described_class.from_raw_data(serialized)).to eq(concrete_case_set)
+        expect(CaseSets::ConcreteCaseSet.from_raw_data(serialized)).to eq(concrete_case_set)
       end
 
       it 'produces non-empty cases' do
@@ -55,5 +56,6 @@ describe CaseSets::ConcreteCaseSet do
         end
       end
     end
+    # rubocop:enable RSpec/DescribedClass
   end
 end
