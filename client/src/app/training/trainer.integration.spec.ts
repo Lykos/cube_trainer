@@ -68,7 +68,7 @@ const trainingSession: TrainingSession = {
   trainingSessionType
 };
 
-describe('TrainerComponent', () => {
+describe('TrainerComponentIntegration', () => {
   let matDialog: any;
   let matSnackBar: any;
   let httpMock: HttpTestingController;

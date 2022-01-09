@@ -24,7 +24,33 @@ getTestBed().initTestEnvironment(
   platformBrowserDynamicTesting(),
 );
 
+const trainerIntegrationFile = './app/training/trainer.integration.spec.ts';
+const trainerComponentFile = './app/training/trainer/trainer.component.spec.ts';
+
+// TODO: Get rid of the order dependency
+function compareAndPutTrainerIntegrationFirst(a: string, b: string) {
+  if (a === trainerIntegrationFile && b === trainerIntegrationFile) {
+    return 0;
+  }
+  if (a === trainerIntegrationFile) {
+    return -1;
+  }
+  if (b === trainerIntegrationFile) {
+    return 1;
+  }
+  if (a === trainerComponentFile && b === trainerComponentFile) {
+    return 0;
+  }
+  if (a === trainerComponentFile) {
+    return -1;
+  }
+  if (b === trainerComponentFile) {
+    return 1;
+  }
+  return 0;
+}
+
 // Then we find all the tests.
 const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.
-context.keys().map(context);
+context.keys().sort(compareAndPutTrainerIntegrationFirst).map(context);
