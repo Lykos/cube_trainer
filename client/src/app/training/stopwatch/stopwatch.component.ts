@@ -23,7 +23,7 @@ export class StopwatchComponent {
   hasStopAndStart?: boolean;
 
   @Output()
-  readonly start = new EventEmitter<void>();
+  readonly startt = new EventEmitter<void>();
 
   @Output()
   readonly stopAndPause = new EventEmitter<void>();
@@ -40,7 +40,7 @@ export class StopwatchComponent {
   }
 
   onStart() {
-    this.start.emit();
+    this.startt.emit();
   }
 
   onStopAndPause() {
