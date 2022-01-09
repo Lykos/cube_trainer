@@ -11,24 +11,22 @@ class StubLetterScheme
 end
 
 describe CaseSets::ConcreteCaseSet do
-  let(:concrete_case_sets) do
-    with_buffer = CaseSets::AbstractCaseSet.all.select(&:buffer?)
-    without_buffer = CaseSets::AbstractCaseSet.all.reject(&:buffer?)
-    without_buffer_refinements = without_buffer.map(&:refinement)
-    with_buffer_refinements = with_buffer.map { |c| c.refinement(c.buffer_part_type::ELEMENTS.first) }
-    with_buffer_refinements + without_buffer_refinements
-  end
+  with_buffer = CaseSets::AbstractCaseSet.all.select(&:buffer?)
+  without_buffer = CaseSets::AbstractCaseSet.all.reject(&:buffer?)
+  without_buffer_refinements = without_buffer.map(&:refinement)
+  with_buffer_refinements = with_buffer.map { |c| c.refinement(c.buffer_part_type::ELEMENTS.first) }
+  concrete_case_sets = with_buffer_refinements + without_buffer_refinements
 
   concrete_case_sets.each do |concrete_case_set|
     describe concrete_case_set do
       it 'can be found by name' do
-        class_name = ConcreteCaseSet.simple_class_name(concrete_case_set)
-        expect(ConcreteCaseSet.class_by_name(class_name)).to eq(concrete_case_set)
+        class_name = CaseSets::ConcreteCaseSet.simple_class_name(concrete_case_set.class)
+        expect(CaseSets::ConcreteCaseSet.class_by_name(class_name)).to eq(concrete_case_set.class)
       end
 
       it 'can be serialized and deserialized' do
         serialized = concrete_case_set.to_raw_data
-        expect(ConcreteCaseSet.from_raw_data(serialized)).to eq(concrete_case_set)
+        expect(CaseSets::ConcreteCaseSet.from_raw_data(serialized)).to eq(concrete_case_set)
       end
 
       it 'produces non-empty cases' do
