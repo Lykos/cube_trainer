@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'trainer', type: :system do
+fdescribe 'trainer', type: :system do
   include_context 'with user abc'
   include_context 'with training session'
 
@@ -18,7 +18,7 @@ describe 'trainer', type: :system do
 
     visit "/training-sessions/#{training_session.id}"
 
-    sleep(5)
+    sleep(10)
     click_button 'Start'
     sleep(0.5)
     click_button 'Stop and Start'
