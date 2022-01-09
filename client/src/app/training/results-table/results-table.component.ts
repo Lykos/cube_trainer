@@ -1,6 +1,6 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Result } from '../result.model';
-import { Component, OnInit, Input, LOCALE_ID, Inject } from '@angular/core';
+import { Component, Input, LOCALE_ID, Inject } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { formatDate } from '@angular/common';
 import { fromDateString, Instant } from '@utils/instant';
@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { forceValue } from '@utils/optional';
 import { selectResults, selectResultsTotal, selectResultsOnPage, selectResultsTotalOnPage, selectInitialLoadLoading } from '@store/trainer.selectors';
-import { initialLoad, destroy, markDnf, setPage } from '@store/trainer.actions';
+import { destroy, markDnf, setPage } from '@store/trainer.actions';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -17,7 +17,7 @@ import { Store } from '@ngrx/store';
   templateUrl: './results-table.component.html',
   styleUrls: ['./results-table.component.css']
 })
-export class ResultsTableComponent implements OnInit {
+export class ResultsTableComponent {
   @Input()
   trainingSessionId?: number;
 
@@ -49,10 +49,6 @@ export class ResultsTableComponent implements OnInit {
       throw new Error('trainingSessionId has to be defined');
     }
     return trainingSessionId
-  }
-
-  ngOnInit() {
-    this.store.dispatch(initialLoad({ trainingSessionId: this.checkedTrainingSessionId }));
   }
 
   onDeleteSelected() {

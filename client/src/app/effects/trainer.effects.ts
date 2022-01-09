@@ -86,10 +86,10 @@ export class TrainerEffects {
   initialLoad$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initialLoad),
-      switchMap(action => of(
+      switchMap(action => { console.log('initial loading results after initial load'); return of(
         initialLoadResults({ trainingSessionId: action.trainingSessionId }),
         loadOne({ trainingSessionId: action.trainingSessionId }),
-      )),
+      )}),
     )
   );
 
@@ -120,7 +120,7 @@ export class TrainerEffects {
   initialLoadResultsSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initialLoadResultsSuccess),
-      map(action => loadNextCase({ trainingSessionId: action.trainingSessionId })),
+      map(action => { console.log('load next case after initial load results'); return loadNextCase({ trainingSessionId: action.trainingSessionId }) }),
     )
   );
 
@@ -207,7 +207,7 @@ export class TrainerEffects {
     this.actions$.pipe(
       ofType(loadSelectedNextCase),
       concatLatestFrom(() => this.store.select(selectSelectedTrainingSessionId).pipe(filter(hasValue), map(forceValue))),
-      map(([action, trainingSessionId]) => loadNextCase({ trainingSessionId })),
+      map(([action, trainingSessionId]) => { console.log('load selected next case'); return loadNextCase({ trainingSessionId }); }),
     )
   );
 
@@ -216,6 +216,7 @@ export class TrainerEffects {
       ofType(loadNextCase),
       concatLatestFrom(() => this.store.select(selectTrainingSessionAndResultsById).pipe(filter(hasValue), map(forceValue))),
       switchMap(([action, lolMap]) => {
+        console.log('loading next case');
         const { trainingSession, results } = lolMap.get(action.trainingSessionId)!;
         return this.trainerService.randomScrambleOrSample(now(), trainingSession, results).pipe(
           map(nextCase => loadNextCaseSuccess({ trainingSessionId: action.trainingSessionId, nextCase })),
@@ -283,6 +284,7 @@ export class TrainerEffects {
           timeS: duration.toSeconds(),
           success: true,
         };
+        console.log('load next case after stopwatch success');
         return of(
           create({ trainingSessionId: action.trainingSessionId, newResult }),
           loadNextCase({ trainingSessionId: action.trainingSessionId })
