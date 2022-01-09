@@ -5,7 +5,10 @@ module CaseSets
   # This is used for training and parsing alg sets.
   class ConcreteCaseSet
     def self.class_by_name(name)
-      @classes_by_name ||= [BufferedThreeCycleSet, BufferedParitySet, BufferedParityTwistSet, ConcreteFloatingTwoTwistSet].index_by do |e|
+      @classes_by_name ||= [
+        BufferedThreeCycleSet, BufferedParitySet, BufferedParityTwistSet,
+        ConcreteFloatingTwoTwistSet
+      ].index_by do |e|
         simple_class_name(e)
       end.freeze
       @classes_by_name[name]

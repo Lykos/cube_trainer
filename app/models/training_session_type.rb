@@ -18,15 +18,12 @@ class TrainingSessionType
   attr_accessor :key,
                 :name,
                 :default_cube_size,
-                :show_input_modes,
                 :used_training_session_types,
                 :memo_time,
                 :case_set
 
   validates :key, presence: true
   validates :name, presence: true
-  validates :show_input_modes, presence: true
-  validate :show_input_modes_valid
 
   alias memo_time? memo_time
 
@@ -76,6 +73,7 @@ class TrainingSessionType
   # Returns a simple version for the current user that can be returned to the frontend.
   def to_simple(simple_alg_sets = alg_sets.map(&:to_simple))
     raise TypeError unless simple_alg_sets.is_a?(Array) && simple_alg_sets.all?(Hash)
+
     {
       key: key,
       name: name,
@@ -93,8 +91,11 @@ class TrainingSessionType
 
   # More efficient bulk `#to_simple`.
   def self.multi_to_simple(training_session_types)
-    concrete_case_sets = training_session_types.flat_map { |t| t.concrete_case_sets }.uniq
-    alg_sets = AlgSet.for_concrete_case_sets(concrete_case_sets).index_by { |a| a.case_set }.transform_values { |a| a.to_simple }
+    concrete_case_sets = training_session_types.flat_map(&:concrete_case_sets).uniq
+    # rubocop:disable Layout/LineLength
+    alg_sets =
+      AlgSet.for_concrete_case_sets(concrete_case_sets).index_by(&:case_set).transform_values(&:to_simple)
+    # rubocop:enable Layout/LineLength
     training_session_types.map do |t|
       simple_alg_sets = t.concrete_case_sets.flat_map { |c| alg_sets[c] || [] }
       t.to_simple(simple_alg_sets)
@@ -158,22 +159,6 @@ class TrainingSessionType
     buffer_part_type::ELEMENTS
   end
 
-  def show_input_modes_valid
-    return if (show_input_modes - SHOW_INPUT_MODES).empty?
-
-    errors.add(
-      :show_input_modes,
-      "has to be a subset of all show input training_sessions #{SHOW_INPUT_MODES.inspect}"
-    )
-  end
-
-  # TODO: Remove once we don't rely on heavy caching for pictures.
-  def show_input_mode_picture_for_bounded_input
-    return unless show_input_modes.include?(:picture) && bounded_inputs?
-
-    errors.add(:show_input_modes, 'cannot be :picture for unbounded inputs')
-  end
-
   def stats_types
     StatType::ALL.select { |s| bounded_inputs? || !s.needs_bounded_inputs? }
   end
@@ -196,83 +181,72 @@ class TrainingSessionType
             key: :memo_rush,
             name: 'Memo Rush',
             default_cube_size: 3,
-            memo_time: true,
+            memo_time: true
           ),
           TrainingSessionType.new(
             key: :corner_commutators,
             name: 'Corner Commutators',
             default_cube_size: 3,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :corner_parities,
             name: 'Corner Parities',
             default_cube_size: 3,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::ParitySet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :edge_parities,
             name: 'Edge Parities',
             default_cube_size: 3,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::ParitySet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :corner_twists_plus_parities,
             name: 'Corner 1 Twists + Parities',
             default_cube_size: 3,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :edge_flips_plus_parities,
             name: 'Edge 1 Flips + Parities',
             default_cube_size: 3,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :floating_2twists,
             name: 'Floating Corner 2 Twists',
             default_cube_size: 3,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
             key: :floating_2flips,
             name: 'Floating Edge 2 Flips',
             default_cube_size: 3,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :edge_commutators,
             name: 'Edge Commutators',
             default_cube_size: 3,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
             key: :wing_commutators,
             name: 'Wing Commutators',
             default_cube_size: 4,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Wing)
           ),
           TrainingSessionType.new(
             key: :xcenter_commutators,
             name: 'X-Center Commutators',
             default_cube_size: 4,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::XCenter)
           ),
           TrainingSessionType.new(
             key: :tcenter_commutators,
             name: 'T-Center Commutators',
             default_cube_size: 5,
-            show_input_modes: %i[picture name],
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::TCenter)
           )
         ].freeze

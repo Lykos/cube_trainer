@@ -38,7 +38,7 @@ class AlgSet < ApplicationRecord
   private
 
   def alg_map
-    @alg_map ||= algs.index_by { |alg| alg.casee }
+    @alg_map ||= algs.index_by(&:casee)
   end
 
   def commutator_internal(casee)

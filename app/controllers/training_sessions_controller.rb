@@ -12,7 +12,11 @@ class TrainingSessionsController < ApplicationController
 
   # GET /api/training_sessions
   def index
-    render json: TrainingSession.multi_to_simple(TrainingSession.find_by_user_with_preloads(current_user))
+    # rubocop:disable Rails/DynamicFindBy
+    render json: TrainingSession.multi_to_simple(
+      TrainingSession.find_by_user_with_preloads(current_user)
+    )
+    # rubocop:enable Rails/DynamicFindBy
   end
 
   # GET /api/training_sessions/1

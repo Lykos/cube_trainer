@@ -20,13 +20,13 @@ describe CaseSets::ConcreteCaseSet do
   concrete_case_sets.each do |concrete_case_set|
     describe concrete_case_set do
       it 'can be found by name' do
-        class_name = CaseSets::ConcreteCaseSet.simple_class_name(concrete_case_set.class)
-        expect(CaseSets::ConcreteCaseSet.class_by_name(class_name)).to eq(concrete_case_set.class)
+        class_name = described_class.simple_class_name(concrete_case_set.class)
+        expect(described_class.class_by_name(class_name)).to eq(concrete_case_set.class)
       end
 
       it 'can be serialized and deserialized' do
         serialized = concrete_case_set.to_raw_data
-        expect(CaseSets::ConcreteCaseSet.from_raw_data(serialized)).to eq(concrete_case_set)
+        expect(described_class.from_raw_data(serialized)).to eq(concrete_case_set)
       end
 
       it 'produces non-empty cases' do
