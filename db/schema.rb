@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_01_100340) do
+ActiveRecord::Schema.define(version: 2022_01_09_160315) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 2022_01_01_100340) do
   create_table "alg_spreadsheets", force: :cascade do |t|
     t.string "owner", null: false
     t.string "spreadsheet_id", null: false
+    t.index ["spreadsheet_id"], name: "index_alg_spreadsheets_on_spreadsheet_id", unique: true
   end
 
   create_table "algs", force: :cascade do |t|

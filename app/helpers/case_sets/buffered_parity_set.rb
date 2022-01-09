@@ -133,7 +133,7 @@ module CaseSets
     end
 
     def swap_part(casee)
-      buffer_cycle(casee).find { |p| !p.turned_equal?(@buffer) }
+      buffer_cycle(casee).parts.find { |p| !p.turned_equal?(@buffer) }
     end
 
     def buffer_cycle(casee)

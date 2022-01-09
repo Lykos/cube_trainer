@@ -7,5 +7,5 @@
 class AlgSpreadsheet < ApplicationRecord
   has_many :alg_sets, dependent: :destroy
   validates :owner, presence: true
-  validates :spreadsheet_id, presence: true
+  validates :spreadsheet_id, presence: true, uniqueness: true
 end
