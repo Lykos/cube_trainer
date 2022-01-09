@@ -6,6 +6,11 @@ namespace :npm do
     system('npm install')
   end
 
+  desc 'Run npm ci.'
+  task ci: :environment do
+    system('npm ci')
+  end
+
   desc 'Run npm start.'
   task start: :environment do
     system('npm run start')

@@ -52,8 +52,8 @@ jobs:
         node-version: '12'
         cache: 'npm'
 
-    - name: Run npm install
-      run: bundle exec rake npm:install
+    - name: Run npm (similar to install but made for CI)
+      run: bundle exec rake npm:ci
       env:
         RAILS_ENV: test
 
