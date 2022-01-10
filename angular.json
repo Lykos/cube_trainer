@@ -102,13 +102,33 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular-builders/custom-webpack:extract-i18n",
+           "customWebpackConfig": {
+             "path": "client/builder-webpack.config.js",
+             "mergeStrategies": {
+               "output": "append",
+               "target": "replace",
+               "externals": "append",
+               "module.rules": "prepend"
+             },
+             "replaceDuplicatePlugins": true
+           },
           "options": {
             "browserTarget": "cube-trainer:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular-builders/custom-webpack:karma",
+           "customWebpackConfig": {
+             "path": "client/builder-webpack.config.js",
+             "mergeStrategies": {
+               "output": "append",
+               "target": "replace",
+               "externals": "append",
+               "module.rules": "prepend"
+             },
+             "replaceDuplicatePlugins": true
+           },
           "options": {
             "main": "client/src/test.ts",
             "polyfills": "client/src/polyfills.ts",
