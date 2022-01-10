@@ -518,6 +518,7 @@ module CasePattern
   end
 
   # A pattern that matches a specific case.
+  # TODO: Deprecate
   class SpecificCasePattern < CasePattern
     # If `ignore_same_face_center_cycles` is set,
     # center cycles that stay on the same face are ignored for matching
