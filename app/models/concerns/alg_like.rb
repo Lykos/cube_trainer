@@ -79,6 +79,6 @@ module AlgLike
 
     return if alg_correct?(comm)
 
-    errors.add(:alg, 'does not solve this case')
+    errors.add(:alg, "#{comm} does not solve case #{casee}")
   end
 end

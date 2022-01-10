@@ -112,7 +112,8 @@ module CubeTrainer
         )
         return if alg_model.save
 
-        Rails.logger.error "Error saving alg #{alg} for case #{casee}:\n#{alg_model.errors.full_messages.join('\n')}"
+        Rails.logger.error "Error creating alg #{alg} for case #{casee}:\n" \
+                           "#{alg_model.errors.full_messages.join('\n')}"
       end
 
       def update_alg(existing_alg, alg, counters, is_fixed:)
@@ -126,7 +127,10 @@ module CubeTrainer
         counters[:updated_algs] += 1
         existing_alg.alg = alg_string
         existing_alg.is_fixed = is_fixed
-        existing_alg.save!
+        return if existing_alg.save
+
+        Rails.logger.error "Error updating alg #{alg} for case #{existing_alg.casee}:\n" \
+                           "#{existing_alg.errors.full_messages.join('\n')}"
       end
 
       def total_cells(tables)

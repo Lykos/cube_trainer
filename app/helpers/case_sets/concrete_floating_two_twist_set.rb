@@ -27,10 +27,10 @@ module CaseSets
       raise ArgumentError if refinement_index != 0 && refinement_index != 1
       raise ArgumentError unless match?(casee)
 
-      desired_twist = [1, inverse_twist(1)][refinement_index]
+      desired_twist = refinement_twist(refinement_index)
       other_twist = inverse_twist(desired_twist)
-      cycle = casee.part_cycles.find { |c| c.twist == desired_twist }
-      specific_part_pattern = specific_part(cycle.parts.first)
+      part = twisted_part(casee, desired_twist)
+      specific_part_pattern = specific_part(part)
       specific_cycle_pattern = part_cycle_pattern(
         @part_type, specific_part_pattern,
         twist: specific_twist(desired_twist)
@@ -91,6 +91,15 @@ module CaseSets
     end
 
     private
+
+    def twisted_part(casee, twist)
+      cycle = casee.part_cycles.find { |c| c.length == 1 && c.twist == twist }
+      cycle&.parts&.first
+    end
+
+    def refinement_twist(refinement_index)
+      [1, inverse_twist(1)][refinement_index]
+    end
 
     def inverse_twist(twist)
       @part_type::ELEMENTS.first.rotations.length - twist

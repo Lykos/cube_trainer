@@ -57,11 +57,12 @@ module CasePattern
       raise NotImplementedError
     end
 
-    def rotate_by(n)
+    def rotate_by(number)
       raise NotImplementedError
     end
   end
 
+  # Helper for all part patterns that have no parameter and always return the same answer.
   module ConstantPartPattern
     def part; end
 
@@ -79,7 +80,7 @@ module CasePattern
       [self.class].hash
     end
 
-    def rotate_by(_n)
+    def rotate_by(_number)
       self
     end
   end
@@ -159,8 +160,8 @@ module CasePattern
       self == other || other.is_a?(PartWildcard) ? self : EmptyPartPattern.new
     end
 
-    def rotate_by(n)
-      self.class.new(part.rotate_by(n))
+    def rotate_by(number)
+      self.class.new(part.rotate_by(number))
     end
   end
 
@@ -220,10 +221,14 @@ module CasePattern
     end
 
     def &(other)
-      self == other || (@twist > 0 && other.is_a?(AnyUnsolvedTwist)) ? self : EmptyTwistPattern.new
+      return self if self == other
+      return self if @twist.positive? && other.is_a?(AnyUnsolvedTwist)
+
+      EmptyTwistPattern.new
     end
   end
 
+  # Helper module for twist patterns that have no parameter and always return the same answer.
   module ParameterLessTwist
     def <=>(other)
       self.class.name <=> other.class.name
@@ -346,7 +351,7 @@ module CasePattern
         part_patterns_rotations.filter_map do |r|
           merged_part_patterns = r.zip(other.part_patterns).map { |a, b| a & b }
 
-          next if merged_part_patterns.any? { |p| p.is_a?(EmptyPartPattern) }
+          next if merged_part_patterns.any?(EmptyPartPattern)
 
           merged_part_patterns
         end
@@ -454,20 +459,13 @@ module CasePattern
     end
 
     def &(other)
-      if other.is_a?(EmptyCasePattern) || part_cycle_pattern_groups.keys.sort != other.part_cycle_pattern_groups.keys.sort
+      return EmptyCasePattern.new if other.is_a?(EmptyCasePattern)
+      return Conjunction.new([self, other]) unless other.is_a?(LeafCasePattern)
+      if part_cycle_pattern_groups.keys.sort != other.part_cycle_pattern_groups.keys.sort
         return EmptyCasePattern.new
       end
-      return Conjunction.new([self, other]) unless other.is_a?(LeafCasePattern)
 
-      merged_groups =
-        part_cycle_pattern_groups.map do |k, cycle_group|
-          other_cycle_group = other.part_cycle_pattern_groups[k]
-          merge_cycle_groups_possibilities(cycle_group, other_cycle_group)
-        end
-      return EmptyCasePattern.new if merged_groups.any? { |g| g.empty? }
-      return LeafCasePattern.new(merged_groups.flatten) if merged_groups.all? { |g| g.length == 1 }
-
-      Conjunction.new([self, other])
+      merge_groups(other)
     end
 
     def to_s
@@ -485,6 +483,18 @@ module CasePattern
     end
 
     private
+
+    def merge_groups(other)
+      merged_groups =
+        part_cycle_pattern_groups.map do |k, cycle_group|
+          other_cycle_group = other.part_cycle_pattern_groups[k]
+          merge_cycle_groups_possibilities(cycle_group, other_cycle_group)
+        end
+      return EmptyCasePattern.new if merged_groups.any?(&:empty?)
+      return LeafCasePattern.new(merged_groups.flatten) if merged_groups.all? { |g| g.length == 1 }
+
+      Conjunction.new([self, other])
+    end
 
     def merge_cycle_groups_possibilities(cycle_group, other_cycle_group)
       return [] if cycle_group.length != other_cycle_group.length

@@ -101,36 +101,46 @@ module CubeTrainer
     end
 
     def log_outside_report
-      if @outside_algs > 0
-        Rails.logger.info "#{@outside_algs} were outside of the valid part of the table"
+      if @outside_algs.positive?
+        Rails.logger.debug { "#{@outside_algs} were outside of the valid part of the table" }
       end
-      Rails.logger.info "#{@diagonal_algs} were in the diagonal of the table" if @diagonal_algs > 0
+      if @diagonal_algs.positive? # rubocop:disable Style/GuardClause
+        Rails.logger.debug { "#{@diagonal_algs} were in the diagonal of the table" }
+      end
+    end
+
+    def log_incorrect(cell_description, commutator)
+      return unless @verbose
+
+      Rails.logger.debug do
+        "Algorithm for #{cell_description} #{commutator} " \
+          "doesn't do what it's expected to do."
+      end
     end
 
     def handle_incorrect(cell_description, commutator, alg)
-      if @verbose
-        Rails.logger.debug do
-          "Algorithm for #{cell_description} #{commutator} " \
-            "doesn't do what it's expected to do."
-        end
-      end
+      log_incorrect(cell_description, commutator)
       @broken_algs += 1
 
       # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
       if @find_fixes
         if (fix = find_fix(commutator, cell_description.pattern))
-          fixes.push(fix)
-          if @verbose
-            Rails.logger.debug do
-              "For #{cell_description} found fix #{fix.fixed_algorithm}."
-            end
-          end
+          push_fix(fix)
           return CheckAlgResult.new(:fix_found, casee: fix.casee, fix: fix.fixed_algorithm)
         else
           handle_unfixable_alg(alg)
         end
       end
       CheckAlgResult::UNFIXABLE
+    end
+
+    def push_fix(fix)
+      fixes.push(fix)
+      return unless @verbose
+
+      Rails.logger.debug do
+        "For #{cell_description} found fix #{fix.fixed_algorithm}."
+      end
     end
 
     # Result of checking an algorithm.
