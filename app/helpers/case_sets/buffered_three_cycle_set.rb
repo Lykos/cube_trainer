@@ -76,7 +76,7 @@ module CaseSets
     end
 
     def default_cube_size
-      @part_type.min_cube_size
+      [@part_type.min_cube_size, 3].max
     end
 
     def cases

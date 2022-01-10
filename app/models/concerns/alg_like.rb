@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/sheet_scraping/case_checker'
+require 'cube_trainer/sheet_scraping/case_reverse_engineer'
 require 'twisty_puzzles'
 
 # Concern for classes that behave like and alg that solves
@@ -14,17 +14,6 @@ module AlgLike
     validates :alg, presence: true
     validates :casee, presence: true
     validate :validate_case, :validate_alg
-  end
-
-  # Cell description that we just make up without having an actual spreadsheet.
-  class SyntheticCellDescription
-    def initialize(casee)
-      @pattern = CasePattern::SpecificCasePattern.new(casee)
-    end
-
-    attr_reader :pattern
-
-    delegate :to_s, to: :pattern
   end
 
   def commutator
@@ -68,14 +57,15 @@ module AlgLike
     nil
   end
 
-  def create_checker
-    CubeTrainer::CaseChecker.new(
+  def create_reverse_engineer
+    CubeTrainer::CaseReverseEngineer.new(
       cube_size: owning_set.case_set.default_cube_size
     )
   end
 
   def alg_correct?(comm)
-    create_checker.check_alg(SyntheticCellDescription.new(casee), comm).correct?
+    found_case = create_reverse_engineer.find_case(comm.algorithm)
+    found_case&.equivalent?(casee)
   end
 
   def validate_alg

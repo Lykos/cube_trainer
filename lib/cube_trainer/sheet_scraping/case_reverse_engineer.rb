@@ -93,6 +93,7 @@ module CubeTrainer
 
     def find_case(alg)
       raise TypeError unless alg.is_a?(TwistyPuzzles::Algorithm)
+      return if alg_unsuitable_for_cube_size?(alg)
 
       alg.inverse.apply_temporarily_to(@state) { |s| find_case_internal(s) }
     end
@@ -103,6 +104,17 @@ module CubeTrainer
       raise ArgumentError unless @buffer
 
       alg.inverse.apply_temporarily_to(@state) { |s| find_part_cycle_internal(s, @buffer) }
+    end
+
+    private
+
+    def alg_unsuitable_for_cube_size?(alg)
+      alg.moves.any? { |m| move_unsuitable_for_cube_size?(m) }
+    end
+
+    def move_unsuitable_for_cube_size?(move)
+      move.is_a?(TwistyPuzzles::SliceMove) && move.slice_index >= @cube_size - 1 ||
+        move.is_a?(TwistyPuzzles::FatMove) && move.width >= @cube_size - 1
     end
   end
 end

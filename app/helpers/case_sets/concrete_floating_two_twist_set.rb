@@ -19,7 +19,8 @@ module CaseSets
     attr_reader :part_type, :pattern
 
     def to_s
-      "floating #{simple_class_name(@part_type).downcase} 2-cycles"
+      twist_name = part_type == TwistyPuzzles::Edge ? 'flip' : 'twist'
+      "floating #{simple_class_name(@part_type).downcase} #{twist_name}s"
     end
 
     def row_pattern(refinement_index, casee)
@@ -71,7 +72,7 @@ module CaseSets
     end
 
     def default_cube_size
-      @part_type.min_cube_size
+      [@part_type.min_cube_size, 3].max
     end
 
     def cases

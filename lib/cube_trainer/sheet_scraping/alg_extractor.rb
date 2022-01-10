@@ -26,9 +26,11 @@ module CubeTrainer
             end
           @num_unfixable = checker.unfixable_algs
           @num_unparseable = checker.error_algs
+          @num_outside = checker.outside_algs
+          @num_diagonal = checker.diagonal_algs
         end
 
-        attr_reader :case_set, :algs, :fixes, :num_unfixable, :num_unparseable
+        attr_reader :case_set, :algs, :fixes, :num_unfixable, :num_unparseable, :num_outside, :num_diagonal
       end
 
       def self.extract_alg_set(table)
@@ -44,8 +46,8 @@ module CubeTrainer
         return unless interpretation.case_set
 
         # Now check everything and construct the alg table.
-        Rails.logger.info "Sheet #{table.sheet_info.title} is for " \
-                          "alg set #{interpretation.case_set}"
+        Rails.logger.info "Sheet #{table.sheet_info.title} is for alg set" \
+                          "#{interpretation.case_set} for cube size #{interpretation.cube_size}"
         extract_alg_set_for_interpretation(table.sheet_info, alg_table, interpretation)
       end
 
@@ -134,8 +136,7 @@ module CubeTrainer
         # interesting part of the table.
         return unless cell.is_a?(AlgEntry)
 
-        Rails.logger.warn "Algorithm for #{cell_description} #{cell.algorithm} is outside of the " \
-                          'valid part of the table.'
+        @checker.count_outside_alg(cell_description, cell.algorithm)
       end
 
       # Process a cell in the diagonal of an alg table where we don't expect algorithms.
@@ -144,15 +145,11 @@ module CubeTrainer
         # interesting part of the table.
         return unless cell.is_a?(AlgEntry)
 
-        Rails.logger.warn "Algorithm for #{cell_description} #{cell.algorithm} is in the " \
-                          'diagonal of the table.'
+        @checker.count_diagonal_alg(cell_description, cell.algorithm)
       end
 
       def process_error_cell(cell_description, cell)
-        @checker.count_error_alg
-
-        Rails.logger.warn "Algorithm for #{cell_description} has a problem: " \
-                          "#{cell.error_message}."
+        @checker.count_error_alg(cell_description, cell.error_message)
       end
 
       def process_algorithm_cell(hints, cell_description, cell, case_set)
@@ -209,9 +206,9 @@ module CubeTrainer
 
       def log_final_report
         if @checker.found_problems?
-          Rails.logger.warn @checker.failure_report
+          @checker.log_failure_report
         else
-          Rails.logger.info @checker.parse_report
+          @checker.log_parse_report
         end
       end
 

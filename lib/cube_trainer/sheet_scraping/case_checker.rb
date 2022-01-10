@@ -40,13 +40,15 @@ module CubeTrainer
       reset
     end
 
-    attr_reader :unfixable_algs, :error_algs
+    attr_reader :unfixable_algs, :error_algs, :outside_algs, :diagonal_algs
 
     def reset
       @total_algs = 0
       @broken_algs = 0
       @unfixable_algs = 0
       @error_algs = 0
+      @outside_algs = 0
+      @diagonal_algs = 0
     end
 
     def fixes
@@ -59,26 +61,48 @@ module CubeTrainer
 
     # Count an alg with a parse error or something like that that is broken before the checker gets
     # to see it.
-    def count_error_alg
+    def count_error_alg(cell_description, error_message)
+      Rails.logger.debug "Algorithm for #{cell_description} has a problem: " \
+                         "#{error_message}."
       @total_algs += 1
       @error_algs += 1
     end
 
-    def failure_report
-      msg = "#{@error_algs} unparseable algs and #{@broken_algs} " \
-            "incorrect algs of #{@total_algs}."
-      msg << " #{@unfixable_algs} were unfixable." if @unfixable_algs.positive?
-      msg
+    def count_outside_alg(cell_description, algorithm)
+      Rails.logger.debug "Algorithm for #{cell_description} #{algorithm} is outside of the " \
+                         'valid part of the table.'
+      @outside_algs += 1
+      # We don't count total_algs since this is outside of the valid part.
     end
 
-    def parse_report
-      "Parsed #{@total_algs} algs."
+    def count_diagonal_alg(cell_description, algorithm)
+      Rails.logger.debug "Algorithm for #{cell_description} #{cell.algorithm} is in the " \
+                         'diagonal of the table.'
+      @diagonal_algs += 1
+      # We don't count total_algs since this is outside of the valid part.
+    end
+
+    def log_failure_report
+      Rails.logger.info "#{@error_algs} unparseable algs and #{@broken_algs} " \
+                        "incorrect algs of #{@total_algs}."
+      Rails.logger.info " #{@unfixable_algs} were unfixable." if @unfixable_algs.positive?
+      log_outside_report
+    end
+
+    def log_parse_report
+      Rails.logger.info "Parsed #{@total_algs} algs."
+      log_outside_report
+    end
+
+    def log_outside_report
+      Rails.logger.info "#{@outside_algs} were outside of the valid part of the table" if @outside_algs > 0
+      Rails.logger.info "#{@diagonal_algs} were in the diagonal of the table" if @diagonal_algs > 0
     end
 
     def handle_incorrect(cell_description, commutator, alg)
       if @verbose
-        Rails.logger.warn "Algorithm for #{cell_description} #{commutator} " \
-                          "doesn't do what it's expected to do."
+        Rails.logger.debug "Algorithm for #{cell_description} #{commutator} " \
+                           "doesn't do what it's expected to do."
       end
       @broken_algs += 1
 
@@ -86,7 +110,7 @@ module CubeTrainer
       if @find_fixes
         if (fix = find_fix(commutator, cell_description.pattern))
           fixes.push(fix)
-          Rails.logger.info "For #{cell_description} found fix #{fix}." if @verbose
+          Rails.logger.debug "For #{cell_description} found fix #{fix.fixed_algorithm}." if @verbose
           return CheckAlgResult.new(:fix_found, casee: fix.casee, fix: fix.fixed_algorithm)
         else
           handle_unfixable_alg(alg)
@@ -150,7 +174,7 @@ module CubeTrainer
       count_unfixable_alg
       return unless @verbose
 
-      Rails.logger.warn "Couldn't find a fix for this alg."
+      Rails.logger.debug "Couldn't find a fix for this alg."
     end
 
     def count_unfixable_alg

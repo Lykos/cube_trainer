@@ -15,7 +15,7 @@ module CubeTrainer
         @column_interpretations = column_interpretations
       end
 
-      attr_reader :case_set, :cube_size
+      attr_reader :case_set, :cube_size, :row_interpretations, :column_interpretations
 
       def maybe_pattern(row_index, col_index)
         return unless @case_set
@@ -66,9 +66,6 @@ module CubeTrainer
       row_interpretations = find_row_interpretations(table, case_set, flip_axes ? 0 : 1, cube_size)
       column_interpretations =
         find_row_interpretations(transposed_table, case_set, flip_axes ? 1 : 0, cube_size)
-      if flip_axes
-        row_interpretations, column_interpretations = column_interpretations, row_interpretations
-      end
       TableInterpretation.new(
         case_set, cube_size,
         row_interpretations, column_interpretations

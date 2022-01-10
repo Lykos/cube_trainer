@@ -52,20 +52,21 @@ module CasePattern
     def match?(part)
       raise NotImplementedError
     end
-  end
 
-  # A part pattern that matches all parts.
-  class PartWildcard < PartPattern
-    def match?(_part)
-      true
+    def &(other)
+      raise NotImplementedError
     end
 
+    def rotate_by(n)
+      raise NotImplementedError
+    end
+  end
+
+  module ConstantPartPattern
     def part; end
 
     def <=>(other)
-      return 0 if instance_of?(other.class)
-
-      1
+      self.class.name <=> other.class.name
     end
 
     def eql?(other)
@@ -78,8 +79,42 @@ module CasePattern
       [self.class].hash
     end
 
+    def rotate_by(n)
+      self
+    end
+  end
+
+  # A part pattern that matches nothing
+  class EmptyPartPattern < PartPattern
+    include ConstantPartPattern
+
+    def match?(_part)
+      false
+    end
+
+    def to_s
+      '!'
+    end
+
+    def &(other)
+      self
+    end
+  end
+
+  # A part pattern that matches all parts.
+  class PartWildcard < PartPattern
+    include ConstantPartPattern
+
+    def match?(_part)
+      true
+    end
+
     def to_s
       '*'
+    end
+
+    def &(other)
+      other
     end
   end
 
@@ -95,28 +130,37 @@ module CasePattern
     attr_reader :part
 
     def match?(part)
-      @part.turned_equals?(part)
+      @part == part
     end
 
     def eql?(other)
       self.class.equal?(other.class) &&
-        @part.turned_equals?(other.part)
+        @part == other.part
     end
 
     def <=>(other)
-      return -1 unless instance_of?(other.class)
+      class_spaceship = self.class.name <=> other.class.name
+      return class_spaceship if class_spaceship != 0
 
-      @part.rotations.min <=> other.part.rotations.min
+      @part <=> other.part
     end
 
     alias == eql?
 
     def hash
-      [self.class, @part.rotations.min].hash
+      [self.class, @part].hash
     end
 
     def to_s
       @part.to_s
+    end
+
+    def &(other)
+      self == other || other.is_a?(PartWildcard) ? self : EmptyPartPattern.new
+    end
+
+    def rotate_by(n)
+      self.class.new(part.rotate_by(n))
     end
   end
 
@@ -129,6 +173,10 @@ module CasePattern
     end
 
     def match?(twist)
+      raise NotImplementedError
+    end
+
+    def &(other)
       raise NotImplementedError
     end
   end
@@ -150,7 +198,8 @@ module CasePattern
     end
 
     def <=>(other)
-      return -1 unless instance_of?(other.class)
+      class_spaceship = self.class.name <=> other.class.name
+      return class_spaceship if class_spaceship != 0
 
       @twist <=> other.twist
     end
@@ -169,18 +218,15 @@ module CasePattern
     def to_s
       @twist.to_s
     end
+
+    def &(other)
+      self == other || (@twist > 0 && other.is_a?(AnyUnsolvedTwist)) ? self : EmptyTwistPattern.new
+    end
   end
 
-  # A pattern that matches all unsolved twists.
-  class AnyUnsolvedTwist < TwistPattern
-    def match?(twist)
-      twist.positive?
-    end
-
+  module ParameterLessTwist
     def <=>(other)
-      return 0 if instance_of?(other.class)
-
-      1
+      self.class.name <=> other.class.name
     end
 
     def eql?(other)
@@ -192,9 +238,42 @@ module CasePattern
     def hash
       [self.class].hash
     end
+  end
+
+  # A pattern that matches all unsolved twists.
+  class AnyUnsolvedTwist < TwistPattern
+    include ParameterLessTwist
+
+    def match?(twist)
+      twist.positive?
+    end
 
     def to_s
       'any unsolved'
+    end
+
+    def &(other)
+      return self if self == other
+      return other if other.is_a?(SpecificTwistPattern)
+
+      EmptyTwistPattern.new
+    end
+  end
+  
+  # A part pattern that matches nothing
+  class EmptyTwistPattern < TwistPattern
+    include ParameterLessTwist
+
+    def match?(twist)
+      false
+    end
+
+    def to_s
+      'unfulfillable'
+    end    
+
+    def &(other)
+      self
     end
   end
 
@@ -257,10 +336,45 @@ module CasePattern
       @min_part_patterns_rotation ||= part_patterns_rotations.min
     end
 
+    def merge_possibilities(other)
+      return [] unless @part_type == other.part_type
+
+      merged_twist = @twist & other.twist
+      return [] if merged_twist.is_a?(EmptyTwistPattern)
+
+      merge_part_patterns_possibilities = part_patterns_rotations.filter_map do |r|
+        merged_part_patterns = r.zip(other.part_patterns).map { |a, b| a & b }
+
+        next if merged_part_patterns.any? { |p| p.is_a?(EmptyPartPattern) }
+        merged_part_patterns
+      end
+
+      merge_part_patterns_possibilities.map do |p|
+        PartCyclePattern.new(@part_type, p, merged_twist)
+      end
+    end
+
+    # Both cyclic shift and per element shifts are 
+    def part_patterns_rotations
+      @part_patterns_rotations ||=
+        pointwise_rotations(cyclic_shifts)
+    end
+
     private
 
-    def part_patterns_rotations
-      @part_patterns_rotations ||= (0...@part_patterns.length).map { |r| @part_patterns.rotate(r) }
+    def cyclic_shifts
+      (0...@part_patterns.length).map { |r| @part_patterns.rotate(r) }
+    end
+
+    def pointwise_rotations(cyclic_shifts)
+      part = @part_patterns.find { |e| e.is_a?(SpecificPart) }&.part
+      return cyclic_shifts unless part
+
+      (0...part.rotations.length).flat_map do |r|
+        cyclic_shifts.map do |cyclic_shift|
+          cyclic_shift.map { |p| p.rotate_by(r) }
+        end
+      end
     end
 
     def part_patterns_match?(part_cycle)
@@ -270,6 +384,25 @@ module CasePattern
         r.zip(part_cycle.parts).all? { |p, q| p.match?(q) }
       end
     end
+  end
+
+  # A case pattern that matches nothing.
+  class EmptyCasePattern < CasePattern
+    def match?(_casee)
+      false
+    end
+
+    alias == eql?
+
+    def to_s
+      simple_class_name(self.class)
+    end
+
+    def hash
+      [self.class].hash
+    end
+
+    alias bracketed_to_s to_s
   end
 
   # A leaf case pattern (i.e. one that isn't a conjuction) that
@@ -287,7 +420,7 @@ module CasePattern
     attr_reader :part_cycle_patterns, :ignore_same_face_center_cycles
 
     def match?(casee)
-      raise TypeError unless casee.is_a?(Case)
+      raise TypeError, "Expected Case but got #{casee.inspect}." unless casee.is_a?(Case)
       return false unless casee.part_cycles.length == @part_cycle_patterns.length
 
       cycle_groups = part_cycle_groups(casee)
@@ -319,7 +452,17 @@ module CasePattern
     end
 
     def &(other)
-      Conjunction.new([self, other])
+      return EmptyCasePattern.new if other.is_a?(EmptyCasePattern) || part_cycle_pattern_groups.keys.sort != other.part_cycle_pattern_groups.keys.sort
+      return Conjunction.new([self, other]) unless other.is_a?(LeafCasePattern)
+
+      merged_groups = part_cycle_pattern_groups.map do |k, cycle_group|
+        other_cycle_group = other.part_cycle_pattern_groups[k]
+        merge_cycle_groups_possibilities(cycle_group, other_cycle_group)
+      end
+      return EmptyCasePattern.new if merged_groups.any? { |g| g.empty? }
+      return LeafCasePattern.new(merged_groups.flatten) if merged_groups.all? { |g| g.length == 1 }
+
+      return Conjunction.new([self, other])
     end
 
     def to_s
@@ -329,13 +472,23 @@ module CasePattern
 
     alias bracketed_to_s to_s
 
-    private
-
     def part_cycle_pattern_groups
       @part_cycle_pattern_groups ||=
         part_cycle_patterns.group_by do |p|
           [p.part_type.name, p.length]
         end
+    end
+
+    private
+
+    def merge_cycle_groups_possibilities(cycle_group, other_cycle_group)
+      return [] if cycle_group.length != other_cycle_group.length
+
+      cycle_group.permutation.flat_map do |e|
+        e.zip(other_cycle_group).flat_map do |cycle, other_cycle|
+          cycle.merge_possibilities(other_cycle)
+        end
+      end
     end
 
     # Should be called for a pattern group and a part cycle group where all
@@ -389,6 +542,10 @@ module CasePattern
         @casee.canonicalize(ignore_same_face_center_cycles: ignore),
         @ignore_same_face_center_cycles
       ].hash
+    end
+
+    def &(other)
+      Conjunction.new([self, other])
     end
   end
 

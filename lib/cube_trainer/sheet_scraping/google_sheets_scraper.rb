@@ -4,6 +4,7 @@ require 'googleauth'
 require 'google/apis/sheets_v4'
 require_relative 'google_sheets_client'
 require_relative 'alg_extractor'
+require_relative 'sheet_filter'
 
 module CubeTrainer
   module SheetScraping
@@ -11,17 +12,22 @@ module CubeTrainer
     class GoogleSheetsScraper
       def initialize(
         credentials_factory: Google::Auth::ServiceAccountCredentials,
-        sheets_service_factory: Google::Apis::SheetsV4::SheetsService
+        sheets_service_factory: Google::Apis::SheetsV4::SheetsService,
+        sheet_filter: AllSheetFilter.new
       )
         @sheets_client = GoogleSheetsClient.new(
           credentials_factory: credentials_factory,
-          sheets_service_factory: sheets_service_factory
+          sheets_service_factory: sheets_service_factory,
+          sheet_filter: sheet_filter
         )
+        @sheet_filter = sheet_filter
       end
 
       def run
         @sheets_client.fetch_access_token!
-        AlgSpreadsheet.all.map do |alg_spreadsheet|
+        AlgSpreadsheet.all.filter_map do |alg_spreadsheet|
+          next unless @sheet_filter.spreadsheet_owner_passes?(alg_spreadsheet.owner)
+
           scrape_sheet(alg_spreadsheet)
         end
       end
@@ -99,11 +105,14 @@ module CubeTrainer
 
       def create_new_alg(alg_set, casee, alg, counters, is_fixed:)
         counters[:new_algs] += 1
-        alg_set.algs.create!(
+        alg_model = alg_set.algs.new(
           casee: casee,
           alg: alg,
           is_fixed: is_fixed
         )
+        return if alg_model.save
+
+        Rails.logger.error "Error saving alg #{alg} for case #{casee}:\n#{alg_model.errors.full_messages.join('\n')}"
       end
 
       def update_alg(existing_alg, alg, counters, is_fixed:)
