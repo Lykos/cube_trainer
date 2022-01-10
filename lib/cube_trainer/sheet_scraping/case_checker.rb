@@ -62,22 +62,28 @@ module CubeTrainer
     # Count an alg with a parse error or something like that that is broken before the checker gets
     # to see it.
     def count_error_alg(cell_description, error_message)
-      Rails.logger.debug "Algorithm for #{cell_description} has a problem: " \
-                         "#{error_message}."
+      Rails.logger.debug do
+        "Algorithm for #{cell_description} has a problem: " \
+          "#{error_message}."
+      end
       @total_algs += 1
       @error_algs += 1
     end
 
     def count_outside_alg(cell_description, algorithm)
-      Rails.logger.debug "Algorithm for #{cell_description} #{algorithm} is outside of the " \
-                         'valid part of the table.'
+      Rails.logger.debug do
+        "Algorithm for #{cell_description} #{algorithm} is outside of the " \
+          'valid part of the table.'
+      end
       @outside_algs += 1
       # We don't count total_algs since this is outside of the valid part.
     end
 
-    def count_diagonal_alg(cell_description, algorithm)
-      Rails.logger.debug "Algorithm for #{cell_description} #{cell.algorithm} is in the " \
-                         'diagonal of the table.'
+    def count_diagonal_alg(cell_description, _algorithm)
+      Rails.logger.debug do
+        "Algorithm for #{cell_description} #{cell.algorithm} is in the " \
+          'diagonal of the table.'
+      end
       @diagonal_algs += 1
       # We don't count total_algs since this is outside of the valid part.
     end
@@ -95,14 +101,18 @@ module CubeTrainer
     end
 
     def log_outside_report
-      Rails.logger.info "#{@outside_algs} were outside of the valid part of the table" if @outside_algs > 0
+      if @outside_algs > 0
+        Rails.logger.info "#{@outside_algs} were outside of the valid part of the table"
+      end
       Rails.logger.info "#{@diagonal_algs} were in the diagonal of the table" if @diagonal_algs > 0
     end
 
     def handle_incorrect(cell_description, commutator, alg)
       if @verbose
-        Rails.logger.debug "Algorithm for #{cell_description} #{commutator} " \
-                           "doesn't do what it's expected to do."
+        Rails.logger.debug do
+          "Algorithm for #{cell_description} #{commutator} " \
+            "doesn't do what it's expected to do."
+        end
       end
       @broken_algs += 1
 
@@ -110,7 +120,11 @@ module CubeTrainer
       if @find_fixes
         if (fix = find_fix(commutator, cell_description.pattern))
           fixes.push(fix)
-          Rails.logger.debug "For #{cell_description} found fix #{fix.fixed_algorithm}." if @verbose
+          if @verbose
+            Rails.logger.debug do
+              "For #{cell_description} found fix #{fix.fixed_algorithm}."
+            end
+          end
           return CheckAlgResult.new(:fix_found, casee: fix.casee, fix: fix.fixed_algorithm)
         else
           handle_unfixable_alg(alg)
@@ -143,7 +157,7 @@ module CubeTrainer
     # Returns the case if the alg solves the pattern and nil otherwise
     def alg_case_for_pattern(alg, pattern)
       casee = @reverse_engineer.find_case(alg)
-      pattern.match?(casee) ? casee : nil
+      casee && pattern.match?(casee) ? casee : nil
     end
 
     def check_alg(cell_description, commutator)

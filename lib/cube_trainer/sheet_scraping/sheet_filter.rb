@@ -20,11 +20,11 @@ module CubeTrainer
 
     # sheet filter that lets everything pass.
     class AllSheetFilter
-      def spreadsheet_owner_passes?(owner)
+      def spreadsheet_owner_passes?(_owner)
         true
       end
 
-      def sheet_title_passes?(title)
+      def sheet_title_passes?(_title)
         true
       end
     end

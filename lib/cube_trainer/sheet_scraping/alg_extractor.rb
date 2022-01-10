@@ -30,7 +30,8 @@ module CubeTrainer
           @num_diagonal = checker.diagonal_algs
         end
 
-        attr_reader :case_set, :algs, :fixes, :num_unfixable, :num_unparseable, :num_outside, :num_diagonal
+        attr_reader :case_set, :algs, :fixes, :num_unfixable, :num_unparseable, :num_outside,
+                    :num_diagonal
       end
 
       def self.extract_alg_set(table)
@@ -46,7 +47,7 @@ module CubeTrainer
         return unless interpretation.case_set
 
         # Now check everything and construct the alg table.
-        Rails.logger.info "Sheet #{table.sheet_info.title} is for alg set" \
+        Rails.logger.info "Sheet #{table.sheet_info.title} is for alg set " \
                           "#{interpretation.case_set} for cube size #{interpretation.cube_size}"
         extract_alg_set_for_interpretation(table.sheet_info, alg_table, interpretation)
       end

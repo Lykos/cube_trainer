@@ -35,7 +35,10 @@ module CaseSets
         @part_type, specific_part_pattern,
         twist: specific_twist(desired_twist)
       )
-      wildcard_cycle_pattern = part_cycle_pattern(@part_type, wildcard, twist: specific_twist(other_twist))
+      wildcard_cycle_pattern = part_cycle_pattern(
+        @part_type, wildcard,
+        twist: specific_twist(other_twist)
+      )
       case_pattern(specific_cycle_pattern, wildcard_cycle_pattern)
     end
 

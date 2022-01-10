@@ -79,7 +79,7 @@ module CasePattern
       [self.class].hash
     end
 
-    def rotate_by(n)
+    def rotate_by(_n)
       self
     end
   end
@@ -96,7 +96,7 @@ module CasePattern
       '!'
     end
 
-    def &(other)
+    def &(_other)
       self
     end
   end
@@ -259,20 +259,20 @@ module CasePattern
       EmptyTwistPattern.new
     end
   end
-  
+
   # A part pattern that matches nothing
   class EmptyTwistPattern < TwistPattern
     include ParameterLessTwist
 
-    def match?(twist)
+    def match?(_twist)
       false
     end
 
     def to_s
       'unfulfillable'
-    end    
+    end
 
-    def &(other)
+    def &(_other)
       self
     end
   end
@@ -342,19 +342,21 @@ module CasePattern
       merged_twist = @twist & other.twist
       return [] if merged_twist.is_a?(EmptyTwistPattern)
 
-      merge_part_patterns_possibilities = part_patterns_rotations.filter_map do |r|
-        merged_part_patterns = r.zip(other.part_patterns).map { |a, b| a & b }
+      merge_part_patterns_possibilities =
+        part_patterns_rotations.filter_map do |r|
+          merged_part_patterns = r.zip(other.part_patterns).map { |a, b| a & b }
 
-        next if merged_part_patterns.any? { |p| p.is_a?(EmptyPartPattern) }
-        merged_part_patterns
-      end
+          next if merged_part_patterns.any? { |p| p.is_a?(EmptyPartPattern) }
+
+          merged_part_patterns
+        end
 
       merge_part_patterns_possibilities.map do |p|
         PartCyclePattern.new(@part_type, p, merged_twist)
       end
     end
 
-    # Both cyclic shift and per element shifts are 
+    # Both cyclic shift and per element shifts are
     def part_patterns_rotations
       @part_patterns_rotations ||=
         pointwise_rotations(cyclic_shifts)
@@ -452,17 +454,20 @@ module CasePattern
     end
 
     def &(other)
-      return EmptyCasePattern.new if other.is_a?(EmptyCasePattern) || part_cycle_pattern_groups.keys.sort != other.part_cycle_pattern_groups.keys.sort
+      if other.is_a?(EmptyCasePattern) || part_cycle_pattern_groups.keys.sort != other.part_cycle_pattern_groups.keys.sort
+        return EmptyCasePattern.new
+      end
       return Conjunction.new([self, other]) unless other.is_a?(LeafCasePattern)
 
-      merged_groups = part_cycle_pattern_groups.map do |k, cycle_group|
-        other_cycle_group = other.part_cycle_pattern_groups[k]
-        merge_cycle_groups_possibilities(cycle_group, other_cycle_group)
-      end
+      merged_groups =
+        part_cycle_pattern_groups.map do |k, cycle_group|
+          other_cycle_group = other.part_cycle_pattern_groups[k]
+          merge_cycle_groups_possibilities(cycle_group, other_cycle_group)
+        end
       return EmptyCasePattern.new if merged_groups.any? { |g| g.empty? }
       return LeafCasePattern.new(merged_groups.flatten) if merged_groups.all? { |g| g.length == 1 }
 
-      return Conjunction.new([self, other])
+      Conjunction.new([self, other])
     end
 
     def to_s
