@@ -18,6 +18,8 @@ module CaseSets
 
     attr_reader :part_type, :pattern
 
+    def buffer; end
+
     def to_s
       twist_name = part_type == TwistyPuzzles::Edge ? 'flip' : 'twist'
       "floating #{simple_class_name(@part_type).downcase} #{twist_name}s"
@@ -67,7 +69,7 @@ module CaseSets
     end
 
     def case_name(casee, letter_scheme: nil)
-      raise ArgumentError unless match?(casee)
+      raise ArgumentError, "Cannot apply letter scheme for non-matching case #{casee}" unless match?(casee)
 
       parts = casee.part_cycles.map { |c| c.parts.first }
       name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts

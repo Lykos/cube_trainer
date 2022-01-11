@@ -21,7 +21,7 @@ module CaseSets
     SEPARATOR = ':'
 
     def buffer
-      raise NotImplementedError
+      raise NotImplementedError, "buffer is not implemented for #{self}"
     end
 
     def row_pattern(refinement_index, casee)

@@ -27,7 +27,7 @@ class AlgSet < ApplicationRecord
     {
       id: id,
       owner: alg_spreadsheet.owner,
-      buffer: part_to_simple(case_set.buffer)
+      buffer: case_set.buffer ? part_to_simple(case_set.buffer) : nil
     }
   end
 
