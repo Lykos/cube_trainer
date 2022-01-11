@@ -20,9 +20,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test_ci": "ng test --karma-config client/karma-ci.conf.js",
-    "lint": "ng lint",
-    "postinstall": "patch-package",
-    "heroku-postbuild": "patch-package"
+    "lint": "ng lint"
   },
   "dependencies": {
     "@angular/animations": "^13.1.1",
@@ -82,7 +80,6 @@
     "karma-jasmine-html-reporter": "~1.7.0",
     "karma-mocha": "^2.0.1",
     "mocha": "^9.1.3",
-    "patch-package": "^6.4.7",
     "typescript": "~4.4.4"
   }
 }

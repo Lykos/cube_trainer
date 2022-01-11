@@ -1,3 +1,3 @@
 module.exports = {
-    externals: ["crypto", "worker_threads"]
+    externals: ["crypto", "worker_threads"],
 };

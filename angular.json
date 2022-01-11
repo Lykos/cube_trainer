@@ -10,20 +10,17 @@
           "strict": true
         }
       },
-      "root": "",
+      "root": "client",
       "sourceRoot": "client/src",
-      "prefix": "app",
+      "prefix": "cube-trainer",
       "architect": {
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "customWebpackConfig": {
               "path": "client/builder-webpack.config.js",
-              "mergeStrategies": {
-                  "output": "append",
-                  "target": "replace",
-                  "externals": "append",
-                  "module.rules": "prepend"
+              "mergeRules": {
+                "externals": "append"
               }
             },
             "outputPath": "./public",
@@ -78,17 +75,13 @@
         },
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
-           "customWebpackConfig": {
-             "path": "client/builder-webpack.config.js",
-             "mergeStrategies": {
-               "output": "append",
-               "target": "replace",
-               "externals": "append",
-               "module.rules": "prepend"
-             },
-             "replaceDuplicatePlugins": true
-           },
           "options": {
+            "customWebpackConfig": {
+              "path": "client/builder-webpack.config.js",
+              "mergeRules": {
+                "externals": "append"
+              }
+            },
             "proxyConfig": "client/src/proxy.conf.json"
           },
           "configurations": {
@@ -103,33 +96,25 @@
         },
         "extract-i18n": {
           "builder": "@angular-builders/custom-webpack:extract-i18n",
-           "customWebpackConfig": {
-             "path": "client/builder-webpack.config.js",
-             "mergeStrategies": {
-               "output": "append",
-               "target": "replace",
-               "externals": "append",
-               "module.rules": "prepend"
-             },
-             "replaceDuplicatePlugins": true
-           },
           "options": {
+            "customWebpackConfig": {
+              "path": "client/builder-webpack.config.js",
+              "mergeRules": {
+                "externals": "append"
+              }
+            },
             "browserTarget": "cube-trainer:build"
           }
         },
         "test": {
           "builder": "@angular-builders/custom-webpack:karma",
-           "customWebpackConfig": {
-             "path": "client/builder-webpack.config.js",
-             "mergeStrategies": {
-               "output": "append",
-               "target": "replace",
-               "externals": "append",
-               "module.rules": "prepend"
-             },
-             "replaceDuplicatePlugins": true
-           },
           "options": {
+            "customWebpackConfig": {
+              "path": "client/builder-webpack.config.js",
+              "mergeRules": {
+                "externals": "append"
+              }
+            },
             "main": "client/src/test.ts",
             "polyfills": "client/src/polyfills.ts",
             "tsConfig": "client/tsconfig.spec.json",
@@ -159,6 +144,7 @@
   },
   "defaultProject": "cube-trainer",
   "cli": {
-    "defaultCollection": "@ngrx/schematics"
+    "defaultCollection": "@ngrx/schematics",
+    "packageManager": "npm"
   }
 }
