@@ -184,11 +184,11 @@ class StatType
     end
 
     def calculate_count(training_session)
-      case_keys_seen =
-        training_session.results.pluck(:case_key).uniq
-      valid_case_keys =
-        training_session.cases.map(&:case_key)
-      (case_keys_seen & valid_case_keys).length
+      cases_seen =
+        training_session.results.pluck(:casee).uniq
+      valid_cases =
+        training_session.case_set.cases
+      (cases_seen & valid_cases).length
     end
 
     def name
@@ -203,7 +203,7 @@ class StatType
     end
 
     def calculate_count(training_session)
-      training_session.cases.length
+      training_session.case_set.cases.length
     end
 
     def name
