@@ -11,8 +11,8 @@ import { fromDateString } from '@utils/instant'
 function parseStatPart(statPart: any): StatPart {
   return {
     name: statPart.name,
-    statPartType: statPart.stat_part_type,
-    duration: statPart.success ? seconds(statPart.time_s) : undefined,
+    statPartType: statPart.statPartType,
+    duration: statPart.success ? seconds(statPart.timeS) : undefined,
     fraction: statPart.fraction,
     count: statPart.count,
     success: statPart.success,
@@ -23,8 +23,8 @@ function parseStat(stat: any): Stat {
   return {
     id: stat.id,
     index: stat.index,
-    timestamp: fromDateString(stat.created_at),
-    statType: stat.stat_type,
+    timestamp: fromDateString(stat.createdAt),
+    statType: stat.statType,
     parts: stat.stat_parts.map(parseStatPart),
   };
 }
@@ -39,12 +39,12 @@ export class StatsService {
     return this.rails.get<StatType[]>('/stat_types', {});
   }
   
-  list(modeId: number): Observable<Stat[]> {
-    return this.rails.get<any[]>(`/modes/${modeId}/stats`, {}).pipe(
+  list(trainingSessionId: number): Observable<Stat[]> {
+    return this.rails.get<any[]>(`/training_sessions/${trainingSessionId}/stats`, {}).pipe(
       map(stats => stats.map(parseStat)));
   }
 
-  destroy(modeId: number, statId: number): Observable<void> {
-    return this.rails.delete<void>(`/modes/${modeId}/stats/${statId}`, {});
+  destroy(trainingSessionId: number, statId: number): Observable<void> {
+    return this.rails.delete<void>(`/training_sessions/${trainingSessionId}/stats/${statId}`, {});
   }
 }

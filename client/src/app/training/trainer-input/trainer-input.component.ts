@@ -1,9 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Mode } from '../mode.model';
-import { overrideAlgClick } from '@store/modes.actions';
+import { TrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
-import { Case } from '../case.model';
-import { Store } from '@ngrx/store';
+import { ScrambleOrSample, isScramble, isSample } from '../scramble-or-sample.model';
 
 @Component({
   selector: 'cube-trainer-trainer-input',
@@ -12,38 +10,46 @@ import { Store } from '@ngrx/store';
 })
 export class TrainerInputComponent {
   @Input()
-  casee?: Case;
+  scrambleOrSample?: ScrambleOrSample;
 
   @Input()
-  mode?: Mode;
+  trainingSession?: TrainingSession;
 
-  @Input()
-  numHints?: number;
+  get scramble() {
+    const scrambleOrSample = this.scrambleOrSample;
+    return scrambleOrSample && isScramble(scrambleOrSample) ? scrambleOrSample.scramble : undefined;
+  }
 
-  constructor(private readonly store: Store) {}
+  get sample() {
+    const scrambleOrSample = this.scrambleOrSample;
+    return scrambleOrSample && isSample(scrambleOrSample) ? scrambleOrSample.sample : undefined;
+  }
 
   get setup() {
-    return this.casee?.setup;
+    return this.sample?.item?.setup;
   }
 
   get puzzle() {
-    const cubeSize = this.mode?.cubeSize;
+    const cubeSize = this.trainingSession?.cubeSize;
     return cubeSize ? `${cubeSize}x${cubeSize}x${cubeSize}` : undefined;
   }
 
-  get alg() {
-    return this.casee?.alg;
-  }
-
   get showImage() {
-    return this.mode && this.mode.showInputMode == ShowInputMode.Picture;
+    return this.trainingSession && this.trainingSession.showInputMode == ShowInputMode.Picture;
   }
 
   get showName() {
-    return this.mode && this.mode.showInputMode == ShowInputMode.Name;
+    return this.trainingSession && this.trainingSession.showInputMode == ShowInputMode.Name;
   }
 
-  onOverride() {
-    this.mode && this.casee && this.store.dispatch(overrideAlgClick({ mode: this.mode, casee: this.casee }));
+  get showScramble() {
+    return this.trainingSession && this.trainingSession.showInputMode == ShowInputMode.Scramble;
+  }
+
+  get sampleTooltip() {
+    if (!this.sample) {
+      return '';
+    }
+    return `Item was chosen by sampling strategy ${this.sample.samplerName}`;
   }
 }

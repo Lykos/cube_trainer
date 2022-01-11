@@ -150,7 +150,7 @@ module CubeTrainer
         corner_parities: CornerParitiesComputer
       }.freeze
 
-      def initialize(now, mode)
+      def initialize(now, _training_session)
         @now = now
         @mode = mode
       end
@@ -163,11 +163,11 @@ module CubeTrainer
         EXPECTED_ALGS_COMPUTER_CLASSES[key].new(cube_numbers).compute_expected_algs
       end
 
-      def per_mode_stats(mode)
-        average = StatsComputer.new(@now, mode).total_average
-        expected_algs = expected_algs(mode.mode_type.key)
+      def per_mode_stats(training_session)
+        average = StatsComputer.new(@now, training_session).total_average
+        expected_algs = expected_algs(training_session.training_session_type.key)
         {
-          name: mode.mode_type.key,
+          name: training_session.training_session_type.key,
           expected_algs: expected_algs,
           average: average,
           total_time: expected_algs * average
@@ -176,8 +176,8 @@ module CubeTrainer
 
       def compute_expected_time_per_type_stats
         relevant_modes =
-          @mode.user.modes.select do |m|
-            EXPECTED_ALGS_COMPUTER_CLASSES.key?(m.mode_type.key)
+          @mode.user.training_sessions.select do |m|
+            EXPECTED_ALGS_COMPUTER_CLASSES.key?(m.training_session_type.key)
           end
         per_type_stats = relevant_modes.map { |m| per_mode_stats(m) }
         total_time = per_type_stats.pluck(:total_time).sum

@@ -33,12 +33,14 @@ describe CubeTrainer::SheetScraping::GoogleSheetsScraper do
 
     SpreadsheetValues.new(
       [
-        ['', 'UB', 'UR', 'UL'],
-        ['UB', '', '[R2 U : [S, R2]]', "[L2 U' : [L2, S']]"],
-        ['UR', '[R2 U : [R2, S]]', '', "[M2 : [U/M']]"],
-        ['UL', "[L2 U' : [L2, S']]", "[M2 : [U/M']]"],
-        [],
-        ['', 'One of the UL UR algs needs to be fixed']
+        ['',   'UB',                 'UR',               'UL',                 'DF'],
+        ['UB', '',                   '[R2 U : [S, R2]]', "[L2 U' : [S', L2]]", "[M', U2]"],
+        ['UR', '[R2 U : [R2, S]]',   '',                 "[M2 : [U'/M]]",       '(U R2 f2 R2) * 2'],
+        ['UL', "[L2 U' : [L2, S']]", '[M2 : [U/M]]',     '',                    '(R2 f2 R2 U) * 2'],
+        ['DF', "[U2, M']",           '[',                'R U F L',             'R U F L'],
+        ['',   'random alg cell', 'R U F L'],
+        ['',   'the alg in the UL row and DF column is in the wrong direction'],
+        ['',   'the DF row algs are wrong except for UB']
       ]
     )
   end
@@ -74,14 +76,49 @@ describe CubeTrainer::SheetScraping::GoogleSheetsScraper do
 
   it 'parses a sheet correctly' do
     alg_spreadsheet
-    described_class.new(
+    counters = described_class.new(
       credentials_factory: credentials_factory,
       sheets_service_factory: sheets_service_factory
-    ).run
+    ).run[0]
+
+    expect(counters[:new_algs]).to eq(10)
+    expect(counters[:updated_algs]).to eq(0)
+    expect(counters[:confirmed_algs]).to eq(0)
+    expect(counters[:correct_algs]).to eq(9)
+    expect(counters[:fixed_algs]).to eq(1)
+    expect(counters[:unfixable_algs]).to eq(2)
+    expect(counters[:unparseable_algs]).to eq(1)
 
     expect(sheets_service).to have_received(:'authorization=').with(authorizer)
     expect(authorizer).to have_received(:fetch_access_token!)
+
     expect(AlgSet.all.count).to eq(1)
     expect(AlgSet.first.alg_spreadsheet).to eq(alg_spreadsheet)
+    expect(AlgSet.first.algs.count).to eq(10)
+  end
+
+  it 'updates an existing sheet correctly' do
+    # Simulate a previous run
+    alg_spreadsheet
+    scraper = described_class.new(
+      credentials_factory: credentials_factory,
+      sheets_service_factory: sheets_service_factory
+    )
+    scraper.run
+
+    # Change one alg cell to a different alg.
+    get_spreadsheet_values_response.values[4][1] = "U2 M' U2 M"
+    counters = scraper.run[0]
+
+    expect(counters[:new_algs]).to eq(0)
+    expect(counters[:updated_algs]).to eq(1)
+    expect(counters[:confirmed_algs]).to eq(9)
+
+    expect(sheets_service).to have_received(:'authorization=').with(authorizer)
+    expect(authorizer).to have_received(:fetch_access_token!).twice
+
+    expect(AlgSet.all.count).to eq(1)
+    expect(AlgSet.first.alg_spreadsheet).to eq(alg_spreadsheet)
+    expect(AlgSet.first.algs.count).to eq(10)
   end
 end

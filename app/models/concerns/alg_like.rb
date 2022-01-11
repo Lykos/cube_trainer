@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/sheet_scraping/commutator_checker'
+require 'cube_trainer/sheet_scraping/case_reverse_engineer'
 require 'twisty_puzzles'
 
 # Concern for classes that behave like and alg that solves
@@ -10,25 +10,10 @@ module AlgLike
   extend ActiveSupport::Concern
 
   included do
-    attribute :case_key, :input_representation
+    attribute :casee, :case
     validates :alg, presence: true
-    validates :case_key, presence: true
-    validate :validate_case, :validate_buffer, :validate_alg
-  end
-
-  # Cell description that we just make up without having an actual spreadsheet.
-  class SyntheticCellDescription
-    def initialize(part_cycle)
-      @part_cycle = part_cycle
-    end
-
-    attr_reader :part_cycle
-
-    delegate :to_s, to: :part_cycle
-  end
-
-  def buffer
-    case_key.parts.first if case_key.is_a?(TwistyPuzzles::PartCycle)
+    validates :casee, presence: true
+    validate :validate_case, :validate_alg
   end
 
   def commutator
@@ -42,7 +27,8 @@ module AlgLike
   def to_simple
     {
       id: id,
-      case_key: InputRepresentationType.new.serialize(case_key),
+      case_key: CaseType.new.serialize(casee),
+      case_name: owning_set.case_name(casee),
       alg: alg.to_s
     }
   end
@@ -50,13 +36,19 @@ module AlgLike
   private
 
   def validate_case
-    owning_set.mode_type.validate_case_key(case_key, errors) if case_key
-  end
+    return unless casee
 
-  def validate_buffer
-    return unless owning_set.buffer
+    unless casee.valid?
+      errors.add(:casee, 'needs to be valid')
+      return
+    end
+    unless owning_set.case_set.match?(casee)
+      errors.add(:casee, 'does not belong to the case set of the alg set')
+      return
+    end
+    return if owning_set.case_set.strict_match?(casee)
 
-    errors.add(:case_key, 'case has an incorrect buffer') unless buffer == owning_set.buffer
+    errors.add(:casee, 'does not have the right form for the case set of the alg set')
   end
 
   def commutator_or_nil
@@ -65,27 +57,28 @@ module AlgLike
     nil
   end
 
-  def create_checker
-    CubeTrainer::CommutatorChecker.new(
-      part_type: case_key.part_type,
-      cube_size: owning_set.mode_type.default_cube_size
+  def create_reverse_engineer
+    CubeTrainer::CaseReverseEngineer.new(
+      cube_size: owning_set.case_set.default_cube_size
     )
   end
 
   def alg_correct?(comm)
-    create_checker.check_alg(SyntheticCellDescription.new(case_key), comm).result == :correct
+    found_case = create_reverse_engineer.find_case(comm.algorithm)
+    found_case&.equivalent?(casee)
   end
 
-  # TODO: Make this work for other types of alg sets than commutators.
   def validate_alg
-    return unless case_key.respond_to?(:part_type)
-    return unless case_key.part_type == owning_set.mode_type.part_type
+    return unless casee.is_a?(Case)
 
     comm = commutator_or_nil
-    errors.add(:alg, 'cannot be parsed as a commutator') && return unless comm
+    unless comm
+      errors.add(:alg, 'cannot be parsed as a commutator')
+      return
+    end
 
     return if alg_correct?(comm)
 
-    errors.add(:alg, 'does not solve this case')
+    errors.add(:alg, "#{comm} does not solve case #{casee}")
   end
 end

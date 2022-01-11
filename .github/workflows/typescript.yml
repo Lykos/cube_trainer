@@ -13,14 +13,14 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package-lock.json
     
-    - name: Run npm install
-      run: npm install
+    - name: Run npm ci (similar to install but made for CI)
+      run: npm ci
 
     - name: Run Angular Build Prod
       run: npm run build
 
     - name: Run Angular Test
-      run: npm run test
+      run: npm run test_ci
 
     - name: Run Angular Lint
       run: npm run lint

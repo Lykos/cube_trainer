@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
-  "newProjectRoot": "projects",
+  "newProjectRoot": "client",
   "projects": {
     "cube-trainer": {
       "projectType": "application",
@@ -10,13 +10,19 @@
           "strict": true
         }
       },
-      "root": "",
+      "root": "client",
       "sourceRoot": "client/src",
-      "prefix": "app",
+      "prefix": "cube-trainer",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "customWebpackConfig": {
+              "path": "client/builder-webpack.config.js",
+              "mergeRules": {
+                "externals": "append"
+              }
+            },
             "outputPath": "./public",
             "index": "client/src/index.html",
             "main": "client/src/main.ts",
@@ -68,8 +74,14 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
+            "customWebpackConfig": {
+              "path": "client/builder-webpack.config.js",
+              "mergeRules": {
+                "externals": "append"
+              }
+            },
             "proxyConfig": "client/src/proxy.conf.json"
           },
           "configurations": {
@@ -83,14 +95,26 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular-builders/custom-webpack:extract-i18n",
           "options": {
+            "customWebpackConfig": {
+              "path": "client/builder-webpack.config.js",
+              "mergeRules": {
+                "externals": "append"
+              }
+            },
             "browserTarget": "cube-trainer:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular-builders/custom-webpack:karma",
           "options": {
+            "customWebpackConfig": {
+              "path": "client/builder-webpack.config.js",
+              "mergeRules": {
+                "externals": "append"
+              }
+            },
             "main": "client/src/test.ts",
             "polyfills": "client/src/polyfills.ts",
             "tsConfig": "client/tsconfig.spec.json",
@@ -120,6 +144,7 @@
   },
   "defaultProject": "cube-trainer",
   "cli": {
-    "defaultCollection": "@ngrx/schematics"
+    "defaultCollection": "@ngrx/schematics",
+    "packageManager": "npm"
   }
 }

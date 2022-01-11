@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'cube_trainer/cube_scrambler'
-require 'cube_trainer/training/no_hinter'
 require 'cube_trainer/training/scramble'
 
 module CubeTrainer
@@ -13,11 +12,11 @@ module CubeTrainer
       class InputSampler
         SCRAMBLE_LENGTH = 25
 
-        def initialize(mode)
-          raise ArgumentError unless mode.cube_size == 3
+        def initialize(training_session)
+          raise ArgumentError unless training_session.cube_size == 3
 
           @scrambler = CubeScrambler.new
-          @cube_state = mode.solved_cube_state
+          @cube_state = training_session.solved_cube_state
         end
 
         def random_item(_cached_inputs = [])
@@ -26,16 +25,12 @@ module CubeTrainer
         end
       end
 
-      def initialize(mode)
-        @mode = mode
-      end
-
-      def hinter(*)
-        @hinter ||= NoHinter.new({})
+      def initialize(training_session)
+        @training_session = training_session
       end
 
       def input_sampler
-        InputSampler.new(@mode)
+        InputSampler.new(@training_session)
       end
 
       def input_items

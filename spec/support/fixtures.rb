@@ -72,10 +72,10 @@ shared_context 'with achievement grant' do
 end
 
 shared_context 'with stat' do
-  include_context 'with mode'
+  include_context 'with training session'
 
   let(:stat) do
-    stat = Stat.find_or_initialize_by(mode: mode, stat_type: :averages)
+    stat = Stat.find_or_initialize_by(training_session: training_session, stat_type: :averages)
     stat.update(index: 0)
     stat.save!
     stat
@@ -93,23 +93,21 @@ shared_context 'with message' do
   end
 end
 
-shared_context 'with mode' do
+shared_context 'with training session' do
   include_context 'with user abc'
 
-  let(:mode) do
-    mode = user.modes.find_or_initialize_by(
-      name: 'test_mode'
+  let(:training_session) do
+    training_session = user.training_sessions.find_or_initialize_by(
+      name: 'test_training_session'
     )
-    mode.update(
-      show_input_mode: :name,
-      mode_type: :edge_commutators,
-      buffer: TwistyPuzzles::Edge.for_face_symbols(%i[U F]),
-      goal_badness: 1.0,
-      cube_size: 3,
-      known: false
-    )
-    mode.save!
-    mode
+    training_session.show_input_mode = :name
+    training_session.training_session_type = :edge_commutators
+    training_session.buffer = TwistyPuzzles::Edge.for_face_symbols(%i[U F])
+    training_session.goal_badness = 1.0
+    training_session.cube_size = 3
+    training_session.known = false
+    training_session.save!
+    training_session
   end
 end
 
@@ -131,35 +129,58 @@ end
 
 shared_context 'with letter scheme' do
   include_context 'with user abc'
+  include_context 'with edges'
 
   let(:letter_scheme) do
     letter_scheme = LetterScheme.find_or_initialize_by(
       user: user
     )
-    part = TwistyPuzzles::Edge.for_face_symbols(%i[U F])
-    letter_scheme.mappings.new(part: part, letter: 'a')
     letter_scheme.save!
+    letter_scheme.mappings.create!(part: uf, letter: 'A')
+    letter_scheme.mappings.create!(part: ub, letter: 'D')
+    letter_scheme.mappings.create!(part: df, letter: 'U')
     letter_scheme
   end
 end
 
+shared_context 'with edges' do
+  let(:uf) { TwistyPuzzles::Edge.for_face_symbols(%i[U F]) }
+  let(:fu) { TwistyPuzzles::Edge.for_face_symbols(%i[F U]) }
+  let(:ur) { TwistyPuzzles::Edge.for_face_symbols(%i[U R]) }
+  let(:ul) { TwistyPuzzles::Edge.for_face_symbols(%i[U L]) }
+  let(:ub) { TwistyPuzzles::Edge.for_face_symbols(%i[U B]) }
+  let(:df) { TwistyPuzzles::Edge.for_face_symbols(%i[D F]) }
+end
+
+shared_context 'with case' do
+  include_context 'with edges'
+
+  let(:casee) do
+    casee = Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([uf, df, ub])])
+    casee.validate!
+    casee
+  end
+end
+
 shared_context 'with result' do
-  include_context 'with mode'
+  include_context 'with training session'
+  include_context 'with case'
 
   let(:result) do
-    mode.results.find_or_create_by!(case_key: CubeTrainer::LetterPair.new(%w[a b]), time_s: 10)
+    training_session.results.find_or_create_by!(
+      casee: casee,
+      time_s: 10
+    )
   end
 end
 
 shared_context 'with alg override' do
-  include_context 'with mode'
+  include_context 'with training session'
+  include_context 'with case'
 
   let(:alg_override) do
-    uf = TwistyPuzzles::Edge.for_face_symbols(%i[U F])
-    df = TwistyPuzzles::Edge.for_face_symbols(%i[D F])
-    ub = TwistyPuzzles::Edge.for_face_symbols(%i[U B])
-    mode.alg_overrides.find_or_create_by!(
-      case_key: TwistyPuzzles::PartCycle.new([uf, df, ub]),
+    training_session.alg_overrides.find_or_create_by!(
+      casee: casee,
       alg: "[M', U2]"
     )
   end

@@ -7,8 +7,8 @@ Rails.application.routes.draw do
                                 }
     get 'name_or_email_exists', to: 'users#name_or_email_exists?'
     post 'confirm_email', to: 'users#confirm_email'
-    get 'mode_name_exists_for_user', to: 'modes#name_exists_for_user?'
-    resources :mode_types, only: [:index, :show]
+    get 'training_session_name_exists_for_user', to: 'training_sessions#name_exists_for_user?'
+    resources :training_session_types, only: [:index, :show]
     resources :achievements, only: [:index, :create, :show, :update, :destroy]
     resource :color_scheme, only: [:create, :show, :update, :destroy]
     resource :letter_scheme, only: [:create, :show, :update, :destroy]
@@ -16,16 +16,13 @@ Rails.application.routes.draw do
     resources :achievement_grants, only: [:index, :show]
     resource :user
     resource :dump, only: [:show]
-    resources :modes do
-      resources :cases, only: [:index, :show]
+    resources :training_sessions do
       resources :results
       resources :alg_overrides
       resources :stats, only: [:index, :show, :destroy]
       post 'alg_overrides/create_or_update', to: 'alg_overrides#create_or_update'
     end
     resources :stat_types, only: [:index, :show]
-    get 'trainer/:mode_id/random_case', to: 'trainer#random_case'
-    get 'trainer/:mode_id/inputs/:input_id/image/:img_side', to: 'cube_images#show'
     resources :part_types, only: [:index]
   end
   # We don't need this in development because we use a separate server for the frontend via `npm start`.

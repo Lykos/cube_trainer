@@ -28,7 +28,7 @@ const twoTwistsWithCosts: readonly TwistWithCost[] = combination(topLayerCorners
 });
 
 describe('TwistSolver', () => {
-  fit('should find the right 2 twist', () => {
+  it('should find the right 2 twist', () => {
     const solver = createTwistSolverInternal(twoTwistsWithCosts, topLayerCorners);
     const inputTwist = [cw, ccw];
     const actual = solver.algsForOrientedTypes(inputTwist).assertDeterministic();

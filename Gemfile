@@ -27,7 +27,7 @@ group :development, :test, :production do
   gem 'rails', '~> 6.1'
 
   # Core cubing related functionality.
-  gem 'twisty_puzzles', '>= 0.0.32'
+  gem 'twisty_puzzles', '>= 0.0.35'
 
   # Database access. TODO: figure out whether this is still needed now that this project uses rails.
   gem 'activerecord'
@@ -79,6 +79,8 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+
+  gem 'simplecov', require: false
 end
 
 group :rubocop do
@@ -99,5 +101,4 @@ group :test do
   gem 'rantly'
   gem 'rspec'
   gem 'rspec-prof'
-  gem 'simplecov', require: false
 end

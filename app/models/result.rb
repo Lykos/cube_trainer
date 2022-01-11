@@ -8,22 +8,23 @@ class Result < ApplicationRecord
     greater_than_or_equal_to: 0
   }.freeze
 
-  belongs_to :mode
+  belongs_to :training_session
 
-  attribute :case_key, :input_representation
+  attribute :casee, :case
   validates :time_s, presence: true, numericality: { greater_than: 0 }
   validates :failed_attempts, numericality: POSITIVE_INTEGER
   validates :success, inclusion: [true, false]
   validates :num_hints, numericality: POSITIVE_INTEGER
-  validates :case_key, presence: true
+  validates :casee, presence: true
+  validate :validate_case
   after_create :grant_num_results_achievements
-  delegate :user, to: :mode
+  delegate :user, to: :training_session
 
   def to_simple
     {
       id: id,
-      case_key: InputRepresentationType.new.serialize(case_key),
-      case_name: mode.maybe_apply_letter_scheme(case_key).to_s,
+      case_key: CaseType.new.serialize(casee),
+      case_name: training_session.case_name(casee),
       time_s: time_s,
       failed_attempts: failed_attempts,
       word: word,
@@ -35,7 +36,7 @@ class Result < ApplicationRecord
 
   def to_dump
     {
-      case_key: case_key.to_s,
+      case_key: CaseType.new.serialize(casee),
       time_s: time_s,
       failed_attempts: failed_attempts,
       word: word,
@@ -51,19 +52,25 @@ class Result < ApplicationRecord
 
   private
 
+  def validate_case
+    return unless casee
+
+    errors.add(:casee, 'needs to be valid') unless casee.valid?
+  end
+
   def grant_num_results_achievements
     achievement_key = num_results_achievement_key
     user.grant_achievement_if_not_granted(achievement_key) if achievement_key
   end
 
   def num_results_achievement_key
-    if mode.results.count >= 100_000
+    if training_session.results.count >= 100_000
       :wizard
-    elsif mode.results.count >= 10_000
+    elsif training_session.results.count >= 10_000
       :professional
-    elsif mode.results.count >= 1000
+    elsif training_session.results.count >= 1000
       :addict
-    elsif mode.results.count >= 100
+    elsif training_session.results.count >= 100
       :enthusiast
     end
   end

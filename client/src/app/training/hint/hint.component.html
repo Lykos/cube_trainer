@@ -1,0 +1,13 @@
+<div *ngIf="alg">
+  <ng-container *ngIf="active$ | async as active">
+    <div *ngIf="active.value">
+      <span class="alg">{{alg}}</span>
+      <button mat-raised-button color="primary" (click)="onOverride()">
+        Override
+      </button>
+    </div>
+    <button mat-raised-button id="trainer-hint" color="primary" *ngIf="!active.value" (click)="onHint()">
+      Hint
+    </button>
+  </ng-container>
+</div>

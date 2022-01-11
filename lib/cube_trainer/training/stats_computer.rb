@@ -12,7 +12,7 @@ module CubeTrainer
     class StatsComputer
       include Utils::MathHelper
 
-      def initialize(now, mode)
+      def initialize(now, _training_session)
         raise TypeError unless now.is_a?(Time)
 
         @now = now
@@ -124,7 +124,7 @@ module CubeTrainer
       def cutoffs
         return [] if averages.length < 20
 
-        # TODO: Take mode and target into account
+        # TODO: Take training_session and target into account
         some_bad_result = averages[9][1]
         step = floor_to_nice(some_bad_result / 10)
         start = floor_to_step(some_bad_result, step)

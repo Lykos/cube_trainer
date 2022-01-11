@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ModeAndCase } from '../mode-and-case.model';
+import { TrainingSessionAndCase } from '../training-session-and-case.model';
 import { AlgOverride } from '../alg-override.model';
 
 interface MutableAlgOverride extends AlgOverride {
@@ -15,14 +15,14 @@ interface MutableAlgOverride extends AlgOverride {
 export class OverrideAlgDialogComponent {
   algOverride: MutableAlgOverride;
 
-  constructor(@Inject(MAT_DIALOG_DATA) modeAndCase: ModeAndCase) {
+  constructor(@Inject(MAT_DIALOG_DATA) trainingSessionAndCase: TrainingSessionAndCase) {
     this.algOverride = {
-      casee: modeAndCase.casee,
+      trainingCase: trainingSessionAndCase.trainingCase,
       alg: ''
     };
   }
 
-  get casee() {
-    return this.algOverride.casee;
+  get trainingCase() {
+    return this.algOverride.trainingCase;
   }
 }

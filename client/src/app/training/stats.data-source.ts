@@ -26,9 +26,9 @@ export class StatsDataSource implements DataSource<StatPart> {
     this.loadingSubject.complete();
   }
 
-  loadStats(modeId: number) {
+  loadStats(trainingSessionId: number) {
     this.loadingSubject.next(true);
-    this.statsService.list(modeId).pipe(
+    this.statsService.list(trainingSessionId).pipe(
       map((stats: Stat[]) => {
 	const statParts: StatPart[] = [];
 	stats.forEach(stat => stat.parts.forEach(statPart => statParts.push(statPart)));

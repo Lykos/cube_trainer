@@ -1,4 +1,7 @@
+import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 import { Injectable } from '@angular/core';
+import { METADATA } from '@shared/metadata.const';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
@@ -11,6 +14,7 @@ import { Router } from '@angular/router';
 export class UserEffects {
   constructor(
     private actions$: Actions,
+    private readonly dialog: MatDialog,
     private readonly usersService: UsersService,
     private readonly router: Router,
   ) {}
@@ -56,7 +60,14 @@ export class UserEffects {
   loginSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loginSuccess),
-      tap(() => { this.router.navigate(['/modes']); })
+      tap(() => {
+        const storedRedirectUrl = localStorage.getItem(METADATA.signInStoredUrlStorageKey);
+        if (storedRedirectUrl) {
+          localStorage.removeItem(METADATA.signInStoredUrlStorageKey);
+        }
+        const redirectUrl = storedRedirectUrl || '/training-sessions';
+        this.router.navigate([redirectUrl]);
+      })
     ),
     { dispatch: false },
   );
@@ -80,10 +91,20 @@ export class UserEffects {
     )
   );
 
+  logoutFailure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(logoutFailure),
+      tap(action => {
+        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
+      }),
+    ),
+    { dispatch: false }
+  );
+
   logoutSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(logoutSuccess),
-      tap(() => { this.router.navigate(['/logged_out']); })
+      tap(() => { this.router.navigate(['/logged-out']); })
     ),
     { dispatch: false },
   );

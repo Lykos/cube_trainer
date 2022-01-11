@@ -1,26 +1,34 @@
 <div>
-  <ng-container *ngIf="mode">
+  <ng-container *ngIf="trainingSession">
     <div layout="row" layout-sm="column">
-      <div flex *ngIf="casee">
-        <cube-trainer-trainer-input [casee]="casee" [mode]="mode" [numHints]="numHints"></cube-trainer-trainer-input>
-        <cube-trainer-stopwatch
-          [stopwatchStore]="stopwatchStore"
-          [memoTime]="mode.memoTime"
-          [maxHints]="maxHints"
-          [hasStopAndStart]="hasStopAndStart"
-          (numHints)="onNumHints($event)">
-        </cube-trainer-stopwatch>
+      <div flex *ngIf="scrambleOrSample$ | async as scrambleOrSample">
+        <div id="trainer-input">
+          <cube-trainer-trainer-input
+            [scrambleOrSample]="scrambleOrSample"
+            [trainingSession]="trainingSession">
+          </cube-trainer-trainer-input>
+        </div>
+        <ng-container *ngIf="scrambleOrSample.tag === 'sample'">
+          <cube-trainer-hint
+            [trainingCase]="scrambleOrSample.sample.item"
+            [trainingSession]="trainingSession">
+          </cube-trainer-hint>
+        </ng-container>
+        <div id="trainer-stopwatch">
+          <cube-trainer-trainer-stopwatch [trainingSession]="trainingSession">
+          </cube-trainer-trainer-stopwatch>
+        </div>
       </div>
-      <div flex>
-        <cube-trainer-results-table [modeId]="mode.id"></cube-trainer-results-table>
+      <div id="results-table" flex>
+        <cube-trainer-results-table [trainingSessionId]="trainingSession.id"></cube-trainer-results-table>
       </div>
       <div flex>
         <cube-trainer-stats-table></cube-trainer-stats-table>
       </div>
     </div>
   </ng-container>
-  <div *ngIf="error$ | async">
-    Error loading modes.
+  <div id="initial-load-error" *ngIf="error$ | async as error">
+    <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
   </div>
-  <mat-spinner *ngIf="loading$ | async"></mat-spinner>
+  <mat-spinner id="initial-load-loading" *ngIf="loading$ | async"></mat-spinner>
 </div>

@@ -1,52 +1,56 @@
-import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
-import { Case } from './case.model';
-import { Observable } from 'rxjs';
+import { TrainingCase } from './training-case.model';
+import { TrainingSession } from './training-session.model';
+import { GeneratorType } from './generator-type.model';
+import { ScrambleOrSample, scramble, sample } from './scramble-or-sample.model';
+import { Result } from './result.model';
+import { Observable, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { QueueCache } from '@utils/queue-cache';
-
-function parseCase(casee: any) {
-  return {
-    key: casee.case_key,
-    name: casee.case_name,
-    alg: casee.alg,
-    setup: casee.setup
-  };
-}
-
-// This is intentionally very small.
-// Having a big cache size makes the adaptive sampling in the backend worse.
-// We just take 2 to get rid of latencies.
-const cacheSize = 2;
+import { SamplerFactory } from './sampler-factory.service';
+import { Sample } from '@utils/sampling';
+import { SamplingStateService } from './sampling-state.service';
+import { Instant } from '@utils/instant';
+import { Alg } from 'cubing/alg';
+import { randomScrambleForEvent } from 'cubing/scramble';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TrainerService {
-  constructor(private readonly rails: RailsService) {}
+  constructor(private readonly samplerFactory: SamplerFactory,
+              private readonly samplingStateService: SamplingStateService) {}
 
-  private readonly casesCacheMap = new Map<number, QueueCache<Case>>();
-
-  private casesCache(modeId: number) {
-    const cache = this.casesCacheMap.get(modeId);
-    if (cache) {
-      return cache;
+  randomScrambleOrSample(now: Instant, trainingSession: TrainingSession, results: readonly Result[]): Observable<ScrambleOrSample> {
+    const generatorType = trainingSession.trainingSessionType.generatorType;
+    switch (generatorType) {
+      case GeneratorType.Scramble:
+        return this.randomScramble(now, trainingSession).pipe(map(scramble));
+      case GeneratorType.Case:
+        return this.randomTrainingCase(now, trainingSession, results).pipe(map(sample));
+      default:
+        throw new Error(`Unknown generator type ${generatorType}`);
     }
-    const newCache = new QueueCache<Case>(cacheSize, (cachedItems: Case[]) => this.randomCase(modeId, cachedItems));
-    this.casesCacheMap.set(modeId, newCache);
-    return newCache;
+  }
+  
+  randomScramble(now: Instant, trainingSession: TrainingSession): Observable<Alg> {
+    return from(randomScrambleForEvent(this.cubeEvent(trainingSession)));
   }
 
-  nextCaseWithCache(modeId: number): Observable<Case> {
-    return this.casesCache(modeId).next();
+  randomTrainingCase(now: Instant, trainingSession: TrainingSession, results: readonly Result[]): Observable<Sample<TrainingCase>> {    
+    const sampler = this.samplerFactory.sampler(trainingSession);
+    const samplingState = this.samplingStateService.samplingState(now, trainingSession, results);
+    return of(sampler.sample(samplingState));
   }
 
-  prewarmCasesCache(modeId: number) {
-    this.casesCache(modeId);
-  }
-
-  private randomCase(modeId: number, cachedCases: Case[] = []): Observable<Case> {
-    const cachedCaseKeys = cachedCases.map(i => i.key);
-    return this.rails.get<Case>(`/trainer/${modeId}/random_case`, {cachedCaseKeys}).pipe(map(parseCase));
+  private cubeEvent(trainingSession: TrainingSession) {
+    const n = trainingSession.cubeSize;
+    if (!n) {
+      throw new Error('Cube size needs to be defined to determine the cube event.');
+    }
+    if (n >= 3 && n <= 5) {
+      return `${n}${n}${n}bf`
+    } else {
+      return `${n}${n}${n}"`
+    }
   }
 }

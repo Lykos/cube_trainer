@@ -7,18 +7,19 @@ import { map } from 'rxjs/operators';
 import { fromDateString } from '@utils/instant'
 import { Observable } from 'rxjs';
 
-function parseMessage(message: any): Message {
+interface RawMessage extends Omit<Message, 'timstamp'> {
+  createdAt: string;
+}
+
+function parseMessage(message: RawMessage): Message {
   return {
-    id: message.id,
-    title: message.title,
-    body: message.body,
-    read: message.read,
-    timestamp: fromDateString(message.created_at),
+    ...message,
+    timestamp: fromDateString(message.createdAt),
   }
 }
 
 interface UnreadMessagesCount {
-  readonly unread_messages_count: number;
+  readonly unreadMessagesCount: number;
 }
 
 @Injectable({
@@ -37,17 +38,19 @@ export class MessagesService {
   }
 
   list(): Observable<Message[]> {
-    return this.rails.get<any[]>('/messages', {}).pipe(
+    return this.rails.get<RawMessage[]>('/messages', {}).pipe(
       map(messages => messages.map(parseMessage)));
   }
 
   show(messageId: number): Observable<Message> {
-    return this.rails.get<any>(`/messages/${messageId}`, {}).pipe(
+    return this.rails.get<RawMessage>(`/messages/${messageId}`, {}).pipe(
       map(parseMessage));
   }
 
   unreadCountNotifications(): Observable<number> {
-    return this.cableService.channelSubscription<UnreadMessagesCount>('UnreadMessagesCountChannel').pipe(map(m => m.unread_messages_count));
+    return this.cableService.channelSubscription<UnreadMessagesCount>('UnreadMessagesCountChannel').pipe(
+      map(m => m.unreadMessagesCount),
+    );
   }
 
   notifications(): Observable<MessageNotification> {

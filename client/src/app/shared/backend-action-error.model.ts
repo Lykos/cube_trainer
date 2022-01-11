@@ -10,7 +10,8 @@ export interface BackendActionContext {
 
 export interface BackendActionError {
   readonly context: BackendActionContext;
-  readonly status: number;
-  readonly statusText: string;
+  readonly message?: string;
+  readonly status?: number;
+  readonly statusText?: string;
   readonly fieldErrors: readonly FieldError[];
 }

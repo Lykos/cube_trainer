@@ -1,17 +1,19 @@
-<div>
-  <ng-container *ngIf="showImage && setup">
-    <twisty-player
-      [alg]="setup"
-      [puzzle]="puzzle"
-      background="none"
-      control-panel="none">
-    </twisty-player>
-  </ng-container>
-  <span class="trainer-input mat-elevation-z4" *ngIf="showName && casee">{{casee.name}}</span>
-  <div *ngIf="numHints && numHints > 0 && alg">
-    <span class="alg">{{alg}}</span>
-    <button mat-raised-button color="primary" (click)="onOverride()">
-      Override
-    </button>
-  </div>
-</div>
+<ng-container *ngIf="showImage && setup" [matTooltip]="sampleTooltip">
+  <twisty-player
+    [alg]="setup"
+    [puzzle]="puzzle"
+    background="none"
+    control-panel="none">
+  </twisty-player>
+</ng-container>
+<span
+  [matTooltip]="sampleTooltip"
+  class="case mat-elevation-z4"
+  *ngIf="showName && sample">
+  {{sample.item.caseName}}
+</span>
+<span
+  class="scramble mat-elevation-z2"
+  *ngIf="showScramble && scramble">
+  {{scramble}}
+</span>

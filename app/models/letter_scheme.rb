@@ -27,6 +27,7 @@ class LetterScheme < ApplicationRecord
 
   def to_simple
     {
+      id: id,
       mappings: letter_scheme_mappings.map(&:to_simple)
     }
   end

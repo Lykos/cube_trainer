@@ -5,21 +5,25 @@ import { map } from 'rxjs/operators';
 import { fromDateString } from '@utils/instant'
 import { Observable } from 'rxjs';
 
+interface RawAchievementGrant extends Omit<AchievementGrant, 'timestamp'> {
+  readonly createdAt: string;
+}
+
+function parseAchievementGrant(achievementGrant: RawAchievementGrant): AchievementGrant {
+  return {
+    ...achievementGrant,
+    timestamp: fromDateString(achievementGrant.createdAt),
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AchievementGrantsService {
   constructor(private readonly rails: RailsService) {}
 
-  parseAchievementGrant(achievementGrant: any): AchievementGrant {
-    return {
-      achievement: achievementGrant.achievement,
-      timestamp: fromDateString(achievementGrant.created_at),
-    }
-  }
-
   list(): Observable<AchievementGrant[]> {
-    return this.rails.get<any[]>('/achievement_grants', {}).pipe(
-      map(achievementGrants => achievementGrants.map(this.parseAchievementGrant)));
+    return this.rails.get<RawAchievementGrant[]>('/achievement_grants', {}).pipe(
+      map(achievementGrants => achievementGrants.map(parseAchievementGrant)));
   }
 }

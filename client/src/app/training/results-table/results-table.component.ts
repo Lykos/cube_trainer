@@ -1,12 +1,15 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Result } from '../result.model';
-import { Component, OnInit, Input, LOCALE_ID, Inject } from '@angular/core';
+import { Component, Input, LOCALE_ID, Inject } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { formatDate } from '@angular/common';
+import { fromDateString, Instant } from '@utils/instant';
+import { seconds, Duration } from '@utils/duration';
 import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
-import { selectSelectedModeResults, selectSelectedModeNumResults, selectSelectedModeResultsOnPage, selectSelectedModeNumResultsOnPage, selectSelectedModeAnyLoading } from '@store/results.selectors';
-import { initialLoad, destroy, markDnf, setSelectedModeId, setPage } from '@store/results.actions';
+import { map } from 'rxjs/operators';
+import { forceValue } from '@utils/optional';
+import { selectResults, selectResultsTotal, selectResultsOnPage, selectResultsTotalOnPage, selectInitialLoadLoading } from '@store/trainer.selectors';
+import { destroy, markDnf, setPage } from '@store/trainer.actions';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -14,9 +17,9 @@ import { Store } from '@ngrx/store';
   templateUrl: './results-table.component.html',
   styleUrls: ['./results-table.component.css']
 })
-export class ResultsTableComponent implements OnInit {
+export class ResultsTableComponent {
   @Input()
-  modeId?: number;
+  trainingSessionId?: number;
 
   columnsToDisplay = ['select', 'case', 'time', 'numHints', 'timestamp'];
   results$: Observable<readonly Result[]>;
@@ -30,35 +33,29 @@ export class ResultsTableComponent implements OnInit {
 
   constructor(private readonly store: Store,
 	      @Inject(LOCALE_ID) private readonly locale: string) {
-    this.loading$ = this.store.select(selectSelectedModeAnyLoading);
-    this.results$ = this.store.select(selectSelectedModeResults);
-    this.resultsOnPage$ = this.store.select(selectSelectedModeResultsOnPage);
-    this.numResults$ = this.store.select(selectSelectedModeNumResults);
-    this.allSelected$ = this.store.select(selectSelectedModeNumResultsOnPage).pipe(
-      map(l => { return { value: this.selection.selected.length === l }; }),
-      shareReplay(),
+    this.loading$ = this.store.select(selectInitialLoadLoading);
+    this.results$ = this.store.select(selectResults).pipe(map(forceValue));
+    this.resultsOnPage$ = this.store.select(selectResultsOnPage).pipe(map(forceValue));
+    this.numResults$ = this.store.select(selectResultsTotal).pipe(map(forceValue));
+    this.allSelected$ = this.store.select(selectResultsTotalOnPage).pipe(
+      map(l => { return { value: this.selection.selected.length === forceValue(l) }; }),
     );
   }
 
-  get checkedModeId(): number {
-    const modeId = this.modeId;
-    if (!modeId) {
-      throw new Error('modeId has to be defined');
+  get checkedTrainingSessionId(): number {
+    const trainingSessionId = this.trainingSessionId;
+    if (!trainingSessionId) {
+      throw new Error('trainingSessionId has to be defined');
     }
-    return modeId
-  }
-
-  ngOnInit() {
-    this.store.dispatch(setSelectedModeId({ selectedModeId: this.checkedModeId }));
-    this.store.dispatch(initialLoad({ modeId: this.checkedModeId }));
+    return trainingSessionId
   }
 
   onDeleteSelected() {
-    this.store.dispatch(destroy({ modeId: this.checkedModeId, results: this.selection.selected }));
+    this.store.dispatch(destroy({ trainingSessionId: this.checkedTrainingSessionId, resultIds: this.selection.selected.map(r => r.id) }));
   }
 
   onMarkSelectedDnf() {
-    this.store.dispatch(markDnf({ modeId: this.checkedModeId, results: this.selection.selected }));
+    this.store.dispatch(markDnf({ trainingSessionId: this.checkedTrainingSessionId, resultIds: this.selection.selected.map(r => r.id) }));
   }
 
   onPage(pageEvent: PageEvent) {
@@ -79,6 +76,18 @@ export class ResultsTableComponent implements OnInit {
     if (!row) {
       return `${allSelected ? 'select' : 'deselect'} all`;
     }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} result from ${formatDate(row.timestamp.toDate(), 'short', this.locale)}`;
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} result from ${formatDate(this.timestamp(row).toDate(), 'short', this.locale)}`;
+  }
+
+  duration(result: Result): Duration {
+    return seconds(result.timeS);
+  }
+
+  timestamp(result: Result): Instant {
+    return fromDateString(result.createdAt);
+  }
+
+  resultId(index: number, result: Result) {
+    return result.id;
   }
 }

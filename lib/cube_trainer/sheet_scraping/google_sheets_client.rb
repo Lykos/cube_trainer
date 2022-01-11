@@ -48,9 +48,10 @@ module CubeTrainer
 
       SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly'
 
-      def initialize(credentials_factory:, sheets_service_factory:)
+      def initialize(credentials_factory:, sheets_service_factory:, sheet_filter:)
         @credentials_factory = credentials_factory
         @sheets_service_factory = sheets_service_factory
+        @sheet_filter = sheet_filter
       end
 
       def authorizer
@@ -70,11 +71,9 @@ module CubeTrainer
       end
 
       # Delegate doesn't work during tests here.
-      # rubocop:disable Rails/Delegate
       def fetch_access_token!
         authorizer.fetch_access_token!
       end
-      # rubocop:enable Rails/Delegate
 
       def get_sheets(spreadsheet_id)
         service.get_spreadsheet(spreadsheet_id).sheets.map do |s|
@@ -89,7 +88,9 @@ module CubeTrainer
       end
 
       def get_tables(spreadsheet_id)
-        get_sheets(spreadsheet_id).map do |sheet_info|
+        get_sheets(spreadsheet_id).filter_map do |sheet_info|
+          next unless @sheet_filter.sheet_title_passes?(sheet_info.title)
+
           SheetTable.new(
             sheet_info: sheet_info,
             values: service.get_spreadsheet_values(spreadsheet_id, sheet_info.range).values

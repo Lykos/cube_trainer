@@ -2,9 +2,9 @@
 
 require 'rails_helper'
 
-describe 'trainer', type: :system do
+xdescribe 'trainer', type: :system do
   include_context 'with user abc'
-  include_context 'with mode'
+  include_context 'with training session'
 
   before do
     driven_by(:selenium_chrome_headless)
@@ -14,10 +14,11 @@ describe 'trainer', type: :system do
     login(user)
     sleep(0.5)
 
-    # TODO: Figure out how to identify the right button in the mode list.
+    # TODO: Figure out how to identify the right button in the training_session list.
 
-    visit "/training/#{mode.id}"
+    visit "/training-sessions/#{training_session.id}"
 
+    sleep(10)
     click_button 'Start'
     sleep(0.5)
     click_button 'Stop and Start'

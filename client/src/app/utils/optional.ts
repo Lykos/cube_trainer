@@ -85,5 +85,5 @@ export function hasValue<X>(optional: Optional<X>): boolean {
 }
 
 export function ofNull<X>(orNull: X | null | undefined): Optional<X> {
-  return orNull ? some(orNull) : none;
+  return orNull === null || orNull === undefined ? none : some(orNull);
 }

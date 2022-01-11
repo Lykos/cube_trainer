@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'simplecov'
-
 # TODO: Find the proper way to do this
 ENV['RANTLY_VERBOSE'] ||= '0'
 
@@ -104,8 +102,14 @@ RSpec.configure do |config|
 end
 
 # This must be before we require cube_trainer.
-SimpleCov.start do
-  add_filter '/spec/'
+if ENV['COVERAGE']
+  require 'simplecov'
+
+  puts 'Coverage enabled'
+
+  SimpleCov.start do
+    add_filter '/spec/'
+  end
 end
 
 require 'cube_trainer'

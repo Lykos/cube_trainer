@@ -15,8 +15,8 @@ RSpec.describe Stat, type: :model do
 
   describe '#create' do
     it 'creates a statistician achievement' do
-      mode.stats.clear
-      mode.stats.create!(stat_type: stat_type, index: 0)
+      training_session.stats.clear
+      training_session.stats.create!(stat_type: stat_type, index: 0)
       expect(user.achievement_grants.find_by(achievement: Achievement.find_by(key: :statistician))).not_to be_nil
     end
   end

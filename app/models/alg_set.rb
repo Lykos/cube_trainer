@@ -7,41 +7,41 @@ class AlgSet < ApplicationRecord
 
   belongs_to :alg_spreadsheet
   has_many :algs, dependent: :destroy
-  attribute :mode_type, :mode_type
-  attribute :buffer, :part
+  attribute :case_set, :concrete_case_set
   validates :sheet_title, presence: true
-  validates :mode_type, presence: true
-  validates :buffer, presence: true, if: -> { mode_type&.has_buffer? }
-  validate :mode_type_valid
-  delegate :part_type, to: :mode_type
+  validates :case_set, presence: true
 
-  def commutator(case_key)
-    maybe_commutator = algs.find { |alg| alg.case_key == case_key }&.commutator
+  def commutator(casee)
+    raise TypeError unless casee.is_a?(Case)
+    raise ArgumentError unless casee.valid?
+
+    maybe_commutator = commutator_internal(casee)
     return maybe_commutator if maybe_commutator
 
-    case_key_inverse = case_key.inverse
-    algs.find { |alg| alg.case_key == case_key_inverse }&.commutator&.inverse
+    commutator_internal(casee.inverse)&.inverse
   end
+
+  delegate :case_name, to: :case_set
 
   def to_simple
     {
       id: id,
       owner: alg_spreadsheet.owner,
-      buffer: part_to_simple(buffer)
+      buffer: part_to_simple(case_set.buffer)
     }
   end
 
-  def self.for_mode_type(mode_type)
-    all.find { |a| a.mode_type == mode_type }
+  def self.for_concrete_case_sets(case_sets)
+    where(case_set: case_sets).preload(:alg_spreadsheet)
   end
 
   private
 
-  def buffer_valid
-    mode_type.validate_buffer(buffer, errors, :buffer)
+  def alg_map
+    @alg_map ||= algs.index_by(&:casee)
   end
 
-  def mode_type_valid
-    errors.add(:mode_type, 'has to have bounded inputs') unless mode_type.has_bounded_inputs?
+  def commutator_internal(casee)
+    alg_map[casee]&.commutator
   end
 end

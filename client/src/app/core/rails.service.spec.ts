@@ -6,8 +6,7 @@ import Rails from '@core/ujs';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpVerb } from './http-verb';
 
-// TODO: Figure out how to make these HTTP tests run.
-xdescribe('RailsService', () => {
+describe('RailsService', () => {
   let httpMock: HttpTestingController;
   let railsService: RailsService;
 
@@ -27,52 +26,46 @@ xdescribe('RailsService', () => {
   });
 
   it('should make an get call for an empty object', () => {
-    const req = httpMock.expectOne('/stuff');
+    railsService.get('/stuff', {}).subscribe((result) => { expect(result).toEqual('successful'); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff`);
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
     expect(req.request.responseType).toEqual('json');
     expect(req.request.params.toString()).toEqual('');
     req.flush('successful');
-
-    railsService.get('/stuff', {}).subscribe((result) => { expect(result).toEqual('successful'); })
   });
 
   it('should make an get call with snake caseified URL parameters', () => {
-    const req = httpMock.expectOne('/stuff');
+    const params = {
+      SomeInt: 23,
+      someString: 'abc',
+    };
+    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff?some_int=23&some_string=abc`);
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
     expect(req.request.responseType).toEqual('json');
     expect(req.request.params.toString()).toEqual('some_int=23&some_string=abc');
     req.flush('successful');
-    const params = {
-      SomeInt: 23,
-      someString: 'abc',
-    };
-
-    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
   });
 
   it('should make an get call with snake escaped URL parameters', () => {
-    const req = httpMock.expectOne('/stuff');
+    const params = {
+      needsEscape: 'a b c',
+    };
+    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff?needs_escape=a%20b%20c`);
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
     expect(req.request.responseType).toEqual('json');
     expect(req.request.params.toString()).toEqual('needs_escape=a%20b%20c');
     req.flush('successful');
-    const params = {
-      needsEscape: 'a b c',
-    };
-
-    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
   });
 
-  it('should make an get call with inner object URL parameters', () => {
-    const req = httpMock.expectOne('/stuff');
-    expect(req.request.method).toEqual(HttpVerb.Get);
-    expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
-    expect(req.request.responseType).toEqual('json');
-    expect(req.request.params.toString()).toEqual('some_object%5Bsome_inner_object%5D%5Ba%5D=2&some_object%5Bb%5D=3');
-    req.flush('successful');
+  it('should make an get call with nested object URL parameters', () => {
     const params = {
       someObject: {
 	someInnerObject: {
@@ -81,35 +74,80 @@ xdescribe('RailsService', () => {
 	b: 3,
       },
     };
-
     railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff?some_object%5Bsome_inner_object%5D%5Ba%5D=2&some_object%5Bb%5D=3`);
+    expect(req.request.method).toEqual(HttpVerb.Get);
+    expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
+    expect(req.request.responseType).toEqual('json');
+    expect(req.request.params.toString()).toEqual('some_object%5Bsome_inner_object%5D%5Ba%5D=2&some_object%5Bb%5D=3');
+    req.flush('successful');
   });
 
   it('should make an get call with array URL parameters', () => {
-    const req = httpMock.expectOne('/stuff');
+    const params = {
+      someArray: [1, 2, 3],
+    };
+    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff?some_array%5B%5D=1&some_array%5B%5D=2&some_array%5B%5D=3`);
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
     expect(req.request.responseType).toEqual('json');
     expect(req.request.params.toString()).toEqual('some_array%5B%5D=1&some_array%5B%5D=2&some_array%5B%5D=3');
     req.flush('successful');
-    const params = {
-      someArray: [1, 2, 3],
-    };
-
-    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
   });
 
   it('should make an get call with object array URL parameters', () => {
-    const req = httpMock.expectOne('/stuff');
+    const params = {
+      someObjectArray: [{c: 12}],
+    };
+    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff?some_object_array%5B%5D%5Bc%5D=12`);
     expect(req.request.method).toEqual(HttpVerb.Get);
     expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
     expect(req.request.responseType).toEqual('json');
     expect(req.request.params.toString()).toEqual('some_object_array%5B%5D%5Bc%5D=12');
     req.flush('successful');
-    const params = {
-      someObjectArray: [{c: 12}],
-    };
+  });
 
-    railsService.get('/stuff', params).subscribe((result) => { expect(result).toEqual('successful'); })
+
+  it('should raise on nested arrays', () => {
+    const params = {array: [[2]]};
+    expect(() => { railsService.get('/stuff', params); }).toThrow();
+  });
+
+  it('should return objects with camel caseified fields', () => {
+    railsService.get('/stuff', {}).subscribe((result) => { expect(result).toEqual({ someNumber: 2, someString: 'abc' }); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff`);
+    expect(req.request.method).toEqual(HttpVerb.Get);
+    expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
+    expect(req.request.responseType).toEqual('json');
+    expect(req.request.params.toString()).toEqual('');
+    req.flush({ some_number: 2, some_string: 'abc' });
+  });
+
+  it('should return objects with camel caseified nested fields', () => {
+    railsService.get('/stuff', {}).subscribe((result) => { expect(result).toEqual({ someObject: { someNestedObject: { someField: 2 }, anotherField: 3 } }); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff`);
+    expect(req.request.method).toEqual(HttpVerb.Get);
+    expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
+    expect(req.request.responseType).toEqual('json');
+    expect(req.request.params.toString()).toEqual('');
+    req.flush({ some_object: { some_nested_object: { some_field: 2 }, another_field: 3 } });
+  });
+
+  it('should return objects with camel caseified object array fields', () => {
+    railsService.get('/stuff', {}).subscribe((result) => { expect(result).toEqual({ someArray: [{ someField: 12 }] }); })
+
+    const req = httpMock.expectOne(`${environment.apiPrefix}/stuff`);
+    expect(req.request.method).toEqual(HttpVerb.Get);
+    expect(req.request.url).toEqual(`${environment.apiPrefix}/stuff`);
+    expect(req.request.responseType).toEqual('json');
+    expect(req.request.params.toString()).toEqual('');
+    req.flush({ some_array: [{ some_field: 12}] });
   });
 });

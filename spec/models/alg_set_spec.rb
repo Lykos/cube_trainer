@@ -3,6 +3,12 @@
 require 'rails_helper'
 require 'twisty_puzzles'
 
+def create_case(*parts)
+  casee = Case.new(part_cycles: [TwistyPuzzles::PartCycle.new(parts)])
+  casee.validate!
+  casee
+end
+
 RSpec.describe AlgSet, type: :model do
   include TwistyPuzzles
 
@@ -17,15 +23,15 @@ RSpec.describe AlgSet, type: :model do
 
   let(:alg_set) do
     alg_spreadsheet.alg_sets.create!(
-      mode_type: ModeType.find_by!(key: :edge_commutators),
+      training_session_type: TrainingSessionType.find_by!(key: :edge_commutators),
       sheet_title: 'UF',
-      buffer: uf
+      case_set: CaseSets::BufferedThreeCycleSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Edge.for_face_symbols(%i[U F]))
     )
   end
 
   let(:alg) do
     alg_set.algs.create!(
-      case_key: TwistyPuzzles::PartCycle.new([uf, df, ub]),
+      casee: create_case(uf, df, ub),
       alg: commutator.to_s
     )
   end
@@ -33,17 +39,17 @@ RSpec.describe AlgSet, type: :model do
   describe '#alg' do
     it 'finds a commutator for the given case' do
       alg
-      expect(alg_set.commutator(TwistyPuzzles::PartCycle.new([uf, df, ub]))).to eq(commutator)
+      expect(alg_set.commutator(create_case(uf, df, ub))).to eq(commutator)
     end
 
     it 'finds a commutator for the given case based on its inverse' do
       alg
-      expect(alg_set.commutator(TwistyPuzzles::PartCycle.new([uf, ub, df]))).to eq(commutator.inverse)
+      expect(alg_set.commutator(create_case(uf, ub, df))).to eq(commutator.inverse)
     end
 
     it 'returns nil if there is no commutator for the given case' do
       alg
-      expect(alg_set.commutator(TwistyPuzzles::PartCycle.new([uf, ur, ub]))).to be(nil)
+      expect(alg_set.commutator(create_case(uf, ur, ub))).to be(nil)
     end
   end
 end

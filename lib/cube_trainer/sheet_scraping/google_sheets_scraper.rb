@@ -4,6 +4,7 @@ require 'googleauth'
 require 'google/apis/sheets_v4'
 require_relative 'google_sheets_client'
 require_relative 'alg_extractor'
+require_relative 'sheet_filter'
 
 module CubeTrainer
   module SheetScraping
@@ -11,17 +12,22 @@ module CubeTrainer
     class GoogleSheetsScraper
       def initialize(
         credentials_factory: Google::Auth::ServiceAccountCredentials,
-        sheets_service_factory: Google::Apis::SheetsV4::SheetsService
+        sheets_service_factory: Google::Apis::SheetsV4::SheetsService,
+        sheet_filter: AllSheetFilter.new
       )
         @sheets_client = GoogleSheetsClient.new(
           credentials_factory: credentials_factory,
-          sheets_service_factory: sheets_service_factory
+          sheets_service_factory: sheets_service_factory,
+          sheet_filter: sheet_filter
         )
+        @sheet_filter = sheet_filter
       end
 
       def run
         @sheets_client.fetch_access_token!
-        AlgSpreadsheet.all.each do |alg_spreadsheet|
+        AlgSpreadsheet.all.filter_map do |alg_spreadsheet|
+          next unless @sheet_filter.spreadsheet_owner_passes?(alg_spreadsheet.owner)
+
           scrape_sheet(alg_spreadsheet)
         end
       end
@@ -31,54 +37,83 @@ module CubeTrainer
         tables = @sheets_client.get_tables(alg_spreadsheet.spreadsheet_id)
         Rails.logger.info "Got #{tables.length} sheets " \
                           "with a total of #{total_cells(tables)} cells."
-        counters = { updated_algs: 0, new_algs: 0, confirmed_algs: 0 }
+        counters = new_counters
         tables.map { |t| extract_alg_set(alg_spreadsheet, t, counters) }
-        Rails.logger.info "Got #{counters[:new_algs]} new algs, " \
-                          "updated #{counters[:updated_algs]} algs " \
-                          "and confirmed #{counters[:confirmed_algs]} algs."
+        log_counters(counters)
+        counters
       end
 
       private
 
-      def mode_type(alg_set)
-        ModeType.all.find do |m|
-          (defined? m.generator_class::PART_TYPE) &&
-            m.generator_class::PART_TYPE == alg_set.part_type
-        end || raise
+      def new_counters
+        {
+          updated_algs: 0,
+          new_algs: 0,
+          confirmed_algs: 0,
+          correct_algs: 0,
+          fixed_algs: 0,
+          unfixable_algs: 0,
+          unparseable_algs: 0
+        }
+      end
+
+      def log_counters(counters)
+        Rails.logger.info "Got #{counters[:new_algs]} new algs, " \
+                          "updated #{counters[:updated_algs]} algs " \
+                          "and confirmed #{counters[:confirmed_algs]} algs."
+        Rails.logger.info "Got #{counters[:correct_algs]} correct algs, " \
+                          "#{counters[:fixed_algs]} fixed algs " \
+                          "#{counters[:unfixable_algs]} unfixable algs " \
+                          "and #{counters[:unparseable_algs]} unparseable algs."
+      end
+
+      def add_counters(extracted_alg_set, counters)
+        counters[:correct_algs] += extracted_alg_set.algs.length
+        counters[:fixed_algs] += extracted_alg_set.fixes.length
+        counters[:unfixable_algs] += extracted_alg_set.num_unfixable
+        counters[:unparseable_algs] += extracted_alg_set.num_unparseable
+      end
+
+      def find_or_create_alg_set(alg_spreadsheet, extracted_alg_set, table)
+        alg_spreadsheet.alg_sets.find_or_create_by!(
+          case_set: extracted_alg_set.case_set,
+          sheet_title: table.sheet_info.title
+        )
       end
 
       def extract_alg_set(alg_spreadsheet, table, counters)
         extracted_alg_set = AlgExtractor.extract_alg_set(table) || return
-        alg_set = alg_spreadsheet.alg_sets.find_or_create_by!(
-          mode_type: mode_type(extracted_alg_set),
-          sheet_title: table.sheet_info.title,
-          buffer: extracted_alg_set.buffer
-        )
-        extracted_alg_set.algs.each do |part_cycle, alg|
-          save_alg(alg_set, part_cycle, alg, counters)
+        add_counters(extracted_alg_set, counters)
+        alg_set = find_or_create_alg_set(alg_spreadsheet, extracted_alg_set, table)
+        extracted_alg_set.algs.each do |casee, alg|
+          save_alg(alg_set, casee, alg, counters)
         end
         extracted_alg_set.fixes.each do |fix|
           save_alg(
-            alg_set, fix.cell_description.part_cycle, fix.fixed_algorithm, counters,
+            alg_set, fix.casee, fix.fixed_algorithm, counters,
             is_fixed: true
           )
         end
       end
 
-      def save_alg(alg_set, case_key, alg, counters, is_fixed: false)
-        existing_alg = alg_set.algs.find_by(case_key: case_key)
+      def save_alg(alg_set, casee, alg, counters, is_fixed: false)
+        existing_alg = alg_set.algs.find_by(casee: casee)
         return update_alg(existing_alg, alg, counters, is_fixed: is_fixed) if existing_alg
 
-        create_new_alg(alg_set, case_key, alg, counters, is_fixed: is_fixed)
+        create_new_alg(alg_set, casee, alg, counters, is_fixed: is_fixed)
       end
 
-      def create_new_alg(alg_set, case_key, alg, counters, is_fixed:)
+      def create_new_alg(alg_set, casee, alg, counters, is_fixed:)
         counters[:new_algs] += 1
-        alg_set.algs.create!(
-          case_key: case_key,
+        alg_model = alg_set.algs.new(
+          casee: casee,
           alg: alg,
           is_fixed: is_fixed
         )
+        return if alg_model.save
+
+        Rails.logger.error "Error creating alg #{alg} for case #{casee}:\n" \
+                           "#{alg_model.errors.full_messages.join('\n')}"
       end
 
       def update_alg(existing_alg, alg, counters, is_fixed:)
@@ -92,7 +127,10 @@ module CubeTrainer
         counters[:updated_algs] += 1
         existing_alg.alg = alg_string
         existing_alg.is_fixed = is_fixed
-        existing_alg.save!
+        return if existing_alg.save
+
+        Rails.logger.error "Error updating alg #{alg} for case #{existing_alg.casee}:\n" \
+                           "#{existing_alg.errors.full_messages.join('\n')}"
       end
 
       def total_cells(tables)

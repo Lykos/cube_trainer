@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'cube_trainer/training/input_sampler'
 require 'cube_trainer/training/part_cycle_alg_set'
 require 'cube_trainer/pao_letter_pair'
 require 'cube_trainer/training/dict'

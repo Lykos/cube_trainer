@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'csv'
-require 'cube_trainer/training/alg_hint_parser'
 require 'cube_trainer/anki/external_alg_set_parser'
 require 'cube_trainer/anki/cube_visualizer'
 require 'cube_trainer/anki/note_input'

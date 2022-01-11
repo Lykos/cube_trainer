@@ -21,6 +21,8 @@ AllCops:
   # TODO: Clean up and remove some of the folowing
   - 'config/**/*'
   - 'db/migrate/*'
+Rails/HelperInstanceVariable:
+  Enabled: false
 Layout/LineLength:
   Max: 100
   # TODO: This is temporary
@@ -36,6 +38,7 @@ Metrics/BlockLength:
   Exclude:
   - 'spec/**/*_spec.rb'
   - 'Gemfile'
+  - 'lib/tasks/*.rake'
 Style/MultilineBlockChain:
   Exclude:
   - 'spec/**/*_spec.rb'
@@ -57,6 +60,12 @@ Rails/Output:
 Rails/Exit:
   # TODO: Enable
   Enabled: false
+Rails/Delegate:
+  Exclude:
+  - 'lib/**/*.rb'
+Rails/IndexBy:
+  Exclude:
+  - 'lib/**/*.rb'
 Style/AutoResourceCleanup:
   Enabled: true
 Style/CollectionMethods:
@@ -318,4 +327,6 @@ Rails/DurationArithmetic: # new in 2.13
 Rails/RedundantPresenceValidationOnBelongsTo: # new in 2.13
   Enabled: true
 Rails/RootJoinChain: # new in 2.13
+  Enabled: true
+RSpec/FactoryBot/SyntaxMethods: # new in 2.7
   Enabled: true

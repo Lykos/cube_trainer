@@ -14,7 +14,7 @@ import { StatPartType } from '../stat-part-type.model';
   styleUrls: ['./stats-table.component.css']
 })
 export class StatsTableComponent implements OnInit {
-  modeId$: Observable<number>;
+  trainingSessionId$: Observable<number>;
   dataSource!: StatsDataSource;
   columnsToDisplay = ['name', 'value'];
 
@@ -24,7 +24,7 @@ export class StatsTableComponent implements OnInit {
 
   constructor(private readonly statsService: StatsService,
 	      activatedRoute: ActivatedRoute) {
-    this.modeId$ = activatedRoute.params.pipe(map(p => +p['modeId']));
+    this.trainingSessionId$ = activatedRoute.params.pipe(map(p => +p['trainingSessionId']));
   }
 
   ngOnInit() {
@@ -33,8 +33,8 @@ export class StatsTableComponent implements OnInit {
   }
 
   update() {
-    this.modeId$.subscribe(modeId => {
-      this.dataSource.loadStats(modeId);
+    this.trainingSessionId$.subscribe(trainingSessionId => {
+      this.dataSource.loadStats(trainingSessionId);
     });
   }
 }
