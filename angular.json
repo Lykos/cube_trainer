@@ -76,12 +76,6 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "customWebpackConfig": {
-              "path": "client/builder-webpack.config.js",
-              "mergeRules": {
-                "externals": "append"
-              }
-            },
             "proxyConfig": "client/src/proxy.conf.json"
           },
           "configurations": {
