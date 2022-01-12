@@ -2,7 +2,16 @@
   <h1>Pick Letter Scheme</h1>
   <ng-container *ngIf="letterSchemeForm">
     <form [formGroup]="letterSchemeForm" (ngSubmit)="onSubmit()">
-      <ng-container *ngFor="let partType of partTypes">
+      <mat-form-field>
+        <mat-label>Wing lettering mode</mat-label>
+        <mat-select formControlName="wingLetteringMode">
+          <mat-option *ngFor="let wingLetteringMode of wingLetteringModeEnum | keyvalue" [value]="wingLetteringMode.value"> {{wingLetteringMode.value}} </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-checkbox formControlName="xcentersLikeCorners">X-centers like corners</mat-checkbox>
+      <mat-checkbox formControlName="tcentersLikeEdges">T-centers like wings</mat-checkbox>
+      <mat-checkbox formControlName="midgesLikeEdges">midges like wings</mat-checkbox>
+      <ng-container *ngFor="let partType of customizedPartTypes">
         <mat-label>{{partType.name}}</mat-label>
         <ng-container *ngFor="let part of partType.parts">
           <mat-form-field>
@@ -11,6 +20,7 @@
             <!-- TODO: Validation -->
           </mat-form-field>
         </ng-container>
+        <br>
       </ng-container>
       <div>
         <button mat-raised-button letter="primary" type="Submit">Submit</button>
