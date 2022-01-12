@@ -1,11 +1,11 @@
-require 'symbol_type'
-require 'input_representation_type'
-require 'training_session_type_type'
-require 'achievement_type'
-require 'stat_type_type'
-require 'part_type'
-require 'case_type'
-require 'case_sets/concrete_case_set_type'
+require 'types/symbol_type'
+require 'types/input_representation_type'
+require 'types/training_session_type_type'
+require 'types/achievement_type'
+require 'types/stat_type_type'
+require 'types/part_type'
+require 'types/case_type'
+require 'types/concrete_case_set_type'
 
 ActiveRecord::Type.register(:symbol, SymbolType)
 ActiveRecord::Type.register(:input_representation, InputRepresentationType)
