@@ -72,14 +72,7 @@ class TrainingSession < ApplicationRecord
   def training_cases
     return unless bounded_inputs?
 
-    @training_cases ||=
-      begin
-        training_cases = case_set.cases.map { |c| to_training_case(c) }
-        return withouth_alg_holes(training_cases) if exclude_alg_holes
-        return withouth_algless_parts(training_cases) if exclude_algless_parts
-
-        training_cases
-      end
+    @training_cases ||= create_training_cases
   end
 
   def color_scheme
@@ -178,18 +171,28 @@ class TrainingSession < ApplicationRecord
     )
   end
 
+  def create_training_cases
+    training_cases = case_set.cases.map { |c| to_training_case(c) }
+    return withouth_alg_holes(training_cases) if exclude_alg_holes
+    return withouth_algless_parts(training_cases) if exclude_algless_parts
+
+    training_cases
+  end
+
   def without_algless_parts(training_cases)
     cases_with_algs = training_cases.filter_map { |t| t.alg && t.casee }
     buffer_part_cycles = cases_with_algs.part_cycles.select { |c| c.part_type == buffer.class }
     parts = buffer_part_cycles.flat_map(&:parts).uniq.flat_map(&:rotations)
     parts_without_algs = buffer.class::ELEMENTS - parts
-    training_cases.reject do |c|
-      c.part_cycles.any? { |c| c.part_type == buffer.class && c.parts.contains_any_part?(parts_without_alg) }
+    training_cases.reject do |t|
+      t.part_cycles.any? do |c|
+        c.part_type == buffer.class && c.parts.contains_any_part?(parts_without_algs)
+      end
     end
   end
 
   def without_alg_holes(training_cases)
-    training_cases.select { |t| t.alg }
+    training_cases.select(&:alg)
   end
 
   def grant_training_session_achievement

@@ -43,11 +43,15 @@ Style/MultilineBlockChain:
   Exclude:
   - 'spec/**/*_spec.rb'
 Metrics/AbcSize:
-  Max: 20
+  Max: 30
   Exclude:
   - 'spec/**/*_spec.rb'
+Metrics/CyclomaticComplexity:
+  Max: 10
+Metrics/PerceivedComplexity:
+  Max: 10
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
   Exclude:
   - 'spec/**/*_spec.rb'
 Metrics/ClassLength:

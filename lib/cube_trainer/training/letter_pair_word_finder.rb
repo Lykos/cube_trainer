@@ -17,8 +17,6 @@ module CubeTrainer
         end
       end
 
-      # rubocop:disable Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/PerceivedComplexity
       def matches?(start, rest)
         correct_start = @normalized_parts.select { |p| p.start_with?(start) }
         # No matches for the start letter.
@@ -34,8 +32,6 @@ module CubeTrainer
 
         false
       end
-      # rubocop:enable Metrics/PerceivedComplexity
-      # rubocop:enable Metrics/CyclomaticComplexity
     end
 
     # Helper class to find words that fit a certain letter sequence.

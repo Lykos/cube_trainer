@@ -171,7 +171,6 @@ class TrainingSessionType
     bounded_inputs? ? %i[picture name] : [:scramble]
   end
 
-  # rubocop:disable Metrics/AbcSize
   # rubocop:disable Metrics/MethodLength
   def self.all
     @all ||=
@@ -254,9 +253,8 @@ class TrainingSessionType
         all
       end
   end
-  # rubocop:enable Metrics/MethodLength
-  # rubocop:enable Metrics/AbcSize
 
+  # rubocop:enable Metrics/MethodLength
   def self.by_key
     @by_key ||= all.index_by(&:key).freeze
   end

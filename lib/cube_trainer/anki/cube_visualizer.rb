@@ -68,7 +68,6 @@ module CubeTrainer
     # Represents one type of URL parameter.
     class UrlParameterType
       # rubocop:disable Metrics/ParameterLists
-      # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/PerceivedComplexity
       def initialize(
@@ -97,7 +96,6 @@ module CubeTrainer
       end
       # rubocop:enable Metrics/PerceivedComplexity
       # rubocop:enable Metrics/CyclomaticComplexity
-      # rubocop:enable Metrics/AbcSize
       # rubocop:enable Metrics/ParameterLists
 
       attr_reader :name

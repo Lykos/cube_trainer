@@ -17,8 +17,6 @@ module CubeTrainer
 
       private
 
-      # rubocop:disable Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/PerceivedComplexity
       def extract_weights(array, &block)
         weights = array.map(&block)
         unless weights.all?(Numeric)
@@ -34,8 +32,6 @@ module CubeTrainer
           weights
         end
       end
-      # rubocop:enable Metrics/PerceivedComplexity
-      # rubocop:enable Metrics/CyclomaticComplexity
 
       def index_by_weight(array, weights, weight)
         prefix_weight = 0.0

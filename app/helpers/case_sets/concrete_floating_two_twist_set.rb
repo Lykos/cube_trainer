@@ -69,7 +69,10 @@ module CaseSets
     end
 
     def case_name(casee, letter_scheme: nil)
-      raise ArgumentError, "Cannot apply letter scheme for non-matching case #{casee}" unless match?(casee)
+      unless match?(casee)
+        raise ArgumentError,
+              "Cannot apply letter scheme for non-matching case #{casee}"
+      end
 
       parts = casee.part_cycles.map { |c| c.parts.first }
       name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
