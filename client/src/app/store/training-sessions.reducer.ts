@@ -15,6 +15,9 @@ import {
   overrideAlg,
   overrideAlgSuccess,
   overrideAlgFailure,
+  setAlg,
+  setAlgSuccess,
+  setAlgFailure,
   setSelectedTrainingSessionId,
 } from './training-sessions.actions';
 import { TrainingSessionsState } from './training-sessions.state';
@@ -32,6 +35,7 @@ const initialTrainingSessionsState: TrainingSessionsState = adapter.getInitialSt
   createState: backendActionNotStartedState,
   destroyState: backendActionNotStartedState,
   overrideAlgState: backendActionNotStartedState,
+  setAlgState: backendActionNotStartedState,
   loadOneState: backendActionNotStartedState,
   selectedTrainingSessionId: 0,
 });
@@ -82,6 +86,15 @@ export const trainingSessionsReducer = createReducer(
   }),
   on(overrideAlgFailure, (trainingSessionState, { error }) => {
     return { ...trainingSessionState, overrideAlgState: backendActionFailureState(error) };
+  }),  
+  on(setAlg, (trainingSessionState) => {
+    return { ...trainingSessionState, setAlgState: backendActionLoadingState };
+  }),
+  on(setAlgSuccess, (trainingSessionState) => {
+    return { ...trainingSessionState, setAlgState: backendActionSuccessState };
+  }),
+  on(setAlgFailure, (trainingSessionState, { error }) => {
+    return { ...trainingSessionState, setAlgState: backendActionFailureState(error) };
   }),  
   on(setSelectedTrainingSessionId, (trainingSessionState, { selectedTrainingSessionId }) => {
     return { ...trainingSessionState, selectedTrainingSessionId };

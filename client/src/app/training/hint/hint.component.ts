@@ -1,6 +1,6 @@
 import { HostListener, Component, Input } from '@angular/core';
 import { TrainingSession } from '../training-session.model';
-import { overrideAlgClick } from '@store/training-sessions.actions';
+import { overrideAlgClick, setAlgClick } from '@store/training-sessions.actions';
 import { showHint } from '@store/trainer.actions';
 import { TrainingCase } from '../training-case.model';
 import { Store } from '@ngrx/store';
@@ -44,5 +44,9 @@ export class HintComponent {
 
   onOverride() {
     this.trainingSession && this.trainingCase && this.store.dispatch(overrideAlgClick({ trainingSession: this.trainingSession, trainingCase: this.trainingCase }));
+  }
+
+  onSet() {
+    this.trainingSession && this.trainingCase && this.store.dispatch(setAlgClick({ trainingSession: this.trainingSession, trainingCase: this.trainingCase }));
   }
 }

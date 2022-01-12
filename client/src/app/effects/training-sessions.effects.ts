@@ -29,7 +29,12 @@ import {
   dontOverrideAlg,
   overrideAlg,
   overrideAlgSuccess,
-  overrideAlgFailure
+  overrideAlgFailure,
+  setAlgClick,
+  dontSetAlg,
+  setAlg,
+  setAlgSuccess,
+  setAlgFailure,
 } from '@store/training-sessions.actions';
 import { selectIsInitialLoadFailureOrNotStarted } from '@store/training-sessions.selectors';
 import { TrainingSessionsService } from '@training/training-sessions.service';
@@ -73,8 +78,6 @@ export class TrainingSessionsEffects {
     )
   );
 
-  // Failure for initialLoad has no effect, it shows a message at the component where the training sessions are rendered.
-
   loadOne$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadOne),
@@ -95,17 +98,6 @@ export class TrainingSessionsEffects {
     )
   );
 
-
-  loadOneFailure$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(loadOneFailure),
-      tap(action => {
-        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
-      }),
-    ),
-    { dispatch: false }
-  );
-  
   create$ = createEffect(() =>
     this.actions$.pipe(
       ofType(create),
@@ -123,16 +115,6 @@ export class TrainingSessionsEffects {
         )
       )
     )
-  );
-
-  createFailure$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(createFailure),
-      tap(action => {
-        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
-      }),
-    ),
-    { dispatch: false }
   );
 
   createSuccess$ = createEffect(() =>
@@ -177,16 +159,6 @@ export class TrainingSessionsEffects {
     )
   );
 
-  destroyFailure$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(destroyFailure),
-      tap(action => {
-        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
-      }),
-    ),
-    { dispatch: false }
-  );
-
   destroySuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(destroySuccess),
@@ -215,7 +187,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(overrideAlg),
       exhaustMap(action =>
-        this.algOverridesService.createOrUpdate(action.trainingSession.id, action.algOverride).pipe(
+        this.algOverridesService.update(action.trainingSession.id, action.algOverride).pipe(
           map(trainingSession => overrideAlgSuccess({ trainingSession: action.trainingSession, algOverride: action.algOverride })),
           catchError(httpResponseError => {
             const context = {
@@ -230,16 +202,6 @@ export class TrainingSessionsEffects {
     )
   );
 
-  overrideAlgFailure$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(overrideAlgFailure),
-      tap(action => {
-        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
-      }),
-    ),
-    { dispatch: false }
-  );
-
   overrideAlgSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(overrideAlgSuccess),
@@ -249,4 +211,59 @@ export class TrainingSessionsEffects {
     ),
     { dispatch: false }
   );
+
+  setAlgClick$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(setAlgClick),
+      exhaustMap(action => {
+        const trainingSessionAndCase: TrainingSessionAndCase = { trainingSession: action.trainingSession, trainingCase: action.trainingCase };
+        const dialogRef = this.dialog.open(OverrideAlgDialogComponent, { data: trainingSessionAndCase });
+        return dialogRef.afterClosed().pipe(
+          map(algOverride => algOverride ? setAlg({ trainingSession: action.trainingSession, algOverride }) : dontSetAlg({ trainingSession: action.trainingSession }))
+        );
+      }),
+    )
+  );
+
+  setAlg$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(setAlg),
+      exhaustMap(action =>
+        this.algOverridesService.create(action.trainingSession.id, action.algOverride).pipe(
+          map(trainingSession => setAlgSuccess({ trainingSession: action.trainingSession, algOverride: action.algOverride })),
+          catchError(httpResponseError => {
+            const context = {
+              action: 'overriding alg',
+              subject: action.algOverride.trainingCase.caseName,
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(setAlgFailure({ error }));
+          })
+        )
+      )
+    )
+  );
+
+  setAlgSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(setAlgSuccess),
+      tap(action => {
+	this.snackBar.open(`Alg for ${action.algOverride.trainingCase.caseName} set.`, 'Close');
+      }),
+    ),
+    { dispatch: false }
+  );
+
+  failure$ = createEffect(() =>
+    this.actions$.pipe(
+      // Failure for initialLoad has no effect,
+      // it shows a message at the component where the training sessions are rendered.
+      ofType(loadOneFailure, createFailure, destroyFailure, overrideAlgFailure, setAlgFailure),
+      tap(action => {
+        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
+      }),
+    ),
+    { dispatch: false }
+  );
+  
 }
