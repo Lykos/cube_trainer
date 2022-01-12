@@ -109,7 +109,9 @@ class TrainingSession < ApplicationRecord
       memo_time_s: memo_time_s,
       cube_size: cube_size,
       num_results: results.count,
-      training_cases: training_cases&.map(&:to_simple)
+      training_cases: training_cases&.map(&:to_simple),
+      exclude_algless_parts: exclude_algless_parts,
+      exclude_alg_holes: exclude_alg_holes
     }
   end
 
@@ -142,7 +144,9 @@ class TrainingSession < ApplicationRecord
       cube_size: cube_size,
       results: results.map(&:to_dump),
       stats: stats.map(&:to_dump),
-      alg_overrides: alg_overrides.map(&:to_dump)
+      alg_overrides: alg_overrides.map(&:to_dump),
+      exclude_algless_parts: exclude_algless_parts,
+      exclude_alg_holes: exclude_alg_holes
     }
   end
 

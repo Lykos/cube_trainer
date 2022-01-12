@@ -63,7 +63,7 @@
         <mat-select formControlName="buffer">
           <mat-option *ngFor="let buffer of buffers" [value]="buffer"> {{buffer.name}} </mat-option>
         </mat-select>
-        <mat-error *ngIf="relevantInvalid(buffer) && buffer.errors && buffer.errors['required']">
+        <mat-error *ngIf="relevantInvalid(bufferControl) && bufferControl.errors && bufferControl.errors['required']">
           You must provide a <strong>buffer</strong> for this session type.
         </mat-error>
       </mat-form-field>
@@ -76,12 +76,18 @@
   <mat-step [stepControl]="algSetGroup">
     <ng-template matStepLabel>Choose an alg set</ng-template>
     <form [formGroup]="algSetGroup">
-      <mat-form-field *ngIf="bufferAlgSets as algSets">
+      <mat-form-field *ngIf="matchingAlgSets as algSets">
         <mat-label>Alg Set</mat-label>
         <mat-select formControlName="algSet">
           <mat-option *ngFor="let algSet of algSets" [value]="algSet"> {{algSet.owner}} </mat-option>
         </mat-select>
       </mat-form-field>
+      <mat-checkbox formControlName="excludeHoles" *ngIf="buffer && matchingAlgSets" matTooltip="Without this, cases that have no algs will show up, but we won't be able to show the solution.">
+        Exclude cases that have no algs
+      </mat-checkbox>
+      <mat-checkbox formControlName="excludeAlglessParts" *ngIf="buffer && !excludeAlgHoles && matchingAlgSets" matTooltip="Exclude targets that are completely missing from the alg set, presumably they are intentionally missing because these targets are buffers themselves for the alg sheet owner.">
+        Exclude previous buffers of alg sheet owner
+      </mat-checkbox>
       <div>
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
         <button mat-raised-button color="primary" matStepperNext>Next</button>

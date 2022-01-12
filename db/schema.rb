@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_09_160315) do
+ActiveRecord::Schema.define(version: 2022_01_12_000838) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -143,6 +143,8 @@ ActiveRecord::Schema.define(version: 2022_01_09_160315) do
     t.float "memo_time_s"
     t.string "buffer"
     t.integer "alg_set_id"
+    t.boolean "exclude_alg_holes"
+    t.boolean "exclude_algless_parts"
     t.index ["user_id", "name"], name: "index_training_sessions_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_training_sessions_on_user_id"
   end

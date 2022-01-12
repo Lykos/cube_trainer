@@ -10,4 +10,6 @@ export interface TrainingSessionBase {
   readonly buffer?: Part;
   readonly goalBadness?: number;
   readonly cubeSize?: number;
+  readonly excludeAlgHoles?: boolean;
+  readonly excludeAlglessParts?: boolean;
 }
