@@ -27,6 +27,7 @@ class TrainingSession < ApplicationRecord
   validates :buffer, presence: true, if: -> { training_session_type&.buffer? }
   validates :cube_size, presence: true
   validate :cube_size_valid
+  validates :exclude_algless_parts, absence: true, unless: -> { training_session_type&.buffer? }
   validate :buffer_valid, if: -> { training_session_type&.buffer? }
   validates :memo_time_s, presence: true, if: -> { training_session_type&.memo_time? }
   validate :memo_time_s_valid, if: -> { training_session_type&.memo_time? }
@@ -71,7 +72,14 @@ class TrainingSession < ApplicationRecord
   def training_cases
     return unless bounded_inputs?
 
-    @training_cases ||= case_set.cases.map { |c| to_training_case(c) }
+    @training_cases ||=
+      begin
+        training_cases = case_set.cases.map { |c| to_training_case(c) }
+        return withouth_alg_holes(training_cases) if exclude_alg_holes
+        return withouth_algless_parts(training_cases) if exclude_algless_parts
+
+        training_cases
+      end
   end
 
   def color_scheme
@@ -164,6 +172,20 @@ class TrainingSession < ApplicationRecord
       alg: commutator(casee),
       setup: setup(casee)
     )
+  end
+
+  def without_algless_parts(training_cases)
+    cases_with_algs = training_cases.filter_map { |t| t.alg && t.casee }
+    buffer_part_cycles = cases_with_algs.part_cycles.select { |c| c.part_type == buffer.class }
+    parts = buffer_part_cycles.flat_map(&:parts).uniq.flat_map(&:rotations)
+    parts_without_algs = buffer.class::ELEMENTS - parts
+    training_cases.reject do |c|
+      c.part_cycles.any? { |c| c.part_type == buffer.class && c.parts.contains_any_part?(parts_without_alg) }
+    end
+  end
+
+  def without_alg_holes(training_cases)
+    training_cases.select { |t| t.alg }
   end
 
   def grant_training_session_achievement
