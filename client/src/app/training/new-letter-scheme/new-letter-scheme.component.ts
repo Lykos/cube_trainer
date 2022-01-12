@@ -12,7 +12,8 @@ import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-letter-scheme',
-  templateUrl: './new-letter-scheme.component.html'
+  templateUrl: './new-letter-scheme.component.html',
+  styleUrls: ['./new-letter-scheme.component.css'],
 })
 export class NewLetterSchemeComponent implements OnInit {
   letterSchemeForm?: FormGroup;
@@ -47,7 +48,6 @@ export class NewLetterSchemeComponent implements OnInit {
   }
 
   get wingLetteringModeEnum(): typeof WingLetteringMode {
-    console.log(this.newLetterScheme);
     return WingLetteringMode;
   }
 

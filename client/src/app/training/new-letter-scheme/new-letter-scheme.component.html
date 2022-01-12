@@ -11,19 +11,20 @@
       <mat-checkbox formControlName="xcentersLikeCorners">X-centers like corners</mat-checkbox>
       <mat-checkbox formControlName="tcentersLikeEdges">T-centers like wings</mat-checkbox>
       <mat-checkbox formControlName="midgesLikeEdges">midges like wings</mat-checkbox>
-      <ng-container *ngFor="let partType of customizedPartTypes">
+      <br>
+      <div *ngFor="let partType of customizedPartTypes">
         <mat-label>{{partType.name}}</mat-label>
         <ng-container *ngFor="let part of partType.parts">
-          <mat-form-field>
+          <mat-form-field class="letter-input">
             <mat-label>{{part.name}}</mat-label>
-            <input matInput [formControlName]="part.key" type="text">
+            <input matInput [formControlName]="part.key" type="text" maxlength="1">
             <!-- TODO: Validation -->
           </mat-form-field>
         </ng-container>
         <br>
-      </ng-container>
+      </div>
       <div>
-        <button mat-raised-button letter="primary" type="Submit">Submit</button>
+        <button mat-raised-button color="primary" type="Submit">Submit</button>
       </div>
     </form>
   </ng-container>
