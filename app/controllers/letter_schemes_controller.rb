@@ -83,7 +83,7 @@ class LetterSchemesController < ApplicationController
   def letter_scheme_params
     fixed_params = params
                    .require(:letter_scheme)
-                   .permit(mappings: [:letter, { part: :key }])
+                   .permit(:wing_lettering_mode, :xcenters_like_corners, :tcenters_like_edges, :midges_like_edges, mappings: [:letter, { part: :key }])
     fixed_params[:mappings].each { |m| m[:part] = m[:part][:key] if m[:part] }
     fixed_params[:letter_scheme_mappings_attributes] = fixed_params[:mappings]
     fixed_params.delete(:mappings)

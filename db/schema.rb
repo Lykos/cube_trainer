@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_12_000838) do
+ActiveRecord::Schema.define(version: 2022_01_12_224121) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -83,6 +83,10 @@ ActiveRecord::Schema.define(version: 2022_01_12_000838) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "user_id", null: false
+    t.string "wing_lettering_mode", default: "custom", null: false
+    t.boolean "xcenters_like_corners"
+    t.boolean "tcenters_like_edges"
+    t.boolean "midges_like_edges"
     t.index ["user_id"], name: "index_letter_schemes_on_user_id", unique: true
   end
 
