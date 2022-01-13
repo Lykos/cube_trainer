@@ -90,6 +90,9 @@ class LetterSchemesController < ApplicationController
     fixed_params[:mappings].each { |m| m[:part] = m[:part][:key] if m[:part] }
     fixed_params[:letter_scheme_mappings_attributes] = fixed_params[:mappings]
     fixed_params.delete(:mappings)
+    fixed_params[:wing_lettering_mode] = :custom if fixed_params[:wing_lettering_mode] == 'custom'
+    fixed_params[:wing_lettering_mode] = :like_edges if fixed_params[:wing_lettering_mode] == 'like edges'
+    fixed_params[:wing_lettering_mode] = :like_corners if fixed_params[:wing_lettering_mode] == 'like corners'
     fixed_params
   end
 end
