@@ -4,7 +4,7 @@ require 'twisty_puzzles'
 
 # Model for letter schemes that the user created.
 class LetterScheme < ApplicationRecord
-  WING_LETTERING_MODES = [:custom, :like_edges, :like_corners]
+  WING_LETTERING_MODES = %i[custom like_edges like_corners].freeze
 
   belongs_to :user
   has_many :letter_scheme_mappings, dependent: :destroy, autosave: true
@@ -46,12 +46,7 @@ class LetterScheme < ApplicationRecord
   def used_part_type(part_type)
     case part_type
     when TwistyPuzzles::Wing
-      case wing_lettering_mode
-      when :like_edges then TwistyPuzzles::Edge
-      when :like_corners then TwistyPuzzles::Corner
-      when :custom then part_type
-      else raise
-      end
+      used_part_type_for_wing
     when TwistyPuzzles::XCenter
       xcenters_like_corners ? TwistyPuzzles::Corner : part_type
     when TwistyPuzzles::TCenter
@@ -63,12 +58,21 @@ class LetterScheme < ApplicationRecord
     end
   end
 
+  def used_part_type_for_wing
+    case wing_lettering_mode
+    when :like_edges then TwistyPuzzles::Edge
+    when :like_corners then TwistyPuzzles::Corner
+    when :custom then TwistyPuzzles::Wing
+    else raise
+    end
+  end
+
   def used_part(part)
     used_part_type = used_part_type(part.class)
     return part if used_part_type == part.class
-    return part.corresponding_part if part.corresponding_part.class == used_part_type
+    return part.corresponding_part if part.corresponding_part.instance_of?(used_part_type)
     # All other cases should be handled by the previous branches.
-    raise unless part.class == TwistyPuzzles::Wing && used_part_type == TwistyPuzzles::Edge
+    raise unless part.instance_of?(TwistyPuzzles::Wing) && used_part_type == TwistyPuzzles::Edge
 
     TwistyPuzzles::Edge.for_face_symbols(part.face_symbols)
   end
