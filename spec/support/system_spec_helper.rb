@@ -6,7 +6,6 @@ def login(user)
   fill_in 'Email', with: user.email
   fill_in 'Password', with: user.password
   click_button 'Submit'
-  sleep(0.1)
 end
 
 # Use a material design select.
