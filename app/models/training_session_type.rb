@@ -71,8 +71,8 @@ class TrainingSessionType
   end
 
   # Returns a simple version for the current user that can be returned to the frontend.
-  def to_simple(simple_alg_sets = alg_sets.map(&:to_simple))
-    raise TypeError unless simple_alg_sets.is_a?(Array) && simple_alg_sets.all?(Hash)
+  def to_simple(simple_alg_sets: nil)
+    raise TypeError unless simple_alg_sets.nil? || (simple_alg_sets.is_a?(Array) && simple_alg_sets.all?(Hash))
 
     {
       key: key,
