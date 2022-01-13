@@ -16,29 +16,23 @@ describe 'new training session', type: :system do
     click_link 'Cube Trainer'
     click_button 'New'
 
-    sleep(0.5)
     fill_in 'Name', with: 'system test training session'
     mat_select 'Corner Commutators', from: 'trainingSessionType'
     click_button 'Next'
 
-    sleep(0.5)
     fill_in 'Cube Size', with: '3'
     mat_select 'ULB', from: 'buffer'
     click_button 'Next'
 
-    sleep(0.5)
     click_button 'Next'
 
-    sleep(0.5)
     mat_select 'name', from: 'showInputMode'
     fill_in 'Goal Time per Element', with: '2.0'
     click_button 'Next'
 
-    sleep(0.5)
     # Not adding any stats because drag and drop is buggy with Selenium.
     click_button 'Submit'
 
-    sleep(1)
     expect(page).to have_text('Session system test training session created.')
   end
 
@@ -49,27 +43,21 @@ describe 'new training session', type: :system do
     click_link 'Cube Trainer'
     click_button 'New'
 
-    sleep(0.5)
     fill_in 'Name', with: 'system test training session'
     mat_select 'Memo Rush', from: 'trainingSessionType'
     click_button 'Next'
 
-    sleep(0.5)
     fill_in 'Cube Size', with: '3'
     click_button 'Next'
 
-    sleep(0.5)
     click_button 'Next'
 
-    sleep(0.5)
     fill_in 'Memo Time', with: '20.0'
     click_button 'Next'
 
-    sleep(0.5)
     # Not adding any stats because drag and drop is buggy with Selenium.
     click_button 'Submit'
 
-    sleep(1)
     expect(page).to have_text('Session system test training session created.')
   end
 end
