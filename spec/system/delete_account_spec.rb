@@ -26,7 +26,6 @@ describe 'account deletion', type: :system do
     visit '/modes'
     click_link user.name
     click_button 'Delete Account'
-    sleep(0.5)
     click_button 'Ok'
 
     expect(page).to have_text('Account Deleted')
