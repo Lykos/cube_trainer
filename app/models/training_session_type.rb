@@ -98,7 +98,7 @@ class TrainingSessionType
     # rubocop:enable Layout/LineLength
     training_session_types.map do |t|
       simple_alg_sets = t.concrete_case_sets.flat_map { |c| alg_sets[c] || [] }
-      t.to_simple(simple_alg_sets)
+      t.to_simple(simple_alg_sets: simple_alg_sets)
     end
   end
 
