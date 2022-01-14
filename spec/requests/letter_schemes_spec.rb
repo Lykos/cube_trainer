@@ -16,8 +16,17 @@ RSpec.describe 'LetterSchemes', type: :request do
       letter_scheme
       get '/api/letter_scheme', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
-      expect(parsed_body).to eq_modulo_symbol_vs_string(letter_scheme.to_simple)
+      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      expect(parsed_body[:wing_lettering_mode].to_sym).to eq(:like_edges)
+      expect(parsed_body[:xcenters_like_corners]).to be(true)
+      expect(parsed_body[:tcenters_like_edges]).to be(true)
+      expect(parsed_body[:midges_like_edges]).to be(true)
+      mappings = parsed_body[:mappings]
+      expect(mappings).to contain_exactly(
+                            include(letter: 'A', part: { key: 'Edge:UF', name: 'UF' }),
+                            include(letter: 'D', part: { key: 'Edge:UB', name: 'UB' }),
+                            include(letter: 'U', part: { key: 'Edge:DF', name: 'DF' })
+                          )
     end
 
     it 'returns not found for user with no letter scheme' do

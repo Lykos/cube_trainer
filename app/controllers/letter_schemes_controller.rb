@@ -10,7 +10,7 @@ class LetterSchemesController < ApplicationController
 
   # GET /api/letter_scheme
   def show
-    render json: @letter_scheme.to_simple
+    render json: @letter_scheme
   end
 
   # POST /api/letter_scheme
@@ -18,7 +18,7 @@ class LetterSchemesController < ApplicationController
     if !@letter_scheme.valid?
       render json: @letter_scheme.errors, status: :bad_request
     elsif @letter_scheme.save
-      render json: @letter_scheme.to_simple, status: :created
+      render json: @letter_scheme, status: :created
     else
       render json: @letter_scheme.errors, status: :unprocessable_entity
     end
@@ -33,7 +33,7 @@ class LetterSchemesController < ApplicationController
       # Note that these can render errors and throw rollback exceptions.
       update_letter_scheme(update_params)
       update_mappings(mappings_params)
-      render json: @letter_scheme.to_simple, status: :ok
+      render json: @letter_scheme, status: :ok
     end
   end
 

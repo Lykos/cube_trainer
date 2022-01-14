@@ -31,13 +31,6 @@ class LetterScheme < ApplicationRecord
     mappings.find { |e| e.part_type == used_part_type && e.letter == letter }&.part
   end
 
-  def to_simple
-    {
-      id: id,
-      mappings: letter_scheme_mappings.map(&:to_simple)
-    }
-  end
-
   private
 
   # Returns the part type that is actually used.

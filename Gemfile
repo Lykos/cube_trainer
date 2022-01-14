@@ -36,6 +36,8 @@ group :development, :test, :production do
   gem 'pg', '~> 1.2.3', '>= 1.2.3'
 
   gem 'ruby-filemagic'
+
+  gem 'active_model_serializers'
 end
 
 group :development, :test do
