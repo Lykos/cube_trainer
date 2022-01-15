@@ -43,7 +43,7 @@ const routes: Routes = [
   { path: 'account-deleted', component: AccountDeletedComponent },
   { path: 'training-sessions', component: TrainingSessionsComponent, canActivate: [AngularTokenService] },
   { path: 'achievements', component: AchievementsComponent },
-  { path: 'achievements/:achievementKey', component: AchievementComponent },
+  { path: 'achievements/:achievementId', component: AchievementComponent },
   { path: 'user', component: UserComponent, canActivate: [AngularTokenService] },
   { path: 'edit-user', component: EditUserComponent, canActivate: [AngularTokenService] },
   { path: 'achievement-grants', component: AchievementGrantsComponent, canActivate: [AngularTokenService] },

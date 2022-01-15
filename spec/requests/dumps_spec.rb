@@ -11,9 +11,9 @@ RSpec.describe 'Dumps', type: :request do
     it 'returns http success' do
       get '/api/dump', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
-      expect(parsed_body.keys).to contain_exactly('achievement_grants', 'color_scheme', 'created_at', 'training_sessions', 'name', 'provider', 'uid', 'admin', 'email', 'id', 'letter_scheme', 'messages')
-      expect(parsed_body['name']).to eq(user.name)
+      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      expect(parsed_body.keys).to contain_exactly(:achievement_grants, :color_scheme, :created_at, :training_sessions, :name, :provider, :uid, :admin, :email, :id, :letter_scheme, :messages)
+      expect(parsed_body[:name]).to eq(user.name)
     end
 
     it 'returns http success for a fully featured user' do
@@ -51,10 +51,10 @@ RSpec.describe 'Dumps', type: :request do
       # Now get the dump
       get '/api/dump', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
-      expect(parsed_body['letter_scheme']['mappings']).to eq_modulo_symbol_vs_string([{ letter: 'd', part: { key: 'Edge:UB', name: 'UB' } }])
-      expect(parsed_body['color_scheme']['color_f']).to eq('green')
-      expect(parsed_body['training_sessions'][0]['results'][0]['time_s']).to eq(10.0)
+      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      expect(parsed_body[:letter_scheme][:mappings]).to match([include(letter: 'd', part: { key: 'Edge:UB', name: 'UB' })])
+      expect(parsed_body[:color_scheme][:color_f]).to eq('green')
+      expect(parsed_body[:training_sessions][0][:results][0][:time_s]).to eq(10.0)
     end
 
     it 'returns not found when not logged in' do

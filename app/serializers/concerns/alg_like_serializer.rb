@@ -3,7 +3,7 @@ module AlgLikeSerializer
   include CaseAttributeSerializer
 
   included do
-    attributes :id, :alg
+    attributes :id, :alg, :created_at
   end
 
   def alg

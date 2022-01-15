@@ -13,7 +13,7 @@ export class AchievementsService {
     return this.rails.get<Achievement[]>('/achievements', {});
   }
 
-  show(achievementKey: string): Observable<Achievement> {
-    return this.rails.get<Achievement>(`/achievements/${achievementKey}`, {});
+  show(achievementId: string): Observable<Achievement> {
+    return this.rails.get<Achievement>(`/achievements/${achievementId}`, {});
   }
 }
