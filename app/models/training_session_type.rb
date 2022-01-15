@@ -6,8 +6,7 @@ require 'cube_trainer/training/human_time_learner'
 # Model for training session types.
 # They are basic templates which users use to create their training sessions.
 # rubocop:disable Metrics/ClassLength
-class TrainingSessionType
-  include ActiveModel::Model
+class TrainingSessionType < ActiveModelSerializers::Model
   include CubeTrainer
   include PartHelper
 
@@ -15,14 +14,15 @@ class TrainingSessionType
   MIN_SUPPORTED_CUBE_SIZE = 2
   MAX_SUPPORTED_CUBE_SIZE = 7
 
-  attr_accessor :key,
-                :name,
-                :default_cube_size,
-                :used_training_session_types,
-                :memo_time,
-                :case_set
+  derive_attributes_from_names_and_fix_accessors
+  attributes :id,
+             :name,
+             :default_cube_size,
+             :used_training_session_types,
+             :memo_time,
+             :case_set
 
-  validates :key, presence: true
+  validates :id, presence: true
   validates :name, presence: true
 
   alias memo_time? memo_time
@@ -70,38 +70,6 @@ class TrainingSessionType
     errors.add(:buffer, "has to be a #{buffer_part_type}") unless buffer.is_a?(buffer_part_type)
   end
 
-  # Returns a simple version for the current user that can be returned to the frontend.
-  def to_simple(simple_alg_sets: nil)
-    raise TypeError unless simple_alg_sets.nil? || (simple_alg_sets.is_a?(Array) && simple_alg_sets.all?(Hash))
-
-    {
-      key: key,
-      name: name,
-      generator_type: generator_type,
-      cube_size_spec: cube_size_spec,
-      has_goal_badness: goal_badness?,
-      show_input_modes: show_input_modes,
-      buffers: buffers&.map { |p| part_to_simple(p) },
-      has_bounded_inputs: bounded_inputs?,
-      has_memo_time: memo_time?,
-      stats_types: stats_types.map(&:to_simple),
-      alg_sets: simple_alg_sets
-    }
-  end
-
-  # More efficient bulk `#to_simple`.
-  def self.multi_to_simple(training_session_types)
-    concrete_case_sets = training_session_types.flat_map(&:concrete_case_sets).uniq
-    # rubocop:disable Layout/LineLength
-    alg_sets =
-      AlgSet.for_concrete_case_sets(concrete_case_sets).index_by(&:case_set).transform_values(&:to_simple)
-    # rubocop:enable Layout/LineLength
-    training_session_types.map do |t|
-      simple_alg_sets = t.concrete_case_sets.flat_map { |c| alg_sets[c] || [] }
-      t.to_simple(simple_alg_sets: simple_alg_sets)
-    end
-  end
-
   def concrete_case_sets
     case_set&.all_refinements || []
   end
@@ -110,17 +78,6 @@ class TrainingSessionType
     return [] unless case_set
 
     AlgSet.for_concrete_case_sets(concrete_case_sets)
-  end
-
-  def useable_training_sessions(user)
-    used_training_session_types.map do |used_training_session_type|
-      training_sessions =
-        user.training_sessions.find_by(training_session_type: used_training_session_type)
-      {
-        training_sessions: training_sessions,
-        purpose: used_training_session_type.key
-      }
-    end
   end
 
   def min_cube_size
@@ -177,73 +134,73 @@ class TrainingSessionType
       begin
         all = [
           TrainingSessionType.new(
-            key: :memo_rush,
+            id: :memo_rush,
             name: 'Memo Rush',
             default_cube_size: 3,
             memo_time: true
           ),
           TrainingSessionType.new(
-            key: :corner_commutators,
+            id: :corner_commutators,
             name: 'Corner Commutators',
             default_cube_size: 3,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
-            key: :corner_parities,
+            id: :corner_parities,
             name: 'Corner Parities',
             default_cube_size: 3,
             case_set: CaseSets::ParitySet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
-            key: :edge_parities,
+            id: :edge_parities,
             name: 'Edge Parities',
             default_cube_size: 3,
             case_set: CaseSets::ParitySet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
-            key: :corner_twists_plus_parities,
+            id: :corner_twists_plus_parities,
             name: 'Corner 1 Twists + Parities',
             default_cube_size: 3,
             case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Corner, TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
-            key: :edge_flips_plus_parities,
+            id: :edge_flips_plus_parities,
             name: 'Edge 1 Flips + Parities',
             default_cube_size: 3,
             case_set: CaseSets::ParityTwistSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
-            key: :floating_2twists,
+            id: :floating_2twists,
             name: 'Floating Corner 2 Twists',
             default_cube_size: 3,
             case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Corner)
           ),
           TrainingSessionType.new(
-            key: :floating_2flips,
+            id: :floating_2flips,
             name: 'Floating Edge 2 Flips',
             default_cube_size: 3,
             case_set: CaseSets::AbstractFloatingTwoTwistSet.new(TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
-            key: :edge_commutators,
+            id: :edge_commutators,
             name: 'Edge Commutators',
             default_cube_size: 3,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
-            key: :wing_commutators,
+            id: :wing_commutators,
             name: 'Wing Commutators',
             default_cube_size: 4,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Wing)
           ),
           TrainingSessionType.new(
-            key: :xcenter_commutators,
+            id: :xcenter_commutators,
             name: 'X-Center Commutators',
             default_cube_size: 4,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::XCenter)
           ),
           TrainingSessionType.new(
-            key: :tcenter_commutators,
+            id: :tcenter_commutators,
             name: 'T-Center Commutators',
             default_cube_size: 5,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::TCenter)
@@ -255,16 +212,16 @@ class TrainingSessionType
   end
 
   # rubocop:enable Metrics/MethodLength
-  def self.by_key
-    @by_key ||= all.index_by(&:key).freeze
+  def self.by_id
+    @by_id ||= all.index_by(&:id).freeze
   end
 
-  def self.find_by(key:)
-    by_key[key.to_sym]
+  def self.find_by(id:)
+    by_id[id.to_sym]
   end
 
-  def self.find_by!(key:)
-    find_by(key: key) || (raise ArgumentError, "Unknown training_session type #{key}.")
+  def self.find_by!(id:)
+    find_by(id: id) || (raise ArgumentError, "Unknown training_session type #{id}.")
   end
 end
 # rubocop:enable Metrics/ClassLength

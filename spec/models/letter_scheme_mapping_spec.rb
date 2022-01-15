@@ -13,14 +13,6 @@ RSpec.describe LetterSchemeMapping, type: :model do
   let(:part) { TwistyPuzzles::Edge.for_face_symbols(%i[U F]) }
   let(:other_part) { TwistyPuzzles::Edge.for_face_symbols(%i[U B]) }
 
-  describe '#to_simple' do
-    subject(:letter_scheme_mapping) { letter_scheme.mappings.new(part: part, letter: 'a') }
-
-    it 'returns a simple hash' do
-      expect(letter_scheme_mapping.to_simple).to eq({ part: { key: 'Edge:UF', name: 'UF' }, letter: 'a' })
-    end
-  end
-
   describe '#valid?' do
     it 'returns false if the letter is an empty string' do
       expect(letter_scheme.mappings.new(part: part, letter: '')).not_to be_valid

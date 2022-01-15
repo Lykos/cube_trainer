@@ -20,7 +20,7 @@ RSpec.describe 'Stats', type: :request do
       expect(parsed_body.length).to eq(1)
       parsed_item = parsed_body[0]
       expect(parsed_item['id']).to eq(stat.id)
-      expect(parsed_item['stat_type']['key']).to eq(stat.stat_type.key.to_s)
+      expect(parsed_item['stat_type']['id']).to eq(stat.stat_type.id.to_s)
     end
 
     it 'returns not found for another user' do
@@ -35,7 +35,7 @@ RSpec.describe 'Stats', type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).to eq(stat.id)
-      expect(parsed_body['stat_type']['key']).to eq(stat.stat_type.key.to_s)
+      expect(parsed_body['stat_type']['id']).to eq(stat.stat_type.id.to_s)
     end
 
     it 'returns not found for unknown stats' do

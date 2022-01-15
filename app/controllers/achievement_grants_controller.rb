@@ -6,12 +6,12 @@ class AchievementGrantsController < ApplicationController
 
   # GET /api/achievement_grants
   def index
-    render json: current_user.achievement_grants.map(&:to_simple)
+    render json: current_user.achievement_grants
   end
 
   # GET /api/achievement_grants/1
   def show
-    render json: @achievement_grant.to_simple
+    render json: @achievement_grant
   end
 
   private

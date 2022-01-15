@@ -11,7 +11,7 @@
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
-          <tr mat-row *matRowDef="let achievement; columns: columnsToDisplay" [routerLink]="routerLink(achievement)"></tr>
+          <tr mat-row *matRowDef="let achievement; columns: columnsToDisplay" [routerLink]="['/achievements', achievement.id]"></tr>
         </table>
       </ng-container>
       <ng-template #error>

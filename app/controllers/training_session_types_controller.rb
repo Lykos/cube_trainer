@@ -12,17 +12,17 @@ class TrainingSessionTypesController < ApplicationController
 
   # GET /api/mode_types
   def index
-    render json: TrainingSessionType.multi_to_simple(TrainingSessionType.all)
+    render json: TrainingSessionType.all
   end
 
   # GET /api/mode_types/1
   def show
-    render json: @mode_type.to_simple
+    render json: @mode_type
   end
 
   private
 
   def set_mode_type
-    head :not_found unless (@mode_type = TrainingSessionType.find_by(key: params[:id]))
+    head :not_found unless (@mode_type = TrainingSessionType.find_by(id: params[:id]))
   end
 end

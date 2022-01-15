@@ -31,9 +31,5 @@ export class TrainingSessionsComponent implements OnInit {
   
   onDelete(trainingSession: TrainingSession) {
     this.store.dispatch(deleteClick({ trainingSession }));
-  } 
-
-  routerLink(trainingSession: TrainingSession) {
-    return `/training-sessions/${trainingSession.id}`;
   }
 }

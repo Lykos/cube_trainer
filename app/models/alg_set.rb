@@ -22,14 +22,8 @@ class AlgSet < ApplicationRecord
   end
 
   delegate :case_name, to: :case_set
-
-  def to_simple
-    {
-      id: id,
-      owner: alg_spreadsheet.owner,
-      buffer: case_set.buffer ? part_to_simple(case_set.buffer) : nil
-    }
-  end
+  delegate :owner, to: :alg_spreadsheet
+  delegate :buffer, to: :case_set
 
   def self.for_concrete_case_sets(case_sets)
     where(case_set: case_sets).preload(:alg_spreadsheet)

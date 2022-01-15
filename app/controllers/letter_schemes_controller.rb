@@ -16,6 +16,7 @@ class LetterSchemesController < ApplicationController
   # POST /api/letter_scheme
   def create
     if !@letter_scheme.valid?
+      puts @letter_scheme.errors.full_messages
       render json: @letter_scheme.errors, status: :bad_request
     elsif @letter_scheme.save
       render json: @letter_scheme, status: :created

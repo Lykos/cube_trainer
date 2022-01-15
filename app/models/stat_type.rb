@@ -4,13 +4,13 @@ require 'twisty_puzzles'
 
 # Model for stats.
 # Note that it does NOT include which training_sessions have them.
-class StatType
-  include ActiveModel::Model
-  attr_accessor :key, :name, :description, :parts, :needs_bounded_inputs
+class StatType < ActiveModelSerializers::Model
+  derive_attributes_from_names_and_fix_accessors
+  attributes :id, :name, :description, :parts, :needs_bounded_inputs
 
   STAT_PART_TYPES = %i[time fraction count].freeze
 
-  validates :key, presence: true
+  validates :id, presence: true
   validates :name, presence: true
   validates :parts, presence: true
   validate :part_types_valid
@@ -21,14 +21,6 @@ class StatType
     return if (parts.map(&:type) - STAT_PART_TYPES).empty?
 
     errors.add(:parts, "has to be a subset of all stat part types #{STAT_PART_TYPES.inspect}")
-  end
-
-  def to_simple
-    {
-      key: key,
-      name: name,
-      description: description
-    }
   end
 
   def stat_parts(training_session)
@@ -213,47 +205,47 @@ class StatType
 
   ALL = [
     StatType.new(
-      key: :averages,
+      id: :averages,
       name: 'Averages',
       description: 'Averages like ao5, ao12, ao50, etc..',
       needs_bounded_inputs: false,
       parts: [5, 12, 50, 100, 1000, 1000].map { |i| Average.new(i) }
     ),
     StatType.new(
-      key: :success_averages,
+      id: :success_averages,
       name: 'Averages of Successes',
       description: 'Averages like ao5, ao12, ao50, etc..',
       needs_bounded_inputs: false,
       parts: [5, 12, 50, 100, 1000, 1000].map { |i| SuccessAverage.new(i) }
     ),
     StatType.new(
-      key: :success_rates,
+      id: :success_rates,
       name: 'Success Rates',
       description: 'Success Rates in the last 5, 12 50, etc. solves.',
       needs_bounded_inputs: false,
       parts: [5, 12, 50, 100, 1000, 1000].map { |i| SuccessRate.new(i) }
     ),
     StatType.new(
-      key: :mo3,
+      id: :mo3,
       name: 'Mean of 3',
       needs_bounded_inputs: false,
       parts: [Mean.new(3)]
     ),
     StatType.new(
-      key: :progress,
+      id: :progress,
       name: 'Progress',
       needs_bounded_inputs: true,
       parts: [CasesDone.new, TotalCases.new]
     )
   ].freeze
   ALL.each(&:validate!)
-  BY_KEY = ALL.index_by(&:key).freeze
+  BY_ID = ALL.index_by(&:id).freeze
 
-  def self.find_by(key:)
-    BY_KEY[key.to_sym]
+  def self.find_by(id:)
+    BY_ID[id.to_sym]
   end
 
-  def self.find_by!(key:)
-    find_by(key: key) || (raise ArgumentError)
+  def self.find_by!(id:)
+    find_by(id: id) || (raise ArgumentError)
   end
 end

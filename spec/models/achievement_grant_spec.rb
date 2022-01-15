@@ -5,13 +5,7 @@ require 'rails_helper'
 RSpec.describe AchievementGrant, type: :model do
   include_context 'with achievement grant'
 
-  let(:achievement) { Achievement.find_by(key: :fake) }
-
-  describe '#to_simple' do
-    it 'returns a simple hash' do
-      expect(achievement_grant.to_simple).to include(achievement: achievement.to_simple)
-    end
-  end
+  let(:achievement) { Achievement.find_by(id: :fake) }
 
   describe '#send_achievement_grant_message' do
     it 'sends a message on creation' do

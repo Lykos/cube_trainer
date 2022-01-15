@@ -172,7 +172,7 @@ export class NewTrainingSessionComponent {
       goalBadness: this.goalBadness.value,
       memoTimeS: this.memoTimeS.value,
       cubeSize: this.selectedCubeSize,
-      statTypes: this.pickedStatTypes.map(s => s.key),
+      statTypes: this.pickedStatTypes.map(s => s.id),
       algSet: this.algSet,
       excludeAlgHoles: this.excludeAlgHoles,
       excludeAlglessParts: this.excludeAlglessParts,

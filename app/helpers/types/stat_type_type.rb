@@ -7,13 +7,13 @@ class StatTypeType < ActiveRecord::Type::String
     return value if value.is_a?(StatType)
     raise TypeError unless value.is_a?(String) || value.is_a?(Symbol)
 
-    StatType.find_by!(key: value)
+    StatType.find_by(id: value)
   end
 
   def serialize(value)
     return if value.nil?
 
     value = cast(value) unless value.is_a?(StatType)
-    value.key
+    value.id
   end
 end

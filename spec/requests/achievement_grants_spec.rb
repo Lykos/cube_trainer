@@ -9,25 +9,14 @@ RSpec.describe 'AchievementGrants', type: :request do
   include_context 'with user auth headers'
   include_context 'with eve auth headers'
 
-  let(:expected_achievement) do
-    achievement = Achievement.find_by(key: :fake).to_simple
-    achievement[:key] = achievement[:key].to_s
-    achievement.transform_keys!(&:to_s)
-    achievement
-  end
-
   describe 'GET #index' do
     it 'returns http success' do
       achievement_grant
       get '/api/achievement_grants', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = JSON.parse(response.body).map(&:deep_symbolize_keys)
       expect(parsed_body.length).to be >= 1
-      contains_achievement_grant =
-        parsed_body.any? do |p|
-          p['achievement'] == expected_achievement && p['id'] == achievement_grant.id
-        end
-      expect(contains_achievement_grant).to be(true)
+      expect(parsed_body).to include(include(id: achievement_grant.id, achievement: { id: 'fake', name: 'Fake', description: 'Fake achievement for tests.' }))
     end
   end
 
@@ -35,9 +24,8 @@ RSpec.describe 'AchievementGrants', type: :request do
     it 'returns http success' do
       get "/api/achievement_grants/#{achievement_grant.id}", headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
-      expect(parsed_body['id']).to eq(achievement_grant.id)
-      expect(parsed_body['achievement']).to eq(expected_achievement)
+      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      expect(parsed_body).to include(id: achievement_grant.id, achievement: { id: 'fake', name: 'Fake', description: 'Fake achievement for tests.' })
     end
 
     it 'returns not found for unknown achievement_grants' do

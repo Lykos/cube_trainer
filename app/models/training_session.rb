@@ -87,60 +87,8 @@ class TrainingSession < ApplicationRecord
     used_training_sessions.find_by(training_session_type: training_session_type)
   end
 
-  # Returns a simple version for the current user that can be returned to the frontend.
-  def to_simple(simple_training_session_type = training_session_type.to_simple)
-    raise TypeError unless simple_training_session_type.is_a?(Hash)
-
-    {
-      id: id,
-      training_session_type: simple_training_session_type,
-      name: name,
-      known: known,
-      show_input_mode: show_input_mode,
-      buffer: part_to_simple(buffer),
-      goal_badness: goal_badness,
-      memo_time_s: memo_time_s,
-      cube_size: cube_size,
-      num_results: results.count,
-      training_cases: training_cases&.map(&:to_simple),
-      exclude_algless_parts: exclude_algless_parts,
-      exclude_alg_holes: exclude_alg_holes
-    }
-  end
-
   def self.find_by_user_with_preloads(user)
     user.training_sessions.preload(:alg_set, :alg_overrides)
-  end
-
-  # More efficient bulk `#to_simple`.
-  def self.multi_to_simple(training_sessions)
-    # rubocop:disable Layout/LineLength
-    simple_training_session_types =
-      TrainingSessionType.multi_to_simple(training_sessions.map(&:training_session_type)).index_by do |t|
-        t[:key]
-      end
-    # rubocop:enable Layout/LineLength
-    training_sessions.map do |t|
-      t.to_simple(simple_training_session_types[t.training_session_type.key])
-    end
-  end
-
-  def to_dump
-    {
-      training_session_type_key: training_session_type.key,
-      name: name,
-      known: known,
-      show_input_mode: show_input_mode,
-      buffer: PartType.new.serialize(buffer),
-      goal_badness: goal_badness,
-      memo_time_s: memo_time_s,
-      cube_size: cube_size,
-      results: results.map(&:to_dump),
-      stats: stats.map(&:to_dump),
-      alg_overrides: alg_overrides.map(&:to_dump),
-      exclude_algless_parts: exclude_algless_parts,
-      exclude_alg_holes: exclude_alg_holes
-    }
   end
 
   def commutator_override(casee)
@@ -217,6 +165,10 @@ class TrainingSession < ApplicationRecord
   def memo_time_s_valid
     errors.add(:memo_time_s, 'has to be positive') unless memo_time_s.positive?
     errors.add(:memo_time_s, 'has to be below one day') unless memo_time_s < 1.day
+  end
+
+  def num_results
+    results.count
   end
 
   def set_stats

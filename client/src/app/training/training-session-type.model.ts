@@ -6,7 +6,7 @@ import { AlgSet } from './alg-set.model';
 import { GeneratorType } from './generator-type.model';
 
 export interface TrainingSessionType {
-  readonly key: string;
+  readonly id: string;
   readonly name: string;
   readonly showInputModes: readonly ShowInputMode[];
   readonly generatorType: GeneratorType;

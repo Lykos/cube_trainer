@@ -7,13 +7,13 @@ class TrainingSessionTypeType < ActiveRecord::Type::String
     return value if value.is_a?(TrainingSessionType)
     raise TypeError unless value.is_a?(String) || value.is_a?(Symbol)
 
-    TrainingSessionType.find_by!(key: value)
+    TrainingSessionType.find_by(id: value)
   end
 
   def serialize(value)
     return if value.nil?
 
     value = cast(value) unless value.is_a?(TrainingSessionType)
-    value.key
+    value.id
   end
 end

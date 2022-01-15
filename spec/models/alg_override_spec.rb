@@ -19,6 +19,6 @@ RSpec.describe Alg, type: :model do
       casee: casee,
       alg: "M' U2 M U2"
     )
-    expect(user.achievement_grants.find_by(achievement: Achievement.find_by(key: :alg_overrider))).not_to be_nil
+    expect(user.achievement_grants.find_by(achievement: Achievement.find_by(id: :alg_overrider))).not_to be_nil
   end
 end

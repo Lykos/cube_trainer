@@ -24,15 +24,6 @@ module AlgLike
     raise NotImplementedError
   end
 
-  def to_simple
-    {
-      id: id,
-      case_key: CaseType.new.serialize(casee),
-      case_name: owning_set.case_name(casee),
-      alg: alg.to_s
-    }
-  end
-
   private
 
   def validate_case

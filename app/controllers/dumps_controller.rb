@@ -4,6 +4,6 @@
 class DumpsController < ApplicationController
   # GET /api/dump
   def show
-    render json: current_user.to_dump, status: :ok
+    render json: current_user, serializer: UserDumpSerializer, status: :ok
   end
 end

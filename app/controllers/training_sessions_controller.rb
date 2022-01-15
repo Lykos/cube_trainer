@@ -13,15 +13,13 @@ class TrainingSessionsController < ApplicationController
   # GET /api/training_sessions
   def index
     # rubocop:disable Rails/DynamicFindBy
-    render json: TrainingSession.multi_to_simple(
-      TrainingSession.find_by_user_with_preloads(current_user)
-    )
+    render json: TrainingSession.find_by_user_with_preloads(current_user)
     # rubocop:enable Rails/DynamicFindBy
   end
 
   # GET /api/training_sessions/1
   def show
-    render json: @training_session.to_simple
+    render json: @training_session
   end
 
   # POST /api/training_sessions.json
@@ -29,7 +27,7 @@ class TrainingSessionsController < ApplicationController
     if !@training_session.valid?
       render json: @training_session.errors, status: :bad_request
     elsif @training_session.save
-      render json: @training_session.to_simple, status: :created
+      render json: @training_session, status: :created
     else
       render json: @training_session.errors, status: :unprocessable_entity
     end
@@ -38,7 +36,7 @@ class TrainingSessionsController < ApplicationController
   # PATCH/PUT /api/training_sessions/1
   def update
     if @training_session.update(training_session_params)
-      render json: @training_session.to_simple, status: :ok
+      render json: @training_session, status: :ok
     else
       render json: @training_session.errors, status: :unprocessable_entity
     end
@@ -74,10 +72,10 @@ class TrainingSessionsController < ApplicationController
                    .require(:training_session)
                    .permit(:name, :known, :show_input_mode, :goal_badness, :cube_size,
                            :memo_time_s, stat_types: [], buffer: [:key],
-                                         training_session_type: [:key], alg_set: [:id])
+                                         training_session_type: [:id], alg_set: [:id])
     if fixed_params[:training_session_type]
       fixed_params[:training_session_type] =
-        fixed_params[:training_session_type][:key]
+        fixed_params[:training_session_type][:id]
     end
     fixed_params[:buffer] = fixed_params[:buffer][:key] if fixed_params[:buffer]
     fixed_params[:alg_set_id] = fixed_params[:alg_set][:id] if fixed_params[:alg_set]

@@ -12,14 +12,14 @@ class AlgOverridesController < ApplicationController
                                      .order(created_at: :desc)
                                      .limit(params[:limit])
                                      .offset(params[:offset])
-                                     .map(&:to_simple)
+                                     
     render json: alg_overrides, status: :ok
   end
 
   # POST /api/training_sessions/1/alg_overrides.json
   def create
     if @alg_override.save
-      render json: @alg_override.to_simple, status: :ok
+      render json: @alg_override, status: :ok
     else
       render json: @alg_override.errors, status: :unprocessable_entity
     end
@@ -27,13 +27,13 @@ class AlgOverridesController < ApplicationController
 
   # GET /api/training_sessions/1/alg_overrides/1.json
   def show
-    render json: @alg_override.to_simple, status: :ok
+    render json: @alg_override, status: :ok
   end
 
   # PATCH/PUT /api/training_sessions/1/alg_overrides/1.json
   def update
     if @alg_override.update(alg_override_params)
-      render json: @alg_override.to_simple, status: :ok
+      render json: @alg_override, status: :ok
     else
       render json: @alg_override.errors, status: :unprocessable_entity
     end

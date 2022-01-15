@@ -12,17 +12,17 @@ class AchievementsController < ApplicationController
 
   # GET /api/achievements
   def index
-    render json: Achievement::ALL.map(&:to_simple)
+    render json: Achievement::ALL
   end
 
   # GET /api/achievements/mode_created
   def show
-    render json: @achievement.to_simple
+    render json: @achievement
   end
 
   private
 
   def set_achievement
-    head :not_found unless (@achievement = Achievement.find_by(key: params[:id]))
+    head :not_found unless (@achievement = Achievement.find_by(id: params[:id]))
   end
 end

@@ -7,13 +7,13 @@ class StatsController < ApplicationController
 
   # GET /api/training_sessions/1/stats
   def index
-    stats = @training_session.stats.map(&:to_simple)
+    stats = @training_session.stats
     render json: stats, status: :ok
   end
 
   # GET /api/training_sessions/1/stats/1
   def show
-    render json: @stat.to_simple, status: :ok
+    render json: @stat, status: :ok
   end
 
   # DELETE /api/training_sessions/1/stats/1

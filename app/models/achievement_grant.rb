@@ -6,18 +6,6 @@ class AchievementGrant < ApplicationRecord
   belongs_to :user
   after_create :send_achievement_grant_message
 
-  def to_simple
-    {
-      id: id,
-      created_at: created_at,
-      achievement: achievement.to_simple
-    }
-  end
-
-  def to_dump
-    to_simple
-  end
-
   private
 
   def send_achievement_grant_message

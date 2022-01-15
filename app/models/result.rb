@@ -20,31 +20,7 @@ class Result < ApplicationRecord
   after_create :grant_num_results_achievements
   delegate :user, to: :training_session
 
-  def to_simple
-    {
-      id: id,
-      case_key: CaseType.new.serialize(casee),
-      case_name: training_session.case_name(casee),
-      time_s: time_s,
-      failed_attempts: failed_attempts,
-      word: word,
-      success: success,
-      num_hints: num_hints,
-      created_at: created_at
-    }
-  end
-
-  def to_dump
-    {
-      case_key: CaseType.new.serialize(casee),
-      time_s: time_s,
-      failed_attempts: failed_attempts,
-      word: word,
-      success: success,
-      num_hints: num_hints,
-      created_at: created_at
-    }
-  end
+  alias owning_set training_session
 
   def time
     time_s&.seconds
@@ -59,11 +35,11 @@ class Result < ApplicationRecord
   end
 
   def grant_num_results_achievements
-    achievement_key = num_results_achievement_key
-    user.grant_achievement_if_not_granted(achievement_key) if achievement_key
+    achievement_id = num_results_achievement_id
+    user.grant_achievement_if_not_granted(achievement_id) if achievement_id
   end
 
-  def num_results_achievement_key
+  def num_results_achievement_id
     if training_session.results.count >= 100_000
       :wizard
     elsif training_session.results.count >= 10_000

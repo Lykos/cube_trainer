@@ -12,7 +12,7 @@ describe 'new letter scheme', type: :system do
   it 'allows to create a new letter scheme' do
     login(user)
 
-    visit '/modes'
+    visit '/training-sessions'
     click_link user.name
     click_link 'Create Letter Scheme'
 
