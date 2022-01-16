@@ -24,6 +24,7 @@ describe 'new training session', type: :system do
     mat_select 'ULB', from: 'buffer'
     click_button 'Next'
 
+    expect(page).to have_text('Alg Set')
     click_button 'Next'
 
     mat_select 'name', from: 'showInputMode'
@@ -50,6 +51,7 @@ describe 'new training session', type: :system do
     fill_in 'Cube Size', with: '3'
     click_button 'Next'
 
+    expect(page).to have_text('Alg Set')
     click_button 'Next'
 
     fill_in 'Memo Time', with: '20.0'

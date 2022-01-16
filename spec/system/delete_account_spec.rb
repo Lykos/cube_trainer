@@ -23,7 +23,6 @@ describe 'account deletion', type: :system do
 
     login(user)
 
-    visit '/modes'
     click_link user.name
     click_button 'Delete Account'
     click_button 'Ok'

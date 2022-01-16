@@ -3,30 +3,28 @@ import { Injectable } from '@angular/core';
 import { Stat } from './stat.model';
 import { StatPart } from './stat-part.model';
 import { StatType } from './stat-type.model';
-import { map } from 'rxjs/operators';
+import { switchMap, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { seconds } from '@utils/duration'
-import { fromDateString } from '@utils/instant'
+import { fromDateString, Instant } from '@utils/instant'
 
-function parseStatPart(statPart: any): StatPart {
-  return {
-    name: statPart.name,
-    statPartType: statPart.statPartType,
-    duration: statPart.success ? seconds(statPart.timeS) : undefined,
-    fraction: statPart.fraction,
-    count: statPart.count,
-    success: statPart.success,
-  }
+interface UncalculatedStat {
+  readonly id: number;
+  readonly index: number;
+  readonly timestamp: Instant;
+  readonly statType: StatType;
 }
 
-function parseStat(stat: any): Stat {
+function parseStat(stat: any): UncalculatedStat {
   return {
     id: stat.id,
     index: stat.index,
     timestamp: fromDateString(stat.createdAt),
     statType: stat.statType,
-    parts: stat.stat_parts.map(parseStatPart),
   };
+}
+
+function calculateStat(stat: UncalculatedStat): Observable<Stat> {
 }
 
 @Injectable({
@@ -41,7 +39,9 @@ export class StatsService {
   
   list(trainingSessionId: number): Observable<Stat[]> {
     return this.rails.get<any[]>(`/training_sessions/${trainingSessionId}/stats`, {}).pipe(
-      map(stats => stats.map(parseStat)));
+      map(stats => stats.map(parseStat)),
+      switchMap(calculateStat),
+    );
   }
 
   destroy(trainingSessionId: number, statId: number): Observable<void> {

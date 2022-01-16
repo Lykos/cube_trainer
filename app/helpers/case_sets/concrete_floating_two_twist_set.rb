@@ -20,6 +20,14 @@ module CaseSets
 
     def buffer; end
 
+    def eql?(other)
+      self.class.equal?(other.class) && @part_type == other.part_type
+    end
+
+    def hash
+      @hash ||= [self.class, @part_type].hash
+    end
+
     def to_s
       twist_name = part_type == TwistyPuzzles::Edge ? 'flip' : 'twist'
       "floating #{simple_class_name(@part_type).downcase} #{twist_name}s"

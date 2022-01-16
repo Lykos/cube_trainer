@@ -18,6 +18,8 @@ module CaseSets
     include CaseSetHelper
     include TwistyPuzzles::Utils::StringHelper
 
+    alias == eql?
+             
     SEPARATOR = ':'
 
     def buffer

@@ -6,6 +6,7 @@ def login(user)
   fill_in 'Email', with: user.email
   fill_in 'Password', with: user.password
   click_button 'Submit'
+  expect(page).to have_text(user.name)
 end
 
 # Use a material design select.
