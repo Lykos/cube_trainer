@@ -9,22 +9,8 @@ import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { selectStopwatchState, selectStopwatchRunning, selectNextCaseReady } from '@store/trainer.selectors';
 import { notStartedStopwatchState, runningStopwatchState, stoppedStopwatchState } from '@store/trainer.state';
 import { TrainingSession } from '../training-session.model';
-import { TrainingSessionType } from '../training-session-type.model';
 import { ShowInputMode } from '../show-input-mode.model';
 import { GeneratorType } from '../generator-type.model';import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
-const trainingSessionType: TrainingSessionType = {
-  key: 'test session type key',
-  name: 'test session type name',
-  showInputModes: [ShowInputMode.Scramble],
-  generatorType: GeneratorType.Scramble,
-  hasGoalBadness: false,
-  hasBoundedInputs: false,
-  hasMemoTime: true,
-  buffers: [],
-  statsTypes: [],
-  algSets: [],
-}
 
 const trainingSession: TrainingSession = {
   id: 1,
@@ -33,8 +19,9 @@ const trainingSession: TrainingSession = {
   numResults: 0,
   known: false,
   showInputMode: ShowInputMode.Scramble,
-  trainingSessionType,
+  generatorType: GeneratorType.Scramble,
   memoTimeS: 2,
+  stats: [],
 };
 
 const now = fromDateString('2021-01-01');
