@@ -3,6 +3,7 @@ class TrainingSessionSerializer < ActiveModel::Serializer
   
   attributes :id, :name, :known, :show_input_mode, :buffer, :goal_badness, :memo_time_s, :cube_size, :num_results, :exclude_algless_parts, :exclude_alg_holes, :generator_type
   has_many :training_cases
+  has_many :stats
 
   def buffer
     object.buffer ? part_to_simple(object.buffer) : nil

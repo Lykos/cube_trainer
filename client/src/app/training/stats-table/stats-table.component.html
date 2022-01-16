@@ -1,10 +1,10 @@
-<div *ngIf="dataSource.data.length > 0">
+<div>
   <h2>Stats</h2>
   <div>
-    <div class="spinner-container" *ngIf="dataSource.loading$ | async">
+    <div class="spinner-container" *ngIf="loading$ | async">
       <mat-spinner></mat-spinner>
     </div>
-    <table mat-table class="mat-elevation-z2" [dataSource]="dataSource">
+    <table mat-table class="mat-elevation-z2" [dataSource]="stats$" *ngIf="(loading$ | async) === false" [trackBy]="statId">
       <mat-text-column name="name"></mat-text-column>
       <ng-container matColumnDef="value">
         <th mat-header-cell *matHeaderCellDef> Value </th>
