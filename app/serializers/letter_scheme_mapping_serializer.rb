@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Serializer for letter scheme mappings.
 class LetterSchemeMappingSerializer < ActiveModel::Serializer
   include PartHelper
 

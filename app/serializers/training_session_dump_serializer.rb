@@ -1,8 +1,12 @@
+# frozen_string_literal: true
+
+# Special dump serializer that serializes all data for a training session.
 class TrainingSessionDumpSerializer < ActiveModel::Serializer
   include PartHelper
 
   attributes :id, :name, :known, :show_input_mode, :buffer, :goal_badness, :memo_time_s,
-             :cube_size, :num_results, :exclude_algless_parts, :exclude_alg_holes, :training_session_type, :case_set, :results
+             :cube_size, :num_results, :exclude_algless_parts, :exclude_alg_holes,
+             :training_session_type, :case_set, :results
   delegate :results, to: :object
 
   def case_set

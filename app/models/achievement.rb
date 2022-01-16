@@ -60,6 +60,6 @@ class Achievement < ActiveModelSerializers::Model
   end
 
   def self.find(id)
-    find_by!(id: id)
+    find_by!(id: id) # rubocop:disable Rails/FindById
   end
 end

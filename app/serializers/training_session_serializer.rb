@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Serializer for training sessions.
 class TrainingSessionSerializer < ActiveModel::Serializer
   include PartHelper
 

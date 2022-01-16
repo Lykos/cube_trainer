@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Serializer for training cases.
 class TrainingCaseSerializer < ActiveModel::Serializer
   include CaseAttributeSerializer
 

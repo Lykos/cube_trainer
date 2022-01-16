@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Special dump serializer that serializes all data for a user.
 class UserDumpSerializer < ActiveModel::Serializer
   attributes :id, :name, :email, :created_at, :admin, :provider, :uid
   has_one :letter_scheme

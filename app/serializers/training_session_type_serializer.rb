@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Serializer for training session types.
 class TrainingSessionTypeSerializer < ActiveModel::Serializer
   include PartHelper
 
@@ -6,12 +9,13 @@ class TrainingSessionTypeSerializer < ActiveModel::Serializer
   has_many :alg_sets
   has_many :stats_types
 
-  def has_goal_badness
-    object.goal_badness?
-  end
-
   def buffers
     object.buffers&.map { |p| part_to_simple(p) }
+  end
+
+  # rubocop:disable Naming/PredicateName
+  def has_goal_badness
+    object.goal_badness?
   end
 
   def has_bounded_inputs
@@ -21,4 +25,5 @@ class TrainingSessionTypeSerializer < ActiveModel::Serializer
   def has_memo_time
     object.memo_time?
   end
+  # rubocop:enable Naming/PredicateName
 end

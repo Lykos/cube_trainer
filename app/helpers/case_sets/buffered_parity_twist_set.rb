@@ -20,7 +20,10 @@ module CaseSets
     attr_reader :buffer_part_type, :parity_part_type, :buffer, :pattern
 
     def eql?(other)
-      self.class.equal?(other.class) && @buffer_part_type == other.buffer_part_type && @buffer == other.buffer && @parity_part_type == other.parity_part_type
+      self.class.equal?(other.class) &&
+        @buffer_part_type == other.buffer_part_type &&
+        @buffer == other.buffer &&
+        @parity_part_type == other.parity_part_type
     end
 
     def hash

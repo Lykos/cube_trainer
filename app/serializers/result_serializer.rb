@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ResultSerializer < ActiveModel::Serializer
   include CaseAttributeSerializer
 

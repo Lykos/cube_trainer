@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Serializer for alg sets.
 class AlgSetSerializer < ActiveModel::Serializer
   include PartHelper
 
