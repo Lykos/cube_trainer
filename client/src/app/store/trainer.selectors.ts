@@ -1,5 +1,5 @@
 import { createSelector, MemoizedSelector, createFeatureSelector } from '@ngrx/store';
-import { calculateStat } from '@training/calculate-stat';
+import { calculateStats } from '@training/calculate-stats';
 import { TrainerState, notStartedStopwatchState, isRunning } from './trainer.state';
 import { TrainingSession } from '@training/training-session.model';
 import { Result } from '@training/result.model';
@@ -120,7 +120,7 @@ export const selectStats = createSelector(
     trainingSession =>
       mapOptional(
 	maybeResults,
-	results => trainingSession.stats.map(s => calculateStat(s, results))
+	results => calculateStats(trainingSession, results)
       )
   )
 );

@@ -15,6 +15,7 @@ import { TrainerComponent } from './trainer/trainer.component';
 import { TrainerInputComponent } from './trainer-input/trainer-input.component';
 import { HintComponent } from './hint/hint.component';
 import { StopwatchComponent } from './stopwatch/stopwatch.component';
+import { StatPartValueComponent } from './stat-part-value/stat-part-value.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { StopwatchComponent } from './stopwatch/stopwatch.component';
     TrainerInputComponent,
     HintComponent,
     StopwatchComponent,
+    StatPartValueComponent,
   ],
   imports: [
     CdkStepperModule,
