@@ -13,13 +13,13 @@ RSpec.describe Achievement, type: :model do
     end
   end
 
-  describe '#find_by!' do
+  describe '#find' do
     it 'finds an existing achievement' do
-      expect(described_class.find_by!(id: :fake).id).to eq(:fake)
+      expect(described_class.find(:fake).id).to eq(:fake)
     end
 
     it 'raises an ArgumentError for a non-existing achievement' do
-      expect { described_class.find_by!(id: :non_existing) }.to raise_error(ArgumentError)
+      expect { described_class.find(:non_existing) }.to raise_error(ArgumentError)
     end
   end
 end

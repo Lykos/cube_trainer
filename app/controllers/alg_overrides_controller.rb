@@ -12,7 +12,7 @@ class AlgOverridesController < ApplicationController
                                      .order(created_at: :desc)
                                      .limit(params[:limit])
                                      .offset(params[:offset])
-                                     
+
     render json: alg_overrides, status: :ok
   end
 

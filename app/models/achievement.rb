@@ -58,4 +58,8 @@ class Achievement < ActiveModelSerializers::Model
   def self.find_by!(id:)
     find_by(id: id) || (raise ArgumentError)
   end
+
+  def self.find(id)
+    find_by!(id: id)
+  end
 end

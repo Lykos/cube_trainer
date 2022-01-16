@@ -11,7 +11,7 @@ class TrainingCase < ActiveModelSerializers::Model
   validates :casee, presence: true
   validates :training_session, presence: true
   alias owning_set training_session
-  
+
   def eql?(other)
     self.class.equal?(other.class) &&
       @training_session.id == other.training_session.id &&

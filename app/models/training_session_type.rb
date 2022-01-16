@@ -5,7 +5,6 @@ require 'cube_trainer/training/human_time_learner'
 
 # Model for training session types.
 # They are basic templates which users use to create their training sessions.
-# rubocop:disable Metrics/ClassLength
 class TrainingSessionType < ActiveModelSerializers::Model
   include CubeTrainer
   include PartHelper
@@ -223,5 +222,8 @@ class TrainingSessionType < ActiveModelSerializers::Model
   def self.find_by!(id:)
     find_by(id: id) || (raise ArgumentError, "Unknown training_session type #{id}.")
   end
+
+  def self.find(id)
+    find_by!(id: id)
+  end
 end
-# rubocop:enable Metrics/ClassLength

@@ -1,7 +1,8 @@
 class TrainingSessionTypeSerializer < ActiveModel::Serializer
   include PartHelper
 
-  attributes :id, :name, :generator_type, :cube_size_spec, :has_goal_badness, :show_input_modes, :buffers, :has_bounded_inputs, :has_memo_time
+  attributes :id, :name, :generator_type, :cube_size_spec, :has_goal_badness, :show_input_modes,
+             :buffers, :has_bounded_inputs, :has_memo_time
   has_many :alg_sets
   has_many :stats_types
 

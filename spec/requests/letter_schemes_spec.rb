@@ -23,10 +23,10 @@ RSpec.describe 'LetterSchemes', type: :request do
       expect(parsed_body[:midges_like_edges]).to be(true)
       mappings = parsed_body[:mappings]
       expect(mappings).to contain_exactly(
-                            include(letter: 'A', part: { key: 'Edge:UF', name: 'UF' }),
-                            include(letter: 'D', part: { key: 'Edge:UB', name: 'UB' }),
-                            include(letter: 'U', part: { key: 'Edge:DF', name: 'DF' })
-                          )
+        include(letter: 'A', part: { key: 'Edge:UF', name: 'UF' }),
+        include(letter: 'D', part: { key: 'Edge:UB', name: 'UB' }),
+        include(letter: 'U', part: { key: 'Edge:DF', name: 'DF' })
+      )
     end
 
     it 'returns not found for user with no letter scheme' do
