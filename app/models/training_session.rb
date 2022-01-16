@@ -45,9 +45,9 @@ class TrainingSession < ApplicationRecord
   def case_set
     @case_set ||=
       if buffer
-        training_session_type.case_set&.refinement(buffer)
+        training_session_type&.case_set&.refinement(buffer)
       else
-        training_session_type.case_set&.refinement
+        training_session_type&.case_set&.refinement
       end
   end
 
@@ -155,10 +155,14 @@ class TrainingSession < ApplicationRecord
   end
 
   def buffer_valid
+    return unless training_session_type
+
     training_session_type.validate_buffer(buffer, errors)
   end
 
   def cube_size_valid
+    return unless training_session_type
+
     training_session_type.validate_cube_size(cube_size, errors)
   end
 

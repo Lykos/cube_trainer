@@ -22,7 +22,7 @@ RSpec.describe 'Dumps', type: :request do
         training_session: {
           name: 'test_training_session2',
           show_input_mode: :name,
-          training_session_type: { id: :floating_2flips },
+          training_session_type: :floating_2flips,
           goal_badness: 1,
           cube_size: 3,
           stat_types: [:averages]
