@@ -23,6 +23,10 @@ export interface DnfStatPart extends StatPartBase {
   readonly tag: 'dnf';
 }
 
+export interface UndefinedStatPart extends StatPartBase {
+  readonly tag: 'undefined';
+}
+
 export function fractionStatPart(name: string, fraction: number): FractionStatPart {
   return { tag: 'fraction', name, fraction };
 }
@@ -37,6 +41,10 @@ export function durationStatPart(name: string, duration: Duration): DurationStat
 
 export function dnfStatPart(name: string): DnfStatPart {
   return { tag: 'dnf', name };
+}
+
+export function undefinedStatPart(name: string): UndefinedStatPart {
+  return { tag: 'undefined', name };
 }
 
 export function isFractionStatPart(statPart: StatPart): statPart is FractionStatPart {
@@ -55,4 +63,8 @@ export function isDnfStatPart(statPart: StatPart): statPart is DnfStatPart {
   return statPart.tag === 'dnf'
 }
 
-export type StatPart = FractionStatPart | CountStatPart | DurationStatPart | DnfStatPart;
+export function isUndefinedStatPart(statPart: StatPart): statPart is UndefinedStatPart {
+  return statPart.tag === 'undefined'
+}
+
+export type StatPart = FractionStatPart | CountStatPart | DurationStatPart | DnfStatPart | UndefinedStatPart;

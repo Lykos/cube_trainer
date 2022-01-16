@@ -1,4 +1,4 @@
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { StatPart } from '../stat-part.model';
@@ -21,7 +21,6 @@ export class StatsTableComponent {
     this.stats$ = this.store.select(selectStats).pipe(
       map(forceValue),
       map(ss => ss.flatMap(s => s.parts)),
-      tap(s => { console.log('stats', s); }),
     );
   }
   

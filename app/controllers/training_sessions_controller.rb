@@ -68,18 +68,10 @@ class TrainingSessionsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def training_session_params
-    fixed_params = params
-                   .require(:training_session)
-                   .permit(:name, :known, :show_input_mode, :goal_badness, :cube_size,
-                           :memo_time_s, stat_types: [], buffer: [:key],
-                                         training_session_type: [:id], alg_set: [:id])
-    if fixed_params[:training_session_type]
-      fixed_params[:training_session_type] =
-        fixed_params[:training_session_type][:id]
-    end
-    fixed_params[:buffer] = fixed_params[:buffer][:key] if fixed_params[:buffer]
-    fixed_params[:alg_set_id] = fixed_params[:alg_set][:id] if fixed_params[:alg_set]
-    fixed_params.delete(:alg_set)
-    fixed_params
+    params
+      .require(:training_session)
+      .permit(:name, :known, :show_input_mode, :goal_badness, :cube_size,
+              :memo_time_s, :training_session_type, :buffer, :alg_set_id,
+              stat_types: [], buffer: [:key], alg_set: [:id])
   end
 end

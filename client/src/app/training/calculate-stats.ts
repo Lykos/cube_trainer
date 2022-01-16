@@ -3,7 +3,7 @@ import { TrainingSession } from './training-session.model';
 import { StatType } from './stat-type.model';
 import { seconds, zeroDuration, infiniteDuration, Duration } from '@utils/duration';
 import { orElse } from '@utils/optional';
-import { dnfStatPart, durationStatPart, fractionStatPart, countStatPart, StatPart } from './stat-part.model';
+import { dnfStatPart, undefinedStatPart, durationStatPart, fractionStatPart, countStatPart, StatPart } from './stat-part.model';
 import { Result } from './result.model';
 import { UncalculatedStat } from './uncalculated-stat.model';
 import { CubeAverage } from '@utils/cube-average';
@@ -21,49 +21,62 @@ function durationOrDnfStatPart(name: string, duration: Duration): StatPart {
 }
 
 function successAverage(results: readonly Result[], n: number): StatPart {
+  const name = `ao${n} of successes`;
+  if (!results.length) {
+    return undefinedStatPart(name);
+  }
   const average = new CubeAverage(n);
-  let i = results.length - 1;
+  let i = 0;
   let successes = 0;
-  while (i >= 0 && successes < n) {
+  while (i < results.length && successes < n) {
     if (results[i].success) {
       average.push(time(results[i]));
       ++successes;
     }
-    --i;
+    ++i;
   }
-  const name = `ao${n} of successes`;
   return durationOrDnfStatPart(name, orElse(average.average(), infiniteDuration));
 }
 
 function average(results: readonly Result[], n: number): StatPart {
+  const name = `ao${n}`;
+  if (!results.length) {
+    return undefinedStatPart(name);
+  }
   const average = new CubeAverage(n);
   const adjustedN = Math.min(n, results.length);
-  for (let i = results.length - 1; i >= results.length - adjustedN; --i) {
+  for (let i = 0; i < adjustedN; ++i) {
     average.push(time(results[i]));
   }
-  const name = `ao${n}`;
   return durationOrDnfStatPart(name, orElse(average.average(), infiniteDuration));
 }
 
 function successRates(results: readonly Result[], n: number): StatPart {
+  const name = `success rate of ${n}`;
+  if (!results.length) {
+    return undefinedStatPart(name);
+  }
   let successes = 0;
   const adjustedN = Math.min(n, results.length);
-  for (let i = results.length - 1; i >= results.length - adjustedN; --i) {
+  for (let i = 0; i < adjustedN; ++i) {
     if (results[i].success) {
       ++successes;
     }
   }
-  const name = `success rate of ${n}`;
   return fractionStatPart(name, successes / adjustedN);
 }
 
 function mo3(results: readonly Result[]): StatPart {
-  const adjustedN = Math.min(3, results.length);
-  let average = zeroDuration;
-  for (let i = results.length - 1; i >= results.length - adjustedN; --i) {
-    average = average.plus(time(results[i]));
+  const name = 'mo3';
+  if (!results.length) {
+    return undefinedStatPart(name);
   }
-  return durationOrDnfStatPart('mo3', average.times(1 / adjustedN));
+  const adjustedN = Math.min(3, results.length);
+  let sum = zeroDuration;
+  for (let i = 0; i < adjustedN; ++i) {
+    sum = sum.plus(time(results[i]));
+  }
+  return durationOrDnfStatPart(name, sum.times(1 / adjustedN));
 }
 
 function totalCases(trainingSession: TrainingSession): StatPart {

@@ -164,16 +164,16 @@ export class NewTrainingSessionComponent {
 
   get newTrainingSession(): NewTrainingSession {
     return {
-      trainingSessionType: this.trainingSessionType!,
+      trainingSessionType: this.trainingSessionType!.id,
       name: this.name.value,
       known: !!this.trainingGroup.get('known')?.value,
       showInputMode: this.selectedShowInputMode,
-      buffer: this.buffer,
+      buffer: this.buffer.key,
       goalBadness: this.goalBadness.value,
       memoTimeS: this.memoTimeS.value,
       cubeSize: this.selectedCubeSize,
       statTypes: this.pickedStatTypes.map(s => s.id),
-      algSet: this.algSet,
+      algSetId: this.algSet?.id,
       excludeAlgHoles: this.excludeAlgHoles,
       excludeAlglessParts: this.excludeAlglessParts,
     };

@@ -37,7 +37,7 @@ export const selectIsInitialLoadFailureOrNotStarted = createSelector(
 
 export const selectTrainingSessionEntities = createSelector(
   selectTrainingSessionsState,
-  e => selectTrainingSessionEntitiesFunction(e),
+  selectTrainingSessionEntitiesFunction,
 );
 
 export const selectSelectedTrainingSession = createSelector(

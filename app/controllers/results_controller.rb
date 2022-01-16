@@ -33,6 +33,7 @@ class ResultsController < ApplicationController
 
   # PATCH/PUT /api/training_sessions/1/results/1.json
   def update
+    p @result, result_params
     if @result.update(result_params)
       render json: @result, status: :ok
     else
@@ -69,7 +70,7 @@ class ResultsController < ApplicationController
       :case_key, :time_s, :failed_attempts, :word, :success,
       :num_hints
     )
-    fixed_params[:casee] = CaseType.new.cast(fixed_params[:case_key])
+    fixed_params[:casee] = CaseType.new.cast(fixed_params[:case_key]) if fixed_params[:case_key]
     fixed_params.delete(:case_key)
     fixed_params
   end
