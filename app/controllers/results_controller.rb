@@ -33,7 +33,6 @@ class ResultsController < ApplicationController
 
   # PATCH/PUT /api/training_sessions/1/results/1.json
   def update
-    p @result, result_params
     if @result.update(result_params)
       render json: @result, status: :ok
     else
