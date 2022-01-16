@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-xdescribe 'trainer', type: :system do
+describe 'trainer', type: :system do
   include_context 'with user abc'
   include_context 'with training session'
 

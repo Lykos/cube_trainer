@@ -10,9 +10,9 @@ describe 'account deletion', type: :system do
   it 'enables users to sign up and then delete their account' do
     user = User.find_or_initialize_by(name: 'account deletion user')
     user.update(
-      email: 'account_deletion_test@example.org',
+      email: 'system_test+account_deletion@example.org',
       provider: 'email',
-      uid: 'account_deletion_test@example.org',
+      uid: 'system_test+account_deletion@example.org',
       admin_confirmed: true,
       email_confirmed: true,
       password: 'password',
