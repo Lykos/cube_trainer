@@ -4,8 +4,7 @@ import { Stat } from './stat.model';
 import { StatPart } from './stat-part.model';
 import { StatType } from './stat-type.model';
 import { switchMap, map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { seconds } from '@utils/duration'
+import { Observable, of, forkJoin } from 'rxjs';
 import { fromDateString, Instant } from '@utils/instant'
 
 interface UncalculatedStat {
@@ -14,6 +13,12 @@ interface UncalculatedStat {
   readonly timestamp: Instant;
   readonly statType: StatType;
 }
+
+interface StatCalculator {
+  calculate(trainingSessionId: number): Observable<StatPart[]>;
+}
+
+const statCalculators: Map<string, StatCalculator> = new Map();
 
 function parseStat(stat: any): UncalculatedStat {
   return {
@@ -24,7 +29,10 @@ function parseStat(stat: any): UncalculatedStat {
   };
 }
 
-function calculateStat(stat: UncalculatedStat): Observable<Stat> {
+function calculateStatParts(stat: UncalculatedStat, trainingSessionId: number): Observable<Stat> {
+  const calculator = statCalculators.get(stat.statType.id);
+  const parts$: Observable<StatPart[]> = calculator ? calculator.calculate(trainingSessionId) : of([]);
+  return parts$.pipe(map(parts => ({ ...stat, parts })));
 }
 
 @Injectable({
@@ -40,7 +48,7 @@ export class StatsService {
   list(trainingSessionId: number): Observable<Stat[]> {
     return this.rails.get<any[]>(`/training_sessions/${trainingSessionId}/stats`, {}).pipe(
       map(stats => stats.map(parseStat)),
-      switchMap(calculateStat),
+      switchMap(ss => forkJoin(ss.map(s => calculateStatParts(s, trainingSessionId)))),
     );
   }
 
