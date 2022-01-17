@@ -36,6 +36,9 @@ import { UpdatePasswordComponent } from './update-password/update-password.compo
 import { UserComponent } from './user/user.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { NavigationBarComponent } from './navigation-bar/navigation-bar.component';
+import { WelcomeComponent } from './welcome/welcome.component';
+import { LoggedInWelcomeComponent } from './logged-in-welcome/logged-in-welcome.component';
+import { LoggedOutWelcomeComponent } from './logged-out-welcome/logged-out-welcome.component';
 
 @NgModule({
   declarations: [
@@ -69,6 +72,9 @@ import { NavigationBarComponent } from './navigation-bar/navigation-bar.componen
     GoogleAnalyticsReferenceComponent,
     NotFoundComponent,
     NavigationBarComponent,
+    WelcomeComponent,
+    LoggedInWelcomeComponent,
+    LoggedOutWelcomeComponent,
   ],
   imports: [
     FileSaverModule,

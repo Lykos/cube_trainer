@@ -23,5 +23,5 @@
       </a>
     </ng-template>
   </mat-toolbar>
-  <cube-trainer-navigation-bar></cube-trainer-navigation-bar>
+  <cube-trainer-navigation-bar *ngIf="loggedIn$ | async"></cube-trainer-navigation-bar>
 <div>
