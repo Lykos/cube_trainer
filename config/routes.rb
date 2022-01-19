@@ -9,7 +9,6 @@ Rails.application.routes.draw do
     post 'confirm_email', to: 'users#confirm_email'
     get 'training_session_name_exists_for_user', to: 'training_sessions#name_exists_for_user?'
     resources :training_session_types, only: [:index, :show]
-    resources :achievements, only: [:index, :create, :show, :update, :destroy]
     resource :color_scheme, only: [:create, :show, :update, :destroy]
     resource :letter_scheme, only: [:create, :show, :update, :destroy]
     resources :messages, only: [:index, :create, :show, :update, :destroy]
@@ -19,10 +18,8 @@ Rails.application.routes.draw do
     resources :training_sessions do
       resources :results
       resources :alg_overrides
-      resources :stats, only: [:index, :show, :destroy]
       post 'alg_overrides/create_or_update', to: 'alg_overrides#create_or_update'
     end
-    resources :stat_types, only: [:index, :show]
     resources :part_types, only: [:index]
   end
   # We don't need this in development because we use a separate server for the frontend via `npm start`.

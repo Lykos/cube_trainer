@@ -1,22 +1,26 @@
 import { Component } from '@angular/core';
-import { AchievementsService } from '../achievements.service';
 import { Achievement } from '../achievement.model';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
+import { orElse } from '@utils/optional';
+import { achievementById } from '../achievements.const';
 
 @Component({
   selector: 'cube-trainer-achievement',
   templateUrl: './achievement.component.html'
 })
 export class AchievementComponent {
-  achievement$: Observable<Achievement>;
+  achievementId$: Observable<string>;
+  achievement$: Observable<Achievement | undefined>;
 
-  constructor(private readonly achievementsService: AchievementsService,
-	      private readonly activatedRoute: ActivatedRoute) {
-    this.achievement$ = this.activatedRoute.params.pipe(
+  constructor(private readonly activatedRoute: ActivatedRoute) {
+    this.achievementId$ = this.activatedRoute.params.pipe(
       map(p => p['achievementId']),
-      switchMap(achievementId => this.achievementsService.show(achievementId)),
+      shareReplay(),
+    );
+    this.achievement$ = this.achievementId$.pipe(
+      map(achievementId => orElse(achievementById(achievementId), undefined)),
     );
   }
 }

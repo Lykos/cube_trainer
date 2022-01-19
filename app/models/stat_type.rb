@@ -4,6 +4,7 @@ require 'twisty_puzzles'
 
 # Model for stats.
 # Note that it does NOT include which training_sessions have them.
+# TODO: Remove now that it exists in the frontend.
 class StatType < ActiveModelSerializers::Model
   derive_attributes_from_names_and_fix_accessors
   attributes :id, :name, :description, :parts, :needs_bounded_inputs

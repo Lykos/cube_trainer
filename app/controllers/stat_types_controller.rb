@@ -2,6 +2,7 @@
 
 # Controller that allows retrieval of stat types.
 # Note that it does NOT include which training_sessions have them.
+# TODO: Remove now that it exists in the frontend.
 class StatTypesController < ApplicationController
   before_action :set_stat_type, only: [:show]
 

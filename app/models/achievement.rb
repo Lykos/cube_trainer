@@ -2,6 +2,7 @@
 
 # Model for possible achievements.
 # Note that it does NOT include which users have them.
+# TODO: Remove now that it exists in the frontend.
 class Achievement < ActiveModelSerializers::Model
   derive_attributes_from_names_and_fix_accessors
   attributes :id, :name, :description

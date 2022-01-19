@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Controller for stats that a user had for one training session.
+# TODO: Remove now that it exists in the frontend.
 class StatsController < ApplicationController
   before_action :set_training_session
   before_action :set_stat, only: %i[show destroy]

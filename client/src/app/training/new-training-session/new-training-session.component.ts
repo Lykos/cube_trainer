@@ -6,6 +6,7 @@ import { TrainingSessionFormsService } from '../training-session-forms.service';
 import { NewTrainingSession } from '../new-training-session.model';
 import { AlgSet } from '../alg-set.model';
 import { StatType } from '../stat-type.model';
+import { statTypes } from '../stat-types.const';
 import { Observable } from 'rxjs';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { create } from '@store/training-sessions.actions';
@@ -47,7 +48,7 @@ export class NewTrainingSessionComponent {
 
   get statTypesForCurrentTrainingSessionType() {
     if (this.lastTrainingSessionTypeForStatsTypes !== this.trainingSessionType) {
-      this.statTypesForLastTrainingSessionType = Object.assign([], this.trainingSessionType!.statsTypes);
+      this.statTypesForLastTrainingSessionType = statTypes.filter(s => !s.needsBoundedInputs || this.trainingSessionType!.hasBoundedInputs);
       this.lastTrainingSessionTypeForStatsTypes = this.trainingSessionType;
     }
     return this.statTypesForLastTrainingSessionType;

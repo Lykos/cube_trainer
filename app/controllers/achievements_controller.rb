@@ -2,6 +2,7 @@
 
 # Controller that allows retrieval of achievements.
 # Note that it does NOT include which users have them.
+# TODO: Remove now that it exists in the frontend.
 class AchievementsController < ApplicationController
   before_action :set_achievement, only: [:show]
 

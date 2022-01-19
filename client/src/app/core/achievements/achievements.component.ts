@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-import { AchievementsService } from '../achievements.service';
-import { Observable } from 'rxjs';
-import { Achievement } from '../achievement.model';
+import { achievements } from '../achievements.const';
 
 @Component({
   selector: 'cube-trainer-achievements',
@@ -9,17 +7,6 @@ import { Achievement } from '../achievement.model';
   styleUrls: ['./achievements.component.css']
 })
 export class AchievementsComponent {
-  achievements$: Observable<Achievement[]>;
+  achievements = achievements;
   columnsToDisplay = ['name'];
-
-  constructor(achievementsService: AchievementsService) {
-    this.achievements$ = achievementsService.list();
-  }
-
-  get context() {
-    return {
-      action: 'loading',
-      subject: 'achievements',
-    };
-  }
 }
