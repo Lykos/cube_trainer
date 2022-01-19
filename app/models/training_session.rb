@@ -121,20 +121,21 @@ class TrainingSession < ApplicationRecord
 
   def create_training_cases
     training_cases = case_set.cases.map { |c| to_training_case(c) }
-    return withouth_alg_holes(training_cases) if exclude_alg_holes
-    return withouth_algless_parts(training_cases) if exclude_algless_parts
+    return without_alg_holes(training_cases) if exclude_alg_holes
+    return without_algless_parts(training_cases) if exclude_algless_parts
 
     training_cases
   end
 
   def without_algless_parts(training_cases)
     cases_with_algs = training_cases.filter_map { |t| t.alg && t.casee }
-    buffer_part_cycles = cases_with_algs.part_cycles.select { |c| c.part_type == buffer.class }
-    parts = buffer_part_cycles.flat_map(&:parts).uniq.flat_map(&:rotations)
+    all_part_cycles = cases_with_algs.flat_map(&:part_cycles)
+    buffer_part_cycles = all_part_cycles.select { |c| c.part_type == buffer.class }
+    parts = buffer_part_cycles.flat_map(&:parts).uniq.flat_map(&:rotations).uniq
     parts_without_algs = buffer.class::ELEMENTS - parts
     training_cases.reject do |t|
-      t.part_cycles.any? do |c|
-        c.part_type == buffer.class && c.parts.contains_any_part?(parts_without_algs)
+      t.casee.part_cycles.any? do |c|
+        c.part_type == buffer.class && c.contains_any_part?(parts_without_algs)
       end
     end
   end

@@ -13,7 +13,6 @@ describe 'achievements', type: :system do
   it 'allows to view achievements' do
     achievement_grant
     login(user)
-    visit '/modes'
     click_link user.name
 
     find('cube-trainer-achievement-grants td', text: achievement_grant.achievement.name).click
