@@ -98,13 +98,33 @@ export const overrideAlg = createAction(
   props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
 );
  
-export const overrideAlgSuccess = createAction(
-  '[TrainingSessions] override alg success',
+export const createAlgOverride = createAction(
+  '[TrainingSessions] create alg override',
   props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
 );
  
-export const overrideAlgFailure = createAction(
-  '[TrainingSessions] override alg failure',
+export const createAlgOverrideSuccess = createAction(
+  '[TrainingSessions] create alg override success',
+  props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
+);
+ 
+export const createAlgOverrideFailure = createAction(
+  '[TrainingSessions] create alg override failure',
+  props<{ error: BackendActionError }>()
+);
+
+export const updateAlgOverride = createAction(
+  '[TrainingSessions] update alg override',
+  props<{ trainingSession: TrainingSession, algOverrideId: number, algOverride: AlgOverride }>()
+);
+ 
+export const updateAlgOverrideSuccess = createAction(
+  '[TrainingSessions] update alg override success',
+  props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
+);
+ 
+export const updateAlgOverrideFailure = createAction(
+  '[TrainingSessions] update alg override failure',
   props<{ error: BackendActionError }>()
 );
 

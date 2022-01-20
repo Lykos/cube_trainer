@@ -39,6 +39,7 @@ const item: TrainingCase = {
   caseKey: 'test case key',
   caseName: 'test case name',
   alg: 'solve it',
+  algSource: { tag: 'original' },
 };
 
 const trainingSessionId = 56;

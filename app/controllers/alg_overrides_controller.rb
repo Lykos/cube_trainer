@@ -32,6 +32,7 @@ class AlgOverridesController < ApplicationController
 
   # PATCH/PUT /api/training_sessions/1/alg_overrides/1.json
   def update
+    puts 'update'
     if @alg_override.update(alg_override_params)
       render json: @alg_override, status: :ok
     else

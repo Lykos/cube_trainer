@@ -11,14 +11,14 @@ class AlgSet < ApplicationRecord
   validates :sheet_title, presence: true
   validates :case_set, presence: true
 
-  def commutator(casee)
+  def alg(casee)
     raise TypeError unless casee.is_a?(Case)
     raise ArgumentError unless casee.valid?
 
-    maybe_commutator = commutator_internal(casee)
-    return maybe_commutator if maybe_commutator
+    maybe_alg = alg_map[casee]
+    return maybe_alg if maybe_alg
 
-    commutator_internal(casee.inverse)&.inverse
+    alg_map[casee.inverse]&.inverse
   end
 
   delegate :case_name, to: :case_set
@@ -33,9 +33,5 @@ class AlgSet < ApplicationRecord
 
   def alg_map
     @alg_map ||= algs.index_by(&:casee)
-  end
-
-  def commutator_internal(casee)
-    alg_map[casee]&.commutator
   end
 end

@@ -19,7 +19,7 @@ end
 
 def alternative_alg(case_string)
   case case_string
-  when 'UR UL' then "[M2 : [U / M]]"
+  when 'UR UL' then '[M2 : [U / M]]'
   when 'UL UR' then "[M2 : [U' / M]]"
   when 'RU UL' then "R' F R S R' F' R S'"
   when 'UL RU' then "S R' F R S' R' F' R"
@@ -50,49 +50,49 @@ describe 'trainer hint', type: :system do
       casee: Case.new(
         part_cycles: [TwistyPuzzles::PartCycle.new([uf, ur, ul])]
       ),
-      alg: "M2 U M U2 M' U M2",
+      alg: "M2 U M U2 M' U M2"
     )
     alg_set.algs.create(
       casee: Case.new(
         part_cycles: [TwistyPuzzles::PartCycle.new([uf, ul, ur])]
       ),
-      alg: "M2 U' M U2 M' U' M2",
+      alg: "M2 U' M U2 M' U' M2"
     )
     alg_set.algs.create(
       casee: Case.new(
         part_cycles: [TwistyPuzzles::PartCycle.new([uf, ru, ul])]
       ),
-      alg: "[R' F R, S]",
+      alg: "[R' F R, S]"
     )
     alg_set.algs.create(
       casee: Case.new(
         part_cycles: [TwistyPuzzles::PartCycle.new([uf, ul, ru])]
       ),
-      alg: "[S, R' F R]",
+      alg: "[S, R' F R]"
     )
     alg_set.algs.create(
       casee: Case.new(
         part_cycles: [TwistyPuzzles::PartCycle.new([uf, lu, ur])]
       ),
-      alg: "[L F L', S']",
+      alg: "[L F L', S']"
     )
     alg_set.algs.create(
       casee: Case.new(
         part_cycles: [TwistyPuzzles::PartCycle.new([uf, ur, lu])]
       ),
-      alg: "[S', L F L']",
+      alg: "[S', L F L']"
     )
     alg_set.algs.create(
       casee: Case.new(
         part_cycles: [TwistyPuzzles::PartCycle.new([uf, ru, lu])]
       ),
-      alg: "M U' M' U2 M U' M'",
+      alg: "M U' M' U2 M U' M'"
     )
     alg_set.algs.create(
       casee: Case.new(
         part_cycles: [TwistyPuzzles::PartCycle.new([uf, lu, ru])]
       ),
-      alg: "M U M' U2 M U M'",
+      alg: "M U M' U2 M U M'"
     )
     alg_set
   end
@@ -132,9 +132,9 @@ describe 'trainer hint', type: :system do
         page.text[case_regexp]
       end
     click_button 'Reveal'
-      within('.alg') do
-        expect(page).to have_text(expected_alg(picked_case))
-      end
+    within('.alg') do
+      expect(page).to have_text(expected_alg(picked_case))
+    end
   end
 
   it 'allows to override hints' do
@@ -150,8 +150,13 @@ describe 'trainer hint', type: :system do
         expect(page).to have_text(case_regexp)
         page.text[case_regexp]
       end
+
     click_button 'Reveal'
     click_button 'Override'
-    find('#cube-trainer-override-alg-input').fill_in 'Alg Override', alternative_alg(picked_case)
+    find('#override-alg-input').fill_in 'Alg Override', with: alternative_alg(picked_case)
+    within('#override-alg-dialog') { click_button 'Override' }
+    expect(page).to have_text("Alg for #{picked_case} overridden")
+
+    expect(training_session.alg_overrides.count).to be(1)
   end
 end

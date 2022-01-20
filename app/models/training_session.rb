@@ -91,31 +91,30 @@ class TrainingSession < ApplicationRecord
     user.training_sessions.preload(:alg_set, :alg_overrides)
   end
 
-  def commutator_override(casee)
-    alg_overrides.find { |alg| alg.casee == casee }&.commutator
+  def alg_override(casee)
+    alg_overrides.find { |alg| alg.casee == casee }
   end
 
-  def commutator(casee)
-    commutator_override(casee) || alg_set&.commutator(casee)
+  def alg(casee)
+    alg_override(casee) || alg_set&.alg(casee)
   end
 
-  def algorithm(casee)
-    commutator(casee)&.algorithm
-  end
+  def setup(algorithm)
+    return unless algorithm
+    raise TypeError unless algorithm.is_a?(TwistyPuzzles::Algorithm)
 
-  def setup(casee)
-    alg_setup = algorithm(casee)&.inverse
-    color_scheme.setup + alg_setup if alg_setup
+    color_scheme.setup + algorithm.inverse
   end
 
   private
 
   def to_training_case(casee)
+    a = alg(casee)
     TrainingCase.new(
       training_session: self,
       casee: casee,
-      alg: commutator(casee),
-      setup: setup(casee)
+      alg: a,
+      setup: setup(a&.algorithm)
     )
   end
 

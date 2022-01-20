@@ -1,3 +1,18 @@
+export interface OriginalAlg {
+  readonly tag: 'original';
+}
+
+export interface FixedAlg {
+  readonly tag: 'fixed';
+}
+
+export interface OverriddenAlg {
+  readonly tag: 'overridden';
+  readonly algOverrideId: number;
+}
+
+export type AlgSource = OriginalAlg | FixedAlg | OverriddenAlg;
+
 // Represents case that we train to get better on, e.g. one 3-cycle, one parity case,
 // one twist case, one scramble etc.
 // This contains a specific case attached to a training session with a specific solution.
@@ -7,4 +22,5 @@ export interface TrainingCase {
   readonly caseName: string;
   readonly alg?: string;
   readonly setup?: string;
+  readonly algSource?: AlgSource;
 }
