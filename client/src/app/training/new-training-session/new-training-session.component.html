@@ -39,7 +39,7 @@
   <mat-step [stepControl]="setupGroup">
     <ng-template matStepLabel>Setup basics</ng-template>
     <form [formGroup]="setupGroup">
-      <mat-form-field *ngIf="hasMultipleCubeSizes">
+      <mat-form-field id="cube-size-input" *ngIf="hasMultipleCubeSizes">
         <mat-label>Cube Size</mat-label>
         <input matInput formControlName="cubeSize" type="number" [value]="defaultCubeSize">
         <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['required']">
@@ -76,7 +76,7 @@
   <mat-step [stepControl]="algSetGroup">
     <ng-template matStepLabel>Choose an alg set</ng-template>
     <form [formGroup]="algSetGroup">
-      <mat-form-field *ngIf="matchingAlgSets as algSets">
+      <mat-form-field id="alg-set-select" *ngIf="matchingAlgSets as algSets">
         <mat-label>Alg Set</mat-label>
         <mat-select formControlName="algSet">
           <mat-option *ngFor="let algSet of algSets" [value]="algSet"> {{algSet.owner}} </mat-option>

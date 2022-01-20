@@ -20,11 +20,15 @@ describe 'new training session', type: :system do
     mat_select 'Corner Commutators', from: 'trainingSessionType'
     click_button 'Next'
 
-    fill_in 'Cube Size', with: '3'
+    within('#cube-size-input') do
+      fill_in 'Cube Size', with: '3'
+    end
     mat_select 'ULB', from: 'buffer'
     click_button 'Next'
 
-    expect(page).to have_text('Alg Set')
+    within('#alg-set-select') do
+      expect(page).to have_text('Alg Set')
+    end
     click_button 'Next'
 
     mat_select 'name', from: 'showInputMode'
@@ -48,10 +52,14 @@ describe 'new training session', type: :system do
     mat_select 'Memo Rush', from: 'trainingSessionType'
     click_button 'Next'
 
-    fill_in 'Cube Size', with: '3'
+    within('#cube-size-input') do
+      fill_in 'Cube Size', with: '3'
+    end
     click_button 'Next'
 
-    expect(page).to have_text('Alg Set')
+    within('#alg-set-select') do
+      expect(page).to have_text('Alg Set')
+    end
     click_button 'Next'
 
     fill_in 'Memo Time', with: '20.0'
