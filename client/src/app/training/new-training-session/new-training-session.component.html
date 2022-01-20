@@ -31,7 +31,7 @@
       <ng-template #loading>
         <mat-spinner></mat-spinner>
       </ng-template>
-      <div>
+      <div id="training-session-type-group-actions">
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
     </form>
@@ -67,7 +67,7 @@
           You must provide a <strong>buffer</strong> for this session type.
         </mat-error>
       </mat-form-field>
-      <div>
+      <div id="setup-group-actions">
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
@@ -88,7 +88,7 @@
       <mat-checkbox formControlName="excludeAlglessParts" *ngIf="buffer && !excludeAlgHoles && matchingAlgSets" matTooltip="Exclude targets that are completely missing from the alg set, presumably they are intentionally missing because these targets are buffers themselves for the alg sheet owner.">
         Exclude previous buffers of alg sheet owner
       </mat-checkbox>
-      <div>
+      <div id="alg-set-group-actions">
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
@@ -127,7 +127,7 @@
         </mat-error>
       </mat-form-field>
       <mat-checkbox formControlName="known" *ngIf="trainingSessionType?.hasBoundedInputs">Known</mat-checkbox>
-      <div>
+      <div id="training-group-actions">
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
@@ -175,9 +175,33 @@
         </div>
       </div>
     </div>
-    <div>
+    <div id="stats-group-actions">
       <button mat-raised-button color="primary" matStepperPrevious>Back</button>
       <button mat-raised-button color="primary" (click)="onSubmit()">Submit</button>
     </div>
   </mat-step>
 </mat-horizontal-stepper>
+<div id="partial-new-training-session" style="display: none">
+  <h2>Details about the Created Session for Debugging</h2>
+  <div id="training-session-type-id">
+    {{trainingSessionType?.id}}
+  </div>
+  <div id="cube-size">
+    {{selectedCubeSize}}
+  </div>
+  <div id="buffer">
+    {{buffer.key}}
+  </div>
+  <div id="alg-set-id">
+    {{algSet?.id}}
+  </div>
+  <div id="show-input-mode">
+    {{selectedShowInputMode}}
+  </div>
+  <div id="memo-time-s">
+    {{memoTimeS.value}}
+  </div>
+  <div id="goal-badness">
+    {{goalBadness.value}}
+  </div>
+</div>

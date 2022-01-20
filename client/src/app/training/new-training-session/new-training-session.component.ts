@@ -164,6 +164,9 @@ export class NewTrainingSessionComponent {
 
   get newTrainingSession(): NewTrainingSession {
     return {
+      // We cheat here: This is called when the id is nil,
+      // but when we call it at the end and use it as a complete NewTrainingSession,
+      // the id will be non-nil.
       trainingSessionType: this.trainingSessionType!.id,
       name: this.name.value,
       known: !!this.trainingGroup.get('known')?.value,

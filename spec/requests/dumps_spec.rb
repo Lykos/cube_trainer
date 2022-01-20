@@ -47,7 +47,7 @@ RSpec.describe 'Dumps', type: :request do
           stat_types: [:averages]
         }
       }
-      
+
       training_session_id = JSON.parse(response.body)['id']
       # Get a this training session.
       get "/api/training_sessions/#{training_session_id}", headers: user_headers
@@ -69,7 +69,7 @@ RSpec.describe 'Dumps', type: :request do
       }
       # Create an alg override.
       post "/api/training_sessions/#{training_session_id}/alg_overrides", headers: user_headers, params: { alg_override: { case_key: 'Edge(UF UB DF)', alg: "[U2, M']" } }
-      
+
       # Now get the dump
       get '/api/dump', headers: user_headers
       expect(response).to have_http_status(:success)
