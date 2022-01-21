@@ -11,7 +11,7 @@
         <ng-container matColumnDef="use">
           <th mat-header-cell *matHeaderCellDef> Use </th>
           <td mat-cell *matCellDef="let trainingSession">
-            <button mat-icon-button [routerLink]="routerLink(trainingSession)">
+            <button mat-icon-button [routerLink]="['/training-sessions', trainingSession.id]">
               <span class="material-icons">play_arrow</span>
             </button>
           </td>

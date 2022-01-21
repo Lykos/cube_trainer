@@ -16,10 +16,6 @@ export class AchievementsComponent {
     this.achievements$ = achievementsService.list();
   }
 
-  routerLink(achievement: Achievement) {
-    return `/achievements/${achievement.key}`;
-  }
-
   get context() {
     return {
       action: 'loading',

@@ -32,7 +32,7 @@ import {
   stopStopwatchSuccess,
   stopStopwatchFailure,
 } from '@store/trainer.actions';
-import { loadOne } from '@store/training-sessions.actions';
+import { loadOne, loadOneSuccess } from '@store/training-sessions.actions';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { ResultsService } from '@training/results.service';
 import { NewResult } from '@training/new-result.model';
@@ -86,10 +86,14 @@ export class TrainerEffects {
   initialLoad$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initialLoad),
-      switchMap(action => of(
-        initialLoadResults({ trainingSessionId: action.trainingSessionId }),
-        loadOne({ trainingSessionId: action.trainingSessionId }),
-      )),
+      map(action => loadOne({ trainingSessionId: action.trainingSessionId })),
+    )
+  );
+
+  loadOneSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadOneSuccess),
+      map(action => initialLoadResults({ trainingSessionId: action.trainingSession.id })),
     )
   );
 

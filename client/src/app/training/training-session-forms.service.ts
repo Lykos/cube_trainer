@@ -84,6 +84,8 @@ export class TrainingSessionFormsService {
   algSetGroup(trainingSessionTypeProvider: () => TrainingSessionType | undefined): FormGroup {
     return this.formBuilder.group({
       algSet: [''],
+      excludeAlglessParts: [true],
+      excludeAlgHoles: [false],
     });
   }
 

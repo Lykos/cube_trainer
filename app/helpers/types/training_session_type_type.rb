@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
 # Active record type for training_session types.
-class AchievementTypeType < ActiveRecord::Type::String
+class TrainingSessionTypeType < ActiveRecord::Type::String
   def cast(value)
     return if value.nil?
-    return value if value.is_a?(AchievementType)
+    return value if value.is_a?(TrainingSessionType)
     raise TypeError unless value.is_a?(String) || value.is_a?(Symbol)
 
-    AchievementType::BY_NAME[value.to_sym] || (raise ArgumentError)
+    TrainingSessionType.find_by(id: value)
   end
 
   def serialize(value)
     return if value.nil?
-    raise TypeError unless value.is_a?(AchievementType)
 
-    value.name
+    value = cast(value) unless value.is_a?(TrainingSessionType)
+    value.id
   end
 end

@@ -21,7 +21,7 @@ export class TrainerService {
               private readonly samplingStateService: SamplingStateService) {}
 
   randomScrambleOrSample(now: Instant, trainingSession: TrainingSession, results: readonly Result[]): Observable<ScrambleOrSample> {
-    const generatorType = trainingSession.trainingSessionType.generatorType;
+    const generatorType = trainingSession.generatorType;
     switch (generatorType) {
       case GeneratorType.Scramble:
         return this.randomScramble(now, trainingSession).pipe(map(scramble));

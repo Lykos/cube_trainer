@@ -79,6 +79,6 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   }
 
   get hasStopAndStart(): boolean {
-    return this.trainingSession?.trainingSessionType?.generatorType === GeneratorType.Case;
+    return this.trainingSession?.generatorType === GeneratorType.Case;
   }
 }

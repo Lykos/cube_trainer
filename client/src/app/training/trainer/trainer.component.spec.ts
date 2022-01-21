@@ -18,7 +18,6 @@ import { BackendActionLoadErrorComponent } from '@shared/backend-action-load-err
 import { ScrambleOrSample } from '../scramble-or-sample.model';
 import { TrainingCase } from '../training-case.model';
 import { TrainingSession } from '../training-session.model';
-import { TrainingSessionType } from '../training-session-type.model';
 import { ShowInputMode } from '../show-input-mode.model';
 import { GeneratorType } from '../generator-type.model';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -34,19 +33,6 @@ function exampleError(message: string) {
   };
 }
 
-const trainingSessionType: TrainingSessionType = {
-  key: 'test session type key',
-  name: 'test session type name',
-  showInputModes: [ShowInputMode.Name, ShowInputMode.Picture],
-  generatorType: GeneratorType.Case,
-  hasGoalBadness: true,
-  hasBoundedInputs: true,
-  hasMemoTime: false,
-  buffers: [],
-  statsTypes: [],
-  algSets: [],
-}
-
 const item: TrainingCase = {
   caseKey: 'test case key',
   caseName: 'test case name',
@@ -59,7 +45,8 @@ const trainingSession: TrainingSession = {
   numResults: 0,
   known: false,
   showInputMode: ShowInputMode.Name,
-  trainingSessionType
+  generatorType: GeneratorType.Case,
+  stats: [],
 };
 
 const scrambleOrSample: ScrambleOrSample = {

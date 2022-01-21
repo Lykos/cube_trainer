@@ -1,5 +1,6 @@
 export interface StatType {
-  readonly key: string;
+  readonly id: string;
   readonly name: string;
-  readonly description: string;
+  readonly description?: string;
+  readonly needsBoundedInputs: boolean;
 }

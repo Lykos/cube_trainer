@@ -1,40 +1,30 @@
-import { StatsService } from '../stats.service';
-import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router';
-// @ts-ignore
-import Rails from '@core/ujs';
+import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { StatsDataSource } from '../stats.data-source';
-import { StatPartType } from '../stat-part-type.model';
+import { StatPart } from '../stat-part.model';
+import { selectStats, selectInitialLoadLoading } from '@store/trainer.selectors';
+import { Store } from '@ngrx/store';
+import { forceValue } from '@utils/optional';
 
 @Component({
   selector: 'cube-trainer-stats-table',
   templateUrl: './stats-table.component.html',
   styleUrls: ['./stats-table.component.css']
 })
-export class StatsTableComponent implements OnInit {
-  trainingSessionId$: Observable<number>;
-  dataSource!: StatsDataSource;
+export class StatsTableComponent {
   columnsToDisplay = ['name', 'value'];
+  stats$: Observable<readonly StatPart[]>;
+  loading$: Observable<boolean>;
 
-  public get statPartType(): typeof StatPartType {
-    return StatPartType; 
+  constructor(private readonly store: Store) {
+    this.loading$ = this.store.select(selectInitialLoadLoading);
+    this.stats$ = this.store.select(selectStats).pipe(
+      map(forceValue),
+      map(ss => ss.flatMap(s => s.parts)),
+    );
   }
-
-  constructor(private readonly statsService: StatsService,
-	      activatedRoute: ActivatedRoute) {
-    this.trainingSessionId$ = activatedRoute.params.pipe(map(p => +p['trainingSessionId']));
-  }
-
-  ngOnInit() {
-    this.dataSource = new StatsDataSource(this.statsService);
-    this.update();
-  }
-
-  update() {
-    this.trainingSessionId$.subscribe(trainingSessionId => {
-      this.dataSource.loadStats(trainingSessionId);
-    });
+  
+  statId(index: number, stat: StatPart) {
+    return stat.name;
   }
 }

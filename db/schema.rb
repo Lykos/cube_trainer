@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_09_160315) do
+ActiveRecord::Schema.define(version: 2022_01_12_224121) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,11 +61,11 @@ ActiveRecord::Schema.define(version: 2022_01_09_160315) do
   end
 
   create_table "color_schemes", force: :cascade do |t|
+    t.integer "user_id", null: false
     t.string "color_u", null: false
     t.string "color_f", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_color_schemes_on_user_id", unique: true
   end
 
@@ -80,9 +80,13 @@ ActiveRecord::Schema.define(version: 2022_01_09_160315) do
   end
 
   create_table "letter_schemes", force: :cascade do |t|
+    t.integer "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "user_id", null: false
+    t.string "wing_lettering_mode", default: "custom", null: false
+    t.boolean "xcenters_like_corners"
+    t.boolean "tcenters_like_edges"
+    t.boolean "midges_like_edges"
     t.index ["user_id"], name: "index_letter_schemes_on_user_id", unique: true
   end
 
@@ -143,16 +147,18 @@ ActiveRecord::Schema.define(version: 2022_01_09_160315) do
     t.float "memo_time_s"
     t.string "buffer"
     t.integer "alg_set_id"
+    t.boolean "exclude_alg_holes"
+    t.boolean "exclude_algless_parts"
     t.index ["user_id", "name"], name: "index_training_sessions_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_training_sessions_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "admin", default: false, null: false
-    t.string "email"
+    t.string "email", null: false
     t.boolean "admin_confirmed", default: false
     t.boolean "email_confirmed", default: false
     t.string "confirm_token"

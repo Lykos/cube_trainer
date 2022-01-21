@@ -2,6 +2,7 @@
 
 # Controller that allows retrieval of stat types.
 # Note that it does NOT include which training_sessions have them.
+# TODO: Remove now that it exists in the frontend.
 class StatTypesController < ApplicationController
   before_action :set_stat_type, only: [:show]
 
@@ -15,7 +16,7 @@ class StatTypesController < ApplicationController
   def index
     respond_to do |format|
       format.html { render 'application/cube_trainer' }
-      format.json { render json: StatType::ALL.map(&:to_simple) }
+      format.json { render json: StatType::ALL }
     end
   end
 
@@ -24,13 +25,13 @@ class StatTypesController < ApplicationController
   def show
     respond_to do |format|
       format.html { render 'application/cube_trainer' }
-      format.json { render json: @stat_type.to_simple }
+      format.json { render json: @stat_type }
     end
   end
 
   private
 
   def set_stat_type
-    head :not_found unless (@stat_type = StatType.find_by(key: params[:id]))
+    head :not_found unless (@stat_type = StatType.find_by(id: params[:id]))
   end
 end

@@ -6,6 +6,7 @@ import { TrainingSessionFormsService } from '../training-session-forms.service';
 import { NewTrainingSession } from '../new-training-session.model';
 import { AlgSet } from '../alg-set.model';
 import { StatType } from '../stat-type.model';
+import { statTypes } from '../stat-types.const';
 import { Observable } from 'rxjs';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { create } from '@store/training-sessions.actions';
@@ -47,7 +48,7 @@ export class NewTrainingSessionComponent {
 
   get statTypesForCurrentTrainingSessionType() {
     if (this.lastTrainingSessionTypeForStatsTypes !== this.trainingSessionType) {
-      this.statTypesForLastTrainingSessionType = Object.assign([], this.trainingSessionType!.statsTypes);
+      this.statTypesForLastTrainingSessionType = statTypes.filter(s => !s.needsBoundedInputs || this.trainingSessionType!.hasBoundedInputs);
       this.lastTrainingSessionTypeForStatsTypes = this.trainingSessionType;
     }
     return this.statTypesForLastTrainingSessionType;
@@ -61,8 +62,12 @@ export class NewTrainingSessionComponent {
     return this.setupGroup.get('cubeSize')!;
   }
 
-  get buffer() {
+  get bufferControl() {
     return this.setupGroup.get('buffer')!;
+  }
+
+  get buffer() {
+    return this.bufferControl.value;
   }
 
   get goalBadness() {
@@ -105,6 +110,20 @@ export class NewTrainingSessionComponent {
     return this.algSetControl.value;
   }
 
+  get excludeAlglessParts() {
+    if (!this.buffer || this.excludeAlgHoles || !this.matchingAlgSets) {
+      return undefined;
+    }
+    return this.algSetGroup.get('excludeAlglessParts')!.value;
+  }
+
+  get excludeAlgHoles() {
+    if (!this.buffer || !this.matchingAlgSets) {
+      return undefined;
+    }
+    return this.algSetGroup.get('excludeAlgHoles')!.value;
+  }
+
   get selectedShowInputMode() {
     if (this.trainingSessionType && this.trainingSessionType.showInputModes.length == 1) {
       return this.trainingSessionType.showInputModes[0];
@@ -128,12 +147,16 @@ export class NewTrainingSessionComponent {
     }
   }
 
-  get bufferAlgSets(): AlgSet[] {
+  get matchingAlgSets(): readonly AlgSet[] {
     const trainingSessionType = this.trainingSessionType;
     if (!trainingSessionType || !trainingSessionType?.buffers?.length) {
       return [];
     }
-    const buffer = this.buffer.value;
+    // For alg sets without buffer, we don't filter and return all alg sets.
+    if (!trainingSessionType.buffers?.length) {
+      return trainingSessionType.algSets;
+    }
+    const buffer = this.buffer;
     if (!buffer) {
       return [];
     }
@@ -142,16 +165,21 @@ export class NewTrainingSessionComponent {
 
   get newTrainingSession(): NewTrainingSession {
     return {
-      trainingSessionType: this.trainingSessionType!,
+      // We cheat here: This is called when the id is nil,
+      // but when we call it at the end and use it as a complete NewTrainingSession,
+      // the id will be non-nil.
+      trainingSessionType: this.trainingSessionType!.id,
       name: this.name.value,
       known: !!this.trainingGroup.get('known')?.value,
       showInputMode: this.selectedShowInputMode,
-      buffer: this.buffer.value,
+      buffer: this.buffer.key,
       goalBadness: this.goalBadness.value,
       memoTimeS: this.memoTimeS.value,
       cubeSize: this.selectedCubeSize,
-      statTypes: this.pickedStatTypes.map(s => s.key),
-      algSet: this.algSet,
+      statTypes: this.pickedStatTypes.map(s => s.id),
+      algSetId: this.algSet?.id,
+      excludeAlgHoles: this.excludeAlgHoles,
+      excludeAlglessParts: this.excludeAlglessParts,
     };
   }
 

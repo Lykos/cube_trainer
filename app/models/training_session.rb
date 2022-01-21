@@ -27,6 +27,7 @@ class TrainingSession < ApplicationRecord
   validates :buffer, presence: true, if: -> { training_session_type&.buffer? }
   validates :cube_size, presence: true
   validate :cube_size_valid
+  validates :exclude_algless_parts, absence: true, unless: -> { training_session_type&.buffer? }
   validate :buffer_valid, if: -> { training_session_type&.buffer? }
   validates :memo_time_s, presence: true, if: -> { training_session_type&.memo_time? }
   validate :memo_time_s_valid, if: -> { training_session_type&.memo_time? }
@@ -44,9 +45,9 @@ class TrainingSession < ApplicationRecord
   def case_set
     @case_set ||=
       if buffer
-        training_session_type.case_set&.refinement(buffer)
+        training_session_type&.case_set&.refinement(buffer)
       else
-        training_session_type.case_set&.refinement
+        training_session_type&.case_set&.refinement
       end
   end
 
@@ -71,7 +72,7 @@ class TrainingSession < ApplicationRecord
   def training_cases
     return unless bounded_inputs?
 
-    @training_cases ||= case_set.cases.map { |c| to_training_case(c) }
+    @training_cases ||= create_training_cases
   end
 
   def color_scheme
@@ -86,84 +87,60 @@ class TrainingSession < ApplicationRecord
     used_training_sessions.find_by(training_session_type: training_session_type)
   end
 
-  # Returns a simple version for the current user that can be returned to the frontend.
-  def to_simple(simple_training_session_type = training_session_type.to_simple)
-    raise TypeError unless simple_training_session_type.is_a?(Hash)
-
-    {
-      id: id,
-      training_session_type: simple_training_session_type,
-      name: name,
-      known: known,
-      show_input_mode: show_input_mode,
-      buffer: part_to_simple(buffer),
-      goal_badness: goal_badness,
-      memo_time_s: memo_time_s,
-      cube_size: cube_size,
-      num_results: results.count,
-      training_cases: training_cases&.map(&:to_simple)
-    }
-  end
-
   def self.find_by_user_with_preloads(user)
     user.training_sessions.preload(:alg_set, :alg_overrides)
   end
 
-  # More efficient bulk `#to_simple`.
-  def self.multi_to_simple(training_sessions)
-    # rubocop:disable Layout/LineLength
-    simple_training_session_types =
-      TrainingSessionType.multi_to_simple(training_sessions.map(&:training_session_type)).index_by do |t|
-        t[:key]
-      end
-    # rubocop:enable Layout/LineLength
-    training_sessions.map do |t|
-      t.to_simple(simple_training_session_types[t.training_session_type.key])
-    end
+  def alg_override(casee)
+    alg_overrides.find { |alg| alg.casee == casee }
   end
 
-  def to_dump
-    {
-      training_session_type_key: training_session_type.key,
-      name: name,
-      known: known,
-      show_input_mode: show_input_mode,
-      buffer: PartType.new.serialize(buffer),
-      goal_badness: goal_badness,
-      memo_time_s: memo_time_s,
-      cube_size: cube_size,
-      results: results.map(&:to_dump),
-      stats: stats.map(&:to_dump),
-      alg_overrides: alg_overrides.map(&:to_dump)
-    }
+  def alg(casee)
+    alg_override(casee) || alg_set&.alg(casee)
   end
 
-  def commutator_override(casee)
-    alg_overrides.find { |alg| alg.casee == casee }&.commutator
-  end
+  def setup(algorithm)
+    return unless algorithm
+    raise TypeError unless algorithm.is_a?(TwistyPuzzles::Algorithm)
 
-  def commutator(casee)
-    commutator_override(casee) || alg_set&.commutator(casee)
-  end
-
-  def algorithm(casee)
-    commutator(casee)&.algorithm
-  end
-
-  def setup(casee)
-    alg_setup = algorithm(casee)&.inverse
-    color_scheme.setup + alg_setup if alg_setup
+    color_scheme.setup + algorithm.inverse
   end
 
   private
 
   def to_training_case(casee)
+    a = alg(casee)
     TrainingCase.new(
       training_session: self,
       casee: casee,
-      alg: commutator(casee),
-      setup: setup(casee)
+      alg: a,
+      setup: setup(a&.algorithm)
     )
+  end
+
+  def create_training_cases
+    training_cases = case_set.cases.map { |c| to_training_case(c) }
+    return without_alg_holes(training_cases) if exclude_alg_holes
+    return without_algless_parts(training_cases) if exclude_algless_parts
+
+    training_cases
+  end
+
+  def without_algless_parts(training_cases)
+    cases_with_algs = training_cases.filter_map { |t| t.alg && t.casee }
+    all_part_cycles = cases_with_algs.flat_map(&:part_cycles)
+    buffer_part_cycles = all_part_cycles.select { |c| c.part_type == buffer.class }
+    parts = buffer_part_cycles.flat_map(&:parts).uniq.flat_map(&:rotations).uniq
+    parts_without_algs = buffer.class::ELEMENTS - parts
+    training_cases.reject do |t|
+      t.casee.part_cycles.any? do |c|
+        c.part_type == buffer.class && c.contains_any_part?(parts_without_algs)
+      end
+    end
+  end
+
+  def without_alg_holes(training_cases)
+    training_cases.select(&:alg)
   end
 
   def grant_training_session_achievement
@@ -178,16 +155,24 @@ class TrainingSession < ApplicationRecord
   end
 
   def buffer_valid
+    return unless training_session_type
+
     training_session_type.validate_buffer(buffer, errors)
   end
 
   def cube_size_valid
+    return unless training_session_type
+
     training_session_type.validate_cube_size(cube_size, errors)
   end
 
   def memo_time_s_valid
     errors.add(:memo_time_s, 'has to be positive') unless memo_time_s.positive?
     errors.add(:memo_time_s, 'has to be below one day') unless memo_time_s < 1.day
+  end
+
+  def num_results
+    results.count
   end
 
   def set_stats

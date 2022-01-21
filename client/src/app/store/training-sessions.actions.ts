@@ -98,12 +98,57 @@ export const overrideAlg = createAction(
   props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
 );
  
-export const overrideAlgSuccess = createAction(
-  '[TrainingSessions] override alg success',
+export const createAlgOverride = createAction(
+  '[TrainingSessions] create alg override',
   props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
 );
  
-export const overrideAlgFailure = createAction(
-  '[TrainingSessions] override alg failure',
+export const createAlgOverrideSuccess = createAction(
+  '[TrainingSessions] create alg override success',
+  props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
+);
+ 
+export const createAlgOverrideFailure = createAction(
+  '[TrainingSessions] create alg override failure',
+  props<{ error: BackendActionError }>()
+);
+
+export const updateAlgOverride = createAction(
+  '[TrainingSessions] update alg override',
+  props<{ trainingSession: TrainingSession, algOverrideId: number, algOverride: AlgOverride }>()
+);
+ 
+export const updateAlgOverrideSuccess = createAction(
+  '[TrainingSessions] update alg override success',
+  props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
+);
+ 
+export const updateAlgOverrideFailure = createAction(
+  '[TrainingSessions] update alg override failure',
+  props<{ error: BackendActionError }>()
+);
+
+export const setAlgClick = createAction(
+  '[TrainingSessions] set alg click',
+  props<{ trainingSession: TrainingSession, trainingCase: TrainingCase }>()
+);
+
+export const dontSetAlg = createAction(
+  '[TrainingSessions] dont set alg',
+  props<{ trainingSession: TrainingSession }>()
+);
+
+export const setAlg = createAction(
+  '[TrainingSessions] set alg',
+  props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
+);
+ 
+export const setAlgSuccess = createAction(
+  '[TrainingSessions] set alg success',
+  props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
+);
+ 
+export const setAlgFailure = createAction(
+  '[TrainingSessions] set alg failure',
   props<{ error: BackendActionError }>()
 );

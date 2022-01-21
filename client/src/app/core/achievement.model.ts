@@ -1,5 +1,5 @@
 export interface Achievement {
-  readonly key: number;
+  readonly id: string;
   readonly name: string;
   readonly description: string;
 }

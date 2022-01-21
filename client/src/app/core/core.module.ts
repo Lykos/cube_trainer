@@ -22,6 +22,7 @@ import { LoginComponent } from './login/login.component';
 import { MaintainerNameComponent } from './maintainer-name/maintainer-name.component';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MessageComponent } from './message/message.component';
 import { MessagesComponent } from './messages/messages.component';
 import { NgModule } from '@angular/core';
@@ -34,6 +35,10 @@ import { ToolbarComponent } from './toolbar/toolbar.component';
 import { UpdatePasswordComponent } from './update-password/update-password.component';
 import { UserComponent } from './user/user.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { NavigationBarComponent } from './navigation-bar/navigation-bar.component';
+import { WelcomeComponent } from './welcome/welcome.component';
+import { LoggedInWelcomeComponent } from './logged-in-welcome/logged-in-welcome.component';
+import { LoggedOutWelcomeComponent } from './logged-out-welcome/logged-out-welcome.component';
 
 @NgModule({
   declarations: [
@@ -66,10 +71,15 @@ import { NotFoundComponent } from './not-found/not-found.component';
     MaintainerNameComponent,
     GoogleAnalyticsReferenceComponent,
     NotFoundComponent,
+    NavigationBarComponent,
+    WelcomeComponent,
+    LoggedInWelcomeComponent,
+    LoggedOutWelcomeComponent,
   ],
   imports: [
     FileSaverModule,
     MatBadgeModule,
+    MatTabsModule,
     MatToolbarModule,
     SharedModule,
     HttpClientModule,

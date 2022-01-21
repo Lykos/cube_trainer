@@ -19,6 +19,14 @@ module CaseSets
 
     attr_reader :part_type, :buffer, :pattern
 
+    def eql?(other)
+      self.class.equal?(other.class) && @part_type == other.part_type && @buffer == other.buffer
+    end
+
+    def hash
+      @hash ||= [self.class, @part_type, @buffer].hash
+    end
+
     def to_s
       "#{simple_class_name(@part_type).downcase} 3-cycles for buffer #{@buffer}"
     end

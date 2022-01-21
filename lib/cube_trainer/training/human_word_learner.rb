@@ -31,7 +31,6 @@ module CubeTrainer
 
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
-      # rubocop:disable Metrics/CyclomaticComplexity
       def execute(input)
         puts_and_say(input)
         time_s = nil
@@ -67,7 +66,6 @@ module CubeTrainer
         puts "Time: #{format_time(time_s)}; Failed attempts: #{failed_attempts}; Word: #{word}"
         PartialResult.new(time_s: time_s, failed_attempts: failed_attempts, word: word)
       end
-      # rubocop:enable Metrics/CyclomaticComplexity
       # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/AbcSize
     end

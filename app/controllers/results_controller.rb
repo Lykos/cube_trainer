@@ -12,7 +12,6 @@ class ResultsController < ApplicationController
                                .order(created_at: :desc)
                                .limit(params[:limit])
                                .offset(params[:offset])
-                               .map(&:to_simple)
     render json: results, status: :ok
   end
 
@@ -21,7 +20,7 @@ class ResultsController < ApplicationController
     if !@result.valid?
       render json: @result.errors, status: :bad_request
     elsif @result.save
-      render json: @result.to_simple, status: :ok
+      render json: @result, status: :ok
     else
       render json: @result.errors, status: :unprocessable_entity
     end
@@ -29,13 +28,13 @@ class ResultsController < ApplicationController
 
   # GET /api/training_sessions/1/results/1.json
   def show
-    render json: @result.to_simple, status: :ok
+    render json: @result, status: :ok
   end
 
   # PATCH/PUT /api/training_sessions/1/results/1.json
   def update
     if @result.update(result_params)
-      render json: @result.to_simple, status: :ok
+      render json: @result, status: :ok
     else
       render json: @result.errors, status: :unprocessable_entity
     end
@@ -70,7 +69,7 @@ class ResultsController < ApplicationController
       :case_key, :time_s, :failed_attempts, :word, :success,
       :num_hints
     )
-    fixed_params[:casee] = CaseType.new.cast(fixed_params[:case_key])
+    fixed_params[:casee] = CaseType.new.cast(fixed_params[:case_key]) if fixed_params[:case_key]
     fixed_params.delete(:case_key)
     fixed_params
   end

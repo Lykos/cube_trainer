@@ -11,8 +11,9 @@ RSpec.describe 'Achievements', type: :request do
     it 'returns http success' do
       get '/api/achievements', headers: headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
-      expect(parsed_body).to eq_modulo_symbol_vs_string(Achievement::ALL.map(&:to_simple))
+      parsed_body = JSON.parse(response.body).map(&:deep_symbolize_keys)
+      expect(parsed_body.length).to eq(Achievement::ALL.length)
+      expect(parsed_body).to include({ id: 'fake', name: 'Fake', description: 'Fake achievement for tests.' })
     end
   end
 
@@ -20,8 +21,8 @@ RSpec.describe 'Achievements', type: :request do
     it 'returns http success' do
       get '/api/achievements/fake', headers: headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
-      expect(parsed_body).to eq_modulo_symbol_vs_string(Achievement.find_by(key: :fake).to_simple)
+      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      expect(parsed_body).to eq({ id: 'fake', name: 'Fake', description: 'Fake achievement for tests.' })
     end
 
     it 'returns not found for unknown achievements' do

@@ -10,39 +10,52 @@ import { AlgCountsRequest, SamplingMethod } from './alg-counts-request'
 import { AlgCountsResponse } from './alg-counts-response'
 import { ExhaustiveSamplingStrategy } from './exhaustive-sampling-strategy';
 import { RandomSamplingStrategy } from './random-sampling-strategy';
-import { now } from '../instant';
+import { now, Instant } from '../instant';
 import { seconds } from '../duration';
 import { find } from '../utils';
 import { sumVectorSpaceElements } from './vector-space-element';
 
 const numIterations = 20000;
-const slowGroupThreshold = seconds(10);
-const outputInterval = seconds(1);
+
+class ProgressLogger {
+  private readonly slowComputationThreshold = seconds(10);
+  private readonly outputInterval = seconds(1);
+  private computationsDone = 0;
+  private lastOutput: Instant;
+
+  constructor(private readonly totalComputations: number,
+	      private readonly start: Instant) {
+    this.lastOutput = start;
+  }
+
+  compute<X>(computation: () => X): X {
+    const computationStart = now();
+    const result = computation();
+    const computationEnd = now();
+    const computationElapsed = computationEnd.minusInstant(computationStart);
+    const totalElapsed = computationEnd.minusInstant(this.start);
+    const elapsedSinceLastOutput = computationEnd.minusInstant(this.lastOutput);
+    if (elapsedSinceLastOutput.greaterThan(this.outputInterval)) {
+      this.lastOutput = computationEnd;
+      const computationsPerSecond = this.computationsDone / totalElapsed.toSeconds();
+      // TODO: Get away from console.log
+      console.log(`${this.computationsDone / this.totalComputations} done (${this.computationsDone} / ${this.totalComputations}) with a rate of ${computationsPerSecond} computations per second`);
+    }
+    if (computationElapsed.greaterThan(this.slowComputationThreshold)) {
+      console.log(`Slow computation (${computationElapsed.toSeconds()} seconds)`, computation);
+    }
+    ++this.computationsDone;
+    return result;
+  }
+}
 
 function expectedAlgCountsForPieces(pieces: PiecePermutationDescription, methodDescription: PieceMethodDescription, samplingMethod: SamplingMethod): AlgCounts {
   const solver = createSolver(new Decider(pieces, methodDescription), pieces.pieceDescription);
   const samplingStrategy = samplingMethod === SamplingMethod.EXHAUSTIVE ? new ExhaustiveSamplingStrategy(pieces) : new RandomSamplingStrategy(pieces, numIterations);
   const groups = samplingStrategy.groups();
-  let groupsDone = 0;
-  const start = now()
-  let lastOutput = start;
+  const progressLogger = new ProgressLogger(groups.length, now());
   return expectedValue(groups.flatMap(group => {
-    const groupStart = now();
-    const algCounts = solver.algCounts(group);
-    const groupEnd = now();
-    ++groupsDone;
-    const elapsedSinceLastOutput = groupEnd.minusInstant(lastOutput);
-    const groupElapsed = groupEnd.minusInstant(groupStart);
-    const totalElapsed = groupEnd.minusInstant(start);
-    if (elapsedSinceLastOutput.greaterThan(outputInterval)) {
-      lastOutput = groupEnd;
-      const groupsPerSecond = groupsDone / totalElapsed.toSeconds();
-      console.log(`${groupsDone / groups.length} done (${groupsDone} / ${groups.length}) with a rate of ${groupsPerSecond} groups per second`);
-    }
-    if (groupElapsed.greaterThan(slowGroupThreshold)) {
-      console.log(`Slow group (${groupElapsed.toSeconds()} seconds)`, group);
-    }
-    return algCounts;
+    return progressLogger.compute(() => solver.algCounts(group));
   }));
 }
 

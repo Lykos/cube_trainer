@@ -1,4 +1,5 @@
 import { createSelector, MemoizedSelector, createFeatureSelector } from '@ngrx/store';
+import { calculateStats } from '@training/calculate-stats';
 import { TrainerState, notStartedStopwatchState, isRunning } from './trainer.state';
 import { TrainingSession } from '@training/training-session.model';
 import { Result } from '@training/result.model';
@@ -10,7 +11,7 @@ import {
   selectResultsTotal as selectResultsTotalFunction,
 } from './trainer.reducer';
 import { selectSelectedTrainingSessionId } from './router.selectors';
-import { selectTrainingSessionEntities } from './training-sessions.selectors';
+import { selectTrainingSessionEntities, selectSelectedTrainingSession } from './training-sessions.selectors';
 import { Optional, orElse, mapOptional, flatMapOptional, ofNull, some, none, hasValue } from '@utils/optional';
 import { isBackendActionLoading, isBackendActionFailure, isBackendActionNotStarted, maybeBackendActionError } from '@shared/backend-action-state.model';
 
@@ -107,7 +108,22 @@ export const selectPageSize = createSelector(
 
 export const selectResults = createSelector(
   selectResultsState,
-  maybeRs => mapOptional(maybeRs, selectAllResultsFunction));
+  maybeRs => mapOptional(maybeRs, selectAllResultsFunction)
+);
+
+
+export const selectStats = createSelector(
+  selectSelectedTrainingSession,
+  selectResults,
+  (maybeTrainingSession, maybeResults) => flatMapOptional(
+    maybeTrainingSession,
+    trainingSession =>
+      mapOptional(
+	maybeResults,
+	results => calculateStats(trainingSession, results)
+      )
+  )
+);
 
 export const selectResultsTotal = createSelector(
   selectResultsState,

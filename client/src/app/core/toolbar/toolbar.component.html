@@ -1,24 +1,27 @@
-<mat-toolbar color="primary">
-  <ng-container *ngIf="loggedIn$ | async">
-    <a id="toolbar-title" mat-button routerLink="/training-sessions">
-      Cube Trainer
-    </a>
-  </ng-container>
-  <div class="horizontal-spacer"></div>
-  <ng-container *ngIf="loggedIn$ | async; else loggedOutBlock">
-    <a mat-button routerLink="/user" [matBadge]="unreadMessagesCount$ | async" matBadgeColor="accent">
-      {{ userName$ | async }}
-    </a>
-    <button mat-button (click)="onLogout()">
-      Logout
-    </button>
-  </ng-container>
-  <ng-template #loggedOutBlock>
-    <a id="toolbar-login" mat-button routerLink="/login">
-      Login
-    </a>
-    <a id="toolbar-signup" mat-button routerLink="/signup">
-      Sign Up
-    </a>
-  </ng-template>
-</mat-toolbar>
+<div>
+  <mat-toolbar color="primary">
+    <ng-container *ngIf="loggedIn$ | async">
+      <a id="toolbar-title" mat-button routerLink="/training-sessions">
+        Cube Trainer
+      </a>
+    </ng-container>
+    <div class="horizontal-spacer"></div>
+    <ng-container *ngIf="loggedIn$ | async; else loggedOutBlock">
+      <a id="user-name" mat-button routerLink="/user" [matBadge]="unreadMessagesCount$ | async" matBadgeColor="accent">
+        {{ userName$ | async }}
+      </a>
+      <button mat-button (click)="onLogout()">
+        Logout
+      </button>
+    </ng-container>
+    <ng-template #loggedOutBlock>
+      <a id="toolbar-login" mat-button routerLink="/login">
+        Login
+      </a>
+      <a id="toolbar-signup" mat-button routerLink="/signup">
+        Sign Up
+      </a>
+    </ng-template>
+  </mat-toolbar>
+  <cube-trainer-navigation-bar *ngIf="loggedIn$ | async"></cube-trainer-navigation-bar>
+<div>

@@ -40,32 +40,6 @@ RSpec.describe Result, type: :model do
     end
   end
 
-  describe '#to_dump' do
-    it 'returns a simple hash' do
-      result = training_session.results.new(casee: casee, time_s: 10)
-      expect(result.to_dump).to include(case_key: 'Edge(UF DF UB)', time_s: 10, success: true)
-    end
-  end
-
-  describe '#to_simple' do
-    subject(:result) { training_session.results.new(casee: casee, time_s: 10) }
-
-    context 'when no letter scheme is defined' do
-      it 'returns a simple hash with no letter scheme applied' do
-        expect(result.to_simple).to include(case_key: 'Edge(UF DF UB)', case_name: 'DF UB', time_s: 10, success: true)
-      end
-    end
-
-    context 'when a letter scheme is defined' do
-      include_context 'with letter scheme'
-
-      it 'returns a simple hash with the letter scheme applied' do
-        letter_scheme
-        expect(result.to_simple).to include(case_key: 'Edge(UF DF UB)', case_name: 'U D', time_s: 10, success: true)
-      end
-    end
-  end
-
   describe '#time' do
     it 'returns the seconds' do
       result = training_session.results.new(casee: casee, time_s: 10)
@@ -85,7 +59,7 @@ RSpec.describe Result, type: :model do
       100.times do
         training_session.results.create!(casee: casee, time_s: 10)
       end
-      expect(user.achievement_grants.find_by(achievement: Achievement.find_by(key: :enthusiast))).not_to be_nil
+      expect(user.achievement_grants.find_by(achievement: Achievement.find_by(id: :enthusiast))).not_to be_nil
     end
 
     it 'creates no achievement after 99 results' do
@@ -94,7 +68,7 @@ RSpec.describe Result, type: :model do
       99.times do
         training_session.results.create!(casee: casee, time_s: 10)
       end
-      expect(user.achievement_grants.find_by(achievement: Achievement.find_by(key: :enthusiast))).to be_nil
+      expect(user.achievement_grants.find_by(achievement: Achievement.find_by(id: :enthusiast))).to be_nil
     end
   end
 end

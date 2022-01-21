@@ -135,6 +135,10 @@ shared_context 'with letter scheme' do
     letter_scheme = LetterScheme.find_or_initialize_by(
       user: user
     )
+    letter_scheme.wing_lettering_mode = :like_edges
+    letter_scheme.xcenters_like_corners = true
+    letter_scheme.tcenters_like_edges = true
+    letter_scheme.midges_like_edges = true
     letter_scheme.save!
     letter_scheme.mappings.create!(part: uf, letter: 'A')
     letter_scheme.mappings.create!(part: ub, letter: 'D')
@@ -149,6 +153,8 @@ shared_context 'with edges' do
   let(:ur) { TwistyPuzzles::Edge.for_face_symbols(%i[U R]) }
   let(:ul) { TwistyPuzzles::Edge.for_face_symbols(%i[U L]) }
   let(:ub) { TwistyPuzzles::Edge.for_face_symbols(%i[U B]) }
+  let(:lu) { TwistyPuzzles::Edge.for_face_symbols(%i[L U]) }
+  let(:ru) { TwistyPuzzles::Edge.for_face_symbols(%i[R U]) }
   let(:df) { TwistyPuzzles::Edge.for_face_symbols(%i[D F]) }
 end
 

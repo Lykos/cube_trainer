@@ -10,7 +10,7 @@ class LetterSchemesController < ApplicationController
 
   # GET /api/letter_scheme
   def show
-    render json: @letter_scheme.to_simple
+    render json: @letter_scheme
   end
 
   # POST /api/letter_scheme
@@ -18,7 +18,7 @@ class LetterSchemesController < ApplicationController
     if !@letter_scheme.valid?
       render json: @letter_scheme.errors, status: :bad_request
     elsif @letter_scheme.save
-      render json: @letter_scheme.to_simple, status: :created
+      render json: @letter_scheme, status: :created
     else
       render json: @letter_scheme.errors, status: :unprocessable_entity
     end
@@ -33,7 +33,7 @@ class LetterSchemesController < ApplicationController
       # Note that these can render errors and throw rollback exceptions.
       update_letter_scheme(update_params)
       update_mappings(mappings_params)
-      render json: @letter_scheme.to_simple, status: :ok
+      render json: @letter_scheme, status: :ok
     end
   end
 
@@ -83,10 +83,22 @@ class LetterSchemesController < ApplicationController
   def letter_scheme_params
     fixed_params = params
                    .require(:letter_scheme)
-                   .permit(mappings: [:letter, { part: :key }])
+                   .permit(:wing_lettering_mode, :xcenters_like_corners, :tcenters_like_edges,
+                           :midges_like_edges, mappings: [
+                             :letter, { part: :key }
+                           ])
     fixed_params[:mappings].each { |m| m[:part] = m[:part][:key] if m[:part] }
     fixed_params[:letter_scheme_mappings_attributes] = fixed_params[:mappings]
     fixed_params.delete(:mappings)
+    fixed_params[:wing_lettering_mode] = :custom if fixed_params[:wing_lettering_mode] == 'custom'
+    if fixed_params[:wing_lettering_mode] == 'like edges'
+      fixed_params[:wing_lettering_mode] =
+        :like_edges
+    end
+    if fixed_params[:wing_lettering_mode] == 'like corners'
+      fixed_params[:wing_lettering_mode] =
+        :like_corners
+    end
     fixed_params
   end
 end

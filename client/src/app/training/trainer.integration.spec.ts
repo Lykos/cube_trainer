@@ -19,7 +19,6 @@ import { of } from 'rxjs';
 import { BackendActionLoadErrorComponent } from '@shared/backend-action-load-error/backend-action-load-error.component';
 import { TrainingCase } from './training-case.model';
 import { TrainingSession } from './training-session.model';
-import { TrainingSessionType } from './training-session-type.model';
 import { ShowInputMode } from './show-input-mode.model';
 import { GeneratorType } from './generator-type.model';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -36,23 +35,11 @@ import { EffectsModule } from '@ngrx/effects';
 import { TrainingSessionsEffects } from '@effects/training-sessions.effects';
 import { TrainerEffects } from '@effects/trainer.effects';
 
-const trainingSessionType: TrainingSessionType = {
-  key: 'test session type key',
-  name: 'test session type name',
-  showInputModes: [ShowInputMode.Name, ShowInputMode.Picture],
-  generatorType: GeneratorType.Case,
-  hasGoalBadness: true,
-  hasBoundedInputs: true,
-  hasMemoTime: false,
-  buffers: [],
-  statsTypes: [],
-  algSets: [],
-}
-
 const item: TrainingCase = {
   caseKey: 'test case key',
   caseName: 'test case name',
   alg: 'solve it',
+  algSource: { tag: 'original' },
 };
 
 const trainingSessionId = 56;
@@ -65,7 +52,8 @@ const trainingSession: TrainingSession = {
   known: false,
   showInputMode: ShowInputMode.Name,
   goalBadness: 2,
-  trainingSessionType
+  generatorType: GeneratorType.Case,
+  stats: [],
 };
 
 describe('TrainerComponentIntegration', () => {

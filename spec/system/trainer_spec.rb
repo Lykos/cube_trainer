@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'twisty_puzzles'
 
-xdescribe 'trainer', type: :system do
+describe 'trainer', type: :system do
   include_context 'with user abc'
   include_context 'with training session'
 
@@ -12,19 +13,13 @@ xdescribe 'trainer', type: :system do
 
   it 'allows to train' do
     login(user)
-    sleep(0.5)
 
     # TODO: Figure out how to identify the right button in the training_session list.
 
     visit "/training-sessions/#{training_session.id}"
 
-    sleep(10)
     click_button 'Start'
-    sleep(0.5)
     click_button 'Stop and Start'
-    sleep(0.5)
     click_button 'Stop and Pause'
-
-    # TODO: Check hints
   end
 end

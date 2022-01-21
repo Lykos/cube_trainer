@@ -1,19 +1,20 @@
 # frozen_string_literal: true
 
 # Controller for stats that a user had for one training session.
+# TODO: Remove now that it exists in the frontend.
 class StatsController < ApplicationController
   before_action :set_training_session
   before_action :set_stat, only: %i[show destroy]
 
   # GET /api/training_sessions/1/stats
   def index
-    stats = @training_session.stats.map(&:to_simple)
+    stats = @training_session.stats
     render json: stats, status: :ok
   end
 
   # GET /api/training_sessions/1/stats/1
   def show
-    render json: @stat.to_simple, status: :ok
+    render json: @stat, status: :ok
   end
 
   # DELETE /api/training_sessions/1/stats/1

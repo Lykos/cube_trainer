@@ -3,16 +3,17 @@ import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
 import { NewLetterScheme } from '../new-letter-scheme.model';
-import { LetterSchemeMapping } from '../letter-scheme-base.model';
+import { LetterSchemeMapping, WingLetteringMode } from '../letter-scheme-base.model';
 import { LetterSchemesService } from '../letter-schemes.service';
 import { PartTypesService } from '../part-types.service';
-import { PartType } from '../part-type.model';
+import { PartType, PartTypeName } from '../part-type.model';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-letter-scheme',
-  templateUrl: './new-letter-scheme.component.html'
+  templateUrl: './new-letter-scheme.component.html',
+  styleUrls: ['./new-letter-scheme.component.css'],
 })
 export class NewLetterSchemeComponent implements OnInit {
   letterSchemeForm?: FormGroup;
@@ -28,18 +29,15 @@ export class NewLetterSchemeComponent implements OnInit {
     return control.invalid && (control.dirty || control.touched);
   }
 
-  get separator() {
-    return ':';
-  }
-
-  partKey(partType: PartType, part: string) {
-    return `#{partType}#{this.separator}#{part}`;
-  }
-
   ngOnInit() {
     this.partTypesService.list().subscribe((partTypes: PartType[]) => {
       this.partTypes = partTypes
-      const formGroup: { [key: string]: any; } = {};
+      const formGroup: { [key: string]: any; } = {
+        wingLetteringMode: [WingLetteringMode.LikeEdges],
+        xcentersLikeCorners: [true],
+        tcentersLikeEdges: [true],
+        midgesLikeEdges: [true],
+      };
       partTypes.forEach(partType => {
         partType.parts.forEach(part => {
           formGroup[part.key] = [''];
@@ -49,17 +47,63 @@ export class NewLetterSchemeComponent implements OnInit {
     });
   }
 
+  get wingLetteringModeEnum(): typeof WingLetteringMode {
+    return WingLetteringMode;
+  }
+
+  get customizedPartTypes(): PartType[] {
+    return this.partTypes.filter(p => this.customized(p));
+  }
+
+  private customized(partType: PartType): boolean {
+    if (partType.name === PartTypeName.Wing && this.wingLetteringMode !== WingLetteringMode.Custom) {
+      return false;
+    }
+    if (partType.name === PartTypeName.XCenter && this.xcentersLikeCorners) {
+      return false;
+    }
+    if (partType.name === PartTypeName.TCenter && this.tcentersLikeEdges) {
+      return false;
+    }
+    if (partType.name === PartTypeName.Midge && this.midgesLikeEdges) {
+      return false;
+    }
+    return true
+  }
+
+  get wingLetteringMode(): WingLetteringMode {
+    return this.letterSchemeForm!.get('wingLetteringMode')!.value;
+  }
+
+  get xcentersLikeCorners() {
+    return this.letterSchemeForm!.get('xcentersLikeCorners')!.value;
+  }
+
+  get tcentersLikeEdges() {
+    return this.letterSchemeForm!.get('tcentersLikeEdges')!.value;
+  }
+
+  get midgesLikeEdges() {
+    return this.letterSchemeForm!.get('midgesLikeEdges')!.value;
+  }
+
   get newLetterScheme(): NewLetterScheme {
     const mappings: LetterSchemeMapping[] = [];
-    this.partTypes.forEach(partType => {
-      return partType.parts.forEach(part => {
+    for (let partType of this.customizedPartTypes) {
+      for (let part of partType.parts) {
         const letter = this.letterSchemeForm!.get(part.key)!.value;
         if (letter) {
           mappings.push({part, letter});
         }
-      });
-    });
-    return { mappings };
+      }
+    }
+    return {
+      wingLetteringMode: this.wingLetteringMode,
+      xcentersLikeCorners: this.xcentersLikeCorners,
+      tcentersLikeEdges: this.tcentersLikeEdges,
+      midgesLikeEdges: this.midgesLikeEdges,
+      mappings,
+    };
   }
 
   onSubmit() {

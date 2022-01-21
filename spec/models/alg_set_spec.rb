@@ -23,7 +23,7 @@ RSpec.describe AlgSet, type: :model do
 
   let(:alg_set) do
     alg_spreadsheet.alg_sets.create!(
-      training_session_type: TrainingSessionType.find_by!(key: :edge_commutators),
+      training_session_type: TrainingSessionType.find(:edge_commutators),
       sheet_title: 'UF',
       case_set: CaseSets::BufferedThreeCycleSet.new(TwistyPuzzles::Edge, TwistyPuzzles::Edge.for_face_symbols(%i[U F]))
     )
@@ -39,17 +39,17 @@ RSpec.describe AlgSet, type: :model do
   describe '#alg' do
     it 'finds a commutator for the given case' do
       alg
-      expect(alg_set.commutator(create_case(uf, df, ub))).to eq(commutator)
+      expect(alg_set.alg(create_case(uf, df, ub)).commutator).to eq(commutator)
     end
 
     it 'finds a commutator for the given case based on its inverse' do
       alg
-      expect(alg_set.commutator(create_case(uf, ub, df))).to eq(commutator.inverse)
+      expect(alg_set.alg(create_case(uf, ub, df)).commutator).to eq(commutator.inverse)
     end
 
     it 'returns nil if there is no commutator for the given case' do
       alg
-      expect(alg_set.commutator(create_case(uf, ur, ub))).to be(nil)
+      expect(alg_set.alg(create_case(uf, ur, ub))).to be(nil)
     end
   end
 end

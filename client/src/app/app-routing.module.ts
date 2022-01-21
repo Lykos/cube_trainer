@@ -21,6 +21,7 @@ import { ConfirmEmailComponent } from '@core/confirm-email/confirm-email.compone
 import { TrainingSessionsComponent } from './training/training-sessions/training-sessions.component';
 import { NewTrainingSessionComponent } from './training/new-training-session/new-training-session.component';
 import { TrainerComponent } from './training/trainer/trainer.component';
+import { WelcomeComponent } from '@core/welcome/welcome.component';
 import { AboutComponent } from '@core/about/about.component';
 import { CookiePolicyComponent } from '@core/cookie-policy/cookie-policy.component';
 import { PrivacyPolicyComponent } from '@core/privacy-policy/privacy-policy.component';
@@ -32,6 +33,7 @@ import { RouterModule, Routes, ExtraOptions } from '@angular/router';
 import { environment } from '@environment';
 
 const routes: Routes = [
+  { path: 'welcome', component: WelcomeComponent },
   { path: 'method-explorer', component: MethodExplorerComponent },
   { path: 'confirm-email', component: ConfirmEmailComponent },
   { path: 'signup', component: SignupComponent },
@@ -43,7 +45,7 @@ const routes: Routes = [
   { path: 'account-deleted', component: AccountDeletedComponent },
   { path: 'training-sessions', component: TrainingSessionsComponent, canActivate: [AngularTokenService] },
   { path: 'achievements', component: AchievementsComponent },
-  { path: 'achievements/:achievementKey', component: AchievementComponent },
+  { path: 'achievements/:achievementId', component: AchievementComponent },
   { path: 'user', component: UserComponent, canActivate: [AngularTokenService] },
   { path: 'edit-user', component: EditUserComponent, canActivate: [AngularTokenService] },
   { path: 'achievement-grants', component: AchievementGrantsComponent, canActivate: [AngularTokenService] },
@@ -59,8 +61,8 @@ const routes: Routes = [
   { path: 'cookie-policy', component: CookiePolicyComponent },
   { path: 'terms-and-conditions', component: TermsAndConditionsComponent },
   { path: 'disclaimer', component: DisclaimerComponent },
-  { path: '404', component: NotFoundComponent },
-  { path: '**', redirectTo: '/404' }
+  { path: '', pathMatch: 'full', redirectTo: '/welcome' },
+  { path: '**', component: NotFoundComponent },
 ];
 
 const routerOptions: ExtraOptions = {

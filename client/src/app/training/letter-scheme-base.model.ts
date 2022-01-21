@@ -5,6 +5,16 @@ export interface LetterSchemeMapping {
   readonly letter: string;
 }
 
+export enum WingLetteringMode {
+  LikeEdges = 'like edges',
+  LikeCorners = 'like corners',
+  Custom = 'custom',
+}
+
 export interface LetterSchemeBase {
+  readonly wingLetteringMode: WingLetteringMode;
+  readonly xcentersLikeCorners: boolean;
+  readonly tcentersLikeEdges: boolean;
+  readonly midgesLikeEdges: boolean;
   readonly mappings: LetterSchemeMapping[];
 }

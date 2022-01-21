@@ -13,7 +13,7 @@ describe 'signup', type: :system do
     click_link 'Sign Up'
 
     fill_in 'Username', with: 'system test user'
-    fill_in 'Email', with: 'system_test@example.org'
+    fill_in 'Email', with: 'system_test+signup@example.org'
     find('#password').fill_in 'Password', with: 'password'
     fill_in 'Confirm Password', with: 'password'
     find(:css, '#cube-trainer-terms-and-conditions-accepted').set(true)
@@ -27,15 +27,16 @@ describe 'signup', type: :system do
     confirm_path = extract_first_link_path(confirmation_email)
     expect(confirm_path).to start_with('/api/auth/confirmation')
 
-    # TODO: Instead, just use `visit confirm_path`
-    # Doesn't work due to some connection errors.
-    user = User.find_by(name: 'system test user')
-    user.admin_confirm!
+    # TODO: Fix this
+    # visit confirm_path
+    # expect(page).to have_text('Email Confirmed')
+    # TODO: Remove this
+    user = User.find_by!(email: 'system_test+signup@example.org')
     user.confirm
-    user.password = 'password'
 
+    # Note that the password can't be read from the database
+    user = User.new(email: 'system_test+signup@example.org', password: 'password')
     login(user)
-    visit '/modes'
     expect(page).to have_text('system test user')
     expect(page).to have_text('Logout')
   end

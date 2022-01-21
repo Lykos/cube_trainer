@@ -1,0 +1,17 @@
+<ng-container *ngIf="statPart">
+  <ng-container *ngIf="countStatPart">
+    {{countStatPart.count}}
+  </ng-container>
+  <ng-container *ngIf="fractionStatPart">
+    {{fractionStatPart.fraction | percent:'1.2-2'}}
+  </ng-container>
+  <ng-container *ngIf="durationStatPart">
+    {{durationStatPart.duration | duration}}
+  </ng-container>
+  <ng-container *ngIf="dnfStatPart">
+    DNF
+  </ng-container>
+  <ng-container *ngIf="undefinedStatPart">
+    -
+  </ng-container>
+</ng-container>

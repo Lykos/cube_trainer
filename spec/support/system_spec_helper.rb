@@ -2,11 +2,13 @@
 
 def login(user)
   visit ''
-  click_link 'Login'
+  find('#toolbar-login').click
   fill_in 'Email', with: user.email
   fill_in 'Password', with: user.password
   click_button 'Submit'
-  sleep(0.1)
+  within('#user-name') do
+    expect(page).to have_text(user.name)
+  end
 end
 
 # Use a material design select.

@@ -22,7 +22,7 @@ describe CaseSets::ConcreteCaseSet do
     describe concrete_case_set do
       it 'can be found by name' do
         class_name = CaseSets::ConcreteCaseSet.simple_class_name(concrete_case_set.class)
-        expect(CaseSets::ConcreteCaseSet.class_by_name(class_name)).to eq(concrete_case_set.class)
+        expect(CaseSets::ConcreteCaseSet.class_by_name(class_name).name).to eq(concrete_case_set.class.name)
       end
 
       it 'can be serialized and deserialized' do

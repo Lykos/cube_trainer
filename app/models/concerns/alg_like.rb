@@ -14,6 +14,7 @@ module AlgLike
     validates :alg, presence: true
     validates :casee, presence: true
     validate :validate_case, :validate_alg
+    delegate :algorithm, to: :commutator
   end
 
   def commutator
@@ -24,13 +25,10 @@ module AlgLike
     raise NotImplementedError
   end
 
-  def to_simple
-    {
-      id: id,
-      case_key: CaseType.new.serialize(casee),
-      case_name: owning_set.case_name(casee),
-      alg: alg.to_s
-    }
+  def inverse
+    result = dup
+    result.alg = commutator.inverse.to_s
+    result
   end
 
   private

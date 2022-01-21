@@ -22,34 +22,10 @@ class User < ApplicationRecord
     admin
   end
 
-  def to_simple
-    {
-      id: id,
-      name: name,
-      email: email,
-      created_at: created_at,
-      admin: admin
-    }
-  end
+  def grant_achievement_if_not_granted(achievement_id)
+    return if achievement_grants.exists?(achievement: achievement_id)
 
-  def to_dump
-    to_simple.merge!(
-      {
-        provider: provider,
-        uid: uid,
-        color_scheme: color_scheme&.to_dump,
-        letter_scheme: letter_scheme&.to_dump,
-        achievement_grants: achievement_grants.map(&:to_dump),
-        messages: messages.map(&:to_dump),
-        training_sessions: training_sessions.map(&:to_dump)
-      }
-    )
-  end
-
-  def grant_achievement_if_not_granted(achievement_key)
-    return if achievement_grants.exists?(achievement: achievement_key)
-
-    achievement_grants.create(achievement: achievement_key)
+    achievement_grants.create(achievement: achievement_id)
   end
 
   def admin_confirm!

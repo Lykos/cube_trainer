@@ -32,8 +32,8 @@ RSpec.describe 'TrainingSessions', type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be(1)
-      parsed_training_session = parsed_body.find { |p| p['id'] == training_session.id }
-      expect(parsed_training_session).to eq_modulo_symbol_vs_string(training_session.to_simple)
+      parsed_training_session = parsed_body.find { |p| p['id'] == training_session.id }.deep_symbolize_keys
+      expect(parsed_training_session).to include(show_input_mode: 'name', generator_type: 'case', buffer: { key: 'Edge:UF', name: 'UF' }, goal_badness: 1.0, cube_size: 3, known: false)
     end
 
     it 'returns nothing for another user' do
@@ -49,8 +49,8 @@ RSpec.describe 'TrainingSessions', type: :request do
     it 'returns http success' do
       get "/api/training_sessions/#{training_session.id}", headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
-      expect(parsed_body).to eq_modulo_symbol_vs_string(training_session.to_simple)
+      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      expect(parsed_body).to include(show_input_mode: 'name', generator_type: 'case', buffer: { key: 'Edge:UF', name: 'UF' }, goal_badness: 1.0, cube_size: 3, known: false)
     end
 
     it 'returns not found for unknown training_sessions' do
@@ -77,7 +77,7 @@ RSpec.describe 'TrainingSessions', type: :request do
         training_session: {
           name: 'test_training_session2',
           show_input_mode: :name,
-          training_session_type: { key: :floating_2flips },
+          training_session_type: :floating_2flips,
           goal_badness: 1,
           cube_size: 3
         }
@@ -93,7 +93,7 @@ RSpec.describe 'TrainingSessions', type: :request do
         training_session: {
           name: 'test_training_session2',
           show_input_mode: :lol,
-          training_session_type: { key: :floating_2flips },
+          training_session_type: :floating_2flips,
           goal_badness: 1,
           cube_size: 3
         }

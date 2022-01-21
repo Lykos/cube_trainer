@@ -12,18 +12,14 @@ describe 'new letter scheme', type: :system do
   it 'allows to create a new letter scheme' do
     login(user)
 
-    visit '/modes'
     click_link user.name
     click_link 'Create Letter Scheme'
 
-    sleep(0.5)
     fill_in 'ULB', with: 'A'
     fill_in 'URF', with: 'B'
 
-    sleep(0.5)
     click_button 'Submit'
 
-    sleep(1)
     expect(page).to have_text('Letter scheme created!')
   end
 end
