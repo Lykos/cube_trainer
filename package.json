@@ -63,7 +63,7 @@
     "@ngrx/schematics": "^13.0.2",
     "@types/actioncable": "^5.2.7",
     "@types/chai": "^4.2.22",
-    "@types/file-saver": "^2.0.4",
+    "@types/file-saver": "^2.0.5",
     "@types/jasmine": "^3.10.3",
     "@types/node": "^16.11.7",
     "@typescript-eslint/eslint-plugin": "4.33.0",
