@@ -6,7 +6,7 @@ require 'byebug'
 RSpec.describe Stat, type: :model do
   include_context 'with stat'
 
-  let(:stat_type) { StatType.find_by(id: :averages) }
+  let(:stat_type) { :averages }
 
   describe '#create' do
     it 'creates a statistician achievement' do

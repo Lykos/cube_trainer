@@ -2,7 +2,6 @@
 
 # Model for stats (i.e. which stat type is assigned to which training session).
 class Stat < ApplicationRecord
-  attribute :stat_type, :stat_type
   belongs_to :training_session
 
   after_create :grant_stat_creator_achievement

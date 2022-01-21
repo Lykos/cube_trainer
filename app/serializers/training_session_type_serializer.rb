@@ -7,7 +7,6 @@ class TrainingSessionTypeSerializer < ActiveModel::Serializer
   attributes :id, :name, :generator_type, :cube_size_spec, :has_goal_badness, :show_input_modes,
              :buffers, :has_bounded_inputs, :has_memo_time
   has_many :alg_sets
-  has_many :stats_types
 
   def buffers
     object.buffers&.map { |p| part_to_simple(p) }

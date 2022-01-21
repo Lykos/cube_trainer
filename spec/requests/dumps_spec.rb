@@ -80,7 +80,7 @@ RSpec.describe 'Dumps', type: :request do
       expect(parsed_training_session[:buffer][:name]).to eq('UF')
       expect(parsed_training_session[:case_set]).to eq('edge 3-cycles for buffer UF')
       expect(parsed_training_session[:results][0][:time_s]).to eq(10.0)
-      expect(parsed_training_session[:stats][0][:stat_type][:id]).to eq('averages')
+      expect(parsed_training_session[:stats][0][:stat_type]).to eq('averages')
       expect(parsed_training_session[:alg_set][:id]).to eq(alg_set.id)
       expect(parsed_training_session[:alg_set][:owner]).to eq('Testy Testikow')
       expect(parsed_training_session[:alg_overrides][0][:alg]).to eq("[U2, M']")

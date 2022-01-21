@@ -115,10 +115,6 @@ class TrainingSessionType < ActiveModelSerializers::Model
     buffer_part_type::ELEMENTS
   end
 
-  def stats_types
-    StatType::ALL.select { |s| bounded_inputs? || !s.needs_bounded_inputs? }
-  end
-
   def generator_type
     bounded_inputs? ? :case : :scramble
   end
