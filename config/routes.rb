@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     post 'confirm_email', to: 'users#confirm_email'
     get 'training_session_name_exists_for_user', to: 'training_sessions#name_exists_for_user?'
     resources :training_session_types, only: [:index, :show]
+    resources :achievements, only: [:index, :show]
     resource :color_scheme, only: [:create, :show, :update, :destroy]
     resource :letter_scheme, only: [:create, :show, :update, :destroy]
     resources :messages, only: [:index, :create, :show, :update, :destroy]
