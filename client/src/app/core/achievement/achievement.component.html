@@ -1,15 +1,16 @@
 <div>
-  <ng-container *ngIf="achievement$ | async as achievement; else unknown">
-    <h1>{{achievement.name}}</h1>
-    <p>
+  <ng-container *ngIf="achievement$ | orerror | async as achievementOrError; else loading">
+    <ng-container *ngIf="achievementOrError | value as achievement; else error">
+      <h1>{{achievement.name}}</h1>
       {{achievement.description}}
-    </p>
+      <br>
+      <a mat-raised-button color="primary" routerLink="/achievements">All Achievements</a>
+    </ng-container>
+    <ng-template #error>
+      <h1>Error Loading Achievement</h1>
+    </ng-template>
   </ng-container>
-  <ng-template #unknown>
-    <h1>Unknown Achievement</h1>
-    <p>
-      Achievement with id {{ achievementId$ | async }} could not be found.
-    </p>
+  <ng-template #loading>
+    <mat-spinner></mat-spinner>
   </ng-template>
-  <a mat-raised-button color="primary" routerLink="/achievements">All Achievements</a>
 </div>

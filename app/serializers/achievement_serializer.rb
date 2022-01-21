@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# TODO: Remove now that it exists in the frontend.
+# Serializer for achievements.
 class AchievementSerializer < ActiveModel::Serializer
   attributes :id, :name, :description
 end
