@@ -35,7 +35,7 @@ export class NewTrainingSessionComponent {
     this.trainingSessionTypeGroup = this.trainingSessionFormsService.trainingSessionTypeGroup();
     this.algSetGroup = this.trainingSessionFormsService.algSetGroup(() => this.trainingSessionType);
     this.setupGroup = this.trainingSessionFormsService.setupGroup(() => this.trainingSessionType);
-    this.trainingGroup = this.trainingSessionFormsService.trainingGroup(() => this.trainingSessionType);
+    this.trainingGroup = this.trainingSessionFormsService.trainingGroup(() => this.trainingSessionType, () => !this.algSet || !this.excludeAlgHoles);
   }
 
   relevantInvalid(control: AbstractControl) {
