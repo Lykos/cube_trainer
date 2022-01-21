@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'twisty_puzzles'
 
 describe 'trainer', type: :system do
   include_context 'with user abc'
@@ -20,7 +21,5 @@ describe 'trainer', type: :system do
     click_button 'Start'
     click_button 'Stop and Start'
     click_button 'Stop and Pause'
-
-    # TODO: Check hints
   end
 end

@@ -5,9 +5,12 @@ class TrainingSessionDumpSerializer < ActiveModel::Serializer
   include PartHelper
 
   attributes :id, :name, :known, :show_input_mode, :buffer, :goal_badness, :memo_time_s,
-             :cube_size, :num_results, :exclude_algless_parts, :exclude_alg_holes,
-             :training_session_type, :case_set, :results
-  delegate :results, to: :object
+             :cube_size, :exclude_algless_parts, :exclude_alg_holes, :training_session_type,
+             :case_set
+  has_one :alg_set
+  has_many :results
+  has_many :stats
+  has_many :alg_overrides
 
   def case_set
     object.case_set.to_s

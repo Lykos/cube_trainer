@@ -297,7 +297,8 @@ export class Solver {
   algCounts<T extends Solvable<T>>(solvable: T): Probabilistic<AlgCounts> {
     const algTraces = pSecond(this.algs(emptyBufferState(), solvable, none))
     const adjustedAlgTraces = algTraces.map(algTrace => algTrace.withMaxCycleLength((buffer: Piece) => this.decider.maxCycleLengthForBuffer(buffer)));
-    return adjustedAlgTraces.map(algTrace => algTrace.countAlgs());
+    const algCounts = adjustedAlgTraces.map(algTrace => algTrace.countAlgs());
+    return algCounts;
   }
 }
 

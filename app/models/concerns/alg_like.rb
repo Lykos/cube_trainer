@@ -14,6 +14,7 @@ module AlgLike
     validates :alg, presence: true
     validates :casee, presence: true
     validate :validate_case, :validate_alg
+    delegate :algorithm, to: :commutator
   end
 
   def commutator
@@ -22,6 +23,12 @@ module AlgLike
 
   def owning_set
     raise NotImplementedError
+  end
+
+  def inverse
+    result = dup
+    result.alg = commutator.inverse.to_s
+    result
   end
 
   private

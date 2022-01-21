@@ -17,12 +17,13 @@ class TrainingCase < ActiveModelSerializers::Model
       @training_session.id == other.training_session.id &&
       @casee == other.casee &&
       @alg == other.alg &&
-      @setup == other.setup
+      @setup == other.setup &&
+      @alg_source == other.alg_source
   end
 
   alias == eql?
 
   def hash
-    [self.class, @training_session.id, @case, @alg, @setup].hash
+    [self.class, @training_session.id, @case, @alg, @setup, @alg_source].hash
   end
 end

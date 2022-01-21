@@ -12,9 +12,12 @@ import {
   destroy,
   destroySuccess,
   destroyFailure,
-  overrideAlg,
-  overrideAlgSuccess,
-  overrideAlgFailure,
+  createAlgOverride,
+  createAlgOverrideSuccess,
+  createAlgOverrideFailure,
+  updateAlgOverride,
+  updateAlgOverrideSuccess,
+  updateAlgOverrideFailure,
   setAlg,
   setAlgSuccess,
   setAlgFailure,
@@ -34,7 +37,8 @@ const initialTrainingSessionsState: TrainingSessionsState = adapter.getInitialSt
   initialLoadState: backendActionNotStartedState,
   createState: backendActionNotStartedState,
   destroyState: backendActionNotStartedState,
-  overrideAlgState: backendActionNotStartedState,
+  createAlgOverrideState: backendActionNotStartedState,
+  updateAlgOverrideState: backendActionNotStartedState,
   setAlgState: backendActionNotStartedState,
   loadOneState: backendActionNotStartedState,
   selectedTrainingSessionId: 0,
@@ -78,14 +82,23 @@ export const trainingSessionsReducer = createReducer(
   on(destroyFailure, (trainingSessionState, { error }) => {
     return { ...trainingSessionState, destroyState: backendActionFailureState(error) };
   }),  
-  on(overrideAlg, (trainingSessionState) => {
-    return { ...trainingSessionState, overrideAlgState: backendActionLoadingState };
+  on(createAlgOverride, (trainingSessionState) => {
+    return { ...trainingSessionState, createAlgOverrideState: backendActionLoadingState };
   }),
-  on(overrideAlgSuccess, (trainingSessionState) => {
-    return { ...trainingSessionState, overrideAlgState: backendActionSuccessState };
+  on(createAlgOverrideSuccess, (trainingSessionState) => {
+    return { ...trainingSessionState, createAlgOverrideState: backendActionSuccessState };
   }),
-  on(overrideAlgFailure, (trainingSessionState, { error }) => {
-    return { ...trainingSessionState, overrideAlgState: backendActionFailureState(error) };
+  on(createAlgOverrideFailure, (trainingSessionState, { error }) => {
+    return { ...trainingSessionState, createAlgOverrideState: backendActionFailureState(error) };
+  }),  
+  on(updateAlgOverride, (trainingSessionState) => {
+    return { ...trainingSessionState, updateAlgOverrideState: backendActionLoadingState };
+  }),
+  on(updateAlgOverrideSuccess, (trainingSessionState) => {
+    return { ...trainingSessionState, updateAlgOverrideState: backendActionSuccessState };
+  }),
+  on(updateAlgOverrideFailure, (trainingSessionState, { error }) => {
+    return { ...trainingSessionState, updateAlgOverrideState: backendActionFailureState(error) };
   }),  
   on(setAlg, (trainingSessionState) => {
     return { ...trainingSessionState, setAlgState: backendActionLoadingState };

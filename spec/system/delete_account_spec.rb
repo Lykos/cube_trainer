@@ -24,8 +24,8 @@ describe 'account deletion', type: :system do
     login(user)
 
     click_link user.name
-    click_button 'Delete Account'
-    click_button 'Ok'
+    within('#delete-account-div') { click_button 'Delete Account' }
+    within('#delete-account-confirmation-dialog') { click_button 'Ok' }
 
     expect(page).to have_text('Account Deleted')
     expect(User.find_by(name: 'system test user')).to be_nil

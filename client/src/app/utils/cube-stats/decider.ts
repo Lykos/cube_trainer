@@ -62,6 +62,9 @@ export class Decider {
   constructor(readonly piecePermutationDescription: PiecePermutationDescription,
               private readonly methodDescription: PieceMethodDescription) {
     this.twistsWithCosts = piecePermutationDescription.pieceDescription.twistGroups().filter(g => {
+      if (g.numUnoriented === 0) {
+	return false;
+      }
       const allowedAsFloatingTwist = g.numUnoriented <= this.methodDescription.maxFloatingTwistLength
       const allowedAsBufferedTwist = g.orientedTypes.some((orientedType, index) => {
         return !orientedType.isSolved &&

@@ -86,9 +86,7 @@ export class TrainerEffects {
   initialLoad$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initialLoad),
-      switchMap(action => of(
-        loadOne({ trainingSessionId: action.trainingSessionId }),
-      )),
+      map(action => loadOne({ trainingSessionId: action.trainingSessionId })),
     )
   );
 

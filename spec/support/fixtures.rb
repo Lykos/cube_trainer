@@ -153,6 +153,8 @@ shared_context 'with edges' do
   let(:ur) { TwistyPuzzles::Edge.for_face_symbols(%i[U R]) }
   let(:ul) { TwistyPuzzles::Edge.for_face_symbols(%i[U L]) }
   let(:ub) { TwistyPuzzles::Edge.for_face_symbols(%i[U B]) }
+  let(:lu) { TwistyPuzzles::Edge.for_face_symbols(%i[L U]) }
+  let(:ru) { TwistyPuzzles::Edge.for_face_symbols(%i[R U]) }
   let(:df) { TwistyPuzzles::Edge.for_face_symbols(%i[D F]) }
 end
 

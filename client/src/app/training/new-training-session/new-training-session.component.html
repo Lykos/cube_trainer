@@ -31,7 +31,7 @@
       <ng-template #loading>
         <mat-spinner></mat-spinner>
       </ng-template>
-      <div>
+      <div id="training-session-type-group-actions">
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
     </form>
@@ -39,7 +39,7 @@
   <mat-step [stepControl]="setupGroup">
     <ng-template matStepLabel>Setup basics</ng-template>
     <form [formGroup]="setupGroup">
-      <mat-form-field *ngIf="hasMultipleCubeSizes">
+      <mat-form-field id="cube-size-input" *ngIf="hasMultipleCubeSizes">
         <mat-label>Cube Size</mat-label>
         <input matInput formControlName="cubeSize" type="number" [value]="defaultCubeSize">
         <mat-error *ngIf="relevantInvalid(cubeSize) && cubeSize.errors && cubeSize.errors['required']">
@@ -67,7 +67,7 @@
           You must provide a <strong>buffer</strong> for this session type.
         </mat-error>
       </mat-form-field>
-      <div>
+      <div id="setup-group-actions">
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
@@ -76,7 +76,7 @@
   <mat-step [stepControl]="algSetGroup">
     <ng-template matStepLabel>Choose an alg set</ng-template>
     <form [formGroup]="algSetGroup">
-      <mat-form-field *ngIf="matchingAlgSets as algSets">
+      <mat-form-field id="alg-set-select" *ngIf="matchingAlgSets as algSets">
         <mat-label>Alg Set</mat-label>
         <mat-select formControlName="algSet">
           <mat-option *ngFor="let algSet of algSets" [value]="algSet"> {{algSet.owner}} </mat-option>
@@ -88,7 +88,7 @@
       <mat-checkbox formControlName="excludeAlglessParts" *ngIf="buffer && !excludeAlgHoles && matchingAlgSets" matTooltip="Exclude targets that are completely missing from the alg set, presumably they are intentionally missing because these targets are buffers themselves for the alg sheet owner.">
         Exclude previous buffers of alg sheet owner
       </mat-checkbox>
-      <div>
+      <div id="alg-set-group-actions">
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
@@ -127,7 +127,7 @@
         </mat-error>
       </mat-form-field>
       <mat-checkbox formControlName="known" *ngIf="trainingSessionType?.hasBoundedInputs">Known</mat-checkbox>
-      <div>
+      <div id="training-group-actions">
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
         <button mat-raised-button color="primary" matStepperNext>Next</button>
       </div>
@@ -175,9 +175,33 @@
         </div>
       </div>
     </div>
-    <div>
+    <div id="stats-group-actions">
       <button mat-raised-button color="primary" matStepperPrevious>Back</button>
       <button mat-raised-button color="primary" (click)="onSubmit()">Submit</button>
     </div>
   </mat-step>
 </mat-horizontal-stepper>
+<div id="partial-new-training-session" style="display: none">
+  <h2>Details about the Created Session for Debugging</h2>
+  <div id="training-session-type-id">
+    {{trainingSessionType?.id}}
+  </div>
+  <div id="cube-size">
+    {{selectedCubeSize}}
+  </div>
+  <div id="buffer">
+    {{buffer.key}}
+  </div>
+  <div id="alg-set-id">
+    {{algSet?.id}}
+  </div>
+  <div id="show-input-mode">
+    {{selectedShowInputMode}}
+  </div>
+  <div id="memo-time-s">
+    {{memoTimeS.value}}
+  </div>
+  <div id="goal-badness">
+    {{goalBadness.value}}
+  </div>
+</div>

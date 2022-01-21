@@ -15,7 +15,7 @@ xdescribe 'reset_password', type: :system do
     email = user.email
     name = user.name
     visit ''
-    click_link 'Login'
+    find('#toolbar-login').click
     click_link 'Password Forgotten'
 
     fill_in 'Email', with: email
