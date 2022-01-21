@@ -30,10 +30,6 @@ class TwistSolverImpl implements TwistSolver {
 
   algsForOrientedTypes(orientedTypes: readonly OrientedType[]): Probabilistic<AlgTrace> {
     const index = orientedTypesIndex(orientedTypes);
-    if (!hasValue(this.algsByIndex[index])) {
-      console.log(this);
-      console.log(orientedTypes);
-    }
     const algTrace = forceValue(this.algsByIndex[index]);
     return deterministic(algTrace);
   }
@@ -96,8 +92,10 @@ export function createTwistSolverInternal(twistsWithCosts: readonly TwistWithCos
   const algsByIndex: Optional<AlgTrace>[] = Array(numItems).fill(none);
   const costByIndex: number[] = Array(numItems).fill(Infinity);
   const targetOrientedTypes: readonly OrientedType[] = pieceDescription.pieces.map(() => solvedOrientedType);
-  const index = orientedTypesIndex(targetOrientedTypes);
+  const index = orientedTypesIndex(targetOrientedTypes)
   const solvedAlgTraceWithCost: AlgTraceWithCost = {targetOrientedTypes, index, algTrace: emptyAlgTrace(), cost: 0};
+  algsByIndex[index] = some(emptyAlgTrace());
+  costByIndex[index] = 0;
   const unprocessed = new AlgTracesPriorityQueue();
   unprocessed.pushOrDecreaseCost(solvedAlgTraceWithCost);
   while (!unprocessed.empty) {

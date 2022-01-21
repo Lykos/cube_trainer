@@ -1,11 +1,11 @@
 import { Piece } from './piece';
 import { PiecePermutationDescription } from './piece-permutation-description';
-import { rand, swap, only, findIndex } from '../utils';
+import { rand, swap, only } from '../utils';
 import { assert } from '../assert';
 import { Solvable } from './solvable';
 import { VectorSpaceElement, NumberAsVectorSpaceElement } from './vector-space-element';
 import { OrientedType, orientedType, solvedOrientedType, orientedSum } from './oriented-type';
-import { Optional, some, none, forceValue } from '../optional';
+import { Optional, some, none } from '../optional';
 import { Probabilistic, deterministic } from './probabilistic';
 import { Parity, EvenCycle, ThreeCycle, ParityTwist, DoubleSwap } from './alg';
 
@@ -26,6 +26,7 @@ function shuffle<X>(xs: X[], allowOddPermutations: boolean) {
 
 export class Scramble implements Solvable<Scramble> {
   constructor(readonly pieces: readonly Piece[], readonly orientedTypes: readonly OrientedType[]) {
+    assert(pieces.length === orientedTypes.length, 'pieces and oriented types have to have the same length');
     assert(orientedSum(this.orientedTypes).isSolved, 'oriented sum does not add up');
   }
 
@@ -68,18 +69,18 @@ export class Scramble implements Solvable<Scramble> {
     assert(cycleBreak.secondPiece.pieceId !== cycleBreak.thirdPiece.pieceId);
     const pieces = [...this.pieces];
     const orientedTypes = [...this.orientedTypes];
-    const firstIndex = forceValue(findIndex(this.pieces, p => p.pieceId === cycleBreak.firstPiece.pieceId));
-    const secondIndex = forceValue(findIndex(this.pieces, p => p.pieceId === cycleBreak.secondPiece.pieceId));
-    const thirdIndex = forceValue(findIndex(this.pieces, p => p.pieceId === cycleBreak.thirdPiece.pieceId));
+    const firstIndex = cycleBreak.firstPiece.pieceId;
+    const secondIndex = cycleBreak.secondPiece.pieceId;
+    const thirdIndex = cycleBreak.thirdPiece.pieceId;
     const cycleOrientedSum = orientedTypes[firstIndex].plus(orientedTypes[secondIndex]).plus(orientedTypes[thirdIndex]);
     // Technically we don't have enough information how the orientation gets distributed.
     // Given that it doesn't matter, we just move it to the first one.
     orientedTypes[firstIndex] = cycleOrientedSum;
     orientedTypes[secondIndex] = solvedOrientedType;
     orientedTypes[thirdIndex] = solvedOrientedType;
-    pieces[firstIndex] = cycleBreak.thirdPiece;
-    pieces[secondIndex] = cycleBreak.firstPiece;
-    pieces[thirdIndex] = cycleBreak.secondPiece;
+    pieces[firstIndex] = this.pieces[thirdIndex];
+    pieces[secondIndex] = this.pieces[firstIndex];
+    pieces[thirdIndex] = this.pieces[secondIndex];
     return new Scramble(pieces, orientedTypes);
   }
 
@@ -253,7 +254,7 @@ export class Scramble implements Solvable<Scramble> {
 export function randomScramble(piecePermutationDescription: PiecePermutationDescription): Scramble {
   const pieces = [...piecePermutationDescription.pieces];
   const numOrientedTypes = piecePermutationDescription.numOrientedTypes
-  const orientedTypes = [...pieces].map(() => rand(numOrientedTypes)).map(index => orientedType(index, numOrientedTypes));
+  const orientedTypes = pieces.map(() => rand(numOrientedTypes)).map(index => orientedType(index, numOrientedTypes));
   orientedTypes[0] = orientedSum(orientedTypes.slice(1)).inverse;
   shuffle(pieces, piecePermutationDescription.allowOddPermutations);
   return new Scramble(pieces, orientedTypes);

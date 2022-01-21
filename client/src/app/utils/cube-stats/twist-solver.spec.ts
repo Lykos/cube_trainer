@@ -30,7 +30,7 @@ const twoTwistsWithCosts: readonly TwistWithCost[] = combination(topLayerCorners
 describe('TwistSolver', () => {
   it('should find the right 2 twist', () => {
     const solver = createTwistSolverInternal(twoTwistsWithCosts, topLayerCorners);
-    const inputTwist = [cw, ccw];
+    const inputTwist = [cw, ccw, solvedOrientedType, solvedOrientedType];
     const actual = solver.algsForOrientedTypes(inputTwist).assertDeterministic();
     expect(actual.algs.length).toEqual(1);
     const alg = actual.algs[0];
@@ -44,8 +44,15 @@ describe('TwistSolver', () => {
 
   it('should find two 2 twists', () => {
     const solver = createTwistSolverInternal(twoTwistsWithCosts, topLayerCorners);
-    const inputTwist = [cw, cw, cw];
+    const inputTwist = [cw, cw, cw, solvedOrientedType];
     const actual = solver.algsForOrientedTypes(inputTwist).assertDeterministic();
     expect(actual.algs.length).toEqual(2);
+  });
+
+  it('should return an empty alg trace for the solved case', () => {
+    const solver = createTwistSolverInternal(twoTwistsWithCosts, topLayerCorners);
+    const solvedTwist = [solvedOrientedType, solvedOrientedType, solvedOrientedType, solvedOrientedType];
+    const actual = solver.algsForOrientedTypes(solvedTwist).assertDeterministic();
+    expect(actual.algs.length).toEqual(0);
   });
 });
