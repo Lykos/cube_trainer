@@ -3,6 +3,7 @@ import { UniqueTrainingSessionNameValidator } from './unique-training-session-na
 import { TrainingSessionType } from './training-session-type.model';
 import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ShowInputMode } from './show-input-mode.model';
 
 function hasMultipleCubeSizes(trainingSessionType: TrainingSessionType | undefined) {
   const cubeSizeSpec = trainingSessionType?.cubeSizeSpec;
@@ -99,9 +100,15 @@ export class TrainingSessionFormsService {
     });
   }
 
-  trainingGroup(trainingSessionTypeProvider: () => TrainingSessionType | undefined): FormGroup {
+  trainingGroup(trainingSessionTypeProvider: () => TrainingSessionType | undefined, missingAlgsProvider: () => boolean): FormGroup {
     return this.formBuilder.group({
-      showInputMode: ['', RxwebValidators.required({ conditionalExpression: () => hasMultipleShowInputModes(trainingSessionTypeProvider()) })],
+      showInputMode: ['', RxwebValidators.compose({
+	conditionalExpression: () => hasMultipleShowInputModes(trainingSessionTypeProvider()),
+	validators: [
+	  RxwebValidators.required(),
+	  RxwebValidators.noneOf({ conditionalExpression: missingAlgsProvider, matchValues: [ShowInputMode.Picture] }),
+	],
+      })],
       goalBadness: ['', RxwebValidators.compose({
 	conditionalExpression: () => trainingSessionTypeProvider()?.hasGoalBadness,
 	validators: [

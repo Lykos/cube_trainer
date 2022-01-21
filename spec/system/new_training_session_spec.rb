@@ -64,11 +64,6 @@ describe 'new training session', type: :system do
     expect(find('#cube-size', visible: :all)).to have_text(:all, '3')
     within('#setup-group-actions') { click_button 'Next' }
 
-    within('#alg-set-select') do
-      expect(page).to have_text('Alg Set')
-    end
-    within('#alg-set-group-actions') { click_button 'Next' }
-
     fill_in 'Memo Time', with: '20.0'
     expect(find('#memo-time-s', visible: :all)).to have_text(:all, '20')
     within('#training-group-actions') { click_button 'Next' }
