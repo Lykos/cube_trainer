@@ -73,16 +73,16 @@
       </div>
     </form>
   </mat-step>
-  <mat-step *ngIf="matchingAlgSets as algSets" [stepControl]="algSetGroup" [optional]="true">
+  <mat-step *ngIf="matchingAlgSets.length" [stepControl]="algSetGroup" [optional]="true">
     <ng-template matStepLabel>Choose an alg set</ng-template>
     <form [formGroup]="algSetGroup">
       <mat-form-field id="alg-set-select">
         <mat-label>Alg Set</mat-label>
         <mat-select formControlName="algSet">
-          <mat-option *ngFor="let algSet of algSets" [value]="algSet"> {{algSet.owner}} </mat-option>
+          <mat-option *ngFor="let algSet of matchingAlgSets" [value]="algSet"> {{algSet.owner}} </mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-checkbox formControlName="excludeAlgHoles" *ngIf="buffer && matchingAlgSets" matTooltip="Without this, cases that have no algs will show up, but we won't be able to show the solution.">
+      <mat-checkbox id="exclude-alg-holes" formControlName="excludeAlgHoles" *ngIf="buffer && matchingAlgSets" matTooltip="Without this, cases that have no algs will show up, but we won't be able to show the solution.">
         Exclude cases that have no algs
       </mat-checkbox>
       <mat-checkbox formControlName="excludeAlglessParts" *ngIf="buffer && !excludeAlgHoles && matchingAlgSets" matTooltip="Exclude targets that are completely missing from the alg set, presumably they are intentionally missing because these targets are buffers themselves for the alg sheet owner.">
@@ -203,6 +203,9 @@
   </div>
   <div id="memo-time-s">
     {{memoTimeS.value}}
+  </div>
+  <div id="exclude-alg-holes-value">
+    {{excludeAlgHoles}}
   </div>
   <div id="goal-badness">
     {{goalBadness.value}}

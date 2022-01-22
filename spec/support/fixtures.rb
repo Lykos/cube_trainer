@@ -2,6 +2,73 @@
 
 require 'twisty_puzzles'
 
+shared_context 'with case set' do
+  include_context 'with edges'
+
+  let(:case_set) do
+    CaseSets::BufferedThreeCycleSet.new(TwistyPuzzles::Edge, uf)
+  end
+end
+
+shared_context 'with alg set' do
+  include_context 'with edges'
+  include_context 'with case set'
+  include_context 'with alg spreadsheet'
+
+  let(:alg_set) do
+    alg_set = alg_spreadsheet.alg_sets.create!(case_set: case_set, sheet_title: 'test sheet')
+    alg_set.algs.create(
+      casee: Case.new(
+        part_cycles: [TwistyPuzzles::PartCycle.new([uf, ur, ul])]
+      ),
+      alg: "M2 U M U2 M' U M2"
+    )
+    alg_set.algs.create(
+      casee: Case.new(
+        part_cycles: [TwistyPuzzles::PartCycle.new([uf, ul, ur])]
+      ),
+      alg: "M2 U' M U2 M' U' M2"
+    )
+    alg_set.algs.create(
+      casee: Case.new(
+        part_cycles: [TwistyPuzzles::PartCycle.new([uf, ru, ul])]
+      ),
+      alg: "[R' F R, S]"
+    )
+    alg_set.algs.create(
+      casee: Case.new(
+        part_cycles: [TwistyPuzzles::PartCycle.new([uf, ul, ru])]
+      ),
+      alg: "[S, R' F R]"
+    )
+    alg_set.algs.create(
+      casee: Case.new(
+        part_cycles: [TwistyPuzzles::PartCycle.new([uf, lu, ur])]
+      ),
+      alg: "[L F L', S']"
+    )
+    alg_set.algs.create(
+      casee: Case.new(
+        part_cycles: [TwistyPuzzles::PartCycle.new([uf, ur, lu])]
+      ),
+      alg: "[S', L F L']"
+    )
+    alg_set.algs.create(
+      casee: Case.new(
+        part_cycles: [TwistyPuzzles::PartCycle.new([uf, ru, lu])]
+      ),
+      alg: "M U' M' U2 M U' M'"
+    )
+    alg_set.algs.create(
+      casee: Case.new(
+        part_cycles: [TwistyPuzzles::PartCycle.new([uf, lu, ru])]
+      ),
+      alg: "M U M' U2 M U M'"
+    )
+    alg_set
+  end
+end
+
 shared_context 'with user abc' do
   let(:user) do
     user = User.find_or_initialize_by(
