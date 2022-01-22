@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 def login(user)
+  raise ArgumentError unless user.name && user.password && user.email
+
   visit ''
   find('#toolbar-login').click
   fill_in 'Email', with: user.email

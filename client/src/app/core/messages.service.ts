@@ -47,6 +47,7 @@ export class MessagesService {
       map(parseMessage));
   }
 
+  // Note that this is not a regular request to the backend. This uses action cable and will continuously update.
   unreadCountNotifications(): Observable<number> {
     return this.cableService.channelSubscription<UnreadMessagesCount>('UnreadMessagesCountChannel').pipe(
       map(m => m.unreadMessagesCount),
