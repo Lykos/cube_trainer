@@ -34,8 +34,8 @@ describe 'signup', type: :system do
     user = User.find_by!(email: 'system_test+signup@example.org')
     user.confirm
 
-    # Note that the password can't be read from the database
-    user = User.new(email: 'system_test+signup@example.org', password: 'password')
+    # Note that the password can't be read from the database, so we create the user manually.
+    user = User.new(name: 'system test user', email: 'system_test+signup@example.org', password: 'password')
     login(user)
     expect(page).to have_text('system test user')
     expect(page).to have_text('Logout')

@@ -31,6 +31,9 @@ export class CableService {
   }
 
   private createConsumer(): Observable<Cable> {
+    if (!environment.actionCableUrl) {
+      return of();
+    }
     return new Observable<Cable>(subscriber => {
       try {
         const authData = this.tokenService.currentAuthData;

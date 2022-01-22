@@ -36,8 +36,12 @@ namespace :npm do
     # TODO: forward development vs production better.
     if Rails.env.production?
       system('npm run build')
-    else
+    elsif Rails.env.test?
+      system('npm run build_e2e')
+    elsif Rails.env.development?
       system('npm run build_development')
+    else
+      raise "Unknown rails environment #{Rails.env}"
     end
   end
 end
