@@ -33,6 +33,7 @@ end
 
 describe 'trainer hint', type: :system do
   include_context 'with user abc'
+  include_context 'with alg set'
 
   before do
     driven_by(:selenium_chrome_headless)
