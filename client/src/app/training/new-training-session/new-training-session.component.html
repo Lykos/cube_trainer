@@ -32,7 +32,7 @@
         <mat-spinner></mat-spinner>
       </ng-template>
       <div id="training-session-type-group-actions">
-        <button mat-raised-button color="primary" matStepperNext>Next</button>
+        <button mat-raised-button color="primary" matStepperNext [disabled]="!trainingSessionTypeGroup.valid">Next</button>
       </div>
     </form>
   </mat-step>
@@ -69,7 +69,7 @@
       </mat-form-field>
       <div id="setup-group-actions">
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
-        <button mat-raised-button color="primary" matStepperNext>Next</button>
+        <button mat-raised-button color="primary" matStepperNext [disabled]="!setupGroup.valid">Next</button>
       </div>
     </form>
   </mat-step>
@@ -90,7 +90,7 @@
       </mat-checkbox>
       <div id="alg-set-group-actions">
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
-        <button mat-raised-button color="primary" matStepperNext>Next</button>
+        <button mat-raised-button color="primary" matStepperNext [disabled]="!algSetGroup.valid">Next</button>
       </div>
     </form>
   </mat-step>
@@ -132,7 +132,7 @@
       <mat-checkbox formControlName="known" *ngIf="trainingSessionType?.hasBoundedInputs">Known</mat-checkbox>
       <div id="training-group-actions">
         <button mat-raised-button color="primary" matStepperPrevious>Back</button>
-        <button mat-raised-button color="primary" matStepperNext>Next</button>
+        <button mat-raised-button color="primary" matStepperNext [disabled]="!trainingGroup.valid">Next</button>
       </div>
     </form>
   </mat-step>
