@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { StatPart } from '../stat-part.model';
 import { selectStats, selectInitialLoadLoading } from '@store/trainer.selectors';
 import { Store } from '@ngrx/store';
-import { forceValue } from '@utils/optional';
+import { filterPresent } from '@shared/operators';
 
 @Component({
   selector: 'cube-trainer-stats-table',
@@ -19,7 +19,7 @@ export class StatsTableComponent {
   constructor(private readonly store: Store) {
     this.loading$ = this.store.select(selectInitialLoadLoading);
     this.stats$ = this.store.select(selectStats).pipe(
-      map(forceValue),
+      filterPresent(),
       map(ss => ss.flatMap(s => s.parts)),
     );
   }

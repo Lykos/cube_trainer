@@ -4,7 +4,7 @@ import { TrainingSession } from './training-session.model';
 import { GeneratorType } from './generator-type.model';
 import { ScrambleOrSample, scramble, sample } from './scramble-or-sample.model';
 import { Result } from './result.model';
-import { Observable, from, of } from 'rxjs';
+import { Observable, from, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SamplerFactory } from './sampler-factory.service';
 import { Sample } from '@utils/sampling';
@@ -36,7 +36,10 @@ export class TrainerService {
     return from(randomScrambleForEvent(this.cubeEvent(trainingSession)));
   }
 
-  randomTrainingCase(now: Instant, trainingSession: TrainingSession, results: readonly Result[]): Observable<Sample<TrainingCase>> {    
+  randomTrainingCase(now: Instant, trainingSession: TrainingSession, results: readonly Result[]): Observable<Sample<TrainingCase>> {
+    if (trainingSession.trainingCases.length === 0) {
+      return throwError(new Error('No cases configured. This can happen for training sessions with no algs and a configuration to avoid cases without algs. Please reconfigure your session.'));
+    }
     const sampler = this.samplerFactory.sampler(trainingSession);
     const samplingState = this.samplingStateService.samplingState(now, trainingSession, results);
     return of(sampler.sample(samplingState));

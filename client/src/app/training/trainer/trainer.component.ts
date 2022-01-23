@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { map, filter, distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { filterPresent } from '@shared/operators';
 import { TrainingSession } from '../training-session.model';
 import { ScrambleOrSample } from '../scramble-or-sample.model';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { hasValue, forceValue } from '@utils/optional';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
 import { initialLoadSelected } from '@store/trainer.actions';
@@ -26,15 +26,11 @@ export class TrainerComponent implements OnInit, OnDestroy {
   constructor(private readonly store: Store) {
     this.trainingSession$ = this.store.select(selectSelectedTrainingSession).pipe(
       distinctUntilChanged(),
-      filter(hasValue),
-      map(forceValue),
+      filterPresent(),
     );
     this.loading$ = this.store.select(selectInitialLoadLoading);
-    this.scrambleOrSample$ = this.store.select(selectNextCase).pipe(filter(hasValue), map(forceValue));
-    this.error$ = this.store.select(selectInitialLoadError).pipe(
-      filter(hasValue),
-      map(forceValue),
-    );
+    this.scrambleOrSample$ = this.store.select(selectNextCase).pipe(filterPresent());
+    this.error$ = this.store.select(selectInitialLoadError).pipe(filterPresent());
   }
 
   ngOnInit() {

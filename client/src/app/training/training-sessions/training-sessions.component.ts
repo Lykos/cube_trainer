@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TrainingSession } from '../training-session.model';
 import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { hasValue, forceValue } from '@utils/optional';
+import { filterPresent } from '@shared/operators';
 import { Store } from '@ngrx/store';
 import { initialLoad, deleteClick } from '@store/training-sessions.actions';
 import { BackendActionError } from '@shared/backend-action-error.model';
@@ -22,7 +21,7 @@ export class TrainingSessionsComponent implements OnInit {
   constructor(private readonly store: Store) {
     this.trainingSessions$ = this.store.select(selectTrainingSessions);
     this.loading$ = this.store.select(selectInitialLoadOrDestroyLoading);
-    this.error$ = this.store.select(selectInitialLoadError).pipe(filter(hasValue), map(forceValue));
+    this.error$ = this.store.select(selectInitialLoadError).pipe(filterPresent());
   }
 
   ngOnInit() {

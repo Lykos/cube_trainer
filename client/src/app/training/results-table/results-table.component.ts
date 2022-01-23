@@ -1,3 +1,4 @@
+import { filterPresent } from '@shared/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Result } from '../result.model';
 import { Component, Input, LOCALE_ID, Inject } from '@angular/core';
@@ -34,9 +35,9 @@ export class ResultsTableComponent {
   constructor(private readonly store: Store,
 	      @Inject(LOCALE_ID) private readonly locale: string) {
     this.loading$ = this.store.select(selectInitialLoadLoading);
-    this.results$ = this.store.select(selectResults).pipe(map(forceValue));
-    this.resultsOnPage$ = this.store.select(selectResultsOnPage).pipe(map(forceValue));
-    this.numResults$ = this.store.select(selectResultsTotal).pipe(map(forceValue));
+    this.results$ = this.store.select(selectResults).pipe(filterPresent());
+    this.resultsOnPage$ = this.store.select(selectResultsOnPage).pipe(filterPresent());
+    this.numResults$ = this.store.select(selectResultsTotal).pipe(filterPresent());
     this.allSelected$ = this.store.select(selectResultsTotalOnPage).pipe(
       map(l => { return { value: this.selection.selected.length === forceValue(l) }; }),
     );
