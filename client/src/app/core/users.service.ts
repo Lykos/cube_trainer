@@ -18,11 +18,6 @@ export class UsersService {
   constructor(private readonly rails: RailsService,
               private readonly tokenService: AngularTokenService,
               private readonly cookieConsentService: CookieConsentService) {}
-
-  isNameOrEmailTaken(nameOrEmail: string): Observable<boolean> {
-    return this.rails.get<boolean>('/name_or_email_exists', {nameOrEmail});
-  }
-
   create(newUser: NewUser): Observable<void> {
     const data: RegisterData = {
       login: newUser.email,

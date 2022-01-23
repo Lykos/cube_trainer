@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { login } from '@store/user.actions';
@@ -8,22 +8,20 @@ import { Credentials } from '../credentials.model';
   selector: 'cube-trainer-login',
   templateUrl: './login.component.html'
 })
-export class LoginComponent implements OnInit {
-  loginForm!: FormGroup;
+export class LoginComponent {
+  loginForm: FormGroup;
   loginFailed = false;
 
   constructor(private readonly formBuilder: FormBuilder,
-              private readonly  store: Store) {}
-
-  relevantInvalid(control: AbstractControl) {
-    return control.invalid && (control.dirty || control.touched);
-  }
-
-  ngOnInit() {
+              private readonly store: Store) {
     this.loginForm = this.formBuilder.group({
       email: ['', Validators.required],
       password: ['', Validators.required],
     });
+  }
+
+  relevantInvalid(control: AbstractControl) {
+    return control.invalid && (control.dirty || control.touched);
   }
 
   onSubmit() {

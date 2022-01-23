@@ -2,10 +2,8 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   scope '/api' do
     mount_devise_token_auth_for 'User', at: 'auth', controllers: {
-                                  registrations: 'auth_overrides/registrations',
-                                  sessions: 'auth_overrides/sessions'
+                                  registrations: 'auth_overrides/registrations'
                                 }
-    get 'name_or_email_exists', to: 'users#name_or_email_exists?'
     post 'confirm_email', to: 'users#confirm_email'
     get 'training_session_name_exists_for_user', to: 'training_sessions#name_exists_for_user?'
     resources :training_session_types, only: [:index, :show]

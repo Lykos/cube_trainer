@@ -91,21 +91,21 @@ export class UserEffects {
     )
   );
 
-  logoutFailure$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(logoutFailure),
-      tap(action => {
-        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
-      }),
-    ),
-    { dispatch: false }
-  );
-
   logoutSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(logoutSuccess),
       tap(() => { this.router.navigate(['/logged-out']); })
     ),
     { dispatch: false },
+  );
+
+  failure$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loginFailure, logoutFailure),
+      tap(action => {
+        this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
+      }),
+    ),
+    { dispatch: false }
   );
 }

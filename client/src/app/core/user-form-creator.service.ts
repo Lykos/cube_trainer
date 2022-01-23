@@ -1,22 +1,20 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RxwebValidators } from "@rxweb/reactive-form-validators";
-import { UniqueUsernameOrEmailValidator } from './unique-username-or-email.validator';
 import { User } from './user.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserFormCreator {
-  constructor(private readonly formBuilder: FormBuilder,
-	      private readonly uniqueUsernameOrEmailValidator: UniqueUsernameOrEmailValidator) {}
+  constructor(private readonly formBuilder: FormBuilder) {}
+
   createSignupForm(): FormGroup {
     return this.formBuilder.group({
       name: [
 	'',
 	{
 	  validators: Validators.required,
-	  asyncValidators: this.uniqueUsernameOrEmailValidator.validate(),
 	  updateOn: 'blur',
 	}
       ],
@@ -26,7 +24,6 @@ export class UserFormCreator {
 	    Validators.email,
 	    Validators.required
 	  ],
-	  asyncValidators: this.uniqueUsernameOrEmailValidator.validate(),
 	  updateOn: 'blur'
 	}
       ],
@@ -83,7 +80,6 @@ export class UserFormCreator {
 	user.name,
 	{
 	  validators: Validators.required,
-	  asyncValidators: this.uniqueUsernameOrEmailValidator.validate(user?.name),
 	  updateOn: 'blur',
 	}
       ],
@@ -93,7 +89,6 @@ export class UserFormCreator {
 	    Validators.email,
 	    Validators.required
 	  ],
-	  asyncValidators: this.uniqueUsernameOrEmailValidator.validate(user?.email),
 	  updateOn: 'blur'
 	}
       ],
