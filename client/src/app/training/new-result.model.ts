@@ -1,7 +1,8 @@
+import { Case } from './case.model';
+
 export interface NewResult {
   readonly timeS: number;
-  readonly caseKey: string;
-  readonly caseName: string;
+  readonly casee: Case;
   readonly success: boolean;
   readonly numHints: number;
 }

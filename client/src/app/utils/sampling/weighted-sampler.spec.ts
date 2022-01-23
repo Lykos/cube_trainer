@@ -1,29 +1,71 @@
-import { FixedSampler, NeverSampler, CombinedSampler } from './';
+import { FixedWeighter, WeightedSampler, SamplingState } from './';
+import { infiniteDuration } from '../duration';
+import { none } from '../optional';
 
-const samplingState = { weightStates: [] };
+const weightState = {
+  totalOccurrences: 0,
+  itemsSinceLastOccurrence: Infinity,
+  durationSinceLastOccurrence: infiniteDuration,
+  occurrenceDays: 0,
+  occurrenceDaysSinceLastHintOrDnf: none,
+  badnessAverage: none,
+};
 
-describe('CombinedSampler', () => {
-  it('is ready if one of its subsamplers is ready', () => {
-    const sampler = new CombinedSampler([
-      { sampler: new NeverSampler(), weight: 1 },
-      { sampler: new FixedSampler(3), weight: 1 },
-    ]);
+const samplingState: SamplingState<string> = {
+  weightStates: [
+    {
+      item: 'picked',
+      state: weightState,
+    },
+  ],
+};
+
+describe('WeightedSampler', () => {
+  it('is ready if one of the items has a positive weight', () => {
+    const sampler = new WeightedSampler('test sampler', new FixedWeighter(1), 2);
     expect(sampler.ready(samplingState)).toEqual(true);
   });
 
-  it('is not ready if none of its subsamplers is ready', () => {
-    const sampler = new CombinedSampler([
-      { sampler: new NeverSampler(), weight: 1 },
-      { sampler: new NeverSampler(), weight: 1 },
-    ]);
+  it('is not ready if none of the items has a positive weight', () => {
+    const sampler = new WeightedSampler('test sampler', new FixedWeighter(-1), 2);
     expect(sampler.ready(samplingState)).toEqual(false);
   });
 
-  it('uses the unique ready subsampler if it exists', () => {
-    const sampler = new CombinedSampler([
-      { sampler: new NeverSampler(), weight: 1 },
-      { sampler: new FixedSampler(3), weight: 1 },
-    ]);
-    expect(sampler.sample(samplingState).item).toEqual(3);
+  it('uses the unique item if it exists', () => {
+    const sampler = new WeightedSampler('test sampler', new FixedWeighter(1), 2);
+    expect(sampler.sample(samplingState).item).toEqual('picked');
+  });
+
+  it('uses the unique non-recent item if it exists', () => {
+    const recentWeightState = {
+      ...weightState,
+      itemsSinceLastOccurrence: 0,
+    }
+    const samplingState: SamplingState<string> = {
+      weightStates: [
+	{
+	  item: 'picked',
+	  state: weightState,
+	},
+	{
+	  item: 'recent',
+	  state: recentWeightState,
+	},
+	{
+	  item: 'recent',
+	  state: recentWeightState,
+	},
+	{
+	  item: 'recent',
+	  state: recentWeightState,
+	},
+	{
+	  item: 'recent',
+	  state: recentWeightState,
+	},
+      ],
+    };
+    const sampler = new WeightedSampler('test sampler', new FixedWeighter(1), 2);
+    expect(sampler.sample(samplingState).item).toEqual('picked');
   });
 });

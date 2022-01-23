@@ -210,7 +210,7 @@ export class TrainingSessionsEffects {
           catchError(httpResponseError => {
             const context = {
               action: 'creating alg override',
-              subject: action.algOverride.trainingCase.caseName,
+              subject: action.algOverride.trainingCase.casee.name,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(createAlgOverrideFailure({ error }));
@@ -229,7 +229,7 @@ export class TrainingSessionsEffects {
           catchError(httpResponseError => {
             const context = {
               action: 'creating alg override',
-              subject: action.algOverride.trainingCase.caseName,
+              subject: action.algOverride.trainingCase.casee.name,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(updateAlgOverrideFailure({ error }));
@@ -243,7 +243,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(createAlgOverrideSuccess, updateAlgOverrideSuccess),
       tap(action => {
-	this.snackBar.open(`Alg for ${action.algOverride.trainingCase.caseName} overridden.`, 'Close');
+	this.snackBar.open(`Alg for ${action.algOverride.trainingCase.casee.name} overridden.`, 'Close');
       }),
     ),
     { dispatch: false }
@@ -271,7 +271,7 @@ export class TrainingSessionsEffects {
           catchError(httpResponseError => {
             const context = {
               action: 'overriding alg',
-              subject: action.algOverride.trainingCase.caseName,
+              subject: action.algOverride.trainingCase.casee.name,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(setAlgFailure({ error }));
@@ -285,7 +285,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(setAlgSuccess),
       tap(action => {
-	this.snackBar.open(`Alg for ${action.algOverride.trainingCase.caseName} set.`, 'Close');
+	this.snackBar.open(`Alg for ${action.algOverride.trainingCase.casee.name} set.`, 'Close');
       }),
     ),
     { dispatch: false }

@@ -20,7 +20,7 @@ RSpec.describe 'Results', type: :request do
       expect(parsed_body.length).to eq(1)
       parsed_item = parsed_body[0]
       expect(parsed_item['id']).to eq(result.id)
-      expect(parsed_item['case_name']).to eq('DF UB')
+      expect(parsed_item['casee']['name']).to eq('DF UB')
       expect(parsed_item['time_s']).to eq(10)
       expect(parsed_item['failed_attempts']).to eq(0)
       expect(parsed_item['success']).to eq(true)
@@ -39,7 +39,7 @@ RSpec.describe 'Results', type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       expect(parsed_body['id']).to eq(result.id)
-      expect(parsed_body['case_name']).to eq('DF UB')
+      expect(parsed_body['casee']['name']).to eq('DF UB')
       expect(parsed_body['time_s']).to eq(10)
       expect(parsed_body['failed_attempts']).to eq(0)
       expect(parsed_body['success']).to eq(true)

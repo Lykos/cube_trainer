@@ -46,22 +46,19 @@ import { now, fromUnixMillis } from '@utils/instant';
 import { selectTrainingSessionAndResultsById, selectIsInitialLoadNecessaryById, selectNextCaseAndHintActiveById, selectStopwatchState, selectStartAfterLoading } from '@store/trainer.selectors';
 import { selectSelectedTrainingSessionId } from '@store/router.selectors';
 import { ScrambleOrSample } from '@training/scramble-or-sample.model';
+import { Case } from '@training/case.model';
 
-function caseName(scrambleOrSample: ScrambleOrSample) {
+function casee(scrambleOrSample: ScrambleOrSample): Case {
   switch (scrambleOrSample.tag) {
     case 'scramble':
-      return scrambleOrSample.scramble.toString();
+      const scrambleString = scrambleOrSample.scramble.toString();
+      return {
+	key: scrambleString,
+	name: scrambleString,
+	rawName: scrambleString,
+      };
     case 'sample':
-      return scrambleOrSample.sample.item.caseName;
-  }
-}
-
-function caseKey(scrambleOrSample: ScrambleOrSample) {
-  switch (scrambleOrSample.tag) {
-    case 'scramble':
-      return scrambleOrSample.scramble.toString();
-    case 'sample':
-      return scrambleOrSample.sample.item.caseKey;
+      return scrambleOrSample.sample.item.casee;
   }
 }
 
@@ -138,7 +135,7 @@ export class TrainerEffects {
           catchError(httpResponseError => {
             const context = {
               action: 'creating result',
-              subject: `${action.newResult.caseName}`,
+              subject: `${action.newResult.casee.name}`,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(createFailure({ trainingSessionId: action.trainingSessionId, error }));
@@ -282,8 +279,7 @@ export class TrainerEffects {
         const scrambleOrSample = forceValue(nextCase);
         const duration = millis(action.durationMillis);
         const newResult: NewResult = {
-          caseKey: caseKey(scrambleOrSample),
-          caseName: caseName(scrambleOrSample),
+          casee: casee(scrambleOrSample),
           numHints: hintActive ? 1 : 0,
           timeS: duration.toSeconds(),
           success: true,

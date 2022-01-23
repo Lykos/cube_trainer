@@ -79,7 +79,7 @@ RSpec.describe 'AlgOverrides', type: :request do
       expect(response).to have_http_status(:success)
       parsed_body = JSON.parse(response.body)
       alg_override_id = parsed_body['id']
-      expect(parsed_body['case_key']).to eq('Edge(UF UB DF)')
+      expect(parsed_body['casee']['key']).to eq('Edge(UF UB DF)')
       expect(parsed_body['alg']).to eq("[U2, M']")
       expect(AlgOverride.find(alg_override_id).alg).to eq("[U2, M']")
     end

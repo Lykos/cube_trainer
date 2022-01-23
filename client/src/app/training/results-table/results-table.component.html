@@ -27,15 +27,18 @@
       </ng-container>
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef> Timestamp </th>
-        <td mat-cell *matCellDef="let result" [matTooltip]="timestamp(result) | instant"> {{timestamp(result) | fluidInstant:now()}} </td>
+        <td mat-cell *matCellDef="let result" [matTooltip]="timestamp(result) | instant"> {{ timestamp(result) | fluidInstant:now() }} </td>
       </ng-container>
       <ng-container matColumnDef="case">
         <th mat-header-cell *matHeaderCellDef> Case </th>
-        <td mat-cell *matCellDef="let result"> {{result.caseName}} </td>
+        <td mat-cell *matCellDef="let result" [matTooltip]="result.casee.rawName"> {{ result.casee.name }} </td>
       </ng-container>
       <ng-container matColumnDef="time">
         <th mat-header-cell *matHeaderCellDef> Time </th>
-        <td mat-cell *matCellDef="let result"> {{result.success ? (duration(result) | duration) : 'DNF'}} </td>
+        <td mat-cell *matCellDef="let result">
+	  <ng-container *ngIf="result.success"> {{ duration(result) | duration }} </ng-container>
+	  <ng-container *ngIf="!result.success"> DNF </ng-container>
+	</td>
       </ng-container>
       <ng-container matColumnDef="numHints">
         <th mat-header-cell *matHeaderCellDef> Num Hints </th>

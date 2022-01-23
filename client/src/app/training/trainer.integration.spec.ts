@@ -37,8 +37,11 @@ import { TrainingSessionsEffects } from '@effects/training-sessions.effects';
 import { TrainerEffects } from '@effects/trainer.effects';
 
 const item: TrainingCase = {
-  caseKey: 'test case key',
-  caseName: 'test case name',
+  casee: {
+    key: 'test case key',
+    name: 'test case name',
+    rawName: 'raw test case name',
+  },
   alg: 'solve it',
   algSource: { tag: 'original' },
 };
@@ -148,8 +151,8 @@ describe('TrainerComponentIntegration', () => {
     fixture.detectChanges();
     {
       const req = httpMock.expectOne({ url: '/api/training_sessions/56/results', method: HttpVerb.Post });
-      expect(req.request.body).toEqual({ result: { case_key: 'test case key', case_name: 'test case name', num_hints: 1, time_s: 1.2, success: true } });
-      req.flush({ id: 1, created_at: '2022-01-01 09:22', case_key: 'test case key', case_name: 'test case name', num_hints: 1, time_s: 1.2, success: true });
+      expect(req.request.body).toEqual({ result: { case_key: 'test case key', num_hints: 1, time_s: 1.2, success: true } });
+      req.flush({ id: 1, created_at: '2022-01-01 09:22', casee: { key: 'test case key', name: 'test case name', raw_name: 'raw test case name' }, num_hints: 1, time_s: 1.2, success: true });
     }
     fixture.detectChanges();    
     expect(compiled.querySelector('#results-table')?.textContent).toContain('1.2');    
@@ -161,8 +164,8 @@ describe('TrainerComponentIntegration', () => {
     fixture.detectChanges();
     {
       const req = httpMock.expectOne({ url: '/api/training_sessions/56/results', method: HttpVerb.Post });
-      expect(req.request.body).toEqual({ result: { case_key: 'test case key', case_name: 'test case name', num_hints: 0, time_s: 1.3, success: true } });
-      req.flush({ id: 2, created_at: '2022-01-01 09:23', case_key: 'test case key', case_name: 'test case name', num_hints: 1, time_s: 1.3, success: true });
+      expect(req.request.body).toEqual({ result: { case_key: 'test case key', num_hints: 0, time_s: 1.3, success: true } });
+      req.flush({ id: 2, created_at: '2022-01-01 09:23', casee: { key: 'test case key', name: 'test case name', raw_name: 'raw test case name' }, num_hints: 1, time_s: 1.3, success: true });
     }
     fixture.detectChanges();
     expect(compiled.querySelector('#results-table')?.textContent).toContain('1.2');    

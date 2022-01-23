@@ -21,6 +21,7 @@ class AlgSet < ApplicationRecord
     alg_map[casee.inverse]&.inverse
   end
 
+  delegate :raw_case_name, to: :case_set
   delegate :case_name, to: :case_set
   delegate :owner, to: :alg_spreadsheet
   delegate :buffer, to: :case_set

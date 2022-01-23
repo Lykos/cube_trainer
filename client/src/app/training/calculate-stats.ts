@@ -90,11 +90,11 @@ function totalCases(trainingSession: TrainingSession): StatPart {
 function casesSeen(trainingSession: TrainingSession, results: readonly Result[]): StatPart {
   const caseKeys = new Set<string>();
   for (let r of results) {
-    caseKeys.add(r.caseKey);
+    caseKeys.add(r.casee.key);
   }
   let casesSeen = 0;
   for (let c of trainingSession.trainingCases) {
-    if (caseKeys.has(c.caseKey)) {
+    if (caseKeys.has(c.casee.key)) {
       ++casesSeen;
     }
   }

@@ -13,6 +13,7 @@ export * from './prioritized-sampler';
 export * from './combined-sampler';
 export * from './never-sampler';
 export * from './fixed-sampler';
+export * from './fixed-weighter';
 export * from './sampling-state';
 export * from './weighter';
 export * from './weight-state';

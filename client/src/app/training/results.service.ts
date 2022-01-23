@@ -23,7 +23,13 @@ export class ResultsService {
                                     { result: { success: false } });
   }
 
-  create(trainingSessionId: number, result: NewResult): Observable<Result> {
+  create(trainingSessionId: number, newResult: NewResult): Observable<Result> {
+    const result = {
+      timeS: newResult.timeS,
+      caseKey: newResult.casee.key,
+      success: newResult.success,
+      numHints: newResult.numHints,
+    };
     return this.rails.post<Result>(`/training_sessions/${trainingSessionId}/results`,
 				   { result });
   }

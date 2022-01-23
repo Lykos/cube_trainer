@@ -59,11 +59,11 @@ function toItemAndWeightState(state: ItemAndIntermediateWeightState): ItemAndWei
 function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: readonly Result[]): SamplingState<TrainingCase> {
   const weightStates = new Map<string, ItemAndIntermediateWeightState>();
   for (let casee of cases) {
-    weightStates.set(casee.caseKey, { item: casee, state: initialWeightState() });
+    weightStates.set(casee.casee.key, { item: casee, state: initialWeightState() });
   }
   for (let i = 0; i < results.length; ++i) {
     const result = results[i];
-    const weightState = weightStates.get(result.caseKey)?.state;
+    const weightState = weightStates.get(result.casee.key)?.state;
     if (!weightState) {
       // Probably a result of a case that isn't available any more.
       continue;

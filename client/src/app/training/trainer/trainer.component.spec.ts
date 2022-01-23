@@ -34,8 +34,11 @@ function exampleError(message: string) {
 }
 
 const item: TrainingCase = {
-  caseKey: 'test case key',
-  caseName: 'test case name',
+  casee: {
+    key: 'test case key',
+    name: 'test case name',
+    rawName: 'test case name',
+  },
 };
 
 const trainingSession: TrainingSession = {
