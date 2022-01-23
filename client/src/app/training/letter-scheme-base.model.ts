@@ -6,8 +6,8 @@ export interface LetterSchemeMapping {
 }
 
 export enum WingLetteringMode {
-  LikeEdges = 'like edges',
-  LikeCorners = 'like corners',
+  LikeEdges = 'like_edges',
+  LikeCorners = 'like_corners',
   Custom = 'custom',
 }
 

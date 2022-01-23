@@ -4,13 +4,13 @@
     <mat-form-field>
       <mat-label>U</mat-label>
       <mat-select formControlName="colorU" id="colorSelectU">
-        <mat-option *ngFor="let color of colorEnum | keyvalue" [value]="color.key"> {{color.key}} </mat-option>
+        <mat-option *ngFor="let color of colorEnum | keyvalue" [value]="color.value"> {{color.key}} </mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field>
       <mat-label>F</mat-label>
       <mat-select formControlName="colorF" id="colorSelectF">
-        <mat-option *ngFor="let color of colorEnum | keyvalue" [value]="color.key"> {{color.key}} </mat-option>
+        <mat-option *ngFor="let color of colorEnum | keyvalue" [value]="color.value"> {{color.key}} </mat-option>
       </mat-select>
     </mat-form-field>
     <div>

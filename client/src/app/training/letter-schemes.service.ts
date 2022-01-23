@@ -21,4 +21,8 @@ export class LetterSchemesService {
   create(letterScheme: NewLetterScheme): Observable<LetterScheme> {
     return this.rails.post<LetterScheme>('/letter_scheme', {letterScheme});
   }
+
+  update(letterScheme: NewLetterScheme): Observable<LetterScheme> {
+    return this.rails.put<LetterScheme>('/letter_scheme', {letterScheme});
+  }
 }

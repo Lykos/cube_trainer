@@ -11,12 +11,15 @@ import { SharedModule } from '@shared/shared.module';
 import { TrainingModule } from '@training/training.module';
 import { MethodExplorerModule } from './method-explorer/method-explorer.module';
 import { APP_BASE_HREF } from '@angular/common';
-// TODO: Move this to a better place
 import { userReducer } from '@store/user.reducer';
+import { colorSchemeReducer } from '@store/color-scheme.reducer';
+import { letterSchemeReducer } from '@store/letter-scheme.reducer';
 import { trainingSessionsReducer } from '@store/training-sessions.reducer';
 import { trainerReducer } from '@store/trainer.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { UserEffects } from '@effects/user.effects';
+import { ColorSchemeEffects } from '@effects/color-scheme.effects';
+import { LetterSchemeEffects } from '@effects/letter-scheme.effects';
 import { TrainingSessionsEffects } from '@effects/training-sessions.effects';
 import { TrainerEffects } from '@effects/trainer.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -49,6 +52,8 @@ import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
         trainingSessions: trainingSessionsReducer,
         trainer: trainerReducer,
         router: routerReducer,
+	colorScheme: colorSchemeReducer,
+	letterScheme: letterSchemeReducer,
       },
       {
         runtimeChecks: {
@@ -62,7 +67,13 @@ import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
       },
     ),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot([UserEffects, TrainingSessionsEffects, TrainerEffects]),
+    EffectsModule.forRoot([
+      UserEffects,
+      TrainingSessionsEffects,
+      TrainerEffects,
+      ColorSchemeEffects,
+      LetterSchemeEffects,
+    ]),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
       logOnly: environment.production, // Restrict extension to log-only mode

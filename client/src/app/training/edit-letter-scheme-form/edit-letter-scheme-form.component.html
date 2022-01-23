@@ -5,14 +5,16 @@
       <mat-form-field>
         <mat-label>Wing lettering mode</mat-label>
         <mat-select formControlName="wingLetteringMode">
-          <mat-option *ngFor="let wingLetteringMode of wingLetteringModeEnum | keyvalue" [value]="wingLetteringMode.value"> {{wingLetteringMode.value}} </mat-option>
+	  <mat-option [value]="likeEdges">like edges</mat-option>
+	  <mat-option [value]="likeCorners">like corners</mat-option>
+	  <mat-option [value]="likeEdges">custom</mat-option>
         </mat-select>
       </mat-form-field>
       <mat-checkbox formControlName="xcentersLikeCorners">X-centers like corners</mat-checkbox>
       <mat-checkbox formControlName="tcentersLikeEdges">T-centers like wings</mat-checkbox>
       <mat-checkbox formControlName="midgesLikeEdges">midges like wings</mat-checkbox>
       <mat-form-field  *ngIf="!hasCustomizedWingLetters">
-        <mat-label>Wing lettering mode</mat-label>
+        <mat-label>Wing letter sticker</mat-label>
         <mat-select formControlName="invertWingLetter">
 	  <mat-option [value]="true">
 	    Wing UFr is named like

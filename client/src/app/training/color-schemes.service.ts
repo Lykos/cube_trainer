@@ -19,6 +19,10 @@ export class ColorSchemesService {
   }
 
   create(colorScheme: NewColorScheme): Observable<ColorScheme> {
-    return this.rails.post<ColorScheme>('/color_scheme', {colorScheme});
+    return this.rails.post<ColorScheme>('/color_scheme', { colorScheme });
+  }
+
+  update(colorScheme: NewColorScheme): Observable<ColorScheme> {
+    return this.rails.put<ColorScheme>('/color_scheme', { colorScheme });
   }
 }
