@@ -10,5 +10,6 @@ begin
   RSpec::Core::RakeTask.new(:spec_failures) do |t|
     t.rspec_opts = '--only-failures'
   end
-rescue LoadError # rubocop:disable Lint/SuppressedException
+rescue LoadError
+  warn 'Coudn\'t load RSpec.'
 end
