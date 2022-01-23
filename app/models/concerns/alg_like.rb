@@ -10,6 +10,8 @@ module AlgLike
   extend ActiveSupport::Concern
 
   included do
+    attr_accessor :is_inferred
+    attr_writer :inverse
     attribute :casee, :case
     validates :alg, presence: true
     validates :casee, presence: true
@@ -26,9 +28,14 @@ module AlgLike
   end
 
   def inverse
-    result = dup
-    result.alg = commutator.inverse.to_s
-    result
+    @inverse ||=
+      begin
+        result = dup
+        result.is_inferred = true
+        result.alg = commutator.inverse.to_s
+        result.inverse = self
+        result
+      end
   end
 
   private

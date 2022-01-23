@@ -30,6 +30,24 @@ export class HintComponent {
     return this.trainingCase?.alg;
   }
 
+  get algSource() {
+    return this.trainingCase?.algSource?.tag;
+  }
+
+  get algSourceClass() {
+    return this.algSource || '';
+  }
+
+  get tooltip() {
+    switch (this.algSource) {
+      case 'original': return 'This alg comes unchanged from the source alg sheet.';
+      case 'fixed': return 'This alg comes from the source alg sheet, but the original had a mistake (e.g. wrong direction) and it was fixed here.';
+      case 'inferred': return 'This alg was inferred from a related alg (usually the inverse).';
+      case 'original': return 'This alg comes unchanged from the source alg sheet.';
+      default: return '';
+    }
+  }
+
   onHint() {
     this.store.dispatch(showHint({ trainingSessionId: this.trainingSession!.id }));
   }

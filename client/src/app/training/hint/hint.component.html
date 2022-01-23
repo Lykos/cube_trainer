@@ -1,7 +1,7 @@
 <div *ngIf="alg">
   <ng-container *ngIf="active$ | async as active">
     <div *ngIf="active.value">
-      <span class="alg">{{alg}}</span>
+      <span class="alg mat-elevation-z1" [ngClass]="algSourceClass" [matTooltip]="tooltip">{{alg}}</span>
       <button mat-raised-button color="primary" (click)="onOverride()">
         Override
       </button>

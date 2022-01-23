@@ -1,17 +1,4 @@
-export interface OriginalAlg {
-  readonly tag: 'original';
-}
-
-export interface FixedAlg {
-  readonly tag: 'fixed';
-}
-
-export interface OverriddenAlg {
-  readonly tag: 'overridden';
-  readonly algOverrideId: number;
-}
-
-export type AlgSource = OriginalAlg | FixedAlg | OverriddenAlg;
+import { AlgSource } from './alg-source.model';
 
 // Represents case that we train to get better on, e.g. one 3-cycle, one parity case,
 // one twist case, one scramble etc.
