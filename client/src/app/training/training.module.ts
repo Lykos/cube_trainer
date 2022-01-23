@@ -4,7 +4,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TrainingSessionsComponent } from './training-sessions/training-sessions.component';
 import { EditColorSchemeComponent } from './edit-color-scheme/edit-color-scheme.component'
 import { EditColorSchemeFormComponent } from './edit-color-scheme-form/edit-color-scheme-form.component'
-import { NewLetterSchemeComponent } from './new-letter-scheme/new-letter-scheme.component'
+import { EditLetterSchemeComponent } from './edit-letter-scheme/edit-letter-scheme.component'
+import { EditLetterSchemeFormComponent } from './edit-letter-scheme-form/edit-letter-scheme-form.component'
 import { NewTrainingSessionComponent } from './new-training-session/new-training-session.component';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { OverrideAlgDialogComponent } from './override-alg-dialog/override-alg-dialog.component';
@@ -25,7 +26,8 @@ import { SelectStatsComponent } from './select-stats/select-stats.component';
     TrainingSessionsComponent,
     EditColorSchemeComponent,
     EditColorSchemeFormComponent,
-    NewLetterSchemeComponent,
+    EditLetterSchemeComponent,
+    EditLetterSchemeFormComponent,
     NewTrainingSessionComponent,
     OverrideAlgDialogComponent,
     ResultsTableComponent,
@@ -45,7 +47,7 @@ import { SelectStatsComponent } from './select-stats/select-stats.component';
   ],
   exports: [
     EditColorSchemeComponent,
-    NewLetterSchemeComponent,
+    EditLetterSchemeComponent,
     NewTrainingSessionComponent,
     TrainingSessionsComponent,
     StatsTableComponent,

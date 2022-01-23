@@ -12,7 +12,7 @@ import { AchievementComponent } from '@core/achievement/achievement.component';
 import { MessageComponent } from '@core/message/message.component';
 import { MessagesComponent } from '@core/messages/messages.component';
 import { EditColorSchemeComponent } from './training/edit-color-scheme/edit-color-scheme.component';
-import { NewLetterSchemeComponent } from './training/new-letter-scheme/new-letter-scheme.component';
+import { EditLetterSchemeComponent } from './training/edit-letter-scheme/edit-letter-scheme.component';
 import { SignupComponent } from '@core/signup/signup.component';
 import { LoginComponent } from '@core/login/login.component';
 import { LoggedOutComponent } from '@core/logged-out/logged-out.component';
@@ -52,7 +52,7 @@ const routes: Routes = [
   { path: 'messages', component: MessagesComponent, canActivate: [AngularTokenService] },
   { path: 'messages/:messageId', component: MessageComponent, canActivate: [AngularTokenService] },
   { path: 'color-scheme', component: EditColorSchemeComponent, canActivate: [AngularTokenService] },
-  { path: 'letter-schemes/new', component: NewLetterSchemeComponent, canActivate: [AngularTokenService] },
+  { path: 'letter-scheme', component: EditLetterSchemeComponent, canActivate: [AngularTokenService] },
   { path: 'training-sessions/new', component: NewTrainingSessionComponent, canActivate: [AngularTokenService] },
   { path: 'training-sessions/:trainingSessionId', component: TrainerComponent, canActivate: [AngularTokenService] },
   { path: 'about', component: AboutComponent },

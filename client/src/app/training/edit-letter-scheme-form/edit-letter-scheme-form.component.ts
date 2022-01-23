@@ -1,55 +1,79 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
+import { LetterScheme } from '../letter-scheme.model';
 import { NewLetterScheme } from '../new-letter-scheme.model';
 import { LetterSchemeMapping, WingLetteringMode } from '../letter-scheme-base.model';
 import { LetterSchemesService } from '../letter-schemes.service';
-import { PartTypesService } from '../part-types.service';
 import { PartType, PartTypeName } from '../part-type.model';
 import { of } from 'rxjs';
+import { Optional, ifPresent, none } from '@utils/optional';
 import { catchError } from 'rxjs/operators';
 
 @Component({
-  selector: 'cube-trainer-letter-scheme',
-  templateUrl: './new-letter-scheme.component.html',
-  styleUrls: ['./new-letter-scheme.component.css'],
+  selector: 'cube-trainer-edit-letter-scheme-form',
+  templateUrl: './edit-letter-scheme-form.component.html',
+  styleUrls: ['./edit-letter-scheme-form.component.css'],
 })
-export class NewLetterSchemeComponent implements OnInit {
-  letterSchemeForm?: FormGroup;
-  partTypes!: PartType[];
+export class EditLetterSchemeFormComponent implements OnInit {
+  letterSchemeForm: FormGroup;
+
+  @Input()
+  existingLetterScheme: Optional<LetterScheme> = none;
+
+  @Input()
+  partTypes: PartType[] = [];
 
   constructor(private readonly formBuilder: FormBuilder,
-              private readonly partTypesService: PartTypesService,
               private readonly letterSchemesService: LetterSchemesService,
 	      private readonly snackBar: MatSnackBar,
-	      private readonly router: Router) {}
+	      private readonly router: Router) {
+    this.letterSchemeForm =
+      this.formBuilder.group({
+        wingLetteringMode: [WingLetteringMode.LikeEdges],
+        xcentersLikeCorners: [true],
+        tcentersLikeEdges: [true],
+        midgesLikeEdges: [true],
+        invertWingLetter: [false],      
+    })
+  }
 
   relevantInvalid(control: AbstractControl) {
     return control.invalid && (control.dirty || control.touched);
   }
 
   ngOnInit() {
-    this.partTypesService.list().subscribe((partTypes: PartType[]) => {
-      this.partTypes = partTypes
-      const formGroup: { [key: string]: any; } = {
-        wingLetteringMode: [WingLetteringMode.LikeEdges],
-        xcentersLikeCorners: [true],
-        tcentersLikeEdges: [true],
-        midgesLikeEdges: [true],
-        invertWingLetter: [false],
-      };
-      partTypes.forEach(partType => {
-        partType.parts.forEach(part => {
-          formGroup[part.key] = [''];
-        });
+    this.partTypes.forEach(partType => {
+      partType.parts.forEach(part => {
+        this.letterSchemeForm.addControl(part.key, this.formBuilder.control(''));
       });
-      this.letterSchemeForm = this.formBuilder.group(formGroup);
     });
+    ifPresent(
+      this.existingLetterScheme,
+      letterScheme => {
+	this.letterSchemeForm.get('wingLetteringMode')!.setValue(letterScheme.wingLetteringMode);
+	this.letterSchemeForm.get('xcentersLikeCorners')!.setValue(letterScheme.xcentersLikeCorners);
+	this.letterSchemeForm.get('tcentersLikeEdges')!.setValue(letterScheme.tcentersLikeEdges);
+	this.letterSchemeForm.get('midgesLikeEdges')!.setValue(letterScheme.midgesLikeEdges);
+	this.letterSchemeForm.get('invertWingLetter')!.setValue(letterScheme.invertWingLetter);
+	for (let mapping of letterScheme.mappings) {
+	  this.letterSchemeForm.get(mapping.part.key)!.setValue(mapping.letter);
+	}
+      }
+    );
   }
 
-  get wingLetteringModeEnum(): typeof WingLetteringMode {
-    return WingLetteringMode;
+  get likeEdges() {
+    return WingLetteringMode.LikeEdges;
+  }
+
+  get likeCorners() {
+    return WingLetteringMode.LikeCorners;
+  }
+
+  get custom() {
+    return WingLetteringMode.Custom;
   }
 
   get customizedPartTypes(): PartType[] {
@@ -122,7 +146,7 @@ export class NewLetterSchemeComponent implements OnInit {
     const mappings: LetterSchemeMapping[] = [];
     for (let partType of this.customizedPartTypes) {
       for (let part of partType.parts) {
-        const letter = this.letterSchemeForm!.get(part.key)!.value;
+        const letter = this.letterSchemeForm.get(part.key)!.value;
         if (letter) {
           mappings.push({part, letter});
         }

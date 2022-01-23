@@ -31,7 +31,8 @@ export class EditColorSchemeFormComponent implements OnInit {
       colorScheme => {
 	this.colorSchemeForm.get('colorU')!.setValue(colorScheme.colorU);
 	this.colorSchemeForm.get('colorF')!.setValue(colorScheme.colorF);
-      })
+      }
+    );
   }
 
   relevantInvalid(control: AbstractControl) {
