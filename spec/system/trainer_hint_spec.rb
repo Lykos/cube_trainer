@@ -31,7 +31,7 @@ def alternative_alg(case_string)
   end
 end
 
-describe 'trainer hint', type: :system do
+describe 'trainer hint', type: :system, skip_on_ci: true do
   include_context 'with user abc'
   include_context 'with alg set'
 
