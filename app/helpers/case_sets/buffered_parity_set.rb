@@ -92,6 +92,15 @@ module CaseSets
       "#{name_parts[0]} (#{name_parts[1]} ⟷ #{name_parts[2]})"
     end
 
+    def raw_case_name(casee)
+      raise ArgumentError unless match?(casee)
+
+      buffer_cycle_parts = buffer_cycle(casee).parts
+      parity_cycle_parts = parity_cycle(casee).parts
+      "#{buffer_cycle_parts[0]} ⟷ #{buffer_cycle_parts[1]}, " \
+        "#{parity_cycle_parts[0]} ⟷ #{parity_cycle_parts[1]}"
+    end
+
     def default_cube_size
       candidate = [@buffer_part_type.min_cube_size, @parity_part_type.min_cube_size].max
       if @buffer_part_type.exists_on_cube_size?(candidate) &&

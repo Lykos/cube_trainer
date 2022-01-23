@@ -51,7 +51,7 @@ RSpec.describe 'Dumps', type: :request do
       training_session_id = JSON.parse(response.body)['id']
       # Get a this training session.
       get "/api/training_sessions/#{training_session_id}", headers: user_headers
-      case_key = JSON.parse(response.body)['training_cases'].sample['case_key']
+      case_key = JSON.parse(response.body)['training_cases'].sample['casee']['key']
       # Create a new result for this input.
       post "/api/training_sessions/#{training_session_id}/results", headers: user_headers, params: { result: { case_key: case_key, time_s: 10 } }
       # Create a new letter scheme.

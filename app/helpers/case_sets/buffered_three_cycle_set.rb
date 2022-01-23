@@ -83,6 +83,14 @@ module CaseSets
       name_parts.join(' ')
     end
 
+    def raw_case_name(casee)
+      raise ArgumentError unless casee.part_cycles.length == 1
+      raise ArgumentError unless casee.part_cycles.first.length == 3
+
+      parts = casee.part_cycles.first.parts
+      parts.join(' ⟶ ')
+    end
+
     def default_cube_size
       [@part_type.min_cube_size, 3].max
     end

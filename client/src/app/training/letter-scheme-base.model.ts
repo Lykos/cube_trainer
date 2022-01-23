@@ -16,5 +16,6 @@ export interface LetterSchemeBase {
   readonly xcentersLikeCorners: boolean;
   readonly tcentersLikeEdges: boolean;
   readonly midgesLikeEdges: boolean;
+  readonly invertWingLetter: boolean;
   readonly mappings: LetterSchemeMapping[];
 }

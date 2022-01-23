@@ -24,6 +24,6 @@ export class AchievementGrantsService {
 
   list(): Observable<AchievementGrant[]> {
     return this.rails.get<RawAchievementGrant[]>('/achievement_grants', {}).pipe(
-      map(achievementGrants => achievementGrants.map(parseAchievementGrant)));
+      map(achievementGrants => achievementGrants.filter(r => r.achievement).map(parseAchievementGrant)));
   }
 }

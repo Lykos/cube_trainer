@@ -20,18 +20,22 @@ export class WeightedSampler implements Sampler {
               private readonly recencyThreshold: number) {}  
 
   ready<X>(state: SamplingState<X>) {
-    return state.weightStates.some(w => !isRecent(state, w.state, this.recencyThreshold) && this.weighter.weight(w.state) > 0);
+    return this.weightedItems(state).length > 0;
   }
 
   sample<X>(state: SamplingState<X>): Sample<X> {
-    const weightedItems = state.weightStates
-      .filter(s => !isRecent(state, s.state, this.recencyThreshold))
-      .map(s => ({ item: s.item, weight: this.weighter.weight(s.state) }))
-      .filter(s => s.weight > 0);
+    const weightedItems = this.weightedItems(state);
     if (weightedItems.length === 0) {
       throw new SamplingError('no item has positive weight');
     }
     const item = weightedDraw(weightedItems).item;
     return { item, samplerName: this.name };
+  }
+
+  private weightedItems<X>(state: SamplingState<X>) {
+    return state.weightStates
+      .filter(s => !isRecent(state, s.state, this.recencyThreshold))
+      .map(s => ({ item: s.item, weight: this.weighter.weight(s.state) }))
+      .filter(s => s.weight > 0);
   }
 }

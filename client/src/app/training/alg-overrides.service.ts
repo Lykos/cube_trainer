@@ -11,7 +11,7 @@ export class AlgOverridesService {
 
   create(trainingSessionId: number, algOverride: AlgOverride): Observable<void> {
     return this.rails.post<void>(`/training_sessions/${trainingSessionId}/alg_overrides`,
-                                 { algOverride: { caseKey: algOverride.trainingCase.caseKey, alg: algOverride.alg } });
+                                 { algOverride: { caseKey: algOverride.trainingCase.casee.key, alg: algOverride.alg } });
   }
 
   update(trainingSessionId: number, algOverrideId: number, alg: string): Observable<void> {

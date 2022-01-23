@@ -1,12 +1,16 @@
+import { StatTypeId } from './stat-type-id.model';
 import { Stat } from './stat.model';
+import { statTypes } from './stat-types.const';
 import { TrainingSession } from './training-session.model';
-import { StatType } from './stat-type.model';
 import { seconds, zeroDuration, infiniteDuration, Duration } from '@utils/duration';
 import { orElse } from '@utils/optional';
 import { dnfStatPart, undefinedStatPart, durationStatPart, fractionStatPart, countStatPart, StatPart } from './stat-part.model';
 import { Result } from './result.model';
-import { UncalculatedStat } from './uncalculated-stat.model';
+import { RawStat } from './raw-stat.model';
 import { CubeAverage } from '@utils/cube-average';
+import { fromDateString } from '@utils/instant';
+import { find } from '@utils/utils';
+import { Optional, mapOptional, hasValue, forceValue } from '@utils/optional';
 
 function time(result: Result) {
   return result.success ? seconds(result.timeS) : infiniteDuration;
@@ -86,11 +90,11 @@ function totalCases(trainingSession: TrainingSession): StatPart {
 function casesSeen(trainingSession: TrainingSession, results: readonly Result[]): StatPart {
   const caseKeys = new Set<string>();
   for (let r of results) {
-    caseKeys.add(r.caseKey);
+    caseKeys.add(r.casee.key);
   }
   let casesSeen = 0;
   for (let c of trainingSession.trainingCases) {
-    if (caseKeys.has(c.caseKey)) {
+    if (caseKeys.has(c.casee.key)) {
       ++casesSeen;
     }
   }
@@ -99,23 +103,29 @@ function casesSeen(trainingSession: TrainingSession, results: readonly Result[])
 
 const NS = [5, 12, 50, 100, 1000];
 
-function calculateStatParts(trainingSession: TrainingSession, uncalculatedStat: StatType, results: readonly Result[]): StatPart[] {
-  switch (uncalculatedStat.id) {
-    case 'averages': return NS.map(n => average(results, n));
-    case 'success_averages': return NS.map(n => successAverage(results, n));
-    case 'success_rates': return NS.map(n => successRates(results, n));
-    case 'mo3': return [mo3(results)];
-    case 'progress': return [casesSeen(trainingSession, results), totalCases(trainingSession)];
+function calculateStatParts(trainingSession: TrainingSession, statType: StatTypeId, results: readonly Result[]): StatPart[] {
+  switch (statType) {
+    case StatTypeId.Averages: return NS.map(n => average(results, n));
+    case StatTypeId.SuccessAverages: return NS.map(n => successAverage(results, n));
+    case StatTypeId.SuccessRates: return NS.map(n => successRates(results, n));
+    case StatTypeId.Mo3: return [mo3(results)];
+    case StatTypeId.Progress: return [casesSeen(trainingSession, results), totalCases(trainingSession)];
     default:
       return [];
   }
 }
 
-function calculateStat(trainingSession: TrainingSession, uncalculatedStat: UncalculatedStat, results: readonly Result[]): Stat {
-  const parts = calculateStatParts(trainingSession, uncalculatedStat.statType, results);
-  return { ...uncalculatedStat, parts };
+function calculateStat(trainingSession: TrainingSession, rawStat: RawStat, results: readonly Result[]): Optional<Stat> {
+  const maybeStatType = find(statTypes, s => s.id === rawStat.statType);
+  return mapOptional(
+    maybeStatType,
+    statType => {
+      const parts = calculateStatParts(trainingSession, statType.id, results);
+      return { ...rawStat, timestamp: fromDateString(rawStat.createdAt), statType, parts };
+    }
+  );
 }
 
 export function calculateStats(trainingSession: TrainingSession, results: readonly Result[]): Stat[] {
-  return trainingSession.stats.flatMap(s => calculateStat(trainingSession, s, results));
+  return trainingSession.stats.flatMap(s => calculateStat(trainingSession, s, results)).filter(hasValue).map(forceValue);
 }

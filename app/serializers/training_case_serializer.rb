@@ -9,10 +9,17 @@ class TrainingCaseSerializer < ActiveModel::Serializer
   def alg_source
     return unless object.alg
     return { tag: :overridden, alg_override_id: object.alg.id } if object.alg.is_a?(AlgOverride)
+
+    { tag: alg_tag(object.alg) }
+  end
+
+  def alg_tag(alg)
     raise TypeError unless object.alg.is_a?(Alg)
 
-    tag = object.alg.is_fixed ? :fixed : :original
-    { tag: tag }
+    return :inferred if alg.is_inferred
+    return :fixed if alg.is_fixed
+
+    :original
   end
 
   def setup
@@ -20,6 +27,6 @@ class TrainingCaseSerializer < ActiveModel::Serializer
   end
 
   def alg
-    object.alg&.algorithm&.to_s
+    object.alg&.commutator&.to_s
   end
 end

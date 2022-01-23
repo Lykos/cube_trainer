@@ -1,0 +1,19 @@
+.alg {
+    font-size: large;
+}
+
+.overridden {
+    border-left: 6px solid blue
+}
+
+.original {
+    border-left: 6px solid green
+}
+
+.fixed {
+    border-left: 6px solid yellow
+}
+
+.inferred {
+    border-left: 6px solid violet
+}

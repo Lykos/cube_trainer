@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Sampler, NewSampler, CombinedSampler, RepeatWeighter, ForgottenWeighter, BadnessWeighter, ManyItemsNotSeenWeighter, WeightedSampler, PrioritizedSampler } from '@utils/sampling';
+import { Sampler, NewSampler, CombinedSampler, RepeatWeighter, ForgottenWeighter, BadnessWeighter, UniformWeighter, ManyItemsNotSeenWeighter, WeightedSampler, PrioritizedSampler } from '@utils/sampling';
 import { TrainingSession } from './training-session.model';
 import { seconds, Duration } from '@utils/duration';
 
@@ -40,11 +40,15 @@ function samplingConfig(trainingSession: TrainingSession): SamplingConfig {
 }
 
 function createSampler(config: SamplingConfig) {
+  const badnessSampler = new PrioritizedSampler([
+    new WeightedSampler('badness', new BadnessWeighter(config.goalBadness, config.badnessBase), config.recencyThreshold),
+    new WeightedSampler('uniform', new UniformWeighter(), config.recencyThreshold),
+  ]);
   const sampler = new PrioritizedSampler([
     new WeightedSampler('forgotten', new ForgottenWeighter(config.forgottenExponentialBackoffBase, config.forgottenRepetitions), config.recencyThreshold),
     new CombinedSampler([
       { weight: config.newItemsWeight, sampler: new NewSampler('new') },
-      { weight: config.badItemsWeight, sampler: new WeightedSampler('badness', new BadnessWeighter(config.goalBadness, config.badnessBase), config.recencyThreshold) },
+      { weight: config.badItemsWeight, sampler: badnessSampler },
       { weight: config.longNotSeenItemsWeight, sampler: new WeightedSampler('long not seen', new ManyItemsNotSeenWeighter(config.manyItemsNotSeenExponent), config.recencyThreshold) },
     ]),
   ]);
@@ -52,6 +56,7 @@ function createSampler(config: SamplingConfig) {
     return sampler;
   }
   return new PrioritizedSampler([
+    // TODO: Enable
     //new WeightedSampler(new RevisitWeighter(config.revisitExponentialBackoffBase), config.recencyThreshold),
     new WeightedSampler('repeat', new RepeatWeighter(config.repeatExponentialBackoffBase), config.recencyThreshold),
     sampler,

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
+import { filterPresent } from '@shared/operators';
 import { Actions, ofType, concatLatestFrom, createEffect } from '@ngrx/effects';
 import { of, forkJoin } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, exhaustMap, switchMap, filter, flatMap, map, tap, mapTo } from 'rxjs/operators';
+import { catchError, exhaustMap, switchMap, flatMap, map, tap, mapTo } from 'rxjs/operators';
 import { millis } from '@utils/duration';
 import { isRunning } from '@store/trainer.state';
 import {
@@ -40,27 +41,24 @@ import { TrainerService } from '@training/trainer.service';
 import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { hasValue, forceValue } from '@utils/optional';
+import { forceValue } from '@utils/optional';
 import { now, fromUnixMillis } from '@utils/instant';
 import { selectTrainingSessionAndResultsById, selectIsInitialLoadNecessaryById, selectNextCaseAndHintActiveById, selectStopwatchState, selectStartAfterLoading } from '@store/trainer.selectors';
 import { selectSelectedTrainingSessionId } from '@store/router.selectors';
 import { ScrambleOrSample } from '@training/scramble-or-sample.model';
+import { Case } from '@training/case.model';
 
-function caseName(scrambleOrSample: ScrambleOrSample) {
+function casee(scrambleOrSample: ScrambleOrSample): Case {
   switch (scrambleOrSample.tag) {
     case 'scramble':
-      return scrambleOrSample.scramble.toString();
+      const scrambleString = scrambleOrSample.scramble.toString();
+      return {
+	key: scrambleString,
+	name: scrambleString,
+	rawName: scrambleString,
+      };
     case 'sample':
-      return scrambleOrSample.sample.item.caseName;
-  }
-}
-
-function caseKey(scrambleOrSample: ScrambleOrSample) {
-  switch (scrambleOrSample.tag) {
-    case 'scramble':
-      return scrambleOrSample.scramble.toString();
-    case 'sample':
-      return scrambleOrSample.sample.item.caseKey;
+      return scrambleOrSample.sample.item.casee;
   }
 }
 
@@ -78,7 +76,7 @@ export class TrainerEffects {
   initialLoadSelected$ = createEffect(() =>
     this.actions$.pipe(
       ofType(initialLoadSelected),
-      concatLatestFrom(() => this.store.select(selectSelectedTrainingSessionId).pipe(filter(hasValue), map(forceValue))),
+      concatLatestFrom(() => this.store.select(selectSelectedTrainingSessionId).pipe(filterPresent())),
       map(([action, trainingSessionId]) => initialLoad({ trainingSessionId })),
     )
   );
@@ -137,7 +135,7 @@ export class TrainerEffects {
           catchError(httpResponseError => {
             const context = {
               action: 'creating result',
-              subject: `${action.newResult.caseName}`,
+              subject: `${action.newResult.casee.name}`,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(createFailure({ trainingSessionId: action.trainingSessionId, error }));
@@ -210,7 +208,7 @@ export class TrainerEffects {
   loadSelectedNextCase$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadSelectedNextCase),
-      concatLatestFrom(() => this.store.select(selectSelectedTrainingSessionId).pipe(filter(hasValue), map(forceValue))),
+      concatLatestFrom(() => this.store.select(selectSelectedTrainingSessionId).pipe(filterPresent())),
       map(([action, trainingSessionId]) => loadNextCase({ trainingSessionId })),
     )
   );
@@ -218,7 +216,7 @@ export class TrainerEffects {
   loadNextCase$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadNextCase),
-      concatLatestFrom(() => this.store.select(selectTrainingSessionAndResultsById).pipe(filter(hasValue), map(forceValue))),
+      concatLatestFrom(() => this.store.select(selectTrainingSessionAndResultsById).pipe(filterPresent())),
       switchMap(([action, lolMap]) => {
         const { trainingSession, results } = lolMap.get(action.trainingSessionId)!;
         return this.trainerService.randomScrambleOrSample(now(), trainingSession, results).pipe(
@@ -281,8 +279,7 @@ export class TrainerEffects {
         const scrambleOrSample = forceValue(nextCase);
         const duration = millis(action.durationMillis);
         const newResult: NewResult = {
-          caseKey: caseKey(scrambleOrSample),
-          caseName: caseName(scrambleOrSample),
+          casee: casee(scrambleOrSample),
           numHints: hintActive ? 1 : 0,
           timeS: duration.toSeconds(),
           success: true,

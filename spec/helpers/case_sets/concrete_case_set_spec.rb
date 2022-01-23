@@ -55,6 +55,12 @@ describe CaseSets::ConcreteCaseSet do
           expect(concrete_case_set.case_name(c)).to be_a(String)
         end
       end
+
+      it 'produces raw case names' do
+        concrete_case_set.cases.each do |c|
+          expect(concrete_case_set.raw_case_name(c)).to be_a(String)
+        end
+      end
     end
     # rubocop:enable RSpec/DescribedClass
   end

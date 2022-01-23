@@ -8,7 +8,7 @@ import { formatDate } from '@angular/common';
 export class InstantPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private readonly locale: string) {}
 
-  transform(instant: Instant, now?: Instant) {
+  transform(instant: Instant) {
     return formatDate(instant.toDate(), 'short', this.locale);
   }
 }

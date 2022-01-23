@@ -5,6 +5,8 @@ require 'twisty_puzzles'
 module CaseSets
   # An alg set with all parities of a given fixed buffer and parity part type.
   class BufferedParityTwistSet < ConcreteCaseSet
+    include TwistNameHelper
+
     def initialize(buffer_part_type, parity_part_type, buffer)
       super()
       @buffer_part_type = buffer_part_type
@@ -18,6 +20,7 @@ module CaseSets
     end
 
     attr_reader :buffer_part_type, :parity_part_type, :buffer, :pattern
+    alias twist_part_type buffer_part_type
 
     def eql?(other)
       self.class.equal?(other.class) &&
@@ -95,6 +98,16 @@ module CaseSets
       parts = [buffer_cycle(casee).parts[1]] + parity_cycle(casee).parts + twist_cycle(casee).parts
       name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
       "#{name_parts[0]} (#{name_parts[1]} ⟷ #{name_parts[2]}, #{name_parts[3]})"
+    end
+
+    def raw_case_name(casee)
+      raise ArgumentError unless match?(casee)
+
+      buffer_cycle_parts = buffer_cycle(casee).parts
+      parity_cycle_parts = parity_cycle(casee).parts
+      "#{buffer_cycle_parts[0]} ⟷ #{buffer_cycle_parts[1]}, " \
+        "#{parity_cycle_parts[0]} ⟷ #{parity_cycle_parts[1]}, "  \
+        "#{twist_name(twist_cycle(casee))}"
     end
 
     def default_cube_size

@@ -6,6 +6,8 @@ require 'twisty_puzzles/utils'
 module CaseSets
   # An alg set with all flaoting two twists of a given part type.
   class ConcreteFloatingTwoTwistSet < ConcreteCaseSet
+    include TwistNameHelper
+
     def initialize(part_type)
       super()
       @part_type = part_type
@@ -77,14 +79,18 @@ module CaseSets
     end
 
     def case_name(casee, letter_scheme: nil)
-      unless match?(casee)
-        raise ArgumentError,
-              "Cannot apply letter scheme for non-matching case #{casee}"
-      end
+      raise ArgumentError unless match?(casee)
 
       parts = casee.part_cycles.map { |c| c.parts.first }
       name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
       name_parts.join(' ')
+    end
+
+    def raw_case_name(casee)
+      raise ArgumentError unless match?(casee)
+
+      twist_names = casee.part_cycles.map { |c| twist_name(c) }
+      twist_names.join(' ')
     end
 
     def default_cube_size

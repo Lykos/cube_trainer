@@ -1,5 +1,5 @@
 import { TrainingSessionBase } from './training-session-base.model';
-import { UncalculatedStat } from './uncalculated-stat.model';
+import { RawStat } from './raw-stat.model';
 import { TrainingCase } from './training-case.model';
 import { GeneratorType } from './generator-type.model';
 import { Part } from './part.model';
@@ -9,7 +9,7 @@ export interface TrainingSession extends TrainingSessionBase {
   readonly id: number;
   readonly numResults: number;
   readonly trainingCases: readonly TrainingCase[];
-  readonly stats: readonly UncalculatedStat[];
+  readonly stats: readonly RawStat[];
   readonly buffer?: Part;
   readonly generatorType: GeneratorType;
 }
