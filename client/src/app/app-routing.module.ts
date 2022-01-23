@@ -11,7 +11,7 @@ import { AchievementGrantsComponent } from '@core/achievement-grants/achievement
 import { AchievementComponent } from '@core/achievement/achievement.component';
 import { MessageComponent } from '@core/message/message.component';
 import { MessagesComponent } from '@core/messages/messages.component';
-import { NewColorSchemeComponent } from './training/new-color-scheme/new-color-scheme.component';
+import { EditColorSchemeComponent } from './training/edit-color-scheme/edit-color-scheme.component';
 import { NewLetterSchemeComponent } from './training/new-letter-scheme/new-letter-scheme.component';
 import { SignupComponent } from '@core/signup/signup.component';
 import { LoginComponent } from '@core/login/login.component';
@@ -51,7 +51,7 @@ const routes: Routes = [
   { path: 'achievement-grants', component: AchievementGrantsComponent, canActivate: [AngularTokenService] },
   { path: 'messages', component: MessagesComponent, canActivate: [AngularTokenService] },
   { path: 'messages/:messageId', component: MessageComponent, canActivate: [AngularTokenService] },
-  { path: 'color-schemes/new', component: NewColorSchemeComponent, canActivate: [AngularTokenService] },
+  { path: 'color-scheme', component: EditColorSchemeComponent, canActivate: [AngularTokenService] },
   { path: 'letter-schemes/new', component: NewLetterSchemeComponent, canActivate: [AngularTokenService] },
   { path: 'training-sessions/new', component: NewTrainingSessionComponent, canActivate: [AngularTokenService] },
   { path: 'training-sessions/:trainingSessionId', component: TrainerComponent, canActivate: [AngularTokenService] },
