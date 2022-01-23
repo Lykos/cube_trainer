@@ -20,6 +20,6 @@ class TrainingCaseSerializer < ActiveModel::Serializer
   end
 
   def alg
-    object.alg&.algorithm&.to_s
+    object.alg&.commutator&.to_s
   end
 end
