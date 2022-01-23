@@ -1,5 +1,5 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormGroup, AbstractControl } from '@angular/forms';
 import { UserFormCreator } from '../user-form-creator.service';
 import { UsersService } from '../users.service';
@@ -14,12 +14,14 @@ import { PasswordChange } from '../password-change.model';
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css']
 })
-export class ChangePasswordComponent implements OnInit {
-  form!: FormGroup;
+export class ChangePasswordComponent {
+  form: FormGroup;
 
   constructor(private readonly userFormCreator: UserFormCreator,
 	      private readonly snackBar: MatSnackBar,
-              private readonly usersService: UsersService) {}
+              private readonly usersService: UsersService) {
+    this.form = this.userFormCreator.createChangePasswordForm();
+  }
 
   get currentPasswordControl() { return this.form.get('currentPassword')!; }
 
@@ -49,9 +51,5 @@ export class ChangePasswordComponent implements OnInit {
 	this.currentPasswordControl.setErrors({'wrongcurrentpassword': true});
       }
     });
-  }
-    
-  ngOnInit() {
-    this.form = this.userFormCreator.createChangePasswordForm();
   }
 }

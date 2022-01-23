@@ -1,4 +1,4 @@
-<div *ngIf="alg">
+<div *ngIf="alg && trainingSession">
   <ng-container *ngIf="active$ | async as active">
     <div *ngIf="active.value">
       <span class="alg mat-elevation-z1" [ngClass]="algSourceClass" [matTooltip]="tooltip">{{alg}}</span>
@@ -6,7 +6,7 @@
         Override
       </button>
     </div>
-    <button mat-raised-button id="trainer-hint" color="primary" *ngIf="!active.value" (click)="onHint()">
+    <button mat-raised-button id="trainer-hint" color="primary" *ngIf="!active.value" (click)="onHint(trainingSession)">
       Reveal Alg
     </button>
   </ng-container>
