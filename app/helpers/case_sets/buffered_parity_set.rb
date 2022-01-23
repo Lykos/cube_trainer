@@ -98,7 +98,7 @@ module CaseSets
       buffer_cycle_parts = buffer_cycle(casee).parts
       parity_cycle_parts = parity_cycle(casee).parts
       "#{buffer_cycle_parts[0]} ⟷ #{buffer_cycle_parts[1]}, " \
-      "#{parity_cycle_parts[0]} ⟷ #{parity_cycle_parts[1]}"
+        "#{parity_cycle_parts[0]} ⟷ #{parity_cycle_parts[1]}"
     end
 
     def default_cube_size

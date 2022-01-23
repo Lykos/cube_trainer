@@ -12,6 +12,7 @@ module AlgLike
   included do
     attr_accessor :is_inferred
     attr_writer :inverse
+
     attribute :casee, :case
     validates :alg, presence: true
     validates :casee, presence: true

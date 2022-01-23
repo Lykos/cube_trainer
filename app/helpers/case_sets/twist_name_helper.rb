@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'twisty_puzzles'
 
 module CaseSets
@@ -5,13 +7,13 @@ module CaseSets
   module TwistNameHelper
     def twist_name(twist_cycle)
       raise TypeError unless twist_cycle.is_a?(TwistyPuzzles::PartCycle)
-      raise ArgumentError unless twist_cycle.length == 1 && twist_cycle.twist > 0
+      raise ArgumentError unless twist_cycle.length == 1 && twist_cycle.twist.positive?
 
       "#{twist_word(twist_cycle)} #{twist_cycle.parts.first}#{twist_suffix(twist_cycle)}"
     end
 
     private
-    
+
     def twist_word(twist_cycle)
       direction_matters?(twist_cycle) ? 'twist' : 'flip'
     end

@@ -18,7 +18,8 @@ class TrainingCaseSerializer < ActiveModel::Serializer
 
     return :inferred if alg.is_inferred
     return :fixed if alg.is_fixed
-    return :original
+
+    :original
   end
 
   def setup
