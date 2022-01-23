@@ -37,6 +37,7 @@ export class NewLetterSchemeComponent implements OnInit {
         xcentersLikeCorners: [true],
         tcentersLikeEdges: [true],
         midgesLikeEdges: [true],
+        invertWingLetter: [false],
       };
       partTypes.forEach(partType => {
         partType.parts.forEach(part => {
@@ -56,7 +57,7 @@ export class NewLetterSchemeComponent implements OnInit {
   }
 
   private customized(partType: PartType): boolean {
-    if (partType.name === PartTypeName.Wing && this.wingLetteringMode !== WingLetteringMode.Custom) {
+    if (partType.name === PartTypeName.Wing && !this.hasCustomizedWingLetters) {
       return false;
     }
     if (partType.name === PartTypeName.XCenter && this.xcentersLikeCorners) {
@@ -87,6 +88,36 @@ export class NewLetterSchemeComponent implements OnInit {
     return this.letterSchemeForm!.get('midgesLikeEdges')!.value;
   }
 
+  get hasCustomizedWingLetters() {
+    return this.wingLetteringMode === WingLetteringMode.Custom;
+  }
+
+  get invertWingLetter() {
+    return !this.hasCustomizedWingLetters && this.letterSchemeForm!.get('invertWingLetter')!.value;
+  }
+
+  get wingLetterLike() {
+    switch (this.wingLetteringMode) {
+      case WingLetteringMode.LikeEdges:
+	return 'edge FU';
+      case WingLetteringMode.LikeCorners:
+	return 'corner FUR';
+      default:
+	throw new Error(`Unsupported wing lettering mode for inverting wing letters: ${this.wingLetteringMode}`);
+    }
+  }
+
+  get invertWingLetterLike() {
+    switch (this.wingLetteringMode) {
+      case WingLetteringMode.LikeEdges:
+	return 'edge UF';
+      case WingLetteringMode.LikeCorners:
+	return 'corner UFR';
+      default:
+	throw new Error(`Unsupported wing lettering mode for inverting wing letters: ${this.wingLetteringMode}`);
+    }
+  }
+
   get newLetterScheme(): NewLetterScheme {
     const mappings: LetterSchemeMapping[] = [];
     for (let partType of this.customizedPartTypes) {
@@ -102,6 +133,7 @@ export class NewLetterSchemeComponent implements OnInit {
       xcentersLikeCorners: this.xcentersLikeCorners,
       tcentersLikeEdges: this.tcentersLikeEdges,
       midgesLikeEdges: this.midgesLikeEdges,
+      invertWingLetter: this.invertWingLetter,
       mappings,
     };
   }

@@ -11,6 +11,7 @@ class LetterScheme < ApplicationRecord
   accepts_nested_attributes_for :letter_scheme_mappings
   attribute :wing_lettering_mode, :symbol
   validates :wing_lettering_mode, inclusion: WING_LETTERING_MODES
+  validates :invert_wing_letter, inclusion: [nil, false], if: ->{ wing_lettering_mode == :custom }
 
   alias mappings letter_scheme_mappings
   alias mappings= letter_scheme_mappings=
@@ -23,8 +24,11 @@ class LetterScheme < ApplicationRecord
   end
 
   def for_letter(part_type, letter)
-    used_part_type = used_part(part_type)
-    mappings.find { |e| e.part_type == used_part_type && e.letter == letter }&.part
+    used_part_type = used_part_type(part_type)
+    used_part = mappings.find { |e| e.part_type == used_part_type && e.letter == letter }&.part
+    return unless used_part
+
+    original_part(part_type, used_part)
   end
 
   private
@@ -33,14 +37,13 @@ class LetterScheme < ApplicationRecord
   # In some cases, it will be the same as part_type,
   # but e.g. xcenters_like_corners is true, for xcenters, this will be corners.
   def used_part_type(part_type)
-    case part_type
-    when TwistyPuzzles::Wing
+    if part_type == TwistyPuzzles::Wing
       used_part_type_for_wing
-    when TwistyPuzzles::XCenter
+    elsif part_type == TwistyPuzzles::XCenter
       xcenters_like_corners ? TwistyPuzzles::Corner : part_type
-    when TwistyPuzzles::TCenter
+    elsif part_type == TwistyPuzzles::TCenter
       tcenters_like_edges ? TwistyPuzzles::Edge : part_type
-    when TwistyPuzzles::Midge
+    elsif part_type == TwistyPuzzles::Midge
       midges_like_edges ? TwistyPuzzles::Edge : part_type
     else
       part_type
@@ -59,10 +62,50 @@ class LetterScheme < ApplicationRecord
   def used_part(part)
     used_part_type = used_part_type(part.class)
     return part if used_part_type == part.class
+    return used_wing_corner(part) if part.instance_of?(TwistyPuzzles::Wing) && used_part_type == TwistyPuzzles::Corner
     return part.corresponding_part if part.corresponding_part.instance_of?(used_part_type)
     # All other cases should be handled by the previous branches.
-    raise unless part.instance_of?(TwistyPuzzles::Wing) && used_part_type == TwistyPuzzles::Edge
+    raise unless used_part_type == TwistyPuzzles::Edge
 
-    TwistyPuzzles::Edge.for_face_symbols(part.face_symbols)
+    used_edge(part)
   end
+
+  def original_part(original_part_type, used_part)
+    return used_part if used_part.class == original_part_type
+    return original_wing_for_corner(used_part) if used_part.instance_of?(TwistyPuzzles::Corner) && original_part_type == TwistyPuzzles::Wing
+    if original_part_type::ELEMENTS.first.corresponding_part.instance_of?(used_part.class)
+      return original_part_type::ELEMENTS.find { |p| p.corresponding_part == used_part }
+    end
+    # All other cases should be handled by the previous branches.
+    raise unless used_part.class == TwistyPuzzles::Edge
+
+    original_part_for_edge(original_part_type, used_part)
+  end
+
+  def used_wing_corner(part)
+    corner = part.corresponding_part
+    invert_wing_letter ? corner.rotate_by(1) : corner
+  end
+
+  def original_wing_for_corner(used_corner)
+    used_corner = used_corner.rotate_by(-1) if invert_wing_letter
+    TwistyPuzzles::Wing::ELEMENTS.find { |p| p.corresponding_part == used_corner }
+  end
+
+  def used_edge(part)
+    raise unless part.instance_of?(TwistyPuzzles::Wing) || part.instance_of?(TwistyPuzzles::Midge)
+    
+    edge_face_symbols = part.face_symbols.dup
+    edge_face_symbols.reverse! if part.instance_of?(TwistyPuzzles::Wing) && invert_wing_letter
+    TwistyPuzzles::Edge.for_face_symbols(edge_face_symbols)
+  end
+
+  def original_part_for_edge(original_part_type, used_edge)
+    raise unless original_part_type == TwistyPuzzles::Wing || original_part_type == TwistyPuzzles::Midge
+
+    original_face_symbols = used_edge.face_symbols.dup
+    original_face_symbols.reverse! if original_part_type == TwistyPuzzles::Wing && invert_wing_letter
+    original_part_type.for_face_symbols(original_face_symbols)
+  end
+
 end
