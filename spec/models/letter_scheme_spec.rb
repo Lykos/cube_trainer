@@ -3,15 +3,15 @@
 require 'rails_helper'
 
 RSpec.describe LetterScheme, type: :model do
-  include_context 'with edges'
-  include_context 'with user abc'
-
   subject(:letter_scheme) do
     described_class.new(
       user: user,
       letter_scheme_mappings_attributes: [{ part: 'Edge:UF', letter: 'a' }, { part: 'Edge:FU', letter: 'e' }, { part: 'Corner:URF', letter: 'b' }, { part: 'Corner:FUR', letter: 'f' }]
     )
   end
+
+  include_context 'with edges'
+  include_context 'with user abc'
 
   describe '#letter' do
     it 'returns the configured letter for an edge' do
