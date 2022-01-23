@@ -39,8 +39,8 @@ jobs:
     - name: Setup Database
       run: |
         cp config/database.yml.github-actions config/database.yml
-        bundle exec rake db:create
-        bundle exec rake db:schema:load
+        bundle exec rails db:create
+        bundle exec rails db:schema:load
       env:
         RAILS_ENV: test
         POSTGRES_USER: postgres
@@ -53,17 +53,17 @@ jobs:
         cache: 'npm'
 
     - name: Run npm (similar to install but made for CI)
-      run: bundle exec rake npm:ci
+      run: bundle exec rails npm:ci
       env:
         RAILS_ENV: test
 
     - name: Run npm build
-      run: bundle exec rake npm:build
+      run: bundle exec rails npm:build
       env:
         RAILS_ENV: test
 
     - name: Run RSpec
-      run: bundle exec rake spec
+      run: bundle exec rails spec SPEC_OPTS='--tag ~skip_on_ci'
       env:
         RAILS_ENV: test
         POSTGRES_USER: postgres

@@ -25,10 +25,10 @@ export class SelectStatsComponent implements OnInit {
     this.pickedStatTypesChanged.emit(this.pickedStatTypes);
   }
 
-  get statTypesForCurrentTrainingSessionType() {
-    if (this.lastTrainingSessionTypeForStatsTypes !== this.trainingSessionType) {
-      this.statTypesForLastTrainingSessionType = statTypes.filter(s => !s.needsBoundedInputs || this.trainingSessionType!.hasBoundedInputs);
-      this.lastTrainingSessionTypeForStatsTypes = this.trainingSessionType;
+  statTypes(trainingSessionType: TrainingSessionType) {
+    if (this.lastTrainingSessionTypeForStatsTypes !== trainingSessionType) {
+      this.statTypesForLastTrainingSessionType = statTypes.filter(s => !s.needsBoundedInputs || trainingSessionType.hasBoundedInputs);
+      this.lastTrainingSessionTypeForStatsTypes = trainingSessionType;
     }
     return this.statTypesForLastTrainingSessionType;
   }

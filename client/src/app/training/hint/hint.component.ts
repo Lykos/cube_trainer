@@ -48,14 +48,14 @@ export class HintComponent {
     }
   }
 
-  onHint() {
-    this.store.dispatch(showHint({ trainingSessionId: this.trainingSession!.id }));
+  onHint(trainingSession: TrainingSession) {
+    this.store.dispatch(showHint({ trainingSessionId: trainingSession.id }));
   }
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'h') {
-      this.onHint();
+    if (this.trainingSession && event.key === 'h') {
+      this.onHint(this.trainingSession);
       return;
     }
   }

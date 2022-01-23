@@ -5,8 +5,8 @@
     [running]="running"
     [memoTime]="memoTime"
     [hasStopAndStart]="hasStopAndStart"
-    (startt)="onStart()"
-    (stopAndPause)="onStopAndPause()"
-    (stopAndStart)="onStopAndStart()">
+    (startt)="onStart(trainingSession)"
+    (stopAndPause)="onStopAndPause(trainingSession)"
+    (stopAndStart)="onStopAndStart(trainingSession)">
   </cube-trainer-stopwatch>
 </ng-container>

@@ -57,20 +57,20 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
     this.nextCaseReadySubscription?.unsubscribe();
   }
 
-  onStart() {
-    this.store.dispatch(startStopwatch({ trainingSessionId: this.trainingSession!.id, startUnixMillis: now().toUnixMillis() }));
+  onStart(trainingSession: TrainingSession) {
+    this.store.dispatch(startStopwatch({ trainingSessionId: trainingSession.id, startUnixMillis: now().toUnixMillis() }));
   }
 
-  onStopAndPause() {
-    this.store.dispatch(stopAndPauseStopwatch(this.stopProps));
+  onStopAndPause(trainingSession: TrainingSession) {
+    this.store.dispatch(stopAndPauseStopwatch(this.stopProps(trainingSession)));
   }
 
-  onStopAndStart() {
-    this.store.dispatch(stopAndStartStopwatch(this.stopProps));
+  onStopAndStart(trainingSession: TrainingSession) {
+    this.store.dispatch(stopAndStartStopwatch(this.stopProps(trainingSession)));
   }
 
-  private get stopProps() {
-    return { trainingSessionId: this.trainingSession!.id, stopUnixMillis: now().toUnixMillis() };
+  private stopProps(trainingSession: TrainingSession) {
+    return { trainingSessionId: trainingSession.id, stopUnixMillis: now().toUnixMillis() };
   }
   
   get memoTime() {
