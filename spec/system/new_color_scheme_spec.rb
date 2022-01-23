@@ -20,6 +20,6 @@ describe 'new color scheme', type: :system do
 
     click_button 'Submit'
 
-    expect(page).to have_text('Color scheme created!')
+    expect(page).to have_text('Color scheme created.')
   end
 end
