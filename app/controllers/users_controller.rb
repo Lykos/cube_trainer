@@ -2,18 +2,6 @@
 
 # Controller for users.
 class UsersController < ApplicationController
-  # The action `name_or_email_exists?` is needed for signup and
-  # hence we can't require the user to already be signed in.
-  skip_before_action :authenticate_user!, only: %i[name_or_email_exists?]
-
-  # TODO: Deprecate
-  # GET /api/name_or_email_exists
-  def name_or_email_exists?
-    name_or_email = params[:name_or_email]
-    exists = User.exists?(name: name_or_email) || User.exists?(email: name_or_email)
-    render json: exists, status: :ok
-  end
-
   # TODO: Deprecate
   # GET /api/user
   def show
