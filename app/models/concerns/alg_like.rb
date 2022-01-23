@@ -84,6 +84,6 @@ module AlgLike
 
     return if alg_correct?(comm)
 
-    errors.add(:alg, "#{comm} does not solve case #{casee}")
+    errors.add(:alg, "#{comm} does not solve case #{owning_set.raw_case_name(casee)}")
   end
 end

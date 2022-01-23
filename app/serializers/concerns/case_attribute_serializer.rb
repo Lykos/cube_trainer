@@ -5,7 +5,7 @@ module CaseAttributeSerializer
   extend ActiveSupport::Concern
 
   included do
-    attributes :case_key, :case_name
+    attributes :case_key, :case_name, :raw_case_name
   end
 
   def case_key
@@ -14,5 +14,9 @@ module CaseAttributeSerializer
 
   def case_name
     object.owning_set.case_name(object.casee)
+  end
+
+  def raw_case_name
+    object.owning_set.raw_case_name(object.casee)
   end
 end
