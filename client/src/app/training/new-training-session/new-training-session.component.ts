@@ -6,9 +6,7 @@ import { TrainingSessionFormsService } from '../training-session-forms.service';
 import { NewTrainingSession } from '../new-training-session.model';
 import { AlgSet } from '../alg-set.model';
 import { StatType } from '../stat-type.model';
-import { statTypes } from '../stat-types.const';
 import { Observable } from 'rxjs';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { create } from '@store/training-sessions.actions';
 import { Store } from '@ngrx/store';
 
@@ -25,9 +23,6 @@ export class NewTrainingSessionComponent {
   trainingSessionTypes$: Observable<TrainingSessionType[]>;
   pickedStatTypes: StatType[] = [];
 
-  lastTrainingSessionTypeForStatsTypes: TrainingSessionType | undefined
-  statTypesForLastTrainingSessionType: StatType[] = [];
-  
   constructor(private readonly trainingSessionFormsService: TrainingSessionFormsService,
 	      private readonly trainingSessionsService: TrainingSessionsService,
               private readonly store: Store) {
@@ -44,14 +39,6 @@ export class NewTrainingSessionComponent {
 
   get name() {
     return this.trainingSessionTypeGroup.get('name')!;
-  }
-
-  get statTypesForCurrentTrainingSessionType() {
-    if (this.lastTrainingSessionTypeForStatsTypes !== this.trainingSessionType) {
-      this.statTypesForLastTrainingSessionType = statTypes.filter(s => !s.needsBoundedInputs || this.trainingSessionType!.hasBoundedInputs);
-      this.lastTrainingSessionTypeForStatsTypes = this.trainingSessionType;
-    }
-    return this.statTypesForLastTrainingSessionType;
   }
 
   get hasMultipleShowInputModes() {
@@ -187,15 +174,8 @@ export class NewTrainingSessionComponent {
     this.store.dispatch(create({ newTrainingSession: this.newTrainingSession }));
   }
 
-  drop(event: CdkDragDrop<StatType[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(event.previousContainer.data,
-                        event.container.data,
-                        event.previousIndex,
-                        event.currentIndex);
-    }
+  onPickedStatTypesChanged(pickedStatTypes: StatType[]) {
+    this.pickedStatTypes = pickedStatTypes;
   }
 
   get trainingSessionTypesContext() {
