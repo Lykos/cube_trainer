@@ -13,6 +13,7 @@ import { StopwatchComponent } from '@training/stopwatch/stopwatch.component';
 import { HintComponent } from '@training/hint/hint.component';
 import { ResultsTableComponent } from '@training/results-table/results-table.component';
 import { DurationPipe } from '@shared/duration.pipe';
+import { FluidInstantPipe } from '@shared/fluid-instant.pipe';
 import { InstantPipe } from '@shared/instant.pipe';
 import { StoreModule } from '@ngrx/store';
 import { of } from 'rxjs';
@@ -76,6 +77,7 @@ describe('TrainerComponentIntegration', () => {
         HintComponent,
         ResultsTableComponent,
         DurationPipe,
+        FluidInstantPipe,
         InstantPipe,
         BackendActionLoadErrorComponent,
       ],

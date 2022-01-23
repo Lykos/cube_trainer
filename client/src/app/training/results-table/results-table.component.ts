@@ -4,7 +4,7 @@ import { Result } from '../result.model';
 import { Component, Input, LOCALE_ID, Inject } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { formatDate } from '@angular/common';
-import { fromDateString, Instant } from '@utils/instant';
+import { fromDateString, Instant, now } from '@utils/instant';
 import { seconds, Duration } from '@utils/duration';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -41,6 +41,10 @@ export class ResultsTableComponent {
     this.allSelected$ = this.store.select(selectResultsTotalOnPage).pipe(
       map(l => { return { value: this.selection.selected.length === forceValue(l) }; }),
     );
+  }
+
+  now() {
+    return now();
   }
 
   get checkedTrainingSessionId(): number {

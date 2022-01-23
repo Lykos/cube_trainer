@@ -6,6 +6,7 @@ import { DurationPipe } from './duration.pipe';
 import { ErrorPipe } from './error.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InstantPipe } from './instant.pipe';
+import { FluidInstantPipe } from './fluid-instant.pipe';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -35,6 +36,7 @@ import { BackendActionLoadErrorComponent } from './backend-action-load-error/bac
     DurationPipe,
     ErrorPipe,
     InstantPipe,
+    FluidInstantPipe,
     OrErrorPipe,
     ValuePipe,
   ],
@@ -69,6 +71,7 @@ import { BackendActionLoadErrorComponent } from './backend-action-load-error/bac
     ErrorPipe,
     FormsModule,
     InstantPipe,
+    FluidInstantPipe,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,

@@ -60,6 +60,14 @@ export class Instant {
     return this.greaterOrEqual(that) ? this : that;
   }
 
+  sameDay(that: Instant) {
+    const thisDate = this.toDate();
+    const thatDate = that.toDate();
+    return thisDate.getFullYear() === thatDate.getFullYear() &&
+      thisDate.getMonth() === thatDate.getMonth() &&
+      thisDate.getDate() === thatDate.getDate();
+  }
+
   toString() {
     if (this.equals(infiniteFuture)) {
       return "infiniteFuture";
