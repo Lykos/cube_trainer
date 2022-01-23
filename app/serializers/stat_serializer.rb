@@ -2,6 +2,5 @@
 
 # Serializer for stats.
 class StatSerializer < ActiveModel::Serializer
-  attributes :id, :index, :created_at
-  belongs_to :stat_type
+  attributes :id, :index, :created_at, :stat_type
 end
