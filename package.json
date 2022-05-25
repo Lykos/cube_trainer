@@ -24,7 +24,7 @@
     "lint": "ng lint"
   },
   "dependencies": {
-    "@angular/animations": "^13.1.1",
+    "@angular/animations": "^13.3.10",
     "@angular/cdk": "^13.0.2",
     "@angular/common": "^13.1.2",
     "@angular/compiler": "^13.0.2",
@@ -45,7 +45,7 @@
     "angular-token": "^7.0.1",
     "cubing": "^0.22.0",
     "file-saver": "^2.0.5",
-    "ngx-cookie-service": "^13.1.2",
+    "ngx-cookie-service": "^13.2.1",
     "ngx-filesaver": "^13.0.0",
     "rxjs": "^7.5.2",
     "tslib": "^2.3.0",
@@ -54,7 +54,7 @@
   "devDependencies": {
     "@angular-builders/custom-webpack": "^13.0.0",
     "@angular-eslint/builder": "13.0.1",
-    "@angular-eslint/eslint-plugin": "13.0.1",
+    "@angular-eslint/eslint-plugin": "13.2.1",
     "@angular-eslint/eslint-plugin-template": "13.0.1",
     "@angular-eslint/schematics": "13.0.1",
     "@angular-eslint/template-parser": "13.0.1",
@@ -74,7 +74,7 @@
     "jasmine-core": "^4.0.0",
     "karma": "^6.3.20",
     "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^3.1.0",
+    "karma-chrome-launcher": "^3.1.1",
     "karma-coverage": "^2.1.0",
     "karma-jasmine": "^4.0.0",
     "karma-jasmine-html-reporter": "^1.7.0",
