@@ -49,7 +49,7 @@ RSpec.describe AlgSet, type: :model do
 
     it 'returns nil if there is no commutator for the given case' do
       alg
-      expect(alg_set.alg(create_case(uf, ur, ub))).to be(nil)
+      expect(alg_set.alg(create_case(uf, ur, ub))).to be_nil
     end
   end
 end

@@ -334,3 +334,9 @@ Rails/RootJoinChain: # new in 2.13
   Enabled: true
 RSpec/FactoryBot/SyntaxMethods: # new in 2.7
   Enabled: true
+RSpec/BeEq: # new in 2.9.0
+  Enabled: true
+RSpec/BeNil: # new in 2.9.0
+  Enabled: true
+RSpec/VerifiedDoubleReference: # new in 2.10.0
+  Enabled: true
