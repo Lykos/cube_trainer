@@ -159,7 +159,7 @@ describe('AngularTokenService', () => {
     
     const fakeSessionStorage = {
       setItem: (key: string, value: string) => store[key] = `${value}`,
-      getItem: (key: string): string => key in store ? store[key] : null,
+      getItem: (key: string): string | null => key in store ? store[key] : null,
       removeItem: (key: string) => delete store[key],
       clear: () => store = {}
     };
@@ -466,15 +466,15 @@ describe('AngularTokenService', () => {
     });
 
     it('currentAuthData should return undefined', () => {
-      expect(service.currentAuthData).toEqual(null);
+      expect(service.currentAuthData).toBeNull();
     });
 
     it('currentUserData should return undefined', () => {
-      expect(service.currentUserData).toEqual(null);
+      expect(service.currentUserData).toBeNull();
     });
 
     it('currentUserType should return undefined', () => {
-      expect(service.currentUserType).toEqual(undefined);
+      expect(service.currentUserType).toBeUndefined();
     });
 
     it('userSignedIn should return false', () => {

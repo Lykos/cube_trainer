@@ -8,9 +8,9 @@ export interface SignInData {
 }
 
 export interface RegisterData {
-  login:                  string;
+  login?:                 string;
   password:               string;
-  passwordConfirmation:   string;
+  passwordConfirmation?:  string;
   name?:                  string;
   userType?:              string;
 }
@@ -80,12 +80,12 @@ export interface TokenPlatform {
 export interface AngularTokenOptions {
   angularTokenOptionsProvider?: Provider;
 
-  apiBase?:                   string;
-  apiPath?:                   string;
+  apiBase?:                   string | null;
+  apiPath?:                   string | null;
 
   signInPath?:                string;
-  signInRedirect?:            string;
-  signInStoredUrlStorageKey?: string;
+  signInRedirect?:            string | null;
+  signInStoredUrlStorageKey?: string | null;
 
   signOutPath?:               string;
   validateTokenPath?:         string;
@@ -100,13 +100,13 @@ export interface AngularTokenOptions {
   resetPasswordPath?:         string;
   resetPasswordCallback?:     string;
 
-  userTypes?:                 UserType[];
+  userTypes?:                 UserType[] | null;
   loginField?:                string;
 
   oAuthBase?:                 string;
   oAuthPaths?:                { [key: string]: string; };
   oAuthCallbackPath?:         string;
   oAuthWindowType?:           string;
-  oAuthWindowOptions?:        { [key: string]: string; };
+  oAuthWindowOptions?:        { [key: string]: string; } | null;
   oAuthBrowserCallbacks?:     { [key: string]: string; };
 }

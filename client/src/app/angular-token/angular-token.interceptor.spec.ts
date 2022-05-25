@@ -40,7 +40,7 @@ describe('AngularTokenInterceptor', () => {
     
     const fakeSessionStorage = {
       setItem: (key: string, value: string) => store[key] = `${value}`,
-      getItem: (key: string): string => key in store ? store[key] : null,
+      getItem: (key: string): string | null => key in store ? store[key] : null,
       removeItem: (key: string) => delete store[key],
       clear: () => store = {}
     };

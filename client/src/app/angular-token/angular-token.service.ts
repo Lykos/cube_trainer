@@ -30,7 +30,7 @@ import {
 })
 export class AngularTokenService implements CanActivate {
 
-  get currentUserType(): string {
+  get currentUserType(): string | undefined {
     if (this.userType.value != null) {
       return this.userType.value.name;
     } else {
@@ -38,15 +38,15 @@ export class AngularTokenService implements CanActivate {
     }
   }
 
-  get currentUserData(): UserData {
+  get currentUserData(): UserData | null | undefined {
     return this.userData.value;
   }
 
-  get currentAuthData(): AuthData {
+  get currentAuthData(): AuthData | null {
     return this.authData.value;
   }
 
-  get apiBase(): string {
+  get apiBase(): string | undefined | null {
     console.warn('[angular-token] The attribute .apiBase will be removed in the next major release, please use' +
     '.tokenOptions.apiBase instead');
     return this.options.apiBase;
@@ -61,9 +61,9 @@ export class AngularTokenService implements CanActivate {
   }
 
   private options: AngularTokenOptions;
-  public userType: BehaviorSubject<UserType> = new BehaviorSubject<UserType>(null);
-  public authData: BehaviorSubject<AuthData> = new BehaviorSubject<AuthData>(null);
-  public userData: BehaviorSubject<UserData> = new BehaviorSubject<UserData>(null);
+  public userType: BehaviorSubject<UserType | null | undefined> = new BehaviorSubject<UserType | null | undefined>(null);
+  public authData: BehaviorSubject<AuthData | null> = new BehaviorSubject<AuthData | null>(null);
+  public userData: BehaviorSubject<UserData | null | undefined> = new BehaviorSubject<UserData | null | undefined>(null);
   private global: Window | any;
 
   private localStorage: Storage | any = {};
@@ -81,7 +81,7 @@ export class AngularTokenService implements CanActivate {
 
       // Bad pratice, needs fixing
       this.global = {
-        open: (): void => null,
+        open: () => {},
         location: {
           href: '/',
           origin: '/'
@@ -89,9 +89,9 @@ export class AngularTokenService implements CanActivate {
       };
 
       // Bad pratice, needs fixing
-      this.localStorage.setItem = (): void => null;
-      this.localStorage.getItem = (): void => null;
-      this.localStorage.removeItem = (): void => null;
+      this.localStorage.setItem = () => {};
+      this.localStorage.getItem = () => {};
+      this.localStorage.removeItem = () => {};
     } else {
       this.localStorage = localStorage;
     }
@@ -193,22 +193,22 @@ export class AngularTokenService implements CanActivate {
     }
 
     if (
-      registerData.password_confirmation == null &&
+      registerData['password_confirmation'] == null &&
       registerData.passwordConfirmation != null
     ) {
-      registerData.password_confirmation = registerData.passwordConfirmation;
+      registerData['password_confirmation'] = registerData.passwordConfirmation;
       delete registerData.passwordConfirmation;
     }
 
     if (additionalData !== undefined) {
-      registerData.additionalData = additionalData;
+      registerData['additionalData'] = additionalData;
     }
 
     const login = registerData.login;
     delete registerData.login;
-    registerData[this.options.loginField] = login;
+    registerData[this.options.loginField!] = login;
 
-    registerData.confirm_success_url = this.options.registerAccountCallback;
+    registerData['confirm_success_url'] = this.options.registerAccountCallback;
 
     return this.http.post<ApiResponse>(
       this.getServerPath() + this.options.registerAccountPath, registerData
@@ -225,12 +225,12 @@ export class AngularTokenService implements CanActivate {
     this.userType.next((signInData.userType == null) ? null : this.getUserTypeByName(signInData.userType));
 
     const body = {
-      [this.options.loginField]: signInData.login,
+      [this.options.loginField!]: signInData.login,
       password: signInData.password
     };
 
     if (additionalData !== undefined) {
-      body.additionalData = additionalData;
+      body['additionalData'] = additionalData;
     }
 
     const observ = this.http.post<ApiResponse>(
@@ -246,7 +246,7 @@ export class AngularTokenService implements CanActivate {
 
     const oAuthPath: string = this.getOAuthPath(oAuthType);
     const callbackUrl = `${this.global.location.origin}/${this.options.oAuthCallbackPath}`;
-    const oAuthWindowType: string = this.options.oAuthWindowType;
+    const oAuthWindowType: string | undefined = this.options.oAuthWindowType;
     const authUrl: string = this.getOAuthUrl(oAuthPath, callbackUrl, oAuthWindowType);
 
     if (oAuthWindowType === 'newWindow' ||
@@ -269,7 +269,7 @@ export class AngularTokenService implements CanActivate {
       );
       return this.requestCredentialsViaPostMessage(popup);
     } else if (oAuthWindowType == 'inAppBrowser') {
-      let oAuthBrowserCallback = this.options.oAuthBrowserCallbacks[oAuthType];
+      let oAuthBrowserCallback = this.options.oAuthBrowserCallbacks![oAuthType];
       if (!oAuthBrowserCallback) {
         throw new Error(`To login with oAuth provider ${oAuthType} using inAppBrowser the callback (in oAuthBrowserCallbacks) is required.`);
       }
@@ -282,7 +282,7 @@ export class AngularTokenService implements CanActivate {
       //     }
       // }
 
-      let browser = inAppBrowser.create(
+      let browser = inAppBrowser!.create(
           authUrl,
           '_blank',
           'location=no'
@@ -402,7 +402,7 @@ export class AngularTokenService implements CanActivate {
     
     
     if (additionalData !== undefined) {
-      resetPasswordData.additionalData = additionalData;
+      (resetPasswordData as any).additionalData = additionalData;
     }
 
     this.userType.next(
@@ -410,7 +410,7 @@ export class AngularTokenService implements CanActivate {
     );
 
     const body = {
-      [this.options.loginField]: resetPasswordData.login,
+      [this.options.loginField!]: resetPasswordData.login,
       redirect_url: this.options.resetPasswordCallback
     };
 
@@ -449,7 +449,7 @@ export class AngularTokenService implements CanActivate {
   private getOAuthPath(oAuthType: string): string {
     let oAuthPath: string;
 
-    oAuthPath = this.options.oAuthPaths[oAuthType];
+    oAuthPath = this.options.oAuthPaths![oAuthType];
 
     if (oAuthPath == null) {
       oAuthPath = `/auth/${oAuthType}`;
@@ -458,7 +458,7 @@ export class AngularTokenService implements CanActivate {
     return oAuthPath;
   }
 
-  private getOAuthUrl(oAuthPath: string, callbackUrl: string, windowType: string): string {
+  private getOAuthUrl(oAuthPath: string, callbackUrl: string, windowType: string | undefined): string {
     let url: string;
 
     url =   `${this.options.oAuthBase}/${oAuthPath}`;
@@ -504,11 +504,11 @@ export class AngularTokenService implements CanActivate {
     const headers = data.headers;
 
     const authData: AuthData = {
-      accessToken:    headers.get('access-token'),
-      client:         headers.get('client'),
-      expiry:         headers.get('expiry'),
-      tokenType:      headers.get('token-type'),
-      uid:            headers.get('uid')
+      accessToken:    headers.get('access-token')!,
+      client:         headers.get('client')!,
+      expiry:         headers.get('expiry')!,
+      tokenType:      headers.get('token-type')!,
+      uid:            headers.get('uid')!
     };
 
     this.setAuthData(authData);
@@ -654,7 +654,7 @@ export class AngularTokenService implements CanActivate {
    */
 
   // Match user config by user config name
-  private getUserTypeByName(name: string): UserType {
+  private getUserTypeByName(name: string): UserType | null | undefined {
     if (name == null || this.options.userTypes == null) {
       return null;
     }
