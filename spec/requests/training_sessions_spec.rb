@@ -15,13 +15,13 @@ RSpec.describe 'TrainingSessions', type: :request do
     it 'returns true if a user exists' do
       get '/api/training_session_name_exists_for_user', params: { training_session_name: training_session.name }, headers: user_headers
       expect(response).to have_http_status(:success)
-      expect(JSON.parse(response.body)).to eq(true)
+      expect(JSON.parse(response.body)).to be(true)
     end
 
     it "returns false if a name doesn't exist" do
       get '/api/training_session_name_exists_for_user', params: { training_session_name: 'new_training_session_name' }, headers: user_headers
       expect(response).to have_http_status(:success)
-      expect(JSON.parse(response.body)).to eq(false)
+      expect(JSON.parse(response.body)).to be(false)
     end
   end
 

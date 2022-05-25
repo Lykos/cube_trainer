@@ -36,32 +36,32 @@ describe CasePattern::CasePattern do
   describe '==' do
     it 'is equal to itself' do
       # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
-      expect(case_pattern == case_pattern).to eq(true)
+      expect(case_pattern == case_pattern).to be(true)
       # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
     end
 
     it 'is equal to an equivalent one' do
-      expect(case_pattern == equivalent_case_pattern).to eq(true)
+      expect(case_pattern == equivalent_case_pattern).to be(true)
     end
 
     it 'is not equal to a different one' do
-      expect(case_pattern == other_case_pattern).to eq(false)
+      expect(case_pattern == other_case_pattern).to be(false)
     end
   end
 
   describe '#hash' do
     it 'is equal to its own hash' do
       # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
-      expect(case_pattern.hash == case_pattern.hash).to eq(true)
+      expect(case_pattern.hash == case_pattern.hash).to be(true)
       # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
     end
 
     it 'is equal to the hash of an equivalent one' do
-      expect(case_pattern.hash == equivalent_case_pattern.hash).to eq(true)
+      expect(case_pattern.hash == equivalent_case_pattern.hash).to be(true)
     end
 
     it 'is not equal to a different one' do
-      expect(case_pattern.hash == other_case_pattern.hash).to eq(false)
+      expect(case_pattern.hash == other_case_pattern.hash).to be(false)
     end
   end
 

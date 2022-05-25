@@ -23,7 +23,7 @@ RSpec.describe 'Results', type: :request do
       expect(parsed_item['casee']['name']).to eq('DF UB')
       expect(parsed_item['time_s']).to eq(10)
       expect(parsed_item['failed_attempts']).to eq(0)
-      expect(parsed_item['success']).to eq(true)
+      expect(parsed_item['success']).to be(true)
       expect(parsed_item['num_hints']).to eq(0)
     end
 
@@ -42,7 +42,7 @@ RSpec.describe 'Results', type: :request do
       expect(parsed_body['casee']['name']).to eq('DF UB')
       expect(parsed_body['time_s']).to eq(10)
       expect(parsed_body['failed_attempts']).to eq(0)
-      expect(parsed_body['success']).to eq(true)
+      expect(parsed_body['success']).to be(true)
       expect(parsed_body['num_hints']).to eq(0)
     end
 

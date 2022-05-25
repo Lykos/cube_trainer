@@ -47,7 +47,7 @@ RSpec.describe 'Messages', type: :request do
       expect(response).to have_http_status(:success)
       user_message.reload
       expect(user_message.title).to eq('message_title')
-      expect(user_message.read).to eq(true)
+      expect(user_message.read).to be(true)
     end
 
     it 'returns not found for unknown messages' do
@@ -58,7 +58,7 @@ RSpec.describe 'Messages', type: :request do
     it 'returns not found for other users' do
       put "/api/messages/#{user_message.id}", params: { message: { read: true } }, headers: eve_headers
       expect(response).to have_http_status(:not_found)
-      expect(Message.find(user_message.id).read).to eq(false)
+      expect(Message.find(user_message.id).read).to be(false)
     end
   end
 
