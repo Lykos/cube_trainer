@@ -45,7 +45,7 @@
     "angular-token": "^7.0.1",
     "cubing": "^0.22.0",
     "file-saver": "^2.0.5",
-    "ngx-cookie-service": "^13.1.2",
+    "ngx-cookie-service": "^13.2.1",
     "ngx-filesaver": "^13.0.0",
     "rxjs": "^7.5.2",
     "tslib": "^2.3.0",
