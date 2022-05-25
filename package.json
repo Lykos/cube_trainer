@@ -42,7 +42,6 @@
     "@ngrx/store-devtools": "^13.0.2",
     "@rxweb/reactive-form-validators": "^2.1.6",
     "actioncable": "^5.2.6",
-    "angular-token": "^7.0.1",
     "cubing": "^0.22.0",
     "file-saver": "^2.0.5",
     "ngx-cookie-service": "^13.2.1",

@@ -11,6 +11,7 @@
       "@effects/*": ["app/effects/*"],
       "@core/*": ["app/core/*"],
       "@training/*": ["app/training/*"]
+      "@angular-token/*": ["app/angular-token/*"]
     },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
