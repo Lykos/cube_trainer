@@ -136,6 +136,10 @@ module CaseSets
       end
     end
 
+    def axis_order_matters?
+      true
+    end
+
     private
 
     def create_case(swap_part, twist_part, twist)

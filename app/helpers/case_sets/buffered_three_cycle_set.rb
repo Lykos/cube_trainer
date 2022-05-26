@@ -105,6 +105,10 @@ module CaseSets
       end
     end
 
+    def axis_order_matters?
+      true
+    end
+
     private
 
     def refined_part(refinement_index, casee)

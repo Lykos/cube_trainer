@@ -143,6 +143,10 @@ module CaseSets
       end
     end
 
+    def axis_order_matters?
+      true
+    end
+
     private
 
     def create_case_pattern(buffer_cycle_pattern)

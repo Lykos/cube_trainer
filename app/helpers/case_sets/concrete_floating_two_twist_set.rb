@@ -35,8 +35,28 @@ module CaseSets
       "floating #{simple_class_name(@part_type).downcase} #{twist_name}s"
     end
 
+    def axis_order_matters?
+      @part_type::ELEMENTS.first.rotations.length > 2
+    end
+
+    def row_patterns(casee)
+      raise ArgumentError if axis_order_matters?
+      raise ArgumentError unless match?(casee)
+      raise ArgumentError unless casee.part_cycles.length == 2
+
+      casee.part_cycles.map do |specific_cycle|
+        raise ArgumentError unless specific_cycle.parts.length == 1
+
+        specific_part_pattern = specific_part(specific_cycle.parts.first)
+        specific_cycle_pattern = part_cycle_pattern(@part_type, specific_part_pattern, twist: specific_twist(1))
+        wildcard_cycle_pattern = part_cycle_pattern(@part_type, wildcard, twist: specific_twist(1))
+        case_pattern(specific_cycle_pattern, wildcard_cycle_pattern)
+      end
+    end
+
     def row_pattern(refinement_index, casee)
       raise ArgumentError if refinement_index != 0 && refinement_index != 1
+      raise ArgumentError unless axis_order_matters?
       raise ArgumentError unless match?(casee)
 
       desired_twist = refinement_twist(refinement_index)
