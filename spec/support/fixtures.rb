@@ -10,7 +10,6 @@ shared_context 'with case set' do
   end
 end
 
-# rubocop:disable Metrics/BlockLength
 shared_context 'with alg set' do
   include_context 'with edges'
   include_context 'with case set'
@@ -69,8 +68,6 @@ shared_context 'with alg set' do
     alg_set
   end
 end
-# rubocop:enable Metrics/BlockLength
-
 shared_context 'with user abc' do
   let(:user) do
     user = User.find_or_initialize_by(

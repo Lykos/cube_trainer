@@ -3,7 +3,6 @@
 require 'rails_helper'
 require 'twisty_puzzles'
 
-# rubocop:disable Metrics/BlockLength
 shared_examples 'alg_like' do
   include TwistyPuzzles
 
@@ -69,4 +68,3 @@ shared_examples 'alg_like' do
     end
   end
 end
-# rubocop:enable Metrics/BlockLength
