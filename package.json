@@ -15,7 +15,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration development",
+    "build": "ng build --configuration production",
     "build_development": "ng build --configuration development",
     "build_e2e": "ng build --configuration e2e",
     "watch": "ng build --watch --configuration development",
