@@ -1,16 +1,27 @@
 import { Sampler } from './sampler';
 import { Sample } from './sample';
 import { Weighter } from './weighter';
-import { SamplingState } from './sampling-state';
-import { WeightState } from './weight-state';
+import { SamplingState, ItemAndWeightState } from './sampling-state';
 import { SamplingError } from './sampling-error';
 import { weightedDraw } from './weighted-draw';
-import { Optional, some, none, orElse } from '@utils/optional';
+import { Optional, some, none, orElse, mapOptional, hasValue } from '@utils/optional';
 
-function isRecent<X>(samplingState: SamplingState<X>, weightState: WeightState, recencyThreshold: number) {
+function equalsValue<X>(x: X, optY: Optional<X>) {
+  return orElse(mapOptional(optY, y => y === x), false);
+}
+
+function isRecent<X>(samplingState: SamplingState<X>, weightState: ItemAndWeightState<X>, recencyThreshold: number) {
+  const numItems = samplingState.weightStates.length
+
+  // We always exclude the next item unless there is only one item.
+  if (numItems > 1 && equalsValue(weightState.item, samplingState.nextItem)) {
+    return true;
+  }
+  const recencyThresholdMalus = hasValue(samplingState.nextItem) ? 1 : 0;
+  
   // In case of very few total items, we have to soften the recency threshold.
-  const adjustedRecencyThreshold = Math.min(Math.floor(samplingState.weightStates.length / 2), recencyThreshold);
-  return weightState.itemsSinceLastOccurrence < adjustedRecencyThreshold;
+  const adjustedRecencyThreshold = Math.min(Math.floor(numItems / 2), recencyThreshold - recencyThresholdMalus);
+  return weightState.state.itemsSinceLastOccurrence < adjustedRecencyThreshold;
 }
 
 interface WeightedItem<X> {
@@ -45,7 +56,7 @@ export class WeightedSampler implements Sampler {
     const result = orElse(
       this.cachedWeightedItems,
       state.weightStates
-	.filter(s => !isRecent(state, s.state, this.recencyThreshold))
+	.filter(s => !isRecent(state, s, this.recencyThreshold))
 	.map(s => ({ item: s.item, weight: this.weighter.weight(s.state) }))
 	.filter(s => s.weight > 0)
     );

@@ -43,7 +43,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { forceValue } from '@utils/optional';
 import { now, fromUnixMillis } from '@utils/instant';
-import { selectTrainingSessionAndResultsById, selectIsInitialLoadNecessaryById, selectNextCaseAndHintActiveById, selectStopwatchState, selectStartAfterLoading } from '@store/trainer.selectors';
+import {
+  selectTrainingSessionAndResultsById,
+  selectIsInitialLoadNecessaryById,
+  selectNextCaseAndHintActiveById,
+  selectStopwatchState,
+  selectStartAfterLoading,
+  selectNextCase,
+} from '@store/trainer.selectors';
 import { selectSelectedTrainingSessionId } from '@store/router.selectors';
 import { ScrambleOrSample } from '@training/scramble-or-sample.model';
 import { Case } from '@training/case.model';
@@ -217,9 +224,10 @@ export class TrainerEffects {
     this.actions$.pipe(
       ofType(loadNextCase),
       concatLatestFrom(() => this.store.select(selectTrainingSessionAndResultsById).pipe(filterPresent())),
-      switchMap(([action, lolMap]) => {
+      concatLatestFrom(() => this.store.select(selectNextCase)),
+      switchMap(([[action, lolMap], nextCase]) => {
         const { trainingSession, results } = lolMap.get(action.trainingSessionId)!;
-        return this.trainerService.randomScrambleOrSample(now(), trainingSession, results).pipe(
+        return this.trainerService.randomScrambleOrSample(now(), trainingSession, results, nextCase).pipe(
           map(nextCase => loadNextCaseSuccess({ trainingSessionId: action.trainingSessionId, nextCase })),
           catchError(httpResponseError => {
             const context = { action: 'selecting', subject: 'next scramble or sample' };

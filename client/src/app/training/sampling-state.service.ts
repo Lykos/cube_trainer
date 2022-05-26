@@ -56,7 +56,7 @@ function toItemAndWeightState(state: ItemAndIntermediateWeightState): ItemAndWei
   };
 }
 
-function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: readonly Result[]): SamplingState<TrainingCase> {
+function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: readonly Result[], nextCase: Optional<TrainingCase>): SamplingState<TrainingCase> {
   const weightStates = new Map<string, ItemAndIntermediateWeightState>();
   for (let casee of cases) {
     weightStates.set(casee.casee.key, { item: casee, state: initialWeightState() });
@@ -95,14 +95,14 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
     }
   }
   const weightStateValues = [...weightStates.values()];
-  return { weightStates: weightStateValues.map(toItemAndWeightState) };
+  return { weightStates: weightStateValues.map(toItemAndWeightState), nextItem: nextCase };
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class SamplingStateService {
-  samplingState(now: Instant, trainingSession: TrainingSession, results: readonly Result[]): SamplingState<TrainingCase> {
-    return toSamplingState(now, trainingSession.trainingCases, results);
+  samplingState(now: Instant, trainingSession: TrainingSession, results: readonly Result[], nextCase: Optional<TrainingCase>): SamplingState<TrainingCase> {
+    return toSamplingState(now, trainingSession.trainingCases, results, nextCase);
   }
 }
