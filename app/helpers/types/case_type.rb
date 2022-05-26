@@ -23,9 +23,7 @@ module Types
       parts.shift if parts.first == 'PartCycle'
 
       # TODO: Refactor for more future proofness.
-      if parts.first == 'Scramble' && parts.length == 2
-        return Scramble.new(algorithm: parts.second)
-      end
+      return Scramble.new(algorithm: parts.second) if parts.first == 'Scramble' && parts.length == 2
 
       part_cycles = parts.map { |raw_data| TwistyPuzzles::PartCycle.from_raw_data(raw_data) }
       Case.new(part_cycles: part_cycles)
@@ -34,9 +32,10 @@ module Types
     def serialize(value)
       return if value.nil?
 
-      if value.is_a?(Case)
+      case value
+      when Case
         serialize_case(value)
-      elsif value.is_a?(Scramble)
+      when Scramble
         serialize_scramble(value)
       else
         raise TypeError, "#{value.class} is not a valid case class"

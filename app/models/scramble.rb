@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Scramble
   include ActiveModel::Model
 

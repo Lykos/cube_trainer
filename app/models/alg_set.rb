@@ -18,7 +18,7 @@ class AlgSet < ApplicationRecord
     maybe_alg = alg_map[casee.canonicalize(ignore_same_face_center_cycles: true)]
     return maybe_alg if maybe_alg
 
-    alg_map[casee.canonicalize(ignore_same_face_center_cycles: true)]&.inverse
+    alg_map[casee.inverse.canonicalize(ignore_same_face_center_cycles: true)]&.inverse
   end
 
   delegate :raw_case_name, to: :case_set
