@@ -6,7 +6,7 @@ class ChangeBufferType < ActiveRecord::Migration[6.0]
     attribute :mode_type, :mode_type
   end
 
-  class PartType < ActiveRecord::Type::String
+  class PartType
     extend TwistyPuzzles::Utils::StringHelper
     include TwistyPuzzles::Utils::StringHelper
 
