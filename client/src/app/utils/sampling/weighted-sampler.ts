@@ -26,7 +26,7 @@ export class WeightedSampler implements Sampler {
   sample<X>(state: SamplingState<X>): Sample<X> {
     const weightedItems = this.weightedItems(state);
     if (weightedItems.length === 0) {
-      throw new SamplingError('no item has positive weight');
+      throw new SamplingError(`no item has positive weight in sampler ${this.name}`);
     }
     const item = weightedDraw(weightedItems).item;
     return { item, samplerName: this.name };
