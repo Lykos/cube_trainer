@@ -6,8 +6,6 @@ require 'types/part_type'
 require 'types/case_type'
 require 'types/concrete_case_set_type'
 
-Rails.autoloaders.log!
-
 ActiveRecord::Type.register(:symbol, Types::SymbolType)
 ActiveRecord::Type.register(:input_representation, Types::InputRepresentationType)
 ActiveRecord::Type.register(:training_session_type, Types::TrainingSessionTypeType)
