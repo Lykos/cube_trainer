@@ -15,20 +15,44 @@ module Types
 
     def cast(value)
       return if value.nil?
-      return value if value.is_a?(Case)
+      return value if value.is_a?(Case) || value.is_a?(Scramble)
       raise TypeError unless value.is_a?(String)
 
       parts = value.split(SEPARATOR)
       # TODO: Get rid of this backwards compatibility logic
       parts.shift if parts.first == 'PartCycle'
+
+      # TODO: Refactor for more future proofness.
+      if parts.first == 'Scramble' && parts.length == 2
+        return Scramble.new(algorithm: parts.second)
+      end
+
       part_cycles = parts.map { |raw_data| TwistyPuzzles::PartCycle.from_raw_data(raw_data) }
       Case.new(part_cycles: part_cycles)
     end
 
     def serialize(value)
       return if value.nil?
-      raise TypeError unless value.is_a?(Case)
 
+      if value.is_a?(Case)
+        serialize_case(value)
+      elsif value.is_a?(Scramble)
+        serialize_scramble(value)
+      else
+        raise TypeError, "#{value.class} is not a valid case class"
+      end
+    end
+
+    private
+
+    def serialize_scramble(value)
+      scramble_string = value.algorithm
+      raise if scramble_string.include?(SEPARATOR)
+
+      "Scramble#{SEPARATOR}#{scramble_string}"
+    end
+
+    def serialize_case(value)
       serialized_parts = value.part_cycles.map(&:to_raw_data)
       raise if serialized_parts.any? { |p| p.include?(SEPARATOR) }
 

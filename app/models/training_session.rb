@@ -63,7 +63,9 @@ class TrainingSession < ApplicationRecord
     case_set&.case_name(casee, letter_scheme: user.letter_scheme) || casee.to_s
   end
 
-  delegate :raw_case_name, to: :case_set
+  def raw_case_name(casee)
+    case_set&.raw_case_name(casee, letter_scheme: user.letter_scheme) || casee.to_s
+  end
 
   def picture
     show_input_mode == :picture

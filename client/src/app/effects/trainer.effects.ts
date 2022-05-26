@@ -51,7 +51,7 @@ import { Case } from '@training/case.model';
 function casee(scrambleOrSample: ScrambleOrSample): Case {
   switch (scrambleOrSample.tag) {
     case 'scramble':
-      const scrambleString = scrambleOrSample.scramble.toString();
+      const scrambleString = `Scramble:${scrambleOrSample.scramble}`;
       return {
 	key: scrambleString,
 	name: scrambleString,
