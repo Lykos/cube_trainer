@@ -17,7 +17,10 @@ function isAuthErrorData(error: object): error is AuthErrorData {
   return !!authErrorData.status && !!authErrorData.data && !!authErrorData.errors && Object.keys(authErrorData).length === 3;
 }
 
-function isFieldlessAuthErrorData(error: object): error is FieldlessAuthErrorData {
+function isFieldlessAuthErrorData(error: any): error is FieldlessAuthErrorData {
+  if (!error) {
+    return false;
+  }
   const fieldlessAuthErrorData = error as FieldlessAuthErrorData;
   return (fieldlessAuthErrorData.success !== undefined && !!fieldlessAuthErrorData.errors && Object.keys(fieldlessAuthErrorData).length === 2) ||
     (!!fieldlessAuthErrorData.errors && Object.keys(fieldlessAuthErrorData).length === 1);
