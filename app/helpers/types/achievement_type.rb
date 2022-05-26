@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Types
-  
   # Active record type for achievements.
   class AchievementType < ActiveRecord::Type::String
     def cast(value)
@@ -19,5 +18,4 @@ module Types
       value.id
     end
   end
-
 end

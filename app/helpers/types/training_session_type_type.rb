@@ -18,5 +18,4 @@ module Types
       value.id
     end
   end
-
 end

@@ -49,5 +49,4 @@ module Types
       "#{simple_class_name(value.class)}#{SEPARATOR}#{value.to_raw_data}"
     end
   end
-
 end

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Types
-
   # Active record type for a case, e.g. one 3-cycle, one parity case,
   # one twist case, one scramble etc.
   # This represents the abstract case independent of its solution.
@@ -31,5 +30,4 @@ module Types
       value.to_raw_data
     end
   end
-
 end

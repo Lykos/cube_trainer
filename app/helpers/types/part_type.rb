@@ -4,7 +4,6 @@ require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 
 module Types
-
   # Active record type for parts.
   class PartType < ActiveRecord::Type::String
     extend TwistyPuzzles::Utils::StringHelper
@@ -33,5 +32,4 @@ module Types
       "#{simple_class_name(value.class)}#{SEPARATOR}#{value}"
     end
   end
-
 end

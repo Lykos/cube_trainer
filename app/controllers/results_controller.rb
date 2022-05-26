@@ -69,7 +69,10 @@ class ResultsController < ApplicationController
       :case_key, :time_s, :failed_attempts, :word, :success,
       :num_hints
     )
-    fixed_params[:casee] = Types::CaseType.new.cast(fixed_params[:case_key]) if fixed_params[:case_key]
+    if fixed_params[:case_key]
+      fixed_params[:casee] =
+        Types::CaseType.new.cast(fixed_params[:case_key])
+    end
     fixed_params.delete(:case_key)
     fixed_params
   end
