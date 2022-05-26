@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
+require 'types/part_type'
 
 # Helps controllers and models to serialize parts.
 module PartHelper
