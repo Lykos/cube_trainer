@@ -1,4 +1,4 @@
-import { AngularTokenService } from 'angular-token';
+import { AngularTokenService } from '@angular-token/angular-token.service';
 import { NgModule } from '@angular/core';
 import { MethodExplorerComponent } from './method-explorer/method-explorer/method-explorer.component';
 import { UserComponent } from '@core/user/user.component';

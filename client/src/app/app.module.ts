@@ -1,6 +1,6 @@
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
-import { AngularTokenModule } from 'angular-token';
+import { AngularTokenModule } from '@angular-token/angular-token.module';
 import { METADATA } from '@shared/metadata.const';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';

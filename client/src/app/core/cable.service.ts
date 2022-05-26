@@ -1,4 +1,4 @@
-import { AngularTokenService } from 'angular-token';
+import { AngularTokenService } from '@angular-token/angular-token.service';
 import { Injectable } from '@angular/core';
 import { Cable, ChannelNameWithParams, Channel } from 'actioncable';
 import * as ActionCable from 'actioncable';

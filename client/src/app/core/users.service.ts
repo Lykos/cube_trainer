@@ -1,4 +1,5 @@
-import { AngularTokenService, RegisterData } from 'angular-token';
+import { AngularTokenService } from '@angular-token/angular-token.service';
+import { RegisterData } from '@angular-token/angular-token.model';
 import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
 import { NewUser } from './new-user.model';
@@ -8,7 +9,7 @@ import { PasswordChange } from './password-change.model';
 import { User } from './user.model';
 import { Credentials } from './credentials.model';
 import { Observable } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
+import { filter, tap, map, mapTo } from 'rxjs/operators';
 import { CookieConsentService } from './cookie-consent.service';
 
 @Injectable({
@@ -27,19 +28,23 @@ export class UsersService {
     };
     // Users have to consent to cookies during registration.
     return this.tokenService.registerAccount(data).pipe(
-      tap(() => { this.cookieConsentService.turnOnConsent(); })
+      tap(() => { this.cookieConsentService.turnOnConsent(); }),
+      mapTo(undefined),
     );
   }
 
   login(credentials: Credentials): Observable<User> {
     const params = { login: credentials.email, password: credentials.password };
     return this.tokenService.signIn(params).pipe(
-      map(response => response.body.data),
+      map(response => response.data),
+      filter(user => !!user),
+      map(user => user!),
+      map(user => ({ id: user.id, email: user.login, name: user.name })),
       tap((user) => {
         // Users have to consent to cookies during registration,
         // so we know they consented in the past if they log in.
         this.cookieConsentService.turnOnConsent();
-      })
+      }),
     );
   }
 
@@ -74,6 +79,6 @@ export class UsersService {
   }
 
   destroy(): Observable<void> {
-    return this.tokenService.deleteAccount();
+    return this.tokenService.deleteAccount().pipe(mapTo(undefined));
   }
 }
