@@ -13,7 +13,7 @@ interface FieldlessAuthErrorData {
 }
 
 function isAuthErrorData(error: any): error is AuthErrorData {
-  if (!error || typeof error !== object) {
+  if (!error || typeof error !== 'object') {
     return false;
   }
   const authErrorData = error as AuthErrorData;
@@ -21,7 +21,7 @@ function isAuthErrorData(error: any): error is AuthErrorData {
 }
 
 function isFieldlessAuthErrorData(error: any): error is FieldlessAuthErrorData {
-  if (!error || typeof error !== object) {
+  if (!error || typeof error !== 'object') {
     return false;
   }
   const fieldlessAuthErrorData = error as FieldlessAuthErrorData;
