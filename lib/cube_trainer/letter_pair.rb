@@ -44,7 +44,7 @@ module CubeTrainer
     alias == eql?
 
     def hash
-      @hash ||= ([self.class] + @letters).hash
+      @hash ||= [self.class, @letters].hash
     end
 
     def to_s

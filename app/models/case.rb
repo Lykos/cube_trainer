@@ -50,7 +50,7 @@ class Case
   alias == eql?
 
   def hash
-    self.class.hash ^ part_cycles.hash
+    [self.class, part_cycles].hash
   end
 
   def contains_any_part?(parts)
