@@ -103,7 +103,9 @@ module CubeTrainer
       if commutator_sequence.commutators.length == 2
         left_modifications = commutator_modifications(commutator_sequence.commutators.first)
         right_modifications = commutator_modifications(commutator_sequence.commutators.last)
-        left_modifications.product(right_modifications).map { |a, b| TwistyPuzzles::CommutatorSequence.new([a, b]) }
+        left_modifications.product(right_modifications).map do |a, b|
+          TwistyPuzzles::CommutatorSequence.new([a, b])
+        end
       else
         commutator_sequence
       end
