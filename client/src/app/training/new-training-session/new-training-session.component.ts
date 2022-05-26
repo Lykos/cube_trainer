@@ -105,7 +105,7 @@ export class NewTrainingSessionComponent {
   }
 
   get excludeAlgHoles() {
-    if (!this.buffer || !this.matchingAlgSets) {
+    if (!this.matchingAlgSets) {
       return undefined;
     }
     return this.algSetGroup.get('excludeAlgHoles')!.value;
@@ -136,7 +136,7 @@ export class NewTrainingSessionComponent {
 
   get matchingAlgSets(): readonly AlgSet[] {
     const trainingSessionType = this.trainingSessionType;
-    if (!trainingSessionType || !trainingSessionType?.buffers?.length) {
+    if (!trainingSessionType) {
       return [];
     }
     // For alg sets without buffer, we don't filter and return all alg sets.
