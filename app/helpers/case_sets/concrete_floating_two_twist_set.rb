@@ -101,7 +101,7 @@ module CaseSets
       twist_parts = @part_type::ELEMENTS.select { |a| a == a.rotations.min }
       part_permutations = twist_parts.permutation(2).reject { |a, b| a == b }
       part_permutations.select! { |a, b| a < b } if inverse_twist(1) == 1
-      lol = part_permutations.map do |parts|
+      part_permutations.map do |parts|
         Case.new(
           part_cycles: [
             TwistyPuzzles::PartCycle.new([parts[0]], 1),
@@ -109,8 +109,6 @@ module CaseSets
           ]
         )
       end
-      p lol
-      lol
     end
 
     private
