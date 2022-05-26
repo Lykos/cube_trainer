@@ -69,7 +69,7 @@ class AlgOverridesController < ApplicationController
     fixed_params = params.require(:alg_override).permit(
       :case_key, :alg
     )
-    fixed_params[:casee] = CaseType.new.cast(fixed_params[:case_key]) if fixed_params[:case_key]
+    fixed_params[:casee] = Types::CaseType.new.cast(fixed_params[:case_key]) if fixed_params[:case_key]
     fixed_params.delete(:case_key)
     fixed_params
   end

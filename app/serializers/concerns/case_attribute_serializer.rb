@@ -20,7 +20,7 @@ module CaseAttributeSerializer
   private
 
   def case_key
-    CaseType.new.serialize(object.casee)
+    Types::CaseType.new.serialize(object.casee)
   end
 
   def case_name
