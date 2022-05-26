@@ -12,13 +12,16 @@ interface FieldlessAuthErrorData {
   readonly errors: readonly string[];
 }
 
-function isAuthErrorData(error: object): error is AuthErrorData {
+function isAuthErrorData(error: any): error is AuthErrorData {
+  if (!error || typeof error !== object) {
+    return false;
+  }
   const authErrorData = error as AuthErrorData;
   return !!authErrorData.status && !!authErrorData.data && !!authErrorData.errors && Object.keys(authErrorData).length === 3;
 }
 
 function isFieldlessAuthErrorData(error: any): error is FieldlessAuthErrorData {
-  if (!error) {
+  if (!error || typeof error !== object) {
     return false;
   }
   const fieldlessAuthErrorData = error as FieldlessAuthErrorData;
