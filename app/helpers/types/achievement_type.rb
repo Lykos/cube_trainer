@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'byebug'
-
 # Active record type for achievements.
 class AchievementType < ActiveRecord::Type::String
   def cast(value)

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'byebug'
 
 RSpec.describe Stat, type: :model do
   include_context 'with stat'
