@@ -40,7 +40,7 @@ const trainerAdapter: EntityAdapter<ResultsState> = createEntityAdapter<ResultsS
 
 const initialPageState = {
   pageIndex: 0,
-  pageSize: 100,
+  pageSize: 20,
 }
 
 const initialStopwatchState: StopwatchState = notStartedStopwatchState;

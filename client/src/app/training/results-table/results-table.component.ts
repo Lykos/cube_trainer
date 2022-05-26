@@ -9,7 +9,7 @@ import { seconds, Duration } from '@utils/duration';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { forceValue } from '@utils/optional';
-import { selectResults, selectResultsTotal, selectResultsOnPage, selectResultsTotalOnPage, selectInitialLoadLoading } from '@store/trainer.selectors';
+import { selectResults, selectResultsTotal, selectResultsOnPage, selectResultsTotalOnPage, selectInitialLoadLoading, selectPageSize } from '@store/trainer.selectors';
 import { destroy, markDnf, setPage } from '@store/trainer.actions';
 import { Store } from '@ngrx/store';
 
@@ -27,6 +27,7 @@ export class ResultsTableComponent {
   resultsOnPage$: Observable<readonly Result[]>;
   loading$: Observable<boolean>;
   numResults$: Observable<number>;
+  pageSize$: Observable<number>;
   /** Whether the number of selected elements matches the total number of rows. */
   allSelected$: Observable<{ value: boolean }>;
 
@@ -38,6 +39,7 @@ export class ResultsTableComponent {
     this.results$ = this.store.select(selectResults).pipe(filterPresent());
     this.resultsOnPage$ = this.store.select(selectResultsOnPage).pipe(filterPresent());
     this.numResults$ = this.store.select(selectResultsTotal).pipe(filterPresent());
+    this.pageSize$ = this.store.select(selectPageSize);
     this.allSelected$ = this.store.select(selectResultsTotalOnPage).pipe(
       map(l => { return { value: this.selection.selected.length === forceValue(l) }; }),
     );
@@ -52,7 +54,7 @@ export class ResultsTableComponent {
     if (!trainingSessionId) {
       throw new Error('trainingSessionId has to be defined');
     }
-    return trainingSessionId
+    return trainingSessionId;
   }
 
   onDeleteSelected() {
