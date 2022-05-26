@@ -53,7 +53,10 @@ module CubeTrainer
 
     def self.interpret_table_with_case_set(table, transposed_table, case_set, cube_size)
       if case_set.axis_order_matters?
-        table_interpretations = table_interpretations_with_axis_orders(table, transposed_table, case_set, cube_size)
+        table_interpretations = table_interpretations_with_axis_orders(
+          table, transposed_table,
+          case_set, cube_size
+        )
         best_interpretation(table_interpretations, table)
       else
         table_interpretation(table, transposed_table, case_set, false, cube_size)
@@ -62,7 +65,7 @@ module CubeTrainer
 
     def self.table_interpretations_with_axis_orders(table, transposed_table, case_set, cube_size)
       [true, false].map do |flip_axes|
-        [table_interpretation(table, transposed_table, case_set, true, cube_size)]
+        table_interpretation(table, transposed_table, case_set, flip_axes, cube_size)
       end
     end
 
@@ -144,9 +147,10 @@ module CubeTrainer
     end
 
     def self.relevant_cases(row, case_set, cube_size)
-      case_candidates = row.filter_map do |cell|
-        cell.maybe_case(cube_size)&.canonicalize(ignore_same_face_center_cycles: true)
-      end
+      case_candidates =
+        row.filter_map do |cell|
+          cell.maybe_case(cube_size)&.canonicalize(ignore_same_face_center_cycles: true)
+        end
       case_candidates.filter { |e| case_set.match?(e) }
     end
 
@@ -158,8 +162,8 @@ module CubeTrainer
           pattern = case_set.row_pattern(axis_interpretation, e)
           counts[pattern] += 1
         else
-          case_set.row_patterns(e).each do |pattern|
-            counts[pattern] += 1
+          case_set.row_patterns(e).each do |p|
+            counts[p] += 1
           end
         end
       end

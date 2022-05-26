@@ -48,7 +48,10 @@ module CaseSets
         raise ArgumentError unless specific_cycle.parts.length == 1
 
         specific_part_pattern = specific_part(specific_cycle.parts.first)
-        specific_cycle_pattern = part_cycle_pattern(@part_type, specific_part_pattern, twist: specific_twist(1))
+        specific_cycle_pattern = part_cycle_pattern(
+          @part_type, specific_part_pattern,
+          twist: specific_twist(1)
+        )
         wildcard_cycle_pattern = part_cycle_pattern(@part_type, wildcard, twist: specific_twist(1))
         case_pattern(specific_cycle_pattern, wildcard_cycle_pattern)
       end
