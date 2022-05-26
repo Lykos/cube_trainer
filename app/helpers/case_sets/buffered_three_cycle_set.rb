@@ -79,7 +79,7 @@ module CaseSets
       raise ArgumentError unless casee.part_cycles.first.length == 3
 
       parts = casee.part_cycles.first.parts[1..2]
-      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
+      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) || p } : parts
       name_parts.join(' ')
     end
 

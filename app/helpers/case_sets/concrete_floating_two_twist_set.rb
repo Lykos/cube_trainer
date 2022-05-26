@@ -82,7 +82,7 @@ module CaseSets
       raise ArgumentError unless match?(casee)
 
       parts = casee.part_cycles.map { |c| c.parts.first }
-      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
+      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) || p } : parts
       name_parts.join(' ')
     end
 

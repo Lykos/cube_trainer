@@ -88,7 +88,7 @@ module CaseSets
       raise ArgumentError unless match?(casee)
 
       parts = [buffer_cycle(casee).parts[1]] + parity_cycle(casee).parts
-      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
+      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) || p } : parts
       "#{name_parts[0]} (#{name_parts[1]} ⟷ #{name_parts[2]})"
     end
 
