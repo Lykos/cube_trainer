@@ -83,7 +83,7 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
     if (weightState.occurrenceDays.length === 0 || weightState.occurrenceDays[weightState.occurrenceDays.length - 1] != daysAgo) {
       weightState.occurrenceDays.push(daysAgo);
     }
-    weightState.itemsSinceLastOccurrence = Math.min(weightState.itemsSinceLastOccurrence, result.length - 1 - i);
+    weightState.itemsSinceLastOccurrence = Math.min(weightState.itemsSinceLastOccurrence, results.length - 1 - i);
     weightState.durationSinceLastOccurrence = weightState.durationSinceLastOccurrence.min(timestamp.durationUntil(now));
     weightState.totalOccurrences += 1;
     if (!result.success) {
