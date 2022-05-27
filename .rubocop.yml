@@ -372,3 +372,7 @@ Rails/TransactionExitStatement: # new in 2.14
   Enabled: true
 RSpec/ChangeByZero: # new in 2.11.0
   Enabled: true
+Gemspec/DeprecatedAttributeAssignment: # new in 1.30
+  Enabled: true
+Style/MapCompactWithConditionalBlock: # new in 1.30
+  Enabled: true

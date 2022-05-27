@@ -1,5 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Sampler, NewSampler, CombinedSampler, RepeatWeighter, ForgottenWeighter, BadnessWeighter, UniformWeighter, ManyItemsNotSeenWeighter, WeightedSampler, PrioritizedSampler } from '@utils/sampling';
+import {
+  Sampler,
+  NewSampler,
+  CombinedSampler,
+  RepeatWeighter,
+  RevisitWeighter,
+  ForgottenWeighter,
+  BadnessWeighter,
+  UniformWeighter,
+  ManyItemsNotSeenWeighter,
+  WeightedSampler,
+  PrioritizedSampler
+} from '@utils/sampling';
 import { TrainingSession } from './training-session.model';
 import { seconds, Duration } from '@utils/duration';
 
@@ -14,6 +26,7 @@ interface SamplingConfig {
   readonly repeatExponentialBackoffBase: number;
   readonly revisitExponentialBackoffBase: number;
   readonly recencyThreshold: number;
+  readonly longNotSeenThreshold: number;
   readonly forgottenRepetitions: number;
   readonly manyItemsNotSeenExponent: number;
 }
@@ -34,6 +47,7 @@ function samplingConfig(trainingSession: TrainingSession): SamplingConfig {
     repeatExponentialBackoffBase: 2,
     revisitExponentialBackoffBase: 2,
     recencyThreshold: 4,
+    longNotSeenThreshold: 100,
     forgottenRepetitions: 5,
     manyItemsNotSeenExponent: 2,
   };
@@ -49,15 +63,14 @@ function createSampler(config: SamplingConfig) {
     new CombinedSampler([
       { weight: config.newItemsWeight, sampler: new NewSampler('new') },
       { weight: config.badItemsWeight, sampler: badnessSampler },
-      { weight: config.longNotSeenItemsWeight, sampler: new WeightedSampler('long not seen', new ManyItemsNotSeenWeighter(config.manyItemsNotSeenExponent), config.recencyThreshold) },
+      { weight: config.longNotSeenItemsWeight, sampler: new WeightedSampler('long not seen', new ManyItemsNotSeenWeighter(config.manyItemsNotSeenExponent), config.longNotSeenThreshold) },
     ]),
   ]);
   if (!config.revisitNewItems) {
     return sampler;
   }
   return new PrioritizedSampler([
-    // TODO: Enable
-    //new WeightedSampler(new RevisitWeighter(config.revisitExponentialBackoffBase), config.recencyThreshold),
+    new WeightedSampler('revisit', new RevisitWeighter(config.revisitExponentialBackoffBase), config.recencyThreshold),
     new WeightedSampler('repeat', new RepeatWeighter(config.repeatExponentialBackoffBase), config.recencyThreshold),
     sampler,
   ]);
