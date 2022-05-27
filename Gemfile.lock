@@ -314,13 +314,13 @@ GEM
       rspec-mocks (~> 3.10)
       rspec-support (~> 3.10)
     rspec-support (3.11.0)
-    rubocop (1.29.1)
+    rubocop (1.30.0)
       parallel (~> 1.10)
       parser (>= 3.1.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml (>= 3.2.5, < 4.0)
-      rubocop-ast (>= 1.17.0, < 2.0)
+      rubocop-ast (>= 1.18.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.18.0)
@@ -370,7 +370,7 @@ GEM
       sprockets (>= 3.0.0)
     thor (1.2.1)
     trailblazer-option (0.1.2)
-    twisty_puzzles (0.0.37)
+    twisty_puzzles (0.0.38)
       colorize
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
@@ -436,7 +436,7 @@ DEPENDENCIES
   rspec
   rspec-prof
   rspec-rails
-  rubocop (~> 1.25)
+  rubocop (~> 1.30)
   rubocop-performance
   rubocop-rails
   rubocop-rake
