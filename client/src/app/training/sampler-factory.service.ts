@@ -1,5 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Sampler, NewSampler, CombinedSampler, RepeatWeighter, ForgottenWeighter, BadnessWeighter, UniformWeighter, ManyItemsNotSeenWeighter, WeightedSampler, PrioritizedSampler } from '@utils/sampling';
+import {
+  Sampler,
+  NewSampler,
+  CombinedSampler,
+  RepeatWeighter,
+  RevisitWeighter,
+  ForgottenWeighter,
+  BadnessWeighter,
+  UniformWeighter,
+  ManyItemsNotSeenWeighter,
+  WeightedSampler,
+  PrioritizedSampler
+} from '@utils/sampling';
 import { TrainingSession } from './training-session.model';
 import { seconds, Duration } from '@utils/duration';
 
