@@ -1,6 +1,7 @@
 import { FixedSampler, NeverSampler, PrioritizedSampler } from './';
+import { none } from '@utils/optional';
 
-const samplingState = { weightStates: [] };
+const samplingState = { weightStates: [], nextItem: none };
 
 describe('PrioritizedSampler', () => {
   it('is ready if one of its subsamplers is ready', () => {
