@@ -36,4 +36,28 @@ describe('CubeAverage', () => {
     cubeAverage.push(seconds(100));
     expect(forceValue(cubeAverage.average()).toSeconds()).toEqual(5);
   });
+
+  it('returns the average of the middle three when five values have been set', () => {
+    const cubeAverage = new CubeAverage(5);
+    cubeAverage.push(seconds(1));
+    cubeAverage.push(seconds(5));
+    cubeAverage.push(seconds(4));
+    cubeAverage.push(seconds(6));
+    cubeAverage.push(seconds(100));
+    expect(forceValue(cubeAverage.average()).toSeconds()).toEqual(5);
+  });
+
+  it('ignores values past the memory', () => {
+    const cubeAverage = new CubeAverage(5);
+    cubeAverage.push(seconds(1000));
+    cubeAverage.push(seconds(1000));
+    cubeAverage.push(seconds(1000));
+    cubeAverage.push(seconds(1000));
+    cubeAverage.push(seconds(1));
+    cubeAverage.push(seconds(5));
+    cubeAverage.push(seconds(4));
+    cubeAverage.push(seconds(6));
+    cubeAverage.push(seconds(100));
+    expect(forceValue(cubeAverage.average()).toSeconds()).toEqual(5);
+  });
 });
