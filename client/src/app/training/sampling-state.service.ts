@@ -61,7 +61,7 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
   for (let casee of cases) {
     weightStates.set(casee.casee.key, { item: casee, state: initialWeightState() });
   }
-  for (let i = 0; i < results.length; ++i) {
+  for (let i = results.length - 1; i >= 0; --i) {
     const result = results[i];
     const weightState = weightStates.get(result.casee.key)?.state;
     if (!weightState) {
