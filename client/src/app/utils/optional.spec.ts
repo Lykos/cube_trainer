@@ -1,4 +1,4 @@
-import { some, none, mapOptional, forceValue, hasValue, checkNone } from './optional';
+import { some, none, mapOptional, forceValue, hasValue, checkNone, equalsValue } from './optional';
 
 describe('Optional', () => {
   it('should support mapOptional', () => {
@@ -19,5 +19,11 @@ describe('Optional', () => {
   it('should support checkNone', () => {
     expect(() => checkNone(some(2))).toThrowError();
     expect(() => checkNone(none)).not.toThrowError();
+  });
+
+  it('should support equalsValue', () => {
+    expect(equalsValue(2, some(1))).toBeFalse();
+    expect(equalsValue(2, some(2))).toBeTrue();
+    expect(equalsValue(2, none)).toBeFalse();
   });
 });

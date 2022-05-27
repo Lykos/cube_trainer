@@ -87,3 +87,7 @@ export function hasValue<X>(optional: Optional<X>): boolean {
 export function ofNull<X>(orNull: X | null | undefined): Optional<X> {
   return orNull === null || orNull === undefined ? none : some(orNull);
 }
+
+export function equalsValue<X>(x: X, optY: Optional<X>) {
+  return orElse(mapOptional(optY, y => y === x), false);
+}

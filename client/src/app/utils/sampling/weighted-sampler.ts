@@ -4,11 +4,7 @@ import { Weighter } from './weighter';
 import { SamplingState, ItemAndWeightState } from './sampling-state';
 import { SamplingError } from './sampling-error';
 import { weightedDraw } from './weighted-draw';
-import { Optional, some, none, orElse, mapOptional, hasValue } from '@utils/optional';
-
-function equalsValue<X>(x: X, optY: Optional<X>) {
-  return orElse(mapOptional(optY, y => y === x), false);
-}
+import { Optional, some, none, orElse, equalsValue, hasValue } from '@utils/optional';
 
 function isRecent<X>(samplingState: SamplingState<X>, weightState: ItemAndWeightState<X>, recencyThreshold: number) {
   const numItems = samplingState.weightStates.length
