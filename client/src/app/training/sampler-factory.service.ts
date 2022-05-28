@@ -40,7 +40,7 @@ function samplingConfig(trainingSession: TrainingSession): SamplingConfig {
     revisitNewItems: !trainingSession.known,
     goalBadness: seconds(trainingSession.goalBadness),
     badnessBase: 10,
-    newItemsWeight: trainingSession.known ? 15 : 4,
+    newItemsWeight: trainingSession.known ? 15 : 2,
     badItemsWeight: 5,
     longNotSeenItemsWeight: 1,
     forgottenExponentialBackoffBase: 2,

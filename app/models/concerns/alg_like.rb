@@ -69,11 +69,6 @@ module AlgLike
     )
   end
 
-  def alg_correct?(comm)
-    found_case = create_reverse_engineer.find_case(comm.algorithm)
-    found_case&.equivalent?(casee)
-  end
-
   def validate_alg
     return unless casee.is_a?(Case)
 
@@ -83,8 +78,24 @@ module AlgLike
       return
     end
 
-    return if alg_correct?(comm)
+    found_case = create_reverse_engineer.find_case(comm.algorithm)
+    unless found_case
+      errors.add(:alg, unsuitable_cube_size_message(comm))
+      return
+    end
 
-    errors.add(:alg, "#{comm} does not solve case #{owning_set.raw_case_name(casee)}")
+    return if found_case.equivalent?(casee)
+
+    errors.add(:alg, incorrect_case_message(comm, found_case))
+  end
+
+  def incorrect_case_message(comm, found_case)
+    "#{comm} does not solve case #{owning_set.raw_case_name(casee)} " \
+      "but case #{found_case}"
+  end
+
+  def unsuitable_cube_size_message(comm)
+    "#{comm} does not seem to be suitable for cube size " \
+      "#{owning_set.case_set.default_cube_size}"
   end
 end
