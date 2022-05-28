@@ -91,7 +91,7 @@ module AlgLike
 
   def incorrect_case_message(comm, found_case)
     "#{comm} does not solve case #{owning_set.raw_case_name(casee)} " \
-      "but case #{owning_set.raw_case_name(found_case)}"
+      "but case #{found_case}"
   end
 
   def unsuitable_cube_size_message(comm)
