@@ -114,7 +114,7 @@ module CubeTrainer
 
     def move_unsuitable_for_cube_size?(move)
       (move.is_a?(TwistyPuzzles::SliceMove) && move.slice_index >= @cube_size - 1) ||
-        (move.is_a?(TwistyPuzzles::FatMove) && move.width >= @cube_size - 1)
+        (move.is_a?(TwistyPuzzles::FatMove) && move.width > @cube_size - 1)
     end
   end
 end
