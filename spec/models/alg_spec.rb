@@ -9,6 +9,7 @@ RSpec.describe Alg, type: :model do
   let(:fu_r) { TwistyPuzzles::Wing.for_face_symbols(%i[F U R]) }
   let(:fl_u) { TwistyPuzzles::Wing.for_face_symbols(%i[F L U]) }
   let(:ld_b) { TwistyPuzzles::Wing.for_face_symbols(%i[L D B]) }
+  let(:db_l) { TwistyPuzzles::Wing.for_face_symbols(%i[D B L]) }
   let(:wing_case_set) { CaseSets::BufferedThreeCycleSet.new(TwistyPuzzles::Wing, fu_r) }
   let(:wing_alg_set) { alg_spreadsheet.alg_sets.create!(case_set: wing_case_set, sheet_title: 'wings') }
 
@@ -24,10 +25,18 @@ RSpec.describe Alg, type: :model do
     let(:owning_set_alg_likes) { alg_set.algs }
   end
 
-  it 'returns true for a complicated valid alg' do
+  it 'returns true for a valid alg with very fat moves' do
     alg = wing_alg_set.algs.new(
       casee: Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([fu_r, fl_u, ld_b])]),
       alg: "[3Lw' U: [R' d R, U]]"
+    )
+    expect(alg).to be_valid
+  end
+
+  it 'returns true for a valid alg with fat slice moves' do
+    alg = wing_alg_set.algs.new(
+      casee: Case.new(part_cycles: [TwistyPuzzles::PartCycle.new([fu_r, fl_u, db_l])]),
+      alg: "[U' M: [U, R' u' R]]"
     )
     expect(alg).to be_valid
   end
