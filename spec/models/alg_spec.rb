@@ -5,7 +5,7 @@ require_relative 'alg_like_shared_examples'
 
 RSpec.describe Alg, type: :model do
   include_context 'with alg spreadsheet'
-  
+
   let(:fu_r) { TwistyPuzzles::Wing.for_face_symbols(%i[F U R]) }
   let(:fl_u) { TwistyPuzzles::Wing.for_face_symbols(%i[F L U]) }
   let(:ld_b) { TwistyPuzzles::Wing.for_face_symbols(%i[L D B]) }
