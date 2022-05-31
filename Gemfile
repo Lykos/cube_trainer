@@ -27,7 +27,7 @@ group :development, :test, :production do
   gem 'rails', '~> 6.1'
 
   # Core cubing related functionality.
-  gem 'twisty_puzzles', '>= 0.0.35'
+  gem 'twisty_puzzles', '>= 0.0.37'
 
   # Database access. TODO: figure out whether this is still needed now that this project uses rails.
   gem 'activerecord'
@@ -86,7 +86,7 @@ group :development do
 end
 
 group :rubocop do
-  gem 'rubocop', '~> 1.25', require: false
+  gem 'rubocop', '~> 1.30', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rake', require: false

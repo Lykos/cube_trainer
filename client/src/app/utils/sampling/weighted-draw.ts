@@ -1,4 +1,4 @@
-import { sum } from '../utils';
+import { sum } from '@utils/utils';
 
 interface Weighted {
   readonly weight: number;

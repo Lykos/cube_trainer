@@ -8,43 +8,45 @@ require 'cube_trainer/pao_letter_pair'
 require 'cube_trainer/training/scramble'
 require 'twisty_puzzles/utils'
 
-# Result of giving one task to the learner and judging their performance.
-# TODO: Deprecate in favor of CaseType.
-class InputRepresentationType < ActiveRecord::Type::String
-  extend TwistyPuzzles::Utils::StringHelper
-  include TwistyPuzzles::Utils::StringHelper
+module Types
+  # Result of giving one task to the learner and judging their performance.
+  # TODO: Deprecate in favor of CaseType.
+  class InputRepresentationType < ActiveRecord::Type::String
+    extend TwistyPuzzles::Utils::StringHelper
+    include TwistyPuzzles::Utils::StringHelper
 
-  INPUT_REPRESENTATION_CLASSES = [
-    CubeTrainer::LetterPair,
-    CubeTrainer::PaoLetterPair,
-    CubeTrainer::SimpleAlgName,
-    CubeTrainer::CombinedAlgName,
-    CubeTrainer::PartCycleSequence,
-    CubeTrainer::Training::Scramble,
-    TwistyPuzzles::PartCycle
-  ].freeze
-  INPUT_REPRESENTATION_NAME_TO_CLASS =
-    INPUT_REPRESENTATION_CLASSES.index_by { |e| simple_class_name(e) }.freeze
-  SEPARATOR = ':'
+    INPUT_REPRESENTATION_CLASSES = [
+      CubeTrainer::LetterPair,
+      CubeTrainer::PaoLetterPair,
+      CubeTrainer::SimpleAlgName,
+      CubeTrainer::CombinedAlgName,
+      CubeTrainer::PartCycleSequence,
+      CubeTrainer::Training::Scramble,
+      TwistyPuzzles::PartCycle
+    ].freeze
+    INPUT_REPRESENTATION_NAME_TO_CLASS =
+      INPUT_REPRESENTATION_CLASSES.index_by { |e| simple_class_name(e) }.freeze
+    SEPARATOR = ':'
 
-  def cast(value)
-    return if value.nil?
-    return value if INPUT_REPRESENTATION_CLASSES.any? { |c| value.is_a?(c) }
-    raise TypeError unless value.is_a?(String)
+    def cast(value)
+      return if value.nil?
+      return value if INPUT_REPRESENTATION_CLASSES.any? { |c| value.is_a?(c) }
+      raise TypeError unless value.is_a?(String)
 
-    raw_clazz, raw_data = value.split(SEPARATOR, 2)
-    clazz = INPUT_REPRESENTATION_NAME_TO_CLASS[raw_clazz]
-    raise ArgumentError, "Unknown input representation class #{raw_clazz}." unless clazz
+      raw_clazz, raw_data = value.split(SEPARATOR, 2)
+      clazz = INPUT_REPRESENTATION_NAME_TO_CLASS[raw_clazz]
+      raise ArgumentError, "Unknown input representation class #{raw_clazz}." unless clazz
 
-    clazz.from_raw_data(raw_data)
-  end
-
-  def serialize(value)
-    return if value.nil?
-    unless INPUT_REPRESENTATION_CLASSES.any? { |c| value.is_a?(c) }
-      raise TypeError, "Illegal input representation type #{value.class}."
+      clazz.from_raw_data(raw_data)
     end
 
-    "#{simple_class_name(value.class)}#{SEPARATOR}#{value.to_raw_data}"
+    def serialize(value)
+      return if value.nil?
+      unless INPUT_REPRESENTATION_CLASSES.any? { |c| value.is_a?(c) }
+        raise TypeError, "Illegal input representation type #{value.class}."
+      end
+
+      "#{simple_class_name(value.class)}#{SEPARATOR}#{value.to_raw_data}"
+    end
   end
 end

@@ -99,6 +99,18 @@ module CubeTrainer
       alg_modifications(commutator.algorithm).map { |a| TwistyPuzzles::FakeCommutator.new(a) }
     end
 
+    def commutator_sequence_modifications(commutator_sequence)
+      if commutator_sequence.commutators.length == 2
+        left_modifications = commutator_modifications(commutator_sequence.commutators.first)
+        right_modifications = commutator_modifications(commutator_sequence.commutators.last)
+        left_modifications.product(right_modifications).map do |a, b|
+          TwistyPuzzles::CommutatorSequence.new([a, b])
+        end
+      else
+        commutator_sequence
+      end
+    end
+
     def commutator_modifications(commutator)
       case commutator
       when TwistyPuzzles::SetupCommutator
@@ -109,6 +121,8 @@ module CubeTrainer
         pure_commutator_modifications(commutator)
       when TwistyPuzzles::FakeCommutator
         fake_commutator_modifications(commutator)
+      when TwistyPuzzles::CommutatorSequence
+        commutator_sequence_modifications(commutator)
       else
         raise ArgumentError
       end

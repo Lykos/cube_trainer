@@ -96,7 +96,7 @@ module CaseSets
       raise ArgumentError unless match?(casee)
 
       parts = [buffer_cycle(casee).parts[1]] + parity_cycle(casee).parts + twist_cycle(casee).parts
-      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
+      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) || p } : parts
       "#{name_parts[0]} (#{name_parts[1]} ⟷ #{name_parts[2]}, #{name_parts[3]})"
     end
 
@@ -134,6 +134,10 @@ module CaseSets
       part_permutations.flat_map do |swap_part, twist_part|
         twists.map { |twist| create_case(swap_part, twist_part, twist) }
       end
+    end
+
+    def axis_order_matters?
+      true
     end
 
     private

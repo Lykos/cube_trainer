@@ -52,11 +52,18 @@ module CubeTrainer
     end
 
     def self.interpret_table_with_case_set(table, transposed_table, case_set, cube_size)
-      table_interpretations = table_interpretations(table, transposed_table, case_set, cube_size)
-      best_interpretation(table_interpretations, table)
+      if case_set.axis_order_matters?
+        table_interpretations = table_interpretations_with_axis_orders(
+          table, transposed_table,
+          case_set, cube_size
+        )
+        best_interpretation(table_interpretations, table)
+      else
+        table_interpretation(table, transposed_table, case_set, false, cube_size)
+      end
     end
 
-    def self.table_interpretations(table, transposed_table, case_set, cube_size)
+    def self.table_interpretations_with_axis_orders(table, transposed_table, case_set, cube_size)
       [true, false].map do |flip_axes|
         table_interpretation(table, transposed_table, case_set, flip_axes, cube_size)
       end
@@ -140,15 +147,25 @@ module CubeTrainer
     end
 
     def self.relevant_cases(row, case_set, cube_size)
-      row.filter_map { |cell| cell.maybe_case(cube_size) }.filter { |e| case_set.match?(e) }
+      case_candidates =
+        row.filter_map do |cell|
+          cell.maybe_case(cube_size)&.canonicalize(ignore_same_face_center_cycles: true)
+        end
+      case_candidates.filter { |e| case_set.match?(e) }
     end
 
     # Note that this is also used for columns (by using the transposed table)
     def self.find_row_interpretation(row, case_set, axis_interpretation, cube_size)
       counts = new_counter_hash
       relevant_cases(row, case_set, cube_size).each do |e|
-        pattern = case_set.row_pattern(axis_interpretation, e)
-        counts[pattern] += 1
+        if case_set.axis_order_matters?
+          pattern = case_set.row_pattern(axis_interpretation, e)
+          counts[pattern] += 1
+        else
+          case_set.row_patterns(e).each do |p|
+            counts[p] += 1
+          end
+        end
       end
       max_count = counts.values.max
       keys = counts.select { |_k, v| v == max_count }.keys

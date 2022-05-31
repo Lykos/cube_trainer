@@ -15,10 +15,10 @@ class AlgSet < ApplicationRecord
     raise TypeError unless casee.is_a?(Case)
     raise ArgumentError unless casee.valid?
 
-    maybe_alg = alg_map[casee]
+    maybe_alg = alg_map[casee.canonicalize(ignore_same_face_center_cycles: true)]
     return maybe_alg if maybe_alg
 
-    alg_map[casee.inverse]&.inverse
+    alg_map[casee.inverse.canonicalize(ignore_same_face_center_cycles: true)]&.inverse
   end
 
   delegate :raw_case_name, to: :case_set
@@ -33,6 +33,6 @@ class AlgSet < ApplicationRecord
   private
 
   def alg_map
-    @alg_map ||= algs.index_by(&:casee)
+    @alg_map ||= algs.index_by { |a| a.casee.canonicalize(ignore_same_face_center_cycles: true) }
   end
 end

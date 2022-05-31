@@ -35,8 +35,31 @@ module CaseSets
       "floating #{simple_class_name(@part_type).downcase} #{twist_name}s"
     end
 
+    def axis_order_matters?
+      @part_type::ELEMENTS.first.rotations.length > 2
+    end
+
+    def row_patterns(casee)
+      raise ArgumentError if axis_order_matters?
+      raise ArgumentError unless match?(casee)
+      raise ArgumentError unless casee.part_cycles.length == 2
+
+      casee.part_cycles.map do |specific_cycle|
+        raise ArgumentError unless specific_cycle.parts.length == 1
+
+        specific_part_pattern = specific_part(specific_cycle.parts.first)
+        specific_cycle_pattern = part_cycle_pattern(
+          @part_type, specific_part_pattern,
+          twist: specific_twist(1)
+        )
+        wildcard_cycle_pattern = part_cycle_pattern(@part_type, wildcard, twist: specific_twist(1))
+        case_pattern(specific_cycle_pattern, wildcard_cycle_pattern)
+      end
+    end
+
     def row_pattern(refinement_index, casee)
       raise ArgumentError if refinement_index != 0 && refinement_index != 1
+      raise ArgumentError unless axis_order_matters?
       raise ArgumentError unless match?(casee)
 
       desired_twist = refinement_twist(refinement_index)
@@ -82,7 +105,7 @@ module CaseSets
       raise ArgumentError unless match?(casee)
 
       parts = casee.part_cycles.map { |c| c.parts.first }
-      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) } : parts
+      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) || p } : parts
       name_parts.join(' ')
     end
 
@@ -98,7 +121,9 @@ module CaseSets
     end
 
     def cases
-      part_permutations = @part_type::ELEMENTS.permutation(2).reject { |a, b| a.turned_equals?(b) }
+      twist_parts = @part_type::ELEMENTS.select { |a| a == a.rotations.min }
+      part_permutations = twist_parts.permutation(2).reject { |a, b| a == b }
+      part_permutations.select! { |a, b| a < b } if inverse_twist(1) == 1
       part_permutations.map do |parts|
         Case.new(
           part_cycles: [

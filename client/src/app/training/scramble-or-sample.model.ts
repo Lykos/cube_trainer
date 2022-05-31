@@ -4,13 +4,13 @@ import { Alg } from 'cubing/alg';
 
 export interface Scramble {
   readonly tag: 'scramble';
-  readonly scramble: Alg;
+  readonly scramble: string;
 }
 
 export function scramble(alg: Alg): Scramble {
   return {
     tag: 'scramble',
-    scramble: alg,
+    scramble: `${alg}`,
   };
 }
 

@@ -213,13 +213,6 @@ module CubeTrainer
         end
       end
 
-      BLACKLIST = ['flip'].freeze
-
-      # Recognizes special cell values that are blacklisted because they are not commutators
-      def blacklisted?(value)
-        BLACKLIST.include?(value.downcase)
-      end
-
       def maybe_cases(algorithm)
         cases = {}
         cases[3] = reverse_engineer.find_case(algorithm)
@@ -228,7 +221,7 @@ module CubeTrainer
       end
 
       def parse_table_cell(cell)
-        return EmptyEntry if cell.blank? || blacklisted?(cell)
+        return EmptyEntry if cell.blank?
 
         # No complete parse because there might be some sort of (AB) at the end of the cell.
         alg = parse_commutator(cell, complete_parse: false)

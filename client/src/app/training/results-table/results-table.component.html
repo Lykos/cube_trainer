@@ -4,7 +4,7 @@
     <div class="spinner-container" *ngIf="loading$ | async">
       <mat-spinner></mat-spinner>
     </div>
-    <table *ngIf="(loading$ | async) === false" mat-table class="mat-elevation-z2" [dataSource]="results$" [trackBy]="resultId">
+    <table *ngIf="(loading$ | async) === false" mat-table class="mat-elevation-z2" [dataSource]="resultsOnPage$" [trackBy]="resultId">
       <ng-container matColumnDef="select">
 	<ng-container *ngIf="resultsOnPage$ | async as resultsOnPage">
           <ng-container *ngIf="allSelected$ | async as allSelected">
@@ -46,8 +46,8 @@
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let result; columns: columnsToDisplay"></tr>
-      <mat-paginator [length]="numResults$ | async" [pageSize]="20"  [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)"></mat-paginator>
     </table>
+    <mat-paginator [length]="numResults$ | async" [pageSize]="pageSize$ | async"  [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)"></mat-paginator>
     <button mat-fab (click)="onDeleteSelected()" *ngIf="selection.hasValue()">
       <span class="material-icons">delete</span>
     </button>

@@ -77,7 +77,7 @@ module CasePattern
     alias == eql?
 
     def hash
-      [self.class].hash
+      self.class.hash
     end
 
     def rotate_by(_number)
@@ -241,7 +241,7 @@ module CasePattern
     alias == eql?
 
     def hash
-      [self.class].hash
+      self.class.hash
     end
   end
 
@@ -406,7 +406,7 @@ module CasePattern
     end
 
     def hash
-      [self.class].hash
+      self.class.hash
     end
 
     alias bracketed_to_s to_s

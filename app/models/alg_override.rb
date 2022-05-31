@@ -18,7 +18,7 @@ class AlgOverride < ApplicationRecord
   def to_dump
     {
       id: id,
-      case_key: CaseType.new.serialize(casee),
+      case_key: Types::CaseType.new.serialize(casee),
       alg: alg.to_s
     }
   end
