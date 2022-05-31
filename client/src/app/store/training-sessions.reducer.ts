@@ -25,6 +25,8 @@ import {
 } from './training-sessions.actions';
 import { TrainingSessionsState } from './training-sessions.state';
 import { TrainingSession } from '@training/training-session.model';
+import { TrainingCase } from '@training/training-case.model';
+import { AlgOverride } from '@training/alg-override.model';
 import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
 import { EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 
@@ -43,6 +45,21 @@ const initialTrainingSessionsState: TrainingSessionsState = adapter.getInitialSt
   loadOneState: backendActionNotStartedState,
   selectedTrainingSessionId: 0,
 });
+
+function addAlgOverrideToTrainingCase(trainingCase: TrainingCase, algOverride: AlgOverride): TrainingCase {
+  return { ...trainingCase, alg: algOverride.alg };
+}
+
+function addAlgOverrideToTrainingCases(trainingCases: readonly TrainingCase[], algOverride: AlgOverride): TrainingCase[] {
+  return trainingCases.map(t => t == algOverride.trainingCase ? addAlgOverrideToTrainingCase(t, algOverride) : t);
+}
+
+function addAlgOverrideToTrainingSession(trainingSessionId: number, algOverride: AlgOverride) {
+  return {
+    id: trainingSessionId,
+    map: (trainingSession: TrainingSession) => ({ ...trainingSession, trainingCases: addAlgOverrideToTrainingCases(trainingSession.trainingCases, algOverride) }),
+  };
+}
 
 export const trainingSessionsReducer = createReducer(
   initialTrainingSessionsState,
@@ -85,8 +102,11 @@ export const trainingSessionsReducer = createReducer(
   on(createAlgOverride, (trainingSessionState) => {
     return { ...trainingSessionState, createAlgOverrideState: backendActionLoadingState };
   }),
-  on(createAlgOverrideSuccess, (trainingSessionState) => {
-    return { ...trainingSessionState, createAlgOverrideState: backendActionSuccessState };
+  on(createAlgOverrideSuccess, (trainingSessionState, { trainingSession, algOverride }) => {
+    return adapter.mapOne(
+      addAlgOverrideToTrainingSession(trainingSession.id, algOverride),
+      { ...trainingSessionState, createAlgOverrideState: backendActionSuccessState }
+    );
   }),
   on(createAlgOverrideFailure, (trainingSessionState, { error }) => {
     return { ...trainingSessionState, createAlgOverrideState: backendActionFailureState(error) };
@@ -94,8 +114,11 @@ export const trainingSessionsReducer = createReducer(
   on(updateAlgOverride, (trainingSessionState) => {
     return { ...trainingSessionState, updateAlgOverrideState: backendActionLoadingState };
   }),
-  on(updateAlgOverrideSuccess, (trainingSessionState) => {
-    return { ...trainingSessionState, updateAlgOverrideState: backendActionSuccessState };
+  on(updateAlgOverrideSuccess, (trainingSessionState, { trainingSession, algOverride }) => {
+    return adapter.mapOne(
+      addAlgOverrideToTrainingSession(trainingSession.id, algOverride),
+      { ...trainingSessionState, updateAlgOverrideState: backendActionSuccessState }
+    );
   }),
   on(updateAlgOverrideFailure, (trainingSessionState, { error }) => {
     return { ...trainingSessionState, updateAlgOverrideState: backendActionFailureState(error) };
@@ -103,8 +126,11 @@ export const trainingSessionsReducer = createReducer(
   on(setAlg, (trainingSessionState) => {
     return { ...trainingSessionState, setAlgState: backendActionLoadingState };
   }),
-  on(setAlgSuccess, (trainingSessionState) => {
-    return { ...trainingSessionState, setAlgState: backendActionSuccessState };
+  on(setAlgSuccess, (trainingSessionState, { trainingSession, algOverride }) => {
+    return adapter.mapOne(
+      addAlgOverrideToTrainingSession(trainingSession.id, algOverride),
+      { ...trainingSessionState, setAlgState: backendActionSuccessState }
+    );
   }),
   on(setAlgFailure, (trainingSessionState, { error }) => {
     return { ...trainingSessionState, setAlgState: backendActionFailureState(error) };
