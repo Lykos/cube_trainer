@@ -29,7 +29,7 @@ import { TrainingCase } from '@training/training-case.model';
 import { AlgOverride } from '@training/alg-override.model';
 import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
 import { EntityAdapter, createEntityAdapter } from '@ngrx/entity';
-
+ 
 const adapter: EntityAdapter<TrainingSession> = createEntityAdapter<TrainingSession>({
   selectId: s => s.id,
   sortComparer: (s, t) => s.name.localeCompare(t.name),
@@ -47,11 +47,11 @@ const initialTrainingSessionsState: TrainingSessionsState = adapter.getInitialSt
 });
 
 function addAlgOverrideToTrainingCase(trainingCase: TrainingCase, algOverride: AlgOverride): TrainingCase {
-  return { ...trainingCase, alg: algOverride.alg };
+  return { ...trainingCase, alg: algOverride.alg, algSource: { tag: 'overridden', algOverrideId: algOverride.id} };
 }
 
 function addAlgOverrideToTrainingCases(trainingCases: readonly TrainingCase[], algOverride: AlgOverride): TrainingCase[] {
-  return trainingCases.map(t => t == algOverride.trainingCase ? addAlgOverrideToTrainingCase(t, algOverride) : t);
+  return trainingCases.map(t => t.casee.key === algOverride.casee.key ? addAlgOverrideToTrainingCase(t, algOverride) : t);
 }
 
 function addAlgOverrideToTrainingSession(trainingSessionId: number, algOverride: AlgOverride) {

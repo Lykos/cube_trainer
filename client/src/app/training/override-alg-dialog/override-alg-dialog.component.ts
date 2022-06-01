@@ -1,9 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TrainingSessionAndCase } from '../training-session-and-case.model';
-import { AlgOverride } from '../alg-override.model';
+import { NewAlgOverride } from '../new-alg-override.model';
 
-interface MutableAlgOverride extends AlgOverride {
+interface MutableAlgOverride extends NewAlgOverride {
   alg: string;
 }
 

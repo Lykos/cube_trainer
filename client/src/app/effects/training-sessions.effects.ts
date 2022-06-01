@@ -181,7 +181,7 @@ export class TrainingSessionsEffects {
         const trainingSessionAndCase: TrainingSessionAndCase = { trainingSession: action.trainingSession, trainingCase: action.trainingCase };
         const dialogRef = this.dialog.open(OverrideAlgDialogComponent, { data: trainingSessionAndCase });
         return dialogRef.afterClosed().pipe(
-          map(algOverride => algOverride ? overrideAlg({ trainingSession: action.trainingSession, algOverride }) : dontOverrideAlg({ trainingSession: action.trainingSession }))
+          map(newAlgOverride => newAlgOverride ? overrideAlg({ trainingSession: action.trainingSession, newAlgOverride }) : dontOverrideAlg({ trainingSession: action.trainingSession }))
         );
       }),
     )
@@ -191,7 +191,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(overrideAlg),
       map(action => {
-	const algOverrideSource = action.algOverride.trainingCase.algSource;
+	const algOverrideSource = action.newAlgOverride.trainingCase.algSource;
 	if (algOverrideSource && algOverrideSource.tag === 'overridden') {
 	  return updateAlgOverride({ ...action, algOverrideId: algOverrideSource.algOverrideId });
 	} else {
@@ -205,12 +205,12 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(createAlgOverride),
       exhaustMap(action =>
-        this.algOverridesService.create(action.trainingSession.id, action.algOverride).pipe(
-          map(trainingSession => createAlgOverrideSuccess({ trainingSession: action.trainingSession, algOverride: action.algOverride })),
+        this.algOverridesService.create(action.trainingSession.id, action.newAlgOverride).pipe(
+          map(algOverride => createAlgOverrideSuccess({ trainingSession: action.trainingSession, algOverride })),
           catchError(httpResponseError => {
             const context = {
               action: 'creating alg override',
-              subject: action.algOverride.trainingCase.casee.name,
+              subject: action.newAlgOverride.trainingCase.casee.name,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(createAlgOverrideFailure({ error }));
@@ -224,12 +224,12 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(updateAlgOverride),
       exhaustMap(action =>
-        this.algOverridesService.update(action.trainingSession.id, action.algOverrideId, action.algOverride.alg).pipe(
-          map(trainingSession => updateAlgOverrideSuccess({ trainingSession: action.trainingSession, algOverride: action.algOverride })),
+        this.algOverridesService.update(action.trainingSession.id, action.algOverrideId, action.newAlgOverride.alg).pipe(
+          map(algOverride => updateAlgOverrideSuccess({ trainingSession: action.trainingSession, algOverride })),
           catchError(httpResponseError => {
             const context = {
               action: 'creating alg override',
-              subject: action.algOverride.trainingCase.casee.name,
+              subject: action.newAlgOverride.trainingCase.casee.name,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(updateAlgOverrideFailure({ error }));
@@ -243,7 +243,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(createAlgOverrideSuccess, updateAlgOverrideSuccess),
       tap(action => {
-	this.snackBar.open(`Alg for ${action.algOverride.trainingCase.casee.name} overridden.`, 'Close');
+	this.snackBar.open(`Alg for ${action.algOverride.casee.name} overridden.`, 'Close');
       }),
     ),
     { dispatch: false }
@@ -256,7 +256,7 @@ export class TrainingSessionsEffects {
         const trainingSessionAndCase: TrainingSessionAndCase = { trainingSession: action.trainingSession, trainingCase: action.trainingCase };
         const dialogRef = this.dialog.open(OverrideAlgDialogComponent, { data: trainingSessionAndCase });
         return dialogRef.afterClosed().pipe(
-          map(algOverride => algOverride ? setAlg({ trainingSession: action.trainingSession, algOverride }) : dontSetAlg({ trainingSession: action.trainingSession }))
+          map(newAlgOverride => newAlgOverride ? setAlg({ trainingSession: action.trainingSession, newAlgOverride }) : dontSetAlg({ trainingSession: action.trainingSession }))
         );
       }),
     )
@@ -266,12 +266,12 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(setAlg),
       exhaustMap(action =>
-        this.algOverridesService.create(action.trainingSession.id, action.algOverride).pipe(
-          map(trainingSession => setAlgSuccess({ trainingSession: action.trainingSession, algOverride: action.algOverride })),
+        this.algOverridesService.create(action.trainingSession.id, action.newAlgOverride).pipe(
+          map(algOverride => setAlgSuccess({ trainingSession: action.trainingSession, algOverride })),
           catchError(httpResponseError => {
             const context = {
               action: 'overriding alg',
-              subject: action.algOverride.trainingCase.casee.name,
+              subject: action.newAlgOverride.trainingCase.casee.name,
             }
             const error = parseBackendActionError(context, httpResponseError);
             return of(setAlgFailure({ error }));
@@ -285,7 +285,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(setAlgSuccess),
       tap(action => {
-	this.snackBar.open(`Alg for ${action.algOverride.trainingCase.casee.name} set.`, 'Close');
+	this.snackBar.open(`Alg for ${action.algOverride.casee.name} set.`, 'Close');
       }),
     ),
     { dispatch: false }

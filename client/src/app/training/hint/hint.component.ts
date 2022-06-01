@@ -43,7 +43,7 @@ export class HintComponent {
       case 'original': return 'This alg comes unchanged from the source alg sheet.';
       case 'fixed': return 'This alg comes from the source alg sheet, but the original had a mistake (e.g. wrong direction) and it was fixed here.';
       case 'inferred': return 'This alg was inferred from a related alg (usually the inverse).';
-      case 'original': return 'This alg comes unchanged from the source alg sheet.';
+      case 'overridden': return 'This alg has been previously overridden by you.';
       default: return '';
     }
   }
