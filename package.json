@@ -33,7 +33,7 @@
     "@angular/material": "^13.1.2",
     "@angular/platform-browser": "^13.3.11",
     "@angular/platform-browser-dynamic": "^13.3.11",
-    "@angular/router": "^13.1.2",
+    "@angular/router": "^13.3.11",
     "@ngrx/component-store": "^13.0.2",
     "@ngrx/effects": "^13.0.2",
     "@ngrx/entity": "^13.0.2",
