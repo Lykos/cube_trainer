@@ -1,5 +1,5 @@
 import { TrainingCase } from './training-case.model';
-import { Sample } from '@utils/sampling';
+import { Sample, mapSample } from '@utils/sampling';
 import { Alg } from 'cubing/alg';
 
 export interface Scramble {
@@ -34,4 +34,11 @@ export function isScramble(scrambleOrSample: ScrambleOrSample): scrambleOrSample
 
 export function isSample(scrambleOrSample: ScrambleOrSample): scrambleOrSample is TrainingCaseSample {
   return scrambleOrSample.tag === 'sample';
+}
+
+export function mapTrainingCase(scrambleOrSample: ScrambleOrSample, f: (t: TrainingCase) => TrainingCase): ScrambleOrSample {
+  switch (scrambleOrSample.tag) {
+    case 'scramble': return scrambleOrSample;
+    case 'sample': return { tag: 'sample', sample: mapSample(scrambleOrSample.sample, f) };
+  }
 }

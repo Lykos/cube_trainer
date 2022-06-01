@@ -1,6 +1,7 @@
-import { TrainingCase } from './training-case.model';
+import { Case } from './case.model';
 
 export interface AlgOverride {
-  readonly trainingCase: TrainingCase;
+  readonly casee: Case;
+  readonly id: number;
   readonly alg: string;
 }

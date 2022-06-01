@@ -3,6 +3,7 @@ import { TrainingSession } from '@training/training-session.model';
 import { TrainingCase } from '@training/training-case.model';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { AlgOverride } from '@training/alg-override.model';
+import { NewAlgOverride } from '@training/new-alg-override.model';
 import { NewTrainingSession } from '@training/new-training-session.model';
 
 export const initialLoad = createAction(
@@ -95,12 +96,12 @@ export const dontOverrideAlg = createAction(
 
 export const overrideAlg = createAction(
   '[TrainingSessions] override alg',
-  props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
+  props<{ trainingSession: TrainingSession, newAlgOverride: NewAlgOverride }>()
 );
  
 export const createAlgOverride = createAction(
   '[TrainingSessions] create alg override',
-  props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
+  props<{ trainingSession: TrainingSession, newAlgOverride: NewAlgOverride }>()
 );
  
 export const createAlgOverrideSuccess = createAction(
@@ -115,7 +116,7 @@ export const createAlgOverrideFailure = createAction(
 
 export const updateAlgOverride = createAction(
   '[TrainingSessions] update alg override',
-  props<{ trainingSession: TrainingSession, algOverrideId: number, algOverride: AlgOverride }>()
+  props<{ trainingSession: TrainingSession, algOverrideId: number, newAlgOverride: NewAlgOverride }>()
 );
  
 export const updateAlgOverrideSuccess = createAction(
@@ -140,7 +141,7 @@ export const dontSetAlg = createAction(
 
 export const setAlg = createAction(
   '[TrainingSessions] set alg',
-  props<{ trainingSession: TrainingSession, algOverride: AlgOverride }>()
+  props<{ trainingSession: TrainingSession, newAlgOverride: NewAlgOverride }>()
 );
  
 export const setAlgSuccess = createAction(
