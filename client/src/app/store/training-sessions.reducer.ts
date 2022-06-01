@@ -29,6 +29,7 @@ import { TrainingCase } from '@training/training-case.model';
 import { AlgOverride } from '@training/alg-override.model';
 import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
 import { EntityAdapter, createEntityAdapter } from '@ngrx/entity';
+import { addAlgOverrideToTrainingCase } from './reducer-utils';
  
 const adapter: EntityAdapter<TrainingSession> = createEntityAdapter<TrainingSession>({
   selectId: s => s.id,
@@ -45,10 +46,6 @@ const initialTrainingSessionsState: TrainingSessionsState = adapter.getInitialSt
   loadOneState: backendActionNotStartedState,
   selectedTrainingSessionId: 0,
 });
-
-function addAlgOverrideToTrainingCase(trainingCase: TrainingCase, algOverride: AlgOverride): TrainingCase {
-  return { ...trainingCase, alg: algOverride.alg, algSource: { tag: 'overridden', algOverrideId: algOverride.id} };
-}
 
 function addAlgOverrideToTrainingCases(trainingCases: readonly TrainingCase[], algOverride: AlgOverride): TrainingCase[] {
   return trainingCases.map(t => t.casee.key === algOverride.casee.key ? addAlgOverrideToTrainingCase(t, algOverride) : t);

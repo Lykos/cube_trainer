@@ -22,6 +22,15 @@ import {
   stopStopwatchSuccess,
   showHint,
 } from '@store/trainer.actions';
+import { AlgOverride } from '@training/alg-override.model';
+import { ScrambleOrSample, mapTrainingCase } from '@training/scramble-or-sample.model';
+import { mapOptional } from '@utils/optional';
+import { 
+  createAlgOverrideSuccess,
+  updateAlgOverrideSuccess,
+  setAlgSuccess,
+} from './training-sessions.actions';
+import { addAlgOverrideToTrainingCase } from './reducer-utils';
 import { Result } from '@training/result.model';
 import { TrainerState, ResultsState, StopwatchState, notStartedStopwatchState, runningStopwatchState, stoppedStopwatchState } from './trainer.state';
 import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
@@ -48,6 +57,14 @@ const initialStopwatchState: StopwatchState = notStartedStopwatchState;
 const initialTrainerState: TrainerState = trainerAdapter.getInitialState({
   pageState: initialPageState,
 });
+
+function addAlgOverrideToScrambleOrSample(scrambleOrSample: ScrambleOrSample, algOverride: AlgOverride): ScrambleOrSample {
+  return mapTrainingCase(scrambleOrSample, t => addAlgOverrideToTrainingCase(t, algOverride));
+}
+
+function addAlgOverrideToResultsState(resultsState: ResultsState, algOverride: AlgOverride): ResultsState {
+  return { ...resultsState, nextCase: mapOptional(resultsState.nextCase, t => addAlgOverrideToScrambleOrSample(t, algOverride)) };
+}
 
 export const trainerReducer = createReducer(
   initialTrainerState,
@@ -191,6 +208,24 @@ export const trainerReducer = createReducer(
     return trainerAdapter.updateOne({
       id: trainingSessionId,
       changes: { hintActive: true }
+    }, trainerState);
+  }),
+  on(createAlgOverrideSuccess, (trainerState, { trainingSession, algOverride }) => {
+    return trainerAdapter.mapOne({
+      id: trainingSession.id,
+      map: resultsState => addAlgOverrideToResultsState(resultsState, algOverride),
+    }, trainerState);
+  }),
+  on(updateAlgOverrideSuccess, (trainerState, { trainingSession, algOverride }) => {
+    return trainerAdapter.mapOne({
+      id: trainingSession.id,
+      map: resultsState => addAlgOverrideToResultsState(resultsState, algOverride),
+    }, trainerState);
+  }),
+  on(setAlgSuccess, (trainerState, { trainingSession, algOverride }) => {
+    return trainerAdapter.mapOne({
+      id: trainingSession.id,
+      map: resultsState => addAlgOverrideToResultsState(resultsState, algOverride),
     }, trainerState);
   }),
 )
