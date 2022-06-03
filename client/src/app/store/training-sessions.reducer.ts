@@ -23,6 +23,7 @@ import {
   setAlgFailure,
   setSelectedTrainingSessionId,
 } from './training-sessions.actions';
+import { createSuccess as createResultSuccess, destroySuccess as destroyResultSuccess } from './trainer.actions';
 import { TrainingSessionsState } from './training-sessions.state';
 import { TrainingSession } from '@training/training-session.model';
 import { TrainingCase } from '@training/training-case.model';
@@ -134,6 +135,24 @@ export const trainingSessionsReducer = createReducer(
   }),  
   on(setSelectedTrainingSessionId, (trainingSessionState, { selectedTrainingSessionId }) => {
     return { ...trainingSessionState, selectedTrainingSessionId };
+  }),
+  on(createResultSuccess, (trainingSessionState, { trainingSessionId }) => {
+    return adapter.mapOne(
+      {
+	id: trainingSessionId,
+	map: trainingSession => ({ ...trainingSession, numResults: trainingSession.numResults + 1 }),
+      },
+      trainingSessionState,
+    )
+  }),
+  on(destroyResultSuccess, (trainingSessionState, { trainingSessionId }) => {
+    return adapter.mapOne(
+      {
+	id: trainingSessionId,
+	map: trainingSession => ({ ...trainingSession, numResults: trainingSession.numResults - 1 }),
+      },
+      trainingSessionState,
+    )
   }),
 )
 
