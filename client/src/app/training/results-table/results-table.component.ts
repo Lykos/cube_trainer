@@ -7,15 +7,9 @@ import { formatDate } from '@angular/common';
 import { fromDateString, Instant, now } from '@utils/instant';
 import { seconds, Duration } from '@utils/duration';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { mapOptional, orElse, Optional } from '@utils/optional';
-import { selectResults, selectResultsTotal, selectResultsOnPage, selectResultsTotalOnPage, selectInitialLoadLoading, selectPageSize } from '@store/trainer.selectors';
+import { selectResults, selectResultsTotal, selectResultsOnPage, selectInitialLoadLoading, selectPageSize } from '@store/trainer.selectors';
 import { destroy, markDnf, setPage } from '@store/trainer.actions';
 import { Store } from '@ngrx/store';
-
-function equalsValue<X>(x: X, optY: Optional<X>) {
-  return orElse(mapOptional(optY, y => y === x), false);
-}
 
 @Component({
   selector: 'cube-trainer-results-table',
@@ -32,8 +26,6 @@ export class ResultsTableComponent {
   loading$: Observable<boolean>;
   numResults$: Observable<number>;
   pageSize$: Observable<number>;
-  /** Whether the number of selected elements matches the total number of rows. */
-  allSelected$: Observable<{ value: boolean }>;
 
   selection = new SelectionModel<Result>(true, []);
 
@@ -44,9 +36,6 @@ export class ResultsTableComponent {
     this.resultsOnPage$ = this.store.select(selectResultsOnPage).pipe(filterPresent());
     this.numResults$ = this.store.select(selectResultsTotal).pipe(filterPresent());
     this.pageSize$ = this.store.select(selectPageSize);
-    this.allSelected$ = this.store.select(selectResultsTotalOnPage).pipe(
-      map(l => { return { value: equalsValue(this.selection.selected.length, l) }; }),
-    );
   }
 
   now() {
@@ -73,20 +62,25 @@ export class ResultsTableComponent {
     this.store.dispatch(setPage({ pageSize: pageEvent.pageSize, pageIndex: pageEvent.pageIndex }));
   }
 
+  allSelected(resultsOnPage: readonly Result[]) {
+    return this.selection.selected.length === resultsOnPage.length;
+  }
+
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle(resultsOnPage: readonly Result[], allSelected: boolean) {
-    if (allSelected) {
+  masterToggle(resultsOnPage: readonly Result[]) {
+    if (this.allSelected(resultsOnPage)) {
       this.selection.clear();
     } else {
       resultsOnPage.forEach(row => this.selection.select(row));
     }
   }
 
+  masterCheckboxLabel(resultsOnPage: readonly Result[]): string {
+    return `${this.allSelected(resultsOnPage) ? 'select' : 'deselect'} all`;
+  }
+
   /** The label for the checkbox on the passed row */
-  checkboxLabel(allSelected: boolean, row?: Result): string {
-    if (!row) {
-      return `${allSelected ? 'select' : 'deselect'} all`;
-    }
+  checkboxLabel(row: Result): string {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} result from ${formatDate(this.timestamp(row).toDate(), 'short', this.locale)}`;
   }
 

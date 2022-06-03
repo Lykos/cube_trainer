@@ -151,7 +151,7 @@ export const selectResultsTotalOnPage = createSelector(
   (maybeResultsTotal, pageSize, pageIndex) =>
     mapOptional(
       maybeResultsTotal,
-      resultsTotal => Math.max(resultsTotal - pageIndex * pageSize, pageSize)
+      resultsTotal => Math.min(resultsTotal - pageIndex * pageSize, pageSize)
     ),
 );
 
