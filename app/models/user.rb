@@ -28,10 +28,6 @@ class User < ApplicationRecord
     achievement_grants.create(achievement: achievement_id)
   end
 
-  def admin_confirm!
-    update(admin_confirmed: true)
-  end
-
   def unread_messages_count
     messages.where(read: false).count
   end
