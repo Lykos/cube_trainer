@@ -90,8 +90,13 @@ module AlgLike
   end
 
   def incorrect_case_message(comm, found_case)
-    "#{comm} does not solve case #{owning_set.raw_case_name(casee)} " \
-      "but case #{found_case}"
+    if owning_set.case_set.match?(found_case)
+      "#{comm} does not solve case #{owning_set.raw_case_name(casee)} " \
+        "but case #{owning_set.raw_case_name(found_case)}"
+    else
+      "#{comm} does not solve case #{owning_set.raw_case_name(casee)} " \
+        'but does not belong to the alg set.'
+    end
   end
 
   def unsuitable_cube_size_message(comm)
