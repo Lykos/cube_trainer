@@ -22,6 +22,9 @@ export class StopwatchComponent {
   @Input()
   hasStopAndStart?: boolean;
 
+  @Input()
+  algOverrideActive?: boolean;
+  
   @Output()
   readonly startt = new EventEmitter<void>();
 
@@ -51,9 +54,33 @@ export class StopwatchComponent {
     this.stopAndStart.emit();
   }
 
+  get startTooltip() {
+    return "Start the stopwatch. You can also press enter or space for this."
+  }
+
+  get stopTooltip() {
+    return "Stop the stopwatch. You can also press enter or space for this."
+  }
+  
+  get stopAndPauseTooltip() {
+    return "Stop the stopwatch and then pause. You can also press p for this."
+  }
+  
+  get stopAndStartTooltip() {
+    return "Stop the stopwatch and then immediately start the next algorithm without pause. You can also press enter or space for this. This is the recommended way to use cube trainer."
+  }
+  
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
+    if (this.algOverrideActive) {
+      return;
+    }
     switch (event.key) {
+      case 'p':
+	if (this.running && this.hasStopAndStart) {
+	  this.onStopAndPause();
+	}
+	return;
       case 'Enter':
       case ' ':
         if (this.running) {

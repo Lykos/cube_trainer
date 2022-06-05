@@ -77,8 +77,6 @@ shared_context 'with user abc' do
       email: 'abc@example.org',
       provider: 'email',
       uid: 'abc@example.org',
-      admin_confirmed: true,
-      email_confirmed: true,
       password: 'password',
       password_confirmation: 'password'
     )
@@ -97,8 +95,6 @@ shared_context 'with user eve' do
       email: 'eve@example.org',
       provider: 'email',
       uid: 'eve@example.org',
-      admin_confirmed: true,
-      email_confirmed: true,
       password: 'password',
       password_confirmation: 'password'
     )
@@ -117,8 +113,6 @@ shared_context 'with user admin' do
       email: 'admin@example.org',
       provider: 'email',
       uid: 'admin@example.org',
-      admin_confirmed: true,
-      email_confirmed: true,
       password: 'password',
       password_confirmation: 'password',
       admin: true

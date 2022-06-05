@@ -13,8 +13,6 @@ describe 'account deletion', type: :system do
       email: 'system_test+account_deletion@example.org',
       provider: 'email',
       uid: 'system_test+account_deletion@example.org',
-      admin_confirmed: true,
-      email_confirmed: true,
       password: 'password',
       password_confirmation: 'password'
     )
