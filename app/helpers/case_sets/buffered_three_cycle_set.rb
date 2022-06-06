@@ -98,6 +98,10 @@ module CaseSets
     def cases
       part_permutations =
         @part_type::ELEMENTS.permutation(2).select do |a, b|
+          # Exclude centers on the same face.
+          return false if a.solved_face == b.solved_face && a.face_symbols.length == 1 && b.face_symbols.length == 1
+
+          # Exclude duplicates of the buffer or duplicates between the two targets.
           !a.turned_equals?(b) && !a.turned_equals?(buffer) && !b.turned_equals?(buffer)
         end
       part_permutations.map do |parts|
