@@ -25,9 +25,7 @@ module CubeTrainer
 
     def no_auf_score_on_face(state, face)
       raise InvalidArgumentError, "Crosses for 2x2 don't make any sense." if state.n < 3
-      if state.n > 3
-        raise UnimplementedError, 'Scoring for crosses on big cubes in not implemented.'
-      end
+      raise UnimplementedError, 'Scoring for crosses on big cubes in not implemented.' if state.n > 3
 
       cross_color = state[TwistyPuzzles::Coordinate.center(face, 3)]
       face.neighbors.count { |neighbor| cross_part_solved?(state, face, cross_color, neighbor) }

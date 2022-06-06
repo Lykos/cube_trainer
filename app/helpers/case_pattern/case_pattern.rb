@@ -461,9 +461,7 @@ module CasePattern
     def &(other)
       return EmptyCasePattern.new if other.is_a?(EmptyCasePattern)
       return Conjunction.new([self, other]) unless other.is_a?(LeafCasePattern)
-      if part_cycle_pattern_groups.keys.sort != other.part_cycle_pattern_groups.keys.sort
-        return EmptyCasePattern.new
-      end
+      return EmptyCasePattern.new if part_cycle_pattern_groups.keys.sort != other.part_cycle_pattern_groups.keys.sort
 
       merge_groups(other)
     end

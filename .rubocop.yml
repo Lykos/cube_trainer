@@ -24,7 +24,6 @@ AllCops:
 Rails/HelperInstanceVariable:
   Enabled: false
 Layout/LineLength:
-  Max: 100
   # TODO: This is temporary
   Exclude:
   - 'spec/**/*_spec.rb'

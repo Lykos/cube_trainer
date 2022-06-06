@@ -104,9 +104,7 @@ module CubeTrainer
         serialized_value =
           if (v = map[@name])
             raise TypeError unless v.is_a?(@type)
-            unless @value_range.include?(v)
-              raise ArgumentError, "Invalid value #{v} for parameter #{@name}."
-            end
+            raise ArgumentError, "Invalid value #{v} for parameter #{@name}." unless @value_range.include?(v)
 
             @parameter_value_serializer.serialize(v)
           elsif @required

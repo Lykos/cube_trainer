@@ -7,9 +7,7 @@ module CubeTrainer
 
     def initialize(letters)
       raise TypeError unless letters.is_a?(Array)
-      unless letters.length >= 1
-        raise ArgumentError, "Invalid letter pair length for letter pair #{letters.join(' ')}."
-      end
+      raise ArgumentError, "Invalid letter pair length for letter pair #{letters.join(' ')}." unless letters.length >= 1
       if letters.include?(SEPARATOR)
         raise ArgumentError, "Invalid letter '#{SEPARATOR}' in letter pair #{letters.join(' ')}."
       end

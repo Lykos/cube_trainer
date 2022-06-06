@@ -39,9 +39,7 @@ RSpec::Matchers.define(:eq_sarahs_skewb_algorithm) do |expected|
   include TwistyPuzzles
 
   match do |actual|
-    if expected.is_a?(String)
-      expected = parse_skewb_algorithm(expected, TwistyPuzzles::SkewbNotation.sarah)
-    end
+    expected = parse_skewb_algorithm(expected, TwistyPuzzles::SkewbNotation.sarah) if expected.is_a?(String)
     actual == expected
   end
   failure_message do |actual|

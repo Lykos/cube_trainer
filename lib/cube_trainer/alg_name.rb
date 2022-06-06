@@ -21,9 +21,7 @@ module CubeTrainer
     end
 
     def self.from_raw_data(input)
-      if input.include?(OPENING_BRACKET) || input.include?(CLOSING_BRACKET)
-        raise NotImplementedError
-      end
+      raise NotImplementedError if input.include?(OPENING_BRACKET) || input.include?(CLOSING_BRACKET)
 
       if input.include?(SEPARATOR)
         CombinedAlgName.new(input.split(SEPARATOR))

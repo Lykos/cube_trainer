@@ -13,9 +13,7 @@ module CubeTrainer
       include TwistyPuzzles::Utils::StringHelper
 
       def initialize(_hinter, results_model, options)
-        unless options.memo_time_s&.positive?
-          raise ArgumentError, 'Argument memo_time_s has to be positive.'
-        end
+        raise ArgumentError, 'Argument memo_time_s has to be positive.' unless options.memo_time_s&.positive?
 
         @results_model = results_model
         @memo_time_s = options.memo_time_s

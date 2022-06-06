@@ -60,9 +60,7 @@ module CubeTrainer
       end
 
       def generate
-        unless File.exist?(File.dirname(@options.output))
-          FileUtils.mkpath(File.dirname(@options.output))
-        end
+        FileUtils.mkpath(File.dirname(@options.output)) unless File.exist?(File.dirname(@options.output))
         FileUtils.mkpath(@options.output_dir) unless File.exist?(@options.output_dir)
         CSV.open(@options.output, 'wb', col_sep: "\t") do |csv|
           generate_internal(csv)

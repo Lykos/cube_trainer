@@ -61,9 +61,7 @@ class Case
 
   def canonicalized_cycles(ignore)
     cycles = part_cycles.map(&:canonicalize).sort
-    if ignore && part_cycles.any? { |c| non_center_cycle?(c) }
-      cycles.delete_if { |c| equivalent_center_cycle?(c) }
-    end
+    cycles.delete_if { |c| equivalent_center_cycle?(c) } if ignore && part_cycles.any? { |c| non_center_cycle?(c) }
     cycles
   end
 
