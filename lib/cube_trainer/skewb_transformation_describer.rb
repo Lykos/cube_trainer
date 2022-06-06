@@ -16,9 +16,7 @@ module CubeTrainer
     # Represents a sequence of Skewb parts.
     class PartSequence
       def initialize(letter_scheme, parts)
-        unless letter_scheme.nil? || letter_scheme.is_a?(TwistyPuzzles::LetterScheme)
-          raise ArgumentError
-        end
+        raise ArgumentError unless letter_scheme.nil? || letter_scheme.is_a?(TwistyPuzzles::LetterScheme)
         raise ArgumentError unless parts.all?(TwistyPuzzles::Part)
 
         @letter_scheme = letter_scheme
@@ -177,16 +175,16 @@ module CubeTrainer
     # Describes where each interesting piece comes from.
     def source_descriptions(algorithm)
       algorithm.apply_temporarily_to(@skewb_state) do |s|
-        find_part_sources(@interesting_corners, s) { |c| TwistyPuzzles::SkewbCoordinate.for_corner(c) } + # rubocop:disable Layout/LineLength
-          find_part_sources(@interesting_faces, s) { |c| TwistyPuzzles::SkewbCoordinate.for_center(c) } # rubocop:disable Layout/LineLength
+        find_part_sources(@interesting_corners, s) { |c| TwistyPuzzles::SkewbCoordinate.for_corner(c) } +
+          find_part_sources(@interesting_faces, s) { |c| TwistyPuzzles::SkewbCoordinate.for_center(c) }
       end.sort
     end
 
     # Describes what kind of tranformation the alg does in terms of piece cycles.
     def transformation_descriptions(algorithm)
       algorithm.apply_temporarily_to(@skewb_state) do |s|
-        find_part_target_cycles(@interesting_corners, s) { |c| TwistyPuzzles::SkewbCoordinate.for_corner(c) } + # rubocop:disable Layout/LineLength
-          find_part_target_cycles(@interesting_faces, s) { |c| TwistyPuzzles::SkewbCoordinate.for_center(c) } # rubocop:disable Layout/LineLength
+        find_part_target_cycles(@interesting_corners, s) { |c| TwistyPuzzles::SkewbCoordinate.for_corner(c) } +
+          find_part_target_cycles(@interesting_faces, s) { |c| TwistyPuzzles::SkewbCoordinate.for_center(c) }
       end.sort
     end
   end

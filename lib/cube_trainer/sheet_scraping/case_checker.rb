@@ -101,9 +101,7 @@ module CubeTrainer
     end
 
     def log_outside_report
-      if @outside_algs.positive?
-        Rails.logger.debug { "#{@outside_algs} were outside of the valid part of the table" }
-      end
+      Rails.logger.debug { "#{@outside_algs} were outside of the valid part of the table" } if @outside_algs.positive?
       if @diagonal_algs.positive? # rubocop:disable Style/GuardClause
         Rails.logger.debug { "#{@diagonal_algs} were in the diagonal of the table" }
       end

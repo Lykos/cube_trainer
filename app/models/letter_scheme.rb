@@ -62,9 +62,7 @@ class LetterScheme < ApplicationRecord
   def used_part(part)
     used_part_type = used_part_type(part.class)
     return part if used_part_type == part.class
-    if part.instance_of?(TwistyPuzzles::Wing) && used_part_type == TwistyPuzzles::Corner
-      return used_wing_corner(part)
-    end
+    return used_wing_corner(part) if part.instance_of?(TwistyPuzzles::Wing) && used_part_type == TwistyPuzzles::Corner
     return part.corresponding_part if part.corresponding_part.instance_of?(used_part_type)
     # All other cases should be handled by the previous branches.
     raise unless used_part_type == TwistyPuzzles::Edge
@@ -108,9 +106,7 @@ class LetterScheme < ApplicationRecord
     raise unless [TwistyPuzzles::Wing, TwistyPuzzles::Midge].include?(original_part_type)
 
     original_face_symbols = used_edge.face_symbols.dup
-    if original_part_type == TwistyPuzzles::Wing && invert_wing_letter
-      original_face_symbols.reverse!
-    end
+    original_face_symbols.reverse! if original_part_type == TwistyPuzzles::Wing && invert_wing_letter
     original_part_type.for_face_symbols(original_face_symbols)
   end
 end

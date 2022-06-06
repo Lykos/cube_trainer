@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 def sheet_filter(args)
-  unless args[:owner_regexp] || args[:sheet_title_regexp]
-    return CubeTrainer::SheetScraping::AllSheetFilter.new
-  end
+  return CubeTrainer::SheetScraping::AllSheetFilter.new unless args[:owner_regexp] || args[:sheet_title_regexp]
 
   owner_regexp = args[:owner_regexp] ? Regexp.new(args[:owner_regexp]) : /.*/
   sheet_title_regexp = args[:sheet_title_regexp] ? Regexp.new(args[:sheet_title_regexp]) : /.*/
