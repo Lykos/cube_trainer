@@ -7,6 +7,7 @@ import { formatDate } from '@angular/common';
 import { fromDateString, Instant, now } from '@utils/instant';
 import { seconds, Duration } from '@utils/duration';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { selectResults, selectResultsTotal, selectResultsOnPage, selectInitialLoadLoading, selectPageSize } from '@store/trainer.selectors';
 import { destroy, markDnf, setPage } from '@store/trainer.actions';
 import { Store } from '@ngrx/store';
@@ -33,7 +34,10 @@ export class ResultsTableComponent {
 	      @Inject(LOCALE_ID) private readonly locale: string) {
     this.loading$ = this.store.select(selectInitialLoadLoading);
     this.results$ = this.store.select(selectResults).pipe(filterPresent());
-    this.resultsOnPage$ = this.store.select(selectResultsOnPage).pipe(filterPresent());
+    this.resultsOnPage$ = this.store.select(selectResultsOnPage).pipe(
+      filterPresent(),
+      tap(() => this.selection.clear())
+    );
     this.numResults$ = this.store.select(selectResultsTotal).pipe(filterPresent());
     this.pageSize$ = this.store.select(selectPageSize);
   }
