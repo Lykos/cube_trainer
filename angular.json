@@ -136,6 +136,7 @@
   "defaultProject": "cube-trainer",
   "cli": {
     "defaultCollection": "@ngrx/schematics",
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "01b9572f-b58b-41e8-ac3d-a041ef5fde39"
   }
 }
