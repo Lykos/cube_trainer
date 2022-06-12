@@ -61,6 +61,7 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
   for (let casee of cases) {
     weightStates.set(casee.casee.key, { item: casee, state: initialWeightState() });
   }
+  // Newer results come first. The only place where this matters is for `itemsSinceLastOccurrence`.
   for (let i = results.length - 1; i >= 0; --i) {
     const result = results[i];
     const weightState = weightStates.get(result.casee.key)?.state;
@@ -83,7 +84,7 @@ function toSamplingState(now: Instant, cases: readonly TrainingCase[], results: 
     if (weightState.occurrenceDays.length === 0 || weightState.occurrenceDays[weightState.occurrenceDays.length - 1] != daysAgo) {
       weightState.occurrenceDays.push(daysAgo);
     }
-    weightState.itemsSinceLastOccurrence = Math.min(weightState.itemsSinceLastOccurrence, results.length - 1 - i);
+    weightState.itemsSinceLastOccurrence = Math.min(weightState.itemsSinceLastOccurrence, i);
     weightState.durationSinceLastOccurrence = weightState.durationSinceLastOccurrence.min(timestamp.durationUntil(now));
     weightState.totalOccurrences += 1;
     if (!result.success) {
