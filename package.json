@@ -65,7 +65,7 @@
     "@types/file-saver": "^2.0.5",
     "@types/jasmine": "^4.0.3",
     "@types/node": "^17.0.42",
-    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.27.1",
     "angular-http-server": "^1.10.0",
     "chai": "^4.3.4",
