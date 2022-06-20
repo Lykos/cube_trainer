@@ -137,6 +137,6 @@
   "cli": {
     "defaultCollection": "@ngrx/schematics",
     "packageManager": "npm",
-    "analytics": "01b9572f-b58b-41e8-ac3d-a041ef5fde39"
+    "analytics": "bb5fdec7-e219-41ac-a6bd-fc802f29caec"
   }
 }
