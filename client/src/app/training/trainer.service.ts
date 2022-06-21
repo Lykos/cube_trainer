@@ -2,33 +2,28 @@ import { Injectable } from '@angular/core';
 import { TrainingCase } from './training-case.model';
 import { TrainingSession } from './training-session.model';
 import { GeneratorType } from './generator-type.model';
-import { ScrambleOrSample, scramble, sample, isSample } from './scramble-or-sample.model';
-import { Result } from './result.model';
+import { ScrambleOrSample, scramble, sample } from './scramble-or-sample.model';
 import { Observable, from, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SamplerFactory } from './sampler-factory.service';
-import { Sample } from '@utils/sampling';
-import { SamplingStateService } from './sampling-state.service';
+import { Sample, SamplingState } from '@utils/sampling';
 import { Instant } from '@utils/instant';
 import { Alg } from 'cubing/alg';
 import { randomScrambleForEvent } from 'cubing/scramble';
-import { flatMapOptional, Optional, some, none } from '@utils/optional';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TrainerService {
-  constructor(private readonly samplerFactory: SamplerFactory,
-              private readonly samplingStateService: SamplingStateService) {}
+  constructor(private readonly samplerFactory: SamplerFactory) {}
 
-  randomScrambleOrSample(now: Instant, trainingSession: TrainingSession, results: readonly Result[], nextCase: Optional<ScrambleOrSample>): Observable<ScrambleOrSample> {
+  randomScrambleOrSample(now: Instant, trainingSession: TrainingSession, samplingState: SamplingState<TrainingCase>): Observable<ScrambleOrSample> {
     const generatorType = trainingSession.generatorType;
     switch (generatorType) {
       case GeneratorType.Scramble:
         return this.randomScramble(now, trainingSession).pipe(map(scramble));
       case GeneratorType.Case:
-	const nextSample = flatMapOptional(nextCase, c => isSample(c) ? some(c.sample.item) : none);
-        return this.randomTrainingCase(now, trainingSession, results, nextSample).pipe(map(sample));
+        return this.randomTrainingCase(now, trainingSession, samplingState).pipe(map(sample));
       default:
         throw new Error(`Unknown generator type ${generatorType}`);
     }
@@ -38,12 +33,11 @@ export class TrainerService {
     return from(randomScrambleForEvent(this.cubeEvent(trainingSession)));
   }
 
-  randomTrainingCase(now: Instant, trainingSession: TrainingSession, results: readonly Result[], nextSample: Optional<TrainingCase>): Observable<Sample<TrainingCase>> {
+  randomTrainingCase(now: Instant, trainingSession: TrainingSession, samplingState: SamplingState<TrainingCase>): Observable<Sample<TrainingCase>> {
     if (trainingSession.trainingCases.length === 0) {
       return throwError(new Error('No cases configured. This can happen for training sessions with no algs and a configuration to avoid cases without algs. Please reconfigure your session.'));
     }
     const sampler = this.samplerFactory.sampler(trainingSession);
-    const samplingState = this.samplingStateService.samplingState(now, trainingSession, results, nextSample);
     return of(sampler.sample(samplingState));
   }
 

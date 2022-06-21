@@ -1,8 +1,39 @@
 import { Result } from '@training/result.model';
+import { Case } from '@training/case.model';
 import { ScrambleOrSample } from '@training/scramble-or-sample.model';
 import { BackendActionState } from '@shared/backend-action-state.model';
 import { EntityState } from '@ngrx/entity';
-import { Optional } from '@utils/optional';
+import { Optional, none } from '@utils/optional';
+
+export interface LastHintOrDnfInfo {
+  readonly daysAfterEpoch: number;
+  // Each is a number of days after the unix epoch.
+  readonly occurrenceDaysSince: readonly number[];
+}
+
+export interface IntermediateWeightState {
+  readonly itemsSinceLastOccurrence: number;
+  readonly lastOccurrenceUnixMillis: number;
+  // Each is a number of days after the unix epoch.
+  readonly occurrenceDays: readonly number[];
+  readonly totalOccurrences: number;
+  readonly lastHintOrDnfInfo: Optional<LastHintOrDnfInfo>;
+  readonly recentBadnessesS: readonly number[];
+}
+
+export const initialIntermediateWeightState: IntermediateWeightState = {
+  itemsSinceLastOccurrence: Infinity,
+  lastOccurrenceUnixMillis: -Infinity,
+  occurrenceDays: [],
+  lastHintOrDnfInfo: none,
+  totalOccurrences: 0,
+  recentBadnessesS: [],
+}
+
+export interface CaseAndIntermediateWeightState {
+  readonly casee: Case;
+  readonly state: IntermediateWeightState;
+}
 
 // Results for one specific training session.
 export interface ResultsState extends EntityState<Result> {
@@ -18,6 +49,8 @@ export interface ResultsState extends EntityState<Result> {
   readonly hintActive: boolean;
   readonly nextCase: Optional<ScrambleOrSample>;
   readonly startAfterLoading: boolean;
+
+  readonly intermediateWeightStates: readonly CaseAndIntermediateWeightState[];
 }
 
 export interface PageState {
