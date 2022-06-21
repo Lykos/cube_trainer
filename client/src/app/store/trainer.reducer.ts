@@ -22,6 +22,8 @@ import {
   stopStopwatchSuccess,
   showHint,
 } from '@store/trainer.actions';
+import { Duration, seconds, minutes } from '@utils/duration';
+import { unixEpoch } from '@utils/instant';
 import { AlgOverride } from '@training/alg-override.model';
 import { ScrambleOrSample, mapTrainingCase } from '@training/scramble-or-sample.model';
 import { mapOptional } from '@utils/optional';
@@ -32,11 +34,11 @@ import {
 } from './training-sessions.actions';
 import { addAlgOverrideToTrainingCase } from './reducer-utils';
 import { Result } from '@training/result.model';
-import { TrainerState, ResultsState, StopwatchState, notStartedStopwatchState, runningStopwatchState, stoppedStopwatchState } from './trainer.state';
+import { TrainerState, ResultsState, StopwatchState, notStartedStopwatchState, runningStopwatchState, stoppedStopwatchState, IntermediateWeightState, CaseAndIntermediateWeightState, LastHintOrDnfInfo, initialIntermediateWeightState } from './trainer.state';
 import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
 import { EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import { fromDateString } from '@utils/instant';
-import { none, some } from '@utils/optional';
+import { Optional, none, some } from '@utils/optional';
 
 const resultsAdapter: EntityAdapter<Result> = createEntityAdapter<Result>({
   selectId: s => s.id,
@@ -49,8 +51,12 @@ const trainerAdapter: EntityAdapter<ResultsState> = createEntityAdapter<ResultsS
 
 const initialPageState = {
   pageIndex: 0,
-  pageSize: 20,
+  pageSize: 10,
 }
+
+const BADNESS_MEMORY = 5;
+const DNF_PENALTY = minutes(1);
+const HINT_PENALTY = minutes(1);
 
 const initialStopwatchState: StopwatchState = notStartedStopwatchState;
 
@@ -64,6 +70,72 @@ function addAlgOverrideToScrambleOrSample(scrambleOrSample: ScrambleOrSample, al
 
 function addAlgOverrideToResultsState(resultsState: ResultsState, algOverride: AlgOverride): ResultsState {
   return { ...resultsState, nextCase: mapOptional(resultsState.nextCase, t => addAlgOverrideToScrambleOrSample(t, algOverride)) };
+}
+
+function pushWithMemory<X>(xs: readonly X[], x: X, memory: number): X[] {
+  if (xs.length < memory) {
+    return [...xs, x];
+  }
+  const withoutForgotten = xs.slice(1);
+  withoutForgotten.push(x);
+  return withoutForgotten;
+}
+
+function badness(result: Result): Duration {
+  if (!result.success) {
+    return DNF_PENALTY;
+  } else if (result.numHints > 0) {
+    return HINT_PENALTY;
+  }
+  return seconds(result.timeS);
+}
+
+function updateLastHintOrDnfInfo(maybeLastHintOrDnfInfo: Optional<LastHintOrDnfInfo>, result: Result): Optional<LastHintOrDnfInfo> {
+  const timestamp = fromDateString(result.createdAt);
+  const daysAfterEpoch = unixEpoch.durationUntil(timestamp).toDays();
+  if (result.numHints > 0 || !result.success) {
+    return some({ daysAfterEpoch, occurrenceDaysSince: []});
+  } else {
+    return mapOptional(
+      maybeLastHintOrDnfInfo,
+      lastHintOrDnfInfo => {
+	const dayIsAfterHintOrDnf = daysAfterEpoch > lastHintOrDnfInfo.daysAfterEpoch;
+	const newDay = lastHintOrDnfInfo.occurrenceDaysSince.length === 0 || lastHintOrDnfInfo.occurrenceDaysSince[lastHintOrDnfInfo.occurrenceDaysSince.length - 1] != daysAfterEpoch;
+	return dayIsAfterHintOrDnf && newDay ? { ...lastHintOrDnfInfo, occurenceDays: [...lastHintOrDnfInfo.occurrenceDaysSince, daysAfterEpoch] } : lastHintOrDnfInfo
+      }
+    );
+  }
+  
+}
+
+function addMatchingResultToEnd(weightState: IntermediateWeightState, result: Result, numResultsAfter: number) {
+  const timestamp = fromDateString(result.createdAt);
+  const daysAfterEpoch = unixEpoch.durationUntil(timestamp).toDays();
+  const newDay = weightState.occurrenceDays.length === 0 || weightState.occurrenceDays[weightState.occurrenceDays.length - 1] != daysAfterEpoch;
+  const occurrenceDays = newDay ? [...weightState.occurrenceDays, daysAfterEpoch] : weightState.occurrenceDays;
+  const recentBadnessesS = pushWithMemory(weightState.recentBadnessesS, badness(result).toSeconds(), BADNESS_MEMORY);
+  return {
+    itemsSinceLastOccurrence: numResultsAfter,
+    lastOccurrenceUnixMillis: timestamp.toUnixMillis(),
+    occurrenceDays,
+    lastHintOrDnfInfo: updateLastHintOrDnfInfo(weightState.lastHintOrDnfInfo, result),
+    totalOccurrences: weightState.totalOccurrences + 1,
+    recentBadnessesS,
+  };
+}
+
+function recompute(resultsState: ResultsState): ResultsState {
+  const weightStates = new Map<string, CaseAndIntermediateWeightState>();
+  // Newer results come first. The only place where this matters is for `itemsSinceLastOccurrence`.
+  const results = resultsState.ids.map(id => resultsState.entities[id]!);
+  for (let i = results.length - 1; i >= 0; --i) {
+    const result = results[i];
+    const caseKey = result.casee.key;
+    const weightState = weightStates.get(caseKey)?.state || initialIntermediateWeightState;
+    weightStates.set(caseKey, { casee: result.casee, state: addMatchingResultToEnd(weightState, result, i) });
+  }
+  const intermediateWeightStates = [...weightStates.values()];
+  return { ...resultsState, intermediateWeightStates };
 }
 
 export const trainerReducer = createReducer(
@@ -80,13 +152,14 @@ export const trainerReducer = createReducer(
       stopwatchState: initialStopwatchState,
       hintActive: false,
       startAfterLoading: false,
+      intermediateWeightStates: [],
     });
     return trainerAdapter.upsertOne(initialResultsState, trainerState);
   }),
   on(initialLoadResultsSuccess, (trainerState, { trainingSessionId, results }) => {
     return trainerAdapter.mapOne({
       id: trainingSessionId,
-      map: resultsState => resultsAdapter.setAll(results.map(r => r), { ...resultsState, initialLoadResultsState: backendActionSuccessState }),
+      map: resultsState => recompute(resultsAdapter.setAll(results.map(r => r), { ...resultsState, initialLoadResultsState: backendActionSuccessState })),
     }, trainerState);
   }),
   on(initialLoadResultsFailure, (trainerState, { trainingSessionId, error }) => {
@@ -104,7 +177,7 @@ export const trainerReducer = createReducer(
   on(createSuccess, (trainerState, { trainingSessionId, result }) => {
     return trainerAdapter.mapOne({
       id: trainingSessionId,
-      map: resultsState => resultsAdapter.addOne(result, { ...resultsState, createState: backendActionSuccessState }),
+      map: resultsState => recompute(resultsAdapter.addOne(result, { ...resultsState, createState: backendActionSuccessState })),
     }, trainerState);
   }),
   on(createFailure, (trainerState, { trainingSessionId, error }) => {
@@ -122,7 +195,7 @@ export const trainerReducer = createReducer(
   on(destroySuccess, (trainerState, { trainingSessionId, resultIds }) => {
     return trainerAdapter.mapOne({
       id: trainingSessionId,
-      map: resultsState => resultsAdapter.removeMany(resultIds.map(r => r), { ...resultsState, destroyState: backendActionSuccessState }),
+      map: resultsState => recompute(resultsAdapter.removeMany(resultIds.map(r => r), { ...resultsState, destroyState: backendActionSuccessState })),
     }, trainerState);
   }),
   on(destroyFailure, (trainerState, { trainingSessionId, error }) => {
@@ -142,10 +215,10 @@ export const trainerReducer = createReducer(
       id: trainingSessionId,
       map: resultsState => {
         const updates = resultIds.map(id => ({ id, changes: { success: false } }));
-        return resultsAdapter.updateMany(
+        return recompute(resultsAdapter.updateMany(
           updates,
           { ...resultsState, markDnfState: backendActionSuccessState },
-        );
+        ));
       },
     }, trainerState);
   }),

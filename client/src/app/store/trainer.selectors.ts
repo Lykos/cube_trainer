@@ -1,9 +1,13 @@
 import { createSelector, MemoizedSelector, createFeatureSelector } from '@ngrx/store';
 import { calculateStats } from '@training/calculate-stats';
-import { TrainerState, notStartedStopwatchState, isRunning } from './trainer.state';
+import { Instant, now, fromUnixMillis } from '@utils/instant';
+import { seconds } from '@utils/duration';
+import { TrainerState, notStartedStopwatchState, isRunning, ResultsState, IntermediateWeightState, initialIntermediateWeightState } from './trainer.state';
 import { TrainingSession } from '@training/training-session.model';
-import { Result } from '@training/result.model';
-import { ScrambleOrSample } from '@training/scramble-or-sample.model';
+import { TrainingCase } from '@training/training-case.model';
+import { Case } from '@training/case.model';
+import { SamplingState, WeightState } from '@utils/sampling';
+import { ScrambleOrSample, isSample } from '@training/scramble-or-sample.model';
 import {
   selectTrainerEntities as selectTrainerEntitiesFunction,
   selectTrainerAll as selectTrainerAllFunction,
@@ -14,6 +18,7 @@ import { selectSelectedTrainingSessionId } from './router.selectors';
 import { selectTrainingSessionEntities, selectSelectedTrainingSession } from './training-sessions.selectors';
 import { Optional, orElse, mapOptional, flatMapOptional, ofNull, some, none, hasValue } from '@utils/optional';
 import { isBackendActionLoading, isBackendActionFailure, isBackendActionNotStarted, maybeBackendActionError } from '@shared/backend-action-state.model';
+import { computeCubeAverage } from '@utils/cube-average';
 
 export const selectTrainerState = createFeatureSelector<TrainerState>('trainer');
 
@@ -59,27 +64,59 @@ export const selectNextCaseAndHintActiveById = createSelector(
   },
 );
 
-interface TrainingSessionAndResults {
+export interface TrainingSessionAndSamplingState {
   readonly trainingSession: TrainingSession;
-  readonly results: readonly Result[];
+  readonly samplingState: SamplingState<TrainingCase>;
 };
 
-export const selectTrainingSessionAndResultsById: MemoizedSelector<any, Optional<Map<number, TrainingSessionAndResults>>> = createSelector(
+
+function toWeightState(state: IntermediateWeightState, instant: Instant): WeightState {
+  const badnessAverage = computeCubeAverage(state.recentBadnessesS.map(seconds));
+  return {
+    itemsSinceLastOccurrence: state.itemsSinceLastOccurrence,
+    durationSinceLastOccurrence: fromUnixMillis(state.lastOccurrenceUnixMillis).durationUntil(instant),
+    occurrenceDays: state.occurrenceDays.length,
+    totalOccurrences: state.totalOccurrences,
+    occurrenceDaysSinceLastHintOrDnf: mapOptional(state.lastHintOrDnfInfo, l => l.occurrenceDaysSince.length),
+    badnessAverage,
+  };
+}
+
+export function getIntermediateWeightState(resultsState: ResultsState, casee: Case): IntermediateWeightState {
+  for (let weightState of resultsState.intermediateWeightStates) {
+    if (weightState.casee.key === casee.key) {
+      return weightState.state;
+    }
+  }
+  return initialIntermediateWeightState;
+}
+
+function toSamplingState(trainingSession: TrainingSession, resultsState: ResultsState, instant: Instant): SamplingState<TrainingCase> {
+  const weightStates = trainingSession.trainingCases.map(
+    trainingCase => {
+      const intermediateWeightState = getIntermediateWeightState(resultsState, trainingCase.casee);
+      return { item: trainingCase, state: toWeightState(intermediateWeightState, instant) };
+    }
+  );
+  const nextItem = flatMapOptional(resultsState.nextCase, nextCase => isSample(nextCase) ? some(nextCase.sample.item) : none);
+  return { weightStates, nextItem };
+}
+
+export const selectTrainingSessionAndSamplingStateById: MemoizedSelector<any, Optional<Map<number, TrainingSessionAndSamplingState>>> = createSelector(
   selectTrainingSessionEntities,
   selectTrainerAll,
   (trainingSessionEntities, trainerAll) => {
     if (!trainingSessionEntities) {
       return none;
     }
-    const map = new Map<number, TrainingSessionAndResults>();
+    const map = new Map<number, TrainingSessionAndSamplingState>();
     for (let resultsState of trainerAll) {
       const trainingSessionId = resultsState.trainingSessionId
       const trainingSession = trainingSessionEntities[trainingSessionId];
       if (!trainingSession) {
         return none;
       }
-      const results = selectAllResultsFunction(resultsState);
-      map.set(trainingSessionId, { trainingSession, results });
+      map.set(trainingSessionId, { trainingSession, samplingState: toSamplingState(trainingSession, resultsState, now()) });
     }
     return some(map);
   },

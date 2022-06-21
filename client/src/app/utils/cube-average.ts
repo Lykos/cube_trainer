@@ -17,18 +17,22 @@ export class CubeAverage {
   }
 
   average(): Optional<Duration> {
-    if (this.durations.length === 0) {
-      return none;
-    }
-    const sorted = [...this.durations];
-    sorted.sort(d => d.toMillis());
-    const removedLength = sorted.length < 3 ? 0 : Math.ceil(sorted.length * REMOVED_FRACTION);
-    const keptLength = sorted.length - 2 * removedLength;
-    assert(keptLength > 0);
-    let sum = zeroDuration;
-    for (let i = removedLength; i < sorted.length - removedLength; ++i) {
-      sum = sum.plus(sorted[i]);
-    }
-    return some(sum.times(1.0 / keptLength));
+    return computeCubeAverage(this.durations);
   }
+}
+
+export function computeCubeAverage(durations: Duration[]): Optional<Duration> {
+  if (durations.length === 0) {
+    return none;
+  }
+  const sorted = [...durations];
+  sorted.sort(d => d.toMillis());
+  const removedLength = sorted.length < 3 ? 0 : Math.ceil(sorted.length * REMOVED_FRACTION);
+  const keptLength = sorted.length - 2 * removedLength;
+  assert(keptLength > 0);
+  let sum = zeroDuration;
+  for (let i = removedLength; i < sorted.length - removedLength; ++i) {
+    sum = sum.plus(sorted[i]);
+  }
+  return some(sum.times(1.0 / keptLength));
 }

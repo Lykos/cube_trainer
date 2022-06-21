@@ -44,12 +44,11 @@ import { Store } from '@ngrx/store';
 import { forceValue } from '@utils/optional';
 import { now, fromUnixMillis } from '@utils/instant';
 import {
-  selectTrainingSessionAndResultsById,
+  selectTrainingSessionAndSamplingStateById,
   selectIsInitialLoadNecessaryById,
   selectNextCaseAndHintActiveById,
   selectStopwatchState,
   selectStartAfterLoading,
-  selectNextCase,
 } from '@store/trainer.selectors';
 import { selectSelectedTrainingSessionId } from '@store/router.selectors';
 import { ScrambleOrSample } from '@training/scramble-or-sample.model';
@@ -223,11 +222,10 @@ export class TrainerEffects {
   loadNextCase$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadNextCase),
-      concatLatestFrom(() => this.store.select(selectTrainingSessionAndResultsById).pipe(filterPresent())),
-      concatLatestFrom(() => this.store.select(selectNextCase)),
-      switchMap(([[action, lolMap], nextCase]) => {
-        const { trainingSession, results } = lolMap.get(action.trainingSessionId)!;
-        return this.trainerService.randomScrambleOrSample(now(), trainingSession, results, nextCase).pipe(
+      concatLatestFrom(() => this.store.select(selectTrainingSessionAndSamplingStateById).pipe(filterPresent())),
+      switchMap(([action, lolMap]) => {
+        const { trainingSession, samplingState } = lolMap.get(action.trainingSessionId)!;
+        return this.trainerService.randomScrambleOrSample(now(), trainingSession, samplingState).pipe(
           map(nextCase => loadNextCaseSuccess({ trainingSessionId: action.trainingSessionId, nextCase })),
           catchError(httpResponseError => {
             const context = { action: 'selecting', subject: 'next scramble or sample' };
