@@ -7,6 +7,6 @@ class IndexController < ApplicationController
   skip_before_action :authenticate_user!, only: %i[index]
 
   def index
-    render file: Rails.root.join('public/index.html')
+    render file: Rails.public_path.join('index.html')
   end
 end
