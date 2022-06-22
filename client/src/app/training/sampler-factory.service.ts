@@ -44,7 +44,7 @@ function samplingConfig(trainingSession: TrainingSession): SamplingConfig {
     badItemsWeight: 5,
     longNotSeenItemsWeight: 1,
     forgottenExponentialBackoffBase: 2,
-    repeatExponentialBackoffBase: 2,
+    repeatExponentialBackoffBase: 3,
     revisitExponentialBackoffBase: 2,
     recencyThreshold: 4,
     longNotSeenThreshold: 100,
