@@ -381,3 +381,11 @@ Rails/StripHeredoc: # new in 2.15
   Enabled: true
 Rails/ToFormattedS: # new in 2.15
   Enabled: true
+Layout/LineContinuationLeadingSpace: # new in 1.31
+  Enabled: true
+Layout/LineContinuationSpacing: # new in 1.31
+  Enabled: true
+Lint/ConstantOverwrittenInRescue: # new in 1.31
+  Enabled: true
+Lint/NonAtomicFileOperation: # new in 1.31
+  Enabled: true

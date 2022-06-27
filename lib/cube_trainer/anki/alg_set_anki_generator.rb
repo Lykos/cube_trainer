@@ -60,8 +60,8 @@ module CubeTrainer
       end
 
       def generate
-        FileUtils.mkpath(File.dirname(@options.output)) unless File.exist?(File.dirname(@options.output))
-        FileUtils.mkpath(@options.output_dir) unless File.exist?(@options.output_dir)
+        FileUtils.mkdir_p(File.dirname(@options.output))
+        FileUtils.mkdir_p(@options.output_dir)
         CSV.open(@options.output, 'wb', col_sep: "\t") do |csv|
           generate_internal(csv)
         end
@@ -203,7 +203,7 @@ module CubeTrainer
         return unless @options.cache
 
         check_output_dir('cache', @options.cache_dir)
-        FileUtils.mkpath(@options.cache_dir) unless File.exist?(@options.cache_dir)
+        FileUtils.mkdir_p(@options.cache_dir)
         CacheFetchWrapper.new(ActiveSupport::Cache::FileStore.new(@options.cache_dir))
       end
 

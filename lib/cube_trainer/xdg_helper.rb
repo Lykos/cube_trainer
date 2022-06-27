@@ -28,11 +28,11 @@ module CubeTrainer
     end
 
     def ensure_data_directory_exists
-      FileUtils.mkpath(data_directory) unless File.exist?(data_directory)
+      FileUtils.mkdir_p(data_directory)
     end
 
     def ensure_cache_directory_exists
-      FileUtils.mkpath(cache_directory) unless File.exist?(cache_directory)
+      FileUtils.mkdir_p(cache_directory)
     end
   end
 end
