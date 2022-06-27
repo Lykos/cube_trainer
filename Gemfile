@@ -33,7 +33,7 @@ group :development, :test, :production do
   gem 'activerecord'
 
   # Postgresql support.
-  gem 'pg', '~> 1.4.0'
+  gem 'pg', '~> 1.4.1'
 
   gem 'ruby-filemagic'
 
@@ -68,7 +68,7 @@ end
 
 group :production do
   # Use Redis adapter to run Action Cable in production
-  gem 'redis', '~> 4.6'
+  gem 'redis', '~> 4.7'
 end
 
 group :development do
