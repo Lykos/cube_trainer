@@ -13,7 +13,7 @@ class TrainingSessionsController < ApplicationController
   # GET /api/training_sessions
   def index
     # rubocop:disable Rails/DynamicFindBy
-    render json: TrainingSession.find_by_user_with_preloads(current_user)
+    render json: TrainingSession.find_by_user_with_preloads(current_user), each_serializer: TrainingSessionSummarySerializer
     # rubocop:enable Rails/DynamicFindBy
   end
 
