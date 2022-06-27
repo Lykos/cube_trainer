@@ -1,6 +1,7 @@
 import { RailsService } from '@core/rails.service';
 import { Injectable } from '@angular/core';
 import { TrainingSession } from './training-session.model';
+import { TrainingSessionSummary } from './training-session-summary.model';
 import { NewTrainingSession } from './new-training-session.model';
 import { TrainingSessionType } from './training-session-type.model';
 import { Observable } from 'rxjs';
@@ -19,8 +20,8 @@ export class TrainingSessionsService {
     return this.rails.get<TrainingSessionType[]>('/training_session_types', {});
   }
 
-  list(): Observable<TrainingSession[]> {
-    return this.rails.get<TrainingSession[]>('/training_sessions', {});
+  list(): Observable<TrainingSessionSummary[]> {
+    return this.rails.get<TrainingSessionSummary[]>('/training_sessions', {});
   }
 
   show(trainingSessionId: number): Observable<TrainingSession> {

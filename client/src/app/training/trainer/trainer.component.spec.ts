@@ -45,7 +45,6 @@ const trainingSession: TrainingSession = {
   id: 1,
   name: 'test session',
   trainingCases: [item],
-  numResults: 0,
   known: false,
   showInputMode: ShowInputMode.Name,
   generatorType: GeneratorType.Case,

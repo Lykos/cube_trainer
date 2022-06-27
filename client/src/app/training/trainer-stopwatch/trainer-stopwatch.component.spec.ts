@@ -16,7 +16,6 @@ const trainingSession: TrainingSession = {
   id: 1,
   name: 'test session',
   trainingCases: [],
-  numResults: 0,
   known: false,
   showInputMode: ShowInputMode.Scramble,
   generatorType: GeneratorType.Scramble,

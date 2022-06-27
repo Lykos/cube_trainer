@@ -68,7 +68,7 @@ export class TrainingSessionsEffects {
           of(initialLoadNop());
         }
         return this.trainingSessionsService.list().pipe(
-          map(trainingSessions => initialLoadSuccess({ trainingSessions })),
+          map(trainingSessionSummaries => initialLoadSuccess({ trainingSessionSummaries })),
           catchError(httpResponseError => {
             const context = {
               action: 'loading',

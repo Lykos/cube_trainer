@@ -52,7 +52,6 @@ const trainingSession: TrainingSession = {
   id: trainingSessionId,
   name: 'test session',
   trainingCases: [item],
-  numResults: 0,
   known: false,
   showInputMode: ShowInputMode.Name,
   goalBadness: 2,

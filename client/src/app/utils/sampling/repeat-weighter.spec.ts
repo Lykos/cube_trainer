@@ -11,7 +11,7 @@ const emptyWeightState: WeightState = {
   badnessAverage: none,
 };
 
-fdescribe('RepeatWeighter', () => {
+describe('RepeatWeighter', () => {
   it('selects nothing if no item has been seen', () => {
     const weighter = new RepeatWeighter(2);
     expect(weighter.weight(emptyWeightState)).toEqual(0);
