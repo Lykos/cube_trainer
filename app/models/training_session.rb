@@ -91,10 +91,6 @@ class TrainingSession < ApplicationRecord
     used_training_sessions.find_by(training_session_type: training_session_type)
   end
 
-  def self.find_by_user_with_preloads(user)
-    user.training_sessions.preload(:alg_set, :alg_overrides)
-  end
-
   def alg_override(casee)
     alg_overrides.find { |alg| alg.casee == casee }
   end

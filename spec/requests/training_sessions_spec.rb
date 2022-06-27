@@ -33,7 +33,7 @@ RSpec.describe 'TrainingSessions', type: :request do
       parsed_body = JSON.parse(response.body)
       expect(parsed_body.length).to be(1)
       parsed_training_session = parsed_body.find { |p| p['id'] == training_session.id }.deep_symbolize_keys
-      expect(parsed_training_session).to include(show_input_mode: 'name', generator_type: 'case', buffer: { key: 'Edge:UF', name: 'UF' }, goal_badness: 1.0, cube_size: 3, known: false)
+      expect(parsed_training_session).to include(name: 'test_training_session')
     end
 
     it 'returns nothing for another user' do
