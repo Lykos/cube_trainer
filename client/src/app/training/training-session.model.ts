@@ -7,7 +7,6 @@ import { Part } from './part.model';
 export interface TrainingSession extends TrainingSessionBase {
   readonly memoTimeS?: number;
   readonly id: number;
-  readonly numResults: number;
   readonly trainingCases: readonly TrainingCase[];
   readonly stats: readonly RawStat[];
   readonly buffer?: Part;

@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { TrainingSession } from '@training/training-session.model';
+import { TrainingSessionSummary } from '@training/training-session-summary.model';
 import { TrainingCase } from '@training/training-case.model';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { AlgOverride } from '@training/alg-override.model';
@@ -16,7 +17,7 @@ export const initialLoadNop = createAction(
  
 export const initialLoadSuccess = createAction(
   '[TrainingSessions] initial load from server success',
-  props<{ trainingSessions: readonly TrainingSession[] }>()
+  props<{ trainingSessionSummaries: readonly TrainingSessionSummary[] }>()
 );
  
 export const initialLoadFailure = createAction(
@@ -56,22 +57,22 @@ export const createFailure = createAction(
 
 export const deleteClick = createAction(
   '[TrainingSessions] delete click',
-  props<{ trainingSession: TrainingSession }>()
+  props<{ trainingSession: TrainingSessionSummary }>()
 );
  
 export const dontDestroy = createAction(
   '[TrainingSessions] dont destroy',
-  props<{ trainingSession: TrainingSession }>()
+  props<{ trainingSession: TrainingSessionSummary }>()
 );
  
 export const destroy = createAction(
   '[TrainingSessions] destroy',
-  props<{ trainingSession: TrainingSession }>()
+  props<{ trainingSession: TrainingSessionSummary }>()
 );
  
 export const destroySuccess = createAction(
   '[TrainingSessions] destroy success',
-  props<{ trainingSession: TrainingSession }>()
+  props<{ trainingSession: TrainingSessionSummary }>()
 );
  
 export const destroyFailure = createAction(

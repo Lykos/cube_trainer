@@ -3,16 +3,16 @@ import { TrainingSessionsState } from './training-sessions.state';
 import { selectSelectedTrainingSessionId } from './router.selectors';
 import {
   selectTrainingSessionEntities as selectTrainingSessionEntitiesFunction,
-  selectAllTrainingSessions as selectAllTrainingSessionsFunction,
+  selectTrainingSessionSummaries as selectTrainingSessionSummariesFunction,
 } from './training-sessions.reducer';
 import { isBackendActionLoading, isBackendActionFailure, isBackendActionNotStarted, maybeBackendActionError } from '@shared/backend-action-state.model';
 import { flatMapOptional, ofNull } from '@utils/optional';
 
 export const selectTrainingSessionsState = createFeatureSelector<TrainingSessionsState>('trainingSessions');
 
-export const selectTrainingSessions = createSelector(
+export const selectTrainingSessionSummaries = createSelector(
   selectTrainingSessionsState,
-  selectAllTrainingSessionsFunction,
+  state => selectTrainingSessionSummariesFunction(state.trainingSessionSummaries),
 );
 
 export const selectInitialLoadLoading = createSelector(
@@ -37,7 +37,7 @@ export const selectIsInitialLoadFailureOrNotStarted = createSelector(
 
 export const selectTrainingSessionEntities = createSelector(
   selectTrainingSessionsState,
-  selectTrainingSessionEntitiesFunction,
+  state => selectTrainingSessionEntitiesFunction(state.trainingSessions),
 );
 
 export const selectSelectedTrainingSession = createSelector(
