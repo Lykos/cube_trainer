@@ -44,7 +44,7 @@
     "actioncable": "^5.2.6",
     "cubing": "^0.26.3",
     "file-saver": "^2.0.5",
-    "ngx-cookie-service": "^14.0.0",
+    "ngx-cookie-service": "^14.0.1",
     "ngx-filesaver": "^14.0.0",
     "rxjs": "^7.5.2",
     "tslib": "^2.3.0",
