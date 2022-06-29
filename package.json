@@ -57,7 +57,7 @@
     "@angular-eslint/eslint-plugin-template": "^14.0.0",
     "@angular-eslint/schematics": "^14.0.0",
     "@angular-eslint/template-parser": "^14.0.0",
-    "@angular/cli": "^14.0.0",
+    "@angular/cli": "^14.0.4",
     "@angular/compiler-cli": "^14.0.0",
     "@ngrx/schematics": "^14.0.0",
     "@types/actioncable": "^5.2.7",
