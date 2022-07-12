@@ -42,7 +42,7 @@
     "@ngrx/store-devtools": "^14.0.0",
     "@rxweb/reactive-form-validators": "^2.1.6",
     "actioncable": "^5.2.6",
-    "cubing": "^0.26.3",
+    "cubing": "^0.26.6",
     "file-saver": "^2.0.5",
     "ngx-cookie-service": "^14.0.1",
     "ngx-filesaver": "^14.0.0",
@@ -51,7 +51,7 @@
     "zone.js": "^0.11.6"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^14.0.0",
+    "@angular-devkit/build-angular": "^14.0.5",
     "@angular-eslint/builder": "^14.0.0",
     "@angular-eslint/eslint-plugin": "^14.0.0",
     "@angular-eslint/eslint-plugin-template": "^14.0.0",
@@ -64,7 +64,7 @@
     "@types/chai": "^4.2.22",
     "@types/file-saver": "^2.0.5",
     "@types/jasmine": "^4.0.3",
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.0.3",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
     "angular-http-server": "^1.10.0",
