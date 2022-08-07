@@ -1,5 +1,6 @@
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { TestBed, inject } from '@angular/core/testing';
 
 import { AngularTokenModule } from './angular-token.module';
@@ -24,6 +25,7 @@ describe('AngularTokenInterceptor', () => {
       imports: [
         HttpClientModule,
         HttpClientTestingModule,
+	RouterTestingModule,
         AngularTokenModule.forRoot(serviceConfig)
       ],
       providers: [
