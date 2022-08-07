@@ -393,3 +393,7 @@ RSpec/Capybara/SpecificMatcher: # new in 2.12
   Enabled: true
 RSpec/Rails/HaveHttpStatus: # new in 2.12
   Enabled: true
+Lint/RequireRangeParentheses: # new in 1.32
+  Enabled: true
+Style/EmptyHeredoc: # new in 1.32
+  Enabled: true
