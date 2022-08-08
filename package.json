@@ -61,7 +61,7 @@
     "@angular/compiler-cli": "^14.1.1",
     "@ngrx/schematics": "^14.0.0",
     "@types/actioncable": "^5.2.7",
-    "@types/chai": "^4.2.22",
+    "@types/chai": "^4.3.3",
     "@types/file-saver": "^2.0.5",
     "@types/jasmine": "^4.0.3",
     "@types/node": "^18.0.6",
