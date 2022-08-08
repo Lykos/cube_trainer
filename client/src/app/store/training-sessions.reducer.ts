@@ -111,7 +111,7 @@ export const trainingSessionsReducer = createReducer(
       ...trainingSessionState,
       createState: backendActionSuccessState,
       trainingSessions: adapter.addOne(trainingSession, trainingSessionState.trainingSessions),
-      trainingSessionSummaries: adapter.addOne(toEmptySummary(trainingSession), trainingSessionState.trainingSessionSummaries),
+      trainingSessionSummaries: summariesAdapter.addOne(toEmptySummary(trainingSession), trainingSessionState.trainingSessionSummaries),
     }
   }),
   on(createFailure, (trainingSessionState, { error }) => {
@@ -125,7 +125,7 @@ export const trainingSessionsReducer = createReducer(
       ...trainingSessionState,
       destroyState: backendActionSuccessState,
       trainingSessions: adapter.removeOne(trainingSession.id, trainingSessionState.trainingSessions),
-      trainingSessions: summariesAdapter.removeOne(trainingSession.id, trainingSessionState.trainingSessionSummaries),
+      trainingSessionSummaries: summariesAdapter.removeOne(trainingSession.id, trainingSessionState.trainingSessionSummaries),
     }
   }),
   on(destroyFailure, (trainingSessionState, { error }) => {
