@@ -37,6 +37,26 @@ module CasePattern
     end
   end
 
+  # A disjunction of two case patterns.
+  class Disjunction < CasePattern
+    def initialize(case_patterns)
+      super()
+      @case_patterns = case_patterns
+    end
+
+    def match?(casee)
+      @case_patterns.any? { |p| p.match?(casee) }
+    end
+
+    def bracketed_to_s
+      "(#{self})"
+    end
+
+    def to_s
+      @case_patterns.map(&:bracketed_to_s).join(' | ')
+    end
+  end
+
   # A part pattern that either matches an individial part or all parts.
   class PartPattern
     include Comparable
@@ -466,6 +486,12 @@ module CasePattern
       merge_groups(other)
     end
 
+    def |(other)
+      return self if other.is_a?(EmptyCasePattern)
+
+      Disjunction.new([self, other])
+    end
+
     def to_s
       "#{self.class.name.split('::').last}(#{@part_cycle_patterns.join(', ')}, " \
         "#{@ignore_same_face_center_cycles})"
@@ -560,6 +586,10 @@ module CasePattern
 
     def &(other)
       Conjunction.new([self, other])
+    end
+
+    def |(other)
+      Disjunction.new([self, other])
     end
   end
 
