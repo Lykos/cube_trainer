@@ -20,7 +20,7 @@ module CaseSets
     def refinements_matching(casee)
       return [] unless casee.part_cycles.length == 3
       return [] unless casee.part_cycles.all? { |c| c.length == 1 }
- 
+
       buffers = casee.part_cycles.map { |c| c.parts.first.rotations.min }
       buffers.map { |b| refinement(b) }
     end

@@ -25,7 +25,7 @@ module CasePattern
     end
 
     attr_reader :case_patterns
-    
+
     def bracketed_to_s
       "(#{self})"
     end

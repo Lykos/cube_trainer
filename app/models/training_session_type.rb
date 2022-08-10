@@ -199,6 +199,12 @@ class TrainingSessionType < ActiveModelSerializers::Model
             name: 'T-Center Commutators',
             default_cube_size: 5,
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::TCenter)
+          ),
+          TrainingSessionType.new(
+            id: :corner_3twists,
+            name: 'Corner 3 Twists with Buffer',
+            default_cube_size: 3,
+            case_set: CaseSets::ThreeTwistSet.new
           )
         ].freeze
         all.each(&:validate!)

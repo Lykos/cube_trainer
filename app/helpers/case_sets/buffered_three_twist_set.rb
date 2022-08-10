@@ -34,8 +34,8 @@ module CaseSets
       return false unless casee.part_cycles.length == 3
       return false unless casee.part_cycles.all? { |c| c.length == 1 }
 
-      direction = refinement_index == 0 ? 1 : 2
-      other_parts = casee.part_cycles.map { |c| c.parts.first }.select { |p| p != buffer }
+      direction = refinement_index.zero? ? 1 : 2
+      other_parts = casee.part_cycles.map { |c| c.parts.first }.reject { |p| p == buffer }
       other_parts.map { |p| row_pattern_for_part(p, direction) }.reduce(:|)
     end
 
