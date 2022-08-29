@@ -275,7 +275,10 @@ GEM
     rb-fsevent (0.11.1)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    redis (4.8.0)
+    redis (5.0.1)
+      redis-client (~> 0.7)
+    redis-client (0.7.1)
+      connection_pool
     regexp_parser (2.5.0)
     representable (3.2.0)
       declarative (< 0.1.0)
@@ -436,7 +439,7 @@ DEPENDENCIES
   rails (~> 6.1)
   rake
   rantly
-  redis (~> 4.8)
+  redis (~> 5.0)
   rspec
   rspec-prof
   rspec-rails
