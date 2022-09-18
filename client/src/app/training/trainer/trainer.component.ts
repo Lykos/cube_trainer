@@ -8,7 +8,7 @@ import { Store } from '@ngrx/store';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
 import { initialLoadSelected } from '@store/trainer.actions';
-import { selectNextCase } from '@store/trainer.selectors';
+import { selectCurrentCase, selectNextCase } from '@store/trainer.selectors';
 
 @Component({
   selector: 'cube-trainer-trainer',
@@ -17,7 +17,8 @@ import { selectNextCase } from '@store/trainer.selectors';
 export class TrainerComponent implements OnInit, OnDestroy {
   trainingSession?: TrainingSession;
   loading$: Observable<boolean>;
-  scrambleOrSample$: Observable<ScrambleOrSample>;
+  currentCase$: Observable<ScrambleOrSample>;
+  nextCase$: Observable<ScrambleOrSample>;
   error$: Observable<BackendActionError>;
 
   private trainingSession$: Observable<TrainingSession>
@@ -29,7 +30,8 @@ export class TrainerComponent implements OnInit, OnDestroy {
       filterPresent(),
     );
     this.loading$ = this.store.select(selectInitialLoadLoading);
-    this.scrambleOrSample$ = this.store.select(selectNextCase).pipe(filterPresent());
+    this.currentCase$ = this.store.select(selectCurrentCase).pipe(filterPresent());
+    this.nextCase$ = this.store.select(selectNextCase).pipe(filterPresent());
     this.error$ = this.store.select(selectInitialLoadError).pipe(filterPresent());
   }
 

@@ -130,11 +130,11 @@ describe('TrainerComponentIntegration', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     const debug = fixture.debugElement;
-    expect(compiled.querySelector('#trainer-input')?.textContent).toContain('test case name');
     expect(compiled.querySelector('#trainer-stopwatch')?.textContent).toContain('0');
     debug.query(By.css('#stopwatch-start')).triggerEventHandler('click', null);
     fixture.detectChanges();
 
+    expect(compiled.querySelector('#trainer-input')?.textContent).toContain('test case name');
     tick(100);
     fixture.detectChanges();
     expect(compiled.querySelector('#trainer-stopwatch')?.textContent).toContain('0.1');

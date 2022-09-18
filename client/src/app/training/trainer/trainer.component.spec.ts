@@ -12,7 +12,7 @@ import { TrainerService } from '../trainer.service';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { of } from 'rxjs';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
-import { selectNextCase } from '@store/trainer.selectors';
+import { selectNextCase, selectCurrentCase } from '@store/trainer.selectors';
 import { none, some } from '@utils/optional';
 import { BackendActionLoadErrorComponent } from '@shared/backend-action-load-error/backend-action-load-error.component';
 import { ScrambleOrSample } from '../scramble-or-sample.model';
@@ -103,6 +103,7 @@ describe('TrainerComponent', () => {
     store.overrideSelector(selectInitialLoadLoading, true);
     store.overrideSelector(selectInitialLoadError, none);
     store.overrideSelector(selectNextCase, none);
+    store.overrideSelector(selectCurrentCase, none);
     const fixture = TestBed.createComponent(TrainerComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
@@ -114,21 +115,35 @@ describe('TrainerComponent', () => {
     store.overrideSelector(selectInitialLoadLoading, false);
     store.overrideSelector(selectInitialLoadError, some(exampleError('stuff went wrong')));
     store.overrideSelector(selectNextCase, none);
+    store.overrideSelector(selectCurrentCase, none);
     const fixture = TestBed.createComponent(TrainerComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('#initial-load-error')?.textContent).toContain('stuff went wrong');
   });
 
-  it('should display the input and stopwatch if a case was loaded', () => {
+  it('should display the stopwatch if a case was loaded', () => {
     store.overrideSelector(selectSelectedTrainingSession, some(trainingSession));
     store.overrideSelector(selectInitialLoadLoading, false);
     store.overrideSelector(selectInitialLoadError, none);
     store.overrideSelector(selectNextCase, some(scrambleOrSample));
+    store.overrideSelector(selectCurrentCase, none);
     const fixture = TestBed.createComponent(TrainerComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('#trainer-input')?.textContent).toContain('test case name');
     expect(compiled.querySelector('#trainer-stopwatch')?.textContent).toContain('0');
+  });
+
+  it('should display case if the stopwatch is running', () => {
+    store.overrideSelector(selectSelectedTrainingSession, some(trainingSession));
+    store.overrideSelector(selectInitialLoadLoading, false);
+    store.overrideSelector(selectInitialLoadError, none);
+    store.overrideSelector(selectNextCase, some(scrambleOrSample));
+    store.overrideSelector(selectCurrentCase, some(scrambleOrSample));
+    const fixture = TestBed.createComponent(TrainerComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('#trainer-stopwatch')?.textContent).toContain('0');
+    expect(compiled.querySelector('#trainer-input')?.textContent).toContain('test case name');
   });
 });

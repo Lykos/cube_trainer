@@ -48,6 +48,7 @@ export interface ResultsState extends EntityState<Result> {
   readonly stopwatchState: StopwatchState;
   readonly hintActive: boolean;
   readonly nextCase: Optional<ScrambleOrSample>;
+  readonly currentCase: Optional<ScrambleOrSample>;
   readonly startAfterLoading: boolean;
 
   readonly intermediateWeightStates: readonly CaseAndIntermediateWeightState[];

@@ -46,7 +46,7 @@ import { now, fromUnixMillis } from '@utils/instant';
 import {
   selectTrainingSessionAndSamplingStateById,
   selectIsInitialLoadNecessaryById,
-  selectNextCaseAndHintActiveById,
+  selectCurrentCaseAndHintActiveById,
   selectStopwatchState,
   selectStartAfterLoading,
 } from '@store/trainer.selectors';
@@ -279,10 +279,10 @@ export class TrainerEffects {
   stopStopwatchSuccess$ = createEffect(() =>
     this.actions$.pipe(
       ofType(stopStopwatchSuccess),
-      concatLatestFrom(() => this.store.select(selectNextCaseAndHintActiveById)),
+      concatLatestFrom(() => this.store.select(selectCurrentCaseAndHintActiveById)),
       flatMap(([action, lolMap]) => {
-        const { nextCase, hintActive } = lolMap.get(action.trainingSessionId)!;
-        const scrambleOrSample = forceValue(nextCase);
+        const { currentCase, hintActive } = lolMap.get(action.trainingSessionId)!;
+        const scrambleOrSample = forceValue(currentCase);
         const duration = millis(action.durationMillis);
         const newResult: NewResult = {
           casee: casee(scrambleOrSample),
