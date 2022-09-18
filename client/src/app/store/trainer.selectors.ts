@@ -46,19 +46,19 @@ export const selectIsInitialLoadNecessaryById = createSelector(
   },
 );
 
-interface NextCaseAndHintActive {
-  readonly nextCase: Optional<ScrambleOrSample>;
+interface CurrentCaseAndHintActive {
+  readonly currentCase: Optional<ScrambleOrSample>;
   readonly hintActive: boolean;
 };
 
-export const selectNextCaseAndHintActiveById = createSelector(
+export const selectCurrentCaseAndHintActiveById = createSelector(
   selectTrainerAll,
   trainerAll => {
-    const map = new Map<number, NextCaseAndHintActive>();
+    const map = new Map<number, CurrentCaseAndHintActive>();
     for (let resultsState of trainerAll) {
-      const nextCase = resultsState.nextCase;
+      const currentCase = resultsState.currentCase;
       const hintActive = resultsState.hintActive;
-      map.set(resultsState.trainingSessionId, { nextCase, hintActive });
+      map.set(resultsState.trainingSessionId, { currentCase, hintActive });
     }
     return map;
   },
@@ -200,6 +200,11 @@ export const selectInitialLoadLoading = createSelector(
 export const selectNextCase = createSelector(
   selectResultsState,
   maybeRs => flatMapOptional(maybeRs, rs => rs.nextCase),
+);
+
+export const selectCurrentCase = createSelector(
+  selectResultsState,
+  maybeRs => flatMapOptional(maybeRs, rs => rs.currentCase),
 );
 
 export const selectNextCaseReady = createSelector(

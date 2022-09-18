@@ -1,4 +1,4 @@
-<div>
+<header>
   <mat-toolbar color="primary">
     <ng-container *ngIf="loggedIn$ | async">
       <a id="toolbar-title" mat-button routerLink="/training-sessions">
@@ -24,4 +24,4 @@
     </ng-template>
   </mat-toolbar>
   <cube-trainer-navigation-bar *ngIf="loggedIn$ | async"></cube-trainer-navigation-bar>
-<div>
+<header>

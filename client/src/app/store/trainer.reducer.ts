@@ -149,6 +149,7 @@ export const trainerReducer = createReducer(
       markDnfState: backendActionNotStartedState,
       loadNextCaseState: backendActionNotStartedState,
       nextCase: none,
+      currentCase: none,
       stopwatchState: initialStopwatchState,
       hintActive: false,
       startAfterLoading: false,
@@ -266,9 +267,9 @@ export const trainerReducer = createReducer(
     }, trainerState);
   }),
   on(startStopwatch, (trainerState, { trainingSessionId, startUnixMillis }) => {
-    return trainerAdapter.updateOne({
+    return trainerAdapter.mapOne({
       id: trainingSessionId,
-      changes: { stopwatchState: runningStopwatchState(startUnixMillis), hintActive: false }
+      map: resultsState => ({ ...resultsState, currentCase: resultsState.nextCase, stopwatchState: runningStopwatchState(startUnixMillis), hintActive: false }),
     }, trainerState);
   }),
   on(stopStopwatchSuccess, (trainerState, { trainingSessionId, durationMillis }) => {
