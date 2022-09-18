@@ -2,18 +2,29 @@
   <ng-container *ngIf="trainingSession">
     <div layout="row" layout-sm="column">
       <div flex *ngIf="nextCase$ | async as nextCase">
-	<ng-container *ngIf="currentCase$ | async as currentCase">
+	<ng-container *ngIf="nextCase.tag !== 'sample'">
           <div id="trainer-input">
             <cube-trainer-trainer-input
-              [scrambleOrSample]="currentCase"
-              [trainingSession]="trainingSession">
+	      [scrambleOrSample]="nextCase"
+	      [trainingSession]="trainingSession">
             </cube-trainer-trainer-input>
           </div>
-          <ng-container *ngIf="currentCase.tag === 'sample'">
-            <cube-trainer-hint
-              [trainingCase]="currentCase.sample.item"
-              [trainingSession]="trainingSession">
-            </cube-trainer-hint>
+	</ng-container>
+	<ng-container *ngIf="nextCase.tag === 'sample'">
+	  <ng-container *ngIf="currentCase$ | async as currentCase">
+            <div id="trainer-input">
+              <cube-trainer-trainer-input
+		[scrambleOrSample]="currentCase"
+		[trainingSession]="trainingSession">
+              </cube-trainer-trainer-input>
+            </div>
+	    <!-- Note that this if will always be true in practice because the currentCase and nextCase will always have the same tag. -->
+	    <ng-container *ngIf="currentCase.tag === 'sample'">
+              <cube-trainer-hint
+		[trainingCase]="currentCase.sample.item"
+		[trainingSession]="trainingSession">
+              </cube-trainer-hint>
+	    </ng-container>
           </ng-container>
 	</ng-container>
         <div id="trainer-stopwatch">
