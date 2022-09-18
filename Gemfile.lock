@@ -65,8 +65,8 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
-    addressable (2.8.0)
-      public_suffix (>= 2.0.2, < 5.0)
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
     bcrypt (3.1.18)
     bindex (0.8.1)
@@ -98,10 +98,10 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
-    devise_token_auth (1.2.0)
+    devise_token_auth (1.2.1)
       bcrypt (~> 3.0)
       devise (> 3.5.2, < 5)
-      rails (>= 4.2.0, < 6.2)
+      rails (>= 4.2.0, < 7.1)
     diff-lcs (1.5.0)
     docile (1.4.0)
     domain_name (0.5.20190701)
@@ -179,7 +179,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2022.0105)
     mini_mime (1.1.2)
-    minitest (5.16.2)
+    minitest (5.16.3)
     msgpack (1.5.4)
     multi_json (1.15.0)
     multi_xml (0.6.0)
@@ -232,7 +232,7 @@ GEM
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    public_suffix (4.0.7)
+    public_suffix (5.0.0)
     puma (5.6.5)
       nio4r (~> 2.0)
     racc (1.6.0)
@@ -275,7 +275,10 @@ GEM
     rb-fsevent (0.11.1)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-    redis (4.8.0)
+    redis (5.0.4)
+      redis-client (>= 0.7.4)
+    redis-client (0.8.0)
+      connection_pool
     regexp_parser (2.5.0)
     representable (3.2.0)
       declarative (< 0.1.0)
@@ -315,7 +318,7 @@ GEM
       rspec-mocks (~> 3.10)
       rspec-support (~> 3.10)
     rspec-support (3.11.0)
-    rubocop (1.35.1)
+    rubocop (1.36.0)
       json (~> 2.3)
       parallel (~> 1.10)
       parser (>= 3.1.2.1)
@@ -327,17 +330,17 @@ GEM
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.21.0)
       parser (>= 3.1.1.0)
-    rubocop-performance (1.14.3)
+    rubocop-performance (1.15.0)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
-    rubocop-rails (2.15.2)
+    rubocop-rails (2.16.0)
       activesupport (>= 4.2.0)
       rack (>= 1.1)
-      rubocop (>= 1.7.0, < 2.0)
+      rubocop (>= 1.33.0, < 2.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
-    rubocop-rspec (2.12.1)
-      rubocop (~> 1.31)
+    rubocop-rspec (2.13.1)
+      rubocop (~> 1.33)
     ruby-filemagic (0.7.3)
     ruby-prof (1.4.3)
     ruby-progressbar (1.11.0)
@@ -399,9 +402,9 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    wombat (2.10.0)
+    wombat (3.0.0)
       activesupport
-      mechanize
+      mechanize (~> 2.8.5)
       rest-client
     xdg (5.3.0)
     xpath (3.2.0)
@@ -419,7 +422,7 @@ DEPENDENCIES
   capybara (>= 2.15)
   colorize
   devise (~> 4.8.0, >= 4.8.0)
-  devise_token_auth (~> 1.2.0, >= 1.2.0)
+  devise_token_auth (~> 1.2.1)
   google-api-client
   googleauth
   listen (>= 3.0.5, < 3.8)
@@ -436,11 +439,11 @@ DEPENDENCIES
   rails (~> 6.1)
   rake
   rantly
-  redis (~> 4.8)
+  redis (~> 5.0)
   rspec
   rspec-prof
   rspec-rails
-  rubocop (~> 1.35)
+  rubocop (~> 1.36)
   rubocop-performance
   rubocop-rails
   rubocop-rake

@@ -14,7 +14,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 group :development, :test, :production do
   # For authentication
   gem 'devise', '~>4.8.0', '>=4.8.0'
-  gem 'devise_token_auth', '~>1.2.0', '>=1.2.0'
+  gem 'devise_token_auth', '~>1.2.1'
   gem 'omniauth-apple'
   gem 'omniauth-facebook'
   gem 'omniauth-github'
@@ -68,7 +68,7 @@ end
 
 group :production do
   # Use Redis adapter to run Action Cable in production
-  gem 'redis', '~> 4.8'
+  gem 'redis', '~> 5.0'
 end
 
 group :development do
@@ -86,7 +86,7 @@ group :development do
 end
 
 group :rubocop do
-  gem 'rubocop', '~> 1.35', require: false
+  gem 'rubocop', '~> 1.36', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rake', require: false
