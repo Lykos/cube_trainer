@@ -14,7 +14,7 @@ describe 'signup', type: :system do
 
     fill_in 'Username', with: 'system test user'
     fill_in 'Email', with: 'system_test+signup@example.org'
-    find('#password').fill_in 'Password', with: 'password'
+    find_by_id('password').fill_in 'Password', with: 'password'
     fill_in 'Confirm Password', with: 'password'
     find(:css, '#cube-trainer-terms-and-conditions-accepted').set(true)
     find(:css, '#cube-trainer-privacy-policy-accepted').set(true)

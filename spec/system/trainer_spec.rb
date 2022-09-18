@@ -11,6 +11,7 @@ describe 'trainer', type: :system do
     driven_by(:selenium_chrome_headless)
   end
 
+  # rubocop:disable RSpec/NoExpectationExample
   it 'allows to train' do
     login(user)
 
@@ -22,4 +23,5 @@ describe 'trainer', type: :system do
     click_button 'Stop and Start'
     click_button 'Stop and Pause'
   end
+  # rubocop:enable RSpec/NoExpectationExample
 end
