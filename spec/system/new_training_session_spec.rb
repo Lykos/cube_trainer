@@ -33,25 +33,25 @@ describe 'new training session', type: :system do
 
     fill_in 'Name', with: 'system test training session'
     mat_select 'Edge Commutators', from: 'trainingSessionType'
-    expect(find('#training-session-type-id', visible: :all)).to have_text(:all, 'edge_commutators')
+    expect(find_by_id('training-session-type-id', visible: :all)).to have_text(:all, 'edge_commutators')
     before_next_sleep
     within('#training-session-type-group-actions') { click_button 'Next' }
 
     mat_select 'UF', from: 'buffer'
-    expect(find('#buffer', visible: :all)).to have_text(:all, 'UF')
+    expect(find_by_id('buffer', visible: :all)).to have_text(:all, 'UF')
     before_next_sleep
     within('#setup-group-actions') { click_button 'Next' }
 
     mat_select 'Testy Testikow', id: 'alg-set-select'
     find(:css, '#exclude-alg-holes').set(true)
-    expect(find('#exclude-alg-holes-value', visible: :all)).to have_text(:all, 'true')
+    expect(find_by_id('exclude-alg-holes-value', visible: :all)).to have_text(:all, 'true')
     before_next_sleep
     within('#alg-set-group-actions') { click_button 'Next' }
 
     mat_select 'picture', from: 'showInputMode'
     fill_in 'Goal Time per Element', with: '2.0'
-    expect(find('#show-input-mode', visible: :all)).to have_text(:all, 'picture')
-    expect(find('#goal-badness', visible: :all)).to have_text(:all, '2')
+    expect(find_by_id('show-input-mode', visible: :all)).to have_text(:all, 'picture')
+    expect(find_by_id('goal-badness', visible: :all)).to have_text(:all, '2')
     before_next_sleep
     within('#training-group-actions') { click_button 'Next' }
 
@@ -71,23 +71,23 @@ describe 'new training session', type: :system do
 
     fill_in 'Name', with: 'system test training session'
     mat_select 'Corner Commutators', from: 'trainingSessionType'
-    expect(find('#training-session-type-id', visible: :all)).to have_text(:all, 'corner_commutators')
+    expect(find_by_id('training-session-type-id', visible: :all)).to have_text(:all, 'corner_commutators')
     before_next_sleep
     within('#training-session-type-group-actions') { click_button 'Next' }
 
     within('#cube-size-input') do
       fill_in 'Cube Size', with: '3'
     end
-    expect(find('#cube-size', visible: :all)).to have_text(:all, '3')
+    expect(find_by_id('cube-size', visible: :all)).to have_text(:all, '3')
     mat_select 'ULB', from: 'buffer'
-    expect(find('#buffer', visible: :all)).to have_text(:all, 'ULB')
+    expect(find_by_id('buffer', visible: :all)).to have_text(:all, 'ULB')
     before_next_sleep
     within('#setup-group-actions') { click_button 'Next' }
 
     mat_select 'name', from: 'showInputMode'
     fill_in 'Goal Time per Element', with: '2.0'
-    expect(find('#show-input-mode', visible: :all)).to have_text(:all, 'name')
-    expect(find('#goal-badness', visible: :all)).to have_text(:all, '2')
+    expect(find_by_id('show-input-mode', visible: :all)).to have_text(:all, 'name')
+    expect(find_by_id('goal-badness', visible: :all)).to have_text(:all, '2')
     before_next_sleep
     within('#training-group-actions') { click_button 'Next' }
 
@@ -107,19 +107,19 @@ describe 'new training session', type: :system do
 
     fill_in 'Name', with: 'system test training session'
     mat_select 'Memo Rush', from: 'trainingSessionType'
-    expect(find('#training-session-type-id', visible: :all)).to have_text(:all, 'memo_rush')
+    expect(find_by_id('training-session-type-id', visible: :all)).to have_text(:all, 'memo_rush')
     before_next_sleep
     within('#training-session-type-group-actions') { click_button 'Next' }
 
     within('#cube-size-input') do
       fill_in 'Cube Size', with: '3'
     end
-    expect(find('#cube-size', visible: :all)).to have_text(:all, '3')
+    expect(find_by_id('cube-size', visible: :all)).to have_text(:all, '3')
     before_next_sleep
     within('#setup-group-actions') { click_button 'Next' }
 
     fill_in 'Memo Time', with: '20.0'
-    expect(find('#memo-time-s', visible: :all)).to have_text(:all, '20')
+    expect(find_by_id('memo-time-s', visible: :all)).to have_text(:all, '20')
     before_next_sleep
     within('#training-group-actions') { click_button 'Next' }
 

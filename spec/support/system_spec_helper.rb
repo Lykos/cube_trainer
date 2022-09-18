@@ -4,7 +4,7 @@ def login(user)
   raise ArgumentError unless user.name && user.password && user.email
 
   visit ''
-  find('#toolbar-login').click
+  find_by_id('toolbar-login').click
   fill_in 'Email', with: user.email
   fill_in 'Password', with: user.password
   click_button 'Submit'

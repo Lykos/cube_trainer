@@ -15,7 +15,7 @@ xdescribe 'reset_password', type: :system do
     email = user.email
     name = user.name
     visit ''
-    find('#toolbar-login').click
+    find_by_id('toolbar-login').click
     click_link 'Password Forgotten'
 
     fill_in 'Email', with: email
@@ -30,7 +30,7 @@ xdescribe 'reset_password', type: :system do
     visit update_path
     expect(page).to have_text('Update Password')
 
-    find('#update-password').fill_in 'Password', with: 'password2'
+    find_by_id('update-password').fill_in 'Password', with: 'password2'
     fill_in 'Confirm Password', with: 'password2'
     click_button 'Submit'
 

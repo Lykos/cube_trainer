@@ -95,7 +95,7 @@ describe 'trainer hint', type: :system, skip_on_ci: true do
 
     click_button 'Reveal'
     click_button 'Override'
-    find('#override-alg-input').fill_in 'Alg Override', with: alternative_alg(picked_case)
+    find_by_id('override-alg-input').fill_in 'Alg Override', with: alternative_alg(picked_case)
     within('#override-alg-dialog') { click_button 'Override' }
     expect(page).to have_text("Alg for #{picked_case} overridden")
 

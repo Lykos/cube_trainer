@@ -7,7 +7,7 @@ module CaseSets
     def self.class_by_name(name)
       @classes_by_name ||= [
         BufferedThreeCycleSet, BufferedParitySet, BufferedParityTwistSet,
-        ConcreteFloatingTwoTwistSet
+        ConcreteFloatingTwoTwistSet, BufferedThreeTwistSet
       ].index_by do |e|
         simple_class_name(e)
       end.freeze

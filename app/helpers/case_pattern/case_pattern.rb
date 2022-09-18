@@ -17,23 +17,53 @@ module CasePattern
     end
   end
 
-  # A conjunction of two case patterns.
-  class Conjunction < CasePattern
+  # A case pattern that is based on a sequence of children like a disjunction or conjunction.
+  class AbstractSequenceBasedCasePattern < CasePattern
     def initialize(case_patterns)
       super()
       @case_patterns = case_patterns
     end
 
-    def match?(casee)
-      @case_patterns.all? { |p| p.match?(casee) }
-    end
+    attr_reader :case_patterns
 
     def bracketed_to_s
       "(#{self})"
     end
 
     def to_s
-      @case_patterns.map(&:bracketed_to_s).join(' & ')
+      @case_patterns.map(&:bracketed_to_s).join(" #{join_symbol} ")
+    end
+
+    def eql?(other)
+      self.class.equal?(other.class) && @case_patterns == other.case_patterns
+    end
+
+    alias == eql?
+
+    def hash
+      self.class.hash
+    end
+  end
+
+  # A conjunction of two case patterns.
+  class Conjunction < AbstractSequenceBasedCasePattern
+    def match?(casee)
+      @case_patterns.all? { |p| p.match?(casee) }
+    end
+
+    def join_symbol
+      '&'
+    end
+  end
+
+  # A disjunction of two case patterns.
+  class Disjunction < AbstractSequenceBasedCasePattern
+    def match?(casee)
+      @case_patterns.any? { |p| p.match?(casee) }
+    end
+
+    def join_symbol
+      '|'
     end
   end
 
@@ -466,6 +496,12 @@ module CasePattern
       merge_groups(other)
     end
 
+    def |(other)
+      return self if other.is_a?(EmptyCasePattern)
+
+      Disjunction.new([self, other])
+    end
+
     def to_s
       "#{self.class.name.split('::').last}(#{@part_cycle_patterns.join(', ')}, " \
         "#{@ignore_same_face_center_cycles})"
@@ -560,6 +596,10 @@ module CasePattern
 
     def &(other)
       Conjunction.new([self, other])
+    end
+
+    def |(other)
+      Disjunction.new([self, other])
     end
   end
 
