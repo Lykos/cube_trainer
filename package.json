@@ -42,7 +42,7 @@
     "@ngrx/store-devtools": "^14.3.1",
     "@rxweb/reactive-form-validators": "^2.1.6",
     "actioncable": "^5.2.6",
-    "cubing": "^0.28.0",
+    "cubing": "^0.29.1",
     "file-saver": "^2.0.5",
     "ngx-cookie-service": "^14.0.1",
     "ngx-filesaver": "^14.0.0",
