@@ -34,7 +34,9 @@ import { trainerReducer } from '@store/trainer.reducer';
 import { overrideSelectedTrainingSessionIdForTesting } from '@store/router.selectors';
 import { EffectsModule } from '@ngrx/effects';
 import { TrainingSessionsEffects } from '@effects/training-sessions.effects';
+import { StatsTableComponent } from '@training/stats-table/stats-table.component';
 import { TrainerEffects } from '@effects/trainer.effects';
+import { routerReducer } from '@ngrx/router-store';
 
 const item: TrainingCase = {
   casee: {
@@ -80,6 +82,7 @@ describe('TrainerComponentIntegration', () => {
         ResultsTableComponent,
         DurationPipe,
         FluidInstantPipe,
+	StatsTableComponent,
         InstantPipe,
         BackendActionLoadErrorComponent,
       ],
@@ -95,6 +98,7 @@ describe('TrainerComponentIntegration', () => {
           {
             trainingSessions: trainingSessionsReducer,
             trainer: trainerReducer,
+	    router: routerReducer,
           },
         ),
         EffectsModule.forRoot([TrainingSessionsEffects, TrainerEffects]),

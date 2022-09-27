@@ -130,7 +130,7 @@ const trainingSessionWithEscapedAlg: TrainingSession = {
   trainingCases: [escapedItem, multiEscapedItem, multilineItem, emptyItem],
 }
 
-fdescribe('AlgSetComponent', () => {
+describe('AlgSetComponent', () => {
   let fileSaverService: any;
   let store: MockStore;
 

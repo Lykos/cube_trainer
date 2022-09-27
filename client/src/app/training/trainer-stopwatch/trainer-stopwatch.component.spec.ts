@@ -10,6 +10,7 @@ import { selectStopwatchState, selectStopwatchRunning, selectNextCaseReady } fro
 import { notStartedStopwatchState, runningStopwatchState, stoppedStopwatchState } from '@store/trainer.state';
 import { TrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { GeneratorType } from '../generator-type.model';import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const trainingSession: TrainingSession = {
@@ -37,6 +38,7 @@ describe('TrainerStopwatchComponent', () => {
       ],
       imports: [
         MatProgressSpinnerModule,
+	MatTooltipModule,
       ],
       providers: [
         provideMockStore({}),

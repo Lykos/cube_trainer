@@ -7,6 +7,7 @@ import { TrainerStopwatchComponent } from '@training/trainer-stopwatch/trainer-s
 import { StopwatchComponent } from '@training/stopwatch/stopwatch.component';
 import { HintComponent } from '@training/hint/hint.component';
 import { ResultsTableComponent } from '@training/results-table/results-table.component';
+import { StatsTableComponent } from '@training/stats-table/stats-table.component';
 import { DurationPipe } from '@shared/duration.pipe';
 import { TrainerService } from '../trainer.service';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
@@ -21,6 +22,7 @@ import { TrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
 import { GeneratorType } from '../generator-type.model';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 function exampleError(message: string) {
   return {
@@ -72,6 +74,7 @@ describe('TrainerComponent', () => {
         TrainerComponent,
         TrainerInputComponent,
         TrainerStopwatchComponent,
+	StatsTableComponent,
         StopwatchComponent,
         HintComponent,
         ResultsTableComponent,
@@ -80,6 +83,7 @@ describe('TrainerComponent', () => {
       ],
       imports: [
         MatProgressSpinnerModule,
+        MatTooltipModule,
       ],
       providers: [
         { provide: ActivatedRoute, useValue: { params: of({ trainingSessionId: 1 }) } },
