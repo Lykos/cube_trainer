@@ -1,0 +1,29 @@
+<div>
+  <ng-container *ngIf="(loading$ | async) === false">
+    <ng-container *ngIf="(error$ | async) === null">
+      <table id="alg-set-table" mat-table class="mat-elevation-z2" [dataSource]="trainingCases$" [trackBy]="trainingCaseKey">
+        <ng-container matColumnDef="case">
+          <th mat-header-cell *matHeaderCellDef> Case </th>
+          <td mat-cell *matCellDef="let trainingCase" [matTooltip]="trainingCase.casee.rawName"> {{ trainingCase.casee.name }} </td>
+        </ng-container>
+        <ng-container matColumnDef="alg">
+          <th mat-header-cell *matHeaderCellDef> Alg </th>
+          <td mat-cell *matCellDef="let trainingCase"> {{ trainingCase.alg }} </td>
+        </ng-container>
+        <ng-container matColumnDef="algSource">
+          <th mat-header-cell *matHeaderCellDef> Alg Source </th>
+          <td mat-cell *matCellDef="let trainingCase"> {{ trainingCase.algSource?.tag }} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
+        <tr mat-row *matRowDef="let trainingCase; columns: columnsToDisplay"></tr>
+      </table>
+      <button mat-raised-button id="download-alg-set-csv" color="primary" (click)="onDownloadAlgSetCsv()">
+        Download as CSV
+      </button>
+    </ng-container>
+  </ng-container>
+  <div id="alg-set-initial-load-error" *ngIf="error$ | async as error">
+    <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
+  </div>
+  <mat-spinner id="alg-set-initial-load-loading" *ngIf="loading$ | async"></mat-spinner>
+</div>
