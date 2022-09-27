@@ -21,6 +21,7 @@ import { ConfirmEmailComponent } from '@core/confirm-email/confirm-email.compone
 import { TrainingSessionsComponent } from './training/training-sessions/training-sessions.component';
 import { NewTrainingSessionComponent } from './training/new-training-session/new-training-session.component';
 import { TrainerComponent } from './training/trainer/trainer.component';
+import { AlgSetComponent } from './training/alg-set/alg-set.component';
 import { WelcomeComponent } from '@core/welcome/welcome.component';
 import { AboutComponent } from '@core/about/about.component';
 import { CookiePolicyComponent } from '@core/cookie-policy/cookie-policy.component';
@@ -55,6 +56,7 @@ const routes: Routes = [
   { path: 'letter-scheme', component: EditLetterSchemeComponent, canActivate: [AngularTokenService] },
   { path: 'training-sessions/new', component: NewTrainingSessionComponent, canActivate: [AngularTokenService] },
   { path: 'training-sessions/:trainingSessionId', component: TrainerComponent, canActivate: [AngularTokenService] },
+  { path: 'alg-sets/:trainingSessionId', component: AlgSetComponent, canActivate: [AngularTokenService] },
   { path: 'about', component: AboutComponent },
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
   { path: 'contact', component: ContactComponent },
