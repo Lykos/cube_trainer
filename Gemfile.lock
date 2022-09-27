@@ -202,7 +202,7 @@ GEM
       hashie (>= 3.4.6)
       rack (>= 2.2.3)
       rack-protection
-    omniauth-apple (1.1.0)
+    omniauth-apple (1.2.0)
       jwt
       omniauth-oauth2
       rack-protection (~> 2.0)
