@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { distinctUntilChanged, map, take } from 'rxjs/operators';
+import { setAlgClick, overrideAlgClick } from '@store/training-sessions.actions';
+import { distinctUntilChanged, take } from 'rxjs/operators';
 import { filterPresent } from '@shared/operators';
+import { TrainingSession } from '../training-session.model';
 import { TrainingCase } from '../training-case.model';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -36,17 +38,16 @@ function toCsv(table: string[][]): string {
   styleUrls: ['./alg-set.component.css']
 })
 export class AlgSetComponent implements OnInit {
-  columnsToDisplay = ['case', 'alg', 'algSource'];
-  trainingCases$: Observable<readonly TrainingCase[]>;
+  columnsToDisplay = ['case', 'alg', 'algSource', 'button'];
+  trainingSession$: Observable<TrainingSession>;
   loading$: Observable<boolean>;
   error$: Observable<BackendActionError>;
 
   constructor(private readonly store: Store,
               private readonly fileSaverService: FileSaverService) {
-    this.trainingCases$ = this.store.select(selectSelectedTrainingSession).pipe(
+    this.trainingSession$ = this.store.select(selectSelectedTrainingSession).pipe(
       distinctUntilChanged(),
       filterPresent(),
-      map(m => m.trainingCases),
     );
     this.loading$ = this.store.select(selectInitialLoadLoading);
     this.error$ = this.store.select(selectInitialLoadError).pipe(filterPresent());
@@ -57,10 +58,10 @@ export class AlgSetComponent implements OnInit {
   }
 
   onDownloadAlgSetCsv() {
-    this.trainingCases$.pipe(
+    this.trainingSession$.pipe(
       take(1),
-    ).subscribe(trainingCases => {
-      const table = trainingCases.map(t => [t.casee.name, t.alg || '']);
+    ).subscribe(trainingSession => {
+      const table = trainingSession.trainingCases.map(t => [t.casee.name, t.alg || '']);
       const blob = new Blob([toCsv(table)], {type: "text/csv;charset=utf-8"});
       this.fileSaverService.save(blob, 'alg-set.csv');
     });
@@ -68,5 +69,13 @@ export class AlgSetComponent implements OnInit {
 
   ngOnInit() {
     this.store.dispatch(initialLoadSelected());
+  }
+
+  onSet(trainingSession: TrainingSession, trainingCase: TrainingCase) {
+    this.store.dispatch(setAlgClick({ trainingSession, trainingCase }));
+  }
+
+  onOverride(trainingSession: TrainingSession, trainingCase: TrainingCase) {
+    this.store.dispatch(overrideAlgClick({ trainingSession, trainingCase }));
   }
 }
