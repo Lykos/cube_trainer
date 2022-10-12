@@ -24,7 +24,7 @@
     "lint": "ng lint"
   },
   "dependencies": {
-    "@angular/animations": "^14.2.2",
+    "@angular/animations": "^14.2.6",
     "@angular/cdk": "^14.2.2",
     "@angular/common": "^14.2.2",
     "@angular/compiler": "^14.2.2",
@@ -65,7 +65,7 @@
     "@types/chai": "^4.3.3",
     "@types/file-saver": "^2.0.5",
     "@types/jasmine": "^4.0.3",
-    "@types/node": "^18.7.23",
+    "@types/node": "^18.8.4",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
     "angular-http-server": "^1.11.1",
