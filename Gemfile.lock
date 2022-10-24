@@ -311,7 +311,7 @@ GEM
     rspec-prof (0.0.7)
       rspec (~> 3.0)
       ruby-prof
-    rspec-rails (6.0.0)
+    rspec-rails (6.0.1)
       actionpack (>= 6.1)
       activesupport (>= 6.1)
       railties (>= 6.1)
