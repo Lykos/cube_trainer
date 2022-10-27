@@ -17,17 +17,17 @@ class AlgOverridesController < ApplicationController
   end
 
   # POST /api/training_sessions/1/alg_overrides.json
+  def show
+    render json: @alg_override, status: :ok
+  end
+
+  # GET /api/training_sessions/1/alg_overrides/1.json
   def create
     if @alg_override.save
       render json: @alg_override, status: :ok
     else
       render json: @alg_override.errors, status: :unprocessable_entity
     end
-  end
-
-  # GET /api/training_sessions/1/alg_overrides/1.json
-  def show
-    render json: @alg_override, status: :ok
   end
 
   # PATCH/PUT /api/training_sessions/1/alg_overrides/1.json

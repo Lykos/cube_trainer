@@ -2,6 +2,6 @@
 
 require 'rails_helper'
 
-RSpec.describe TrainingSession, type: :model do
+RSpec.describe TrainingSession do
   pending "add some examples to (or delete) #{__FILE__}"
 end

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Messages', type: :request do
+RSpec.describe 'Messages' do
   include_context 'with user abc'
   include_context 'with user eve'
   include_context 'with message'

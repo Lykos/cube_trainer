@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'new color scheme', type: :system do
+describe 'new color scheme' do
   include_context 'with user abc'
 
   before do

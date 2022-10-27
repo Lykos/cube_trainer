@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'twisty_puzzles'
 
-describe ColorScheme, type: :model do
+describe ColorScheme do
   include TwistyPuzzles
   include_context 'with user abc'
 

@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'requests/requests_spec_helper'
 
-RSpec.describe 'TrainingSessionTypes', type: :request do
+RSpec.describe 'TrainingSessionTypes' do
   include_context 'with user abc'
   include_context 'with headers'
 

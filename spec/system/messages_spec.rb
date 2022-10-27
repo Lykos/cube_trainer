@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'messages', type: :system do
+describe 'messages' do
   include_context 'with user abc'
   include_context 'with message'
 

@@ -9,7 +9,7 @@ def create_case(*parts)
   casee
 end
 
-RSpec.describe AlgSet, type: :model do
+RSpec.describe AlgSet do
   include TwistyPuzzles
 
   include_context 'with alg spreadsheet'

@@ -3,7 +3,7 @@
 require 'rails_helper'
 require_relative 'alg_like_shared_examples'
 
-RSpec.describe Alg, type: :model do
+RSpec.describe Alg do
   include_context 'with alg spreadsheet'
 
   let(:fu_r) { TwistyPuzzles::Wing.for_face_symbols(%i[F U R]) }

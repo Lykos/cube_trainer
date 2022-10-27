@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'AchievementGrants', type: :request do
+RSpec.describe 'AchievementGrants' do
   include_context 'with user abc'
   include_context 'with user eve'
   include_context 'with achievement grant'

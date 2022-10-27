@@ -16,6 +16,11 @@ class ResultsController < ApplicationController
   end
 
   # POST /api/training_sessions/1/results/1.json
+  def show
+    render json: @result, status: :ok
+  end
+
+  # GET /api/training_sessions/1/results/1.json
   def create
     if !@result.valid?
       render json: @result.errors, status: :bad_request
@@ -24,11 +29,6 @@ class ResultsController < ApplicationController
     else
       render json: @result.errors, status: :unprocessable_entity
     end
-  end
-
-  # GET /api/training_sessions/1/results/1.json
-  def show
-    render json: @result, status: :ok
   end
 
   # PATCH/PUT /api/training_sessions/1/results/1.json

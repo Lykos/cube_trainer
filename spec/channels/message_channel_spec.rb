@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe MessageChannel, type: :channel do
+RSpec.describe MessageChannel do
   include_context 'with user abc'
 
   it 'successfully subscribes' do

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe LetterSchemeMapping, type: :model do
+RSpec.describe LetterSchemeMapping do
   include_context 'with user abc'
   let(:letter_scheme) do
     letter_scheme = LetterScheme.find_or_initialize_by(user: user)

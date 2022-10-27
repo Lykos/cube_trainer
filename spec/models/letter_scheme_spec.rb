@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe LetterScheme, type: :model do
+RSpec.describe LetterScheme do
   subject(:letter_scheme) do
     described_class.new(
       user: user,

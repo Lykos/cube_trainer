@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'requests/requests_spec_helper'
 
-RSpec.describe 'LetterSchemes', type: :request do
+RSpec.describe 'LetterSchemes' do
   include_context 'with user abc'
   include_context 'with user eve'
   include_context 'with letter scheme'

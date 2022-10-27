@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'requests/requests_spec_helper'
 
-RSpec.describe 'Achievements', type: :request do
+RSpec.describe 'Achievements' do
   include_context 'with user abc'
   include_context 'with headers'
 

@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'twisty_puzzles'
 
-describe 'trainer', type: :system do
+describe 'trainer' do
   include_context 'with user abc'
   include_context 'with training session'
 

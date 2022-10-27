@@ -15,7 +15,7 @@ def before_next_sleep
   sleep(0.5)
 end
 
-describe 'new training session', type: :system do
+describe 'new training session' do
   include_context 'with user abc'
   include_context 'with alg set'
 
