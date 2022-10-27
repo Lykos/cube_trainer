@@ -45,6 +45,3 @@ namespace :npm do
     end
   end
 end
-
-# Hack to not use the assets pipeline but our custom ng build instead.
-Rake::Task['assets:precompile'].clear

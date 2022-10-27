@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Achievement, type: :model do
+RSpec.describe Achievement do
   describe '#find_by' do
     it 'finds an existing achievement' do
       expect(described_class.find_by(id: :fake).id).to eq(:fake)

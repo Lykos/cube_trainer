@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Stat, type: :model do
+RSpec.describe Stat do
   include_context 'with stat'
 
   let(:stat_type) { :averages }

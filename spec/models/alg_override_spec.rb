@@ -3,7 +3,7 @@
 require 'rails_helper'
 require_relative 'alg_like_shared_examples'
 
-RSpec.describe Alg, type: :model do
+RSpec.describe Alg do
   include_context 'with training session'
   include_context 'with user abc'
   include_context 'with alg spreadsheet'

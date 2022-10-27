@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'achievements', type: :system do
+describe 'achievements' do
   include_context 'with user abc'
   include_context 'with achievement grant'
 

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'new letter scheme', type: :system do
+describe 'new letter scheme' do
   include_context 'with user abc'
 
   before do

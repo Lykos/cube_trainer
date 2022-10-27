@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 # TODO: Turn on once the snackbar works in system tests.
-xdescribe 'reset_password', type: :system do
+xdescribe 'reset_password' do
   include_context 'with user abc'
 
   before do

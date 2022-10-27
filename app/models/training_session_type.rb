@@ -183,6 +183,12 @@ class TrainingSessionType < ActiveModelSerializers::Model
             case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Edge)
           ),
           TrainingSessionType.new(
+            id: :midge_commutators,
+            name: 'Midge Commutators',
+            default_cube_size: 5,
+            case_set: CaseSets::ThreeCycleSet.new(TwistyPuzzles::Midge)
+          ),
+          TrainingSessionType.new(
             id: :wing_commutators,
             name: 'Wing Commutators',
             default_cube_size: 4,

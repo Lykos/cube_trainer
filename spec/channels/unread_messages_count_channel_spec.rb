@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe UnreadMessagesCountChannel, type: :channel do
+RSpec.describe UnreadMessagesCountChannel do
   include_context 'with user abc'
 
   it 'successfully subscribes' do

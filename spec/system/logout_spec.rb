@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'logout', type: :system do
+describe 'logout' do
   include_context 'with user abc'
 
   before do

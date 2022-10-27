@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe AchievementGrant, type: :model do
+RSpec.describe AchievementGrant do
   include_context 'with achievement grant'
 
   let(:achievement) { Achievement.find_by(id: :fake) }

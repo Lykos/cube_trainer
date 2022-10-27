@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe 'account deletion', type: :system do
+describe 'account deletion' do
   before do
     driven_by(:selenium_chrome_headless)
   end

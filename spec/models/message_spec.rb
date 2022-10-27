@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Message, type: :model do
+RSpec.describe Message do
   include_context 'with user abc'
 
   it 'broadcasts a message after creation' do

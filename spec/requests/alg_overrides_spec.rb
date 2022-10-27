@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'AlgOverrides', type: :request do
+RSpec.describe 'AlgOverrides' do
   include_context 'with user abc'
   include_context 'with user eve'
   include_context 'with training session'

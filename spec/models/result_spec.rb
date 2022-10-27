@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Result, type: :model do
+RSpec.describe Result do
   include_context 'with training session'
 
   let(:uf) { TwistyPuzzles::Edge.for_face_symbols(%i[U F]) }

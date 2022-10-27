@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Dumps', type: :request do
+RSpec.describe 'Dumps' do
   include_context 'with user abc'
   include_context 'with headers'
   include_context 'with user auth headers'

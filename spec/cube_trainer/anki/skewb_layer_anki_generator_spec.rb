@@ -45,7 +45,7 @@ RSpec::Matchers.define(:be_modified_deck) do |column, expected_elements, wildcar
   failure_message do |actual|
     dupped_actual = actual.dup
     delete_columns(dupped_actual, wildcard_columns)
-    actual_elements = dupped_actual.map { |row| row[column] }
+    actual_elements = dupped_actual.pluck(column)
     if expected_elements == actual_elements
       "expected that #{dupped_actual.inspect} would equal #{expected.inspect}"
     else
