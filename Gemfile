@@ -24,13 +24,13 @@ group :development, :test, :production do
   gem 'rack-cors', require: 'rack/cors'
 
   # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-  gem 'rails', '~> 6.1'
+  gem 'rails', '~> 7.0'
 
   # Core cubing related functionality.
   gem 'twisty_puzzles', '>= 0.0.37'
 
   # Database access. TODO: figure out whether this is still needed now that this project uses rails.
-  gem 'activerecord'
+  gem 'activerecord', '~> 7.0'
 
   # Postgresql support.
   gem 'pg', '~> 1.4.4'
