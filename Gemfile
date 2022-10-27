@@ -57,7 +57,7 @@ end
 
 group :development, :production do
   # Use Puma as the app server
-  gem 'puma', '~> 5.6'
+  gem 'puma', '~> 6.0'
 
   # Pry is needed to inspect the production state via rails console.
   gem 'pry'
