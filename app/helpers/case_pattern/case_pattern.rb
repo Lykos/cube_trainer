@@ -530,7 +530,14 @@ module CasePattern
           merge_cycle_groups_possibilities(cycle_group, other_cycle_group)
         end
       return EmptyCasePattern.new if merged_groups.any?(&:empty?)
-      return LeafCasePattern.new(merged_groups.flatten, ignore_same_face_center_cycles: @ignore_same_face_center_cycles) if merged_groups.all? { |g| g.length == 1 }
+
+      all_groups_trivial = merged_groups.all? { |g| g.length == 1 }
+      if all_groups_trivial
+        return LeafCasePattern.new(
+          merged_groups.flatten,
+          ignore_same_face_center_cycles: @ignore_same_face_center_cycles
+        )
+      end
 
       Conjunction.new([self, other])
     end
