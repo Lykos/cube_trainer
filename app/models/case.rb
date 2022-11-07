@@ -61,7 +61,7 @@ class Case
 
   def canonicalized_cycles(ignore)
     cycles = part_cycles.map(&:canonicalize).sort
-    cycles.delete_if { |c| equivalent_center_cycle?(c) } if ignore && part_cycles.any? { |c| non_center_cycle?(c) }
+    cycles.delete_if { |c| equivalent_center_cycle?(c) } if ignore
     cycles
   end
 
@@ -116,12 +116,8 @@ class Case
   end
 
   def equivalent_center_cycle?(part_cycle)
-    part_cycle.part_type.is_a?(TwistyPuzzles::MoveableCenter) && part_cycle.parts.all? do |p|
-      p.face_symbol == part_cycle.first.face_symbol
+    part_cycle.part_type < TwistyPuzzles::MoveableCenter && part_cycle.parts.all? do |p|
+      p.face_symbol == part_cycle.parts.first.face_symbol
     end
-  end
-
-  def non_center_cycle?(part_cycle)
-    !part_cycle.part_type.is_a?(TwistyPuzzles::MoveableCenter)
   end
 end

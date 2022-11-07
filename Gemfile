@@ -57,7 +57,7 @@ end
 
 group :development, :production do
   # Use Puma as the app server
-  gem 'puma', '~> 5.6'
+  gem 'puma', '~> 6.0'
 
   # Pry is needed to inspect the production state via rails console.
   gem 'pry'
@@ -95,7 +95,7 @@ end
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
-  gem 'capybara', '>= 2.15'
+  gem 'capybara', '~> 3.38'
   gem 'selenium-webdriver'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'

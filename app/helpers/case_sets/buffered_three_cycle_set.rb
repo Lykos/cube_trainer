@@ -11,7 +11,8 @@ module CaseSets
         part_cycle_pattern(
           part_type, specific_part(buffer), wildcard,
           wildcard
-        )
+        ),
+        ignore_same_face_center_cycles: !(part_type < TwistyPuzzles::MoveableCenter)
       )
       @part_type = part_type
       @buffer = buffer
@@ -39,7 +40,10 @@ module CaseSets
       part_patterns = [specific_part(@buffer), wildcard, wildcard]
       part = refined_part(refinement_index, casee)
       part_patterns[refinement_index + 1] = specific_part(part)
-      case_pattern(part_cycle_pattern(@part_type, *part_patterns))
+      case_pattern(
+        part_cycle_pattern(@part_type, *part_patterns),
+        ignore_same_face_center_cycles: !(part_type < TwistyPuzzles::MoveableCenter)
+      )
     end
 
     def self.from_raw_data_parts(raw_data)

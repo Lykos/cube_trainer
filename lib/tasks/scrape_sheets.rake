@@ -13,11 +13,13 @@ def sheet_filter(args)
 end
 
 desc 'Scrape algs sheets from Google sheets'
-task :scrape_sheets, %i[owner_regexp sheet_title_regexp] => :environment do |_task, args|
+task :scrape_sheets, %i[owner_regexp sheet_title_regexp verbose] => :environment do |_task, args|
   require 'cube_trainer/sheet_scraping/google_sheets_scraper'
   require 'cube_trainer/sheet_scraping/sheet_filter'
 
+  verbose = args[:verbose]
   Rails.logger = Logger.new($stdout)
-  Rails.logger.level = 1
+  Rails.logger.level = verbose ? 0 : 1
+  Rails.logger.info 'Verbose logging activated.' if verbose
   CubeTrainer::SheetScraping::GoogleSheetsScraper.new(sheet_filter: sheet_filter(args)).run
 end
