@@ -171,6 +171,7 @@ module CubeTrainer
     def check_alg(cell_description, commutator)
       alg = commutator.algorithm
       @total_algs += 1
+
       if (casee = alg_case_for_pattern(alg, cell_description.pattern))
         CheckAlgResult.new(:correct, casee: casee)
       else

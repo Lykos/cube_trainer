@@ -152,7 +152,8 @@ module CaseSets
     def create_case_pattern(buffer_cycle_pattern)
       case_pattern(
         buffer_cycle_pattern,
-        part_cycle_pattern(parity_part_type, wildcard, wildcard)
+        part_cycle_pattern(parity_part_type, wildcard, wildcard),
+        ignore_same_face_center_cycles: true
       )
     end
 

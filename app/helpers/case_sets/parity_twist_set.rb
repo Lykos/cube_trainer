@@ -16,7 +16,8 @@ module CaseSets
           part_cycle_pattern(
             buffer_part_type, wildcard, twist: any_unsolved_twist
           ),
-          part_cycle_pattern(parity_part_type, wildcard, wildcard)
+          part_cycle_pattern(parity_part_type, wildcard, wildcard),
+          ignore_same_face_center_cycles: true
         )
     end
 

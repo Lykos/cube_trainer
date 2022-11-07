@@ -54,7 +54,7 @@ module CubeTrainer
     end
 
     def relevant_parts
-      relevant_part_types.filter_map do |part_type|
+      @relevant_parts ||= relevant_part_types.filter_map do |part_type|
         next unless part_type.exists_on_cube_size?(@cube_size)
 
         part_type::ELEMENTS
@@ -78,7 +78,7 @@ module CubeTrainer
     end
 
     def find_case_internal(state)
-      remaining_parts = relevant_parts
+      remaining_parts = relevant_parts.dup
       cycles = []
 
       until remaining_parts.empty?

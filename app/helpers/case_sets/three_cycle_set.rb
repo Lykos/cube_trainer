@@ -5,7 +5,7 @@ module CaseSets
   class ThreeCycleSet < AbstractCaseSet
     def initialize(part_type)
       super()
-      @pattern = case_pattern(part_cycle_pattern(part_type, wildcard, wildcard, wildcard))
+      @pattern = case_pattern(part_cycle_pattern(part_type, wildcard, wildcard, wildcard), ignore_same_face_center_cycles: !(part_type < TwistyPuzzles::MoveableCenter))
       @part_type = part_type
     end
 

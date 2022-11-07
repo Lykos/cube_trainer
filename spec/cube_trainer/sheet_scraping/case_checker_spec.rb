@@ -7,7 +7,7 @@ require 'rails_helper'
 def cell_description(*parts)
   part_patterns = parts.map { |p| CasePattern::SpecificPart.new(p) }
   part_cycle_patterns = [CasePattern::PartCyclePattern.new(parts.first.class, part_patterns)]
-  case_pattern = CasePattern::LeafCasePattern.new(part_cycle_patterns)
+  case_pattern = CasePattern::LeafCasePattern.new(part_cycle_patterns, ignore_same_face_center_cycles: true)
   SheetScraping::AlgExtractor::CellDescription.new('test', 0, 0, case_pattern)
 end
 
@@ -24,6 +24,9 @@ describe CaseChecker do
   let(:i) { part_type.for_face_symbols(%i[R B U]) }
   let(:j) { part_type.for_face_symbols(%i[R F U]) }
   let(:g) { part_type.for_face_symbols(%i[F L U]) }
+  let(:midge_uf) { TwistyPuzzles::Midge.for_face_symbols(%i[U F]) }
+  let(:midge_ub) { TwistyPuzzles::Midge.for_face_symbols(%i[U B]) }
+  let(:midge_lu) { TwistyPuzzles::Midge.for_face_symbols(%i[L U]) }
   let(:checker) do
     described_class.new(
       cube_size: cube_size,
@@ -31,9 +34,22 @@ describe CaseChecker do
       find_fixes: true
     )
   end
+  let(:midge_checker) do
+    described_class.new(
+      cube_size: 5,
+      verbose: false,
+      find_fixes: true
+    )
+  end
 
   it 'deems a correct algorithm correct' do
     result = checker.check_alg(cell_description(buffer, i, g), parse_commutator("[L', U R U']"))
+    expect(result.result).to be == :correct
+    expect(result.fix).to be_nil
+  end
+
+  it 'deems a correct midge algorithm correct' do
+    result = midge_checker.check_alg(cell_description(midge_uf, midge_ub, midge_lu), parse_commutator("[U' M U' : [M', U2]]"))
     expect(result.result).to be == :correct
     expect(result.fix).to be_nil
   end

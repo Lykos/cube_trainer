@@ -43,7 +43,8 @@ module CaseSets
       case_pattern(
         part_cycle_pattern(@part_type, wildcard, twist: specific_twist(direction)),
         part_cycle_pattern(@part_type, wildcard, twist: specific_twist(direction)),
-        part_cycle_pattern(@part_type, wildcard, twist: specific_twist(direction))
+        part_cycle_pattern(@part_type, wildcard, twist: specific_twist(direction)),
+        ignore_same_face_center_cycles: true
       )
     end
   end

@@ -448,7 +448,7 @@ module CasePattern
     # If `ignore_same_face_center_cycles` is set,
     # center cycles that stay on the same face are ignored for matching
     # if there are non-center components.
-    def initialize(part_cycle_patterns, ignore_same_face_center_cycles: true)
+    def initialize(part_cycle_patterns, ignore_same_face_center_cycles:)
       super()
       @part_cycle_patterns = part_cycle_patterns
       @ignore_same_face_center_cycles = ignore_same_face_center_cycles
@@ -458,6 +458,9 @@ module CasePattern
 
     def match?(casee)
       raise TypeError, "Expected Case but got #{casee.inspect}." unless casee.is_a?(Case)
+
+      ignore = @ignore_same_face_center_cycles
+      casee = casee.canonicalize(ignore_same_face_center_cycles: ignore)
       return false unless casee.part_cycles.length == @part_cycle_patterns.length
 
       cycle_groups = part_cycle_groups(casee)
@@ -466,13 +469,6 @@ module CasePattern
       cycle_groups.all? do |k, cycle_group|
         pattern_group = part_cycle_pattern_groups[k]
         pattern_group_match?(pattern_group, cycle_group)
-      end
-    end
-
-    def part_cycle_groups(casee)
-      ignore = @ignore_same_face_center_cycles
-      casee.canonicalize(ignore_same_face_center_cycles: ignore).part_cycles.group_by do |c|
-        [c.part_type.name, c.length]
       end
     end
 
@@ -518,14 +514,23 @@ module CasePattern
 
     private
 
+    def part_cycle_groups(casee)
+      ignore = @ignore_same_face_center_cycles
+      casee.canonicalize(ignore_same_face_center_cycles: ignore).part_cycles.group_by do |c|
+        [c.part_type.name, c.length]
+      end
+    end
+
     def merge_groups(other)
+      raise ArgumentError unless @ignore_same_face_center_cycles == other.ignore_same_face_center_cycles
+
       merged_groups =
         part_cycle_pattern_groups.map do |k, cycle_group|
           other_cycle_group = other.part_cycle_pattern_groups[k]
           merge_cycle_groups_possibilities(cycle_group, other_cycle_group)
         end
       return EmptyCasePattern.new if merged_groups.any?(&:empty?)
-      return LeafCasePattern.new(merged_groups.flatten) if merged_groups.all? { |g| g.length == 1 }
+      return LeafCasePattern.new(merged_groups.flatten, ignore_same_face_center_cycles: @ignore_same_face_center_cycles) if merged_groups.all? { |g| g.length == 1 }
 
       Conjunction.new([self, other])
     end
@@ -617,8 +622,8 @@ module CasePattern
       PartCyclePattern.new(part_type, part_patterns, twist)
     end
 
-    def case_pattern(*part_cycle_patterns)
-      LeafCasePattern.new(part_cycle_patterns)
+    def case_pattern(*part_cycle_patterns, ignore_same_face_center_cycles:)
+      LeafCasePattern.new(part_cycle_patterns, ignore_same_face_center_cycles: ignore_same_face_center_cycles)
     end
 
     def specific_twist(twist)
