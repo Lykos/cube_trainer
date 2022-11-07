@@ -123,7 +123,7 @@ module CubeTrainer
       # Try to find a fix, but only if verbose is enabled, otherwise that is pointless.
       if @find_fixes
         if (fix = find_fix(commutator, cell_description.pattern))
-          push_fix(fix)
+          push_fix(cell_description, fix)
           return CheckAlgResult.new(:fix_found, casee: fix.casee, fix: fix.fixed_algorithm)
         else
           handle_unfixable_alg(alg)
@@ -132,7 +132,7 @@ module CubeTrainer
       CheckAlgResult::UNFIXABLE
     end
 
-    def push_fix(fix)
+    def push_fix(cell_description, fix)
       fixes.push(fix)
       return unless @verbose
 
