@@ -393,7 +393,7 @@ GEM
     thor (1.2.1)
     timeout (0.3.0)
     trailblazer-option (0.1.2)
-    twisty_puzzles (0.0.38)
+    twisty_puzzles (0.0.39)
       colorize
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
