@@ -299,7 +299,7 @@ GEM
       redis-client (>= 0.9.0)
     redis-client (0.11.1)
       connection_pool
-    regexp_parser (2.6.0)
+    regexp_parser (2.6.1)
     representable (3.2.0)
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)
@@ -338,7 +338,7 @@ GEM
       rspec-mocks (~> 3.11)
       rspec-support (~> 3.11)
     rspec-support (3.12.0)
-    rubocop (1.38.0)
+    rubocop (1.39.0)
       json (~> 2.3)
       parallel (~> 1.10)
       parser (>= 3.1.2.1)
@@ -350,7 +350,7 @@ GEM
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.23.0)
       parser (>= 3.1.1.0)
-    rubocop-performance (1.15.0)
+    rubocop-performance (1.15.1)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
     rubocop-rails (2.17.2)
@@ -393,7 +393,7 @@ GEM
     thor (1.2.1)
     timeout (0.3.0)
     trailblazer-option (0.1.2)
-    twisty_puzzles (0.0.38)
+    twisty_puzzles (0.0.39)
       colorize
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
@@ -461,7 +461,7 @@ DEPENDENCIES
   rspec
   rspec-prof
   rspec-rails
-  rubocop (~> 1.38)
+  rubocop (~> 1.39)
   rubocop-performance
   rubocop-rails
   rubocop-rake
