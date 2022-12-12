@@ -33,7 +33,7 @@ group :development, :test, :production do
   gem 'activerecord', '~> 7.0'
 
   # Postgresql support.
-  gem 'pg', '~> 1.4.4'
+  gem 'pg', '~> 1.4.5'
 
   gem 'ruby-filemagic'
 
@@ -86,7 +86,7 @@ group :development do
 end
 
 group :rubocop do
-  gem 'rubocop', '~> 1.39', require: false
+  gem 'rubocop', '~> 1.40', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rake', require: false
