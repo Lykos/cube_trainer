@@ -443,3 +443,7 @@ RSpec/Rails/InferredSpecType: # new in 2.14
   Enabled: true
 Style/RedundantEach: # new in 1.38
   Enabled: true
+Style/ArrayIntersect: # new in 1.40
+  Enabled: true
+Style/RedundantConstantBase: # new in 1.40
+  Enabled: true
