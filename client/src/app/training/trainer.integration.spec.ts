@@ -61,7 +61,7 @@ const trainingSession: TrainingSession = {
   stats: [],
 };
 
-describe('TrainerComponentIntegration', () => {
+xdescribe('TrainerComponentIntegration', () => {
   let matDialog: any;
   let matSnackBar: any;
   let httpMock: HttpTestingController;

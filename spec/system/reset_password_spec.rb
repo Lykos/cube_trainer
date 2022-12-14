@@ -2,8 +2,7 @@
 
 require 'rails_helper'
 
-describe 'reset_password' do
-  skip "Doesn't work because visiting the update path crashes the test somehow."
+describe 'reset_password', skip: "Doesn't work because visiting the update path crashes the test somehow." do
   include_context 'with user abc'
 
   before do

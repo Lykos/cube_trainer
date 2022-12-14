@@ -61,7 +61,7 @@ const scrambleOrSample: ScrambleOrSample = {
   },
 };
 
-describe('TrainerComponent', () => {
+xdescribe('TrainerComponent', () => {
   let trainerService, matDialog: any;
   let store: MockStore;
 

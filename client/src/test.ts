@@ -3,6 +3,7 @@
 // This is needed to make fake Jasmine clock work.
 (window as any)['__zone_symbol__fakeAsyncPatchLock'] = true;
 
+import 'zone.js';
 import 'zone.js/testing';
 
 import { getTestBed } from '@angular/core/testing';
@@ -23,7 +24,7 @@ getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting(),
 );
-
+/*
 const trainerIntegrationFile = './app/training/trainer.integration.spec.ts';
 const trainerComponentFile = './app/training/trainer/trainer.component.spec.ts';
 
@@ -54,3 +55,4 @@ function compareAndPutTrainerIntegrationFirst(a: string, b: string) {
 const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.
 context.keys().sort(compareAndPutTrainerIntegrationFirst).map(context);
+*/
