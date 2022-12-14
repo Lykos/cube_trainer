@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-# TODO: Turn on once the snackbar works in system tests.
-xdescribe 'reset_password' do
+describe 'reset_password' do
+  skip "Doesn't work because visiting the update path crashes the test somehow."
   include_context 'with user abc'
 
   before do
