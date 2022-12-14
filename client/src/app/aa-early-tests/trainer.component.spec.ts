@@ -1,7 +1,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TestBed } from '@angular/core/testing';
-import { TrainerComponent } from './trainer.component';
+import { TrainerComponent } from '@training/trainer/trainer.component';
 import { TrainerInputComponent } from '@training/trainer-input/trainer-input.component';
 import { TrainerStopwatchComponent } from '@training/trainer-stopwatch/trainer-stopwatch.component';
 import { StopwatchComponent } from '@training/stopwatch/stopwatch.component';
@@ -9,18 +9,18 @@ import { HintComponent } from '@training/hint/hint.component';
 import { ResultsTableComponent } from '@training/results-table/results-table.component';
 import { StatsTableComponent } from '@training/stats-table/stats-table.component';
 import { DurationPipe } from '@shared/duration.pipe';
-import { TrainerService } from '../trainer.service';
+import { TrainerService } from '@training/trainer.service';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { of } from 'rxjs';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
 import { selectNextCase, selectCurrentCase } from '@store/trainer.selectors';
 import { none, some } from '@utils/optional';
 import { BackendActionLoadErrorComponent } from '@shared/backend-action-load-error/backend-action-load-error.component';
-import { ScrambleOrSample } from '../scramble-or-sample.model';
-import { TrainingCase } from '../training-case.model';
-import { TrainingSession } from '../training-session.model';
-import { ShowInputMode } from '../show-input-mode.model';
-import { GeneratorType } from '../generator-type.model';
+import { ScrambleOrSample } from '@training/scramble-or-sample.model';
+import { TrainingCase } from '@training/training-case.model';
+import { TrainingSession } from '@training/training-session.model';
+import { ShowInputMode } from '@training/show-input-mode.model';
+import { GeneratorType } from '@training/generator-type.model';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -61,7 +61,7 @@ const scrambleOrSample: ScrambleOrSample = {
   },
 };
 
-xdescribe('TrainerComponent', () => {
+describe('TrainerComponent', () => {
   let trainerService, matDialog: any;
   let store: MockStore;
 
