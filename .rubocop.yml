@@ -447,3 +447,9 @@ Style/ArrayIntersect: # new in 1.40
   Enabled: true
 Style/RedundantConstantBase: # new in 1.40
   Enabled: true
+RSpec/DuplicatedMetadata: # new in 2.16
+  Enabled: true
+RSpec/PendingWithoutReason: # new in 2.16
+  Enabled: true
+RSpec/FactoryBot/FactoryNameStyle: # new in 2.16
+  Enabled: true
