@@ -39,7 +39,7 @@
     "@ngrx/entity": "^15.0.0",
     "@ngrx/router-store": "^15.0.0",
     "@ngrx/store": "^15.0.0",
-    "@ngrx/store-devtools": "^15.0.0",
+    "@ngrx/store-devtools": "^15.1.0",
     "@rxweb/reactive-form-validators": "^13.0.0",
     "actioncable": "^5.2.6",
     "angular-csv-ext": "^1.0.5",
