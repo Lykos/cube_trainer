@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# A serialize for achievement grants that only serializes relevant attributes.
 class ResultSerializer < ActiveModel::Serializer
   include CaseAttributeSerializer
 
