@@ -457,3 +457,9 @@ Style/ConcatArrayLiterals: # new in 1.41
   Enabled: true
 Style/RedundantDoubleSplatHashBraces: # new in 1.41
   Enabled: true
+Style/MapToSet: # new in 1.42
+  Enabled: true
+Style/MinMaxComparison: # new in 1.42
+  Enabled: true
+Style/YodaExpression: # new in 1.42
+  Enabled: true

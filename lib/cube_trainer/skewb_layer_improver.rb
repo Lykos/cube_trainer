@@ -54,7 +54,7 @@ module CubeTrainer
     def layer_score
       CORNER_COORDINATES_ORDERED_BY_PRIORITY.reduce(0) do |sum, c|
         corner_present = @state[c] == @solved_color
-        (2 * sum) + (corner_present ? 1 : 0)
+        (sum * 2) + (corner_present ? 1 : 0)
       end
     end
   end
