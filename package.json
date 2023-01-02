@@ -46,7 +46,7 @@
     "cubing": "^0.34.6",
     "file-saver": "^2.0.5",
     "ngx-cookie-service": "^15.0.0",
-    "ngx-filesaver": "^14.0.0",
+    "ngx-filesaver": "^15.0.0",
     "rxjs": "^7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "^0.12.0"
