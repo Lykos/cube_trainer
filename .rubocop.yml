@@ -463,3 +463,5 @@ Style/MinMaxComparison: # new in 1.42
   Enabled: true
 Style/YodaExpression: # new in 1.42
   Enabled: true
+Lint/UselessRescue: # new in 1.43
+  Enabled: true
