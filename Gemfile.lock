@@ -119,7 +119,7 @@ GEM
     faraday-net_http (3.0.2)
     ffi (1.15.5)
     gems (1.2.0)
-    globalid (1.0.0)
+    globalid (1.0.1)
       activesupport (>= 5.0)
     google-api-client (0.53.0)
       google-apis-core (~> 0.1)
