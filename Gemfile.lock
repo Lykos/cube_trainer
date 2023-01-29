@@ -73,8 +73,10 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
+    aes_key_wrap (1.1.0)
     ast (2.4.2)
     bcrypt (3.1.18)
+    bindata (2.4.14)
     bindex (0.8.1)
     bootsnap (1.15.0)
       msgpack (~> 1.2)
@@ -113,9 +115,11 @@ GEM
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     erubi (1.11.0)
-    faraday (2.7.2)
+    faraday (2.7.3)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
+    faraday-follow_redirects (0.3.0)
+      faraday (>= 1, < 3)
     faraday-net_http (3.0.2)
     ffi (1.15.5)
     gems (1.2.0)
@@ -156,8 +160,14 @@ GEM
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     json (2.6.3)
+    json-jwt (1.16.1)
+      activesupport (>= 4.2)
+      aes_key_wrap
+      bindata
+      faraday (~> 2.0)
+      faraday-follow_redirects
     jsonapi-renderer (0.2.2)
-    jwt (2.5.0)
+    jwt (2.6.0)
     listen (3.8.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -225,8 +235,8 @@ GEM
       hashie (>= 3.4.6)
       rack (>= 2.2.3)
       rack-protection
-    omniauth-apple (1.2.2)
-      jwt
+    omniauth-apple (1.3.0)
+      json-jwt
       omniauth-oauth2
     omniauth-facebook (9.0.0)
       omniauth-oauth2 (~> 1.2)
@@ -260,10 +270,10 @@ GEM
     puma (6.0.2)
       nio4r (~> 2.0)
     racc (1.6.1)
-    rack (2.2.5)
+    rack (2.2.6.2)
     rack-cors (1.1.1)
       rack (>= 2.0.0)
-    rack-protection (3.0.4)
+    rack-protection (3.0.5)
       rack
     rack-test (2.0.2)
       rack (>= 1.3)
