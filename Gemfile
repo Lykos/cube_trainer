@@ -13,7 +13,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # They are needed for the backend independent of the environment.
 group :development, :test, :production do
   # For authentication
-  gem 'devise', '~>4.8.0', '>=4.8.0'
+  gem 'devise', '~>4.9.0'
   gem 'devise_token_auth', '~>1.2.1'
   gem 'omniauth-apple'
   gem 'omniauth-facebook'
@@ -57,7 +57,7 @@ end
 
 group :development, :production do
   # Use Puma as the app server
-  gem 'puma', '~> 6.0'
+  gem 'puma', '~> 6.1'
 
   # Pry is needed to inspect the production state via rails console.
   gem 'pry'
