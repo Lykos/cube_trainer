@@ -389,8 +389,6 @@ Lint/ConstantOverwrittenInRescue: # new in 1.31
   Enabled: true
 Lint/NonAtomicFileOperation: # new in 1.31
   Enabled: true
-RSpec/Capybara/SpecificMatcher: # new in 2.12
-  Enabled: true
 RSpec/Rails/HaveHttpStatus: # new in 2.12
   Enabled: true
 Lint/RequireRangeParentheses: # new in 1.32
@@ -417,8 +415,6 @@ RSpec/ClassCheck: # new in 2.13
   Enabled: true
 RSpec/NoExpectationExample: # new in 2.13
   Enabled: true
-RSpec/Capybara/SpecificFinders: # new in 2.13
-  Enabled: true
 Lint/DuplicateMagicComment: # new in 1.37
   Enabled: true
 Style/OperatorMethodCall: # new in 1.37
@@ -432,10 +428,6 @@ Rails/IgnoredColumnsAssignment: # new in 2.17
 Rails/WhereNotWithMultipleConditions: # new in 2.17
   Enabled: true
 RSpec/SortMetadata: # new in 2.14
-  Enabled: true
-RSpec/Capybara/NegationMatcher: # new in 2.14
-  Enabled: true
-RSpec/Capybara/SpecificActions: # new in 2.14
   Enabled: true
 RSpec/FactoryBot/ConsistentParenthesesStyle: # new in 2.14
   Enabled: true
@@ -464,4 +456,16 @@ Style/MinMaxComparison: # new in 1.42
 Style/YodaExpression: # new in 1.42
   Enabled: true
 Lint/UselessRescue: # new in 1.43
+  Enabled: true
+Capybara/MatchStyle: # new in 2.17
+  Enabled: true
+Capybara/NegationMatcher: # new in 2.14
+  Enabled: true
+Capybara/SpecificActions: # new in 2.14
+  Enabled: true
+Capybara/SpecificFinders: # new in 2.13
+  Enabled: true
+Capybara/SpecificMatcher: # new in 2.12
+  Enabled: true
+RSpec/Rails/MinitestAssertions: # new in 2.17
   Enabled: true
