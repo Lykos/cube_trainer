@@ -469,3 +469,9 @@ Capybara/SpecificMatcher: # new in 2.12
   Enabled: true
 RSpec/Rails/MinitestAssertions: # new in 2.17
   Enabled: true
+Gemspec/DevelopmentDependencies: # new in 1.44
+  Enabled: true
+Style/ComparableClamp: # new in 1.44
+  Enabled: true
+Style/RedundantHeredocDelimiterQuotes: # new in 1.45
+  Enabled: true
