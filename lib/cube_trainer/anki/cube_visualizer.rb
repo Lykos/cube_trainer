@@ -209,7 +209,7 @@ module CubeTrainer
 
       def cube_state_params(cube_state)
         raise TypeError unless cube_state.is_a?(TwistyPuzzles::CubeState)
-        raise ArgumentError unless MIN_N <= cube_state.n && cube_state.n <= MAX_N
+        raise ArgumentError unless cube_state.n >= MIN_N && cube_state.n <= MAX_N
 
         serialized_cube_state = FACE_SYMBOL_ORDER.map do |s|
           face_lines(cube_state, s) { |c| serialize_color(c) }.flatten.join

@@ -9,7 +9,7 @@ module CubeTrainer
     RESERVED_STUFF = [SEPARATOR, OPENING_BRACKET, CLOSING_BRACKET].freeze
 
     def self.bracketed(stuff)
-      OPENING_BRACKET + stuff.to_s + CLOSING_BRACKET
+      "#{OPENING_BRACKET}#{stuff}#{CLOSING_BRACKET}"
     end
 
     def to_s
