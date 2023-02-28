@@ -262,12 +262,12 @@ GEM
     parallel (1.22.1)
     parser (3.2.1.0)
       ast (~> 2.4.1)
-    pg (1.4.5)
+    pg (1.4.6)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (5.0.1)
-    puma (6.1.0)
+    puma (6.1.1)
       nio4r (~> 2.0)
     racc (1.6.2)
     rack (2.2.6.2)
@@ -466,7 +466,7 @@ DEPENDENCIES
   omniauth-google-oauth2
   omniauth-twitter
   parallel
-  pg (~> 1.4.5)
+  pg (~> 1.4.6)
   pry
   puma (~> 6.1)
   rack-cors
