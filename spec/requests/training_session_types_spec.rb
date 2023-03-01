@@ -11,7 +11,7 @@ RSpec.describe 'TrainingSessionTypes' do
     it 'returns http success' do
       get '/api/training_session_types', headers: headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body).map(&:deep_symbolize_keys)
+      parsed_body = response.parsed_body.map(&:deep_symbolize_keys)
       expect(parsed_body.length).to eq(TrainingSessionType.all.length)
       expect(parsed_body).to include(include(id: 'xcenter_commutators', name: 'X-Center Commutators', has_goal_badness: true, has_bounded_inputs: true, has_memo_time: nil))
     end
@@ -23,7 +23,7 @@ RSpec.describe 'TrainingSessionTypes' do
     it 'returns http success' do
       get "/api/training_session_types/#{training_session_type.id}", headers: headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      parsed_body = response.parsed_body.deep_symbolize_keys
       expect(parsed_body).to include(id: 'edge_commutators', name: 'Edge Commutators', has_goal_badness: true, has_bounded_inputs: true, has_memo_time: nil)
     end
 

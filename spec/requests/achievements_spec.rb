@@ -11,7 +11,7 @@ RSpec.describe 'Achievements' do
     it 'returns http success' do
       get '/api/achievements', headers: headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body).map(&:deep_symbolize_keys)
+      parsed_body = response.parsed_body.map(&:deep_symbolize_keys)
       expect(parsed_body.length).to eq(Achievement::ALL.length)
       expect(parsed_body).to include({ id: 'fake', name: 'Fake', description: 'Fake achievement for tests.' })
     end
@@ -21,7 +21,7 @@ RSpec.describe 'Achievements' do
     it 'returns http success' do
       get '/api/achievements/fake', headers: headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      parsed_body = response.parsed_body.deep_symbolize_keys
       expect(parsed_body).to eq({ id: 'fake', name: 'Fake', description: 'Fake achievement for tests.' })
     end
 

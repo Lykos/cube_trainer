@@ -15,7 +15,7 @@ RSpec.describe 'Messages' do
       user_message
       get '/api/messages', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(parsed_body.length).to be >= 1
       contains_message = parsed_body.any? { |p| Message.new(p) == user_message }
       expect(contains_message).to be(true)
@@ -26,7 +26,7 @@ RSpec.describe 'Messages' do
     it 'returns http success' do
       get "/api/messages/#{user_message.id}", headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(Message.new(parsed_body)).to eq(user_message)
     end
 

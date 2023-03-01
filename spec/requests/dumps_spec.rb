@@ -28,7 +28,7 @@ RSpec.describe 'Dumps' do
     it 'returns http success' do
       get '/api/dump', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      parsed_body = response.parsed_body.deep_symbolize_keys
       expect(parsed_body.keys).to contain_exactly(:achievement_grants, :color_scheme, :created_at, :training_sessions, :name, :provider, :uid, :admin, :email, :id, :letter_scheme, :messages)
       expect(parsed_body[:name]).to eq(user.name)
     end
@@ -48,10 +48,10 @@ RSpec.describe 'Dumps' do
         }
       }
 
-      training_session_id = JSON.parse(response.body)['id']
+      training_session_id = response.parsed_body['id']
       # Get a this training session.
       get "/api/training_sessions/#{training_session_id}", headers: user_headers
-      case_key = JSON.parse(response.body)['training_cases'].sample['casee']['key']
+      case_key = response.parsed_body['training_cases'].sample['casee']['key']
       # Create a new result for this input.
       post "/api/training_sessions/#{training_session_id}/results", headers: user_headers, params: { result: { case_key: case_key, time_s: 10 } }
       # Create a new letter scheme.
@@ -73,7 +73,7 @@ RSpec.describe 'Dumps' do
       # Now get the dump
       get '/api/dump', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      parsed_body = response.parsed_body.deep_symbolize_keys
       expect(parsed_body[:letter_scheme][:mappings]).to match([include(letter: 'd', part: { key: 'Edge:UB', name: 'UB' })])
       expect(parsed_body[:color_scheme][:color_f]).to eq('green')
       parsed_training_session = parsed_body[:training_sessions][0]

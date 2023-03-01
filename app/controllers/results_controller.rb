@@ -22,7 +22,7 @@ class ResultsController < ApplicationController
 
   # GET /api/training_sessions/1/results/1.json
   def create
-    if !@result.valid?
+    if @result.invalid?
       render json: @result.errors, status: :bad_request
     elsif @result.save
       render json: @result, status: :ok

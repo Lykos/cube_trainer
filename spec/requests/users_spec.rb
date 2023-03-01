@@ -14,7 +14,7 @@ RSpec.describe 'Users' do
     it 'returns http success' do
       get '/api/user', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(User.new(parsed_body)).to eq(user)
     end
 

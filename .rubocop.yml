@@ -475,3 +475,5 @@ Style/ComparableClamp: # new in 1.44
   Enabled: true
 Style/RedundantHeredocDelimiterQuotes: # new in 1.45
   Enabled: true
+Rails/ResponseParsedBody: # new in 2.18
+  Enabled: true

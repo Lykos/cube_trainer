@@ -14,7 +14,7 @@ RSpec.describe 'AchievementGrants' do
       achievement_grant
       get '/api/achievement_grants', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body).map(&:deep_symbolize_keys)
+      parsed_body = response.parsed_body.map(&:deep_symbolize_keys)
       expect(parsed_body.length).to be >= 1
       expect(parsed_body).to include(include(id: achievement_grant.id, achievement: { id: 'fake', name: 'Fake', description: 'Fake achievement for tests.' }))
     end
@@ -24,7 +24,7 @@ RSpec.describe 'AchievementGrants' do
     it 'returns http success' do
       get "/api/achievement_grants/#{achievement_grant.id}", headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      parsed_body = response.parsed_body.deep_symbolize_keys
       expect(parsed_body).to include(id: achievement_grant.id, achievement: { id: 'fake', name: 'Fake', description: 'Fake achievement for tests.' })
     end
 

@@ -16,7 +16,7 @@ RSpec.describe 'Results' do
       result
       get "/api/training_sessions/#{training_session.id}/results", params: { offset: 0, limit: 100 }, headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(parsed_body.length).to eq(1)
       parsed_item = parsed_body[0]
       expect(parsed_item['id']).to eq(result.id)
@@ -37,7 +37,7 @@ RSpec.describe 'Results' do
     it 'returns http success' do
       get "/api/training_sessions/#{training_session.id}/results/#{result.id}", headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(parsed_body['id']).to eq(result.id)
       expect(parsed_body['casee']['name']).to eq('DF UB')
       expect(parsed_body['time_s']).to eq(10)
@@ -80,7 +80,7 @@ RSpec.describe 'Results' do
     it 'returns http success' do
       post "/api/training_sessions/#{training_session.id}/results", headers: user_headers, params: { result: { case_key: 'Edge(UF DF UB)', time_s: 10 } }
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       result_id = parsed_body['id']
       expect(parsed_body['time_s']).to eq(10)
       expect(Result.find(result_id).time).to eq(10.seconds)
@@ -113,7 +113,7 @@ RSpec.describe 'Results' do
     it 'returns http success' do
       put "/api/training_sessions/#{training_session.id}/results/#{result.id}", headers: user_headers, params: { result: { case_key: 'Edge(UF DF UB)', time_s: 10 } }
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       result_id = parsed_body['id']
       expect(parsed_body['time_s']).to eq(10)
       expect(Result.find(result_id).time).to eq(10.seconds)

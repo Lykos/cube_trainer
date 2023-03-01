@@ -21,7 +21,7 @@ RSpec.describe 'AlgOverrides' do
       alg_override
       get "/api/training_sessions/#{training_session.id}/alg_overrides", params: { offset: 0, limit: 100 }, headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(parsed_body.length).to eq(1)
       parsed_item = parsed_body[0]
       expect(parsed_item['id']).to eq(alg_override.id)
@@ -38,7 +38,7 @@ RSpec.describe 'AlgOverrides' do
     it 'returns http success' do
       get "/api/training_sessions/#{training_session.id}/alg_overrides/#{alg_override.id}", headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(parsed_body['id']).to eq(alg_override.id)
       expect(parsed_body['alg']).to eq(alg_override.alg)
     end
@@ -77,7 +77,7 @@ RSpec.describe 'AlgOverrides' do
     it 'returns http success' do
       post "/api/training_sessions/#{training_session.id}/alg_overrides", headers: user_headers, params: { alg_override: { case_key: 'Edge(UF UB DF)', alg: "[U2, M']" } }
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       alg_override_id = parsed_body['id']
       expect(parsed_body['casee']['key']).to eq('Edge(UF UB DF)')
       expect(parsed_body['alg']).to eq("[U2, M']")
@@ -129,7 +129,7 @@ RSpec.describe 'AlgOverrides' do
     it 'returns http success' do
       put "/api/training_sessions/#{training_session.id}/alg_overrides/#{alg_override.id}", headers: user_headers, params: { alg_override: { case_key: 'Edge(UF UB DF)', alg: "U2 M' U2 M" } }
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       alg_override_id = parsed_body['id']
       expect(parsed_body['id']).to eq(alg_override.id)
       expect(parsed_body['alg']).to eq("U2 M' U2 M")
