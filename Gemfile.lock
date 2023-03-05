@@ -380,7 +380,7 @@ GEM
       rubocop-capybara (~> 2.17)
     ruby-filemagic (0.7.3)
     ruby-prof (1.6.1)
-    ruby-progressbar (1.11.0)
+    ruby-progressbar (1.12.0)
     ruby2_keywords (0.0.5)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
