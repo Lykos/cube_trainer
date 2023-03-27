@@ -88,7 +88,7 @@ end
 group :rubocop do
   gem 'rubocop', '~> 1.48.1', require: false
   gem 'rubocop-performance', require: false
-  gem 'rubocop-rails', '~> 2.17.4', require: false
+  gem 'rubocop-rails', '~> 2.18.0', require: false
   gem 'rubocop-rake', require: false
   gem 'rubocop-rspec', require: false
 end
