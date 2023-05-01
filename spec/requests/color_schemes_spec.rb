@@ -16,7 +16,7 @@ RSpec.describe 'ColorSchemes' do
       color_scheme
       get '/api/color_scheme', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(ColorScheme.new(parsed_body)).to eq(color_scheme)
     end
 
@@ -35,7 +35,7 @@ RSpec.describe 'ColorSchemes' do
         }
       }
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(parsed_body['id']).not_to eq(color_scheme.id)
       expect(ColorScheme.find(parsed_body['id']).color_u).to eq(:yellow)
     end

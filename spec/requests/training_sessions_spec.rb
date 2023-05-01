@@ -15,13 +15,13 @@ RSpec.describe 'TrainingSessions' do
     it 'returns true if a user exists' do
       get '/api/training_session_name_exists_for_user', params: { training_session_name: training_session.name }, headers: user_headers
       expect(response).to have_http_status(:success)
-      expect(JSON.parse(response.body)).to be(true)
+      expect(response.parsed_body).to be(true)
     end
 
     it "returns false if a name doesn't exist" do
       get '/api/training_session_name_exists_for_user', params: { training_session_name: 'new_training_session_name' }, headers: user_headers
       expect(response).to have_http_status(:success)
-      expect(JSON.parse(response.body)).to be(false)
+      expect(response.parsed_body).to be(false)
     end
   end
 
@@ -30,7 +30,7 @@ RSpec.describe 'TrainingSessions' do
       training_session
       get '/api/training_sessions', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(parsed_body.length).to be(1)
       parsed_training_session = parsed_body.find { |p| p['id'] == training_session.id }.deep_symbolize_keys
       expect(parsed_training_session).to include(name: 'test_training_session')
@@ -40,7 +40,7 @@ RSpec.describe 'TrainingSessions' do
       training_session
       get '/api/training_sessions', headers: eve_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(parsed_body).to be_empty
     end
   end
@@ -49,7 +49,7 @@ RSpec.describe 'TrainingSessions' do
     it 'returns http success' do
       get "/api/training_sessions/#{training_session.id}", headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      parsed_body = response.parsed_body.deep_symbolize_keys
       expect(parsed_body).to include(show_input_mode: 'name', generator_type: 'case', buffer: { key: 'Edge:UF', name: 'UF' }, goal_badness: 1.0, cube_size: 3, known: false)
     end
 
@@ -83,7 +83,7 @@ RSpec.describe 'TrainingSessions' do
         }
       }
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(parsed_body['id']).not_to eq(training_session.id)
       expect(TrainingSession.find(parsed_body['id']).name).to eq('test_training_session2')
     end

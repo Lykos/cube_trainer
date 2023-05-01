@@ -16,7 +16,7 @@ RSpec.describe 'LetterSchemes' do
       letter_scheme
       get '/api/letter_scheme', headers: user_headers
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body).deep_symbolize_keys
+      parsed_body = response.parsed_body.deep_symbolize_keys
       expect(parsed_body[:wing_lettering_mode].to_sym).to eq(:like_edges)
       expect(parsed_body[:xcenters_like_corners]).to be(true)
       expect(parsed_body[:tcenters_like_edges]).to be(true)
@@ -43,7 +43,7 @@ RSpec.describe 'LetterSchemes' do
         }
       }
       expect(response).to have_http_status(:success)
-      parsed_body = JSON.parse(response.body)
+      parsed_body = response.parsed_body
       expect(parsed_body['id']).not_to eq(letter_scheme.id)
       expect(LetterScheme.find_by(id: parsed_body['id']).letter(TwistyPuzzles::Edge.for_face_symbols(%i[U B]))).to eq('D')
     end

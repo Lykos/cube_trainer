@@ -68,6 +68,7 @@ shared_context 'with alg set' do
     alg_set
   end
 end
+
 shared_context 'with user abc' do
   let(:user) do
     user = User.find_or_initialize_by(
