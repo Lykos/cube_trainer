@@ -57,7 +57,7 @@
     "@angular-eslint/eslint-plugin": "^15.0.0",
     "@angular-eslint/eslint-plugin-template": "^15.0.0",
     "@angular-eslint/schematics": "^15.0.0",
-    "@angular-eslint/template-parser": "^15.0.0",
+    "@angular-eslint/template-parser": "^16.0.1",
     "@angular/cli": "^15.2.0",
     "@angular/compiler-cli": "^15.2.0",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
