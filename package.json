@@ -61,7 +61,7 @@
     "@angular/cli": "^15.2.0",
     "@angular/compiler-cli": "^15.2.0",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@ngrx/schematics": "^15.4.0",
+    "@ngrx/schematics": "^16.0.0",
     "@types/actioncable": "^5.2.7",
     "@types/chai": "^4.3.3",
     "@types/file-saver": "^2.0.5",
