@@ -15,7 +15,7 @@ class ColorSchemesController < ApplicationController
 
   # POST /api/color_schemes.json
   def create
-    if !@color_scheme.valid?
+    if @color_scheme.invalid?
       render json: @color_scheme.errors, status: :bad_request
     elsif @color_scheme.save
       render json: @color_scheme, status: :created
