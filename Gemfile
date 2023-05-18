@@ -13,7 +13,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # They are needed for the backend independent of the environment.
 group :development, :test, :production do
   # For authentication
-  gem 'devise', '~>4.9.0'
+  gem 'devise', '~>4.9.2'
   gem 'devise_token_auth', '~>1.2.1'
   gem 'omniauth-apple'
   gem 'omniauth-facebook'
@@ -33,7 +33,7 @@ group :development, :test, :production do
   gem 'activerecord', '~> 7.0'
 
   # Postgresql support.
-  gem 'pg', '~> 1.4.6'
+  gem 'pg', '~> 1.5.3'
 
   gem 'ruby-filemagic'
 
@@ -57,7 +57,7 @@ end
 
 group :development, :production do
   # Use Puma as the app server
-  gem 'puma', '~> 6.1'
+  gem 'puma', '~> 6.2'
 
   # Pry is needed to inspect the production state via rails console.
   gem 'pry'
@@ -86,16 +86,16 @@ group :development do
 end
 
 group :rubocop do
-  gem 'rubocop', '~> 1.46.0', require: false
+  gem 'rubocop', '~> 1.51.0', require: false
   gem 'rubocop-performance', require: false
-  gem 'rubocop-rails', '~> 2.18.0', require: false
+  gem 'rubocop-rails', '~> 2.19.1', require: false
   gem 'rubocop-rake', require: false
   gem 'rubocop-rspec', require: false
 end
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
-  gem 'capybara', '~> 3.38'
+  gem 'capybara', '~> 3.39'
   gem 'selenium-webdriver'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
