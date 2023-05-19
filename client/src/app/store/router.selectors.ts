@@ -1,5 +1,5 @@
 import { MemoizedSelector, createSelector } from '@ngrx/store';
-import { getSelectors } from '@ngrx/router-store';
+import { getRouterSelectors } from '@ngrx/router-store';
 import { Optional, ofNull } from '@utils/optional';
  
 export const {
@@ -11,7 +11,7 @@ export const {
   selectRouteParam, // factory function to select a route param
   selectRouteData, // select the current route data
   selectUrl, // select the current url
-} = getSelectors();
+} = getRouterSelectors();
 
 // For component tests, using a mock store allows us to conveniently override all selectors.
 // But for integration tests, we want to use the actual store implementation.

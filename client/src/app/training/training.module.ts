@@ -55,9 +55,6 @@ import { AlgSetComponent } from './alg-set/alg-set.component';
     StatsTableComponent,
     TrainerComponent,
   ],
-  entryComponents: [
-    DeleteTrainingSessionConfirmationDialogComponent,
-  ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,
   ]
