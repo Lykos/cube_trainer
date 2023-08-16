@@ -24,7 +24,7 @@
     "lint": "ng lint"
   },
   "dependencies": {
-    "@angular/animations": "^16.1.3",
+    "@angular/animations": "^16.2.1",
     "@angular/cdk": "^16.1.3",
     "@angular/common": "^16.1.3",
     "@angular/compiler": "^16.1.3",
