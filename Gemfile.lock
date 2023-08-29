@@ -75,6 +75,7 @@ GEM
       public_suffix (>= 2.0.2, < 6.0)
     aes_key_wrap (1.1.0)
     ast (2.4.2)
+    base64 (0.1.1)
     bcrypt (3.1.19)
     bindata (2.4.15)
     bindex (0.8.1)
@@ -356,7 +357,8 @@ GEM
       rspec-mocks (~> 3.12)
       rspec-support (~> 3.12)
     rspec-support (3.12.1)
-    rubocop (1.55.1)
+    rubocop (1.56.2)
+      base64 (~> 0.1.1)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -485,7 +487,7 @@ DEPENDENCIES
   rspec
   rspec-prof
   rspec-rails
-  rubocop (~> 1.55.1)
+  rubocop (~> 1.56.2)
   rubocop-performance
   rubocop-rails (~> 2.20.2)
   rubocop-rake
