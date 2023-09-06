@@ -33,7 +33,7 @@ group :development, :test, :production do
   gem 'activerecord', '~> 7.0'
 
   # Postgresql support.
-  gem 'pg', '~> 1.5.3'
+  gem 'pg', '~> 1.5.4'
 
   gem 'ruby-filemagic'
 
