@@ -16,5 +16,7 @@ class Message < ApplicationRecord
 
   def broadcast_message
     MessageChannel.broadcast_to(user, title: title)
+  rescue Redis::CannotConnectError => e
+    Rails.logger.error "Broadcasting message failed: #{e}"
   end
 end

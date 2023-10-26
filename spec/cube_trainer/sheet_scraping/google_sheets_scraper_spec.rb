@@ -92,7 +92,7 @@ describe CubeTrainer::SheetScraping::GoogleSheetsScraper do
     expect(sheets_service).to have_received(:'authorization=').with(authorizer)
     expect(authorizer).to have_received(:fetch_access_token!)
 
-    expect(AlgSet.all.count).to eq(1)
+    expect(AlgSet.count).to eq(1)
     expect(AlgSet.first.alg_spreadsheet).to eq(alg_spreadsheet)
     expect(AlgSet.first.algs.count).to eq(10)
   end
@@ -117,7 +117,7 @@ describe CubeTrainer::SheetScraping::GoogleSheetsScraper do
     expect(sheets_service).to have_received(:'authorization=').with(authorizer)
     expect(authorizer).to have_received(:fetch_access_token!).twice
 
-    expect(AlgSet.all.count).to eq(1)
+    expect(AlgSet.count).to eq(1)
     expect(AlgSet.first.alg_spreadsheet).to eq(alg_spreadsheet)
     expect(AlgSet.first.algs.count).to eq(10)
   end

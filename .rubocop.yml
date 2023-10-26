@@ -536,3 +536,11 @@ RSpec/ReceiveMessages: # new in 2.23
   Enabled: true
 RSpec/Rails/NegationBeValid: # new in 2.23
   Enabled: true
+Performance/MapMethodChain: # new in 1.19
+  Enabled: true
+Rails/DangerousColumnNames: # new in 2.21
+  Enabled: true
+Rails/RedundantActiveRecordAllMethod: # new in 2.21
+  Enabled: true
+Rails/UnusedRenderContent: # new in 2.21
+  Enabled: true
