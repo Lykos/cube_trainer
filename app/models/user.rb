@@ -34,6 +34,8 @@ class User < ApplicationRecord
 
   def broadcast_unread_messages_count
     UnreadMessagesCountChannel.broadcast_to(self, unread_messages_count: unread_messages_count)
+  rescue Redis::CannotConnectError => e
+    Rails.logger.error 'Broadcasting message failed: #{e}'
   end
 
   private
