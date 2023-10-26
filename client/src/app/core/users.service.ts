@@ -26,9 +26,12 @@ export class UsersService {
       passwordConfirmation: newUser.passwordConfirmation,
       name: newUser.name,
     };
-    // Users have to consent to cookies during registration.
     return this.tokenService.registerAccount(data).pipe(
-      tap(() => { this.cookieConsentService.turnOnConsent(); }),
+      tap(() => {
+	// Users have to consent to cookies during registration,
+	// so we can assume they consented if they register.
+	this.cookieConsentService.turnOnConsent();
+      }),
       mapTo(undefined),
     );
   }
