@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { setAlgClick, overrideAlgClick } from '@store/training-sessions.actions';
-import { distinctUntilChanged, take } from 'rxjs/operators';
+import { distinctUntilChanged, take, map } from 'rxjs/operators';
 import { filterPresent } from '@shared/operators';
-import { TrainingSession } from '../training-session.model';
+import { CaseTrainingSession } from '../training-session.model';
 import { TrainingCase } from '../training-case.model';
+import { GeneratorType } from '../generator-type.model';
 import { Observable } from 'rxjs';
+import { some, none } from '@utils/optional';
 import { Store } from '@ngrx/store';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { initialLoadSelected } from '@store/trainer.actions';
@@ -39,7 +41,7 @@ function toCsv(table: string[][]): string {
 })
 export class AlgSetComponent implements OnInit {
   columnsToDisplay = ['case', 'alg', 'algSource', 'button'];
-  trainingSession$: Observable<TrainingSession>;
+  trainingSession$: Observable<CaseTrainingSession>;
   loading$: Observable<boolean>;
   error$: Observable<BackendActionError>;
 
@@ -47,6 +49,8 @@ export class AlgSetComponent implements OnInit {
               private readonly fileSaverService: FileSaverService) {
     this.trainingSession$ = this.store.select(selectSelectedTrainingSession).pipe(
       distinctUntilChanged(),
+      filterPresent(),
+      map(trainingSession => trainingSession.generatorType === GeneratorType.Case ? some<CaseTrainingSession>(trainingSession) : none),
       filterPresent(),
     );
     this.loading$ = this.store.select(selectInitialLoadLoading);
@@ -71,11 +75,11 @@ export class AlgSetComponent implements OnInit {
     this.store.dispatch(initialLoadSelected());
   }
 
-  onSet(trainingSession: TrainingSession, trainingCase: TrainingCase) {
+  onSet(trainingSession: CaseTrainingSession, trainingCase: TrainingCase) {
     this.store.dispatch(setAlgClick({ trainingSession, trainingCase }));
   }
 
-  onOverride(trainingSession: TrainingSession, trainingCase: TrainingCase) {
+  onOverride(trainingSession: CaseTrainingSession, trainingCase: TrainingCase) {
     this.store.dispatch(overrideAlgClick({ trainingSession, trainingCase }));
   }
 }

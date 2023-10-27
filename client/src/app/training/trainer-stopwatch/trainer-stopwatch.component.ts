@@ -74,7 +74,11 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   }
   
   get memoTime() {
-    const memoTimeS = this.trainingSession?.memoTimeS;
+    const trainingSession = this.trainingSession;
+    if (!trainingSession || trainingSession.generatorType !== GeneratorType.Scramble) {
+      return undefined;
+    }
+    const memoTimeS = trainingSession.memoTimeS;
     return memoTimeS ? seconds(memoTimeS) : undefined;
   }
 

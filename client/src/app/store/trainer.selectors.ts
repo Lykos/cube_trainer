@@ -1,9 +1,11 @@
 import { createSelector, MemoizedSelector, createFeatureSelector } from '@ngrx/store';
 import { calculateStats } from '@training/calculate-stats';
 import { Instant, now, fromUnixMillis } from '@utils/instant';
+import { TrainingSessionAndMaybeSamplingState } from '@training/training-session-and-maybe-sampling-state.model';
 import { seconds } from '@utils/duration';
+import { GeneratorType } from '@training/generator-type.model';
 import { TrainerState, notStartedStopwatchState, isRunning, ResultsState, IntermediateWeightState, initialIntermediateWeightState } from './trainer.state';
-import { TrainingSession } from '@training/training-session.model';
+import { CaseTrainingSession } from '@training/training-session.model';
 import { TrainingCase } from '@training/training-case.model';
 import { Case } from '@training/case.model';
 import { SamplingState, WeightState } from '@utils/sampling';
@@ -64,12 +66,6 @@ export const selectCurrentCaseAndHintActiveById = createSelector(
   },
 );
 
-export interface TrainingSessionAndSamplingState {
-  readonly trainingSession: TrainingSession;
-  readonly samplingState: SamplingState<TrainingCase>;
-};
-
-
 function toWeightState(state: IntermediateWeightState, instant: Instant): WeightState {
   const badnessAverage = computeCubeAverage(state.recentBadnessesS.map(seconds));
   return {
@@ -91,7 +87,7 @@ export function getIntermediateWeightState(resultsState: ResultsState, casee: Ca
   return initialIntermediateWeightState;
 }
 
-function toSamplingState(trainingSession: TrainingSession, resultsState: ResultsState, instant: Instant): SamplingState<TrainingCase> {
+function toSamplingState(trainingSession: CaseTrainingSession, resultsState: ResultsState, instant: Instant): SamplingState<TrainingCase> {
   const weightStates = trainingSession.trainingCases.map(
     trainingCase => {
       const intermediateWeightState = getIntermediateWeightState(resultsState, trainingCase.casee);
@@ -102,21 +98,28 @@ function toSamplingState(trainingSession: TrainingSession, resultsState: Results
   return { weightStates, nextItem };
 }
 
-export const selectTrainingSessionAndSamplingStateById: MemoizedSelector<any, Optional<Map<number, TrainingSessionAndSamplingState>>> = createSelector(
+export const selectTrainingSessionAndSamplingStateById: MemoizedSelector<any, Optional<Map<number, TrainingSessionAndMaybeSamplingState>>> = createSelector(
   selectTrainingSessionEntities,
   selectTrainerAll,
   (trainingSessionEntities, trainerAll) => {
     if (!trainingSessionEntities) {
       return none;
     }
-    const map = new Map<number, TrainingSessionAndSamplingState>();
+    const map = new Map<number, TrainingSessionAndMaybeSamplingState>();
     for (let resultsState of trainerAll) {
       const trainingSessionId = resultsState.trainingSessionId
       const trainingSession = trainingSessionEntities[trainingSessionId];
       if (!trainingSession) {
         return none;
       }
-      map.set(trainingSessionId, { trainingSession, samplingState: toSamplingState(trainingSession, resultsState, now()) });
+      switch (trainingSession.generatorType) {
+	case GeneratorType.Case:
+	  map.set(trainingSessionId, { generatorType: GeneratorType.Case, trainingSession, samplingState: toSamplingState(trainingSession, resultsState, now()) });
+	  break;
+	case GeneratorType.Scramble:
+	  map.set(trainingSessionId, { generatorType: GeneratorType.Scramble, trainingSession });
+	  break;
+      }
     }
     return some(map);
   },

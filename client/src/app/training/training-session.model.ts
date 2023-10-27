@@ -4,11 +4,21 @@ import { TrainingCase } from './training-case.model';
 import { GeneratorType } from './generator-type.model';
 import { Part } from './part.model';
 
-export interface TrainingSession extends TrainingSessionBase {
-  readonly memoTimeS?: number;
+interface CommonTrainingSession extends TrainingSessionBase {
   readonly id: number;
-  readonly trainingCases: readonly TrainingCase[];
   readonly stats: readonly RawStat[];
   readonly buffer?: Part;
   readonly generatorType: GeneratorType;
 }
+
+export interface ScrambleTrainingSession extends CommonTrainingSession {
+  readonly generatorType: GeneratorType.Scramble;
+  readonly memoTimeS?: number;
+}
+
+export interface CaseTrainingSession extends CommonTrainingSession {
+  readonly generatorType: GeneratorType.Case;
+  readonly trainingCases: readonly TrainingCase[];
+}
+
+export type TrainingSession = ScrambleTrainingSession | CaseTrainingSession;
