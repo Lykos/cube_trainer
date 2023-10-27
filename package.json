@@ -43,7 +43,7 @@
     "@rxweb/reactive-form-validators": "^13.0.0",
     "actioncable": "^5.2.6",
     "angular-csv-ext": "^1.0.5",
-    "cubing": "^0.39.1",
+    "cubing": "^0.43.7",
     "file-saver": "^2.0.5",
     "ngx-cookie-service": "^16.0.0",
     "ngx-filesaver": "^16.0.0",
