@@ -162,7 +162,7 @@ module CubeTrainer
 
     # Finds where each part comes from.
     def find_part_sources(interesting_parts, state, &make_coordinate)
-      interesting_parts.collect_concat do |part|
+      interesting_parts.flat_map do |part|
         source_cycle = find_complete_source_cycle(state, part, &make_coordinate)
         if @show_staying || !source_cycle.trivial?
           [source_cycle.first_move.reverse]

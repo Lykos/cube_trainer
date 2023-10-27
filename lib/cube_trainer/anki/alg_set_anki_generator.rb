@@ -100,7 +100,7 @@ module CubeTrainer
       end
 
       def input_variations_with_auf(basic_note_inputs)
-        basic_note_inputs.collect_concat do |input|
+        basic_note_inputs.flat_map do |input|
           AUFS.map.with_index do |auf, index|
             filename = new_image_filename(input.name, index)
             NoteInputVariation.new(

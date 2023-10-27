@@ -43,7 +43,7 @@ describe 'new training session' do
     within('#setup-group-actions') { click_button 'Next' }
 
     mat_select 'Testy Testikow', id: 'alg-set-select'
-    find(:css, '#exclude-alg-holes').set(true)
+    find_by_id('exclude-alg-holes').set(true)
     expect(find_by_id('exclude-alg-holes-value', visible: :all)).to have_text(:all, 'true')
     before_next_sleep
     within('#alg-set-group-actions') { click_button 'Next' }

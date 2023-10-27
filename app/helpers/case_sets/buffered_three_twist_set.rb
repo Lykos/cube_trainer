@@ -98,7 +98,7 @@ module CaseSets
           # Exclude duplicates of the buffer or duplicates between the two targets.
           !a.turned_equals?(b) && !a.turned_equals?(buffer) && !b.turned_equals?(buffer)
         end
-      part_permutations.collect_concat do |parts|
+      part_permutations.flat_map do |parts|
         [
           case_for_direction(parts, 1),
           case_for_direction(parts, 2)

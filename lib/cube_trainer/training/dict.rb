@@ -30,7 +30,7 @@ module CubeTrainer
       private
 
       def read_words
-        lines = DICT_PATHS.collect_concat { |p| File.readlines(p) }
+        lines = DICT_PATHS.flat_map { |p| File.readlines(p) }
         words = Set[]
         lines.sort.each do |l|
           prefix_exists = 3.upto(l.length).any? { |i| words.include?(l[0...i]) }
