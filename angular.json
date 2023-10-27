@@ -133,7 +133,6 @@
       }
     }
   },
-  "defaultProject": "cube-trainer",
   "cli": {
     "defaultCollection": "@ngrx/schematics",
     "packageManager": "npm",
