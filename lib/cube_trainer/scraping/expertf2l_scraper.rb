@@ -31,7 +31,7 @@ module CubeTrainer
       def scrape_f2l_algs_internal
         base_uri = URI(DOMAIN)
         Net::HTTP.start(base_uri.host, base_uri.port) do |http|
-          (1..22).collect_concat do |f2l_case_index|
+          (1..22).flat_map do |f2l_case_index|
             path = "data/f2l_#{f2l_case_index}.json"
             uri = URI.join(DOMAIN, path)
             request = Net::HTTP::Get.new(uri)
@@ -239,7 +239,7 @@ module CubeTrainer
 
       def extract_case_algs(f2l_case_index, json)
         notes =
-          SLOTS.collect_concat do |slot|
+          SLOTS.flat_map do |slot|
             extract_slot_algs(f2l_case_index, slot, json[slot])
           end
         alg_set = notes.pluck(:best_alg)

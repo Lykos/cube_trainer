@@ -86,7 +86,7 @@ module CubeTrainer
       end
 
       def extract_algorithms
-        alternative_algs = @alternative_solutions.collect_concat(&:extract_algorithms)
+        alternative_algs = @alternative_solutions.flat_map(&:extract_algorithms)
         extract_own_algs + alternative_algs
       end
     end
@@ -111,7 +111,7 @@ module CubeTrainer
     attr_reader :good_layer_solutions
 
     def derived_layer_solutions(layer_solution)
-      TwistyPuzzles::SkewbNotation.sarah.non_zero_moves.reverse.collect_concat do |m|
+      TwistyPuzzles::SkewbNotation.sarah.non_zero_moves.reverse.flat_map do |m|
         # Ignore possible moves along the same axis as the last move.
         if layer_solution.move && layer_solution.move.axis_corner == m.axis_corner
           []

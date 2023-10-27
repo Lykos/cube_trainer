@@ -544,3 +544,5 @@ Rails/RedundantActiveRecordAllMethod: # new in 2.21
   Enabled: true
 Rails/UnusedRenderContent: # new in 2.21
   Enabled: true
+Style/SingleLineDoEndBlock: # new in 1.57
+  Enabled: true
