@@ -382,8 +382,8 @@ GEM
       rubocop (>= 1.33.0, < 2.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
-    rubocop-rspec (2.23.2)
-      rubocop (~> 1.33)
+    rubocop-rspec (2.25.0)
+      rubocop (~> 1.40)
       rubocop-capybara (~> 2.17)
       rubocop-factory_bot (~> 2.22)
     ruby-filemagic (0.7.3)
@@ -485,7 +485,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails (~> 2.21.2)
   rubocop-rake
-  rubocop-rspec (~> 2.23.2)
+  rubocop-rspec (~> 2.25.0)
   ruby-filemagic
   ruby-progressbar
   rubyzip
