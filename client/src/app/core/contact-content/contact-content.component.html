@@ -9,11 +9,19 @@
     <a [href]="'mailto:' + contactEmail">{{contactEmail}}</a>
   </p>
   <p>
-    Link for reporting bugs and feature requests:
-    <a [href]="newIssueLink">{{newIssueLink}}</a>
+    Link for reporting bugs:
+    <a [href]="newBugLink">{{newBugLink}}</a>
+  </p>
+  <p>
+    Link for reporting feature requests:
+    <a [href]="newFeatureRequestLink">{{newFeatureRequestLink}}</a>
+  </p>
+  <p>
+    Link for reporting security bugs:
+    <a [href]="newSecurityBugLink">{{newSecurityBugLink}}</a>
   </p>
   <p>
     Email for reporting security bugs:
-    <a [href]="'mailto:' + securityEmail">{{securityEmail}}</a>
+    <a [href]="'mailto:' + securityBugEmail">{{securityBugEmail}}</a>
   </p>
 </div>

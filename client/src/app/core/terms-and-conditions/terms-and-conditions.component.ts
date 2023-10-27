@@ -6,12 +6,16 @@ import { METADATA } from '@shared/metadata.const';
   templateUrl: './terms-and-conditions.component.html',
 })
 export class TermsAndConditionsComponent {
-  get securityEmail() {
-    return METADATA.maintainer.securityEmail;
+  get securityBugEmail() {
+    return METADATA.maintainer.securityBugEmail;
+  }
+
+  get newSecurityBugLink() {
+    return METADATA.newIssueLinks.securityBug;
   }
 
   get newIssueLink() {
-    return METADATA.newIssueLink;
+    return METADATA.newIssueLinks.choose;
   }
 
   scrollToElement(element: HTMLElement): void {
