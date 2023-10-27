@@ -20,32 +20,32 @@ describe CaseReverseEngineer do
 
       it 'finds the parts of ig' do
         alg = parse_commutator("[L', U R U']").algorithm
-        expect(engineer.find_part_cycle(alg)).to be == TwistyPuzzles::PartCycle.new([buffer, i, g])
+        expect(engineer.find_part_cycle(alg)).to eq TwistyPuzzles::PartCycle.new([buffer, i, g])
       end
 
       it 'finds the parts of gi' do
         alg = parse_commutator("[U R U', L']").algorithm
-        expect(engineer.find_part_cycle(alg)).to be == TwistyPuzzles::PartCycle.new([buffer, g, i])
+        expect(engineer.find_part_cycle(alg)).to eq TwistyPuzzles::PartCycle.new([buffer, g, i])
       end
 
       it 'finds the parts of tg' do
         alg = parse_commutator("[L', U R' U']").algorithm
-        expect(engineer.find_part_cycle(alg)).to be == TwistyPuzzles::PartCycle.new([buffer, t, g])
+        expect(engineer.find_part_cycle(alg)).to eq TwistyPuzzles::PartCycle.new([buffer, t, g])
       end
 
       it 'finds the parts of gt' do
         alg = parse_commutator("[U R' U', L']").algorithm
-        expect(engineer.find_part_cycle(alg)).to be == TwistyPuzzles::PartCycle.new([buffer, g, t])
+        expect(engineer.find_part_cycle(alg)).to eq TwistyPuzzles::PartCycle.new([buffer, g, t])
       end
 
       it 'finds the parts of it' do
         alg = parse_commutator("[D U R U' : [D', R' U R]]").algorithm
-        expect(engineer.find_part_cycle(alg)).to be == TwistyPuzzles::PartCycle.new([buffer, i, t])
+        expect(engineer.find_part_cycle(alg)).to eq TwistyPuzzles::PartCycle.new([buffer, i, t])
       end
 
       it 'finds the parts of ti' do
         alg = parse_commutator("[D U R U' : [R' U R, D']]").algorithm
-        expect(engineer.find_part_cycle(alg)).to be == TwistyPuzzles::PartCycle.new([buffer, t, i])
+        expect(engineer.find_part_cycle(alg)).to eq TwistyPuzzles::PartCycle.new([buffer, t, i])
       end
     end
 
@@ -57,7 +57,7 @@ describe CaseReverseEngineer do
 
       it 'finds the parts of a simple alg' do
         alg = parse_commutator("[R' F R, S]").algorithm
-        expect(engineer.find_part_cycle(alg)).to be == TwistyPuzzles::PartCycle.new([buffer, i, c])
+        expect(engineer.find_part_cycle(alg)).to eq TwistyPuzzles::PartCycle.new([buffer, i, c])
       end
     end
   end

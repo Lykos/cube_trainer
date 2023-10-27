@@ -28,6 +28,7 @@ import { TrainingSessionsState } from './training-sessions.state';
 import { TrainingSession } from '@training/training-session.model';
 import { TrainingSessionSummary } from '@training/training-session-summary.model';
 import { TrainingCase } from '@training/training-case.model';
+import { GeneratorType } from '@training/generator-type.model';
 import { AlgOverride } from '@training/alg-override.model';
 import { backendActionNotStartedState, backendActionLoadingState, backendActionSuccessState, backendActionFailureState } from '@shared/backend-action-state.model';
 import { EntityAdapter, createEntityAdapter } from '@ngrx/entity';
@@ -71,7 +72,12 @@ function addAlgOverrideToTrainingCases(trainingCases: readonly TrainingCase[], a
 function addAlgOverrideToTrainingSession(trainingSessionId: number, algOverride: AlgOverride) {
   return {
     id: trainingSessionId,
-    map: (trainingSession: TrainingSession) => ({ ...trainingSession, trainingCases: addAlgOverrideToTrainingCases(trainingSession.trainingCases, algOverride) }),
+    map: (trainingSession: TrainingSession) => {
+      if (trainingSession.generatorType === GeneratorType.Case) {
+	return { ...trainingSession, trainingCases: addAlgOverrideToTrainingCases(trainingSession.trainingCases, algOverride) }
+      }
+      return trainingSession;
+    },
   };
 }
 

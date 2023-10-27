@@ -16,7 +16,7 @@
   </div>
   <div>
     <h2>Security & Privacy Issues</h2>
-    Users agree to report any Security and Privacy Issue they discover as quickly as possible. If you discover a security bug, please email {{ securityEmail }}. We will respond within 14 days and either fix the bug or take the website offline until we have time to fix it.
+    Users agree to report any Security and Privacy Issue they discover as quickly as possible. If you discover a security bug, please report it via <a [href]="newSecurityBugLink">{{newSecurityBugLink}}</a> or email <a [href]="'mailto:' + securityBugEmail">{{securityBugEmail}}</a>. We will respond within 14 days and either fix the bug or take the website offline until we have time to fix it.
 
     Note that this only counts for security bugs, normal bugs should be reported via <a [href]="newIssueLink">Github</a>.
   </div>

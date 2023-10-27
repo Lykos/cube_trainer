@@ -1,12 +1,13 @@
 import { StatTypeId } from './stat-type-id.model';
 import { Stat } from './stat.model';
 import { statTypes } from './stat-types.const';
-import { TrainingSession } from './training-session.model';
+import { CaseTrainingSession, TrainingSession } from './training-session.model';
 import { seconds, zeroDuration, infiniteDuration, Duration } from '@utils/duration';
 import { orElse } from '@utils/optional';
 import { dnfStatPart, undefinedStatPart, durationStatPart, fractionStatPart, countStatPart, StatPart } from './stat-part.model';
 import { Result } from './result.model';
 import { RawStat } from './raw-stat.model';
+import { GeneratorType } from './generator-type.model';
 import { CubeAverage } from '@utils/cube-average';
 import { fromDateString } from '@utils/instant';
 import { find } from '@utils/utils';
@@ -83,11 +84,11 @@ function mo3(results: readonly Result[]): StatPart {
   return durationOrDnfStatPart(name, sum.times(1 / adjustedN));
 }
 
-function totalCases(trainingSession: TrainingSession): StatPart {
+function totalCases(trainingSession: CaseTrainingSession): StatPart {
   return countStatPart('total cases', trainingSession.trainingCases.length);
 }
 
-function casesSeen(trainingSession: TrainingSession, results: readonly Result[]): StatPart {
+function casesSeen(trainingSession: CaseTrainingSession, results: readonly Result[]): StatPart {
   const caseKeys = new Set<string>();
   for (let r of results) {
     caseKeys.add(r.casee.key);
@@ -109,7 +110,11 @@ function calculateStatParts(trainingSession: TrainingSession, statType: StatType
     case StatTypeId.SuccessAverages: return NS.map(n => successAverage(results, n));
     case StatTypeId.SuccessRates: return NS.map(n => successRates(results, n));
     case StatTypeId.Mo3: return [mo3(results)];
-    case StatTypeId.Progress: return [casesSeen(trainingSession, results), totalCases(trainingSession)];
+    case StatTypeId.Progress:
+      if (trainingSession.generatorType !== GeneratorType.Case) {
+	throw new Error(`Progress stat is only valid for case training sessions, not for one with generator type ${trainingSession.generatorType}.`);
+      }
+      return [casesSeen(trainingSession, results), totalCases(trainingSession)];      
     default:
       return [];
   }

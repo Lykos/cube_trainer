@@ -11,11 +11,19 @@ export class ContactContentComponent {
     return METADATA.maintainer.email;
   }
 
-  get securityEmail() {
-    return METADATA.maintainer.securityEmail;
+  get securityBugEmail() {
+    return METADATA.maintainer.securityBugEmail;
   }
 
-  get newIssueLink() {
-    return METADATA.newIssueLink;
+  get newFeatureRequestLink() {
+    return METADATA.newIssueLinks.featureRequest;
+  }
+
+  get newBugLink() {
+    return METADATA.newIssueLinks.bug;
+  }
+
+  get newSecurityBugLink() {
+    return METADATA.newIssueLinks.securityBug;
   }
 }

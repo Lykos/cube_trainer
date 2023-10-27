@@ -27,6 +27,7 @@ import { RouterModule } from '@angular/router';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { ValuePipe } from './value.pipe';
 import { BackendActionLoadErrorComponent } from './backend-action-load-error/backend-action-load-error.component';
+import { GithubErrorNoteComponent } from './github-error-note/github-error-note.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { BackendActionLoadErrorComponent } from './backend-action-load-error/bac
     FluidInstantPipe,
     OrErrorPipe,
     ValuePipe,
+    GithubErrorNoteComponent,
   ],
   imports: [
     BrowserModule,

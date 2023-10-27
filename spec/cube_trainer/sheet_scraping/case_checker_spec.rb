@@ -44,43 +44,43 @@ describe CaseChecker do
 
   it 'deems a correct algorithm correct' do
     result = checker.check_alg(cell_description(buffer, i, g), parse_commutator("[L', U R U']"))
-    expect(result.result).to be == :correct
+    expect(result.result).to eq :correct
     expect(result.fix).to be_nil
   end
 
   it 'deems a correct midge algorithm correct' do
     result = midge_checker.check_alg(cell_description(midge_uf, midge_ub, midge_lu), parse_commutator("[U' M U' : [M', U2]]"))
-    expect(result.result).to be == :correct
+    expect(result.result).to eq :correct
     expect(result.fix).to be_nil
   end
 
   it 'fixes an algorithm that has to be inverted' do
     result = checker.check_alg(cell_description(buffer, i, g), parse_commutator("[U R U', L']"))
-    expect(result.result).to be == :fix_found
+    expect(result.result).to eq :fix_found
     expect(result.fix).to eq_commutator("[L', U R U']")
   end
 
   it 'fixes an algorithm where one move in the insert has to be inverted' do
     result = checker.check_alg(cell_description(buffer, i, g), parse_commutator("[L', U' R U']"))
-    expect(result.result).to be == :fix_found
+    expect(result.result).to eq :fix_found
     expect(result.fix).to eq_commutator("[L', U R U']")
   end
 
   it 'fixes an algorithm where the interchange has to be inverted' do
     result = checker.check_alg(cell_description(buffer, i, g), parse_commutator("[L, U R U']"))
-    expect(result.result).to be == :fix_found
+    expect(result.result).to eq :fix_found
     expect(result.fix).to eq_commutator("[L', U R U']")
   end
 
   it 'fixes an algorithm where the setup has to be inverted' do
     result = checker.check_alg(cell_description(buffer, i, e), parse_commutator("[F : [L', U R U']]"))
-    expect(result.result).to be == :fix_found
+    expect(result.result).to eq :fix_found
     expect(result.fix).to eq_commutator("[F' : [L', U R U']]")
   end
 
   it 'says unfixable if no fix is in sight' do
     result = checker.check_alg(cell_description(buffer, j, g), parse_commutator('[M, U]'))
-    expect(result.result).to be == :unfixable
+    expect(result.result).to eq :unfixable
     expect(result.fix).to be_nil
   end
 end

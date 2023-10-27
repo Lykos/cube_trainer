@@ -155,7 +155,7 @@ describe SkewbLayerFinder do
 
     it 'does not find a layer that takes too many moves' do
       parse_skewb_algorithm('U R', fixed_corner).apply_to(skewb_state)
-      expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to be == {}
+      expect(layer_finder.find_layer(skewb_state, 1).extract_algorithms).to(eq({}))
     end
 
     it 'finds multiple solutions if applicable' do

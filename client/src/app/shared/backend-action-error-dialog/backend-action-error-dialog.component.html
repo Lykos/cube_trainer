@@ -24,6 +24,7 @@
         </li>
       </ul>
     </ng-container>
+    <cube-trainer-github-error-note [error]="error" *ngIf="!error.fieldErrors"></cube-trainer-github-error-note>
   </div>
   <div mat-dialog-actions>
     <button mat-raised-button color="primary" mat-dialog-close>Ok</button>

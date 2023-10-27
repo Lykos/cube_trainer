@@ -224,8 +224,8 @@ export class TrainerEffects {
       ofType(loadNextCase),
       concatLatestFrom(() => this.store.select(selectTrainingSessionAndSamplingStateById).pipe(filterPresent())),
       switchMap(([action, lolMap]) => {
-        const { trainingSession, samplingState } = lolMap.get(action.trainingSessionId)!;
-        return this.trainerService.randomScrambleOrSample(now(), trainingSession, samplingState).pipe(
+        const trainingSessionAndMaybeSamplingState = lolMap.get(action.trainingSessionId)!;
+        return this.trainerService.randomScrambleOrSample(now(), trainingSessionAndMaybeSamplingState).pipe(
           map(nextCase => loadNextCaseSuccess({ trainingSessionId: action.trainingSessionId, nextCase })),
           catchError(httpResponseError => {
             const context = { action: 'selecting', subject: 'next scramble or sample' };

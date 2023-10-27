@@ -1,3 +1,4 @@
 <div>
   {{ error?.context?.action }} {{ error?.context?.subject }} failed: {{ error?.statusText || error?.message }}
+  <cube-trainer-github-error-note [error]="error"></cube-trainer-github-error-note>
 </div>

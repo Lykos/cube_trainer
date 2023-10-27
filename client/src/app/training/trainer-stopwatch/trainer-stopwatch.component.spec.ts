@@ -8,15 +8,14 @@ import { DurationPipe } from '@shared/duration.pipe';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { selectStopwatchState, selectStopwatchRunning, selectNextCaseReady } from '@store/trainer.selectors';
 import { notStartedStopwatchState, runningStopwatchState, stoppedStopwatchState } from '@store/trainer.state';
-import { TrainingSession } from '../training-session.model';
+import { ScrambleTrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { GeneratorType } from '../generator-type.model';import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-const trainingSession: TrainingSession = {
+const trainingSession: ScrambleTrainingSession = {
   id: 1,
   name: 'test session',
-  trainingCases: [],
   known: false,
   showInputMode: ShowInputMode.Scramble,
   generatorType: GeneratorType.Scramble,
