@@ -12,7 +12,7 @@
 
 * **Ensure the bug was not already reported** by searching Github under [Issues](https://github.com/Lykos/cube_trainer/issues).
 
-* If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/Lykos/cube_trainer/issues/new). Be sure to follow one of the templates and include much relevant information as possible.
+* If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/Lykos/cube_trainer/issues/new/choose). Be sure to follow one of the templates and include much relevant information as possible.
 
 ## Contributing Code
 
