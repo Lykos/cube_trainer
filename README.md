@@ -141,7 +141,13 @@ Note that the way we combine Angular and Ruby is a bit self-baked. They basicall
 
 ## Production Setup
 
-The website is hosted on Heroku and is automatically deployed if CI on the master branch on Github passes. It uses Mailgun for sending mails.
+The website is hosted on Heroku and is automatically deployed if CI on the master branch on Github passes. It uses the following Heroku plugins.
+
+* It uses Mailgun Starter for sending mails. There's also some config on the Mailgun website.
+* It uses Heroku Postgres Basic for the database.
+* It uses Heroku Scheduler to regularly scrape sheets. (Although I haven't checked in a while if this is still working and breakages aren't very visible).
+
+Formerly it also used Redis-to-go for ActionCable. Redis-to-go was removed from Heroku in August 2023 and we don't have a replacement yet. I.e. the ActionCable related things don't work at the moment. Luckily, they are only used to notify the user of achievements, so it's not removing a lot of functionality.
 
 ## Using the Website
 
