@@ -94,6 +94,7 @@ module CaseSets
     end
 
     def self.all
+      # TODO: Parity twist sets
       @all ||= (three_cycle_sets + floating_two_twist_sets + parity_sets + three_twist_sets).freeze
     end
   end

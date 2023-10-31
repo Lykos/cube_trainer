@@ -2,17 +2,17 @@ require 'twisty_puzzles'
 
 module CubeTrainer
   class CaseSetSetupFinder
-    def initialize(concrete_case_set)
-      raise TypeError unless concrete_case_set.is_a?(ConcreteCaseSet)
+    def initialize(case_set)
+      raise TypeError unless case_set.is_a?(CaseSets::ConcreteCaseSet)
 
-      @concrete_case_set = concrete_case_set
+      @case_set = case_set
     end
 
     def find_setup(casee)
       raise ArgumentError unless casee.valid?
-      raise ArgumentError unless @concrete_case_set.case_set.match?(casee)
+      raise ArgumentError unless @case_set.match?(casee)
 
-      setup_hash[casee]
+      setup_hash[casee.canonicalize(ignore_same_face_center_cycles: true)]
     end
 
     private
@@ -21,14 +21,14 @@ module CubeTrainer
 
     def initial_algs
       seed_algs =
-        case @concrete_case_set
-        when BufferedParitySet then buffered_parity_set_seed_algs
-        when BufferedParityTwistSet then buffered_parity_twist_set_seed_algs
-        when BufferedThreeCycleSet then buffered_three_cycle_seed_algs
-        when BufferedThreeTwistSet then buffered_three_twist_seed_algs
-        when ConcreteFloatingTwoTwistSet then floating_two_twist_seed_algs
+        case @case_set
+        when CaseSets::BufferedParitySet then buffered_parity_set_seed_algs
+        when CaseSets::BufferedParityTwistSet then buffered_parity_twist_set_seed_algs
+        when CaseSets::BufferedThreeCycleSet then buffered_three_cycle_seed_algs
+        when CaseSets::BufferedThreeTwistSet then buffered_three_twist_seed_algs
+        when CaseSets::ConcreteFloatingTwoTwistSet then floating_two_twist_seed_algs
         else
-          raise 'Unsupported case set class #{@concrete_case_set.class}.'
+          raise "Unsupported case set class #{@case_set.class}."
         end
       extend_algorithms(seed_algs)
     end
@@ -39,10 +39,10 @@ module CubeTrainer
     # * rotations
     # and combinations thereof.
     def extend_algorithms(seed_algorithms)
-      extended_algorithms = algorithms.flat_map { |a| [a, a.mirror(Face::U)] }
-      extended_algorithms = algorithms.flat_map { |a| [a, a.inverse] }
+      extended_algorithms = seed_algorithms.flat_map { |a| [a, a.mirror(Face::U)] }
+      extended_algorithms = extended_algorithms.flat_map { |a| [a, a.inverse] }
       rotation_combos = Rotation::ALL_ROTATIONS.product(Rotation::ALL_ROTATIONS)
-      extended_algorithms = rotation_combos.flat_map { |r, q| mirror_extended_algorithms.map { |a| a.rotate_by(r).rotate_by(q) } }
+      extended_algorithms = rotation_combos.flat_map { |r, q| extended_algorithms.map { |a| a.rotate_by(r).rotate_by(q) } }
       extended_algorithms.uniq
     end
 
@@ -64,8 +64,7 @@ module CubeTrainer
     end
 
     def buffered_three_cycle_seed_algs
-      case @concrete_case_set.part_type
-      when Corner
+      if @case_set.part_type == Corner
         [
           parse_algorithm("R U R' D R U' R' D'"),
           parse_algorithm("R U' R' D R U R' D'"),
@@ -77,7 +76,7 @@ module CubeTrainer
           parse_algorithm("R U' R' D2 R U R' D2"),
           parse_algorithm("R U2 R' D2 R U2 R' D2"),
         ]
-      when Edge, Midge
+      elsif @case_set.part_type == Edge || @case_set.part_type == Midge
         [
           parse_algorithm("M' U2 M U2"),
           parse_algorithm("U M' U2 M U"),
@@ -101,7 +100,7 @@ module CubeTrainer
           parse_algorithm("R2 U' M' U R2 U' M U"),
           parse_algorithm("R2 U' M2 U R2 U' M2 U"),
         ]
-      when Wing
+      elsif @case_set.part_type == Wing
         [
           parse_algorithm("r' U' R U r U' R' U"),
           parse_algorithm("r' U' R' U r U' R U"),
@@ -122,7 +121,7 @@ module CubeTrainer
           parse_algorithm("R2 U' r' U R2 U' r U"),
           parse_algorithm("R2 U' r2 U R2 U' r2 U"),
         ]
-      when XCenter
+      elsif @case_set.part_type == XCenter
         [
           parse_algorithm("r U r' d r U' r' d'"),
           parse_algorithm("r U' r' d r U r' d'"),
@@ -143,7 +142,7 @@ module CubeTrainer
           parse_algorithm("r u' r' D2 r u r' D2"),
           parse_algorithm("r u2 r' D2 r u2 r' D2"),
         ]        
-      when TCenter
+      elsif @case_set.part_type == TCenter
         [
           parse_algorithm("M' U2 M D M' U2 M D'"),
           parse_algorithm("M' U' r U M U' r' U"),
@@ -166,7 +165,7 @@ module CubeTrainer
           parse_algorithm("r2 U' M2 U r2 U' M2 U"),
         ]
       else
-        raise 'Unsupported part type set class #{@concrete_case_set.part_type.class}.'
+        raise "Unsupported part type set class #{@case_set.part_type} for buffered three cycles."
       end
     end
 
@@ -176,23 +175,32 @@ module CubeTrainer
       ]
     end
 
-    def buffered_floating_two_twist_seed_algs
-      [
-        parse_algorithm("R' D R D' R' D R U R' D' R D R' D' R U'"),
-        parse_algorithm("R' D R D' R' D R U2 R' D' R D R' D' R U2")
-      ]
+    def floating_two_twist_seed_algs
+      if @case_set.part_type == Corner
+        [
+          parse_algorithm("R' D R D' R' D R U R' D' R D R' D' R U'"),
+          parse_algorithm("R' D R D' R' D R U2 R' D' R D R' D' R U2")
+        ]
+      elsif @case_set.part_type == Edge || @case_set.part_type == Midge
+        [
+          parse_algorithm("R' E R U' R' E' R2 E2 R' U R E2 R'"),
+          parse_algorithm("R' E R U R' E' R2 E2 R' U' R E2 R'")
+        ]
+      else
+        raise "Unsupported part type set class #{@case_set.part_type.class} for floating two twists."
+      end
     end
 
     def setup_algs
       setup_moves =
-        case @concrete_case_set
-        when BufferedParitySet then [parse_move('R')]
-        when BufferedParityTwistSet then [parse_move('R')]
-        when BufferedThreeCycleSet then [parse_move('R'), parse_move('Rw')]
-        when BufferedThreeTwistSet then [parse_move('R')]
-        when ConcreteFloatingTwoTwistSet then [parse_move('R')]
+        case @case_set
+        when CaseSets::BufferedParitySet then [parse_move('R'), parse_move('Rw')]
+        when CaseSets::BufferedParityTwistSet then [parse_move('R'), parse_move('Rw')]
+        when CaseSets::BufferedThreeCycleSet then [parse_move('R'), parse_move('Rw')]
+        when CaseSets::BufferedThreeTwistSet then [parse_move('R')]
+        when CaseSets::ConcreteFloatingTwoTwistSet then [parse_move('R'), parse_move('Rw')]
         else
-          raise 'Unsupported case set class #{@concrete_case_set.class}.'
+          raise 'Unsupported case set class #{@case_set.class}.'
         end
       extend_algorithms(setup_moves.map { |m| Algorithm.move(m) })
     end
@@ -200,27 +208,32 @@ module CubeTrainer
     def case_reverse_engineer
       @case_reverse_engineer ||=
         CubeTrainer::CaseReverseEngineer.new(
-          cube_size: owning_set.case_set.default_cube_size
+          cube_size: @case_set.default_cube_size
         )
     end
 
     def create_setup_hash
       setup_hash = {}
-      cases = case_set.cases
+      cases = @case_set.cases
       algs = initial_algs
 
-      loop do
+      4.times do |i|
+        useful_algs = []
         algs.each do |alg|
           casee = case_reverse_engineer.find_case(alg)
 
           found_cases = cases.select { |c| c.equivalent?(casee) }
+          next if found_cases.empty?
+
+          useful_algs.push(alg)
           found_cases.each { |c| setup_hash[c] = alg }
           cases -= found_cases
         end
-        break if cases.empty?
+        return setup_hash if cases.empty?
 
-        algs = algs.flat_map { |alg| setup_algs.flat_map { |s| s + alg + s.inverse } }
+        algs = useful_algs.flat_map { |alg| setup_algs.flat_map { |s| s + alg + s.inverse } }
       end
+      raise "Couldn't find algs for all cases for #{@case_set.class}." unless cases.empty?
     end
 
     def setup_hash

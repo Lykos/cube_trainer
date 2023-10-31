@@ -63,6 +63,8 @@ module AlgLike
     nil
   end
 
+  # Seems like this should be cached, but really it's only created multiple
+  # times during scraping where latency doesn't matter.
   def create_reverse_engineer
     CubeTrainer::CaseReverseEngineer.new(
       cube_size: owning_set.case_set.default_cube_size
