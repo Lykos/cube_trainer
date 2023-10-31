@@ -27,7 +27,7 @@ describe CubeTrainer::SheetScraping::CaseSetSetupFinder do
 
       casee = case_set.cases.first
 
-      fit "Finds a setup for case #{casee} in #{case_set}." do
+      it "Finds a setup for case #{casee} in #{case_set}." do
         alg = SheetScraping::CaseSetSetupFinder.new(case_set).find_setup(casee)
         found_case = case_reverse_engineer.find_case(alg.inverse)
         expect(canonicalize(found_case)).to eq(canonicalize(casee))
