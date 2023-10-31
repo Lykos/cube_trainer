@@ -376,7 +376,7 @@ GEM
     rubocop-performance (1.19.1)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
-    rubocop-rails (2.21.2)
+    rubocop-rails (2.22.0)
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 1.33.0, < 2.0)
@@ -483,7 +483,7 @@ DEPENDENCIES
   rspec-rails
   rubocop (~> 1.57.2)
   rubocop-performance
-  rubocop-rails (~> 2.21.2)
+  rubocop-rails (~> 2.22.0)
   rubocop-rake
   rubocop-rspec (~> 2.25.0)
   ruby-filemagic
