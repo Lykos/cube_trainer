@@ -196,9 +196,19 @@ module CubeTrainer
         case @case_set
         when CaseSets::BufferedParitySet then [parse_move('R'), parse_move('Rw')]
         when CaseSets::BufferedParityTwistSet then [parse_move('R'), parse_move('Rw')]
-        when CaseSets::BufferedThreeCycleSet then [parse_move('R'), parse_move('Rw')]
+        when CaseSets::BufferedThreeCycleSet
+          if @case_set.part_type == Corner
+            [parse_move('R')]
+          else
+            [parse_move('R'), parse_move('Rw')]
+          end
         when CaseSets::BufferedThreeTwistSet then [parse_move('R')]
-        when CaseSets::ConcreteFloatingTwoTwistSet then [parse_move('R'), parse_move('Rw')]
+        when CaseSets::ConcreteFloatingTwoTwistSet
+          if @case_set.part_type == Corner
+            [parse_move('R')]
+          else
+            [parse_move('R'), parse_move('Rw')]
+          end
         else
           raise 'Unsupported case set class #{@case_set.class}.'
         end
@@ -217,7 +227,7 @@ module CubeTrainer
       cases = @case_set.cases
       algs = initial_algs
 
-      4.times do |i|
+      5.times do
         useful_algs = []
         algs.each do |alg|
           casee = case_reverse_engineer.find_case(alg)
