@@ -68,7 +68,7 @@
     "@types/jasmine": "^5.1.1",
     "@types/node": "^20.8.10",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
-    "@typescript-eslint/parser": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.1",
     "angular-http-server": "^1.11.1",
     "chai": "^4.3.4",
     "eslint": "^8.42.0",
