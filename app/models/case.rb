@@ -42,6 +42,14 @@ class Case
     self.class.new(part_cycles: part_cycles.map(&:inverse))
   end
 
+  def mirror(normal_face)
+    self.class.new(part_cycles: part_cycles.map { |c| c.mirror(normal_face) })
+  end
+
+  def rotate_by(rotation)
+    self.class.new(part_cycles: part_cycles.map { |c| c.rotate_by_rotation(rotation) })
+  end
+
   def eql?(other)
     self.class.equal?(other.class) &&
       part_cycles == other.part_cycles
