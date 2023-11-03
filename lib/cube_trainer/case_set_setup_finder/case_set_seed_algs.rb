@@ -3,7 +3,7 @@
 require 'twisty_puzzles'
 
 module CubeTrainer
-  module SheetScraping
+  module CaseSetSetupFinder
     # Contains seed algs to start the search for a `CaseSetSetupFinder`.
     # This is just a list of list of algs, so it's long but not very complicated,
     # therefore we accept a very long module and very long methods.

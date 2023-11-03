@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'cube_trainer/sheet_scraping/case_set_seed_algs'
+require 'cube_trainer/case_set_setup_finder/case_set_seed_algs'
 
 module CubeTrainer
-  module SheetScraping
+  module CaseSetSetupFinder
     # Finds setups for each case in a case set.
     # Note that the setups might be bad algs for humans, but they might be useful for machine processing.
     class CaseSetSetupFinder
@@ -47,9 +47,10 @@ module CubeTrainer
 
             found_cases = cases.select { |c| c.equivalent?(casee) }
             next if found_cases.empty?
+            raise if found_cases.lenght > 1
 
             useful_algs.push(alg)
-            found_cases.each { |c| setup_hash[c] = alg.inverse }
+            setup_hash[found_cases.first] = alg.inverse
             cases -= found_cases
           end
           return setup_hash if cases.empty?
