@@ -45,7 +45,7 @@
     "angular-csv-ext": "^1.0.5",
     "cubing": "^0.43.8",
     "file-saver": "^2.0.5",
-    "ngx-cookie-service": "^16.0.0",
+    "ngx-cookie-service": "^16.0.2",
     "ngx-filesaver": "^16.0.0",
     "rxjs": "^7.8.1",
     "tslib": "^2.3.0",
