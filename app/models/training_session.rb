@@ -3,6 +3,7 @@
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 require 'training_session_type'
+require 'cube_trainer/case_set_setup_finder/case_set_setup_finder'
 
 # Model for training sessions that the user created.
 class TrainingSession < ApplicationRecord
