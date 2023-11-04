@@ -48,7 +48,7 @@ module CubeTrainer
       # * rotations
       # and combinations thereof.
       def extend_cased_algorithms(cased_algorithms)
-        extended_algorithms = extend_cased_algorithms_with_operation(cased_algorithms) { |a| a.mirror(Face::U) }
+        extended_algorithms = extend_cased_algorithms_with_operation(cased_algorithms) { |a| a.mirror(Face::R) }
         extended_algorithms = extend_cased_algorithms_with_operation(extended_algorithms, &:inverse)
         rotation_combos = Rotation::ALL_ROTATIONS.product(Rotation::ALL_ROTATIONS)
         extended_algorithms =

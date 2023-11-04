@@ -81,7 +81,7 @@ module CubeTrainer
       end
 
       def to_rotation(move)
-        Rotation.new(move.axis_face, move.direction)
+        Rotation.new(move.axis_face, move.direction.inverse)
       end
 
       def next_algs(cased_algs)
@@ -112,7 +112,8 @@ module CubeTrainer
             raise if found_cases.length > 1
 
             useful_cased_algs.push(cased_alg)
-            setup_hash[found_cases.first] = alg.inverse
+            canonicalized = found_cases.first.canonicalize(ignore_same_face_center_cycles: true)
+            setup_hash[canonicalized] = alg.inverse
             cases -= found_cases
           end
           return setup_hash if cases.empty?

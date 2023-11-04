@@ -10,11 +10,16 @@ def canonicalize(casee)
   casee.canonicalize(ignore_same_face_center_cycles: true)
 end
 
-xdescribe CubeTrainer::CaseSetSetupFinder::CaseSetSetupFinder do
+def arbitrary_refine(abstract_alg_set)
+  arbitrary_buffer = abstract_alg_set.buffer_part_type::ELEMENTS.first
+  abstract_alg_set.refinement(arbitrary_buffer)
+end
+
+describe CubeTrainer::CaseSetSetupFinder::CaseSetSetupFinder do
   with_buffer = CaseSets::AbstractCaseSet.all.select(&:buffer?)
   without_buffer = CaseSets::AbstractCaseSet.all.reject(&:buffer?)
   without_buffer_refinements = without_buffer.map(&:refinement)
-  with_buffer_refinements = with_buffer.map { |c| c.refinement(c.buffer_part_type::ELEMENTS.first) }
+  with_buffer_refinements = with_buffer.map { |c| arbitrary_refine(c) }
   concrete_case_sets = with_buffer_refinements + without_buffer_refinements
 
   concrete_case_sets.each do |case_set|
