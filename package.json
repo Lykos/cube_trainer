@@ -13,15 +13,15 @@
   },
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build --configuration production",
-    "build_development": "ng build --configuration development",
-    "build_e2e": "ng build --configuration e2e",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "test_ci": "ng test --karma-config client/karma-ci.conf.js",
-    "lint": "ng lint"
+    "ng": "npx -p @angular/cli ng",
+    "start": "npx -p @angular/cli ng serve",
+    "build": "npx -p @angular/cli ng build --configuration production",
+    "build_development": "npx -p @angular/cli ng build --configuration development",
+    "build_e2e": "npx -p @angular/cli ng build --configuration e2e",
+    "watch": "npx -p @angular/cli ng build --watch --configuration development",
+    "test": "npx -p @angular/cli ng test",
+    "test_ci": "npx -p @angular/cli ng test --karma-config client/karma-ci.conf.js",
+    "lint": "npx -p @angular/cli ng lint"
   },
   "dependencies": {
     "@angular/animations": "^16.2.11",
