@@ -30,7 +30,7 @@ export class NewTrainingSessionComponent {
     this.trainingSessionTypeGroup = this.trainingSessionFormsService.trainingSessionTypeGroup();
     this.algSetGroup = this.trainingSessionFormsService.algSetGroup(() => this.trainingSessionType);
     this.setupGroup = this.trainingSessionFormsService.setupGroup(() => this.trainingSessionType);
-    this.trainingGroup = this.trainingSessionFormsService.trainingGroup(() => this.trainingSessionType, () => !this.algSet || !this.excludeAlgHoles);
+    this.trainingGroup = this.trainingSessionFormsService.trainingGroup(() => this.trainingSessionType);
   }
 
   relevantInvalid(control: AbstractControl) {
@@ -97,20 +97,6 @@ export class NewTrainingSessionComponent {
     return this.algSetControl.value;
   }
 
-  get excludeAlglessParts() {
-    if (!this.buffer || this.excludeAlgHoles || !this.matchingAlgSets) {
-      return undefined;
-    }
-    return this.algSetGroup.get('excludeAlglessParts')!.value;
-  }
-
-  get excludeAlgHoles() {
-    if (!this.matchingAlgSets) {
-      return undefined;
-    }
-    return this.algSetGroup.get('excludeAlgHoles')!.value;
-  }
-
   get selectedShowInputMode() {
     if (this.trainingSessionType && this.trainingSessionType.showInputModes.length == 1) {
       return this.trainingSessionType.showInputModes[0];
@@ -165,8 +151,6 @@ export class NewTrainingSessionComponent {
       cubeSize: this.selectedCubeSize,
       statTypes: this.pickedStatTypes.map(s => s.id),
       algSetId: this.algSet?.id,
-      excludeAlgHoles: this.excludeAlgHoles,
-      excludeAlglessParts: this.excludeAlglessParts,
     };
   }
 
