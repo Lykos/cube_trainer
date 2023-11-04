@@ -39,7 +39,7 @@
     	  <ng-container *ngIf="!result.success"> DNF </ng-container>
     	</td>
         </ng-container>
-        <ng-container matColumnDef="numHints">
+        <ng-container matColumnDef="numHints" hide="" show-gt-sm="">
           <th mat-header-cell *matHeaderCellDef> Num Hints </th>
           <td mat-cell *matCellDef="let result"> {{result.numHints}} </td>
         </ng-container>
