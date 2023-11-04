@@ -4,7 +4,7 @@
 class TrainingCaseSerializer < ActiveModel::Serializer
   include CaseAttributeSerializer
 
-  attributes :setup, :alg, :alg_source
+  attributes :picture_setup, :alg, :alg_source
 
   def alg_source
     return unless object.alg
@@ -22,8 +22,8 @@ class TrainingCaseSerializer < ActiveModel::Serializer
     :original
   end
 
-  def setup
-    object.setup&.to_s
+  def picture_setup
+    object.picture_setup&.to_s
   end
 
   def alg
