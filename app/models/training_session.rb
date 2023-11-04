@@ -101,7 +101,7 @@ class TrainingSession < ApplicationRecord
   end
 
   def setup_finder
-    @setup_finder ||= CaseSetSetupFinder::CaseSetSetupFinder.new(case_set)
+    @setup_finder ||= CubeTrainer::CaseSetSetupFinder::CaseSetSetupFinder.new(case_set)
   end
 
   def picture_setup(casee)
