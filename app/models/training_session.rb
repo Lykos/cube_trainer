@@ -3,6 +3,7 @@
 require 'twisty_puzzles'
 require 'twisty_puzzles/utils'
 require 'training_session_type'
+require 'cube_trainer/case_set_setup_finder/case_set_setup_finder'
 
 # Model for training sessions that the user created.
 class TrainingSession < ApplicationRecord
@@ -99,11 +100,15 @@ class TrainingSession < ApplicationRecord
     alg_override(casee) || alg_set&.alg(casee)
   end
 
-  def setup(algorithm)
-    return unless algorithm
-    raise TypeError unless algorithm.is_a?(TwistyPuzzles::Algorithm)
+  def setup_finder
+    @setup_finder ||= CubeTrainer::CaseSetSetupFinder::CaseSetSetupFinder.new(case_set)
+  end
 
-    color_scheme.setup + algorithm.inverse
+  def picture_setup(casee)
+    return unless show_input_mode == :picture
+    raise TypeError unless casee.is_a?(Case)
+
+    color_scheme.setup + setup_finder.find_setup(casee)
   end
 
   private
@@ -114,7 +119,7 @@ class TrainingSession < ApplicationRecord
       training_session: self,
       casee: casee,
       alg: a,
-      setup: setup(a&.algorithm)
+      picture_setup: picture_setup(casee)
     )
   end
 

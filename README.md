@@ -22,7 +22,7 @@ cd cube_trainer
 ### Postgresql
 
 This example is what I did on Ubuntu, but I'm sure you can figure out how to install
-Ruby, PostgreSQL and npm on your OS, too.
+PostgreSQL on your OS, too.
 
 ```shell
 sudo apt install postgresql libpq-dev
@@ -43,6 +43,14 @@ NPM is the package manager and toolchain we use for the CubeTrainer frontend and
 You can install Node.js and NPM via any means you prefer. We recommend installing it via [nvm](https://github.com/nvm-sh/nvm). This is a tool that lets you manage different Node.js and NPM versions. Check the first few line of the [package.json](package.json) (look for the string "engines") for the Node.js and NPM versions that should be used for CubeTrainer. Other versions might work as well, but there is no guarantee.
 
 You can try to use the Node.js and NPM installation that comes via your OS package manager, too, but there is a good chance that this will be older versions that won't work.
+
+### Filemagic
+
+At the moment, cube trainer depends on the `ruby-filemagic` Gem that depends on the C magic library. We are trying to get rid of this, but while it is still active, you need to install it. This is what I did on Ubuntu:
+
+```
+sudo apt install libmagic-dev
+```
 
 ### Mailcatcher (optional)
 

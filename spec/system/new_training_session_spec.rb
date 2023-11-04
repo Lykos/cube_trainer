@@ -43,8 +43,7 @@ describe 'new training session' do
     within('#setup-group-actions') { click_button 'Next' }
 
     mat_select 'Testy Testikow', id: 'alg-set-select'
-    find_by_id('exclude-alg-holes').set(true)
-    expect(find_by_id('exclude-alg-holes-value', visible: :all)).to have_text(:all, 'true')
+    expect(find_by_id('alg-set-id', visible: :all)).to have_text(:all, alg_set.id.to_s)
     before_next_sleep
     within('#alg-set-group-actions') { click_button 'Next' }
 

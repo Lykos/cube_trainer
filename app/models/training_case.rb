@@ -6,7 +6,7 @@
 # For the abstract case (independent of its solution), see Case.
 class TrainingCase < ActiveModelSerializers::Model
   derive_attributes_from_names_and_fix_accessors
-  attributes :casee, :training_session, :setup, :alg
+  attributes :casee, :training_session, :picture_setup, :alg
 
   validates :casee, presence: true
   validates :training_session, presence: true
@@ -17,13 +17,13 @@ class TrainingCase < ActiveModelSerializers::Model
       @training_session.id == other.training_session.id &&
       @casee == other.casee &&
       @alg == other.alg &&
-      @setup == other.setup &&
+      @picture_setup == other.picture_setup &&
       @alg_source == other.alg_source
   end
 
   alias == eql?
 
   def hash
-    [self.class, @training_session.id, @case, @alg, @setup, @alg_source].hash
+    [self.class, @training_session.id, @case, @alg, @picture_setup, @alg_source].hash
   end
 end

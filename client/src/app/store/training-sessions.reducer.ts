@@ -57,14 +57,6 @@ const initialTrainingSessionsState: TrainingSessionsState = {
   selectedTrainingSessionId: 0,
 };
 
-function toEmptySummary(trainingSession: TrainingSession): TrainingSessionSummary {
-  return {
-    name: trainingSession.name,
-    id: trainingSession.id,
-    numResults: 0,
-  };
-}
-
 function addAlgOverrideToTrainingCases(trainingCases: readonly TrainingCase[], algOverride: AlgOverride): TrainingCase[] {
   return trainingCases.map(t => t.casee.key === algOverride.casee.key ? addAlgOverrideToTrainingCase(t, algOverride) : t);
 }
@@ -112,12 +104,11 @@ export const trainingSessionsReducer = createReducer(
   on(create, (trainingSessionState, { newTrainingSession }) => {
     return { ...trainingSessionState, createState: backendActionLoadingState };
   }),
-  on(createSuccess, (trainingSessionState, { trainingSession, newTrainingSession }) => {
+  on(createSuccess, (trainingSessionState, { trainingSessionSummary, newTrainingSession }) => {
     return {
       ...trainingSessionState,
       createState: backendActionSuccessState,
-      trainingSessions: adapter.addOne(trainingSession, trainingSessionState.trainingSessions),
-      trainingSessionSummaries: summariesAdapter.addOne(toEmptySummary(trainingSession), trainingSessionState.trainingSessionSummaries),
+      trainingSessionSummaries: summariesAdapter.addOne(trainingSessionSummary, trainingSessionState.trainingSessionSummaries),
     }
   }),
   on(createFailure, (trainingSessionState, { error }) => {

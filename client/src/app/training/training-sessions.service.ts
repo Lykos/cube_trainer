@@ -32,7 +32,7 @@ export class TrainingSessionsService {
     return this.rails.delete<void>(`/training_sessions/${trainingSessionId}`, {});
   }
 
-  create(trainingSession: NewTrainingSession): Observable<TrainingSession> {
-    return this.rails.post<TrainingSession>('/training_sessions', {trainingSession});
+  create(trainingSession: NewTrainingSession): Observable<TrainingSessionSummary> {
+    return this.rails.post<TrainingSessionSummary>('/training_sessions', {trainingSession});
   }
 }

@@ -6,6 +6,4 @@ export interface TrainingSessionBase {
   readonly showInputMode: ShowInputMode;
   readonly goalBadness?: number;
   readonly cubeSize?: number;
-  readonly excludeAlgHoles?: boolean;
-  readonly excludeAlglessParts?: boolean;
 }

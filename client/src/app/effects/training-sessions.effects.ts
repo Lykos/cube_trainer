@@ -107,7 +107,7 @@ export class TrainingSessionsEffects {
       ofType(create),
       exhaustMap(action =>
         this.trainingSessionsService.create(action.newTrainingSession).pipe(
-          map(trainingSession => createSuccess({ newTrainingSession: action.newTrainingSession, trainingSession })),
+          map(trainingSessionSummary => createSuccess({ newTrainingSession: action.newTrainingSession, trainingSessionSummary })),
           catchError(httpResponseError => {
             const context = {
               action: 'creating',
@@ -125,7 +125,7 @@ export class TrainingSessionsEffects {
     this.actions$.pipe(
       ofType(createSuccess),
       tap(action => {
-        this.snackBar.open(`Session ${action.trainingSession.name} created.`, 'Close');
+        this.snackBar.open(`Session ${action.trainingSessionSummary.name} created.`, 'Close');
 	this.router.navigate([`/training-sessions`]);
       }),
     ),

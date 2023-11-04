@@ -3,7 +3,6 @@ import { UniqueTrainingSessionNameValidator } from './unique-training-session-na
 import { TrainingSessionType } from './training-session-type.model';
 import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ShowInputMode } from './show-input-mode.model';
 
 function hasMultipleCubeSizes(trainingSessionType: TrainingSessionType | undefined) {
   const cubeSizeSpec = trainingSessionType?.cubeSizeSpec;
@@ -85,8 +84,6 @@ export class TrainingSessionFormsService {
   algSetGroup(trainingSessionTypeProvider: () => TrainingSessionType | undefined): FormGroup {
     return this.formBuilder.group({
       algSet: [''],
-      excludeAlglessParts: [true],
-      excludeAlgHoles: [false],
     });
   }
 
@@ -100,13 +97,12 @@ export class TrainingSessionFormsService {
     });
   }
 
-  trainingGroup(trainingSessionTypeProvider: () => TrainingSessionType | undefined, missingAlgsProvider: () => boolean): FormGroup {
+  trainingGroup(trainingSessionTypeProvider: () => TrainingSessionType | undefined): FormGroup {
     return this.formBuilder.group({
       showInputMode: ['', RxwebValidators.compose({
 	conditionalExpression: () => hasMultipleShowInputModes(trainingSessionTypeProvider()),
 	validators: [
 	  RxwebValidators.required(),
-	  RxwebValidators.noneOf({ conditionalExpression: missingAlgsProvider, matchValues: [ShowInputMode.Picture] }),
 	],
       })],
       goalBadness: ['', RxwebValidators.compose({

@@ -54,7 +54,7 @@ module CaseSets
           twist: specific_twist(1)
         )
         wildcard_cycle_pattern = part_cycle_pattern(@part_type, wildcard, twist: specific_twist(1))
-        case_pattern(specific_cycle_pattern, wildcard_cycle_pattern)
+        case_pattern(specific_cycle_pattern, wildcard_cycle_pattern, ignore_same_face_center_cycles: true)
       end
     end
 
@@ -75,7 +75,7 @@ module CaseSets
         @part_type, wildcard,
         twist: specific_twist(other_twist)
       )
-      case_pattern(specific_cycle_pattern, wildcard_cycle_pattern)
+      case_pattern(specific_cycle_pattern, wildcard_cycle_pattern, ignore_same_face_center_cycles: true)
     end
 
     def self.from_raw_data_parts(raw_data)

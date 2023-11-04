@@ -27,7 +27,7 @@ group :development, :test, :production do
   gem 'rails', '~> 7.0'
 
   # Core cubing related functionality.
-  gem 'twisty_puzzles', '>= 0.0.37'
+  gem 'twisty_puzzles', '>= 0.0.44'
 
   # Database access. TODO: figure out whether this is still needed now that this project uses rails.
   gem 'activerecord', '~> 7.0'

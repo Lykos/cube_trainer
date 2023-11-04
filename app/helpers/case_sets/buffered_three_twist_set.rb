@@ -94,7 +94,7 @@ module CaseSets
     def cases
       minimal_corners = @part_type::ELEMENTS.select { |c| c == c.rotations.min }
       part_permutations =
-        minimal_corners.permutation(2).select do |a, b|
+        minimal_corners.combination(2).select do |a, b|
           # Exclude duplicates of the buffer or duplicates between the two targets.
           !a.turned_equals?(b) && !a.turned_equals?(buffer) && !b.turned_equals?(buffer)
         end

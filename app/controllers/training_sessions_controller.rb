@@ -25,7 +25,7 @@ class TrainingSessionsController < ApplicationController
     if @training_session.invalid?
       render json: @training_session.errors, status: :bad_request
     elsif @training_session.save
-      render json: @training_session, status: :created
+      render json: @training_session, serializer: TrainingSessionSummarySerializer, status: :created
     else
       render json: @training_session.errors, status: :unprocessable_entity
     end

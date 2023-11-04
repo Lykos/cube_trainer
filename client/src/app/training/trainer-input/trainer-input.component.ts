@@ -25,8 +25,8 @@ export class TrainerInputComponent {
     return scrambleOrSample && isSample(scrambleOrSample) ? scrambleOrSample.sample : undefined;
   }
 
-  get setup() {
-    return this.sample?.item?.setup;
+  get pictureSetup() {
+    return this.sample?.item?.pictureSetup;
   }
 
   get puzzle() {

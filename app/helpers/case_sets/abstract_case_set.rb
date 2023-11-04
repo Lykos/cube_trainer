@@ -78,7 +78,7 @@ module CaseSets
     end
 
     def self.three_cycle_sets
-      TwistyPuzzles::PART_TYPES.map { |p| ThreeCycleSet.new(p) }
+      (TwistyPuzzles::PART_TYPES - [TwistyPuzzles::Face]).map { |p| ThreeCycleSet.new(p) }
     end
 
     def self.three_twist_sets
@@ -94,6 +94,7 @@ module CaseSets
     end
 
     def self.all
+      # TODO: Parity twist sets
       @all ||= (three_cycle_sets + floating_two_twist_sets + parity_sets + three_twist_sets).freeze
     end
   end

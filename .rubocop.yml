@@ -564,3 +564,6 @@ RSpec/SpecFilePathFormat: # new in 2.24
   Enabled: true
 RSpec/SpecFilePathSuffix: # new in 2.24
   Enabled: true
+Rails/EnvLocal: # new in 2.22
+  Enabled: true
+
