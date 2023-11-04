@@ -47,7 +47,7 @@ export const create = createAction(
  
 export const createSuccess = createAction(
   '[TrainingSessions] create success',
-  props<{ newTrainingSession: NewTrainingSession, trainingSession: TrainingSession }>()
+  props<{ newTrainingSession: NewTrainingSession, trainingSessionSummary: TrainingSessionSummary }>()
 );
  
 export const createFailure = createAction(
