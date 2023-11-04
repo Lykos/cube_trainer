@@ -24,7 +24,7 @@
     "lint": "npx -p @angular/cli ng lint"
   },
   "dependencies": {
-    "@angular/animations": "^16.2.11",
+    "@angular/animations": "^16.2.12",
     "@angular/cdk": "^16.2.10",
     "@angular/common": "^16.2.11",
     "@angular/compiler": "^16.2.11",
