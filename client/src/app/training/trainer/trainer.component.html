@@ -1,6 +1,6 @@
 <div>
   <ng-container *ngIf="trainingSession">
-    <div layout="row" layout-sm="column">
+    <div layout="column" layout-gt-sm="row">
       <div flex *ngIf="nextCase$ | async as nextCase">
 	<ng-container *ngIf="nextCase.tag !== 'sample'">
           <div id="trainer-input">

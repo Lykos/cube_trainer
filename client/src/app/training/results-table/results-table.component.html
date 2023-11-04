@@ -24,7 +24,7 @@
             </td>
           </ng-container>
         </ng-container>
-        <ng-container matColumnDef="timestamp">
+        <ng-container matColumnDef="timestamp" hide="" show-gt-sm="">
           <th mat-header-cell *matHeaderCellDef> Timestamp </th>
           <td mat-cell *matCellDef="let result" [matTooltip]="timestamp(result) | instant"> {{ timestamp(result) | fluidInstant:now() }} </td>
         </ng-container>
