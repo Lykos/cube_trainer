@@ -8,6 +8,6 @@ import { Case } from './case.model';
 export interface TrainingCase {
   readonly casee: Case;
   readonly alg?: string;
-  readonly setup?: string;
+  readonly pictureSetup?: string;
   readonly algSource?: AlgSource;
 }
