@@ -52,6 +52,14 @@ At the moment, cube trainer depends on the `ruby-filemagic` Gem that depends on 
 sudo apt install libmagic-dev
 ```
 
+### Angular Command Line
+
+All the dependencies of Angular itself are installed via package dependencies, but the Angular command line is assumed to be available globally. This will be fixed in the future, but for now, it needs to be installed. E.g. as follows:
+
+```
+npm install --global @angular/cli
+```
+
 ### Mailcatcher (optional)
 
 Optionally, you can install mailcatcher. This is a useful tool to debug emails that the website sends. Note that the documentation of mailcatcher recommends to set it up separately as a global gem and to not make it a gem dependency.
