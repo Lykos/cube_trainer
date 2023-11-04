@@ -22,7 +22,7 @@ class TrainingSessionsController < ApplicationController
 
   # POST /api/training_sessions.json
   def create
-    if @training_session.invalid? 
+    if @training_session.invalid?
       render json: @training_session.errors, status: :bad_request
     elsif @training_session.save
       render json: @training_session, serializer: TrainingSessionSummarySerializer, status: :created
