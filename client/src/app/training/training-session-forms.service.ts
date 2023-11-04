@@ -3,7 +3,6 @@ import { UniqueTrainingSessionNameValidator } from './unique-training-session-na
 import { TrainingSessionType } from './training-session-type.model';
 import { RxwebValidators, NumericValueType } from "@rxweb/reactive-form-validators";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ShowInputMode } from './show-input-mode.model';
 
 function hasMultipleCubeSizes(trainingSessionType: TrainingSessionType | undefined) {
   const cubeSizeSpec = trainingSessionType?.cubeSizeSpec;
