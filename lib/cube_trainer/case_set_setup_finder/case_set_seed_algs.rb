@@ -16,7 +16,7 @@ module CubeTrainer
 
       include TwistyPuzzles
 
-      def initial_algs
+      def initial_cased_algs
         seed_algs =
           case case_set
           when CaseSets::BufferedParitySet then buffered_parity_set_seed_algs
@@ -27,7 +27,19 @@ module CubeTrainer
           else
             raise "Unsupported case set class #{case_set.class}."
           end
-        extend_algorithms(seed_algs)
+        cased_seed_algs =
+          seed_algs.map do |a|
+            attach_case(a)
+          end
+        extend_cased_algorithms(cased_seed_algs)
+      end
+
+      def attach_case(algorithm)
+        { casee: case_reverse_engineer.find_case(algorithm), algorithm: algorithm }
+      end
+
+      def extend_cased_algorithms_with_operation(cased_algorithms, &block)
+        cased_algorithms + cased_algorithms.map { |a| a.transform_values(&block) }
       end
 
       # Turns a set of seed algorithms into a bigger set by
@@ -35,17 +47,19 @@ module CubeTrainer
       # * inverses
       # * rotations
       # and combinations thereof.
-      def extend_algorithms(seed_algorithms)
-        extended_algorithms = seed_algorithms.flat_map { |a| [a, a.mirror(Face::U)] }
-        extended_algorithms = extended_algorithms.flat_map { |a| [a, a.inverse] }
+      def extend_cased_algorithms(cased_algorithms)
+        extended_algorithms = extend_cased_algorithms_with_operation(cased_algorithms) { |a| a.mirror(Face::U) }
+        extended_algorithms = extend_cased_algorithms_with_operation(extended_algorithms, &:inverse)
         rotation_combos = Rotation::ALL_ROTATIONS.product(Rotation::ALL_ROTATIONS)
         extended_algorithms =
           rotation_combos.flat_map do |r, q|
-            extended_algorithms.map do |a|
-              a.rotate_by(r).rotate_by(q)
-            end
+            extend_cased_algorithms_with_operation(extended_algorithms) { |a| a.rotate_by(r).rotate_by(q) }
           end
         extended_algorithms.uniq
+      end
+
+      def extend_algorithms(seed_algorithms)
+        extend_cased_algorithms(seed_algorithms.map { |a| { alg: a } }).pluck(:alg)
       end
 
       def buffered_parity_set_seed_algs
