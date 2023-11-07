@@ -1,7 +1,6 @@
 import { AngularTokenService } from '@angular-token/angular-token.service';
 import { Injectable } from '@angular/core';
-import { Cable, ChannelNameWithParams, Channel } from 'actioncable';
-import * as ActionCable from 'actioncable';
+import { Consumer, ChannelNameWithParams, createConsumer } from '@rails/actioncable';
 import { environment } from '@environment';
 import { Observable, of } from 'rxjs';
 import { distinctUntilChanged, switchMap, shareReplay } from 'rxjs/operators';
@@ -15,7 +14,7 @@ import { camelCaseifyFieldNames } from '@utils/case';
   providedIn: 'root'
 })
 export class CableService {
-  private consumer$: Observable<Cable>;
+  private consumer$: Observable<Consumer>;
 
   constructor(private readonly tokenService: AngularTokenService,
               private readonly store: Store) {
@@ -30,18 +29,18 @@ export class CableService {
     );
   }
 
-  private createConsumer(): Observable<Cable> {
+  private createConsumer(): Observable<Consumer> {
     if (!environment.actionCableUrl) {
       return of();
     }
-    return new Observable<Cable>(subscriber => {
+    return new Observable<Consumer>(subscriber => {
       try {
         const authData = this.tokenService.currentAuthData;
         if (!authData) {
           throw new Error('Tried to create a consumer before authentication.');
         }
         console.log('Connecting to ActionCable');
-        subscriber.next(ActionCable.createConsumer(`${environment.actionCableUrl}/?client=${authData.client}&uid=${authData.uid}&access_token=${authData.accessToken}`));
+        subscriber.next(createConsumer(`${environment.actionCableUrl}/?client=${authData.client}&uid=${authData.uid}&access_token=${authData.accessToken}`));
         subscriber.complete();
       } catch (error: any) {
         subscriber.error(error);
@@ -52,7 +51,7 @@ export class CableService {
   channelSubscription<X>(channelName: string | ChannelNameWithParams): Observable<X> {
     return this.consumer$.pipe(switchMap(consumer => {
       return new Observable<X>(subscriber => {
-        const channel: Channel = consumer.subscriptions.create(channelName, {
+        const subscription = consumer.subscriptions.create(channelName, {
           disconnected: () => {
             subscriber.complete();
           },
@@ -61,7 +60,7 @@ export class CableService {
           },
         });
         return () => {
-          channel.unsubscribe();
+          subscription.unsubscribe();
         };
       });
     }));
