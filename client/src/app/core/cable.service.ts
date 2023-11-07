@@ -1,7 +1,7 @@
 import { AngularTokenService } from '@angular-token/angular-token.service';
 import { Injectable } from '@angular/core';
 import { Cable, ChannelNameWithParams, Channel } from 'actioncable';
-import * as ActionCable from 'actioncable';
+import * as ActionCable from '@rails/actioncable';
 import { environment } from '@environment';
 import { Observable, of } from 'rxjs';
 import { distinctUntilChanged, switchMap, shareReplay } from 'rxjs/operators';
