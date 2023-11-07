@@ -88,7 +88,7 @@ end
 group :rubocop do
   gem 'rubocop', '~> 1.57.2', require: false
   gem 'rubocop-performance', require: false
-  gem 'rubocop-rails', '~> 2.22.0', require: false
+  gem 'rubocop-rails', '~> 2.22.1', require: false
   gem 'rubocop-rake', require: false
   gem 'rubocop-rspec', '~> 2.25.0', require: false
 end
@@ -96,7 +96,7 @@ end
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 3.39'
-  gem 'selenium-webdriver', '~> 4.14.0'
+  gem 'selenium-webdriver', '~> 4.15.0'
 
   gem 'rantly'
   gem 'rspec'
