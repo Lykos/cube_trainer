@@ -26,4 +26,10 @@ describe('Optional', () => {
     expect(equalsValue(2, some(2))).toBeTrue();
     expect(equalsValue(2, none)).toBeFalse();
   });
+
+  it('should flatten', () => {
+    expect(flatten(some(some(3)))).toEqual(some(3));
+    expect(flatten(some(none))).toEqual(none);
+    expect(flatten(none)).toEqual(none);
+  });
 });

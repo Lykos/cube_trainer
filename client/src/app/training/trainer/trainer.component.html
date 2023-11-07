@@ -11,13 +11,14 @@
           </div>
 	</ng-container>
 	<ng-container *ngIf="nextCase.tag === 'sample'">
+          <div id="trainer-input">
+            <cube-trainer-trainer-input
+	      [scrambleOrSample]="currentCase$ | async"
+	      [trainingSession]="trainingSession"
+              [colorScheme]="colorScheme$ | async">
+            </cube-trainer-trainer-input>
+          </div>
 	  <ng-container *ngIf="currentCase$ | async as currentCase">
-            <div id="trainer-input">
-              <cube-trainer-trainer-input
-		[scrambleOrSample]="currentCase"
-		[trainingSession]="trainingSession">
-              </cube-trainer-trainer-input>
-            </div>
 	    <!-- Note that this if will always be true in practice because the currentCase and nextCase will always have the same tag. -->
 	    <ng-container *ngIf="currentCase.tag === 'sample'">
               <cube-trainer-hint

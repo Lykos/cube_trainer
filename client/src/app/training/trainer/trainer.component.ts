@@ -1,3 +1,4 @@
+import { ShowInputMode } from '../show-input-mode.model';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { filterPresent } from '@shared/operators';
@@ -5,10 +6,13 @@ import { TrainingSession } from '../training-session.model';
 import { ScrambleOrSample } from '../scramble-or-sample.model';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
+import { ColorScheme } from '../color-scheme.model';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
 import { initialLoadSelected } from '@store/trainer.actions';
 import { selectCurrentCase, selectNextCase } from '@store/trainer.selectors';
+import { selectColorScheme } from '@store/color-scheme.selectors';
+import { initialLoad } from '@store/color-scheme.actions';
 
 @Component({
   selector: 'cube-trainer-trainer',
@@ -16,10 +20,12 @@ import { selectCurrentCase, selectNextCase } from '@store/trainer.selectors';
 })
 export class TrainerComponent implements OnInit, OnDestroy {
   trainingSession?: TrainingSession;
+  colorScheme?: ColorScheme;
   loading$: Observable<boolean>;
   currentCase$: Observable<ScrambleOrSample>;
   nextCase$: Observable<ScrambleOrSample>;
   error$: Observable<BackendActionError>;
+  colorScheme$: Observable<ColorScheme>;
 
   private trainingSession$: Observable<TrainingSession>
   private trainingSessionSubscription: Subscription | undefined;
@@ -33,11 +39,19 @@ export class TrainerComponent implements OnInit, OnDestroy {
     this.currentCase$ = this.store.select(selectCurrentCase).pipe(filterPresent());
     this.nextCase$ = this.store.select(selectNextCase).pipe(filterPresent());
     this.error$ = this.store.select(selectInitialLoadError).pipe(filterPresent());
+    this.colorScheme$ = this.store.select(selectColorScheme).pipe(filterPresent());
   }
 
   ngOnInit() {
     this.store.dispatch(initialLoadSelected());
-    this.trainingSessionSubscription = this.trainingSession$.subscribe(m => { this.trainingSession = m; });
+    this.trainingSessionSubscription = this.trainingSession$.subscribe(m => {
+      this.trainingSession = m;
+      // For picture modes, load the color scheme s.t. an empty cube
+      // with the right color scheme can be displayed initially.
+      if (m.showInputMode == ShowInputMode.Picture) {
+	this.store.dispatch(initialLoad());
+      }
+    });
   }
 
   ngOnDestroy() {

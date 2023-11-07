@@ -1,4 +1,4 @@
-<ng-container *ngIf="showImage && pictureSetup" [matTooltip]="sampleTooltip">
+<ng-container *ngIf="showImage && (colorScheme || pictureSetup)" [matTooltip]="sampleTooltip">
   <twisty-player
     [alg]="pictureSetup"
     [puzzle]="puzzle"

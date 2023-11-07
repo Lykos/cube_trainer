@@ -19,6 +19,13 @@ export function mapOptional<X, Y>(optional: Optional<X>, f: (x: X) => Y): Option
   return flatMapOptional(optional, x => some(f(x)));
 }
 
+export function flatten<X>(optionalOptional: Optional<Optional<X>>): Optional<X> {
+  switch (optionalOptional.tag) {
+    case "some": return optionalOptional.value;
+    case "none": return none;
+  }
+}
+
 export function flatMapOptional<X, Y>(optional: Optional<X>, f: (x: X) => Optional<Y>): Optional<Y> {
   switch (optional.tag) {
     case "some": return f(optional.value);
