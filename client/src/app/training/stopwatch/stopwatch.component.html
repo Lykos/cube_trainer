@@ -1,6 +1,6 @@
 <div class="stopwatch">
   <h2>Time</h2>
-  <div class="stopwatch-time" [ngClass]="{'post-memo-time': running && isPostMemoTime}"> {{displayedDuration | duration}} </div>
+  <a class="stopwatch-time" [ngClass]="{'post-memo-time': running && isPostMemoTime}"> {{displayedDuration | duration}} </a>
   <div>
     <ng-container *ngIf="running">
       <button mat-raised-button id="stopwatch-stop-and-start" *ngIf="hasStopAndStart" color="primary" (click)="onStopAndStart()" [matTooltip]="stopAndStartTooltip">
