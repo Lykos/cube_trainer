@@ -17,7 +17,7 @@ RSpec.describe 'ColorSchemes' do
       get '/api/color_scheme', headers: user_headers
       expect(response).to have_http_status(:success)
       parsed_body = response.parsed_body
-      expect(parsed_body.delete('setup')).to eq(color_scheme.setup)
+      expect(parsed_body.delete('setup')).to eq(color_scheme.setup.to_s)
       expect(ColorScheme.new(parsed_body)).to eq(color_scheme)
     end
 
