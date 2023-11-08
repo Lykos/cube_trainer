@@ -1,4 +1,4 @@
-import { some, none, mapOptional, forceValue, hasValue, checkNone, equalsValue } from './optional';
+import { some, none, flatten, mapOptional, forceValue, hasValue, checkNone, equalsValue } from './optional';
 
 describe('Optional', () => {
   it('should support mapOptional', () => {
