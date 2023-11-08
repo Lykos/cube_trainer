@@ -7,8 +7,7 @@ import { ScrambleOrSample } from '../scramble-or-sample.model';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { ColorScheme } from '../color-scheme.model';
-import { BackendActionError } from '@shared/backend-action-error.model';
-import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
+import { selectSelectedTrainingSession } from '@store/training-sessions.selectors';
 import { initialLoadSelected } from '@store/trainer.actions';
 import { selectCurrentCase, selectNextCase } from '@store/trainer.selectors';
 import { selectColorScheme } from '@store/color-scheme.selectors';
@@ -21,10 +20,8 @@ import { initialLoad } from '@store/color-scheme.actions';
 export class TrainerComponent implements OnInit, OnDestroy {
   trainingSession?: TrainingSession;
   colorScheme?: ColorScheme;
-  loading$: Observable<boolean>;
   currentCase$: Observable<ScrambleOrSample>;
   nextCase$: Observable<ScrambleOrSample>;
-  error$: Observable<BackendActionError>;
   colorScheme$: Observable<ColorScheme>;
 
   private trainingSession$: Observable<TrainingSession>
@@ -35,10 +32,8 @@ export class TrainerComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
       filterPresent(),
     );
-    this.loading$ = this.store.select(selectInitialLoadLoading);
     this.currentCase$ = this.store.select(selectCurrentCase).pipe(filterPresent());
     this.nextCase$ = this.store.select(selectNextCase).pipe(filterPresent());
-    this.error$ = this.store.select(selectInitialLoadError).pipe(filterPresent());
     this.colorScheme$ = this.store.select(selectColorScheme).pipe(filterPresent());
   }
 

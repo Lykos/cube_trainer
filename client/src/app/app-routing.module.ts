@@ -20,7 +20,7 @@ import { AccountDeletedComponent } from '@core/account-deleted/account-deleted.c
 import { ConfirmEmailComponent } from '@core/confirm-email/confirm-email.component';
 import { TrainingSessionsComponent } from './training/training-sessions/training-sessions.component';
 import { NewTrainingSessionComponent } from './training/new-training-session/new-training-session.component';
-import { TrainerComponent } from './training/trainer/trainer.component';
+import { TrainingSessionComponent } from './training/training-session/training-session.component';
 import { AlgSetComponent } from './training/alg-set/alg-set.component';
 import { WelcomeComponent } from '@core/welcome/welcome.component';
 import { AboutComponent } from '@core/about/about.component';
@@ -55,7 +55,7 @@ const routes: Routes = [
   { path: 'color-scheme', component: EditColorSchemeComponent, canActivate: [AngularTokenService] },
   { path: 'letter-scheme', component: EditLetterSchemeComponent, canActivate: [AngularTokenService] },
   { path: 'training-sessions/new', component: NewTrainingSessionComponent, canActivate: [AngularTokenService] },
-  { path: 'training-sessions/:trainingSessionId', component: TrainerComponent, canActivate: [AngularTokenService] },
+  { path: 'training-sessions/:trainingSessionId', component: TrainingSessionComponent, canActivate: [AngularTokenService] },
   { path: 'alg-sets/:trainingSessionId', component: AlgSetComponent, canActivate: [AngularTokenService] },
   { path: 'about', component: AboutComponent },
   { path: 'privacy-policy', component: PrivacyPolicyComponent },

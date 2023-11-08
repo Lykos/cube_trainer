@@ -20,6 +20,7 @@ import { StopwatchComponent } from './stopwatch/stopwatch.component';
 import { StatPartValueComponent } from './stat-part-value/stat-part-value.component';
 import { SelectStatsComponent } from './select-stats/select-stats.component';
 import { AlgSetComponent } from './alg-set/alg-set.component';
+import { TrainingSessionComponent } from './training-session/training-session.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { AlgSetComponent } from './alg-set/alg-set.component';
     StatPartValueComponent,
     SelectStatsComponent,
     AlgSetComponent,
+    TrainingSessionComponent,
   ],
   imports: [
     CdkStepperModule,

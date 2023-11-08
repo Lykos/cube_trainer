@@ -1,0 +1,19 @@
+<div>
+  <ng-container *ngIf="trainingSession">
+    <div layout="row" layout-gt-sm="column">
+      <div flex="66" layout="row">
+	<cube-trainer-trainer></cube-trainer-trainer>
+	<div id="results-table">
+          <cube-trainer-results-table [trainingSessionId]="trainingSession.id"></cube-trainer-results-table>
+	</div>
+      </div>
+      <div flex="33">
+        <cube-trainer-stats-table></cube-trainer-stats-table>
+      </div>
+    </div>
+  </ng-container>
+  <div id="initial-load-error" *ngIf="error$ | async as error">
+    <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
+  </div>
+  <mat-spinner id="initial-load-loading" *ngIf="loading$ | async"></mat-spinner>
+</div>
