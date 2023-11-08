@@ -8,7 +8,6 @@ import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { ColorScheme } from '../color-scheme.model';
 import { selectSelectedTrainingSession } from '@store/training-sessions.selectors';
-import { initialLoadSelected } from '@store/trainer.actions';
 import { selectCurrentCase, selectNextCase } from '@store/trainer.selectors';
 import { selectColorScheme } from '@store/color-scheme.selectors';
 import { initialLoad } from '@store/color-scheme.actions';
@@ -38,7 +37,6 @@ export class TrainerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(initialLoadSelected());
     this.trainingSessionSubscription = this.trainingSession$.subscribe(m => {
       this.trainingSession = m;
       // For picture modes, load the color scheme s.t. an empty cube

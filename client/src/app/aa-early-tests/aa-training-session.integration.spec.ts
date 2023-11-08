@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TrainingSessionComponent } from '@training/training-session/training-session.component';
 import { TrainerComponent } from '@training/trainer/trainer.component';
 import { some } from '@utils/optional';
 import { TrainerInputComponent } from '@training/trainer-input/trainer-input.component';
@@ -30,6 +31,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpVerb } from '@core/http-verb';
 import { trainingSessionsReducer } from '@store/training-sessions.reducer';
+import { colorSchemeReducer } from '@store/color-scheme.reducer';
 import { trainerReducer } from '@store/trainer.reducer';
 import { overrideSelectedTrainingSessionIdForTesting } from '@store/router.selectors';
 import { EffectsModule } from '@ngrx/effects';
@@ -61,7 +63,7 @@ const trainingSession: TrainingSession = {
   stats: [],
 };
 
-describe('TrainerComponentIntegration', () => {
+describe('TrainingSessionComponentIntegration', () => {
   let matDialog: any;
   let matSnackBar: any;
   let httpMock: HttpTestingController;
@@ -74,6 +76,7 @@ describe('TrainerComponentIntegration', () => {
 
     await TestBed.configureTestingModule({
       declarations: [
+        TrainingSessionComponent,
         TrainerComponent,
         TrainerInputComponent,
         TrainerStopwatchComponent,
@@ -99,6 +102,7 @@ describe('TrainerComponentIntegration', () => {
             trainingSessions: trainingSessionsReducer,
             trainer: trainerReducer,
 	    router: routerReducer,
+	    colorScheme: colorSchemeReducer,
           },
         ),
         EffectsModule.forRoot([TrainingSessionsEffects, TrainerEffects]),
@@ -119,7 +123,7 @@ describe('TrainerComponentIntegration', () => {
   });
 
   it('should fetch the data and have working start and stop', fakeAsync(() => {
-    const fixture = TestBed.createComponent(TrainerComponent);
+    const fixture = TestBed.createComponent(TrainingSessionComponent);
     fixture.detectChanges();
     {
       const req = httpMock.expectOne('/api/training_sessions/56');
