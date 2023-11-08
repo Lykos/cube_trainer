@@ -38,6 +38,10 @@ export class TrainerInputComponent {
     return cubeSize ? `${cubeSize}x${cubeSize}x${cubeSize}` : undefined;
   }
 
+  get caseName() {
+    return this.sample?.item?.casee?.name || ' ';
+  }
+
   get showImage() {
     return this.trainingSession && this.trainingSession.showInputMode == ShowInputMode.Picture;
   }

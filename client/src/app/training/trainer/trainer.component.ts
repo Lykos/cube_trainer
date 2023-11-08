@@ -1,9 +1,11 @@
 import { ShowInputMode } from '../show-input-mode.model';
+import { some, none } from '@utils/optional';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 import { filterPresent } from '@shared/operators';
 import { TrainingSession } from '../training-session.model';
-import { ScrambleOrSample } from '../scramble-or-sample.model';
+import { TrainingCase } from '../training-case.model';
+import { ScrambleOrSample, isSample } from '../scramble-or-sample.model';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { ColorScheme } from '../color-scheme.model';
@@ -20,6 +22,7 @@ export class TrainerComponent implements OnInit, OnDestroy {
   trainingSession?: TrainingSession;
   colorScheme?: ColorScheme;
   currentCase$: Observable<ScrambleOrSample>;
+  currentTrainingCase$: Observable<TrainingCase>;
   nextCase$: Observable<ScrambleOrSample>;
   colorScheme$: Observable<ColorScheme>;
 
@@ -32,6 +35,7 @@ export class TrainerComponent implements OnInit, OnDestroy {
       filterPresent(),
     );
     this.currentCase$ = this.store.select(selectCurrentCase).pipe(filterPresent());
+    this.currentTrainingCase$ = this.store.select(selectCurrentCase).pipe(filterPresent(), map(c => isSample(c) ? some(c.sample.item) : none), filterPresent());
     this.nextCase$ = this.store.select(selectNextCase).pipe(filterPresent());
     this.colorScheme$ = this.store.select(selectColorScheme).pipe(filterPresent());
   }

@@ -146,7 +146,7 @@ describe('TrainingSessionComponentIntegration', () => {
     tick(100);
     fixture.detectChanges();
     expect(compiled.querySelector('#trainer-stopwatch')?.textContent).toContain('0.1');
-    expect(compiled.querySelector('.alg')?.textContent).toBeFalsy();
+    expect(compiled.querySelector('.alg')?.textContent).toContain('\xa0');
     debug.query(By.css('#trainer-hint')).triggerEventHandler('click', null);
     fixture.detectChanges();
     expect(compiled.querySelector('.alg')?.textContent).toContain('solve it');

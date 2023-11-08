@@ -8,12 +8,13 @@
 </ng-container>
 <span
   [matTooltip]="sampleTooltip"
-  class="case mat-elevation-z4"
-  *ngIf="showName && sample">
-  {{sample.item.casee.name}}
+  class="case mat-elevation-z5"
+  *ngIf="showName">
+  {{caseName}}
+  <ng-container ngIf*="!caseName">&nbsp;</ng-container>
 </span>
 <span
   class="scramble mat-elevation-z2"
-  *ngIf="showScramble && scramble">
+  *ngIf="showScramble">
   {{scramble}}
 </span>

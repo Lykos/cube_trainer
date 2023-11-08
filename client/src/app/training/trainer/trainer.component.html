@@ -15,15 +15,10 @@
 	[colorScheme]="colorScheme$ | async">
       </cube-trainer-trainer-input>
     </div>
-    <ng-container *ngIf="currentCase$ | async as currentCase">
-      <!-- Note that this if will always be true in practice because the currentCase and nextCase will always have the same tag. -->
-      <ng-container *ngIf="currentCase.tag === 'sample'">
-	<cube-trainer-hint
-	  [trainingCase]="currentCase.sample.item"
-	  [trainingSession]="trainingSession">
-	</cube-trainer-hint>
-      </ng-container>
-    </ng-container>
+    <cube-trainer-hint
+      [trainingCase]="currentTrainingCase$ | async"
+      [trainingSession]="trainingSession">
+    </cube-trainer-hint>
   </ng-container>
   <div id="trainer-stopwatch">
     <cube-trainer-trainer-stopwatch [trainingSession]="trainingSession">

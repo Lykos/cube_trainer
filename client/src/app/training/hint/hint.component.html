@@ -1,16 +1,19 @@
-<div *ngIf="alg && trainingSession">
+<ng-container *ngIf="trainingSession">
   <ng-container *ngIf="active$ | async as active">
-    <div *ngIf="active.value">
-      <span class="alg mat-elevation-z1" [ngClass]="algSourceClass" [matTooltip]="tooltip">{{alg}}</span>
-      <button mat-raised-button color="primary" (click)="onOverride()">
-        Override
-      </button>
+    <div>
+      <span class="alg mat-elevation-z1" [ngClass]="algSourceClass" [matTooltip]="tooltip" *ngIf="active.value">
+	{{alg}}
+      </span>
+      <span class="alg mat-elevation-z1" *ngIf="!active.value"> &nbsp; </span>
     </div>
-    <button mat-raised-button id="trainer-hint" color="primary" *ngIf="!active.value" (click)="onHint(trainingSession)">
+    <button mat-raised-button [disabled]="!alg || !active.value" color="primary" (click)="onOverride()">
+      Override
+    </button>
+    <button mat-raised-button id="trainer-hint" color="primary" [disabled]="!alg || active.value" (click)="onHint(trainingSession)">
       Reveal Alg
     </button>
   </ng-container>
-</div>
-<button *ngIf="!alg" mat-raised-button color="primary" (click)="onSet()">
-  Set Alg
-</button>
+  <button [disabled]="!trainingCase || alg" mat-raised-button color="primary" (click)="onSet()">
+    Set Alg
+  </button>
+</ng-container>

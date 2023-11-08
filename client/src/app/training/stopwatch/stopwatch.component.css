@@ -1,7 +1,8 @@
 .stopwatch-time {
-  font-size: xxx-large;
+    font-size: xxx-large;
+    margin: 20px;
 }
 .post-memo-time {
-  background-color: red;
-  color: white;  
+    background-color: red;
+    color: white;  
 }

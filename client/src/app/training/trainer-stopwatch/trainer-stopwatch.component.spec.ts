@@ -90,9 +90,9 @@ describe('TrainerStopwatchComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('0');
     expect(compiled.querySelector('#stopwatch-loading')).toBeFalsy();
-    expect(compiled.querySelector('#stopwatch-start')).toBeTruthy();
+    expect(compiled.querySelector('#stopwatch-start:not([disabled])')).toBeTruthy();
     expect(compiled.querySelector('#stopwatch-stop-and-start')).toBeFalsy();
-    expect(compiled.querySelector('#stopwatch-stop-and-pause')).toBeFalsy();
+    expect(compiled.querySelector('#stopwatch-stop-and-pause:disabled')).toBeTruthy();
   });
 
   it('should display the time and the stop button when running', () => {
@@ -109,9 +109,9 @@ describe('TrainerStopwatchComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('1.01');
     expect(compiled.querySelector('#stopwatch-loading')).toBeFalsy();
-    expect(compiled.querySelector('#stopwatch-start')).toBeFalsy();
+    expect(compiled.querySelector('#stopwatch-start:disabled')).toBeTruthy();
     expect(compiled.querySelector('#stopwatch-stop-and-start')).toBeFalsy();
-    expect(compiled.querySelector('#stopwatch-stop-and-pause')).toBeTruthy();
+    expect(compiled.querySelector('#stopwatch-stop-and-pause:not([disabled])')).toBeTruthy();
   });
 
   it('should give a visual cue when the memo time is reached', () => {
@@ -163,8 +163,10 @@ describe('TrainerStopwatchComponent', () => {
     let action: any;
     store.scannedActions$.subscribe(a => action = a);
 
-    debug.query(By.css('#stopwatch-stop-and-pause'))?.triggerEventHandler('click', null);
+    const button = debug.query(By.css('#stopwatch-stop-and-pause:not([disabled])'));
+    button?.triggerEventHandler('click', null);
 
+    expect(button).toBeTruthy();
     expect(action?.type).toEqual('[Trainer] stop stopwatch and do not start again once the next case is loaded');
     expect(action?.trainingSessionId).toEqual(trainingSession.id);
     expect(fromUnixMillis(action?.stopUnixMillis)).toEqual(now);
