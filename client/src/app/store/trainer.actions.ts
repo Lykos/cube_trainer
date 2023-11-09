@@ -118,6 +118,21 @@ export const stopAndPauseStopwatch = createAction(
   props<{ trainingSessionId: number, stopUnixMillis: number }>()
 );
 
+export const startStopwatchDialog = createAction(
+  '[Trainer] start stopwatch dialog',
+  props<{ trainingSessionId: number, scrambleOrSample: ScrambleOrSample, startUnixMillis: number }>()
+);
+
+export const stopAndStartStopwatchDialog = createAction(
+  '[Trainer] stop stopwatch dialog and start again once the next case is loaded',
+  props<{ trainingSessionId: number, stopUnixMillis: number }>()
+);
+
+export const stopAndPauseStopwatchDialog = createAction(
+  '[Trainer] stop stopwatch dialog and do not start again once the next case is loaded',
+  props<{ trainingSessionId: number, stopUnixMillis: number }>()
+);
+
 export const stopStopwatch = createAction(
   '[Trainer] stop stopwatch',
   props<{ trainingSessionId: number, stopUnixMillis: number }>()

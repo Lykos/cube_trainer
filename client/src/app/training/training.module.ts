@@ -22,6 +22,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { SelectStatsComponent } from './select-stats/select-stats.component';
 import { AlgSetComponent } from './alg-set/alg-set.component';
 import { TrainingSessionComponent } from './training-session/training-session.component';
+import { StopwatchDialogComponent } from './stopwatch-dialog/stopwatch-dialog.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { TrainingSessionComponent } from './training-session/training-session.co
     SelectStatsComponent,
     AlgSetComponent,
     TrainingSessionComponent,
+    StopwatchDialogComponent,
   ],
   imports: [
     CdkStepperModule,

@@ -2,11 +2,13 @@ import { GeneratorType } from '../generator-type.model';
 import { Duration, zeroDuration, millis, seconds } from '@utils/duration';
 import { fromUnixMillis, now } from '@utils/instant';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { selectStopwatchState, selectStopwatchRunning, selectNextCaseReady } from '@store/trainer.selectors';
-import { startStopwatch, stopAndPauseStopwatch, stopAndStartStopwatch } from '@store/trainer.actions';
+import { selectStopwatchState, selectStopwatchRunning, selectNextCaseReady, selectNextCase } from '@store/trainer.selectors';
+import { startStopwatchDialog, stopAndPauseStopwatch, stopAndStartStopwatch } from '@store/trainer.actions';
 import { Observable, interval, of, Subscription } from 'rxjs';
 import { TrainingSession } from '../training-session.model';
+import { ScrambleOrSample } from '../scramble-or-sample.model';
 import { map, switchMap } from 'rxjs/operators';
+import { filterPresent } from '@shared/operators';
 import { Store } from '@ngrx/store'
 
 @Component({
@@ -21,12 +23,15 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   duration$: Observable<Duration>;
   running$: Observable<boolean>;
   nextCaseReady$: Observable<boolean>;
+  nextCase$: Observable<ScrambleOrSample> 
 
   running: boolean | undefined;
   nextCaseReady: boolean | undefined;
+  nextCase: ScrambleOrSample | undefined;
 
   runningSubscription: Subscription | undefined;
   nextCaseReadySubscription: Subscription | undefined;
+  nextCaseSubscription: Subscription | undefined;
   
   constructor(private readonly store: Store) {
     this.duration$ = this.store.select(selectStopwatchState).pipe(
@@ -45,11 +50,13 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
     );
     this.running$ = this.store.select(selectStopwatchRunning);
     this.nextCaseReady$ = this.store.select(selectNextCaseReady);
+    this.nextCase$ = this.store.select(selectNextCase).pipe(filterPresent());
   }
 
   ngOnInit() {
     this.runningSubscription = this.running$.subscribe(running => { this.running = running; });
     this.nextCaseReadySubscription = this.nextCaseReady$.subscribe(nextCaseReady => { this.nextCaseReady = nextCaseReady; });
+    this.nextCaseSubscription = this.nextCase$.subscribe(nextCase => { this.nextCase = nextCase; });
   }
 
   ngOnDestroy() {
@@ -58,7 +65,12 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   }
 
   onStart(trainingSession: TrainingSession) {
-    this.store.dispatch(startStopwatch({ trainingSessionId: trainingSession.id, startUnixMillis: now().toUnixMillis() }));
+    const nextCase = this.nextCase;
+    if (!nextCase) {
+      console.log('no current case');
+      return;
+    }
+    this.store.dispatch(startStopwatchDialog({ trainingSessionId: trainingSession.id, scrambleOrSample: nextCase, startUnixMillis: now().toUnixMillis() }));
   }
 
   onStopAndPause(trainingSession: TrainingSession) {

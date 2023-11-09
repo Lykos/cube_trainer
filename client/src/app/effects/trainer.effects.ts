@@ -4,8 +4,10 @@ import { Actions, ofType, concatLatestFrom, createEffect } from '@ngrx/effects';
 import { of, forkJoin } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, switchMap, flatMap, map, tap, mapTo } from 'rxjs/operators';
+import { StopwatchDialogComponent } from '@training/stopwatch-dialog/stopwatch-dialog.component';
+import { TrainingSessionAndScrambleOrSample } from '@training/training-session-and-scramble-or-sample.model';
 import { millis } from '@utils/duration';
-import { isRunning } from '@store/trainer.state';
+import { isRunning, StartAfterLoading } from '@store/trainer.state';
 import {
   initialLoadSelected,
   initialLoad,
@@ -29,6 +31,9 @@ import {
   startStopwatch,
   stopAndStartStopwatch,
   stopAndPauseStopwatch,
+  startStopwatchDialog,
+  stopAndStartStopwatchDialog,
+  stopAndPauseStopwatchDialog,
   stopStopwatch,
   stopStopwatchSuccess,
   stopStopwatchFailure,
@@ -243,17 +248,21 @@ export class TrainerEffects {
       ofType(loadNextCaseSuccess),
       concatLatestFrom(() => this.store.select(selectStartAfterLoading)),
       switchMap(([action, startAfterLoading]) => {
-        if (!startAfterLoading) {
-          return of();
+        switch (startAfterLoading) {
+	  case StartAfterLoading.STOPWATCH:
+            return of(startStopwatch({ trainingSessionId: action.trainingSessionId, startUnixMillis: now().toUnixMillis() }));
+	  case StartAfterLoading.STOPWATCH_DIALOG:
+            return of(startStopwatchDialog({ trainingSessionId: action.trainingSessionId, scrambleOrSample: action.nextCase, startUnixMillis: now().toUnixMillis() }));
+	  default:
+	    return of();
         }
-        return of(startStopwatch({ trainingSessionId: action.trainingSessionId, startUnixMillis: now().toUnixMillis() }));
       }),
     )
   );
 
   stopAndXXXStopwatch$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(stopAndStartStopwatch, stopAndPauseStopwatch),
+      ofType(stopAndStartStopwatch, stopAndPauseStopwatch, stopAndStartStopwatchDialog, stopAndPauseStopwatchDialog),
       map(action => stopStopwatch({ trainingSessionId: action.trainingSessionId, stopUnixMillis: action.stopUnixMillis })),
     )
   );
@@ -294,6 +303,24 @@ export class TrainerEffects {
           create({ trainingSessionId: action.trainingSessionId, newResult }),
           loadNextCase({ trainingSessionId: action.trainingSessionId })
         );
+      }),
+    )
+  );
+
+  startStopwatchDialog$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(startStopwatchDialog),
+      concatLatestFrom(() => this.store.select(selectTrainingSessionAndSamplingStateById).pipe(filterPresent())),
+      exhaustMap(([action, lolMap]) => {
+        const trainingSessionAndMaybeSamplingState = lolMap.get(action.trainingSessionId)!;
+        const trainingSessionAndScrambleOrSample: TrainingSessionAndScrambleOrSample =
+	  { trainingSession: trainingSessionAndMaybeSamplingState.trainingSession, scrambleOrSample: action.scrambleOrSample };
+	const dialogRef = this.dialog.open(StopwatchDialogComponent, { data: trainingSessionAndScrambleOrSample, width: '100%', height: '100%' });
+	return dialogRef.afterClosed().pipe(
+	  map(restart => restart ?
+	    stopAndStartStopwatchDialog({ trainingSessionId: action.trainingSessionId, stopUnixMillis: now().toUnixMillis() }) :
+	    stopAndPauseStopwatchDialog({ trainingSessionId: action.trainingSessionId, stopUnixMillis: now().toUnixMillis() }))
+	);
       }),
     )
   );
