@@ -37,6 +37,9 @@ import {
   stopStopwatch,
   stopStopwatchSuccess,
   stopStopwatchFailure,
+  abandonStopwatch,
+  abandonStopwatchSuccess,
+  abandonStopwatchFailure,
 } from '@store/trainer.actions';
 import { loadOne, loadOneSuccess } from '@store/training-sessions.actions';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
@@ -280,7 +283,7 @@ export class TrainerEffects {
         const start = fromUnixMillis(state.startUnixMillis);
         const stop = fromUnixMillis(action.stopUnixMillis);
         const duration = stop.minusInstant(start);
-        return stopStopwatchSuccess({ trainingSessionId: action.trainingSessionId, durationMillis: duration.toMillis() })
+        return stopStopwatchSuccess({ trainingSessionId: action.trainingSessionId, durationMillis: duration.toMillis() });
       }),
     ),
   );
@@ -307,6 +310,28 @@ export class TrainerEffects {
     )
   );
 
+  abandonStopwatch$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(abandonStopwatch),
+      concatLatestFrom(() => this.store.select(selectStopwatchState)),
+      map(([action, state]) => {
+        if (!isRunning(state)) {
+          const context = { action: 'abandoning', subject: 'stopwatch' };
+          const error = parseBackendActionError(context, new Error('Cannot abandon a stopwatch that is not running'));
+          return abandonStopwatchFailure({ trainingSessionId: action.trainingSessionId, error });
+        }
+        return abandonStopwatchSuccess({ trainingSessionId: action.trainingSessionId });
+      }),
+    ),
+  );
+
+  abandonStopwatchSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(abandonStopwatch),
+      map(action => loadNextCase({ trainingSessionId: action.trainingSessionId })),
+    ),
+  );
+
   startStopwatchDialog$ = createEffect(() =>
     this.actions$.pipe(
       ofType(startStopwatchDialog),
@@ -317,9 +342,9 @@ export class TrainerEffects {
 	  { trainingSession: trainingSessionAndMaybeSamplingState.trainingSession, scrambleOrSample: action.scrambleOrSample };
 	const dialogRef = this.dialog.open(StopwatchDialogComponent, { data: trainingSessionAndScrambleOrSample, width: '100%', height: '100%', maxHeight: '100%', maxWidth: '100%' });
 	return dialogRef.afterClosed().pipe(
-	  map(restart => restart ?
-	    stopAndStartStopwatchDialog({ trainingSessionId: action.trainingSessionId, stopUnixMillis: now().toUnixMillis() }) :
-	    stopAndPauseStopwatchDialog({ trainingSessionId: action.trainingSessionId, stopUnixMillis: now().toUnixMillis() }))
+	  map(save => save ?
+	    stopAndPauseStopwatchDialog({ trainingSessionId: action.trainingSessionId, stopUnixMillis: now().toUnixMillis() }) :
+	    abandonStopwatch({ trainingSessionId: action.trainingSessionId }))
 	);
       }),
     )
@@ -329,7 +354,7 @@ export class TrainerEffects {
     this.actions$.pipe(
       // Failure for initialLoadResults has no here effect,
       // it shows a message at the component where the results are rendered.
-      ofType(createFailure, destroyFailure, markDnfFailure, loadNextCaseFailure, stopStopwatchFailure),
+      ofType(createFailure, destroyFailure, markDnfFailure, loadNextCaseFailure, stopStopwatchFailure, abandonStopwatchFailure),
       tap(action => {
         this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
       }),

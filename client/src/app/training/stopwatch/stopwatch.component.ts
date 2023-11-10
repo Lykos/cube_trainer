@@ -89,7 +89,7 @@ export class StopwatchComponent {
         if (this.running) {
           if (this.hasStopAndStart) {
             this.onStopAndStart();
-          } else {
+          } else if (this.hasStopAndPause) {
             this.onStopAndPause();
           }
         } else if (this.startReady) {

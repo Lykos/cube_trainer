@@ -148,6 +148,21 @@ export const stopStopwatchFailure = createAction(
   props<{ trainingSessionId: number, error: BackendActionError }>()
 );
 
+export const abandonStopwatch = createAction(
+  '[Trainer] abandon stopwatch',
+  props<{ trainingSessionId: number }>()
+);
+
+export const abandonStopwatchSuccess = createAction(
+  '[Trainer] abandon stopwatch success',
+  props<{ trainingSessionId: number }>()
+);
+
+export const abandonStopwatchFailure = createAction(
+  '[Trainer] abandon stopwatch failure',
+  props<{ trainingSessionId: number, error: BackendActionError }>()
+);
+
 export const showHint = createAction(
   '[Trainer] show hint',
   props<{ trainingSessionId: number }>()

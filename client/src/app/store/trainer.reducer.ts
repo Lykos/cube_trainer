@@ -23,6 +23,7 @@ import {
   stopAndStartStopwatchDialog,
   stopAndPauseStopwatchDialog,
   stopStopwatchSuccess,
+  abandonStopwatchSuccess,
   showHint,
 } from '@store/trainer.actions';
 import { Duration, seconds, minutes } from '@utils/duration';
@@ -301,6 +302,12 @@ export const trainerReducer = createReducer(
     return trainerAdapter.updateOne({
       id: trainingSessionId,
       changes: { stopwatchState: stoppedStopwatchState(durationMillis) }
+    }, trainerState);
+  }),
+  on(abandonStopwatchSuccess, (trainerState, { trainingSessionId }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { stopwatchState: notStartedStopwatchState }
     }, trainerState);
   }),
   on(showHint, (trainerState, { trainingSessionId }) => {
