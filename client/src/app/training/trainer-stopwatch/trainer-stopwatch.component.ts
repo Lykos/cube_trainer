@@ -58,7 +58,7 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
     this.nextCase$ = this.store.select(selectNextCase).pipe(filterPresent());
     this.useOverlayTimer$ = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
       distinctUntilChanged(),
-      map(() => this.breakpointObserver.isMatched(Breakpoints.XSmall) || this.breakpointObserver.isMatched(Breakpoints.Small))
+      map(breakpointState => breakpointState.matches)
     );
   }
 
