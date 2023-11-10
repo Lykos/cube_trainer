@@ -315,7 +315,7 @@ export class TrainerEffects {
         const trainingSessionAndMaybeSamplingState = lolMap.get(action.trainingSessionId)!;
         const trainingSessionAndScrambleOrSample: TrainingSessionAndScrambleOrSample =
 	  { trainingSession: trainingSessionAndMaybeSamplingState.trainingSession, scrambleOrSample: action.scrambleOrSample };
-	const dialogRef = this.dialog.open(StopwatchDialogComponent, { data: trainingSessionAndScrambleOrSample, width: '100%', height: '100%' });
+	const dialogRef = this.dialog.open(StopwatchDialogComponent, { data: trainingSessionAndScrambleOrSample, width: '100%', height: '100%', maxHeight: '100%', maxWidth: '100%' });
 	return dialogRef.afterClosed().pipe(
 	  map(restart => restart ?
 	    stopAndStartStopwatchDialog({ trainingSessionId: action.trainingSessionId, stopUnixMillis: now().toUnixMillis() }) :

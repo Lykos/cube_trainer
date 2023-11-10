@@ -23,6 +23,9 @@ export class StopwatchComponent {
   hasStopAndStart?: boolean;
 
   @Input()
+  hasStopAndPause?: boolean;
+
+  @Input()
   algOverrideActive?: boolean;
   
   @Output()

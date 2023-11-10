@@ -7,7 +7,7 @@
     <button mat-raised-button id="stopwatch-stop-and-start" *ngIf="hasStopAndStart" color="primary" (click)="onStopAndStart()" [matTooltip]="stopAndStartTooltip" [disabled]="!running">
       Stop and Start
     </button>
-    <button mat-raised-button id="stopwatch-stop-and-pause" color="primary" (click)="onStopAndPause()" [disabled]="!running">
+    <button mat-raised-button id="stopwatch-stop-and-pause" *ngIf="hasStopAndPause" color="primary" (click)="onStopAndPause()" [disabled]="!running">
       <ng-container *ngIf="hasStopAndStart" [matTooltip]="stopAndPauseTooltip">
         Stop and Pause
       </ng-container>

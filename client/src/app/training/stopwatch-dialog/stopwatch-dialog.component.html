@@ -1,12 +1,8 @@
-<div id='stopwatch-dialog'>
+<div id='stopwatch-dialog' [mat-dialog-close]="false" class='stopwatch-dialog'>
   <div mat-dialog-content id="trainer-input">
     <cube-trainer-trainer-input
       [scrambleOrSample]="scrambleOrSample"
       [trainingSession]="trainingSession">
     </cube-trainer-trainer-input>
-  </div>
-  <div mat-dialog-actions>
-    <button mat-raised-button color="primary" [mat-dialog-close]="true" *ngIf="hasStopAndStart">Stop and Start</button>
-    <button mat-raised-button color="primary" [mat-dialog-close]="false">Stop</button>
   </div>
 </div>
