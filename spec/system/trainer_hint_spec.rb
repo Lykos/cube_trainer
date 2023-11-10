@@ -37,6 +37,7 @@ describe 'trainer hint', :skip_on_ci do
 
   before do
     driven_by(:selenium_chrome_headless)
+    page.driver.browser.manage.window.resize_to(1920, 1080)
   end
 
   let(:case_regexp) do
@@ -73,6 +74,7 @@ describe 'trainer hint', :skip_on_ci do
         expect(page).to have_text(case_regexp)
         page.text[case_regexp]
       end
+    sleep(0.1)
     click_button 'Reveal'
     within('.alg') do
       expect(page).to have_text(expected_alg(picked_case))
@@ -92,7 +94,7 @@ describe 'trainer hint', :skip_on_ci do
         expect(page).to have_text(case_regexp)
         page.text[case_regexp]
       end
-
+    sleep(0.1)
     click_button 'Reveal'
     click_button 'Override'
     find_by_id('override-alg-input').fill_in 'Alg Override', with: alternative_alg(picked_case)
