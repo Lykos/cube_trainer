@@ -79,10 +79,9 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   onStartDialog(trainingSession: TrainingSession) {
     const nextCase = this.nextCase;
     if (!nextCase) {
-      console.log('no current case');
-      return;
+      throw new Error('No current case.');
     }
-    this.store.dispatch(startStopwatchDialog({ trainingSessionId: trainingSession.id, scrambleOrSample: nextCase, startUnixMillis: now().toUnixMillis() }));
+    this.store.dispatch(startStopwatchDialog({ trainingSessionId: trainingSession.id, startUnixMillis: now().toUnixMillis() }));
   }
 
   onStart(trainingSession: TrainingSession) {

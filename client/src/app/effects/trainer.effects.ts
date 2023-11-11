@@ -5,7 +5,6 @@ import { of, forkJoin } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, switchMap, flatMap, map, tap, mapTo } from 'rxjs/operators';
 import { StopwatchDialogComponent } from '@training/stopwatch-dialog/stopwatch-dialog.component';
-import { TrainingSessionAndScrambleOrSample } from '@training/training-session-and-scramble-or-sample.model';
 import { millis } from '@utils/duration';
 import { isRunning, StartAfterLoading } from '@store/trainer.state';
 import {
@@ -255,7 +254,7 @@ export class TrainerEffects {
 	  case StartAfterLoading.STOPWATCH:
             return of(startStopwatch({ trainingSessionId: action.trainingSessionId, startUnixMillis: now().toUnixMillis() }));
 	  case StartAfterLoading.STOPWATCH_DIALOG:
-            return of(startStopwatchDialog({ trainingSessionId: action.trainingSessionId, scrambleOrSample: action.nextCase, startUnixMillis: now().toUnixMillis() }));
+            return of(startStopwatchDialog({ trainingSessionId: action.trainingSessionId, startUnixMillis: now().toUnixMillis() }));
 	  default:
 	    return of();
         }
@@ -338,9 +337,8 @@ export class TrainerEffects {
       concatLatestFrom(() => this.store.select(selectTrainingSessionAndSamplingStateById).pipe(filterPresent())),
       exhaustMap(([action, lolMap]) => {
         const trainingSessionAndMaybeSamplingState = lolMap.get(action.trainingSessionId)!;
-        const trainingSessionAndScrambleOrSample: TrainingSessionAndScrambleOrSample =
-	  { trainingSession: trainingSessionAndMaybeSamplingState.trainingSession, scrambleOrSample: action.scrambleOrSample };
-	const dialogRef = this.dialog.open(StopwatchDialogComponent, { data: trainingSessionAndScrambleOrSample, width: '100%', height: '100%', maxHeight: '100%', maxWidth: '100%' });
+	const trainingSession = trainingSessionAndMaybeSamplingState.trainingSession;
+	const dialogRef = this.dialog.open(StopwatchDialogComponent, { data: trainingSession, width: '100%', height: '100%', maxHeight: '100%', maxWidth: '100%' });
 	return dialogRef.afterClosed().pipe(
 	  map(save => save ?
 	    stopAndPauseStopwatchDialog({ trainingSessionId: action.trainingSessionId, stopUnixMillis: now().toUnixMillis() }) :

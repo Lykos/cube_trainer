@@ -120,7 +120,7 @@ export const stopAndPauseStopwatch = createAction(
 
 export const startStopwatchDialog = createAction(
   '[Trainer] start stopwatch dialog',
-  props<{ trainingSessionId: number, scrambleOrSample: ScrambleOrSample, startUnixMillis: number }>()
+  props<{ trainingSessionId: number, startUnixMillis: number }>()
 );
 
 export const stopAndStartStopwatchDialog = createAction(
