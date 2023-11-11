@@ -31,7 +31,7 @@ def alternative_alg(case_string)
   end
 end
 
-fdescribe 'trainer hint', :skip_on_ci do
+describe 'trainer hint' do
   include_context 'with user abc'
   include_context 'with alg set'
 
@@ -90,7 +90,7 @@ fdescribe 'trainer hint', :skip_on_ci do
       within('.case') do
         expect(page).to have_text(case_regexp)
         page.text[case_regexp]
-    end
+      end
     click_button 'Reveal'
     click_button 'Override'
     find_by_id('override-alg-input').fill_in 'Alg Override', with: alternative_alg(picked_case)

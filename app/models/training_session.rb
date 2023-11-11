@@ -129,10 +129,10 @@ class TrainingSession < ApplicationRecord
   end
 
   def include_case?(casee)
-    !exclude_parts.any? do |p|
-      casee.part_cycles.any? { |c|
+    exclude_parts.none? do |p|
+      casee.part_cycles.any? do |c|
         c.part_type == p.class && c.parts.any? { |q| p.turned_equals?(q) }
-      }
+      end
     end
   end
 
