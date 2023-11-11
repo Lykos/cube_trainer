@@ -4,7 +4,7 @@ import { Instant, now, fromUnixMillis } from '@utils/instant';
 import { TrainingSessionAndMaybeSamplingState } from '@training/training-session-and-maybe-sampling-state.model';
 import { seconds } from '@utils/duration';
 import { GeneratorType } from '@training/generator-type.model';
-import { TrainerState, notStartedStopwatchState, isRunning, ResultsState, IntermediateWeightState, initialIntermediateWeightState } from './trainer.state';
+import { TrainerState, notStartedStopwatchState, isRunning, ResultsState, IntermediateWeightState, initialIntermediateWeightState, StartAfterLoading } from './trainer.state';
 import { CaseTrainingSession } from '@training/training-session.model';
 import { TrainingCase } from '@training/training-case.model';
 import { Case } from '@training/case.model';
@@ -222,7 +222,7 @@ export const selectHintActive = createSelector(
 
 export const selectStartAfterLoading = createSelector(
   selectResultsState,
-  maybeRs => orElse(mapOptional(maybeRs, rs => rs.startAfterLoading), false),
+  maybeRs => orElse(mapOptional(maybeRs, rs => rs.startAfterLoading), StartAfterLoading.NONE),
 );
 
 export const selectStopwatchState = createSelector(

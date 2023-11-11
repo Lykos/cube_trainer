@@ -23,6 +23,9 @@ export class StopwatchComponent {
   hasStopAndStart?: boolean;
 
   @Input()
+  hasStopAndPause?: boolean;
+
+  @Input()
   algOverrideActive?: boolean;
   
   @Output()
@@ -86,7 +89,7 @@ export class StopwatchComponent {
         if (this.running) {
           if (this.hasStopAndStart) {
             this.onStopAndStart();
-          } else {
+          } else if (this.hasStopAndPause) {
             this.onStopAndPause();
           }
         } else if (this.startReady) {

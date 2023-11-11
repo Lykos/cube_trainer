@@ -15,7 +15,7 @@ import { map } from 'rxjs/operators';
 })
 export class HintComponent {
   @Input()
-  trainingCase?: TrainingCase;
+  trainingCase?: TrainingCase | null;
 
   @Input()
   trainingSession?: TrainingSession;
