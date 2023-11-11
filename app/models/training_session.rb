@@ -17,6 +17,7 @@ class TrainingSession < ApplicationRecord
   attribute :training_session_type, :training_session_type
   attribute :show_input_mode, :symbol
   attribute :buffer, :part
+  attribute :exclude_parts, :parts
   attr_accessor :stat_types, :verbose, :show_cube_states, :write_fixes
   attr_writer :test_comms_mode
 
@@ -54,10 +55,6 @@ class TrainingSession < ApplicationRecord
 
   def test_comms_mode
     @test_comms_mode ||= :ignore
-  end
-
-  def exclude_parts
-    []
   end
 
   def case_name(casee)
@@ -124,11 +121,19 @@ class TrainingSession < ApplicationRecord
   end
 
   def create_training_cases
-    training_cases = case_set.cases.map { |c| to_training_case(c) }
+    training_cases = case_set.cases.select { |c| include_case?(c) }.map { |c| to_training_case(c) }
     return without_alg_holes(training_cases) if exclude_alg_holes
     return without_algless_parts(training_cases) if exclude_algless_parts
 
     training_cases
+  end
+
+  def include_case?(casee)
+    !exclude_parts.any? do |p|
+      casee.part_cycles.any? { |c|
+        c.part_type == p.class && c.parts.any? { |q| p.turned_equals?(q) }
+      }
+    end
   end
 
   def without_algless_parts(training_cases)
@@ -163,6 +168,17 @@ class TrainingSession < ApplicationRecord
     return unless training_session_type
 
     training_session_type.validate_buffer(buffer, errors)
+  end
+
+  def exclude_parts_valid
+    return unless exclude_parts
+
+    exclude_parts.combination(2).each do |p, q|
+      errors.add(:exclude_parts, 'has to contain disjoint parts') if p.turned_equals?(q)
+    end
+    exclude_parts.each do |p|
+      training_session_type.validate_buffer(p, errors)
+    end
   end
 
   def cube_size_valid
