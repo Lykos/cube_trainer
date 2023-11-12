@@ -23,6 +23,10 @@ module CubeTrainer
         @sheet_filter = sheet_filter
       end
 
+      def google_sheets_scraper_run
+        @google_sheets_scraper_run ||= GoogleSheetsScraperRun.create!
+      end
+
       def run
         @sheets_client.fetch_access_token!
         AlgSpreadsheet.all.filter_map do |alg_spreadsheet|
@@ -39,7 +43,7 @@ module CubeTrainer
                           "with a total of #{total_cells(tables)} cells."
         counters = new_counters
         tables.map { |t| extract_alg_set(alg_spreadsheet, t, counters) }
-        log_counters(counters)
+        log_counters(alg_spreadsheet, counters)
         counters
       end
 
@@ -57,7 +61,8 @@ module CubeTrainer
         }
       end
 
-      def log_counters(counters)
+      def log_counters(alg_spreadsheet, counters)
+        google_sheets_scraper_run.sheet_runs.create!(counters.merge({ alg_spreadsheet: alg_spreadsheet }))
         Rails.logger.info "Got #{counters[:new_algs]} new algs, " \
                           "updated #{counters[:updated_algs]} algs " \
                           "and confirmed #{counters[:confirmed_algs]} algs."
