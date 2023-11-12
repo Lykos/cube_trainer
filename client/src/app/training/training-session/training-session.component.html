@@ -1,12 +1,12 @@
 <div>
   <ng-container *ngIf="trainingSession">
-    <div fxLayout="column">
+    <div class="training-session">
       <cube-trainer-trainer></cube-trainer-trainer>
-      <div fxFlex fxLayout="column" fxLayout.gt-md="row">
-	<div fxFlex="66" id="results-table" class="stats-table-container">
+      <div class="stats-tables-container">
+	<div id="results-table" class="stats-table-container">
           <cube-trainer-results-table [trainingSessionId]="trainingSession.id"></cube-trainer-results-table>
 	</div>
-	<div fxFlex="33" class="stats-table-container">
+	<div class="stats-table-container">
           <cube-trainer-stats-table></cube-trainer-stats-table>
 	</div>
       </div>

@@ -1,37 +1,44 @@
 import { filterPresent } from '@shared/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Result } from '../result.model';
-import { Component, Input, LOCALE_ID, Inject } from '@angular/core';
+import { Component, Input, LOCALE_ID, Inject, OnInit, OnDestroy } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { formatDate } from '@angular/common';
 import { fromDateString, Instant, now } from '@utils/instant';
 import { seconds, Duration } from '@utils/duration';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { tap, map, distinctUntilChanged } from 'rxjs/operators';
 import { selectResults, selectResultsTotal, selectResultsOnPage, selectInitialLoadLoading, selectPageSize } from '@store/trainer.selectors';
 import { destroy, markDnf, setPage } from '@store/trainer.actions';
 import { Store } from '@ngrx/store';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+
+const IMPORTANT_COLUMNS = ['select', 'case', 'time'];
+const ALL_COLUMNS = IMPORTANT_COLUMNS.concat(['numHints', 'timestamp']);
 
 @Component({
   selector: 'cube-trainer-results-table',
   templateUrl: './results-table.component.html',
   styleUrls: ['./results-table.component.css']
 })
-export class ResultsTableComponent {
+export class ResultsTableComponent implements OnInit, OnDestroy {
   @Input()
   trainingSessionId?: number;
 
-  columnsToDisplay = ['select', 'case', 'time', 'numHints', 'timestamp'];
+  columnsToDisplay = ALL_COLUMNS;
   results$: Observable<readonly Result[]>;
   resultsOnPage$: Observable<readonly Result[]>;
   loading$: Observable<boolean>;
   numResults$: Observable<number>;
   pageSize$: Observable<number>;
+  showUnimportantColumns$: Observable<boolean>;
 
   selection = new SelectionModel<Result>(true, []);
+  showUnimportantColumnsSubscription?: Subscription;
 
   constructor(private readonly store: Store,
-	      @Inject(LOCALE_ID) private readonly locale: string) {
+	      @Inject(LOCALE_ID) private readonly locale: string,
+	      breakpointObserver: BreakpointObserver) {
     this.loading$ = this.store.select(selectInitialLoadLoading);
     this.results$ = this.store.select(selectResults).pipe(filterPresent());
     this.resultsOnPage$ = this.store.select(selectResultsOnPage).pipe(
@@ -40,6 +47,24 @@ export class ResultsTableComponent {
     );
     this.numResults$ = this.store.select(selectResultsTotal).pipe(filterPresent());
     this.pageSize$ = this.store.select(selectPageSize);
+    this.showUnimportantColumns$ = breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
+      distinctUntilChanged(),
+      map(breakpointState => !breakpointState.matches)
+    );
+  }
+
+  ngOnInit() {
+    this.showUnimportantColumnsSubscription = this.showUnimportantColumns$.subscribe(showUnimportantColumns => {
+      if (showUnimportantColumns) {
+	this.columnsToDisplay = ALL_COLUMNS;
+      } else {
+	this.columnsToDisplay = IMPORTANT_COLUMNS;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.showUnimportantColumnsSubscription?.unsubscribe();
   }
 
   now() {

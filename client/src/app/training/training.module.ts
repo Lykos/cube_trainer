@@ -18,7 +18,6 @@ import { TrainerInputComponent } from './trainer-input/trainer-input.component';
 import { HintComponent } from './hint/hint.component';
 import { StopwatchComponent } from './stopwatch/stopwatch.component';
 import { StatPartValueComponent } from './stat-part-value/stat-part-value.component';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { SelectStatsComponent } from './select-stats/select-stats.component';
 import { AlgSetComponent } from './alg-set/alg-set.component';
 import { TrainingSessionComponent } from './training-session/training-session.component';
@@ -51,7 +50,6 @@ import { StopwatchDialogComponent } from './stopwatch-dialog/stopwatch-dialog.co
     CdkStepperModule,
     DragDropModule,
     SharedModule,
-    FlexLayoutModule,
   ],
   exports: [
     EditColorSchemeComponent,

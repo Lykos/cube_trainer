@@ -38,7 +38,7 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   useOverlayTimerSubscription?: Subscription;
   
   constructor(private readonly store: Store,
-	      private readonly breakpointObserver: BreakpointObserver) {
+	      breakpointObserver: BreakpointObserver) {
     this.duration$ = this.store.select(selectStopwatchState).pipe(
       switchMap(state => {
         switch (state.tag) {
@@ -56,7 +56,7 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
     this.running$ = this.store.select(selectStopwatchRunning);
     this.nextCaseReady$ = this.store.select(selectNextCaseReady);
     this.nextCase$ = this.store.select(selectNextCase).pipe(filterPresent());
-    this.useOverlayTimer$ = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
+    this.useOverlayTimer$ = breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
       distinctUntilChanged(),
       map(breakpointState => breakpointState.matches)
     );
