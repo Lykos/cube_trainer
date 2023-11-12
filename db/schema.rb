@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_11_114226) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_12_143918) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -68,6 +68,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_11_114226) do
     t.index ["user_id"], name: "index_color_schemes_on_user_id", unique: true
   end
 
+  create_table "google_sheets_scraper_runs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "letter_scheme_mappings", force: :cascade do |t|
     t.integer "letter_scheme_id", null: false
     t.string "part", null: false
@@ -112,6 +117,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_11_114226) do
     t.string "casee", null: false
     t.integer "training_session_id", null: false
     t.index ["casee"], name: "index_results_on_casee"
+  end
+
+  create_table "sheet_runs", force: :cascade do |t|
+    t.bigint "google_sheets_scraper_run_id", null: false
+    t.integer "updated_algs"
+    t.integer "new_algs"
+    t.integer "confirmed_algs"
+    t.integer "correct_algs"
+    t.integer "fixed_algs"
+    t.integer "unfixable_algs"
+    t.integer "unparseable_algs"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["google_sheets_scraper_run_id"], name: "index_sheet_runs_on_google_sheets_scraper_run_id"
   end
 
   create_table "stats", force: :cascade do |t|
@@ -193,6 +212,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_11_114226) do
   add_foreign_key "letter_schemes", "users"
   add_foreign_key "messages", "users"
   add_foreign_key "results", "training_sessions"
+  add_foreign_key "sheet_runs", "google_sheets_scraper_runs"
   add_foreign_key "stats", "training_sessions"
   add_foreign_key "training_session_usages", "training_sessions"
   add_foreign_key "training_session_usages", "training_sessions", column: "used_training_session_id"
