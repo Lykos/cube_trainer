@@ -1,2 +1,18 @@
 .stopwatch-dialog {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+.trainer-input-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.stopwatch-dialog-actions {
+    
+}
+.stopwatch-dialog-stop-button {
+    width: 100%;
 }

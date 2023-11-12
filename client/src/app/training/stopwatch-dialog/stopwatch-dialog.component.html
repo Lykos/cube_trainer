@@ -1,5 +1,5 @@
 <div id="stopwatch-dialog" class="stopwatch-dialog">
-  <div mat-dialog-content id="stopwatch-trainer-input" class="trainer-input-container" (click)="stopAndStart()">
+  <div mat-dialog-title id="stopwatch-trainer-input" class="trainer-input-container" (click)="stopAndStart()">
     <ng-container *ngIf="nextCase$ | async as nextCase">
       <cube-trainer-trainer-input
 	[scrambleOrSample]="nextCase"
@@ -7,7 +7,7 @@
       </cube-trainer-trainer-input>
     </ng-container>
   </div>
-  <div mat-dialog-actions *ngIf="hasStopAndStart">
-    <button mat-raised-button color="primary" [mat-dialog-close]="true">Stop</button>
+  <div mat-dialog-actions *ngIf="hasStopAndStart" class="stopwatch-dialog-actions">
+    <button mat-raised-button class="stopwatch-dialog-stop-button" color="primary" [mat-dialog-close]="true">Stop</button>
   </div>
 </div>
