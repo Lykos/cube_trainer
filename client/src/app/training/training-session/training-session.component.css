@@ -1,3 +1,22 @@
+.training-session {
+    display: flex;
+    flex-direction: column;
+}
+.tables-container {
+    display: flex;
+    flex-direction: row;
+}
+@media (max-width: 960px) {
+    .tables-container {
+	flex-direction: column;
+    }
+}
 .stats-table-container {
     margin: 20px;
+    flex: 33%;
 }
+.results-table-container {
+    margin: 20px;
+    flex: 66%;
+}
+

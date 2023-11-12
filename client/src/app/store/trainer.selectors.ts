@@ -210,6 +210,11 @@ export const selectCurrentCase = createSelector(
   maybeRs => flatMapOptional(maybeRs, rs => rs.currentCase),
 );
 
+export const selectCurrentCaseResult = createSelector(
+  selectResultsState,
+  maybeRs => flatMapOptional(maybeRs, rs => rs.currentCaseResult),
+);
+
 export const selectNextCaseReady = createSelector(
   selectNextCase,
   hasValue,

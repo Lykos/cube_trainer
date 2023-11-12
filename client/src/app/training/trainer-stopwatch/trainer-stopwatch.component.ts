@@ -38,7 +38,7 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   useOverlayTimerSubscription?: Subscription;
   
   constructor(private readonly store: Store,
-	      private readonly breakpointObserver: BreakpointObserver) {
+	      breakpointObserver: BreakpointObserver) {
     this.duration$ = this.store.select(selectStopwatchState).pipe(
       switchMap(state => {
         switch (state.tag) {
@@ -56,7 +56,7 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
     this.running$ = this.store.select(selectStopwatchRunning);
     this.nextCaseReady$ = this.store.select(selectNextCaseReady);
     this.nextCase$ = this.store.select(selectNextCase).pipe(filterPresent());
-    this.useOverlayTimer$ = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
+    this.useOverlayTimer$ = breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small]).pipe(
       distinctUntilChanged(),
       map(breakpointState => breakpointState.matches)
     );
@@ -79,10 +79,9 @@ export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   onStartDialog(trainingSession: TrainingSession) {
     const nextCase = this.nextCase;
     if (!nextCase) {
-      console.log('no current case');
-      return;
+      throw new Error('No current case.');
     }
-    this.store.dispatch(startStopwatchDialog({ trainingSessionId: trainingSession.id, scrambleOrSample: nextCase, startUnixMillis: now().toUnixMillis() }));
+    this.store.dispatch(startStopwatchDialog({ trainingSessionId: trainingSession.id, startUnixMillis: now().toUnixMillis() }));
   }
 
   onStart(trainingSession: TrainingSession) {

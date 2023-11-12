@@ -1,8 +1,18 @@
-<div id="stopwatch-dialog" [mat-dialog-close]="true" class="stopwatch-dialog">
-  <div mat-dialog-content id="stopwatch-trainer-input" class="trainer-input-container">
-    <cube-trainer-trainer-input
-      [scrambleOrSample]="scrambleOrSample"
-      [trainingSession]="trainingSession">
-    </cube-trainer-trainer-input>
+<div id="stopwatch-dialog" class="stopwatch-dialog" [ngClass]="{'post-memo-time': (isPostMemoTime$ | async)}">
+  <div mat-dialog-title id="stopwatch-trainer-input" class="trainer-input-container" (click)="stopAndStart()">
+    <ng-container *ngIf="showTrainerInput">
+      <ng-container *ngIf="nextCase$ | async as nextCase">
+	<cube-trainer-trainer-input
+	  [scrambleOrSample]="nextCase"
+	  [trainingSession]="trainingSession">
+	</cube-trainer-trainer-input>
+      </ng-container>
+    </ng-container>
+    <span class="stopwatch-dialog-stop-area" *ngIf="!showTrainerInput">
+      Stop
+    </span>
+  </div>
+  <div mat-dialog-actions *ngIf="hasStopAndStart" class="stopwatch-dialog-actions">
+    <button mat-raised-button class="stopwatch-dialog-stop-button" color="primary" [mat-dialog-close]="true">Stop</button>
   </div>
 </div>
