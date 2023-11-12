@@ -39,6 +39,10 @@ import {
   abandonStopwatch,
   abandonStopwatchSuccess,
   abandonStopwatchFailure,
+  showHint,
+  markHint,
+  markHintSuccess,
+  markHintFailure,
 } from '@store/trainer.actions';
 import { loadOne, loadOneSuccess } from '@store/training-sessions.actions';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
@@ -48,7 +52,7 @@ import { TrainerService } from '@training/trainer.service';
 import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { forceValue } from '@utils/optional';
+import { forceValue, mapOptional } from '@utils/optional';
 import { now, fromUnixMillis } from '@utils/instant';
 import {
   selectTrainingSessionAndSamplingStateById,
@@ -56,6 +60,7 @@ import {
   selectCurrentCaseAndHintActiveById,
   selectStopwatchState,
   selectStartAfterLoading,
+  selectCurrentCaseResult,
 } from '@store/trainer.selectors';
 import { selectSelectedTrainingSessionId } from '@store/router.selectors';
 import { ScrambleOrSample } from '@training/scramble-or-sample.model';
@@ -348,11 +353,39 @@ export class TrainerEffects {
     )
   );
 
+  showHint$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(showHint),
+      concatLatestFrom(() => this.store.select(selectCurrentCaseResult)),
+      map(([action, result]) => mapOptional(result, r => markHint({ trainingSessionId: action.trainingSessionId, resultId: r.id }))),
+      filterPresent(),
+    )
+  );
+
+  markHint$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(markHint),
+      exhaustMap(action => {
+        return this.resultsService.markHint(action.trainingSessionId, action.resultId).pipe(
+          map(result => markHintSuccess({ trainingSessionId: action.trainingSessionId, resultId: result.id })),
+          catchError(httpResponseError => {
+            const context = {
+              action: 'marking as hint',
+              subject: 'result',
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(markHintFailure({ trainingSessionId: action.trainingSessionId, error }));
+          })
+        )
+      })
+    )
+  );
+
   failure$ = createEffect(() =>
     this.actions$.pipe(
       // Failure for initialLoadResults has no here effect,
       // it shows a message at the component where the results are rendered.
-      ofType(createFailure, destroyFailure, markDnfFailure, loadNextCaseFailure, stopStopwatchFailure, abandonStopwatchFailure),
+      ofType(createFailure, destroyFailure, markDnfFailure, loadNextCaseFailure, stopStopwatchFailure, abandonStopwatchFailure, markHintFailure),
       tap(action => {
         this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
       }),

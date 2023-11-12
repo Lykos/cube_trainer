@@ -167,3 +167,18 @@ export const showHint = createAction(
   '[Trainer] show hint',
   props<{ trainingSessionId: number }>()
 );
+
+export const markHint = createAction(
+  '[Trainer] mark hint',
+  props<{ trainingSessionId: number, resultId: number }>()
+);
+
+export const markHintSuccess = createAction(
+  '[Trainer] mark hint success',
+  props<{ trainingSessionId: number, resultId: number }>()
+);
+
+export const markHintFailure = createAction(
+  '[Trainer] mark hintFailure',
+  props<{ trainingSessionId: number, error: BackendActionError }>()
+);

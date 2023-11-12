@@ -25,12 +25,15 @@ import {
   stopStopwatchSuccess,
   abandonStopwatchSuccess,
   showHint,
+  markHint,
+  markHintSuccess,
+  markHintFailure,
 } from '@store/trainer.actions';
 import { Duration, seconds, minutes } from '@utils/duration';
 import { unixEpoch } from '@utils/instant';
 import { AlgOverride } from '@training/alg-override.model';
 import { ScrambleOrSample, mapTrainingCase } from '@training/scramble-or-sample.model';
-import { mapOptional } from '@utils/optional';
+import { mapOptional, flatMapOptional } from '@utils/optional';
 import { 
   createAlgOverrideSuccess,
   updateAlgOverrideSuccess,
@@ -73,7 +76,11 @@ function addAlgOverrideToScrambleOrSample(scrambleOrSample: ScrambleOrSample, al
 }
 
 function addAlgOverrideToResultsState(resultsState: ResultsState, algOverride: AlgOverride): ResultsState {
-  return { ...resultsState, nextCase: mapOptional(resultsState.nextCase, t => addAlgOverrideToScrambleOrSample(t, algOverride)) };
+  return {
+    ...resultsState,
+    nextCase: mapOptional(resultsState.nextCase, t => addAlgOverrideToScrambleOrSample(t, algOverride)),
+    currentCase: mapOptional(resultsState.currentCase, t => addAlgOverrideToScrambleOrSample(t, algOverride)),
+  };
 }
 
 function pushWithMemory<X>(xs: readonly X[], x: X, memory: number): X[] {
@@ -151,9 +158,11 @@ export const trainerReducer = createReducer(
       createState: backendActionNotStartedState,
       destroyState: backendActionNotStartedState,
       markDnfState: backendActionNotStartedState,
+      markHintState: backendActionNotStartedState,
       loadNextCaseState: backendActionNotStartedState,
       nextCase: none,
       currentCase: none,
+      currentCaseResult: none,
       stopwatchState: initialStopwatchState,
       hintActive: false,
       startAfterLoading: StartAfterLoading.NONE,
@@ -182,7 +191,7 @@ export const trainerReducer = createReducer(
   on(createSuccess, (trainerState, { trainingSessionId, result }) => {
     return trainerAdapter.mapOne({
       id: trainingSessionId,
-      map: resultsState => recompute(resultsAdapter.addOne(result, { ...resultsState, createState: backendActionSuccessState })),
+      map: resultsState => recompute(resultsAdapter.addOne(result, { ...resultsState, createState: backendActionSuccessState, currentCaseResult: some(result) })),
     }, trainerState);
   }),
   on(createFailure, (trainerState, { trainingSessionId, error }) => {
@@ -200,7 +209,10 @@ export const trainerReducer = createReducer(
   on(destroySuccess, (trainerState, { trainingSessionId, resultIds }) => {
     return trainerAdapter.mapOne({
       id: trainingSessionId,
-      map: resultsState => recompute(resultsAdapter.removeMany(resultIds.map(r => r), { ...resultsState, destroyState: backendActionSuccessState })),
+      map: resultsState => {
+	const currentCaseResult = flatMapOptional(resultsState.currentCaseResult, r => resultIds.includes(r.id) ? none : some(r));
+	return recompute(resultsAdapter.removeMany(resultIds.map(r => r), { ...resultsState, destroyState: backendActionSuccessState, currentCaseResult }));
+      },
     }, trainerState);
   }),
   on(destroyFailure, (trainerState, { trainingSessionId, error }) => {
@@ -231,6 +243,29 @@ export const trainerReducer = createReducer(
     return trainerAdapter.updateOne({
       id: trainingSessionId,
       changes: { markDnfState: backendActionFailureState(error) },
+    }, trainerState);
+  }),
+  on(markHint, (trainerState, { trainingSessionId }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { markHintState: backendActionLoadingState },
+    }, trainerState);
+  }),
+  on(markHintSuccess, (trainerState, { trainingSessionId, resultId }) => {
+    return trainerAdapter.mapOne({
+      id: trainingSessionId,
+      map: resultsState => {
+        return recompute(resultsAdapter.updateOne(
+	  { id: resultId, changes: { numHints: 1 } },
+	  { ...resultsState, markHintState: backendActionSuccessState },
+	));
+      },
+    }, trainerState);
+  }),
+  on(markHintFailure, (trainerState, { trainingSessionId, error }) => {
+    return trainerAdapter.updateOne({
+      id: trainingSessionId,
+      changes: { markHintState: backendActionFailureState(error) },
     }, trainerState);
   }),
   on(loadNextCase, (trainerState, { trainingSessionId }) => {
@@ -273,7 +308,7 @@ export const trainerReducer = createReducer(
   on(startStopwatch, (trainerState, { trainingSessionId, startUnixMillis }) => {
     return trainerAdapter.mapOne({
       id: trainingSessionId,
-      map: resultsState => ({ ...resultsState, currentCase: resultsState.nextCase, stopwatchState: runningStopwatchState(startUnixMillis), hintActive: false }),
+      map: resultsState => ({ ...resultsState, currentCase: resultsState.nextCase, stopwatchState: runningStopwatchState(startUnixMillis), currentCaseResult: none, hintActive: false }),
     }, trainerState);
   }),
   // Note that stopAndStartStopwatch immediately triggers a stopStopwatch,
@@ -295,7 +330,7 @@ export const trainerReducer = createReducer(
   on(startStopwatchDialog, (trainerState, { trainingSessionId, startUnixMillis }) => {
     return trainerAdapter.mapOne({
       id: trainingSessionId,
-      map: resultsState => ({ ...resultsState, currentCase: resultsState.nextCase, stopwatchState: runningStopwatchState(startUnixMillis), hintActive: false }),
+      map: resultsState => ({ ...resultsState, currentCase: resultsState.nextCase, stopwatchState: runningStopwatchState(startUnixMillis), currentCaseResult: none, hintActive: false }),
     }, trainerState);
   }),
   on(stopStopwatchSuccess, (trainerState, { trainingSessionId, durationMillis }) => {

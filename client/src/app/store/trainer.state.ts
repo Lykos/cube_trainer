@@ -49,6 +49,7 @@ export interface ResultsState extends EntityState<Result> {
   readonly createState: BackendActionState;
   readonly destroyState: BackendActionState;
   readonly markDnfState: BackendActionState;
+  readonly markHintState: BackendActionState;
   readonly loadNextCaseState: BackendActionState;
 
   readonly stopwatchState: StopwatchState;
@@ -56,6 +57,7 @@ export interface ResultsState extends EntityState<Result> {
   readonly nextCase: Optional<ScrambleOrSample>;
   readonly currentCase: Optional<ScrambleOrSample>;
   readonly startAfterLoading: StartAfterLoading;
+  readonly currentCaseResult: Optional<Result>;
 
   readonly intermediateWeightStates: readonly CaseAndIntermediateWeightState[];
 }
