@@ -6,6 +6,7 @@
 # usually one per sheet (aka tab).
 class AlgSpreadsheet < ApplicationRecord
   has_many :alg_sets, dependent: :destroy
+  has_many :sheet_runs, dependent: :destroy
   validates :owner, presence: true
   validates :spreadsheet_id, presence: true, uniqueness: true
 end

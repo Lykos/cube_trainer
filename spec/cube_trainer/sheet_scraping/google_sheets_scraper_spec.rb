@@ -95,6 +95,9 @@ describe CubeTrainer::SheetScraping::GoogleSheetsScraper do
     expect(AlgSet.count).to eq(1)
     expect(AlgSet.first.alg_spreadsheet).to eq(alg_spreadsheet)
     expect(AlgSet.first.algs.count).to eq(10)
+    expect(GoogleSheetsScraperRun.count).to eq(1)
+    expect(GoogleSheetsScraperRun.first.sheet_runs.count).to eq(1)
+    expect(GoogleSheetsScraperRun.first.sheet_runs.first.alg_spreadsheet).to eq(alg_spreadsheet)
   end
 
   it 'updates an existing sheet correctly' do
@@ -108,17 +111,24 @@ describe CubeTrainer::SheetScraping::GoogleSheetsScraper do
 
     # Change one alg cell to a different alg.
     get_spreadsheet_values_response.values[4][1] = "U2 M' U2 M"
+    scraper = described_class.new(
+      credentials_factory: credentials_factory,
+      sheets_service_factory: sheets_service_factory
+    )
     counters = scraper.run[0]
 
     expect(counters[:new_algs]).to eq(0)
     expect(counters[:updated_algs]).to eq(1)
     expect(counters[:confirmed_algs]).to eq(9)
 
-    expect(sheets_service).to have_received(:'authorization=').with(authorizer)
+    expect(sheets_service).to have_received(:'authorization=').with(authorizer).twice
     expect(authorizer).to have_received(:fetch_access_token!).twice
 
     expect(AlgSet.count).to eq(1)
     expect(AlgSet.first.alg_spreadsheet).to eq(alg_spreadsheet)
     expect(AlgSet.first.algs.count).to eq(10)
+    expect(GoogleSheetsScraperRun.count).to eq(2)
+    expect(GoogleSheetsScraperRun.last.sheet_runs.count).to eq(1)
+    expect(GoogleSheetsScraperRun.last.sheet_runs.first.alg_spreadsheet).to eq(alg_spreadsheet)
   end
 end

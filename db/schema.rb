@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_12_143918) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_12_145938) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -130,6 +130,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_12_143918) do
     t.integer "unparseable_algs"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "alg_spreadsheet_id", null: false
+    t.index ["alg_spreadsheet_id"], name: "index_sheet_runs_on_alg_spreadsheet_id"
     t.index ["google_sheets_scraper_run_id"], name: "index_sheet_runs_on_google_sheets_scraper_run_id"
   end
 
@@ -212,6 +214,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_12_143918) do
   add_foreign_key "letter_schemes", "users"
   add_foreign_key "messages", "users"
   add_foreign_key "results", "training_sessions"
+  add_foreign_key "sheet_runs", "alg_spreadsheets"
   add_foreign_key "sheet_runs", "google_sheets_scraper_runs"
   add_foreign_key "stats", "training_sessions"
   add_foreign_key "training_session_usages", "training_sessions"
