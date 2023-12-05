@@ -5,6 +5,8 @@ require 'twisty_puzzles'
 module CaseSets
   # An alg set with 3 cycles with a given fixed buffer.
   class BufferedThreeTwistSet < ConcreteCaseSet
+    include TwistNameHelper
+
     def initialize(buffer)
       super()
 
@@ -81,8 +83,8 @@ module CaseSets
       return false unless casee.part_cycles.all? { |c| c.length == 1 }
       return false unless casee.part_cycles.all? { |c| c.part_type == @part_type }
 
-      parts = casee.part_cycles.first.parts
-      parts.join(' ⟶ ')
+      twist_names = casee.part_cycles[1..].map { |c| twist_name(c) }
+      twist_names.join(' ')
     end
 
     def default_cube_size
