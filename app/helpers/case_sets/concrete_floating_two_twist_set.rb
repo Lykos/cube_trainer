@@ -105,9 +105,7 @@ module CaseSets
     def case_name(casee, letter_scheme: nil)
       raise ArgumentError unless match?(casee)
 
-      parts = casee.part_cycles.map { |c| c.parts.first }
-      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) || p } : parts
-      name_parts.join(' ')
+      case_name_parts(casee, letter_scheme).join(' ')
     end
 
     def raw_case_name(casee)
@@ -136,6 +134,12 @@ module CaseSets
     end
 
     private
+
+    def case_name_parts(casee, letter_scheme)
+      casee.part_cycles.map do |c|
+        letter_scheme&.twist_name(c.parts.first, c.twist) || twist_name(c)
+      end
+    end
 
     def twisted_part(casee, twist)
       cycle = casee.part_cycles.find { |c| c.length == 1 && c.twist == twist }

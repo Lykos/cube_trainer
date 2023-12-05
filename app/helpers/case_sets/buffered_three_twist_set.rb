@@ -111,8 +111,9 @@ module CaseSets
     private
 
     def case_name_parts(casee, letter_scheme)
-      parts = casee.part_cycles[1..].map { |c| c.parts.first }
-      letter_scheme ? parts.map { |p| letter_scheme.letter(p) || p } : parts
+      casee.part_cycles[1..].map do |c|
+        letter_scheme&.twist_name(c.parts.first, c.twist) || twist_name(c)
+      end
     end
 
     def case_for_direction(parts, direction)
