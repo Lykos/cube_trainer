@@ -24,7 +24,7 @@ class LetterScheme < ApplicationRecord
   end
 
   def twist_name(part, twist)
-    letter(part.rotations.min.rotate_by(part.rotations.length - twist))
+    letter(part.rotations.min.rotate_by(twist))
   end
 
   def for_letter(part_type, letter)
