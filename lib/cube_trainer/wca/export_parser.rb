@@ -89,7 +89,7 @@ module CubeTrainer
         rank_rows.each do |e|
           personid = e[:personid]
           person_ranks = (ranks[personid] ||= {})
-          eventid = "#{e[:eventid]}_#{eventid_suffix}".to_sym
+          eventid = :"#{e[:eventid]}_#{eventid_suffix}"
           person_ranks[eventid] = e
         end
       end
