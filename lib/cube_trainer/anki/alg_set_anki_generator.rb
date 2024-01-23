@@ -176,7 +176,7 @@ module CubeTrainer
           progress: @options.verbose ? "Fetching #{inputs.length} alg images" : nil,
           in_threads: 50
         ) { |note_input| process_note_input(note_input) }
-        inputs.group_by(&:name).each do |_name, values|
+        inputs.group_by(&:name).each_value do |values|
           fields = values[0].fields
           csv << (fields + values.map(&:img))
         end

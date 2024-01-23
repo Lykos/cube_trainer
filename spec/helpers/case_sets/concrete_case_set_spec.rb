@@ -8,6 +8,10 @@ class StubLetterScheme
   def letter(_part)
     'A'
   end
+
+  def twist_name(part, _twist)
+    letter(part)
+  end
 end
 
 describe CaseSets::ConcreteCaseSet do

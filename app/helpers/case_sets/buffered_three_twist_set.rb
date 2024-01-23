@@ -5,6 +5,8 @@ require 'twisty_puzzles'
 module CaseSets
   # An alg set with 3 cycles with a given fixed buffer.
   class BufferedThreeTwistSet < ConcreteCaseSet
+    include TwistNameHelper
+
     def initialize(buffer)
       super()
 
@@ -73,9 +75,7 @@ module CaseSets
       return false unless casee.part_cycles.all? { |c| c.length == 1 }
       return false unless casee.part_cycles.all? { |c| c.part_type == @part_type }
 
-      parts = casee.part_cycles[1..2].map { |c| c.parts.first }
-      name_parts = letter_scheme ? parts.map { |p| letter_scheme.letter(p) || p } : parts
-      name_parts.join(' ')
+      case_name_parts(casee, letter_scheme).join(' ')
     end
 
     def raw_case_name(casee)
@@ -83,8 +83,8 @@ module CaseSets
       return false unless casee.part_cycles.all? { |c| c.length == 1 }
       return false unless casee.part_cycles.all? { |c| c.part_type == @part_type }
 
-      parts = casee.part_cycles.first.parts
-      parts.join(' ⟶ ')
+      twist_names = casee.part_cycles[1..].map { |c| twist_name(c) }
+      twist_names.join(' ')
     end
 
     def default_cube_size
@@ -111,6 +111,12 @@ module CaseSets
     end
 
     private
+
+    def case_name_parts(casee, letter_scheme)
+      casee.part_cycles[1..].map do |c|
+        letter_scheme&.twist_name(c.parts.first, c.twist) || twist_name(c)
+      end
+    end
 
     def case_for_direction(parts, direction)
       part_cycles = ([@buffer] + parts).map { |q| TwistyPuzzles::PartCycle.new([q], direction) }
