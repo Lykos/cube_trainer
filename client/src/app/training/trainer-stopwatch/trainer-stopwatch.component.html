@@ -4,9 +4,10 @@
     [startReady]="nextCaseReady"
     [running]="running"
     [memoTime]="memoTime"
-    [hasStopAndStart]="hasStopAndStart"
-    (startt)="onStart(trainingSession)"
-    (stopAndPause)="onStopAndPause(trainingSession)"
-    (stopAndStart)="onStopAndStart(trainingSession)">
+    [hasStopAndPause]="!useOverlayTimer"
+    [hasStopAndStart]="hasStopAndStart && !useOverlayTimer"
+    (startt)="useOverlayTimer ? onStartDialog(trainingSession) : onStart(trainingSession)"
+    (stopAndPause)="useOverlayTimer ? undefined : onStopAndPause(trainingSession)"
+    (stopAndStart)="useOverlayTimer ? undefined : onStopAndStart(trainingSession)">
   </cube-trainer-stopwatch>
 </ng-container>

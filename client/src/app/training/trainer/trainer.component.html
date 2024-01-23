@@ -1,47 +1,27 @@
-<div>
-  <ng-container *ngIf="trainingSession">
-    <div layout="column" layout-gt-sm="row">
-      <div flex *ngIf="nextCase$ | async as nextCase">
-	<ng-container *ngIf="nextCase.tag !== 'sample'">
-          <div id="trainer-input">
-            <cube-trainer-trainer-input
-	      [scrambleOrSample]="nextCase"
-	      [trainingSession]="trainingSession">
-            </cube-trainer-trainer-input>
-          </div>
-	</ng-container>
-	<ng-container *ngIf="nextCase.tag === 'sample'">
-	  <ng-container *ngIf="currentCase$ | async as currentCase">
-            <div id="trainer-input">
-              <cube-trainer-trainer-input
-		[scrambleOrSample]="currentCase"
-		[trainingSession]="trainingSession">
-              </cube-trainer-trainer-input>
-            </div>
-	    <!-- Note that this if will always be true in practice because the currentCase and nextCase will always have the same tag. -->
-	    <ng-container *ngIf="currentCase.tag === 'sample'">
-              <cube-trainer-hint
-		[trainingCase]="currentCase.sample.item"
-		[trainingSession]="trainingSession">
-              </cube-trainer-hint>
-	    </ng-container>
-          </ng-container>
-	</ng-container>
-        <div id="trainer-stopwatch">
-          <cube-trainer-trainer-stopwatch [trainingSession]="trainingSession">
-          </cube-trainer-trainer-stopwatch>
-        </div>
-      </div>
-      <div id="results-table" flex>
-        <cube-trainer-results-table [trainingSessionId]="trainingSession.id"></cube-trainer-results-table>
-      </div>
-      <div flex>
-        <cube-trainer-stats-table></cube-trainer-stats-table>
-      </div>
+<div *ngIf="nextCase$ | async as nextCase">
+  <ng-container *ngIf="nextCase.tag !== 'sample'">
+    <div id="trainer-input">
+      <cube-trainer-trainer-input
+	[scrambleOrSample]="nextCase"
+	[trainingSession]="trainingSession">
+      </cube-trainer-trainer-input>
     </div>
   </ng-container>
-  <div id="initial-load-error" *ngIf="error$ | async as error">
-    <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
+  <ng-container *ngIf="nextCase.tag === 'sample'">
+    <div id="trainer-input">
+      <cube-trainer-trainer-input
+	[scrambleOrSample]="currentCase$ | async"
+	[trainingSession]="trainingSession"
+	[colorScheme]="colorScheme$ | async">
+      </cube-trainer-trainer-input>
+    </div>
+    <cube-trainer-hint
+      [trainingCase]="currentTrainingCase$ | async"
+      [trainingSession]="trainingSession">
+    </cube-trainer-hint>
+  </ng-container>
+  <div id="trainer-stopwatch">
+    <cube-trainer-trainer-stopwatch [trainingSession]="trainingSession">
+    </cube-trainer-trainer-stopwatch>
   </div>
-  <mat-spinner id="initial-load-loading" *ngIf="loading$ | async"></mat-spinner>
 </div>

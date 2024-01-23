@@ -4,8 +4,9 @@ import { Actions, ofType, concatLatestFrom, createEffect } from '@ngrx/effects';
 import { of, forkJoin } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, switchMap, flatMap, map, tap, mapTo } from 'rxjs/operators';
+import { StopwatchDialogComponent } from '@training/stopwatch-dialog/stopwatch-dialog.component';
 import { millis } from '@utils/duration';
-import { isRunning } from '@store/trainer.state';
+import { isRunning, StartAfterLoading } from '@store/trainer.state';
 import {
   initialLoadSelected,
   initialLoad,
@@ -29,9 +30,19 @@ import {
   startStopwatch,
   stopAndStartStopwatch,
   stopAndPauseStopwatch,
+  startStopwatchDialog,
+  stopAndStartStopwatchDialog,
+  stopAndPauseStopwatchDialog,
   stopStopwatch,
   stopStopwatchSuccess,
   stopStopwatchFailure,
+  abandonStopwatch,
+  abandonStopwatchSuccess,
+  abandonStopwatchFailure,
+  showHint,
+  markHint,
+  markHintSuccess,
+  markHintFailure,
 } from '@store/trainer.actions';
 import { loadOne, loadOneSuccess } from '@store/training-sessions.actions';
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
@@ -41,7 +52,7 @@ import { TrainerService } from '@training/trainer.service';
 import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-dialog/backend-action-error-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { forceValue } from '@utils/optional';
+import { forceValue, mapOptional } from '@utils/optional';
 import { now, fromUnixMillis } from '@utils/instant';
 import {
   selectTrainingSessionAndSamplingStateById,
@@ -49,6 +60,7 @@ import {
   selectCurrentCaseAndHintActiveById,
   selectStopwatchState,
   selectStartAfterLoading,
+  selectCurrentCaseResult,
 } from '@store/trainer.selectors';
 import { selectSelectedTrainingSessionId } from '@store/router.selectors';
 import { ScrambleOrSample } from '@training/scramble-or-sample.model';
@@ -243,17 +255,21 @@ export class TrainerEffects {
       ofType(loadNextCaseSuccess),
       concatLatestFrom(() => this.store.select(selectStartAfterLoading)),
       switchMap(([action, startAfterLoading]) => {
-        if (!startAfterLoading) {
-          return of();
+        switch (startAfterLoading) {
+	  case StartAfterLoading.STOPWATCH:
+            return of(startStopwatch({ trainingSessionId: action.trainingSessionId, startUnixMillis: now().toUnixMillis() }));
+	  case StartAfterLoading.STOPWATCH_DIALOG:
+            return of(startStopwatchDialog({ trainingSessionId: action.trainingSessionId, startUnixMillis: now().toUnixMillis() }));
+	  default:
+	    return of();
         }
-        return of(startStopwatch({ trainingSessionId: action.trainingSessionId, startUnixMillis: now().toUnixMillis() }));
       }),
     )
   );
 
   stopAndXXXStopwatch$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(stopAndStartStopwatch, stopAndPauseStopwatch),
+      ofType(stopAndStartStopwatch, stopAndPauseStopwatch, stopAndStartStopwatchDialog, stopAndPauseStopwatchDialog),
       map(action => stopStopwatch({ trainingSessionId: action.trainingSessionId, stopUnixMillis: action.stopUnixMillis })),
     )
   );
@@ -271,7 +287,7 @@ export class TrainerEffects {
         const start = fromUnixMillis(state.startUnixMillis);
         const stop = fromUnixMillis(action.stopUnixMillis);
         const duration = stop.minusInstant(start);
-        return stopStopwatchSuccess({ trainingSessionId: action.trainingSessionId, durationMillis: duration.toMillis() })
+        return stopStopwatchSuccess({ trainingSessionId: action.trainingSessionId, durationMillis: duration.toMillis() });
       }),
     ),
   );
@@ -298,11 +314,78 @@ export class TrainerEffects {
     )
   );
 
+  abandonStopwatch$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(abandonStopwatch),
+      concatLatestFrom(() => this.store.select(selectStopwatchState)),
+      map(([action, state]) => {
+        if (!isRunning(state)) {
+          const context = { action: 'abandoning', subject: 'stopwatch' };
+          const error = parseBackendActionError(context, new Error('Cannot abandon a stopwatch that is not running'));
+          return abandonStopwatchFailure({ trainingSessionId: action.trainingSessionId, error });
+        }
+        return abandonStopwatchSuccess({ trainingSessionId: action.trainingSessionId });
+      }),
+    ),
+  );
+
+  abandonStopwatchSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(abandonStopwatch),
+      map(action => loadNextCase({ trainingSessionId: action.trainingSessionId })),
+    ),
+  );
+
+  startStopwatchDialog$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(startStopwatchDialog),
+      concatLatestFrom(() => this.store.select(selectTrainingSessionAndSamplingStateById).pipe(filterPresent())),
+      exhaustMap(([action, lolMap]) => {
+        const trainingSessionAndMaybeSamplingState = lolMap.get(action.trainingSessionId)!;
+	const trainingSession = trainingSessionAndMaybeSamplingState.trainingSession;
+	const dialogRef = this.dialog.open(StopwatchDialogComponent, { data: trainingSession, width: '100%', height: '100%', maxHeight: '100%', maxWidth: '100%' });
+	return dialogRef.afterClosed().pipe(
+	  map(save => save ?
+	    stopAndPauseStopwatchDialog({ trainingSessionId: action.trainingSessionId, stopUnixMillis: now().toUnixMillis() }) :
+	    abandonStopwatch({ trainingSessionId: action.trainingSessionId }))
+	);
+      }),
+    )
+  );
+
+  showHint$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(showHint),
+      concatLatestFrom(() => this.store.select(selectCurrentCaseResult)),
+      map(([action, result]) => mapOptional(result, r => markHint({ trainingSessionId: action.trainingSessionId, resultId: r.id }))),
+      filterPresent(),
+    )
+  );
+
+  markHint$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(markHint),
+      exhaustMap(action => {
+        return this.resultsService.markHint(action.trainingSessionId, action.resultId).pipe(
+          map(result => markHintSuccess({ trainingSessionId: action.trainingSessionId, resultId: result.id })),
+          catchError(httpResponseError => {
+            const context = {
+              action: 'marking as hint',
+              subject: 'result',
+            }
+            const error = parseBackendActionError(context, httpResponseError);
+            return of(markHintFailure({ trainingSessionId: action.trainingSessionId, error }));
+          })
+        )
+      })
+    )
+  );
+
   failure$ = createEffect(() =>
     this.actions$.pipe(
       // Failure for initialLoadResults has no here effect,
       // it shows a message at the component where the results are rendered.
-      ofType(createFailure, destroyFailure, markDnfFailure, loadNextCaseFailure, stopStopwatchFailure),
+      ofType(createFailure, destroyFailure, markDnfFailure, loadNextCaseFailure, stopStopwatchFailure, abandonStopwatchFailure, markHintFailure),
       tap(action => {
         this.dialog.open(BackendActionErrorDialogComponent, { data: action.error });
       }),

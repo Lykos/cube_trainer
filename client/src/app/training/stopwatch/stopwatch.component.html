@@ -1,25 +1,20 @@
 <div class="stopwatch">
-  <h2>Time</h2>
-  <div class="stopwatch-time" [ngClass]="{'post-memo-time': running && isPostMemoTime}"> {{displayedDuration | duration}} </div>
+  <a class="stopwatch-time" [ngClass]="{'post-memo-time': running && isPostMemoTime}"> {{displayedDuration | duration}} </a>
   <div>
-    <ng-container *ngIf="running">
-      <button mat-raised-button id="stopwatch-stop-and-start" *ngIf="hasStopAndStart" color="primary" (click)="onStopAndStart()" [matTooltip]="stopAndStartTooltip">
-        Stop and Start
-      </button>
-      <button mat-raised-button id="stopwatch-stop-and-pause" color="primary" (click)="onStopAndPause()">
-        <ng-container *ngIf="hasStopAndStart" [matTooltip]="stopAndPauseTooltip">
-          Stop and Pause
-        </ng-container>
-        <ng-container *ngIf="!hasStopAndStart" [matTooltip]="stopTooltip">
-          Stop
-        </ng-container>
-      </button>
-    </ng-container>
-    <ng-container *ngIf="!running">
-      <button mat-raised-button id="stopwatch-start" *ngIf="startReady" color="primary" (click)="onStart()" [matTooltip]="startTooltip">
-        Start
-      </button>
-      <mat-spinner id="stopwatch-loading" *ngIf="!startReady"></mat-spinner>
-    </ng-container>
+    <button mat-raised-button id="stopwatch-start" color="primary" (click)="onStart()" [matTooltip]="startTooltip" [disabled]="running || !startReady">
+      Start
+    </button>
+    <button mat-raised-button id="stopwatch-stop-and-start" *ngIf="hasStopAndStart" color="primary" (click)="onStopAndStart()" [matTooltip]="stopAndStartTooltip" [disabled]="!running">
+      Stop and Start
+    </button>
+    <button mat-raised-button id="stopwatch-stop-and-pause" *ngIf="hasStopAndPause" color="primary" (click)="onStopAndPause()" [disabled]="!running">
+      <ng-container *ngIf="hasStopAndStart" [matTooltip]="stopAndPauseTooltip">
+        Stop and Pause
+      </ng-container>
+      <ng-container *ngIf="!hasStopAndStart" [matTooltip]="stopTooltip">
+        Stop
+      </ng-container>
+    </button>
+    <mat-spinner id="stopwatch-loading" *ngIf="!startReady && !running"></mat-spinner>
   </div>
 </div>

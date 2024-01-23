@@ -1,6 +1,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TestBed } from '@angular/core/testing';
+import { TrainingSessionComponent } from '@training/training-session/training-session.component';
 import { TrainerComponent } from '@training/trainer/trainer.component';
 import { TrainerInputComponent } from '@training/trainer-input/trainer-input.component';
 import { TrainerStopwatchComponent } from '@training/trainer-stopwatch/trainer-stopwatch.component';
@@ -61,7 +62,7 @@ const scrambleOrSample: ScrambleOrSample = {
   },
 };
 
-describe('TrainerComponent', () => {
+describe('TrainingSessionComponent', () => {
   let trainerService, matDialog: any;
   let store: MockStore;
 
@@ -71,6 +72,7 @@ describe('TrainerComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [
+        TrainingSessionComponent,
         TrainerComponent,
         TrainerInputComponent,
         TrainerStopwatchComponent,
@@ -97,7 +99,7 @@ describe('TrainerComponent', () => {
   });
 
   it('should create the trainer', () => {
-    const fixture = TestBed.createComponent(TrainerComponent);
+    const fixture = TestBed.createComponent(TrainingSessionComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
@@ -108,7 +110,7 @@ describe('TrainerComponent', () => {
     store.overrideSelector(selectInitialLoadError, none);
     store.overrideSelector(selectNextCase, none);
     store.overrideSelector(selectCurrentCase, none);
-    const fixture = TestBed.createComponent(TrainerComponent);
+    const fixture = TestBed.createComponent(TrainingSessionComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('#initial-load-loading')).toBeTruthy();
@@ -120,7 +122,7 @@ describe('TrainerComponent', () => {
     store.overrideSelector(selectInitialLoadError, some(exampleError('stuff went wrong')));
     store.overrideSelector(selectNextCase, none);
     store.overrideSelector(selectCurrentCase, none);
-    const fixture = TestBed.createComponent(TrainerComponent);
+    const fixture = TestBed.createComponent(TrainingSessionComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('#initial-load-error')?.textContent).toContain('stuff went wrong');
@@ -132,7 +134,7 @@ describe('TrainerComponent', () => {
     store.overrideSelector(selectInitialLoadError, none);
     store.overrideSelector(selectNextCase, some(scrambleOrSample));
     store.overrideSelector(selectCurrentCase, none);
-    const fixture = TestBed.createComponent(TrainerComponent);
+    const fixture = TestBed.createComponent(TrainingSessionComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('#trainer-stopwatch')?.textContent).toContain('0');
@@ -144,7 +146,7 @@ describe('TrainerComponent', () => {
     store.overrideSelector(selectInitialLoadError, none);
     store.overrideSelector(selectNextCase, some(scrambleOrSample));
     store.overrideSelector(selectCurrentCase, some(scrambleOrSample));
-    const fixture = TestBed.createComponent(TrainerComponent);
+    const fixture = TestBed.createComponent(TrainingSessionComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('#trainer-stopwatch')?.textContent).toContain('0');

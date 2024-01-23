@@ -35,6 +35,12 @@ export interface CaseAndIntermediateWeightState {
   readonly state: IntermediateWeightState;
 }
 
+export enum StartAfterLoading {
+  NONE,
+  STOPWATCH,
+  STOPWATCH_DIALOG,
+}
+
 // Results for one specific training session.
 export interface ResultsState extends EntityState<Result> {
   readonly trainingSessionId: number;
@@ -43,13 +49,15 @@ export interface ResultsState extends EntityState<Result> {
   readonly createState: BackendActionState;
   readonly destroyState: BackendActionState;
   readonly markDnfState: BackendActionState;
+  readonly markHintState: BackendActionState;
   readonly loadNextCaseState: BackendActionState;
 
   readonly stopwatchState: StopwatchState;
   readonly hintActive: boolean;
   readonly nextCase: Optional<ScrambleOrSample>;
   readonly currentCase: Optional<ScrambleOrSample>;
-  readonly startAfterLoading: boolean;
+  readonly startAfterLoading: StartAfterLoading;
+  readonly currentCaseResult: Optional<Result>;
 
   readonly intermediateWeightStates: readonly CaseAndIntermediateWeightState[];
 }

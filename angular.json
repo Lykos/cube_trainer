@@ -17,6 +17,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "file-saver"
+	    ],
             "outputPath": "./public",
             "index": "client/src/index.html",
             "main": "client/src/main.ts",

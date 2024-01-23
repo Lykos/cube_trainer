@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { TrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
 import { ScrambleOrSample, isScramble, isSample } from '../scramble-or-sample.model';
+import { ColorScheme } from '../color-scheme.model';
 
 @Component({
   selector: 'cube-trainer-trainer-input',
@@ -10,10 +11,13 @@ import { ScrambleOrSample, isScramble, isSample } from '../scramble-or-sample.mo
 })
 export class TrainerInputComponent {
   @Input()
-  scrambleOrSample?: ScrambleOrSample;
+  scrambleOrSample?: ScrambleOrSample | null;
 
   @Input()
   trainingSession?: TrainingSession;
+
+  @Input()
+  colorScheme?: ColorScheme | null;
 
   get scramble() {
     const scrambleOrSample = this.scrambleOrSample;
@@ -26,12 +30,16 @@ export class TrainerInputComponent {
   }
 
   get pictureSetup() {
-    return this.sample?.item?.pictureSetup;
+    return this.sample?.item?.pictureSetup || this.colorScheme?.setup || '';
   }
 
   get puzzle() {
     const cubeSize = this.trainingSession?.cubeSize;
     return cubeSize ? `${cubeSize}x${cubeSize}x${cubeSize}` : undefined;
+  }
+
+  get caseName() {
+    return this.sample?.item?.casee?.name || ' ';
   }
 
   get showImage() {

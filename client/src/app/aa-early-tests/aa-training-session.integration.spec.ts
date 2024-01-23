@@ -5,19 +5,22 @@ import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TrainingSessionComponent } from '@training/training-session/training-session.component';
 import { TrainerComponent } from '@training/trainer/trainer.component';
 import { some } from '@utils/optional';
 import { TrainerInputComponent } from '@training/trainer-input/trainer-input.component';
 import { TrainerStopwatchComponent } from '@training/trainer-stopwatch/trainer-stopwatch.component';
 import { StopwatchComponent } from '@training/stopwatch/stopwatch.component';
+import { StopwatchDialogComponent } from '@training/stopwatch-dialog/stopwatch-dialog.component';
 import { HintComponent } from '@training/hint/hint.component';
 import { ResultsTableComponent } from '@training/results-table/results-table.component';
 import { DurationPipe } from '@shared/duration.pipe';
 import { FluidInstantPipe } from '@shared/fluid-instant.pipe';
 import { InstantPipe } from '@shared/instant.pipe';
 import { StoreModule } from '@ngrx/store';
-import { of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { BackendActionLoadErrorComponent } from '@shared/backend-action-load-error/backend-action-load-error.component';
+import { GithubErrorNoteComponent } from '@shared/github-error-note/github-error-note.component';
 import { TrainingCase } from '@training/training-case.model';
 import { TrainingSession } from '@training/training-session.model';
 import { ShowInputMode } from '@training/show-input-mode.model';
@@ -30,6 +33,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpVerb } from '@core/http-verb';
 import { trainingSessionsReducer } from '@store/training-sessions.reducer';
+import { colorSchemeReducer } from '@store/color-scheme.reducer';
 import { trainerReducer } from '@store/trainer.reducer';
 import { overrideSelectedTrainingSessionIdForTesting } from '@store/router.selectors';
 import { EffectsModule } from '@ngrx/effects';
@@ -37,6 +41,7 @@ import { TrainingSessionsEffects } from '@effects/training-sessions.effects';
 import { StatsTableComponent } from '@training/stats-table/stats-table.component';
 import { TrainerEffects } from '@effects/trainer.effects';
 import { routerReducer } from '@ngrx/router-store';
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 
 const item: TrainingCase = {
   casee: {
@@ -61,7 +66,24 @@ const trainingSession: TrainingSession = {
   stats: [],
 };
 
-describe('TrainerComponentIntegration', () => {
+const initialBreakpointState: BreakpointState = {matches: false, breakpoints: {}};
+
+class FakeBreakpointObserver {
+  private state: BehaviorSubject<BreakpointState> = new BehaviorSubject(initialBreakpointState);
+
+  setSmall(isSmall: boolean) {
+    this.state.next({ matches: isSmall, breakpoints: {} });
+  }
+
+  observe(breakpoints: readonly string[]): Observable<BreakpointState> {
+    if (breakpoints.length != 2 || breakpoints[0] !== Breakpoints.XSmall || breakpoints[1] != Breakpoints.Small) {
+      return of();
+    }
+    return this.state.asObservable();
+  }
+}
+
+describe('TrainingSessionComponentIntegration', () => {
   let matDialog: any;
   let matSnackBar: any;
   let httpMock: HttpTestingController;
@@ -74,6 +96,7 @@ describe('TrainerComponentIntegration', () => {
 
     await TestBed.configureTestingModule({
       declarations: [
+        TrainingSessionComponent,
         TrainerComponent,
         TrainerInputComponent,
         TrainerStopwatchComponent,
@@ -85,6 +108,8 @@ describe('TrainerComponentIntegration', () => {
 	StatsTableComponent,
         InstantPipe,
         BackendActionLoadErrorComponent,
+	GithubErrorNoteComponent,
+	StopwatchDialogComponent,
       ],
       imports: [
         NoopAnimationsModule,
@@ -99,6 +124,7 @@ describe('TrainerComponentIntegration', () => {
             trainingSessions: trainingSessionsReducer,
             trainer: trainerReducer,
 	    router: routerReducer,
+	    colorScheme: colorSchemeReducer,
           },
         ),
         EffectsModule.forRoot([TrainingSessionsEffects, TrainerEffects]),
@@ -108,6 +134,7 @@ describe('TrainerComponentIntegration', () => {
         { provide: MatDialog, useValue: matDialog },
         { provide: MatSnackBar, useValue: matSnackBar },
         { provide: Router, useValue: router },
+	{ provide: BreakpointObserver, useClass: FakeBreakpointObserver },
       ],
     }).compileComponents();
 
@@ -119,7 +146,7 @@ describe('TrainerComponentIntegration', () => {
   });
 
   it('should fetch the data and have working start and stop', fakeAsync(() => {
-    const fixture = TestBed.createComponent(TrainerComponent);
+    const fixture = TestBed.createComponent(TrainingSessionComponent);
     fixture.detectChanges();
     {
       const req = httpMock.expectOne('/api/training_sessions/56');
@@ -142,7 +169,7 @@ describe('TrainerComponentIntegration', () => {
     tick(100);
     fixture.detectChanges();
     expect(compiled.querySelector('#trainer-stopwatch')?.textContent).toContain('0.1');
-    expect(compiled.querySelector('.alg')?.textContent).toBeFalsy();
+    expect(compiled.querySelector('.alg')?.textContent).toContain('\xa0');
     debug.query(By.css('#trainer-hint')).triggerEventHandler('click', null);
     fixture.detectChanges();
     expect(compiled.querySelector('.alg')?.textContent).toContain('solve it');

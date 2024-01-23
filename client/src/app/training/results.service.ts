@@ -23,6 +23,11 @@ export class ResultsService {
                                     { result: { success: false } });
   }
 
+  markHint(trainingSessionId: number, resultId: number): Observable<Result> {
+    return this.rails.patch<Result>(`/training_sessions/${trainingSessionId}/results/${resultId}`,
+                                    { result: { numHints: 1 } });
+  }
+
   create(trainingSessionId: number, newResult: NewResult): Observable<Result> {
     const result = {
       timeS: newResult.timeS,

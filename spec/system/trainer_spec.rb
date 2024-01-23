@@ -9,6 +9,7 @@ describe 'trainer' do
 
   before do
     driven_by(:selenium_chrome_headless)
+    page.driver.browser.manage.window.resize_to(1920, 1080)
   end
 
   # rubocop:disable RSpec/NoExpectationExample

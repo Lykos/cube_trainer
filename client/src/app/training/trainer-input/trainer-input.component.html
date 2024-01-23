@@ -1,4 +1,4 @@
-<ng-container *ngIf="showImage && pictureSetup" [matTooltip]="sampleTooltip">
+<ng-container *ngIf="showImage && (colorScheme || pictureSetup)" [matTooltip]="sampleTooltip">
   <twisty-player
     [alg]="pictureSetup"
     [puzzle]="puzzle"
@@ -8,12 +8,13 @@
 </ng-container>
 <span
   [matTooltip]="sampleTooltip"
-  class="case mat-elevation-z4"
-  *ngIf="showName && sample">
-  {{sample.item.casee.name}}
+  class="case"
+  *ngIf="showName">
+  {{caseName}}
+  <ng-container ngIf*="!caseName">&nbsp;</ng-container>
 </span>
 <span
-  class="scramble mat-elevation-z2"
-  *ngIf="showScramble && scramble">
+  class="scramble"
+  *ngIf="showScramble">
   {{scramble}}
 </span>

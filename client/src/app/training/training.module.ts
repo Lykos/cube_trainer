@@ -9,6 +9,7 @@ import { EditLetterSchemeFormComponent } from './edit-letter-scheme-form/edit-le
 import { NewTrainingSessionComponent } from './new-training-session/new-training-session.component';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { OverrideAlgDialogComponent } from './override-alg-dialog/override-alg-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 import { ResultsTableComponent } from './results-table/results-table.component';
 import { SharedModule } from '@shared/shared.module';
 import { StatsTableComponent } from './stats-table/stats-table.component';
@@ -20,6 +21,8 @@ import { StopwatchComponent } from './stopwatch/stopwatch.component';
 import { StatPartValueComponent } from './stat-part-value/stat-part-value.component';
 import { SelectStatsComponent } from './select-stats/select-stats.component';
 import { AlgSetComponent } from './alg-set/alg-set.component';
+import { TrainingSessionComponent } from './training-session/training-session.component';
+import { StopwatchDialogComponent } from './stopwatch-dialog/stopwatch-dialog.component';
 
 @NgModule({
   declarations: [
@@ -41,11 +44,14 @@ import { AlgSetComponent } from './alg-set/alg-set.component';
     StatPartValueComponent,
     SelectStatsComponent,
     AlgSetComponent,
+    TrainingSessionComponent,
+    StopwatchDialogComponent,
   ],
   imports: [
     CdkStepperModule,
     DragDropModule,
     SharedModule,
+    MatDialogModule,
   ],
   exports: [
     EditColorSchemeComponent,
