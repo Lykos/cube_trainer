@@ -10,7 +10,7 @@ module CubeTrainer
 
         weights = extract_weights(array, &block)
         weight_sum = weights.sum
-        raise ArgumentError, "Can't sample for total weight 0.0." if weight_sum == 0.0 # rubocop:disable Lint/FloatComparison
+        raise ArgumentError, "Can't sample for total weight 0.0." if weight_sum == 0.0
 
         index_by_weight(array, weights, random.rand * weight_sum)
       end

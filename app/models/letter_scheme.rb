@@ -23,6 +23,10 @@ class LetterScheme < ApplicationRecord
     mappings.find { |e| e.part == used_part }&.letter
   end
 
+  def twist_name(part, twist)
+    letter(part.rotations.min.rotate_by(twist))
+  end
+
   def for_letter(part_type, letter)
     used_part_type = used_part_type(part_type)
     used_part = mappings.find { |e| e.part_type == used_part_type && e.letter == letter }&.part

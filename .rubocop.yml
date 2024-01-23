@@ -566,4 +566,7 @@ RSpec/SpecFilePathSuffix: # new in 2.24
   Enabled: true
 Rails/EnvLocal: # new in 2.22
   Enabled: true
-
+Lint/LiteralAssignmentInCondition: # new in 1.58
+  Enabled: true
+Style/SuperWithArgsParentheses: # new in 1.58
+  Enabled: true
