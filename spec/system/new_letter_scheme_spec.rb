@@ -12,13 +12,13 @@ describe 'new letter scheme' do
   it 'allows to create a new letter scheme' do
     login(user)
 
-    click_link user.name
-    click_link 'Create Letter Scheme'
+    click_link_or_button user.name
+    click_link_or_button 'Create Letter Scheme'
 
     fill_in 'ULB', with: 'A'
     fill_in 'URF', with: 'B'
 
-    click_button 'Submit'
+    click_link_or_button 'Submit'
 
     expect(page).to have_text('Letter scheme created!')
   end

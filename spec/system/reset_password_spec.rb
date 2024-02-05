@@ -15,10 +15,10 @@ describe 'reset_password', skip: "Doesn't work because visiting the update path 
     name = user.name
     visit ''
     find_by_id('toolbar-login').click
-    click_link 'Password Forgotten'
+    click_link_or_button 'Password Forgotten'
 
     fill_in 'Email', with: email
-    click_button 'Send Reset Password Instructions'
+    click_link_or_button 'Send Reset Password Instructions'
 
     expect(page).to have_text('Email sent!')
 
@@ -31,7 +31,7 @@ describe 'reset_password', skip: "Doesn't work because visiting the update path 
 
     find_by_id('update-password').fill_in 'Password', with: 'password2'
     fill_in 'Confirm Password', with: 'password2'
-    click_button 'Submit'
+    click_link_or_button 'Submit'
 
     expect(page).to have_text('Password updated')
 

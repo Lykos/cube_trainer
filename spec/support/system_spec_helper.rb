@@ -7,7 +7,7 @@ def login(user)
   find_by_id('toolbar-login').click
   fill_in 'Email', with: user.email
   fill_in 'Password', with: user.password
-  click_button 'Submit'
+  click_link_or_button 'Submit'
   within('#user-name') do
     expect(page).to have_text(user.name)
   end
