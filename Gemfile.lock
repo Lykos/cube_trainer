@@ -447,7 +447,7 @@ GEM
       activesupport
       mechanize (~> 2.8.5)
       rest-client
-    xdg (5.3.0)
+    xdg (8.0.0)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.6.12)
@@ -502,7 +502,7 @@ DEPENDENCIES
   xdg
 
 RUBY VERSION
-   ruby 3.0.2p107
+   ruby 3.3.0p0
 
 BUNDLED WITH
-   2.2.22
+   2.5.3
