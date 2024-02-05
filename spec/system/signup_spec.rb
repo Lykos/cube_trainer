@@ -19,7 +19,7 @@ describe 'signup' do
     find_by_id('cube-trainer-terms-and-conditions-accepted').set(true)
     find_by_id('cube-trainer-privacy-policy-accepted').set(true)
     find_by_id('cube-trainer-cookie-policy-accepted').set(true)
-    click_link_or_button_or_button 'Submit'
+    click_link_or_button 'Submit'
 
     expect(page).to have_text('Signup successful!')
 

@@ -18,7 +18,7 @@ describe 'new color scheme' do
     mat_select 'Yellow', id: 'colorSelectU'
     mat_select 'Red', id: 'colorSelectF'
 
-    click_link_or_button_or_button 'Submit'
+    click_link_or_button 'Submit'
 
     expect(page).to have_text('Color scheme created.')
   end

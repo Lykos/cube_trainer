@@ -12,7 +12,7 @@ describe 'logout' do
   it 'allows to log out' do
     login(user)
 
-    click_link_or_button_or_button 'Logout'
+    click_link_or_button 'Logout'
     expect(page).to have_text('Logged Out')
   end
 end

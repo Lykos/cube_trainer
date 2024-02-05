@@ -20,9 +20,9 @@ describe 'trainer' do
 
     visit "/training-sessions/#{training_session.id}"
 
-    click_link_or_button_or_button 'Start'
-    click_link_or_button_or_button 'Stop and Start'
-    click_link_or_button_or_button 'Stop and Pause'
+    click_link_or_button 'Start'
+    click_link_or_button 'Stop and Start'
+    click_link_or_button 'Stop and Pause'
   end
   # rubocop:enable RSpec/NoExpectationExample
 end

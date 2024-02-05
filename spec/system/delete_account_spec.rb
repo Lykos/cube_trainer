@@ -22,8 +22,8 @@ describe 'account deletion' do
     login(user)
 
     click_link_or_button user.name
-    within('#delete-account-div') { click_link_or_button_or_button 'Delete Account' }
-    within('#delete-account-confirmation-dialog') { click_link_or_button_or_button 'Ok' }
+    within('#delete-account-div') { click_link_or_button 'Delete Account' }
+    within('#delete-account-confirmation-dialog') { click_link_or_button 'Ok' }
 
     expect(page).to have_text('Account Deleted')
     expect(User.find_by(name: 'system test user')).to be_nil

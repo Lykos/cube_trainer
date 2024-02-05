@@ -18,7 +18,7 @@ describe 'new letter scheme' do
     fill_in 'ULB', with: 'A'
     fill_in 'URF', with: 'B'
 
-    click_link_or_button_or_button 'Submit'
+    click_link_or_button 'Submit'
 
     expect(page).to have_text('Letter scheme created!')
   end

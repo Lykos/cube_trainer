@@ -68,13 +68,13 @@ describe 'trainer hint' do
 
     visit "/training-sessions/#{training_session.id}"
 
-    click_link_or_button_or_button 'Start'
+    click_link_or_button 'Start'
     picked_case =
       within('.case') do
         expect(page).to have_text(case_regexp)
         page.text[case_regexp]
       end
-    click_link_or_button_or_button 'Reveal'
+    click_link_or_button 'Reveal'
     within('.alg') do
       expect(page).to have_text(expected_alg(picked_case))
     end
@@ -85,16 +85,16 @@ describe 'trainer hint' do
 
     visit "/training-sessions/#{training_session.id}"
 
-    click_link_or_button_or_button 'Start'
+    click_link_or_button 'Start'
     picked_case =
       within('.case') do
         expect(page).to have_text(case_regexp)
         page.text[case_regexp]
       end
-    click_link_or_button_or_button 'Reveal'
-    click_link_or_button_or_button 'Override'
+    click_link_or_button 'Reveal'
+    click_link_or_button 'Override'
     find_by_id('override-alg-input').fill_in 'Alg Override', with: alternative_alg(picked_case)
-    within('#override-alg-dialog') { click_link_or_button_or_button 'Override' }
+    within('#override-alg-dialog') { click_link_or_button 'Override' }
     expect(page).to have_text("Alg for #{picked_case} overridden")
 
     expect(training_session.alg_overrides.count).to be(1)
