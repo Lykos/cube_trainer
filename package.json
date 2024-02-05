@@ -65,7 +65,7 @@
     "@ngrx/schematics": "^17.1.0",
     "@types/chai": "^4.3.10",
     "@types/file-saver": "^2.0.5",
-    "@types/jasmine": "^5.1.2",
+    "@types/jasmine": "^5.1.4",
     "@types/node": "^20.11.16",
     "@types/rails__actioncable": "^6.1.9",
     "@typescript-eslint/eslint-plugin": "^6.9.1",
