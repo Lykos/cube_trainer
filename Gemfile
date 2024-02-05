@@ -86,11 +86,11 @@ group :development do
 end
 
 group :rubocop do
-  gem 'rubocop', '~> 1.58.0', require: false
+  gem 'rubocop', '~> 1.60.2', require: false
   gem 'rubocop-performance', require: false
-  gem 'rubocop-rails', '~> 2.22.2', require: false
+  gem 'rubocop-rails', '~> 2.23.1', require: false
   gem 'rubocop-rake', require: false
-  gem 'rubocop-rspec', '~> 2.25.0', require: false
+  gem 'rubocop-rspec', '~> 2.26.1', require: false
 end
 
 group :test do

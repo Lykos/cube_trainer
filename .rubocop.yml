@@ -570,3 +570,13 @@ Lint/LiteralAssignmentInCondition: # new in 1.58
   Enabled: true
 Style/SuperWithArgsParentheses: # new in 1.58
   Enabled: true
+Capybara/RedundantWithinFind: # new in 2.20
+  Enabled: true
+FactoryBot/ExcessiveCreateList: # new in 2.25
+  Enabled: true
+Lint/ItWithoutArgumentsInBlock: # new in 1.59
+  Enabled: true
+RSpec/RedundantPredicateMatcher: # new in 2.26
+  Enabled: true
+RSpec/RemoveConst: # new in 2.26
+  Enabled: true
