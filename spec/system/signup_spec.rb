@@ -10,7 +10,7 @@ describe 'signup' do
 
   it 'enables users to sign up and then login' do
     visit ''
-    click_link 'Sign Up'
+    click_link_or_button 'Sign Up'
 
     fill_in 'Username', with: 'system test user'
     fill_in 'Email', with: 'system_test+signup@example.org'
@@ -19,7 +19,7 @@ describe 'signup' do
     find_by_id('cube-trainer-terms-and-conditions-accepted').set(true)
     find_by_id('cube-trainer-privacy-policy-accepted').set(true)
     find_by_id('cube-trainer-cookie-policy-accepted').set(true)
-    click_button 'Submit'
+    click_link_or_button_or_button 'Submit'
 
     expect(page).to have_text('Signup successful!')
 

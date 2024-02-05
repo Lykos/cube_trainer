@@ -13,11 +13,11 @@ describe 'achievements' do
   it 'allows to view achievements' do
     achievement_grant
     login(user)
-    click_link user.name
+    click_link_or_button user.name
 
     find('cube-trainer-achievement-grants td', text: achievement_grant.achievement.name).click
     expect(page).to have_text('Fake achievement for tests.')
-    click_link 'All Achievements'
+    click_link_or_button 'All Achievements'
 
     expect(page).to have_text('Training Session Creator')
   end
