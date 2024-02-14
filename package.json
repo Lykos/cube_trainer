@@ -70,7 +70,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.1",
     "angular-http-server": "^1.11.1",
-    "chai": "^4.3.4",
+    "chai": "^5.1.0",
     "eslint": "^8.56.0",
     "jasmine-core": "^5.1.1",
     "karma": "^6.4.1",
