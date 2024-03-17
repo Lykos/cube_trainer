@@ -476,7 +476,7 @@ DEPENDENCIES
   pg (~> 1.5.5)
   pry
   puma (~> 6.4)
-  rack-cors
+  rack-cors (~> 2.0.1)
   rails (~> 7.0)
   rake
   rantly
