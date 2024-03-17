@@ -396,7 +396,7 @@ GEM
     ruby-progressbar (1.13.0)
     rubyntlm (0.6.3)
     rubyzip (2.3.2)
-    selenium-webdriver (4.17.0)
+    selenium-webdriver (4.18.1)
       base64 (~> 0.2)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
@@ -492,7 +492,7 @@ DEPENDENCIES
   ruby-filemagic
   ruby-progressbar
   rubyzip
-  selenium-webdriver (~> 4.17.0)
+  selenium-webdriver (~> 4.18.1)
   simplecov
   spring
   spring-watcher-listen (~> 2.1.0)
