@@ -19,6 +19,8 @@ describe 'signup' do
     find_by_id('cube-trainer-terms-and-conditions-accepted').set(true)
     find_by_id('cube-trainer-privacy-policy-accepted').set(true)
     find_by_id('cube-trainer-cookie-policy-accepted').set(true)
+    # Ugly, but it is very flaky on Github and I couldn't figure out how to avoid it.
+    sleep(1)
     click_link_or_button 'Submit'
 
     expect(page).to have_text('Signup successful!')
