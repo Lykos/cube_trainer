@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 # TODO: Doesn't work on github for some reason.
-describe 'signup' do
+fdescribe 'signup' do
   before do
     driven_by(:selenium_chrome_headless)
   end
@@ -16,11 +16,9 @@ describe 'signup' do
     fill_in 'Email', with: 'system_test+signup@example.org'
     find_by_id('password').fill_in 'Password', with: 'password'
     fill_in 'Confirm Password', with: 'password'
-    find_by_id('cube-trainer-terms-and-conditions-accepted').set(true)
-    find_by_id('cube-trainer-privacy-policy-accepted').set(true)
-    find_by_id('cube-trainer-cookie-policy-accepted').set(true)
-    # Ugly, but it is very flaky on Github and I couldn't figure out how to avoid it.
-    sleep(1)
+    mat_checkbox(id: 'cube-trainer-terms-and-conditions-accepted')
+    mat_checkbox(id: 'cube-trainer-privacy-policy-accepted')
+    mat_checkbox(id: 'cube-trainer-cookie-policy-accepted')
     click_link_or_button 'Submit'
 
     expect(page).to have_text('Signup successful!')
