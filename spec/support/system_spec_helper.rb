@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'uri'
+
 def login(user)
   raise ArgumentError unless user.name && user.password && user.email
 
@@ -33,4 +35,25 @@ end
 
 def extract_first_link_path(email)
   email.body.match(%r{(?:"https?://.*?)(/.*?)(?:")}).captures[0]
+end
+
+def replace_capybara_port(url)
+  uri = URI.parse(url)
+  uri.port = Capybara.current_session.server.port
+  uri
+end
+
+def replaced_redirect_url(path)
+  uri = URI.parse(path)
+  query_params = URI.decode_www_form(uri.query || '')
+  query_params.map! do |key, value|
+    if key == 'redirect_url'
+      [key, replace_capybara_port(value)]
+    else
+      [key, value]
+    end
+  end
+  modified_query_string = URI.encode_www_form(query_params)
+  uri.query = modified_query_string
+  uri.to_s
 end
