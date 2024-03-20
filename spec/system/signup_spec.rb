@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 # TODO: Doesn't work on github for some reason.
-fdescribe 'signup' do
+describe 'signup' do
   before do
     driven_by(:selenium_chrome_headless)
   end
