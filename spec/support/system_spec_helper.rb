@@ -25,6 +25,12 @@ def mat_select(name, from: nil, id: nil)
   find('mat-option', text: name).click
 end
 
+# Use a material design checkbox.
+# This is ugly, but it was the only option that I was able to get to work.
+def mat_checkbox(id:)
+  find_by_id(id).check visible: :all
+end
+
 def extract_first_link_path(email)
   email.body.match(%r{(?:"https?://.*?)(/.*?)(?:")}).captures[0]
 end
