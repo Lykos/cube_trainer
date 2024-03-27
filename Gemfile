@@ -96,7 +96,7 @@ end
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 3.39'
-  gem 'selenium-webdriver', '~> 4.18.1'
+  gem 'selenium-webdriver', '~> 4.19.0'
 
   gem 'rantly'
   gem 'rspec'
