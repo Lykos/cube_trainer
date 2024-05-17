@@ -322,7 +322,7 @@ GEM
       redis-client (>= 0.22.0)
     redis-client (0.22.0)
       connection_pool
-    regexp_parser (2.9.0)
+    regexp_parser (2.9.2)
     representable (3.2.0)
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)
@@ -382,7 +382,7 @@ GEM
     rubocop-performance (1.21.0)
       rubocop (>= 1.48.1, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
-    rubocop-rails (2.24.1)
+    rubocop-rails (2.25.0)
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 1.33.0, < 2.0)
@@ -492,7 +492,7 @@ DEPENDENCIES
   rspec-rails
   rubocop (~> 1.63.5)
   rubocop-performance
-  rubocop-rails (~> 2.24.1)
+  rubocop-rails (~> 2.25.0)
   rubocop-rake
   rubocop-rspec (~> 2.29.2)
   ruby-filemagic
