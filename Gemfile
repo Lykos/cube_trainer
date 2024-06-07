@@ -90,7 +90,7 @@ group :rubocop do
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', '~> 2.25.0', require: false
   gem 'rubocop-rake', require: false
-  gem 'rubocop-rspec', '~> 2.29.2', require: false
+  gem 'rubocop-rspec', '~> 2.31.0', require: false
 end
 
 group :test do
