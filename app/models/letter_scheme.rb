@@ -24,7 +24,9 @@ class LetterScheme < ApplicationRecord
   end
 
   def twist_name(part, twist)
-    letter(part.rotations.min.rotate_by(twist))
+    canonical_part = canonicalize_rotation(part)
+
+    letter(canonical_part.rotate_by(twist_correction(part, twist)))
   end
 
   def for_letter(part_type, letter)
@@ -36,6 +38,20 @@ class LetterScheme < ApplicationRecord
   end
 
   private
+
+  def twist_correction(part, twist)
+    if part.rotations.length > 2 && invert_twists
+      part.rotations.length - twist
+    else
+      twist
+    end
+  end
+
+  def canonicalize_rotation(part)
+    part.rotations.find do |r|
+      r.faces[0] == TwistyPuzzles::Face::ELEMENTS.min || r.faces[0] == TwistyPuzzles::Face::ELEMENTS.max
+    end
+  end
 
   # Returns the part type that is actually used.
   # In some cases, it will be the same as part_type,

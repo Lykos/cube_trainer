@@ -36,6 +36,7 @@ export class EditLetterSchemeFormComponent implements OnInit {
         tcentersLikeEdges: [true],
         midgesLikeEdges: [true],
         invertWingLetter: [false],      
+        invertTwists: [false],      
     })
   }
 
@@ -57,6 +58,7 @@ export class EditLetterSchemeFormComponent implements OnInit {
 	this.letterSchemeForm.get('tcentersLikeEdges')!.setValue(letterScheme.tcentersLikeEdges);
 	this.letterSchemeForm.get('midgesLikeEdges')!.setValue(letterScheme.midgesLikeEdges);
 	this.letterSchemeForm.get('invertWingLetter')!.setValue(letterScheme.invertWingLetter);
+	this.letterSchemeForm.get('invertTwists')!.setValue(letterScheme.invertTwists);
 	for (let mapping of letterScheme.mappings) {
 	  this.letterSchemeForm.get(mapping.part.key)!.setValue(mapping.letter);
 	}
@@ -120,6 +122,10 @@ export class EditLetterSchemeFormComponent implements OnInit {
     return !this.hasCustomizedWingLetters && this.letterSchemeForm!.get('invertWingLetter')!.value;
   }
 
+  get invertTwists() {
+    return this.letterSchemeForm!.get('invertTwists')!.value;
+  }
+
   get wingLetterLike() {
     switch (this.wingLetteringMode) {
       case WingLetteringMode.LikeEdges:
@@ -158,6 +164,7 @@ export class EditLetterSchemeFormComponent implements OnInit {
       tcentersLikeEdges: this.tcentersLikeEdges,
       midgesLikeEdges: this.midgesLikeEdges,
       invertWingLetter: this.invertWingLetter,
+      invertTwists: this.invertTwists,
       mappings,
     };
   }

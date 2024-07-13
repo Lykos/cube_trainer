@@ -3,6 +3,17 @@
   <ng-container *ngIf="letterSchemeForm">
     <form [formGroup]="letterSchemeForm" (ngSubmit)="onSubmit()">
       <mat-form-field>
+        <mat-label>Twist letter sticker</mat-label>
+        <mat-select formControlName="invertTwists">
+	  <mat-option [value]="false">
+	    Twist UFR cw is named like sticker RFU. I.e. it's named after where the top sticker goes.
+	  </mat-option>
+	  <mat-option [value]="true">
+	    Twist UFR cw is named like sticker FUR. I.e. it's named after which sticker goes to the top.
+	  </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
         <mat-label>Wing lettering mode</mat-label>
         <mat-select formControlName="wingLetteringMode">
 	  <mat-option [value]="likeEdges">like edges</mat-option>
