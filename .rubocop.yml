@@ -584,3 +584,19 @@ RSpecRails/NegationBeValid: # new in 2.23
   Enabled: true
 RSpecRails/TravelAround: # new in 2.19
   Enabled: true
+FactoryBot/AssociationStyle: # new in 2.23
+  Enabled: true
+FactoryBot/ConsistentParenthesesStyle: # new in 2.14
+  Enabled: true
+FactoryBot/ExcessiveCreateList: # new in 2.25
+  Enabled: true
+FactoryBot/FactoryAssociationWithStrategy: # new in 2.23
+  Enabled: true
+FactoryBot/FactoryNameStyle: # new in 2.16
+  Enabled: true
+FactoryBot/IdSequence: # new in 2.24
+  Enabled: true
+FactoryBot/RedundantFactoryOption: # new in 2.23
+  Enabled: true
+FactoryBot/SyntaxMethods: # new in 2.7
+  Enabled: true
