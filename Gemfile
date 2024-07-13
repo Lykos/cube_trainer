@@ -93,6 +93,7 @@ group :rubocop do
   gem 'rubocop-rake', require: false
   gem 'rubocop-rspec', '~> 3.0.3', require: false
   gem 'rubocop-rspec_rails', require: false
+  gem 'rubocop-factory_bot', require: false
 end
 
 group :test do

@@ -5,6 +5,7 @@ require:
 - rubocop-rspec
 - rubocop-rspec_rails
 - rubocop-capybara
+- rubocop-factory_bot
 AllCops:
   TargetRubyVersion: 3.0
   Exclude:
