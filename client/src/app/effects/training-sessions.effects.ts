@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Actions, ofType, concatLatestFrom, createEffect } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
+import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { DeleteTrainingSessionConfirmationDialogComponent } from '@training/delete-training-session-confirmation-dialog/delete-training-session-confirmation-dialog.component';
 import { OverrideAlgDialogComponent } from '@training/override-alg-dialog/override-alg-dialog.component';
