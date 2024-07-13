@@ -3,6 +3,7 @@ require:
 - rubocop-rake
 - rubocop-rails
 - rubocop-rspec
+- rubocop-rspec_rails
 - rubocop-capybara
 AllCops:
   TargetRubyVersion: 3.0
@@ -294,8 +295,6 @@ RSpec/IdenticalEqualityAssertion: # new in 2.4
   Enabled: true
 RSpec/SubjectDeclaration: # new in 2.5
   Enabled: true
-RSpecRails/AvoidSetupHook: # new in 2.4
-  Enabled: true
 RSpec/MultipleMemoizedHelpers:
   # TODO: Enable
   Enabled: false
@@ -329,8 +328,6 @@ Rails/DurationArithmetic: # new in 2.13
 Rails/RedundantPresenceValidationOnBelongsTo: # new in 2.13
   Enabled: true
 Rails/RootJoinChain: # new in 2.13
-  Enabled: true
-FactoryBot/SyntaxMethods: # new in 2.7
   Enabled: true
 RSpec/BeEq: # new in 2.9.0
   Enabled: true
@@ -390,8 +387,6 @@ Lint/ConstantOverwrittenInRescue: # new in 1.31
   Enabled: true
 Lint/NonAtomicFileOperation: # new in 1.31
   Enabled: true
-RSpecRails/HaveHttpStatus: # new in 2.12
-  Enabled: true
 Lint/RequireRangeParentheses: # new in 1.32
   Enabled: true
 Style/EmptyHeredoc: # new in 1.32
@@ -430,10 +425,6 @@ Rails/WhereNotWithMultipleConditions: # new in 2.17
   Enabled: true
 RSpec/SortMetadata: # new in 2.14
   Enabled: true
-FactoryBot/ConsistentParenthesesStyle: # new in 2.14
-  Enabled: true
-RSpecRails/InferredSpecType: # new in 2.14
-  Enabled: true
 Style/RedundantEach: # new in 1.38
   Enabled: true
 Style/ArrayIntersect: # new in 1.40
@@ -443,8 +434,6 @@ Style/RedundantConstantBase: # new in 1.40
 RSpec/DuplicatedMetadata: # new in 2.16
   Enabled: true
 RSpec/PendingWithoutReason: # new in 2.16
-  Enabled: true
-FactoryBot/FactoryNameStyle: # new in 2.16
   Enabled: true
 Style/ConcatArrayLiterals: # new in 1.41
   Enabled: true
@@ -467,8 +456,6 @@ Capybara/SpecificActions: # new in 2.14
 Capybara/SpecificFinders: # new in 2.13
   Enabled: true
 Capybara/SpecificMatcher: # new in 2.12
-  Enabled: true
-RSpecRails/MinitestAssertions: # new in 2.17
   Enabled: true
 Gemspec/DevelopmentDependencies: # new in 1.44
   Enabled: true
@@ -504,8 +491,6 @@ RSpec/RedundantAround: # new in 2.19
   Enabled: true
 RSpec/SkipBlockInsideExample: # new in 2.19
   Enabled: true
-RSpecRails/TravelAround: # new in 2.19
-  Enabled: true
 Style/ExactRegexpMatch: # new in 1.51
   Enabled: true
 Lint/MixedCaseRange: # new in 1.53
@@ -526,15 +511,7 @@ Style/ReturnNilInPredicateMethodDefinition: # new in 1.53
   Enabled: true
 Style/YAMLFileRead: # new in 1.53
   Enabled: true
-FactoryBot/AssociationStyle: # new in 2.23
-  Enabled: true
-FactoryBot/FactoryAssociationWithStrategy: # new in 2.23
-  Enabled: true
-FactoryBot/RedundantFactoryOption: # new in 2.23
-  Enabled: true
 RSpec/ReceiveMessages: # new in 2.23
-  Enabled: true
-RSpecRails/NegationBeValid: # new in 2.23
   Enabled: true
 Performance/MapMethodChain: # new in 1.19
   Enabled: true
@@ -551,8 +528,6 @@ Capybara/ClickLinkOrButtonStyle: # new in 2.19
 Capybara/RSpec/HaveSelector: # new in 2.19
   Enabled: true
 Capybara/RSpec/PredicateMatcher: # new in 2.19
-  Enabled: true
-FactoryBot/IdSequence: # new in <<next>>
   Enabled: true
 RSpec/EmptyMetadata: # new in 2.24
   Enabled: true
@@ -572,8 +547,6 @@ Style/SuperWithArgsParentheses: # new in 1.58
   Enabled: true
 Capybara/RedundantWithinFind: # new in 2.20
   Enabled: true
-FactoryBot/ExcessiveCreateList: # new in 2.25
-  Enabled: true
 Lint/ItWithoutArgumentsInBlock: # new in 1.59
   Enabled: true
 RSpec/RedundantPredicateMatcher: # new in 2.26
@@ -589,4 +562,24 @@ Style/MapIntoArray: # new in 1.63
 RSpec/EmptyOutput: # new in 2.29
   Enabled: true
 RSpec/UndescriptiveLiteralsDescription: # new in 2.29
+  Enabled: true
+Gemspec/AddRuntimeDependency: # new in 1.65
+  Enabled: true
+Style/SendWithLiteralMethodName: # new in 1.64
+  Enabled: true
+Style/SuperArguments: # new in 1.64
+  Enabled: true
+Rails/WhereRange: # new in 2.25
+  Enabled: true
+RSpecRails/AvoidSetupHook: # new in 2.4
+  Enabled: true
+RSpecRails/HaveHttpStatus: # new in 2.12
+  Enabled: true
+RSpecRails/InferredSpecType: # new in 2.14
+  Enabled: true
+RSpecRails/MinitestAssertions: # new in 2.17
+  Enabled: true
+RSpecRails/NegationBeValid: # new in 2.23
+  Enabled: true
+RSpecRails/TravelAround: # new in 2.19
   Enabled: true

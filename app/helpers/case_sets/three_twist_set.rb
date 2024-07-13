@@ -4,7 +4,7 @@ module CaseSets
   # An alg set with all corner 3 twists.
   class ThreeTwistSet < AbstractCaseSet
     def initialize
-      super()
+      super
       @part_type = TwistyPuzzles::Corner
       @pattern = pattern_for_direction(1) | pattern_for_direction(2)
     end
