@@ -24,6 +24,10 @@ class LetterScheme < ApplicationRecord
   end
 
   def twist_name(part, twist)
+    if part.rotations.length > 2 && invert_twists
+      return letter(part.rotations.min.rotate_by(part.rotations.length - twist))
+    end
+
     letter(part.rotations.min.rotate_by(twist))
   end
 
