@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { filterPresent } from '@shared/operators';
-import { Actions, ofType, concatLatestFrom, createEffect } from '@ngrx/effects';
+import { Actions, ofType, createEffect } from '@ngrx/effects';
+import { concatLatestFrom } from '@ngrx/operators';
 import { of, forkJoin } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, exhaustMap, switchMap, flatMap, map, tap, mapTo } from 'rxjs/operators';
