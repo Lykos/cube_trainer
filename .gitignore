@@ -61,6 +61,7 @@ yarn-debug.log*
 
 # dependencies
 /node_modules
+/.nx/cache
 
 # profiling files
 chrome-profiler-events*.json
