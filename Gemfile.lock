@@ -405,7 +405,7 @@ GEM
       rubocop-ast (>= 1.31.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
-    rubocop-ast (1.31.3)
+    rubocop-ast (1.32.0)
       parser (>= 3.3.1.0)
     rubocop-capybara (2.21.0)
       rubocop (~> 1.41)
@@ -421,7 +421,7 @@ GEM
       rubocop-ast (>= 1.31.1, < 2.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
-    rubocop-rspec (3.0.3)
+    rubocop-rspec (3.0.4)
       rubocop (~> 1.61)
     rubocop-rspec_rails (2.30.0)
       rubocop (~> 1.61)
@@ -529,7 +529,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails (~> 2.25.0)
   rubocop-rake
-  rubocop-rspec (~> 3.0.3)
+  rubocop-rspec (~> 3.0.4)
   rubocop-rspec_rails
   ruby-filemagic
   ruby-progressbar
