@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require 'twisty_puzzles'
-require 'types/part_type'
+require 'cube_trainer/types/part_type'
 
 # Helps controllers and models to serialize parts.
 module PartHelper
   def part_serializer
-    @part_serializer ||= Types::PartType.new
+    @part_serializer ||= CubeTrainer::Types::PartType.new
   end
 
   def part_to_simple(part)

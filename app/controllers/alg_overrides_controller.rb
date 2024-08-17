@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/types/case_type'
+
 # Controller for alg overrides that a user had for one training session.
 class AlgOverridesController < ApplicationController
   before_action :set_training_session
@@ -71,7 +73,7 @@ class AlgOverridesController < ApplicationController
     )
     if fixed_params[:case_key]
       fixed_params[:casee] =
-        Types::CaseType.new.cast(fixed_params[:case_key])
+        CubeTrainer::Types::CaseType.new.cast(fixed_params[:case_key])
     end
     fixed_params.delete(:case_key)
     fixed_params

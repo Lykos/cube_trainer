@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/types/case_type'
+
 # TrainingSession specific override for one alg that solves one particular case.
 # E.g. the edge commutator [M', U2] for the case UF DF UB.
 class AlgOverride < ApplicationRecord
@@ -18,7 +20,7 @@ class AlgOverride < ApplicationRecord
   def to_dump
     {
       id: id,
-      case_key: Types::CaseType.new.serialize(casee),
+      case_key: CubeTrainer::Types::CaseType.new.serialize(casee),
       alg: alg.to_s
     }
   end

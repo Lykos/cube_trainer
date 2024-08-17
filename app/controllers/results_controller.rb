@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/types/case_type'
+
 # Controller for results that a user had for one training session.
 class ResultsController < ApplicationController
   before_action :set_training_session
@@ -71,7 +73,7 @@ class ResultsController < ApplicationController
     )
     if fixed_params[:case_key]
       fixed_params[:casee] =
-        Types::CaseType.new.cast(fixed_params[:case_key])
+        CubeTrainer::Types::CaseType.new.cast(fixed_params[:case_key])
     end
     fixed_params.delete(:case_key)
     fixed_params
