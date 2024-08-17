@@ -3,7 +3,8 @@ require 'twisty_puzzles/utils'
 
 class ChangeBufferType < ActiveRecord::Migration[6.0]
   class Mode < ApplicationRecord
-    attribute :mode_type, :mode_type
+    # TODO: Using a type here is bad because it might be deleted.
+    attribute :mode_type, :training_session_type
   end
 
   class PartType
