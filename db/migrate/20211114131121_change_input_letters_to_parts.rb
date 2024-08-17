@@ -8,7 +8,8 @@ class ChangeInputLettersToParts < ActiveRecord::Migration[6.0]
   end
 
   class Mode < ApplicationRecord
-    attribute :mode_type, :mode_type
+    # TODO: Using a type here is bad because it might be deleted.
+    attribute :mode_type, :training_session_type
     attribute :buffer, :part
 
     belongs_to :user
