@@ -9,7 +9,8 @@ Bundler.require(*Rails.groups)
 module CubeTrainer
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.1
+    config.load_defaults 6.1
+    config.active_support.cache_format_version = 7.0
 
     # TODO enable
     # config.api_only = true
