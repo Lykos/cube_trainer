@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cube_trainer/types/case_type'
+
 # Concern for classes that have a case field and serialize it.
 # Note that we can't use a regular case serializer as this needs a reference to the owning set.
 module CaseAttributeSerializer
@@ -20,7 +22,7 @@ module CaseAttributeSerializer
   private
 
   def case_key
-    Types::CaseType.new.serialize(object.casee)
+    CubeTrainer::Types::CaseType.new.serialize(object.casee)
   end
 
   def case_name
