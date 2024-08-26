@@ -67,7 +67,7 @@
     "@types/jasmine": "^5.1.4",
     "@types/node": "^22.5.0",
     "@types/rails__actioncable": "^6.1.9",
-    "@typescript-eslint/eslint-plugin": "^8.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.2.0",
     "@typescript-eslint/parser": "^8.1.0",
     "angular-http-server": "^1.11.1",
     "chai": "^5.1.0",
