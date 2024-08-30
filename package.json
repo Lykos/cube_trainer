@@ -41,7 +41,7 @@
     "@ngrx/store": "^18.0.0",
     "@ngrx/store-devtools": "^18.0.0",
     "@rxweb/reactive-form-validators": "^13.0.0",
-    "@rails/actioncable": "^7.1.2",
+    "@rails/actioncable": "^7.2.100",
     "angular-csv-ext": "^1.0.5",
     "cubing": "^0.51.0",
     "file-saver": "^2.0.5",
