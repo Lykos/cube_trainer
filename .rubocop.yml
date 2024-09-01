@@ -600,3 +600,5 @@ FactoryBot/RedundantFactoryOption: # new in 2.23
   Enabled: true
 FactoryBot/SyntaxMethods: # new in 2.7
   Enabled: true
+Rails/EnumSyntax: # new in 2.26
+  Enabled: true
