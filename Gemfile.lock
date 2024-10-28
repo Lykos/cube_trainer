@@ -540,7 +540,7 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.1.0)
   twisty_puzzles (>= 0.0.44)
   web-console (>= 3.3.0)
-  wombat
+  wombat (~> 3.0.0)
   xdg
 
 RUBY VERSION

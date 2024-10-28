@@ -47,7 +47,7 @@ group :development, :test do
   gem 'parallel'
   gem 'ruby-progressbar'
   gem 'rubyzip'
-  gem 'wombat'
+  gem 'wombat', '~> 3.0.0'
   gem 'xdg'
 end
 
