@@ -151,7 +151,7 @@ module CubeTrainer
         row.filter_map do |cell|
           cell.maybe_case(cube_size)&.canonicalize(ignore_same_face_center_cycles: true)
         end
-      case_candidates.filter { |e| case_set.match?(e) }
+      case_candidates.filter { |e| case_set.match?(e) } # rubocop:disable Style/SelectByRegexp
     end
 
     # Note that this is also used for columns (by using the transposed table)

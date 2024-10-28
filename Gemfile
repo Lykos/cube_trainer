@@ -64,6 +64,8 @@ group :development, :production do
 
   gem 'google-api-client'
   gem 'googleauth'
+
+  gem 'csv', '~> 3.3.0'
 end
 
 group :production do
@@ -86,7 +88,7 @@ group :development do
 end
 
 group :rubocop do
-  gem 'rubocop', '~> 1.66.1', require: false
+  gem 'rubocop', '~> 1.67.0', require: false
   gem 'rubocop-capybara', require: false
   gem 'rubocop-factory_bot', require: false
   gem 'rubocop-performance', require: false

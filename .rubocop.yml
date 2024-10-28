@@ -606,3 +606,7 @@ Lint/UselessNumericOperation: # new in 1.66
   Enabled: true
 Style/RedundantInterpolationUnfreeze: # new in 1.66
   Enabled: true
+Lint/DuplicateSetElement: # new in 1.67
+  Enabled: true
+RSpec/StringAsInstanceDoubleConstant: # new in 3.1
+  Enabled: true
