@@ -47,7 +47,7 @@ group :development, :test do
   gem 'parallel'
   gem 'ruby-progressbar'
   gem 'rubyzip'
-  gem 'wombat'
+  gem 'wombat', '~> 3.0.0'
   gem 'xdg'
 end
 
@@ -64,6 +64,8 @@ group :development, :production do
 
   gem 'google-api-client'
   gem 'googleauth'
+
+  gem 'csv', '~> 3.2.8'
 end
 
 group :production do
@@ -86,7 +88,7 @@ group :development do
 end
 
 group :rubocop do
-  gem 'rubocop', '~> 1.66.1', require: false
+  gem 'rubocop', '~> 1.67.0', require: false
   gem 'rubocop-capybara', require: false
   gem 'rubocop-factory_bot', require: false
   gem 'rubocop-performance', require: false
