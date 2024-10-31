@@ -65,7 +65,7 @@ group :development, :production do
   gem 'google-api-client'
   gem 'googleauth'
 
-  gem 'csv', '~> 3.2.8'
+  gem 'csv', '~> 3.3.0'
 end
 
 group :production do
@@ -101,7 +101,7 @@ end
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '~> 3.39'
-  gem 'selenium-webdriver', '~> 4.25.0'
+  gem 'selenium-webdriver', '~> 4.26.0'
 
   gem 'rantly'
   gem 'rspec'
