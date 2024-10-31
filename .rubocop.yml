@@ -610,3 +610,15 @@ Lint/DuplicateSetElement: # new in 1.67
   Enabled: true
 RSpec/StringAsInstanceDoubleConstant: # new in 3.1
   Enabled: true
+Lint/UnescapedBracketInRegexp: # new in 1.68
+  Enabled: true
+Style/AmbiguousEndlessMethodDefinition: # new in 1.68
+  Enabled: true
+Style/BitwisePredicate: # new in 1.68
+  Enabled: true
+Style/CombinableDefined: # new in 1.68
+  Enabled: true
+Style/KeywordArgumentsMerging: # new in 1.68
+  Enabled: true
+Style/SafeNavigationChainLength: # new in 1.68
+  Enabled: true
