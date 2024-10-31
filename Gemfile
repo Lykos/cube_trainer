@@ -30,7 +30,7 @@ group :development, :test, :production do
   gem 'twisty_puzzles', '>= 0.0.44'
 
   # Database access. TODO: figure out whether this is still needed now that this project uses rails.
-  gem 'activerecord', '~> 7.1'
+  gem 'activerecord', '~> 7.2'
 
   # Postgresql support.
   gem 'pg', '~> 1.5.8'
