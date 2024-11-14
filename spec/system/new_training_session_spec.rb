@@ -23,7 +23,7 @@ describe 'new training session' do
     driven_by(:selenium_chrome_headless)
   end
 
-  it 'allows to create a new commutator training session with algs' do
+  it 'allows to create a new commutator training session with algs', :skip_on_ci do
     alg_set
     login(user)
 

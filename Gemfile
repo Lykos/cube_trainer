@@ -41,7 +41,7 @@ group :development, :test, :production do
 end
 
 group :development, :test do
-  gem 'rspec-rails'
+  gem 'rspec-rails', '~> 7.1.0'
 
   gem 'colorize'
   gem 'parallel'
