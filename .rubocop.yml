@@ -622,3 +622,5 @@ Style/KeywordArgumentsMerging: # new in 1.68
   Enabled: true
 Style/SafeNavigationChainLength: # new in 1.68
   Enabled: true
+Performance/StringBytesize: # new in 1.23
+  Enabled: true
