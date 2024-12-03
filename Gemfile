@@ -88,7 +88,7 @@ group :development do
 end
 
 group :rubocop do
-  gem 'rubocop', '~> 1.69.0', require: false
+  gem 'rubocop', '~> 1.69.1', require: false
   gem 'rubocop-capybara', require: false
   gem 'rubocop-factory_bot', require: false
   gem 'rubocop-performance', require: false
