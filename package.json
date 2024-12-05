@@ -69,7 +69,7 @@
     "@types/node": "^22.10.1",
     "@types/rails__actioncable": "^6.1.9",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
-    "@typescript-eslint/parser": "^8.15.0",
+    "@typescript-eslint/parser": "^8.17.0",
     "angular-http-server": "^1.11.1",
     "chai": "^5.1.0",
     "eslint": "^9.15.0",
