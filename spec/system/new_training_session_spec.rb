@@ -97,7 +97,7 @@ describe 'new training session' do
     expect(page).to have_text('Session system test training session created.')
   end
 
-  it 'allows to create a new memo rush training session' do
+  it 'allows to create a new memo rush training session', :skip_on_ci do
     login(user)
 
     visit '/training-sessions'

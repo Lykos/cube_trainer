@@ -57,7 +57,7 @@ end
 
 group :development, :production do
   # Use Puma as the app server
-  gem 'puma', '~> 6.4'
+  gem 'puma', '~> 6.5'
 
   # Pry is needed to inspect the production state via rails console.
   gem 'pry'
@@ -88,7 +88,7 @@ group :development do
 end
 
 group :rubocop do
-  gem 'rubocop', '~> 1.68.0', require: false
+  gem 'rubocop', '~> 1.69.1', require: false
   gem 'rubocop-capybara', require: false
   gem 'rubocop-factory_bot', require: false
   gem 'rubocop-performance', require: false
