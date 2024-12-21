@@ -3,14 +3,14 @@ import { TrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
 import { ScrambleOrSample, isScramble, isSample } from '../scramble-or-sample.model';
 import { ColorScheme } from '../color-scheme.model';
-import { SharedModule } from '@shared/shared.module';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'cube-trainer-trainer-input',
   templateUrl: './trainer-input.component.html',
   styleUrls: ['./trainer-input.component.css'],
-  imports: [SharedModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [MatTooltipModule],
 })
 export class TrainerInputComponent {
   @Input()

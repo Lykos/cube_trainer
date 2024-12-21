@@ -3,7 +3,6 @@ import { AlgCountsData, AlgCountsRow } from '../alg-counts-data.model';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SharedModule } from '@shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -71,7 +70,6 @@ class RenderableAlgCountsRow {
   styleUrls: ['./alg-counts-table.component.css'],
   imports: [
     CommonModule,
-    SharedModule,
     MatProgressSpinnerModule,
     MatTableModule,
     FormsModule,

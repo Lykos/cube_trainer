@@ -5,13 +5,14 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectColorScheme, selectInitialLoadLoading } from '@store/color-scheme.selectors';
 import { initialLoad } from '@store/color-scheme.actions';
-import { SharedModule } from '@shared/shared.module';
+
 import { EditColorSchemeFormComponent } from '../edit-color-scheme-form/edit-color-scheme-form.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'cube-trainer-edit-color-scheme',
   templateUrl: './edit-color-scheme.component.html',
-  imports: [EditColorSchemeFormComponent, SharedModule],
+  imports: [EditColorSchemeFormComponent, AsyncPipe],
 })
 export class EditColorSchemeComponent implements OnInit {
   existingColorScheme$: Observable<Optional<ColorScheme>>;

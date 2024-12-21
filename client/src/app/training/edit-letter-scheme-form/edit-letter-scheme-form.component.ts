@@ -10,13 +10,11 @@ import { PartType, PartTypeName } from '../part-type.model';
 import { of } from 'rxjs';
 import { Optional, ifPresent, none } from '@utils/optional';
 import { catchError } from 'rxjs/operators';
-import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-edit-letter-scheme-form',
   templateUrl: './edit-letter-scheme-form.component.html',
   styleUrls: ['./edit-letter-scheme-form.component.css'],
-  imports: [SharedModule],
 })
 export class EditLetterSchemeFormComponent implements OnInit {
   letterSchemeForm: FormGroup;

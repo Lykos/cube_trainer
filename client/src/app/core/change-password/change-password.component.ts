@@ -4,7 +4,6 @@ import { FormGroup, AbstractControl } from '@angular/forms';
 import { UserFormCreator } from '../user-form-creator.service';
 import { UsersService } from '../users.service';
 import { PasswordChange } from '../password-change.model';
-import { SharedModule } from '@shared/shared.module';
 
 // Component for changing the user password.
 // The user needs their old password to change the password.
@@ -14,7 +13,6 @@ import { SharedModule } from '@shared/shared.module';
   selector: 'cube-trainer-change-password',
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css'],
-  imports: [SharedModule],
 })
 export class ChangePasswordComponent {
   form: FormGroup;

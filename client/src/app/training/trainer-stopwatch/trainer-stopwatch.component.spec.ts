@@ -12,7 +12,6 @@ import { ShowInputMode } from '../show-input-mode.model';
 import { GeneratorType } from '../generator-type.model';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
 
 const trainingSession: ScrambleTrainingSession = {
   id: 1,
@@ -51,7 +50,6 @@ describe('TrainerStopwatchComponent', () => {
     imports: [
         TrainerStopwatchComponent,
         StopwatchComponent,
-        SharedModule,
     ],
     providers: [
         provideMockStore({}),

@@ -9,8 +9,8 @@ import { AppComponent } from './app.component';
 import { NgModule } from '@angular/core';
 import { StoreModule } from '@ngrx/store';
 import { CoreModule } from '@core/core.module';
-import { SharedModule } from '@shared/shared.module';
-import { TrainingModule } from '@training/training.module';
+
+
 import { MethodExplorerModule } from './method-explorer/method-explorer.module';
 import { APP_BASE_HREF } from '@angular/common';
 import { userReducer } from '@store/user.reducer';
@@ -33,55 +33,50 @@ import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
     BrowserAnimationsModule,
     AppComponent,
     MethodExplorerModule,
-    TrainingModule,
     AppRoutingModule,
     HttpClientModule,
     CoreModule,
-    SharedModule,
     // TODO: Figure out whether we can move this to the core module.
     // TODO: Don't use the host, use Location and PathLocationStrategy.
     AngularTokenModule.forRoot({
-      loginField: 'email',
-      signInRedirect: 'login',
-      signInStoredUrlStorageKey: METADATA.signInStoredUrlStorageKey,
-      apiBase: environment.apiPrefix,
-      registerAccountCallback: `${environment.redirectProtocol}://${environment.host}/confirm-email`,
-      resetPasswordCallback: `${environment.redirectProtocol}://${environment.host}/update-password`,
+        loginField: 'email',
+        signInRedirect: 'login',
+        signInStoredUrlStorageKey: METADATA.signInStoredUrlStorageKey,
+        apiBase: environment.apiPrefix,
+        registerAccountCallback: `${environment.redirectProtocol}://${environment.host}/confirm-email`,
+        resetPasswordCallback: `${environment.redirectProtocol}://${environment.host}/update-password`,
     }),
-    StoreModule.forRoot(
-      {
+    StoreModule.forRoot({
         user: userReducer,
         trainingSessions: trainingSessionsReducer,
         trainer: trainerReducer,
         router: routerReducer,
-	colorScheme: colorSchemeReducer,
-	letterScheme: letterSchemeReducer,
-      },
-      {
+        colorScheme: colorSchemeReducer,
+        letterScheme: letterSchemeReducer,
+    }, {
         runtimeChecks: {
-          strictStateImmutability: true,
-          strictActionImmutability: true,
-          strictStateSerializability: true,
-          strictActionSerializability: true,
-          strictActionWithinNgZone: true,
-          strictActionTypeUniqueness: true,
+            strictStateImmutability: true,
+            strictActionImmutability: true,
+            strictStateSerializability: true,
+            strictActionSerializability: true,
+            strictActionWithinNgZone: true,
+            strictActionTypeUniqueness: true,
         },
-      },
-    ),
+    }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot([
-      UserEffects,
-      TrainingSessionsEffects,
-      TrainerEffects,
-      ColorSchemeEffects,
-      LetterSchemeEffects,
+        UserEffects,
+        TrainingSessionsEffects,
+        TrainerEffects,
+        ColorSchemeEffects,
+        LetterSchemeEffects,
     ]),
     StoreDevtoolsModule.instrument({
-      maxAge: 25, // Retains last 25 states
-      logOnly: environment.production, // Restrict extension to log-only mode
-      autoPause: true, // Pauses recording actions and state changes when the extension window is not open
+        maxAge: 25, // Retains last 25 states
+        logOnly: environment.production, // Restrict extension to log-only mode
+        autoPause: true, // Pauses recording actions and state changes when the extension window is not open
     }),
-  ],
+],
   providers: [
     { provide: APP_BASE_HREF, useValue: '/' },
     AngularTokenModule,    

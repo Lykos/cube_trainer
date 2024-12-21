@@ -1,7 +1,8 @@
-<nav mat-tab-nav-bar backgroundColor="primary">
+<nav mat-tab-nav-bar backgroundColor="primary" [tabPanel]="tabPanel">
   @for (link of links; track link) {
     <a mat-tab-link
       [routerLink]="link.link"
     [routerLinkActive]="['active']"> {{link.text}} </a>
   }
 </nav>
+<mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>

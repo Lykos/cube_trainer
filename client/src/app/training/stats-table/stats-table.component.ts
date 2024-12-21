@@ -5,14 +5,15 @@ import { StatPart } from '../stat-part.model';
 import { selectStats, selectInitialLoadLoading } from '@store/trainer.selectors';
 import { Store } from '@ngrx/store';
 import { filterPresent } from '@shared/operators';
-import { SharedModule } from '@shared/shared.module';
+import { MatTableModule } from '@angular/material/table';
 import { StatPartValueComponent } from '../stat-part-value/stat-part-value.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'cube-trainer-stats-table',
   templateUrl: './stats-table.component.html',
   styleUrls: ['./stats-table.component.css'],
-  imports: [StatPartValueComponent, SharedModule],
+  imports: [StatPartValueComponent, AsyncPipe, MatTableModule],
 })
 export class StatsTableComponent {
   columnsToDisplay = ['name', 'value'];

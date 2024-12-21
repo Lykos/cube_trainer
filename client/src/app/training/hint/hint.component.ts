@@ -7,14 +7,14 @@ import { Store } from '@ngrx/store';
 import { selectHintActive } from '@store/trainer.selectors';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { SharedModule } from '@shared/shared.module';
-import { NgClass } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgClass, AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'cube-trainer-hint',
   templateUrl: './hint.component.html',
   styleUrls: ['./hint.component.css'],
-  imports: [NgClass, SharedModule],
+  imports: [NgClass, AsyncPipe, MatTooltipModule],
 })
 export class HintComponent {
   @Input()

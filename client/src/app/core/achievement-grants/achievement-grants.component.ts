@@ -2,13 +2,17 @@ import { Component } from '@angular/core';
 import { AchievementGrantsService } from '../achievement-grants.service';
 import { AchievementGrant } from '../achievement-grant.model';
 import { Observable } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
+
+import { AsyncPipe } from '@angular/common';
+import { InstantPipe } from '../../shared/instant.pipe';
+import { OrErrorPipe } from '../../shared/or-error.pipe';
+import { ValuePipe } from '../../shared/value.pipe';
 
 @Component({
   selector: 'cube-trainer-achievement-grants',
   templateUrl: './achievement-grants.component.html',
   styleUrls: ['./achievement-grants.component.css'],
-  imports: [SharedModule],
+  imports: [AsyncPipe, InstantPipe, OrErrorPipe, ValuePipe],
 })
 export class AchievementGrantsComponent {
   achievementGrants$: Observable<AchievementGrant[]>;

@@ -9,14 +9,20 @@ import { StatType } from '../stat-type.model';
 import { Observable } from 'rxjs';
 import { create } from '@store/training-sessions.actions';
 import { Store } from '@ngrx/store';
-import { SharedModule } from '@shared/shared.module';
+
 import { SelectStatsComponent } from '../select-stats/select-stats.component';
+import { AsyncPipe } from '@angular/common';
+import { BackendActionErrorPipe } from '../../shared/backend-action-error.pipe';
+import { BackendActionLoadErrorComponent } from '../../shared/backend-action-load-error/backend-action-load-error.component';
+import { ErrorPipe } from '../../shared/error.pipe';
+import { OrErrorPipe } from '../../shared/or-error.pipe';
+import { ValuePipe } from '../../shared/value.pipe';
 
 @Component({
   selector: 'cube-trainer-new-training-session',
   templateUrl: './new-training-session.component.html',
   styleUrls: ['./new-training-session.component.css'],
-  imports: [SelectStatsComponent, SharedModule],
+  imports: [SelectStatsComponent, AsyncPipe, BackendActionErrorPipe, BackendActionLoadErrorComponent, ErrorPipe, OrErrorPipe, ValuePipe],
 })
 export class NewTrainingSessionComponent {
   trainingSessionTypeGroup: FormGroup;

@@ -6,13 +6,12 @@ import { NewColorScheme } from '../new-color-scheme.model';
 import { Color } from '../color.model';
 import { Store } from '@ngrx/store';
 import { create, update } from '@store/color-scheme.actions';
-import { SharedModule } from '@shared/shared.module';
 import { KeyValuePipe } from '@angular/common';
 
 @Component({
   selector: 'cube-trainer-edit-color-scheme-form',
   templateUrl: './edit-color-scheme-form.component.html',
-  imports: [SharedModule, KeyValuePipe],
+  imports: [KeyValuePipe],
 })
 export class EditColorSchemeFormComponent implements OnInit {
   colorSchemeForm: FormGroup;

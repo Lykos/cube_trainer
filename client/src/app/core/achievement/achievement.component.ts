@@ -4,12 +4,15 @@ import { Achievement } from '../achievement.model';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { SharedModule } from '@shared/shared.module';
+
+import { AsyncPipe } from '@angular/common';
+import { OrErrorPipe } from '../../shared/or-error.pipe';
+import { ValuePipe } from '../../shared/value.pipe';
 
 @Component({
   selector: 'cube-trainer-achievement',
   templateUrl: './achievement.component.html',
-  imports: [SharedModule],
+  imports: [AsyncPipe, OrErrorPipe, ValuePipe],
 })
 export class AchievementComponent {
   achievement$: Observable<Achievement>;

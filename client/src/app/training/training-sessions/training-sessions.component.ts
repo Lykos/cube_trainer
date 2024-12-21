@@ -6,13 +6,15 @@ import { Store } from '@ngrx/store';
 import { initialLoad, deleteClick } from '@store/training-sessions.actions';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { selectTrainingSessionSummaries, selectInitialLoadOrDestroyLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
-import { SharedModule } from '@shared/shared.module';
+
+import { AsyncPipe } from '@angular/common';
+import { BackendActionLoadErrorComponent } from '../../shared/backend-action-load-error/backend-action-load-error.component';
 
 @Component({
   selector: 'cube-trainer-training-sessions',
   templateUrl: './training-sessions.component.html',
   styleUrls: ['./training-sessions.component.css'],
-  imports: [SharedModule],
+  imports: [AsyncPipe, BackendActionLoadErrorComponent],
 })
 export class TrainingSessionsComponent implements OnInit {
   trainingSessions$: Observable<readonly TrainingSessionSummary[]>;

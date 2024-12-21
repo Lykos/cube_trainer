@@ -3,14 +3,13 @@ import { TrainingSessionType } from '../training-session-type.model';
 import { StatType } from '../stat-type.model';
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { SharedModule } from '@shared/shared.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'cube-trainer-select-stats',
   templateUrl: './select-stats.component.html',
   styleUrls: ['./select-stats.component.css'],
-  imports: [SharedModule, DragDropModule],
+  imports: [DragDropModule],
 })
 export class SelectStatsComponent implements OnInit {
   @Input()

@@ -1,13 +1,14 @@
 import { Component, Input } from '@angular/core';
 import { StatPart, CountStatPart, FractionStatPart, DnfStatPart, UndefinedStatPart, DurationStatPart, isCountStatPart, isFractionStatPart, isDnfStatPart, isUndefinedStatPart, isDurationStatPart } from '../stat-part.model';
-import { SharedModule } from '@shared/shared.module';
+
 import { PercentPipe } from '@angular/common';
+import { DurationPipe } from '../../shared/duration.pipe';
 
 @Component({
   selector: 'cube-trainer-stat-part-value',
   templateUrl: './stat-part-value.component.html',
   styleUrls: ['./stat-part-value.component.css'],
-  imports: [SharedModule, PercentPipe],
+  imports: [DurationPipe, PercentPipe],
 })
 export class StatPartValueComponent {
   @Input()

@@ -13,15 +13,16 @@ import { selectSelectedTrainingSession } from '@store/training-sessions.selector
 import { selectCurrentCase, selectNextCase } from '@store/trainer.selectors';
 import { selectColorScheme } from '@store/color-scheme.selectors';
 import { initialLoad } from '@store/color-scheme.actions';
-import { SharedModule } from '@shared/shared.module';
+
 import { TrainerInputComponent } from '../trainer-input/trainer-input.component';
 import { TrainerStopwatchComponent } from '../trainer-stopwatch/trainer-stopwatch.component';
 import { HintComponent } from '../hint/hint.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'cube-trainer-trainer',
   templateUrl: './trainer.component.html',
-  imports: [SharedModule, TrainerInputComponent, TrainerStopwatchComponent, HintComponent],
+  imports: [AsyncPipe, TrainerInputComponent, TrainerStopwatchComponent, HintComponent],
 })
 export class TrainerComponent implements OnInit, OnDestroy {
   trainingSession?: TrainingSession;

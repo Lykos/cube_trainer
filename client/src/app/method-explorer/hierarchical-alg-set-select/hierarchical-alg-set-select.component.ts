@@ -3,7 +3,6 @@ import { HierarchicalAlgSetLevel } from '../hierarchical-alg-set-level.model';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SharedModule } from '@shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -29,7 +28,6 @@ const HIERARCHICAL_EXPAND_OPTIONS: readonly TagWithName[] = [
   styleUrls: ['./hierarchical-alg-set-select.component.css'],
   imports: [
     CommonModule,
-    SharedModule,
     MatProgressSpinnerModule,
     MatTableModule,
     FormsModule,

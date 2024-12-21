@@ -11,7 +11,6 @@ import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { GeneratorType } from '../generator-type.model';
 import { of } from 'rxjs';
 import { none, some } from '@utils/optional';
-import { SharedModule } from '@shared/shared.module';
 
 class ArgumentSaver {
   argument: any;
@@ -135,15 +134,14 @@ describe('AlgSetComponent', () => {
     fileSaverService = jasmine.createSpyObj('FileSaverService', ['save']);
     await TestBed.configureTestingModule({
       imports: [
-	SharedModule,
         AlgSetComponent,
-    ],
-    providers: [
+      ],
+      providers: [
         { provide: ActivatedRoute, useValue: { params: of({ trainingSessionId: 1 }) } },
         { provide: FileSaverService, useValue: fileSaverService },
         provideMockStore({}),
-    ],
-}).compileComponents();
+      ],
+    }).compileComponents();
 
     store = TestBed.inject(MockStore);
   });

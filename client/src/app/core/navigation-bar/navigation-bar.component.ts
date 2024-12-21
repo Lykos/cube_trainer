@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { SharedModule } from '@shared/shared.module';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { MatTabsModule } from '@angular/material/tabs';
 
 interface Link {
   readonly link: string;
@@ -10,7 +11,7 @@ interface Link {
   selector: 'cube-trainer-navigation-bar',
   templateUrl: './navigation-bar.component.html',
   styleUrls: ['./navigation-bar.component.css'],
-  imports: [SharedModule],
+  imports: [RouterLink, RouterLinkActive, MatTabsModule],
 })
 export class NavigationBarComponent {
   links: readonly Link[] = [

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AlgCountsTableComponent } from './alg-counts-table/alg-counts-table.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MethodExplorerComponent } from './method-explorer/method-explorer.component';
-import { SharedModule } from '@shared/shared.module';
+
 import { MethodExplorerService } from './method-explorer.service';
 import { MethodDescriptionFormComponent } from './method-description-form/method-description-form.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -19,24 +19,23 @@ import { HierarchicalAlgSetSelectComponent } from './hierarchical-alg-set-select
 
 @NgModule({
     imports: [
-        CommonModule,
-        SharedModule,
-        MatProgressSpinnerModule,
-        MatTableModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatCheckboxModule,
-        MatSnackBarModule,
-        MatInputModule,
-        MatButtonModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatCardModule,
-        MethodExplorerComponent,
-        AlgCountsTableComponent,
-        MethodDescriptionFormComponent,
-        HierarchicalAlgSetSelectComponent,
-    ],
+    CommonModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatCheckboxModule,
+    MatSnackBarModule,
+    MatInputModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatCardModule,
+    MethodExplorerComponent,
+    AlgCountsTableComponent,
+    MethodDescriptionFormComponent,
+    HierarchicalAlgSetSelectComponent,
+],
     exports: [
         MethodExplorerComponent,
     ],

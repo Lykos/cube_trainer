@@ -8,12 +8,10 @@ import { NewUser } from '../new-user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-signup',
   templateUrl: './signup.component.html',
-  imports: [SharedModule],
 })
 export class SignupComponent implements OnInit {
   signupForm!: FormGroup;
