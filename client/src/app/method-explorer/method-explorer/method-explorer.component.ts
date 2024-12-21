@@ -7,8 +7,7 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'cube-trainer-method-explorer',
   templateUrl: './method-explorer.component.html',
-  styleUrls: ['./method-explorer.component.css'],
-  standalone: false,
+  styleUrls: ['./method-explorer.component.css']
 })
 export class MethodExplorerComponent {
   expectedAlgsData$: Observable<AlgCountsData> | undefined = undefined;

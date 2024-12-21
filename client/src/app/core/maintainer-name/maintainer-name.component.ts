@@ -6,7 +6,6 @@ import { METADATA } from '@shared/metadata.const';
 @Component({
   selector: 'cube-trainer-maintainer-name',
   templateUrl: './maintainer-name.component.html',
-  standalone: false,
 })
 export class MaintainerNameComponent {
   get maintainerEmail() {

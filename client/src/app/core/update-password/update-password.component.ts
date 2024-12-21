@@ -12,8 +12,7 @@ import { PasswordUpdate } from '../password-update.model';
 @Component({
   selector: 'cube-trainer-update-password',
   templateUrl: './update-password.component.html',
-  styleUrls: ['./update-password.component.css'],
-  standalone: false,
+  styleUrls: ['./update-password.component.css']
 })
 export class UpdatePasswordComponent implements OnInit {
   form!: FormGroup;

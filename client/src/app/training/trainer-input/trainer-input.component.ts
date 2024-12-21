@@ -7,8 +7,7 @@ import { ColorScheme } from '../color-scheme.model';
 @Component({
   selector: 'cube-trainer-trainer-input',
   templateUrl: './trainer-input.component.html',
-  styleUrls: ['./trainer-input.component.css'],
-  standalone: false,
+  styleUrls: ['./trainer-input.component.css']
 })
 export class TrainerInputComponent {
   @Input()

@@ -10,8 +10,7 @@ import { selectTrainingSessionSummaries, selectInitialLoadOrDestroyLoading, sele
 @Component({
   selector: 'cube-trainer-training-sessions',
   templateUrl: './training-sessions.component.html',
-  styleUrls: ['./training-sessions.component.css'],
-  standalone: false,
+  styleUrls: ['./training-sessions.component.css']
 })
 export class TrainingSessionsComponent implements OnInit {
   trainingSessions$: Observable<readonly TrainingSessionSummary[]>;

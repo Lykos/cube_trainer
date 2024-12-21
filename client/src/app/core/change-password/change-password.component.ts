@@ -12,8 +12,7 @@ import { PasswordChange } from '../password-change.model';
 @Component({
   selector: 'cube-trainer-change-password',
   templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.css'],
-  standalone: false,
+  styleUrls: ['./change-password.component.css']
 })
 export class ChangePasswordComponent {
   form: FormGroup;

@@ -11,8 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'cube-trainer-message',
-  templateUrl: './message.component.html',
-  standalone: false,
+  templateUrl: './message.component.html'
 })
 export class MessageComponent implements OnInit {
   message$: Observable<Message>;

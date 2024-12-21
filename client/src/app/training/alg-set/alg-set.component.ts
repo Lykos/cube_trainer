@@ -37,8 +37,7 @@ function toCsv(table: string[][]): string {
 @Component({
   selector: 'cube-trainer-alg-set',
   templateUrl: './alg-set.component.html',
-  styleUrls: ['./alg-set.component.css'],
-  standalone: false,
+  styleUrls: ['./alg-set.component.css']
 })
 export class AlgSetComponent implements OnInit {
   columnsToDisplay = ['case', 'alg', 'algSource', 'button'];

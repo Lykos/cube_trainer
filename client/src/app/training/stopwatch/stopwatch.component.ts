@@ -4,8 +4,7 @@ import { HostListener, Component, Input, Output, EventEmitter } from '@angular/c
 @Component({
   selector: 'cube-trainer-stopwatch',
   templateUrl: './stopwatch.component.html',
-  styleUrls: ['./stopwatch.component.css'],
-  standalone: false,
+  styleUrls: ['./stopwatch.component.css']
 })
 export class StopwatchComponent {
   @Input()

@@ -5,7 +5,6 @@ import { METADATA } from '@shared/metadata.const';
 @Component({
   selector: 'cube-trainer-contact-content',
   templateUrl: './contact-content.component.html',
-  standalone: false,
 })
 export class ContactContentComponent {
   get contactEmail() {

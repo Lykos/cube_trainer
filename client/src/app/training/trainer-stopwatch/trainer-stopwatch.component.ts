@@ -15,8 +15,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 @Component({
   selector: 'cube-trainer-trainer-stopwatch',
   templateUrl: './trainer-stopwatch.component.html',
-  styleUrls: ['./trainer-stopwatch.component.css'],
-  standalone: false,
+  styleUrls: ['./trainer-stopwatch.component.css']
 })
 export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   @Input()

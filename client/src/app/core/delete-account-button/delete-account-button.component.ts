@@ -10,7 +10,6 @@ import { Optional, ifPresent, none, some } from '@utils/optional';
 @Component({
   selector: 'cube-trainer-delete-account-button',
   templateUrl: './delete-account-button.component.html',
-  standalone: false,
 })
 export class DeleteAccountButtonComponent implements OnInit {
   user: Optional<User> = none;

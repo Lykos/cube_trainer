@@ -6,8 +6,7 @@ import { UsersService } from '../users.service';
 @Component({
   selector: 'cube-trainer-reset-password',
   templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.css'],
-  standalone: false,
+  styleUrls: ['./reset-password.component.css']
 })
 export class ResetPasswordComponent implements OnInit {
   form!: FormGroup;

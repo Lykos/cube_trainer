@@ -6,8 +6,7 @@ import { Credentials } from '../credentials.model';
 
 @Component({
   selector: 'cube-trainer-login',
-  templateUrl: './login.component.html',
-  standalone: false,
+  templateUrl: './login.component.html'
 })
 export class LoginComponent {
   loginForm: FormGroup;

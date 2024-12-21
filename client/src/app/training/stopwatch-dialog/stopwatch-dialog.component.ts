@@ -15,8 +15,7 @@ import { filterPresent } from '@shared/operators';
 @Component({
   selector: 'cube-trainer-stopwatch-dialog',
   templateUrl: './stopwatch-dialog.component.html',
-  styleUrls: ['./stopwatch-dialog.component.css'],
-  standalone: false,
+  styleUrls: ['./stopwatch-dialog.component.css']
 })
 export class StopwatchDialogComponent {
   readonly isPostMemoTime$: Observable<boolean>;

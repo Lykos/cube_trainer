@@ -11,8 +11,7 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'cube-trainer-hint',
   templateUrl: './hint.component.html',
-  styleUrls: ['./hint.component.css'],
-  standalone: false,
+  styleUrls: ['./hint.component.css']
 })
 export class HintComponent {
   @Input()

@@ -4,8 +4,7 @@ import { StatPart, CountStatPart, FractionStatPart, DnfStatPart, UndefinedStatPa
 @Component({
   selector: 'cube-trainer-stat-part-value',
   templateUrl: './stat-part-value.component.html',
-  styleUrls: ['./stat-part-value.component.css'],
-  standalone: false,
+  styleUrls: ['./stat-part-value.component.css']
 })
 export class StatPartValueComponent {
   @Input()

@@ -15,7 +15,6 @@ import { catchError } from 'rxjs/operators';
   selector: 'cube-trainer-edit-letter-scheme-form',
   templateUrl: './edit-letter-scheme-form.component.html',
   styleUrls: ['./edit-letter-scheme-form.component.css'],
-  standalone: false,
 })
 export class EditLetterSchemeFormComponent implements OnInit {
   letterSchemeForm: FormGroup;

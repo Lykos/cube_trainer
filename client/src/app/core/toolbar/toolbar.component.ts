@@ -11,8 +11,7 @@ import { initialLoad, logout } from '@store/user.actions';
 @Component({
   selector: 'cube-trainer-toolbar',
   templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.css'],
-  standalone: false,
+  styleUrls: ['./toolbar.component.css']
 })
 export class ToolbarComponent implements OnInit {
   readonly user$: Observable<Optional<User>>;

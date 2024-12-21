@@ -19,8 +19,7 @@ const ALL_COLUMNS = IMPORTANT_COLUMNS.concat(['numHints', 'timestamp']);
 @Component({
   selector: 'cube-trainer-results-table',
   templateUrl: './results-table.component.html',
-  styleUrls: ['./results-table.component.css'],
-  standalone: false,
+  styleUrls: ['./results-table.component.css']
 })
 export class ResultsTableComponent implements OnInit, OnDestroy {
   @Input()
