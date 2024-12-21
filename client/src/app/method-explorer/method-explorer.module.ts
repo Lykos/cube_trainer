@@ -1,6 +1,4 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { AlgCountsTableComponent } from './alg-counts-table/alg-counts-table.component';
@@ -24,8 +22,6 @@ import { HierarchicalAlgSetSelectComponent } from './hierarchical-alg-set-select
         CommonModule,
         SharedModule,
         MatProgressSpinnerModule,
-        BrowserModule,
-        BrowserAnimationsModule,
         MatTableModule,
         FormsModule,
         ReactiveFormsModule,

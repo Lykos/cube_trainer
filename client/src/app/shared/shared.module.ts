@@ -31,8 +31,6 @@ import { GithubErrorNoteComponent } from './github-error-note/github-error-note.
 
 @NgModule({
     imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
         FormsModule,
         MatButtonModule,
         MatCardModule,

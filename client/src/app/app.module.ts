@@ -1,4 +1,6 @@
 import { AppRoutingModule } from './app-routing.module';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { AngularTokenModule } from '@angular-token/angular-token.module';
 import { METADATA } from '@shared/metadata.const';
@@ -27,6 +29,8 @@ import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 
 @NgModule({
   imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
     AppComponent,
     MethodExplorerModule,
     TrainingModule,
