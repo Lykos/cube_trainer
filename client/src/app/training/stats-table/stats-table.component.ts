@@ -9,7 +9,8 @@ import { filterPresent } from '@shared/operators';
 @Component({
   selector: 'cube-trainer-stats-table',
   templateUrl: './stats-table.component.html',
-  styleUrls: ['./stats-table.component.css']
+  styleUrls: ['./stats-table.component.css'],
+  standalone: false,
 })
 export class StatsTableComponent {
   columnsToDisplay = ['name', 'value'];

@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'cube-trainer-confirm-email',
   templateUrl: './confirm-email.component.html',
+  standalone: false,
 })
 export class ConfirmEmailComponent implements OnInit {
   // Initially both are false and once we know, we set one.

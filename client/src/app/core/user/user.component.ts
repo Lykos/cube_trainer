@@ -6,7 +6,8 @@ import { FileSaverService } from 'ngx-filesaver';
 
 @Component({
   selector: 'cube-trainer-user',
-  templateUrl: './user.component.html'
+  templateUrl: './user.component.html',
+  standalone: false,
 })
 export class UserComponent implements OnInit {
   user!: User;

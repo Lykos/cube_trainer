@@ -89,7 +89,8 @@ class HierarchicalAlgSetLevelImpl implements HierarchicalAlgSetLevel {
 @Component({
   selector: 'cube-trainer-method-description-form',
   templateUrl: './method-description-form.component.html',
-  styleUrls: ['./method-description-form.component.css']
+  styleUrls: ['./method-description-form.component.css'],
+  standalone: false,
 })
 export class MethodDescriptionFormComponent {
   piecesEqual(left: Piece, right: Piece) {

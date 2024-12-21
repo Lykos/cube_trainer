@@ -5,7 +5,8 @@ import { METADATA } from '@shared/metadata.const';
 @Component({
   selector: 'cube-trainer-github-error-note',
   templateUrl: './github-error-note.component.html',
-  styleUrls: ['./github-error-note.component.css']
+  styleUrls: ['./github-error-note.component.css'],
+  standalone: false,
 })
 export class GithubErrorNoteComponent {
   @Input()

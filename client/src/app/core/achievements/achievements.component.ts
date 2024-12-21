@@ -6,7 +6,8 @@ import { Achievement } from '../achievement.model';
 @Component({
   selector: 'cube-trainer-achievements',
   templateUrl: './achievements.component.html',
-  styleUrls: ['./achievements.component.css']
+  styleUrls: ['./achievements.component.css'],
+  standalone: false,
 })
 export class AchievementsComponent {
   achievements$: Observable<Achievement[]>;

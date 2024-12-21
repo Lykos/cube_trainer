@@ -8,7 +8,8 @@ interface Link {
 @Component({
   selector: 'cube-trainer-navigation-bar',
   templateUrl: './navigation-bar.component.html',
-  styleUrls: ['./navigation-bar.component.css']
+  styleUrls: ['./navigation-bar.component.css'],
+  standalone: false,
 })
 export class NavigationBarComponent {
   links: readonly Link[] = [

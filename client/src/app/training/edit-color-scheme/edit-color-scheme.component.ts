@@ -8,7 +8,8 @@ import { initialLoad } from '@store/color-scheme.actions';
 
 @Component({
   selector: 'cube-trainer-edit-color-scheme',
-  templateUrl: './edit-color-scheme.component.html'
+  templateUrl: './edit-color-scheme.component.html',
+  standalone: false,
 })
 export class EditColorSchemeComponent implements OnInit {
   existingColorScheme$: Observable<Optional<ColorScheme>>;

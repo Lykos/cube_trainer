@@ -10,7 +10,8 @@ import { initialLoad } from '@store/letter-scheme.actions';
 
 @Component({
   selector: 'cube-trainer-edit-letter-scheme',
-  templateUrl: './edit-letter-scheme.component.html'
+  templateUrl: './edit-letter-scheme.component.html',
+  standalone: false,
 })
 export class EditLetterSchemeComponent implements OnInit {
   existingLetterScheme$: Observable<Optional<LetterScheme>>;

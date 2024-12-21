@@ -4,6 +4,7 @@ import { METADATA } from '@shared/metadata.const';
 @Component({
   selector: 'cube-trainer-terms-and-conditions',
   templateUrl: './terms-and-conditions.component.html',
+  standalone: false,
 })
 export class TermsAndConditionsComponent {
   get securityBugEmail() {

@@ -7,7 +7,8 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 @Component({
   selector: 'cube-trainer-select-stats',
   templateUrl: './select-stats.component.html',
-  styleUrls: ['./select-stats.component.css']
+  styleUrls: ['./select-stats.component.css'],
+  standalone: false,
 })
 export class SelectStatsComponent implements OnInit {
   @Input()

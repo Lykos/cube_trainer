@@ -11,7 +11,8 @@ import { initialLoadSelected } from '@store/trainer.actions';
 @Component({
   selector: 'cube-trainer-training-session',
   templateUrl: './training-session.component.html',
-  styleUrls: ['./training-session.component.css']
+  styleUrls: ['./training-session.component.css'],
+  standalone: false,
 })
 export class TrainingSessionComponent implements OnInit, OnDestroy {
   trainingSession?: TrainingSession;

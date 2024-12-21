@@ -13,7 +13,8 @@ import { Store } from '@ngrx/store';
 @Component({
   selector: 'cube-trainer-new-training-session',
   templateUrl: './new-training-session.component.html',
-  styleUrls: ['./new-training-session.component.css']
+  styleUrls: ['./new-training-session.component.css'],
+  standalone: false,
 })
 export class NewTrainingSessionComponent {
   trainingSessionTypeGroup: FormGroup;

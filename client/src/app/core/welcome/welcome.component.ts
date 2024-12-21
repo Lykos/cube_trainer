@@ -8,7 +8,8 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'cube-trainer-welcome',
   templateUrl: './welcome.component.html',
-  styleUrls: ['./welcome.component.css']
+  styleUrls: ['./welcome.component.css'],
+  standalone: false,
 })
 export class WelcomeComponent {
   readonly loggedIn$: Observable<{ readonly value: boolean }>;

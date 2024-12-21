@@ -10,7 +10,8 @@ interface MutableAlgOverride extends NewAlgOverride {
 @Component({
   selector: 'cube-trainer-override-alg-dialog',
   templateUrl: './override-alg-dialog.component.html',
-  styleUrls: ['./override-alg-dialog.component.css']
+  styleUrls: ['./override-alg-dialog.component.css'],
+  standalone: false,
 })
 export class OverrideAlgDialogComponent {
   algOverride: MutableAlgOverride;

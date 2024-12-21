@@ -4,7 +4,8 @@ import { User } from '../user.model';
 
 @Component({
   selector: 'cube-trainer-delete-account-confirmation-dialog',
-  templateUrl: './delete-account-confirmation-dialog.component.html'
+  templateUrl: './delete-account-confirmation-dialog.component.html',
+  standalone: false,
 })
 export class DeleteAccountConfirmationDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public user: User) {}

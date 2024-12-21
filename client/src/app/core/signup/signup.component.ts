@@ -11,7 +11,8 @@ import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'cube-trainer-signup',
-  templateUrl: './signup.component.html'
+  templateUrl: './signup.component.html',
+  standalone: false,
 })
 export class SignupComponent implements OnInit {
   signupForm!: FormGroup;

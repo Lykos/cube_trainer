@@ -14,7 +14,8 @@ const HIERARCHICAL_EXPAND_OPTIONS: readonly TagWithName[] = [
 @Component({
   selector: 'cube-trainer-hierarchical-alg-set-select',
   templateUrl: './hierarchical-alg-set-select.component.html',
-  styleUrls: ['./hierarchical-alg-set-select.component.css']
+  styleUrls: ['./hierarchical-alg-set-select.component.css'],
+  standalone: false,
 })
 export class HierarchicalAlgSetSelectComponent {
   @Input() level: HierarchicalAlgSetLevel | undefined = undefined;

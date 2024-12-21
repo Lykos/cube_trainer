@@ -6,7 +6,8 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'cube-trainer-achievement-grants',
   templateUrl: './achievement-grants.component.html',
-  styleUrls: ['./achievement-grants.component.css']
+  styleUrls: ['./achievement-grants.component.css'],
+  standalone: false,
 })
 export class AchievementGrantsComponent {
   achievementGrants$: Observable<AchievementGrant[]>;

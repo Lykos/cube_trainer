@@ -3,7 +3,8 @@ import { Instant } from '@utils/instant';
 import { formatDate } from '@angular/common';
 
 @Pipe({
-  name: 'fluidInstant'
+  name: 'fluidInstant',
+  standalone: false,
 })
 export class FluidInstantPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private readonly locale: string) {}

@@ -9,7 +9,8 @@ import { UserFormCreator } from '../user-form-creator.service';
 @Component({
   selector: 'cube-trainer-edit-user',
   templateUrl: './edit-user.component.html',
-  styleUrls: ['./edit-user.component.css']
+  styleUrls: ['./edit-user.component.css'],
+  standalone: false,
 })
 export class EditUserComponent implements OnInit {
   user!: User;

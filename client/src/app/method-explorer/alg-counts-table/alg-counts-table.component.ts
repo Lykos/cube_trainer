@@ -56,7 +56,8 @@ class RenderableAlgCountsRow {
 @Component({
   selector: 'cube-trainer-alg-counts-table',
   templateUrl: './alg-counts-table.component.html',
-  styleUrls: ['./alg-counts-table.component.css']
+  styleUrls: ['./alg-counts-table.component.css'],
+  standalone: false,
 })
 export class AlgCountsTableComponent {
   @Input() expectedAlgsData: AlgCountsData | undefined = undefined;

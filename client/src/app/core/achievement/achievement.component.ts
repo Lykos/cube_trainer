@@ -7,7 +7,8 @@ import { map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'cube-trainer-achievement',
-  templateUrl: './achievement.component.html'
+  templateUrl: './achievement.component.html',
+  standalone: false,
 })
 export class AchievementComponent {
   achievement$: Observable<Achievement>;

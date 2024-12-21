@@ -3,7 +3,8 @@ import { BackendActionError, BackendActionContext } from './backend-action-error
 import { parseBackendActionError } from './parse-backend-action-error';
 
 @Pipe({
-  name: 'backendActionError'
+  name: 'backendActionError',
+  standalone: false,
 })
 export class BackendActionErrorPipe implements PipeTransform {
   transform(error: any, context: BackendActionContext): BackendActionError {

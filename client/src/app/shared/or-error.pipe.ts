@@ -4,7 +4,8 @@ import { map, catchError } from 'rxjs/operators';
 import { OrError, value, error } from './or-error.type';
 
 @Pipe({
-  name: 'orerror'
+  name: 'orerror',
+  standalone: false,
 })
 export class OrErrorPipe implements PipeTransform {
   transform<X>(observable: Observable<X>): Observable<OrError<X>> {

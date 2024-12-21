@@ -9,7 +9,8 @@ import { create, update } from '@store/color-scheme.actions';
 
 @Component({
   selector: 'cube-trainer-edit-color-scheme-form',
-  templateUrl: './edit-color-scheme-form.component.html'
+  templateUrl: './edit-color-scheme-form.component.html',
+  standalone: false,
 })
 export class EditColorSchemeFormComponent implements OnInit {
   colorSchemeForm: FormGroup;

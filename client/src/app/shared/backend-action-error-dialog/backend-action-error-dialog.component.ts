@@ -5,7 +5,8 @@ import { BackendActionError, FieldError } from '../backend-action-error.model';
 @Component({
   selector: 'cube-trainer-backend-action-error-dialog',
   templateUrl: './backend-action-error-dialog.component.html',
-  styleUrls: ['./backend-action-error-dialog.component.css']
+  styleUrls: ['./backend-action-error-dialog.component.css'],
+  standalone: false,
 })
 export class BackendActionErrorDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) readonly error: BackendActionError) {}

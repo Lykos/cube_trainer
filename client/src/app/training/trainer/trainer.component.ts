@@ -17,6 +17,7 @@ import { initialLoad } from '@store/color-scheme.actions';
 @Component({
   selector: 'cube-trainer-trainer',
   templateUrl: './trainer.component.html',
+  standalone: false,
 })
 export class TrainerComponent implements OnInit, OnDestroy {
   trainingSession?: TrainingSession;

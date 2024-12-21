@@ -13,7 +13,8 @@ import { map, shareReplay } from 'rxjs/operators';
 @Component({
   selector: 'cube-trainer-messages',
   templateUrl: './messages.component.html',
-  styleUrls: ['./messages.component.css']
+  styleUrls: ['./messages.component.css'],
+  standalone: false,
 })
 export class MessagesComponent {
   messages$: Observable<Message[]>;
