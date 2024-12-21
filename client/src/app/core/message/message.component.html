@@ -1,11 +1,13 @@
-<mat-card *ngIf="message$ | async as message">
-  <mat-card-title>{{message.title}}</mat-card-title>
-  <mat-card-subtitle>Received {{message.timestamp ? (message.timestamp | instant) : undefined}}</mat-card-subtitle>
-  <mat-card-content>
-    {{message.body}}
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="onDelete()">Delete</button>
-    <button mat-raised-button color="primary" routerLink="/messages">All Messages</button>
-  </mat-card-actions>
-</mat-card>
+@if (message$ | async; as message) {
+  <mat-card>
+    <mat-card-title>{{message.title}}</mat-card-title>
+    <mat-card-subtitle>Received {{message.timestamp ? (message.timestamp | instant) : undefined}}</mat-card-subtitle>
+    <mat-card-content>
+      {{message.body}}
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="onDelete()">Delete</button>
+      <button mat-raised-button color="primary" routerLink="/messages">All Messages</button>
+    </mat-card-actions>
+  </mat-card>
+}

@@ -1,16 +1,14 @@
 <div>
-  <ng-container *ngIf="achievement$ | orerror | async as achievementOrError; else loading">
-    <ng-container *ngIf="achievementOrError | value as achievement; else error">
+  @if (achievement$ | orerror | async; as achievementOrError) {
+    @if (achievementOrError | value; as achievement) {
       <h1>{{achievement.name}}</h1>
       {{achievement.description}}
       <br>
-      <a mat-raised-button color="primary" routerLink="/achievements">All Achievements</a>
-    </ng-container>
-    <ng-template #error>
-      <h1>Error Loading Achievement</h1>
-    </ng-template>
-  </ng-container>
-  <ng-template #loading>
-    <mat-spinner></mat-spinner>
-  </ng-template>
-</div>
+        <a mat-raised-button color="primary" routerLink="/achievements">All Achievements</a>
+      } @else {
+        <h1>Error Loading Achievement</h1>
+      }
+    } @else {
+      <mat-spinner></mat-spinner>
+    }
+  </div>

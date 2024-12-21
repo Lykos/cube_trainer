@@ -1,30 +1,44 @@
 <div>
   <h1 mat-dialog-title>{{ context.action }} {{ context.subject }} failed!</h1>
   <div mat-dialog-content>
-    <span *ngIf="error.message">
-      {{ error.message }}
-    </span>
+    @if (error.message) {
+      <span>
+        {{ error.message }}
+      </span>
+    }
     <!-- This is not an ideal case: We basically don't have any useful information to show. -->
-    <span *ngIf="!error.fieldErrors && !error.message ">
-      {{ error.statusText }}
-    </span>
-    <ng-container *ngFor="let fieldError of error.fieldErrors">
+    @if (!error.fieldErrors && !error.message ) {
+      <span>
+        {{ error.statusText }}
+      </span>
+    }
+    @for (fieldError of error.fieldErrors; track fieldError) {
       <span class="field">
         {{ fieldError.field }}
       </span>
-      <span *ngIf="noMessage(fieldError) as message">
-        is invalid.
-      </span>
-      <span *ngIf="uniqueMessage(fieldError) as message">
-        {{ message }}
-      </span>
-      <ul *ngIf="multipleMessages(fieldError)">
-        <li *ngFor="let message of fieldError.messages">
+      @if (noMessage(fieldError); as message) {
+        <span>
+          is invalid.
+        </span>
+      }
+      @if (uniqueMessage(fieldError); as message) {
+        <span>
           {{ message }}
-        </li>
-      </ul>
-    </ng-container>
-    <cube-trainer-github-error-note [error]="error" *ngIf="!error.fieldErrors"></cube-trainer-github-error-note>
+        </span>
+      }
+      @if (multipleMessages(fieldError)) {
+        <ul>
+          @for (message of fieldError.messages; track message) {
+            <li>
+              {{ message }}
+            </li>
+          }
+        </ul>
+      }
+    }
+    @if (!error.fieldErrors) {
+      <cube-trainer-github-error-note [error]="error"></cube-trainer-github-error-note>
+    }
   </div>
   <div mat-dialog-actions>
     <button mat-raised-button color="primary" mat-dialog-close>Ok</button>

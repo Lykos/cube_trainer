@@ -1,8 +1,10 @@
-<ng-container *ngIf="existingLetterScheme$ | async as existingLetterScheme">
-  <ng-container *ngIf="partTypes$ | async as partTypes">
+@if (existingLetterScheme$ | async; as existingLetterScheme) {
+  @if (partTypes$ | async; as partTypes) {
     <cube-trainer-edit-letter-scheme-form [existingLetterScheme]="existingLetterScheme" [partTypes]="partTypes">
     </cube-trainer-edit-letter-scheme-form>
-  </ng-container>
-</ng-container>
-<mat-spinner *ngIf="initialLoadLoading$ | async">
-</mat-spinner>
+  }
+}
+@if (initialLoadLoading$ | async) {
+  <mat-spinner>
+  </mat-spinner>
+}

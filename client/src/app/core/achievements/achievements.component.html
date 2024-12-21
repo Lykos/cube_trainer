@@ -1,8 +1,8 @@
 <div>
   <h2>All Achievements</h2>
   <div>
-    <ng-container *ngIf="achievements$ | orerror | async as achievementsOrError; else loading">
-      <ng-container *ngIf="achievementsOrError | value as achievements; else error">
+    @if (achievements$ | orerror | async; as achievementsOrError) {
+      @if (achievementsOrError | value; as achievements) {
         <table mat-table class="mat-elevation-z2" [dataSource]="achievements">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef> Name </th>
@@ -13,13 +13,14 @@
           <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
           <tr mat-row *matRowDef="let achievement; columns: columnsToDisplay" [routerLink]="['/achievements', achievement.id]"></tr>
         </table>
-      </ng-container>
+      } @else {
+        <cube-trainer-backend-action-load-error [error]="achievementsOrError | error | backendActionError:context"></cube-trainer-backend-action-load-error>
+      }
       <ng-template #error>
         <cube-trainer-backend-action-load-error [error]="achievementsOrError | error | backendActionError:context"></cube-trainer-backend-action-load-error>
       </ng-template>
-    </ng-container>
-    <ng-template #loading>
+    } @else {
       <mat-spinner></mat-spinner>
-    </ng-template>
+    }
   </div>
 </div>

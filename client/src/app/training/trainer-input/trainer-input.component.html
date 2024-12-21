@@ -1,20 +1,26 @@
-<ng-container *ngIf="showImage && (colorScheme || pictureSetup)" [matTooltip]="sampleTooltip">
-  <twisty-player
-    [alg]="pictureSetup"
-    [puzzle]="puzzle"
-    background="none"
-    control-panel="none">
-  </twisty-player>
-</ng-container>
-<span
-  [matTooltip]="sampleTooltip"
-  class="case"
-  *ngIf="showName">
-  {{caseName}}
-  <ng-container ngIf*="!caseName">&nbsp;</ng-container>
-</span>
-<span
-  class="scramble"
-  *ngIf="showScramble">
-  {{scramble}}
-</span>
+@if (showImage && (colorScheme || pictureSetup)) {
+  <ng-container [matTooltip]="sampleTooltip">
+    <twisty-player
+      [alg]="pictureSetup"
+      [puzzle]="puzzle"
+      background="none"
+      control-panel="none">
+    </twisty-player>
+  </ng-container>
+}
+@if (showName) {
+  <span
+    [matTooltip]="sampleTooltip"
+    class="case"
+    >
+    {{caseName}}
+    <ng-container ngIf*="!caseName">&nbsp;</ng-container>
+  </span>
+}
+@if (showScramble) {
+  <span
+    class="scramble"
+    >
+    {{scramble}}
+  </span>
+}

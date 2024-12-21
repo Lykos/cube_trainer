@@ -1,5 +1,5 @@
 <div>
-  <ng-container *ngIf="trainingSession$ | async as trainingSession">
+  @if (trainingSession$ | async; as trainingSession) {
     <table id="alg-set-table" mat-table class="mat-elevation-z2" [dataSource]="trainingSession.trainingCases" [trackBy]="trainingCaseKey">
       <ng-container matColumnDef="case">
         <th mat-header-cell *matHeaderCellDef> Case </th>
@@ -16,13 +16,17 @@
       <ng-container matColumnDef="button">
         <th mat-header-cell *matHeaderCellDef> Alg Source </th>
         <td mat-cell *matCellDef="let trainingCase">
-	  <button *ngIf="trainingCase.alg" mat-raised-button (click)="onOverride(trainingSession, trainingCase)">
-	    Override Alg
-	  </button>
-	  <button *ngIf="!trainingCase.alg" mat-raised-button (click)="onSet(trainingSession, trainingCase)">
-	    Set Alg
-	  </button>
-	</td>
+          @if (trainingCase.alg) {
+            <button mat-raised-button (click)="onOverride(trainingSession, trainingCase)">
+              Override Alg
+            </button>
+          }
+          @if (!trainingCase.alg) {
+            <button mat-raised-button (click)="onSet(trainingSession, trainingCase)">
+              Set Alg
+            </button>
+          }
+        </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
       <tr mat-row *matRowDef="let trainingCase; columns: columnsToDisplay"></tr>
@@ -30,9 +34,13 @@
     <button mat-raised-button id="download-alg-set-csv" color="primary" (click)="onDownloadAlgSetCsv()">
       Download as CSV
     </button>
-  </ng-container>
-  <div id="alg-set-initial-load-error" *ngIf="error$ | async as error">
-    <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
-  </div>
-  <mat-spinner id="alg-set-initial-load-loading" *ngIf="loading$ | async"></mat-spinner>
+  }
+  @if (error$ | async; as error) {
+    <div id="alg-set-initial-load-error">
+      <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
+    </div>
+  }
+  @if (loading$ | async) {
+    <mat-spinner id="alg-set-initial-load-loading"></mat-spinner>
+  }
 </div>

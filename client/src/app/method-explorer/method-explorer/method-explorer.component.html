@@ -2,17 +2,18 @@
   <h1>Method Explorer</h1>
   <cube-trainer-method-description-form (submitMethodDescription)="calculate($event)">
   </cube-trainer-method-description-form>
-  <ng-container *ngIf="expectedAlgsData$">
-    <ng-container *ngIf="expectedAlgsData$ | orerror | async as expectedAlgsDataOrError; else loading">
-      <ng-container *ngIf="expectedAlgsDataOrError | value as expectedAlgsData">
+  @if (expectedAlgsData$) {
+    @if (expectedAlgsData$ | orerror | async; as expectedAlgsDataOrError) {
+      @if (expectedAlgsDataOrError | value; as expectedAlgsData) {
         <cube-trainer-alg-counts-table [expectedAlgsData]="expectedAlgsData"></cube-trainer-alg-counts-table>
-      </ng-container>
-      <div class="error" *ngIf="expectedAlgsDataOrError | error as error">
-        Error computing expected total algs: {{ error }}
-      </div>
-    </ng-container>
-    <ng-template #loading>
+      }
+      @if (expectedAlgsDataOrError | error; as error) {
+        <div class="error">
+          Error computing expected total algs: {{ error }}
+        </div>
+      }
+    } @else {
       <mat-spinner></mat-spinner>
-    </ng-template>
-  </ng-container>
+    }
+  }
 </div>
