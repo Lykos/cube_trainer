@@ -92,10 +92,10 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "cube-trainer:build:production"
+              "buildTarget": "cube-trainer:build:production"
             },
             "development": {
-              "browserTarget": "cube-trainer:build:development"
+              "buildTarget": "cube-trainer:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -103,7 +103,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cube-trainer:build"
+            "buildTarget": "cube-trainer:build"
           }
         },
         "test": {
