@@ -1,5 +1,4 @@
 import { FileSaverService } from 'ngx-filesaver';
-import { BackendActionLoadErrorComponent } from '@shared/backend-action-load-error/backend-action-load-error.component';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
@@ -12,9 +11,7 @@ import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { GeneratorType } from '../generator-type.model';
 import { of } from 'rxjs';
 import { none, some } from '@utils/optional';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTableModule } from '@angular/material/table';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { SharedModule } from '@shared/shared.module';
 
 class ArgumentSaver {
   argument: any;
@@ -137,12 +134,9 @@ describe('AlgSetComponent', () => {
   beforeEach(async () => {
     fileSaverService = jasmine.createSpyObj('FileSaverService', ['save']);
     await TestBed.configureTestingModule({
-    imports: [
-        MatProgressSpinnerModule,
-        MatTableModule,
-        MatTooltipModule,
+      imports: [
+	SharedModule,
         AlgSetComponent,
-        BackendActionLoadErrorComponent,
     ],
     providers: [
         { provide: ActivatedRoute, useValue: { params: of({ trainingSessionId: 1 }) } },
