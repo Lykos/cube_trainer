@@ -6,7 +6,7 @@ import { FormGroup, AbstractControl, FormsModule, ReactiveFormsModule } from '@a
 import { UserFormCreator } from '../user-form-creator.service';
 import { NewUser } from '../new-user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -16,7 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 @Component({
   selector: 'cube-trainer-signup',
   templateUrl: './signup.component.html',
-  imports: [FormsModule, ReactiveFormsModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule],
+  imports: [FormsModule, ReactiveFormsModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule, RouterModule],
 })
 export class SignupComponent implements OnInit {
   signupForm!: FormGroup;
