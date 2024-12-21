@@ -8,8 +8,6 @@ import { ExecutionOrder, PieceMethodDescription, MethodDescription, BufferDescri
 import { CORNER, EDGE, PieceDescription } from '@utils/cube-stats/piece-description';
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -109,8 +107,6 @@ class HierarchicalAlgSetLevelImpl implements HierarchicalAlgSetLevel {
     CommonModule,
     SharedModule,
     MatProgressSpinnerModule,
-    BrowserModule,
-    BrowserAnimationsModule,
     MatTableModule,
     FormsModule,
     ReactiveFormsModule,

@@ -1,7 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { HierarchicalAlgSetLevel } from '../hierarchical-alg-set-level.model';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -33,8 +31,6 @@ const HIERARCHICAL_EXPAND_OPTIONS: readonly TagWithName[] = [
     CommonModule,
     SharedModule,
     MatProgressSpinnerModule,
-    BrowserModule,
-    BrowserAnimationsModule,
     MatTableModule,
     FormsModule,
     ReactiveFormsModule,

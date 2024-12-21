@@ -3,8 +3,6 @@ import { MethodDescription } from '@utils/cube-stats/method-description';
 import { MethodExplorerService } from '../method-explorer.service';
 import { AlgCountsData } from '../alg-counts-data.model';
 import { Observable } from 'rxjs';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { AlgCountsTableComponent } from '../alg-counts-table/alg-counts-table.component';
@@ -28,8 +26,6 @@ import { MatCardModule } from '@angular/material/card';
     CommonModule,
     SharedModule,
     MatProgressSpinnerModule,
-    BrowserModule,
-    BrowserAnimationsModule,
     MatTableModule,
     FormsModule,
     ReactiveFormsModule,

@@ -1,7 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { AlgCountsData, AlgCountsRow } from '../alg-counts-data.model';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -75,8 +73,6 @@ class RenderableAlgCountsRow {
     CommonModule,
     SharedModule,
     MatProgressSpinnerModule,
-    BrowserModule,
-    BrowserAnimationsModule,
     MatTableModule,
     FormsModule,
     ReactiveFormsModule,
