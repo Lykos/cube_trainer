@@ -1,6 +1,8 @@
-<ng-container *ngIf="existingColorScheme$ | async as existingColorScheme">
+@if (existingColorScheme$ | async; as existingColorScheme) {
   <cube-trainer-edit-color-scheme-form [existingColorScheme]="existingColorScheme">
   </cube-trainer-edit-color-scheme-form>
-</ng-container>
-<mat-spinner *ngIf="initialLoadLoading$ | async">
-</mat-spinner>
+}
+@if (initialLoadLoading$ | async) {
+  <mat-spinner>
+  </mat-spinner>
+}

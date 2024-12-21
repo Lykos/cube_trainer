@@ -28,7 +28,7 @@ import { MessagesComponent } from './messages/messages.component';
 import { NgModule } from '@angular/core';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { SharedModule } from '@shared/shared.module';
+
 import { SignupComponent } from './signup/signup.component';
 import { TermsAndConditionsComponent } from './terms-and-conditions/terms-and-conditions.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
@@ -41,7 +41,12 @@ import { LoggedInWelcomeComponent } from './logged-in-welcome/logged-in-welcome.
 import { LoggedOutWelcomeComponent } from './logged-out-welcome/logged-out-welcome.component';
 
 @NgModule({
-  declarations: [
+    imports: [
+    FileSaverModule,
+    MatBadgeModule,
+    MatTabsModule,
+    MatToolbarModule,
+    HttpClientModule,
     ToolbarComponent,
     SignupComponent,
     LoginComponent,
@@ -75,36 +80,28 @@ import { LoggedOutWelcomeComponent } from './logged-out-welcome/logged-out-welco
     WelcomeComponent,
     LoggedInWelcomeComponent,
     LoggedOutWelcomeComponent,
-  ],
-  imports: [
-    FileSaverModule,
-    MatBadgeModule,
-    MatTabsModule,
-    MatToolbarModule,
-    SharedModule,
-    HttpClientModule,
-  ],
-  providers: [
-    CookieService,
-  ],
-  exports: [
-    AchievementComponent,
-    EditUserComponent,
-    SignupComponent,
-    LoginComponent,
-    LoggedOutComponent,
-    AccountDeletedComponent,
-    AchievementsComponent,
-    AchievementGrantsComponent,
-    UserComponent,
-    MessagesComponent,
-    MessageComponent,
-    ConfirmEmailComponent,
-    ResetPasswordComponent,
-    UpdatePasswordComponent,
-    ChangePasswordComponent,
-    ToolbarComponent,
-    FooterComponent,
-  ],
+],
+    providers: [
+        CookieService,
+    ],
+    exports: [
+        AchievementComponent,
+        EditUserComponent,
+        SignupComponent,
+        LoginComponent,
+        LoggedOutComponent,
+        AccountDeletedComponent,
+        AchievementsComponent,
+        AchievementGrantsComponent,
+        UserComponent,
+        MessagesComponent,
+        MessageComponent,
+        ConfirmEmailComponent,
+        ResetPasswordComponent,
+        UpdatePasswordComponent,
+        ChangePasswordComponent,
+        ToolbarComponent,
+        FooterComponent,
+    ],
 })
 export class CoreModule {}

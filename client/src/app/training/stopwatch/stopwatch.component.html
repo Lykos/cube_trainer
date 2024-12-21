@@ -4,17 +4,27 @@
     <button mat-raised-button id="stopwatch-start" color="primary" (click)="onStart()" [matTooltip]="startTooltip" [disabled]="running || !startReady">
       Start
     </button>
-    <button mat-raised-button id="stopwatch-stop-and-start" *ngIf="hasStopAndStart" color="primary" (click)="onStopAndStart()" [matTooltip]="stopAndStartTooltip" [disabled]="!running">
-      Stop and Start
-    </button>
-    <button mat-raised-button id="stopwatch-stop-and-pause" *ngIf="hasStopAndPause" color="primary" (click)="onStopAndPause()" [disabled]="!running">
-      <ng-container *ngIf="hasStopAndStart" [matTooltip]="stopAndPauseTooltip">
-        Stop and Pause
-      </ng-container>
-      <ng-container *ngIf="!hasStopAndStart" [matTooltip]="stopTooltip">
-        Stop
-      </ng-container>
-    </button>
-    <mat-spinner id="stopwatch-loading" *ngIf="!startReady && !running"></mat-spinner>
+    @if (hasStopAndStart) {
+      <button mat-raised-button id="stopwatch-stop-and-start" color="primary" (click)="onStopAndStart()" [matTooltip]="stopAndStartTooltip" [disabled]="!running">
+        Stop and Start
+      </button>
+    }
+    @if (hasStopAndPause) {
+      <button mat-raised-button id="stopwatch-stop-and-pause" color="primary" (click)="onStopAndPause()" [disabled]="!running">
+        @if (hasStopAndStart) {
+          <ng-container [matTooltip]="stopAndPauseTooltip">
+            Stop and Pause
+          </ng-container>
+        }
+        @if (!hasStopAndStart) {
+          <ng-container [matTooltip]="stopTooltip">
+            Stop
+          </ng-container>
+        }
+      </button>
+    }
+    @if (!startReady && !running) {
+      <mat-spinner id="stopwatch-loading"></mat-spinner>
+    }
   </div>
 </div>

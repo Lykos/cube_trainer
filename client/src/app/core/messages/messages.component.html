@@ -1,25 +1,27 @@
 <div>
   <h2>Messages</h2>
   <div>
-    <ng-container *ngIf="messages$ | orerror | async as messagesOrError; else loading">
-      <ng-container *ngIf="messagesOrError | value as messages; else error">
+    @if (messages$ | orerror | async; as messagesOrError) {
+      @if (messagesOrError | value; as messages) {
         <table mat-table class="mat-elevation-z2" [dataSource]="messages">
-          <ng-container matColumnDef="select" *ngIf="allSelected$ | async as allSelected">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-checkbox (change)="$event ? masterToggle(messages, allSelected.value) : null"
-                            [checked]="selection.hasValue() && allSelected.value"
-                            [indeterminate]="selection.hasValue() && !allSelected.value"
-                            [aria-label]="checkboxLabel(allSelected.value)">
-              </mat-checkbox>
-            </th>
-            <td mat-cell *matCellDef="let message">
-              <mat-checkbox (click)="$event.stopPropagation()"
-                            (change)="$event ? selection.toggle(message) : null"
-                            [checked]="selection.isSelected(message)"
-                            [aria-label]="checkboxLabel(allSelected.value, message)">
-              </mat-checkbox>
-            </td>
-          </ng-container>
+          @if (allSelected$ | async; as allSelected) {
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? masterToggle(messages, allSelected.value) : null"
+                  [checked]="selection.hasValue() && allSelected.value"
+                  [indeterminate]="selection.hasValue() && !allSelected.value"
+                  [aria-label]="checkboxLabel(allSelected.value)">
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let message">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                  (change)="$event ? selection.toggle(message) : null"
+                  [checked]="selection.isSelected(message)"
+                  [aria-label]="checkboxLabel(allSelected.value, message)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+          }
           <mat-text-column name="title"></mat-text-column>
           <ng-container matColumnDef="timestamp">
             <th mat-header-cell *matHeaderCellDef> Timestamp </th>
@@ -34,19 +36,24 @@
             [class.unread-message]="!message.read">
           </tr>
         </table>
-      </ng-container>
+      } @else {
+        <cube-trainer-backend-action-load-error [error]="messagesOrError | error | backendActionError:context"></cube-trainer-backend-action-load-error>
+      }
       <ng-template #error>
         <cube-trainer-backend-action-load-error [error]="messagesOrError | error | backendActionError:context"></cube-trainer-backend-action-load-error>
       </ng-template>
-    </ng-container>
-    <ng-template #loading>
+    } @else {
       <mat-spinner></mat-spinner>
-    </ng-template>
-    <button #deleteButton mat-fab (click)="onDeleteSelected()" *ngIf="selection.hasValue()">
-      <span class="material-icons">delete</span>
-    </button>
-    <button #deleteButton mat-fab (click)="onMarkAsReadSelected()" *ngIf="selection.hasValue()">
-      <span class="material-icons">check_circle</span>
-    </button>
+    }
+    @if (selection.hasValue()) {
+      <button #deleteButton mat-fab (click)="onDeleteSelected()">
+        <span class="material-icons">delete</span>
+      </button>
+    }
+    @if (selection.hasValue()) {
+      <button #deleteButton mat-fab (click)="onMarkAsReadSelected()">
+        <span class="material-icons">check_circle</span>
+      </button>
+    }
   </div>
 </div>

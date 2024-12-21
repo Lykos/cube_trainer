@@ -71,29 +71,27 @@ describe('TrainingSessionComponent', () => {
     matDialog = jasmine.createSpyObj('MatDialog', ['open']);
 
     await TestBed.configureTestingModule({
-      declarations: [
+    imports: [
+        MatProgressSpinnerModule,
+        MatTooltipModule,
         TrainingSessionComponent,
         TrainerComponent,
         TrainerInputComponent,
         TrainerStopwatchComponent,
-	StatsTableComponent,
+        StatsTableComponent,
         StopwatchComponent,
         HintComponent,
         ResultsTableComponent,
         DurationPipe,
         BackendActionLoadErrorComponent,
-      ],
-      imports: [
-        MatProgressSpinnerModule,
-        MatTooltipModule,
-      ],
-      providers: [
+    ],
+    providers: [
         { provide: ActivatedRoute, useValue: { params: of({ trainingSessionId: 1 }) } },
         { provide: TrainerService, useValue: trainerService },
         { provide: MatDialog, useValue: matDialog },
         provideMockStore({}),
-      ],
-    }).compileComponents();
+    ],
+}).compileComponents();
 
     store = TestBed.inject(MockStore);
   });

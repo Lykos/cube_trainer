@@ -1,19 +1,23 @@
 <div>
-  <ng-container *ngIf="trainingSession">
+  @if (trainingSession) {
     <div class="training-session">
       <cube-trainer-trainer></cube-trainer-trainer>
       <div class="tables-container">
-	<div id="results-table" class="results-table-container">
+        <div id="results-table" class="results-table-container">
           <cube-trainer-results-table [trainingSessionId]="trainingSession.id"></cube-trainer-results-table>
-	</div>
-	<div class="stats-table-container">
+        </div>
+        <div class="stats-table-container">
           <cube-trainer-stats-table></cube-trainer-stats-table>
-	</div>
+        </div>
       </div>
     </div>
-  </ng-container>
-  <div id="initial-load-error" *ngIf="error$ | async as error">
-    <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
-  </div>
-  <mat-spinner id="initial-load-loading" *ngIf="loading$ | async"></mat-spinner>
+  }
+  @if (error$ | async; as error) {
+    <div id="initial-load-error">
+      <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
+    </div>
+  }
+  @if (loading$ | async) {
+    <mat-spinner id="initial-load-loading"></mat-spinner>
+  }
 </div>

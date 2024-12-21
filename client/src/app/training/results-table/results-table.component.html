@@ -1,36 +1,38 @@
 <div>
   <h2>Results</h2>
   <div>
-    <div class="spinner-container" *ngIf="loading$ | async">
-      <mat-spinner></mat-spinner>
-    </div>
-    <ng-container *ngIf="(loading$ | async) === false">
+    @if (loading$ | async) {
+      <div class="spinner-container">
+        <mat-spinner></mat-spinner>
+      </div>
+    }
+    @if ((loading$ | async) === false) {
       <table mat-table class="mat-elevation-z2" [dataSource]="resultsOnPage$" [trackBy]="resultId">
-    	<ng-container *ngIf="resultsOnPage$ | async as resultsOnPage">
+        @if (resultsOnPage$ | async; as resultsOnPage) {
           <ng-container matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef>
               <mat-checkbox (change)="$event ? masterToggle(resultsOnPage) : null"
-                            [checked]="selection.hasValue() && allSelected(resultsOnPage)"
-                            [indeterminate]="selection.hasValue() && !allSelected(resultsOnPage)"
-                            [aria-label]="masterCheckboxLabel(resultsOnPage)">
+                [checked]="selection.hasValue() && allSelected(resultsOnPage)"
+                [indeterminate]="selection.hasValue() && !allSelected(resultsOnPage)"
+                [aria-label]="masterCheckboxLabel(resultsOnPage)">
               </mat-checkbox>
             </th>
             <td mat-cell *matCellDef="let result">
               <mat-checkbox (click)="$event.stopPropagation()"
-                            (change)="$event ? selection.toggle(result) : null"
-                            [checked]="selection.isSelected(result)"
-                            [aria-label]="checkboxLabel(result)">
-	      </mat-checkbox>
+                (change)="$event ? selection.toggle(result) : null"
+                [checked]="selection.isSelected(result)"
+                [aria-label]="checkboxLabel(result)">
+              </mat-checkbox>
             </td>
           </ng-container>
-        </ng-container>
+        }
         <ng-container matColumnDef="timestamp">
           <th mat-header-cell *matHeaderCellDef>
-	    Timestamp
-	  </th>
+            Timestamp
+          </th>
           <td mat-cell *matCellDef="let result" [matTooltip]="timestamp(result) | instant">
-	    {{ timestamp(result) | fluidInstant:now() }}
-	  </td>
+            {{ timestamp(result) | fluidInstant:now() }}
+          </td>
         </ng-container>
         <ng-container matColumnDef="case">
           <th mat-header-cell *matHeaderCellDef> Case </th>
@@ -39,28 +41,36 @@
         <ng-container matColumnDef="time">
           <th mat-header-cell *matHeaderCellDef> Time </th>
           <td mat-cell *matCellDef="let result">
-    	  <ng-container *ngIf="result.success"> {{ duration(result) | duration }} </ng-container>
-    	  <ng-container *ngIf="!result.success"> DNF </ng-container>
-    	</td>
+            @if (result.success) {
+              {{ duration(result) | duration }}
+            }
+            @if (!result.success) {
+              DNF
+            }
+          </td>
         </ng-container>
         <ng-container matColumnDef="numHints">
           <th mat-header-cell *matHeaderCellDef>
-	    Num Hints
-	  </th>
+            Num Hints
+          </th>
           <td mat-cell *matCellDef="let result">
-	    {{result.numHints}}
-	  </td>
+            {{result.numHints}}
+          </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
         <tr mat-row *matRowDef="let result; columns: columnsToDisplay"></tr>
       </table>
       <mat-paginator [length]="numResults$ | async" [pageSize]="pageSize$ | async"  [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)"></mat-paginator>
-    </ng-container>
-    <button mat-fab (click)="onDeleteSelected()" *ngIf="selection.hasValue()">
-      <span class="material-icons">delete</span>
-    </button>
-    <button mat-fab (click)="onMarkSelectedDnf()" *ngIf="selection.hasValue()">
-      <span class="material-icons">unpublished</span>
-    </button>
+    }
+    @if (selection.hasValue()) {
+      <button mat-fab (click)="onDeleteSelected()">
+        <span class="material-icons">delete</span>
+      </button>
+    }
+    @if (selection.hasValue()) {
+      <button mat-fab (click)="onMarkSelectedDnf()">
+        <span class="material-icons">unpublished</span>
+      </button>
+    }
   </div>
 </div>

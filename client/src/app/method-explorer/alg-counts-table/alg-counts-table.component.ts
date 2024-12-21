@@ -1,5 +1,16 @@
 import { Component, Input } from '@angular/core';
 import { AlgCountsData, AlgCountsRow } from '../alg-counts-data.model';
+import { MatTableModule } from '@angular/material/table';
+import { CommonModule } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
 
 const DATA_COLUMNS = ['name', 'threeCycles', 'fiveCycles', 'doubleSwaps', 'parities', 'parityTwists', 'totalTwists', 'total'];
 
@@ -56,7 +67,21 @@ class RenderableAlgCountsRow {
 @Component({
   selector: 'cube-trainer-alg-counts-table',
   templateUrl: './alg-counts-table.component.html',
-  styleUrls: ['./alg-counts-table.component.css']
+  styleUrls: ['./alg-counts-table.component.css'],
+  imports: [
+    CommonModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatCheckboxModule,
+    MatSnackBarModule,
+    MatInputModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatCardModule,
+  ],
 })
 export class AlgCountsTableComponent {
   @Input() expectedAlgsData: AlgCountsData | undefined = undefined;

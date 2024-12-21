@@ -3,7 +3,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Result } from '../result.model';
 import { Component, Input, LOCALE_ID, Inject, OnInit, OnDestroy } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
-import { formatDate } from '@angular/common';
+import { formatDate, AsyncPipe } from '@angular/common';
 import { fromDateString, Instant, now } from '@utils/instant';
 import { seconds, Duration } from '@utils/duration';
 import { Observable, Subscription } from 'rxjs';
@@ -12,6 +12,15 @@ import { selectResults, selectResultsTotal, selectResultsOnPage, selectInitialLo
 import { destroy, markDnf, setPage } from '@store/trainer.actions';
 import { Store } from '@ngrx/store';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DurationPipe } from '../../shared/duration.pipe';
+import { InstantPipe } from '../../shared/instant.pipe';
+import { FluidInstantPipe } from '../../shared/fluid-instant.pipe';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 
 const IMPORTANT_COLUMNS = ['select', 'case', 'time'];
 const ALL_COLUMNS = IMPORTANT_COLUMNS.concat(['numHints', 'timestamp']);
@@ -19,7 +28,19 @@ const ALL_COLUMNS = IMPORTANT_COLUMNS.concat(['numHints', 'timestamp']);
 @Component({
   selector: 'cube-trainer-results-table',
   templateUrl: './results-table.component.html',
-  styleUrls: ['./results-table.component.css']
+  styleUrls: ['./results-table.component.css'],
+  imports: [
+    AsyncPipe,
+    DurationPipe,
+    InstantPipe,
+    FluidInstantPipe,
+    MatPaginatorModule,
+    MatTableModule,
+    MatTooltipModule,
+    MatCheckboxModule,
+    MatProgressSpinnerModule,
+    MatButtonModule,
+  ],
 })
 export class ResultsTableComponent implements OnInit, OnDestroy {
   @Input()

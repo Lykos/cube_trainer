@@ -1,27 +1,29 @@
-<div *ngIf="nextCase$ | async as nextCase">
-  <ng-container *ngIf="nextCase.tag !== 'sample'">
-    <div id="trainer-input">
-      <cube-trainer-trainer-input
-	[scrambleOrSample]="nextCase"
-	[trainingSession]="trainingSession">
-      </cube-trainer-trainer-input>
+@if (nextCase$ | async; as nextCase) {
+  <div>
+    @if (nextCase.tag !== 'sample') {
+      <div id="trainer-input">
+        <cube-trainer-trainer-input
+          [scrambleOrSample]="nextCase"
+          [trainingSession]="trainingSession">
+        </cube-trainer-trainer-input>
+      </div>
+    }
+    @if (nextCase.tag === 'sample') {
+      <div id="trainer-input">
+        <cube-trainer-trainer-input
+          [scrambleOrSample]="currentCase$ | async"
+          [trainingSession]="trainingSession"
+          [colorScheme]="colorScheme$ | async">
+        </cube-trainer-trainer-input>
+      </div>
+      <cube-trainer-hint
+        [trainingCase]="currentTrainingCase$ | async"
+        [trainingSession]="trainingSession">
+      </cube-trainer-hint>
+    }
+    <div id="trainer-stopwatch">
+      <cube-trainer-trainer-stopwatch [trainingSession]="trainingSession">
+      </cube-trainer-trainer-stopwatch>
     </div>
-  </ng-container>
-  <ng-container *ngIf="nextCase.tag === 'sample'">
-    <div id="trainer-input">
-      <cube-trainer-trainer-input
-	[scrambleOrSample]="currentCase$ | async"
-	[trainingSession]="trainingSession"
-	[colorScheme]="colorScheme$ | async">
-      </cube-trainer-trainer-input>
-    </div>
-    <cube-trainer-hint
-      [trainingCase]="currentTrainingCase$ | async"
-      [trainingSession]="trainingSession">
-    </cube-trainer-hint>
-  </ng-container>
-  <div id="trainer-stopwatch">
-    <cube-trainer-trainer-stopwatch [trainingSession]="trainingSession">
-    </cube-trainer-trainer-stopwatch>
   </div>
-</div>
+}

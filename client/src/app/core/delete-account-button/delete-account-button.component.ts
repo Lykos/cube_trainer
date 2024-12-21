@@ -6,10 +6,12 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { User } from '../user.model';
 import { Optional, ifPresent, none, some } from '@utils/optional';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cube-trainer-delete-account-button',
   templateUrl: './delete-account-button.component.html',
+  imports: [MatButtonModule],
 })
 export class DeleteAccountButtonComponent implements OnInit {
   user: Optional<User> = none;

@@ -10,12 +10,11 @@ describe('NavigationBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NavigationBarComponent ],
-      imports: [ RouterModule ],
-      providers: [
+    imports: [RouterModule, NavigationBarComponent],
+    providers: [
         { provide: ActivatedRoute, useValue: { params: of({}) } },
-      ]
-    })
+    ]
+})
     .compileComponents();
   });
 

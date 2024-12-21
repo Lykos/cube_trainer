@@ -1,4 +1,4 @@
-<ng-container *ngIf="trainingSession">
+@if (trainingSession) {
   <cube-trainer-stopwatch
     [duration]="duration$ | async"
     [startReady]="nextCaseReady"
@@ -10,4 +10,4 @@
     (stopAndPause)="useOverlayTimer ? undefined : onStopAndPause(trainingSession)"
     (stopAndStart)="useOverlayTimer ? undefined : onStopAndStart(trainingSession)">
   </cube-trainer-stopwatch>
-</ng-container>
+}

@@ -5,29 +5,35 @@
       <mat-form-field appearance="fill">
         <mat-label>Email</mat-label>
         <input matInput type="text" formControlName="email">
-        <mat-error *ngIf="relevantInvalid(email) && email.errors && email.errors['required']">
-          You must provide a <strong>username</strong> or <strong>email</strong>.
-        </mat-error>
+        @if (relevantInvalid(email) && email.errors && email.errors['required']) {
+          <mat-error>
+            You must provide a <strong>username</strong> or <strong>email</strong>.
+          </mat-error>
+        }
       </mat-form-field>
       <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Password</mat-label>
-        <input matInput type="password" formControlName="password">
-        <mat-error *ngIf="relevantInvalid(password) && password.errors && password.errors['required']">
-          You must provide a <strong>password</strong>.
-        </mat-error>
-      </mat-form-field>
-      <br>
-      <a routerLink="/reset-password">Password Forgotten</a>
-      <br>
-      <mat-error *ngIf="loginFailed">
-        User name or password incorrect.
-      </mat-error>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary" [disabled]="!loginForm.valid">
-        Submit
-      </button>
-    </mat-card-actions>
-  </form>
-</div>
+        <mat-form-field appearance="fill">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password">
+          @if (relevantInvalid(password) && password.errors && password.errors['required']) {
+            <mat-error>
+              You must provide a <strong>password</strong>.
+            </mat-error>
+          }
+        </mat-form-field>
+        <br>
+          <a routerLink="/reset-password">Password Forgotten</a>
+          <br>
+            @if (loginFailed) {
+              <mat-error>
+                User name or password incorrect.
+              </mat-error>
+            }
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary" [disabled]="!loginForm.valid">
+              Submit
+            </button>
+          </mat-card-actions>
+        </form>
+      </div>

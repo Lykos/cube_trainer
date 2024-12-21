@@ -8,8 +8,8 @@ describe('GithubErrorNoteComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [GithubErrorNoteComponent]
-    });
+    imports: [GithubErrorNoteComponent]
+});
     fixture = TestBed.createComponent(GithubErrorNoteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

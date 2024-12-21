@@ -1,7 +1,7 @@
 <div>
   <h1>Sessions</h1>
   <div>
-    <ng-container *ngIf="trainingSessions$ | async as trainingSessions">
+    @if (trainingSessions$ | async; as trainingSessions) {
       <table mat-table class="mat-elevation-z2" [dataSource]="trainingSessions">
         <mat-text-column name="name"></mat-text-column>
         <ng-container matColumnDef="numResults">
@@ -27,13 +27,13 @@
         <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
         <tr mat-row *matRowDef="let trainingSession; columns: columnsToDisplay"></tr>
       </table>
-    </ng-container>
-    <ng-container *ngIf="error$ | async as error">
+    }
+    @if (error$ | async; as error) {
       <cube-trainer-backend-action-load-error [error]="error"></cube-trainer-backend-action-load-error>
-    </ng-container>
-    <ng-template *ngIf="loading$ | async">
+    }
+    @if (loading$ | async) {
       <mat-spinner></mat-spinner>
-    </ng-template>
+    }
   </div>
   <div>
     <button mat-raised-button color="primary" routerLink="/training-sessions/new">

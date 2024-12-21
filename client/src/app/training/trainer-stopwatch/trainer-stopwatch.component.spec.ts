@@ -4,14 +4,12 @@ import { seconds } from '@utils/duration';
 import { TestBed } from '@angular/core/testing';
 import { TrainerStopwatchComponent } from '@training/trainer-stopwatch/trainer-stopwatch.component';
 import { StopwatchComponent } from '@training/stopwatch/stopwatch.component';
-import { DurationPipe } from '@shared/duration.pipe';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { selectStopwatchState, selectStopwatchRunning, selectNextCaseReady } from '@store/trainer.selectors';
 import { notStartedStopwatchState, runningStopwatchState, stoppedStopwatchState } from '@store/trainer.state';
 import { ScrambleTrainingSession } from '../training-session.model';
 import { ShowInputMode } from '../show-input-mode.model';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { GeneratorType } from '../generator-type.model';import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { GeneratorType } from '../generator-type.model';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
@@ -49,20 +47,15 @@ describe('TrainerStopwatchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+    imports: [
         TrainerStopwatchComponent,
         StopwatchComponent,
-        DurationPipe,
-      ],
-      imports: [
-        MatProgressSpinnerModule,
-	MatTooltipModule,
-      ],
-      providers: [
+    ],
+    providers: [
         provideMockStore({}),
-	{ provide: BreakpointObserver, useClass: FakeBreakpointObserver },
-      ],
-    }).compileComponents();
+        { provide: BreakpointObserver, useClass: FakeBreakpointObserver },
+    ],
+}).compileComponents();
 
     store = TestBed.inject(MockStore);
     breakpointObserver = TestBed.get(BreakpointObserver);

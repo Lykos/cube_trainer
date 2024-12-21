@@ -1,11 +1,11 @@
 <div>
-  <ng-container *ngIf="success">
+  @if (success) {
     <h1>Email Confirmed</h1>
     <a mat-raised-button color="primary" routerLink="/login">
       Login
     </a>
-  </ng-container>
-  <ng-container *ngIf="failed">
+  }
+  @if (failed) {
     <h1>Email Confirmation Failed</h1>
-  </ng-container>
+  }
 </div>
