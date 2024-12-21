@@ -15,18 +15,18 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true
-
     - name: Update packages
       run: sudo apt update
 
     - name: Install OS Package Dependencies
       uses: mstksg/get-package@v1
       with:
-        apt-get: libpq-dev
+        apt-get: libpq-dev libmagic-dev
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
 
     - name: Install Bundler
       run: gem install bundler

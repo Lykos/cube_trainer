@@ -1,8 +1,8 @@
 <div>
   <h2>Your Achievements</h2>
   <div>
-    <ng-container *ngIf="achievementGrants$ | orerror | async as achievementGrantsOrError; else loading">
-      <ng-container *ngIf="achievementGrantsOrError | value as achievementGrants; else error">
+    @if (achievementGrants$ | orerror | async; as achievementGrantsOrError) {
+      @if (achievementGrantsOrError | value; as achievementGrants) {
         <table mat-table class="mat-elevation-z2" [dataSource]="achievementGrants">
           <ng-container matColumnDef="timestamp">
             <th mat-header-cell *matHeaderCellDef> Timestamp </th>
@@ -17,11 +17,12 @@
           <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
           <tr mat-row *matRowDef="let achievementGrant; columns: columnsToDisplay" [routerLink]="['/achievements', achievementGrant.achievement.id]"></tr>
         </table>
-      </ng-container>
-      <ng-template #error>
+      } @else {
         Error loading achievement grants.
-      </ng-template>
-    </ng-container>
+      }
+    } @else {
+      <mat-spinner></mat-spinner>
+    }
     <ng-template #loading>
       <mat-spinner></mat-spinner>
     </ng-template>

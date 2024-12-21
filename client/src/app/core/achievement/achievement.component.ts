@@ -4,10 +4,17 @@ import { Achievement } from '../achievement.model';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AsyncPipe } from '@angular/common';
+import { OrErrorPipe } from '../../shared/or-error.pipe';
+import { ValuePipe } from '../../shared/value.pipe';
+import { MatButtonModule } from '@angular/material/button';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'cube-trainer-achievement',
-  templateUrl: './achievement.component.html'
+  templateUrl: './achievement.component.html',
+  imports: [AsyncPipe, OrErrorPipe, ValuePipe, MatProgressSpinnerModule, MatButtonModule, RouterModule],
 })
 export class AchievementComponent {
   achievement$: Observable<Achievement>;

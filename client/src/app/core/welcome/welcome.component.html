@@ -1,7 +1,11 @@
 <div>
   <h1>Welcome</h1>
-  <ng-container *ngIf="(loggedIn$ | async) as loggedIn">
-    <cube-trainer-logged-in-welcome *ngIf="loggedIn.value"></cube-trainer-logged-in-welcome>
-    <cube-trainer-logged-out-welcome *ngIf="!loggedIn.value"></cube-trainer-logged-out-welcome>
-  </ng-container>
+  @if ((loggedIn$ | async); as loggedIn) {
+    @if (loggedIn.value) {
+      <cube-trainer-logged-in-welcome></cube-trainer-logged-in-welcome>
+    }
+    @if (!loggedIn.value) {
+      <cube-trainer-logged-out-welcome></cube-trainer-logged-out-welcome>
+    }
+  }
 </div>

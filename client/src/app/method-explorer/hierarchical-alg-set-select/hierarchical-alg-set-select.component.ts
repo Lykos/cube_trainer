@@ -1,5 +1,16 @@
 import { Component, Input } from '@angular/core';
 import { HierarchicalAlgSetLevel } from '../hierarchical-alg-set-level.model';
+import { MatTableModule } from '@angular/material/table';
+import { CommonModule } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
 
 interface TagWithName {
   readonly tag: 'uniform' | 'partial';
@@ -14,7 +25,21 @@ const HIERARCHICAL_EXPAND_OPTIONS: readonly TagWithName[] = [
 @Component({
   selector: 'cube-trainer-hierarchical-alg-set-select',
   templateUrl: './hierarchical-alg-set-select.component.html',
-  styleUrls: ['./hierarchical-alg-set-select.component.css']
+  styleUrls: ['./hierarchical-alg-set-select.component.css'],
+  imports: [
+    CommonModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatCheckboxModule,
+    MatSnackBarModule,
+    MatInputModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatCardModule,
+  ],
 })
 export class HierarchicalAlgSetSelectComponent {
   @Input() level: HierarchicalAlgSetLevel | undefined = undefined;

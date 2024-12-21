@@ -2,16 +2,21 @@ import { BackendActionErrorDialogComponent } from '@shared/backend-action-error-
 import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../users.service';
-import { FormGroup, AbstractControl } from '@angular/forms';
+import { FormGroup, AbstractControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserFormCreator } from '../user-form-creator.service';
 import { NewUser } from '../new-user.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'cube-trainer-signup',
-  templateUrl: './signup.component.html'
+  templateUrl: './signup.component.html',
+  imports: [FormsModule, ReactiveFormsModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule, RouterModule],
 })
 export class SignupComponent implements OnInit {
   signupForm!: FormGroup;

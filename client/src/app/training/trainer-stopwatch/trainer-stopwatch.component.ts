@@ -12,10 +12,14 @@ import { filterPresent } from '@shared/operators';
 import { Store } from '@ngrx/store'
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
+import { StopwatchComponent } from '../stopwatch/stopwatch.component';
+import { AsyncPipe } from '@angular/common';
+
 @Component({
   selector: 'cube-trainer-trainer-stopwatch',
   templateUrl: './trainer-stopwatch.component.html',
-  styleUrls: ['./trainer-stopwatch.component.css']
+  styleUrls: ['./trainer-stopwatch.component.css'],
+  imports: [StopwatchComponent, AsyncPipe],
 })
 export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   @Input()

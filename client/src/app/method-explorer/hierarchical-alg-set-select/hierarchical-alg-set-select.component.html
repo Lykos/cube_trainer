@@ -1,18 +1,30 @@
-<mat-card *ngIf="isEnabled" [formGroup]="formGroup">
-  <mat-card-title> {{levelName}} {{pieceName}} </mat-card-title>
-  <mat-card-content>
-    <mat-select *ngIf="hasSublevels" formControlName="tag">
-      <mat-option *ngFor="let option of hierarchicalExpandOptions" [value]="option.tag"> {{option.name}} </mat-option>
-    </mat-select>
-    <div *ngIf="!isExpanded">
-      <mat-select formControlName="mode">
-        <mat-option *ngFor="let option of uniformOptions" [value]="option.mode"> {{option.name}} </mat-option>
-      </mat-select>
-    </div>
-    <div *ngIf="isExpanded">
-      <ng-container *ngFor="let sublevel of getOrCreateSublevels()">
-        <cube-trainer-hierarchical-alg-set-select [level]="sublevel"></cube-trainer-hierarchical-alg-set-select>
-      </ng-container>
-    </div>  
-  </mat-card-content>
-</mat-card>
+@if (isEnabled) {
+  <mat-card [formGroup]="formGroup">
+    <mat-card-title> {{levelName}} {{pieceName}} </mat-card-title>
+    <mat-card-content>
+      @if (hasSublevels) {
+        <mat-select formControlName="tag">
+          @for (option of hierarchicalExpandOptions; track option) {
+            <mat-option [value]="option.tag"> {{option.name}} </mat-option>
+          }
+        </mat-select>
+      }
+      @if (!isExpanded) {
+        <div>
+          <mat-select formControlName="mode">
+            @for (option of uniformOptions; track option) {
+              <mat-option [value]="option.mode"> {{option.name}} </mat-option>
+            }
+          </mat-select>
+        </div>
+      }
+      @if (isExpanded) {
+        <div>
+          @for (sublevel of getOrCreateSublevels(); track sublevel) {
+            <cube-trainer-hierarchical-alg-set-select [level]="sublevel"></cube-trainer-hierarchical-alg-set-select>
+          }
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+}

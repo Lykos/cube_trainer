@@ -7,11 +7,18 @@ import { Store } from '@ngrx/store';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
 import { initialLoadSelected } from '@store/trainer.actions';
+import { ResultsTableComponent } from '../results-table/results-table.component';
+import { StatsTableComponent } from '../stats-table/stats-table.component';
+import { TrainerComponent } from '../trainer/trainer.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AsyncPipe } from '@angular/common';
+import { BackendActionLoadErrorComponent } from '../../shared/backend-action-load-error/backend-action-load-error.component';
 
 @Component({
   selector: 'cube-trainer-training-session',
   templateUrl: './training-session.component.html',
-  styleUrls: ['./training-session.component.css']
+  styleUrls: ['./training-session.component.css'],
+  imports: [AsyncPipe, BackendActionLoadErrorComponent, ResultsTableComponent, StatsTableComponent, TrainerComponent, MatProgressSpinnerModule],
 })
 export class TrainingSessionComponent implements OnInit, OnDestroy {
   trainingSession?: TrainingSession;

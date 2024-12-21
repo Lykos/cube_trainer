@@ -5,11 +5,16 @@ import { StatPart } from '../stat-part.model';
 import { selectStats, selectInitialLoadLoading } from '@store/trainer.selectors';
 import { Store } from '@ngrx/store';
 import { filterPresent } from '@shared/operators';
+import { MatTableModule } from '@angular/material/table';
+import { StatPartValueComponent } from '../stat-part-value/stat-part-value.component';
+import { AsyncPipe } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'cube-trainer-stats-table',
   templateUrl: './stats-table.component.html',
-  styleUrls: ['./stats-table.component.css']
+  styleUrls: ['./stats-table.component.css'],
+  imports: [StatPartValueComponent, AsyncPipe, MatTableModule, MatProgressSpinnerModule],
 })
 export class StatsTableComponent {
   columnsToDisplay = ['name', 'value'];

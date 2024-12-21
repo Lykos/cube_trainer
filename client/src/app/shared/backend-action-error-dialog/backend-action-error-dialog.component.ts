@@ -1,11 +1,14 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BackendActionError, FieldError } from '../backend-action-error.model';
+import { GithubErrorNoteComponent } from '../github-error-note/github-error-note.component';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cube-trainer-backend-action-error-dialog',
   templateUrl: './backend-action-error-dialog.component.html',
-  styleUrls: ['./backend-action-error-dialog.component.css']
+  styleUrls: ['./backend-action-error-dialog.component.css'],
+  imports: [GithubErrorNoteComponent, MatButtonModule],
 })
 export class BackendActionErrorDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) readonly error: BackendActionError) {}

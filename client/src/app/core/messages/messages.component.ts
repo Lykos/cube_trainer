@@ -3,17 +3,40 @@ import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { Component, LOCALE_ID, Inject } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { MessagesService } from '../messages.service';
-import { formatDate } from '@angular/common';
+import { formatDate, AsyncPipe } from '@angular/common';
 import { Message } from '../message.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, zip } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { BackendActionErrorPipe } from '../../shared/backend-action-error.pipe';
+import { BackendActionLoadErrorComponent } from '../../shared/backend-action-load-error/backend-action-load-error.component';
+import { ErrorPipe } from '../../shared/error.pipe';
+import { InstantPipe } from '../../shared/instant.pipe';
+import { OrErrorPipe } from '../../shared/or-error.pipe';
+import { ValuePipe } from '../../shared/value.pipe';
 
 @Component({
   selector: 'cube-trainer-messages',
   templateUrl: './messages.component.html',
-  styleUrls: ['./messages.component.css']
+  styleUrls: ['./messages.component.css'],
+  imports: [
+    AsyncPipe,
+    BackendActionErrorPipe,
+    BackendActionLoadErrorComponent,
+    ErrorPipe,
+    InstantPipe,
+    OrErrorPipe,
+    ValuePipe,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    RouterModule,
+    MatCheckboxModule,
+  ],
 })
 export class MessagesComponent {
   messages$: Observable<Message[]>;

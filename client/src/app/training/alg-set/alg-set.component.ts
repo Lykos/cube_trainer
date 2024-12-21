@@ -12,6 +12,12 @@ import { BackendActionError } from '@shared/backend-action-error.model';
 import { initialLoadSelected } from '@store/trainer.actions';
 import { FileSaverService } from 'ngx-filesaver';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
+import { AsyncPipe } from '@angular/common';
+import { BackendActionLoadErrorComponent } from '../../shared/backend-action-load-error/backend-action-load-error.component';
+import { MatTableModule } from '@angular/material/table'
+import { MatTooltipModule } from '@angular/material/tooltip'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 
 const EOL = "\r\n";
 const COMMA = ",";
@@ -37,7 +43,8 @@ function toCsv(table: string[][]): string {
 @Component({
   selector: 'cube-trainer-alg-set',
   templateUrl: './alg-set.component.html',
-  styleUrls: ['./alg-set.component.css']
+  styleUrls: ['./alg-set.component.css'],
+  imports: [AsyncPipe, BackendActionLoadErrorComponent, MatTableModule, MatTooltipModule, MatProgressSpinnerModule, MatButtonModule],
 })
 export class AlgSetComponent implements OnInit {
   columnsToDisplay = ['case', 'alg', 'algSource', 'button'];

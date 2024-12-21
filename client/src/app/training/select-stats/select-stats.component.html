@@ -1,40 +1,41 @@
-<div *ngIf="trainingSessionType" cdkDropListGroup>
-  <div class="stats-container">
-    <h2>Available stats</h2>
-  
-    <div
-      cdkDropList
-      [cdkDropListData]="statTypes(trainingSessionType)"
-      class="stats-list"
-      id="stats-list"
-      cdkDropListSortingDisabled
-      (cdkDropListDropped)="drop($event)">
+@if (trainingSessionType) {
+  <div cdkDropListGroup>
+    <div class="stats-container">
+      <h2>Available stats</h2>
       <div
-        class="stats-box"
-        *ngFor="let statType of statTypes(trainingSessionType)"
-        cdkDrag
-        [matTooltip]="statType.description || ''">
-        {{statType.name}}
+        cdkDropList
+        [cdkDropListData]="statTypes(trainingSessionType)"
+        class="stats-list"
+        id="stats-list"
+        cdkDropListSortingDisabled
+        (cdkDropListDropped)="drop($event)">
+        @for (statType of statTypes(trainingSessionType); track statType) {
+          <div
+            class="stats-box"
+            cdkDrag
+            [matTooltip]="statType.description || ''">
+            {{statType.name}}
+          </div>
+        }
+      </div>
+    </div>
+    <div class="stats-container">
+      <h2>Picked Stats</h2>
+      <div
+        cdkDropList
+        [cdkDropListData]="pickedStatTypes"
+        class="stats-list"
+        id="picked-stats-list"
+        (cdkDropListDropped)="drop($event)">
+        @for (statType of pickedStatTypes; track statType) {
+          <div
+            class="stats-box"
+            cdkDrag
+            [matTooltip]="statType.description || ''">
+            {{statType.name}}
+          </div>
+        }
       </div>
     </div>
   </div>
-  
-  <div class="stats-container">
-    <h2>Picked Stats</h2>
-  
-    <div
-      cdkDropList
-      [cdkDropListData]="pickedStatTypes"
-      class="stats-list"
-      id="picked-stats-list"
-      (cdkDropListDropped)="drop($event)">
-      <div
-        class="stats-box"
-        *ngFor="let statType of pickedStatTypes"
-        cdkDrag
-        [matTooltip]="statType.description || ''">
-        {{statType.name}}
-      </div>
-    </div>
-  </div>
-</div>
+}

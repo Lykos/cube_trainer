@@ -7,11 +7,18 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { initialLoad, logout } from '@store/user.actions';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatBadgeModule } from '@angular/material/badge';
+import { NavigationBarComponent } from '../navigation-bar/navigation-bar.component';
+import { AsyncPipe } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'cube-trainer-toolbar',
   templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.css']
+  styleUrls: ['./toolbar.component.css'],
+  imports: [MatBadgeModule, MatToolbarModule, AsyncPipe, NavigationBarComponent, MatButtonModule, RouterModule],
 })
 export class ToolbarComponent implements OnInit {
   readonly user$: Observable<Optional<User>>;
