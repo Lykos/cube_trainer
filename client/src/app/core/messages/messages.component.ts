@@ -3,7 +3,7 @@ import { parseBackendActionError } from '@shared/parse-backend-action-error';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { Component, LOCALE_ID, Inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { MessagesService } from '../messages.service';
 import { formatDate, AsyncPipe } from '@angular/common';
 import { Message } from '../message.model';
@@ -34,7 +34,7 @@ import { ValuePipe } from '../../shared/value.pipe';
     ValuePipe,
     MatProgressSpinnerModule,
     MatTableModule,
-    RouterLink,
+    RouterModule,
     MatCheckboxModule,
   ],
 })

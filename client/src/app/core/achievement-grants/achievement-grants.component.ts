@@ -9,7 +9,7 @@ import { OrErrorPipe } from '../../shared/or-error.pipe';
 import { ValuePipe } from '../../shared/value.pipe';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'cube-trainer-achievement-grants',
@@ -22,7 +22,7 @@ import { RouterLink } from '@angular/router';
     ValuePipe,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    RouterLink,
+    RouterModule,
     MatTableModule,
   ],
 })
