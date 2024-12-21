@@ -9,11 +9,12 @@ import { create, update } from '@store/color-scheme.actions';
 import { KeyValuePipe } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cube-trainer-edit-color-scheme-form',
   templateUrl: './edit-color-scheme-form.component.html',
-  imports: [KeyValuePipe, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatSelectModule],
+  imports: [KeyValuePipe, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatSelectModule, MatButtonModule],
 })
 export class EditColorSchemeFormComponent implements OnInit {
   colorSchemeForm: FormGroup;

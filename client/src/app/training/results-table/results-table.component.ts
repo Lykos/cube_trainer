@@ -20,6 +20,7 @@ import { DurationPipe } from '../../shared/duration.pipe';
 import { InstantPipe } from '../../shared/instant.pipe';
 import { FluidInstantPipe } from '../../shared/fluid-instant.pipe';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 
 const IMPORTANT_COLUMNS = ['select', 'case', 'time'];
 const ALL_COLUMNS = IMPORTANT_COLUMNS.concat(['numHints', 'timestamp']);
@@ -28,7 +29,18 @@ const ALL_COLUMNS = IMPORTANT_COLUMNS.concat(['numHints', 'timestamp']);
   selector: 'cube-trainer-results-table',
   templateUrl: './results-table.component.html',
   styleUrls: ['./results-table.component.css'],
-  imports: [AsyncPipe, DurationPipe, InstantPipe, FluidInstantPipe, MatPaginatorModule, MatTableModule, MatTooltipModule, MatCheckboxModule, MatProgressSpinnerModule],
+  imports: [
+    AsyncPipe,
+    DurationPipe,
+    InstantPipe,
+    FluidInstantPipe,
+    MatPaginatorModule,
+    MatTableModule,
+    MatTooltipModule,
+    MatCheckboxModule,
+    MatProgressSpinnerModule,
+    MatButtonModule,
+  ],
 })
 export class ResultsTableComponent implements OnInit, OnDestroy {
   @Input()

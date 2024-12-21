@@ -6,6 +6,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 
 interface MutableAlgOverride extends NewAlgOverride {
   alg: string;
@@ -15,7 +16,7 @@ interface MutableAlgOverride extends NewAlgOverride {
   selector: 'cube-trainer-override-alg-dialog',
   templateUrl: './override-alg-dialog.component.html',
   styleUrls: ['./override-alg-dialog.component.css'],
-  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule],
+  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule],
 })
 export class OverrideAlgDialogComponent {
   algOverride: MutableAlgOverride;

@@ -6,12 +6,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserUpdate } from '../user-update.model';
 import { UserFormCreator } from '../user-form-creator.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cube-trainer-edit-user',
   templateUrl: './edit-user.component.html',
   styleUrls: ['./edit-user.component.css'],
-  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule],
+  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatButtonModule],
 })
 export class EditUserComponent implements OnInit {
   user!: User;

@@ -12,12 +12,13 @@ import { Optional, ifPresent, none } from '@utils/optional';
 import { catchError } from 'rxjs/operators';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cube-trainer-edit-letter-scheme-form',
   templateUrl: './edit-letter-scheme-form.component.html',
   styleUrls: ['./edit-letter-scheme-form.component.css'],
-  imports: [MatFormFieldModule, FormsModule, ReactiveFormsModule, MatSelectModule],
+  imports: [MatFormFieldModule, FormsModule, ReactiveFormsModule, MatSelectModule, MatButtonModule],
 })
 export class EditLetterSchemeFormComponent implements OnInit {
   letterSchemeForm: FormGroup;

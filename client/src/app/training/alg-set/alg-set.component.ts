@@ -17,6 +17,7 @@ import { BackendActionLoadErrorComponent } from '../../shared/backend-action-loa
 import { MatTableModule } from '@angular/material/table'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 
 const EOL = "\r\n";
 const COMMA = ",";
@@ -43,7 +44,7 @@ function toCsv(table: string[][]): string {
   selector: 'cube-trainer-alg-set',
   templateUrl: './alg-set.component.html',
   styleUrls: ['./alg-set.component.css'],
-  imports: [AsyncPipe, BackendActionLoadErrorComponent, MatTableModule, MatTooltipModule, MatProgressSpinnerModule],
+  imports: [AsyncPipe, BackendActionLoadErrorComponent, MatTableModule, MatTooltipModule, MatProgressSpinnerModule, MatButtonModule],
 })
 export class AlgSetComponent implements OnInit {
   columnsToDisplay = ['case', 'alg', 'algSource', 'button'];

@@ -11,12 +11,13 @@ import { MatTableModule } from '@angular/material/table';
 import { AsyncPipe } from '@angular/common';
 import { BackendActionLoadErrorComponent } from '../../shared/backend-action-load-error/backend-action-load-error.component';
 import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cube-trainer-training-sessions',
   templateUrl: './training-sessions.component.html',
   styleUrls: ['./training-sessions.component.css'],
-  imports: [AsyncPipe, BackendActionLoadErrorComponent, MatProgressSpinnerModule, RouterLink, MatTableModule],
+  imports: [AsyncPipe, BackendActionLoadErrorComponent, MatProgressSpinnerModule, RouterLink, MatTableModule, MatButtonModule],
 })
 export class TrainingSessionsComponent implements OnInit {
   trainingSessions$: Observable<readonly TrainingSessionSummary[]>;

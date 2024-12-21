@@ -5,6 +5,7 @@ import { UserFormCreator } from '../user-form-creator.service';
 import { UsersService } from '../users.service';
 import { PasswordUpdate } from '../password-update.model';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 
 // Component for updating the user password.
 // The user needs a link from an email to change the password.
@@ -14,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
   selector: 'cube-trainer-update-password',
   templateUrl: './update-password.component.html',
   styleUrls: ['./update-password.component.css'],
-  imports: [MatFormFieldModule, FormsModule, ReactiveFormsModule],
+  imports: [MatFormFieldModule, FormsModule, ReactiveFormsModule, MatButtonModule],
 })
 export class UpdatePasswordComponent implements OnInit {
   form!: FormGroup;

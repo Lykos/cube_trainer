@@ -4,13 +4,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgClass } from '@angular/common';
 import { DurationPipe } from '../../shared/duration.pipe';
-
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cube-trainer-stopwatch',
   templateUrl: './stopwatch.component.html',
   styleUrls: ['./stopwatch.component.css'],
-  imports: [DurationPipe, NgClass, MatTooltipModule, MatProgressSpinnerModule],
+  imports: [DurationPipe, NgClass, MatTooltipModule, MatProgressSpinnerModule, MatButtonModule],
 })
 export class StopwatchComponent {
   @Input()

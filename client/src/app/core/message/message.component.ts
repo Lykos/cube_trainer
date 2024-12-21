@@ -11,11 +11,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { AsyncPipe } from '@angular/common';
 import { InstantPipe } from '../../shared/instant.pipe';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cube-trainer-message',
   templateUrl: './message.component.html',
-  imports: [AsyncPipe, InstantPipe, MatCardModule, MatDialogModule],
+  imports: [AsyncPipe, InstantPipe, MatCardModule, MatDialogModule, MatButtonModule],
 })
 export class MessageComponent implements OnInit {
   message$: Observable<Message>;

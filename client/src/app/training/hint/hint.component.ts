@@ -8,13 +8,14 @@ import { selectHintActive } from '@store/trainer.selectors';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonModule } from '@angular/material/button';
 import { NgClass, AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'cube-trainer-hint',
   templateUrl: './hint.component.html',
   styleUrls: ['./hint.component.css'],
-  imports: [NgClass, AsyncPipe, MatTooltipModule],
+  imports: [NgClass, AsyncPipe, MatTooltipModule, MatButtonModule],
 })
 export class HintComponent {
   @Input()

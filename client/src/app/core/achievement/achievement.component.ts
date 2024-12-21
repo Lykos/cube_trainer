@@ -8,11 +8,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AsyncPipe } from '@angular/common';
 import { OrErrorPipe } from '../../shared/or-error.pipe';
 import { ValuePipe } from '../../shared/value.pipe';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cube-trainer-achievement',
   templateUrl: './achievement.component.html',
-  imports: [AsyncPipe, OrErrorPipe, ValuePipe, MatProgressSpinnerModule],
+  imports: [AsyncPipe, OrErrorPipe, ValuePipe, MatProgressSpinnerModule, MatButtonModule],
 })
 export class AchievementComponent {
   achievement$: Observable<Achievement>;
