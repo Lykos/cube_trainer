@@ -137,21 +137,19 @@ describe('AlgSetComponent', () => {
   beforeEach(async () => {
     fileSaverService = jasmine.createSpyObj('FileSaverService', ['save']);
     await TestBed.configureTestingModule({
-      declarations: [
-	AlgSetComponent,
-	BackendActionLoadErrorComponent,
-      ],
-      imports: [
+    imports: [
         MatProgressSpinnerModule,
-	MatTableModule,
-	MatTooltipModule,
-      ],
-      providers: [
+        MatTableModule,
+        MatTooltipModule,
+        AlgSetComponent,
+        BackendActionLoadErrorComponent,
+    ],
+    providers: [
         { provide: ActivatedRoute, useValue: { params: of({ trainingSessionId: 1 }) } },
-	{ provide: FileSaverService, useValue: fileSaverService },
+        { provide: FileSaverService, useValue: fileSaverService },
         provideMockStore({}),
-      ],
-    }).compileComponents();
+    ],
+}).compileComponents();
 
     store = TestBed.inject(MockStore);
   });

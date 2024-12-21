@@ -20,34 +20,32 @@ import { MatCardModule } from '@angular/material/card';
 import { HierarchicalAlgSetSelectComponent } from './hierarchical-alg-set-select/hierarchical-alg-set-select.component';
 
 @NgModule({
-  declarations: [
-    MethodExplorerComponent,
-    AlgCountsTableComponent,
-    MethodDescriptionFormComponent,
-    HierarchicalAlgSetSelectComponent,
-  ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    MatProgressSpinnerModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatTableModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatCheckboxModule,
-    MatSnackBarModule,
-    MatInputModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatCardModule,
-  ],
-  exports: [
-    MethodExplorerComponent,
-  ],
-  providers: [
-    MethodExplorerService,
-  ]
+    imports: [
+        CommonModule,
+        SharedModule,
+        MatProgressSpinnerModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        MatTableModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatCheckboxModule,
+        MatSnackBarModule,
+        MatInputModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatCardModule,
+        MethodExplorerComponent,
+        AlgCountsTableComponent,
+        MethodDescriptionFormComponent,
+        HierarchicalAlgSetSelectComponent,
+    ],
+    exports: [
+        MethodExplorerComponent,
+    ],
+    providers: [
+        MethodExplorerService,
+    ]
 })
 export class MethodExplorerModule { }

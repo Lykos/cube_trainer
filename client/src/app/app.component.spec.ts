@@ -6,14 +6,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+    imports: [
+        MatToolbarModule,
         AppComponent,
-	FooterComponent,
-      ],
-      imports: [
-	MatToolbarModule
-      ],
-    }).compileComponents();
+        FooterComponent
+    ],
+}).compileComponents();
   });
 
   it('should create the app', () => {

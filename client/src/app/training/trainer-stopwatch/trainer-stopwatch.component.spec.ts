@@ -49,20 +49,18 @@ describe('TrainerStopwatchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+    imports: [
+        MatProgressSpinnerModule,
+        MatTooltipModule,
         TrainerStopwatchComponent,
         StopwatchComponent,
         DurationPipe,
-      ],
-      imports: [
-        MatProgressSpinnerModule,
-	MatTooltipModule,
-      ],
-      providers: [
+    ],
+    providers: [
         provideMockStore({}),
-	{ provide: BreakpointObserver, useClass: FakeBreakpointObserver },
-      ],
-    }).compileComponents();
+        { provide: BreakpointObserver, useClass: FakeBreakpointObserver },
+    ],
+}).compileComponents();
 
     store = TestBed.inject(MockStore);
     breakpointObserver = TestBed.get(BreakpointObserver);

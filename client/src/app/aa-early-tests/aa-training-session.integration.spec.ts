@@ -95,7 +95,21 @@ describe('TrainingSessionComponentIntegration', () => {
     let router = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
-      declarations: [
+    imports: [
+        NoopAnimationsModule,
+        HttpClientTestingModule,
+        MatProgressSpinnerModule,
+        MatTooltipModule,
+        MatCheckboxModule,
+        MatTableModule,
+        MatPaginatorModule,
+        StoreModule.forRoot({
+            trainingSessions: trainingSessionsReducer,
+            trainer: trainerReducer,
+            router: routerReducer,
+            colorScheme: colorSchemeReducer,
+        }),
+        EffectsModule.forRoot([TrainingSessionsEffects, TrainerEffects]),
         TrainingSessionComponent,
         TrainerComponent,
         TrainerInputComponent,
@@ -105,38 +119,20 @@ describe('TrainingSessionComponentIntegration', () => {
         ResultsTableComponent,
         DurationPipe,
         FluidInstantPipe,
-	StatsTableComponent,
+        StatsTableComponent,
         InstantPipe,
         BackendActionLoadErrorComponent,
-	GithubErrorNoteComponent,
-	StopwatchDialogComponent,
-      ],
-      imports: [
-        NoopAnimationsModule,
-        HttpClientTestingModule,
-        MatProgressSpinnerModule,
-        MatTooltipModule,
-        MatCheckboxModule,
-        MatTableModule,
-        MatPaginatorModule,
-        StoreModule.forRoot(
-          {
-            trainingSessions: trainingSessionsReducer,
-            trainer: trainerReducer,
-	    router: routerReducer,
-	    colorScheme: colorSchemeReducer,
-          },
-        ),
-        EffectsModule.forRoot([TrainingSessionsEffects, TrainerEffects]),
-      ],
-      providers: [
+        GithubErrorNoteComponent,
+        StopwatchDialogComponent,
+    ],
+    providers: [
         { provide: ActivatedRoute, useValue: { params: of({ trainingSessionId: 1 }) } },
         { provide: MatDialog, useValue: matDialog },
         { provide: MatSnackBar, useValue: matSnackBar },
         { provide: Router, useValue: router },
-	{ provide: BreakpointObserver, useClass: FakeBreakpointObserver },
-      ],
-    }).compileComponents();
+        { provide: BreakpointObserver, useClass: FakeBreakpointObserver },
+    ],
+}).compileComponents();
 
     httpMock = TestBed.inject(HttpTestingController);
   });
