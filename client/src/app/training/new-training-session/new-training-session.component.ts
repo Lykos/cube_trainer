@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormGroup, AbstractControl } from '@angular/forms';
+import { FormGroup, AbstractControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TrainingSessionType } from '../training-session-type.model';
 import { TrainingSessionsService } from '../training-sessions.service';
 import { TrainingSessionFormsService } from '../training-session-forms.service';
@@ -9,7 +9,7 @@ import { StatType } from '../stat-type.model';
 import { Observable } from 'rxjs';
 import { create } from '@store/training-sessions.actions';
 import { Store } from '@ngrx/store';
-
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectStatsComponent } from '../select-stats/select-stats.component';
 import { AsyncPipe } from '@angular/common';
 import { BackendActionErrorPipe } from '../../shared/backend-action-error.pipe';
@@ -17,12 +17,31 @@ import { BackendActionLoadErrorComponent } from '../../shared/backend-action-loa
 import { ErrorPipe } from '../../shared/error.pipe';
 import { OrErrorPipe } from '../../shared/or-error.pipe';
 import { ValuePipe } from '../../shared/value.pipe';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'cube-trainer-new-training-session',
   templateUrl: './new-training-session.component.html',
   styleUrls: ['./new-training-session.component.css'],
-  imports: [SelectStatsComponent, AsyncPipe, BackendActionErrorPipe, BackendActionLoadErrorComponent, ErrorPipe, OrErrorPipe, ValuePipe],
+  imports: [
+    SelectStatsComponent,
+    AsyncPipe,
+    BackendActionErrorPipe,
+    BackendActionLoadErrorComponent,
+    ErrorPipe,
+    OrErrorPipe,
+    ValuePipe,
+    MatCheckboxModule,
+    MatStepperModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    FormsModule,
+    MatProgressSpinnerModule,
+    ReactiveFormsModule,
+  ],
 })
 export class NewTrainingSessionComponent {
   trainingSessionTypeGroup: FormGroup;

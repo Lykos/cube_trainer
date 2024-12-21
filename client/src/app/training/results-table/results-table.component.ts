@@ -19,6 +19,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DurationPipe } from '../../shared/duration.pipe';
 import { InstantPipe } from '../../shared/instant.pipe';
 import { FluidInstantPipe } from '../../shared/fluid-instant.pipe';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const IMPORTANT_COLUMNS = ['select', 'case', 'time'];
 const ALL_COLUMNS = IMPORTANT_COLUMNS.concat(['numHints', 'timestamp']);
@@ -27,7 +28,7 @@ const ALL_COLUMNS = IMPORTANT_COLUMNS.concat(['numHints', 'timestamp']);
   selector: 'cube-trainer-results-table',
   templateUrl: './results-table.component.html',
   styleUrls: ['./results-table.component.css'],
-  imports: [AsyncPipe, DurationPipe, InstantPipe, FluidInstantPipe, MatPaginatorModule, MatTableModule, MatTooltipModule, MatCheckboxModule],
+  imports: [AsyncPipe, DurationPipe, InstantPipe, FluidInstantPipe, MatPaginatorModule, MatTableModule, MatTooltipModule, MatCheckboxModule, MatProgressSpinnerModule],
 })
 export class ResultsTableComponent implements OnInit, OnDestroy {
   @Input()

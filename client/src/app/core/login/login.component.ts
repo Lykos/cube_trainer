@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { login } from '@store/user.actions';
 import { Credentials } from '../credentials.model';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'cube-trainer-login',
   templateUrl: './login.component.html',
+  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatCardModule],
 })
 export class LoginComponent {
   loginForm: FormGroup;

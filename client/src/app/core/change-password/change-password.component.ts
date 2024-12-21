@@ -1,9 +1,11 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Component } from '@angular/core';
-import { FormGroup, AbstractControl } from '@angular/forms';
+import { FormGroup, AbstractControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserFormCreator } from '../user-form-creator.service';
 import { UsersService } from '../users.service';
 import { PasswordChange } from '../password-change.model';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
 
 // Component for changing the user password.
 // The user needs their old password to change the password.
@@ -13,6 +15,7 @@ import { PasswordChange } from '../password-change.model';
   selector: 'cube-trainer-change-password',
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css'],
+  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatCardModule],
 })
 export class ChangePasswordComponent {
   form: FormGroup;

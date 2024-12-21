@@ -1,9 +1,10 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, AbstractControl } from '@angular/forms';
+import { FormGroup, AbstractControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserFormCreator } from '../user-form-creator.service';
 import { UsersService } from '../users.service';
 import { PasswordUpdate } from '../password-update.model';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 // Component for updating the user password.
 // The user needs a link from an email to change the password.
@@ -13,6 +14,7 @@ import { PasswordUpdate } from '../password-update.model';
   selector: 'cube-trainer-update-password',
   templateUrl: './update-password.component.html',
   styleUrls: ['./update-password.component.css'],
+  imports: [MatFormFieldModule, FormsModule, ReactiveFormsModule],
 })
 export class UpdatePasswordComponent implements OnInit {
   form!: FormGroup;

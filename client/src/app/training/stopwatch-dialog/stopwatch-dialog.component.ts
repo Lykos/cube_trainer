@@ -2,7 +2,7 @@ import { selectNextCase, selectStopwatchState } from '@store/trainer.selectors';
 import { GeneratorType } from '../generator-type.model';
 import { Component, Inject } from '@angular/core';
 import { seconds } from '@utils/duration';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { ScrambleOrSample } from '../scramble-or-sample.model';
 import { TrainingSession } from '../training-session.model';
 import { now, fromUnixMillis } from '@utils/instant';
@@ -11,7 +11,6 @@ import { stopAndStartStopwatchDialog } from '@store/trainer.actions';
 import { Observable, of, timer } from 'rxjs';
 import { tap, switchMap, mapTo } from 'rxjs/operators';
 import { filterPresent } from '@shared/operators';
-
 import { TrainerInputComponent } from '../trainer-input/trainer-input.component';
 import { NgClass, AsyncPipe } from '@angular/common';
 
@@ -19,7 +18,7 @@ import { NgClass, AsyncPipe } from '@angular/common';
   selector: 'cube-trainer-stopwatch-dialog',
   templateUrl: './stopwatch-dialog.component.html',
   styleUrls: ['./stopwatch-dialog.component.css'],
-  imports: [AsyncPipe, TrainerInputComponent, NgClass],
+  imports: [AsyncPipe, TrainerInputComponent, NgClass, MatDialogModule],
 })
 export class StopwatchDialogComponent {
   readonly isPostMemoTime$: Observable<boolean>;

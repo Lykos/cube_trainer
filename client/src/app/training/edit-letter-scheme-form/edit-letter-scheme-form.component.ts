@@ -1,7 +1,7 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, AbstractControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LetterScheme } from '../letter-scheme.model';
 import { NewLetterScheme } from '../new-letter-scheme.model';
 import { LetterSchemeMapping, WingLetteringMode } from '../letter-scheme-base.model';
@@ -10,11 +10,14 @@ import { PartType, PartTypeName } from '../part-type.model';
 import { of } from 'rxjs';
 import { Optional, ifPresent, none } from '@utils/optional';
 import { catchError } from 'rxjs/operators';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'cube-trainer-edit-letter-scheme-form',
   templateUrl: './edit-letter-scheme-form.component.html',
   styleUrls: ['./edit-letter-scheme-form.component.css'],
+  imports: [MatFormFieldModule, FormsModule, ReactiveFormsModule, MatSelectModule],
 })
 export class EditLetterSchemeFormComponent implements OnInit {
   letterSchemeForm: FormGroup;

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ColorScheme } from '../color-scheme.model';
 import { Optional, none, orElse, mapOptional, ifPresent } from '@utils/optional';
 import { NewColorScheme } from '../new-color-scheme.model';
@@ -7,11 +7,13 @@ import { Color } from '../color.model';
 import { Store } from '@ngrx/store';
 import { create, update } from '@store/color-scheme.actions';
 import { KeyValuePipe } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'cube-trainer-edit-color-scheme-form',
   templateUrl: './edit-color-scheme-form.component.html',
-  imports: [KeyValuePipe],
+  imports: [KeyValuePipe, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatSelectModule],
 })
 export class EditColorSchemeFormComponent implements OnInit {
   colorSchemeForm: FormGroup;

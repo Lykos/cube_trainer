@@ -1,7 +1,4 @@
 import { enableProdMode, importProvidersFrom } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
-
 import { environment } from './environments/environment';
 import { APP_BASE_HREF } from '@angular/common';
 import { AngularTokenModule } from '@angular-token/angular-token.module';
