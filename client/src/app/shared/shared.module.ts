@@ -1,7 +1,5 @@
 import { BackendActionErrorDialogComponent } from './backend-action-error-dialog/backend-action-error-dialog.component';
 import { BackendActionErrorPipe } from './backend-action-error.pipe';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DurationPipe } from './duration.pipe';
 import { ErrorPipe } from './error.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -63,8 +61,6 @@ import { GithubErrorNoteComponent } from './github-error-note/github-error-note.
     exports: [
         BackendActionErrorPipe,
         BackendActionLoadErrorComponent,
-        BrowserModule,
-        BrowserAnimationsModule,
         DurationPipe,
         ErrorPipe,
         FormsModule,
