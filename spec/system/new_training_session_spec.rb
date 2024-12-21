@@ -12,7 +12,7 @@ require 'rails_helper'
 #   check if the entered form data has arrived there. This should avoid problem where the data
 #   hasn't propagated yet.
 def before_next_sleep
-  sleep(1)
+  sleep(0.1)
 end
 
 describe 'new training session' do
