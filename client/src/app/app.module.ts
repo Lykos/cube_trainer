@@ -26,10 +26,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
   imports: [
+    AppComponent,
     MethodExplorerModule,
     TrainingModule,
     AppRoutingModule,

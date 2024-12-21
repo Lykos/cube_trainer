@@ -11,11 +11,14 @@ import { map, switchMap, distinctUntilChanged } from 'rxjs/operators';
 import { filterPresent } from '@shared/operators';
 import { Store } from '@ngrx/store'
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { SharedModule } from '@shared/shared.module';
+import { StopwatchComponent } from '../stopwatch/stopwatch.component';
 
 @Component({
   selector: 'cube-trainer-trainer-stopwatch',
   templateUrl: './trainer-stopwatch.component.html',
-  styleUrls: ['./trainer-stopwatch.component.css']
+  styleUrls: ['./trainer-stopwatch.component.css'],
+  imports: [StopwatchComponent, SharedModule],
 })
 export class TrainerStopwatchComponent implements OnInit, OnDestroy {
   @Input()

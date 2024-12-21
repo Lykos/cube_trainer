@@ -5,11 +5,14 @@ import { StatPart } from '../stat-part.model';
 import { selectStats, selectInitialLoadLoading } from '@store/trainer.selectors';
 import { Store } from '@ngrx/store';
 import { filterPresent } from '@shared/operators';
+import { SharedModule } from '@shared/shared.module';
+import { StatPartValueComponent } from '../stat-part-value/stat-part-value.component';
 
 @Component({
   selector: 'cube-trainer-stats-table',
   templateUrl: './stats-table.component.html',
-  styleUrls: ['./stats-table.component.css']
+  styleUrls: ['./stats-table.component.css'],
+  imports: [StatPartValueComponent, SharedModule],
 })
 export class StatsTableComponent {
   columnsToDisplay = ['name', 'value'];

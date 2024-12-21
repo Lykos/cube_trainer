@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TrainingSessionAndCase } from '../training-session-and-case.model';
 import { NewAlgOverride } from '../new-alg-override.model';
+import { SharedModule } from '@shared/shared.module';
 
 interface MutableAlgOverride extends NewAlgOverride {
   alg: string;
@@ -10,7 +11,8 @@ interface MutableAlgOverride extends NewAlgOverride {
 @Component({
   selector: 'cube-trainer-override-alg-dialog',
   templateUrl: './override-alg-dialog.component.html',
-  styleUrls: ['./override-alg-dialog.component.css']
+  styleUrls: ['./override-alg-dialog.component.css'],
+  imports: [SharedModule],
 })
 export class OverrideAlgDialogComponent {
   algOverride: MutableAlgOverride;

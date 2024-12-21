@@ -3,10 +3,15 @@ import { UsersService } from '../users.service';
 import { DumpsService } from '../dumps.service';
 import { User } from '../user.model';
 import { FileSaverService } from 'ngx-filesaver';
+import { SharedModule } from '@shared/shared.module';
+import { MessagesComponent } from '../messages/messages.component';
+import { AchievementGrantsComponent } from '../achievement-grants/achievement-grants.component';
+import { DeleteAccountButtonComponent } from '../delete-account-button/delete-account-button.component';
 
 @Component({
   selector: 'cube-trainer-user',
-  templateUrl: './user.component.html'
+  templateUrl: './user.component.html',
+  imports: [MessagesComponent, AchievementGrantsComponent, DeleteAccountButtonComponent, SharedModule],
 })
 export class UserComponent implements OnInit {
   user!: User;

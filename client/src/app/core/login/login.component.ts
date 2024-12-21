@@ -3,10 +3,12 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { Store } from '@ngrx/store';
 import { login } from '@store/user.actions';
 import { Credentials } from '../credentials.model';
+import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-login',
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
+  imports: [SharedModule],
 })
 export class LoginComponent {
   loginForm: FormGroup;

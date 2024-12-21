@@ -4,10 +4,12 @@ import { Achievement } from '../achievement.model';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-achievement',
-  templateUrl: './achievement.component.html'
+  templateUrl: './achievement.component.html',
+  imports: [SharedModule],
 })
 export class AchievementComponent {
   achievement$: Observable<Achievement>;

@@ -12,6 +12,7 @@ import { BackendActionError } from '@shared/backend-action-error.model';
 import { initialLoadSelected } from '@store/trainer.actions';
 import { FileSaverService } from 'ngx-filesaver';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
+import { SharedModule } from '@shared/shared.module';
 
 const EOL = "\r\n";
 const COMMA = ",";
@@ -37,7 +38,8 @@ function toCsv(table: string[][]): string {
 @Component({
   selector: 'cube-trainer-alg-set',
   templateUrl: './alg-set.component.html',
-  styleUrls: ['./alg-set.component.css']
+  styleUrls: ['./alg-set.component.css'],
+  imports: [SharedModule],
 })
 export class AlgSetComponent implements OnInit {
   columnsToDisplay = ['case', 'alg', 'algSource', 'button'];

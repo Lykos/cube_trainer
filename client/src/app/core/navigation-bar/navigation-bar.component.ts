@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SharedModule } from '@shared/shared.module';
 
 interface Link {
   readonly link: string;
@@ -8,7 +9,8 @@ interface Link {
 @Component({
   selector: 'cube-trainer-navigation-bar',
   templateUrl: './navigation-bar.component.html',
-  styleUrls: ['./navigation-bar.component.css']
+  styleUrls: ['./navigation-bar.component.css'],
+  imports: [SharedModule],
 })
 export class NavigationBarComponent {
   links: readonly Link[] = [

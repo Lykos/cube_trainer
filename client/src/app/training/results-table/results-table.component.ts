@@ -12,6 +12,7 @@ import { selectResults, selectResultsTotal, selectResultsOnPage, selectInitialLo
 import { destroy, markDnf, setPage } from '@store/trainer.actions';
 import { Store } from '@ngrx/store';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { SharedModule } from '@shared/shared.module';
 
 const IMPORTANT_COLUMNS = ['select', 'case', 'time'];
 const ALL_COLUMNS = IMPORTANT_COLUMNS.concat(['numHints', 'timestamp']);
@@ -19,7 +20,8 @@ const ALL_COLUMNS = IMPORTANT_COLUMNS.concat(['numHints', 'timestamp']);
 @Component({
   selector: 'cube-trainer-results-table',
   templateUrl: './results-table.component.html',
-  styleUrls: ['./results-table.component.css']
+  styleUrls: ['./results-table.component.css'],
+  imports: [SharedModule],
 })
 export class ResultsTableComponent implements OnInit, OnDestroy {
   @Input()

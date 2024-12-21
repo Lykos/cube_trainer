@@ -7,10 +7,13 @@ import { Store } from '@ngrx/store';
 import { PartType } from '../part-type.model';
 import { selectLetterScheme, selectInitialLoadLoading } from '@store/letter-scheme.selectors';
 import { initialLoad } from '@store/letter-scheme.actions';
+import { SharedModule } from '@shared/shared.module';
+import { EditLetterSchemeFormComponent } from '../edit-letter-scheme-form/edit-letter-scheme-form.component';
 
 @Component({
   selector: 'cube-trainer-edit-letter-scheme',
-  templateUrl: './edit-letter-scheme.component.html'
+  templateUrl: './edit-letter-scheme.component.html',
+  imports: [EditLetterSchemeFormComponent, SharedModule],
 })
 export class EditLetterSchemeComponent implements OnInit {
   existingLetterScheme$: Observable<Optional<LetterScheme>>;

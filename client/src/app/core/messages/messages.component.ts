@@ -9,11 +9,13 @@ import { Message } from '../message.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, zip } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
+import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-messages',
   templateUrl: './messages.component.html',
-  styleUrls: ['./messages.component.css']
+  styleUrls: ['./messages.component.css'],
+  imports: [SharedModule],
 })
 export class MessagesComponent {
   messages$: Observable<Message[]>;

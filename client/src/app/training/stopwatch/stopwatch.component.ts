@@ -1,10 +1,12 @@
 import { Duration, zeroDuration } from '@utils/duration';
 import { HostListener, Component, Input, Output, EventEmitter } from '@angular/core';
+import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-stopwatch',
   templateUrl: './stopwatch.component.html',
-  styleUrls: ['./stopwatch.component.css']
+  styleUrls: ['./stopwatch.component.css'],
+  imports: [SharedModule],
 })
 export class StopwatchComponent {
   @Input()

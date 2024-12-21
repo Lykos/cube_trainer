@@ -9,11 +9,14 @@ import { StatType } from '../stat-type.model';
 import { Observable } from 'rxjs';
 import { create } from '@store/training-sessions.actions';
 import { Store } from '@ngrx/store';
+import { SharedModule } from '@shared/shared.module';
+import { SelectStatsComponent } from '../select-stats/select-stats.component';
 
 @Component({
   selector: 'cube-trainer-new-training-session',
   templateUrl: './new-training-session.component.html',
-  styleUrls: ['./new-training-session.component.css']
+  styleUrls: ['./new-training-session.component.css'],
+  imports: [SelectStatsComponent, SharedModule],
 })
 export class NewTrainingSessionComponent {
   trainingSessionTypeGroup: FormGroup;

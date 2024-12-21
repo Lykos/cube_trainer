@@ -4,6 +4,7 @@ import { FormGroup, AbstractControl } from '@angular/forms';
 import { UserFormCreator } from '../user-form-creator.service';
 import { UsersService } from '../users.service';
 import { PasswordUpdate } from '../password-update.model';
+import { SharedModule } from '@shared/shared.module';
 
 // Component for updating the user password.
 // The user needs a link from an email to change the password.
@@ -12,7 +13,8 @@ import { PasswordUpdate } from '../password-update.model';
 @Component({
   selector: 'cube-trainer-update-password',
   templateUrl: './update-password.component.html',
-  styleUrls: ['./update-password.component.css']
+  styleUrls: ['./update-password.component.css'],
+  imports: [SharedModule],
 })
 export class UpdatePasswordComponent implements OnInit {
   form!: FormGroup;

@@ -2,11 +2,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UsersService } from '../users.service';
+import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-reset-password',
   templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.css']
+  styleUrls: ['./reset-password.component.css'],
+  imports: [SharedModule],
 })
 export class ResetPasswordComponent implements OnInit {
   form!: FormGroup;

@@ -7,11 +7,13 @@ import { Store } from '@ngrx/store';
 import { selectHintActive } from '@store/trainer.selectors';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-hint',
   templateUrl: './hint.component.html',
-  styleUrls: ['./hint.component.css']
+  styleUrls: ['./hint.component.css'],
+  imports: [SharedModule],
 })
 export class HintComponent {
   @Input()

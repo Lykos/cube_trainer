@@ -8,6 +8,21 @@ import { ExecutionOrder, PieceMethodDescription, MethodDescription, BufferDescri
 import { CORNER, EDGE, PieceDescription } from '@utils/cube-stats/piece-description';
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatTableModule } from '@angular/material/table';
+import { CommonModule } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SharedModule } from '@shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
+import { HierarchicalAlgSetSelectComponent } from '../hierarchical-alg-set-select/hierarchical-alg-set-select.component';
 
 const UNIFORM_OPTIONS: readonly ModeWithName[] = [
   {name: 'I know all algs from this set', mode: UniformAlgSetMode.ALL},
@@ -89,7 +104,25 @@ class HierarchicalAlgSetLevelImpl implements HierarchicalAlgSetLevel {
 @Component({
   selector: 'cube-trainer-method-description-form',
   templateUrl: './method-description-form.component.html',
-  styleUrls: ['./method-description-form.component.css']
+  styleUrls: ['./method-description-form.component.css'],
+  imports: [
+    CommonModule,
+    SharedModule,
+    MatProgressSpinnerModule,
+    BrowserModule,
+    BrowserAnimationsModule,
+    MatTableModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatCheckboxModule,
+    MatSnackBarModule,
+    MatInputModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatCardModule,
+    HierarchicalAlgSetSelectComponent,
+  ],
 })
 export class MethodDescriptionFormComponent {
   piecesEqual(left: Piece, right: Piece) {

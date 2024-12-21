@@ -5,11 +5,13 @@ import { FormGroup, AbstractControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserUpdate } from '../user-update.model';
 import { UserFormCreator } from '../user-form-creator.service';
+import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-edit-user',
   templateUrl: './edit-user.component.html',
-  styleUrls: ['./edit-user.component.css']
+  styleUrls: ['./edit-user.component.css'],
+  imports: [SharedModule],
 })
 export class EditUserComponent implements OnInit {
   user!: User;

@@ -8,10 +8,12 @@ import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { map, mapTo, exhaustMap, shareReplay, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
+import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-message',
-  templateUrl: './message.component.html'
+  templateUrl: './message.component.html',
+  imports: [SharedModule],
 })
 export class MessageComponent implements OnInit {
   message$: Observable<Message>;

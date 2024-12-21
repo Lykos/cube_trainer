@@ -7,11 +7,16 @@ import { Store } from '@ngrx/store';
 import { BackendActionError } from '@shared/backend-action-error.model';
 import { selectSelectedTrainingSession, selectInitialLoadLoading, selectInitialLoadError } from '@store/training-sessions.selectors';
 import { initialLoadSelected } from '@store/trainer.actions';
+import { ResultsTableComponent } from '../results-table/results-table.component';
+import { StatsTableComponent } from '../stats-table/stats-table.component';
+import { TrainerComponent } from '../trainer/trainer.component';
+import { SharedModule } from '@shared/shared.module';
 
 @Component({
   selector: 'cube-trainer-training-session',
   templateUrl: './training-session.component.html',
-  styleUrls: ['./training-session.component.css']
+  styleUrls: ['./training-session.component.css'],
+  imports: [SharedModule, ResultsTableComponent, StatsTableComponent, TrainerComponent],
 })
 export class TrainingSessionComponent implements OnInit, OnDestroy {
   trainingSession?: TrainingSession;
