@@ -13,12 +13,13 @@ import { tap, switchMap, mapTo } from 'rxjs/operators';
 import { filterPresent } from '@shared/operators';
 import { SharedModule } from '@shared/shared.module';
 import { TrainerInputComponent } from '../trainer-input/trainer-input.component';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'cube-trainer-stopwatch-dialog',
   templateUrl: './stopwatch-dialog.component.html',
   styleUrls: ['./stopwatch-dialog.component.css'],
-  imports: [SharedModule, TrainerInputComponent],
+  imports: [SharedModule, TrainerInputComponent, NgClass],
 })
 export class StopwatchDialogComponent {
   readonly isPostMemoTime$: Observable<boolean>;

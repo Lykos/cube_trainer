@@ -1,7 +1,7 @@
 import { BackendActionErrorDialogComponent } from './backend-action-error-dialog/backend-action-error-dialog.component';
 import { BackendActionErrorPipe } from './backend-action-error.pipe';
 import { DurationPipe } from './duration.pipe';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { ErrorPipe } from './error.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InstantPipe } from './instant.pipe';
@@ -31,6 +31,7 @@ import { GithubErrorNoteComponent } from './github-error-note/github-error-note.
 @NgModule({
   imports: [
     AsyncPipe,
+    DatePipe,
     FormsModule,
     MatButtonModule,
     MatCardModule,
@@ -62,6 +63,7 @@ import { GithubErrorNoteComponent } from './github-error-note/github-error-note.
   ],
   exports: [
     AsyncPipe,
+    DatePipe,
     BackendActionErrorPipe,
     BackendActionLoadErrorComponent,
     DurationPipe,
