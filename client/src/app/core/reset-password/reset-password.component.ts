@@ -4,12 +4,13 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { UsersService } from '../users.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'cube-trainer-reset-password',
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.css'],
-  imports: [MatFormFieldModule, FormsModule, ReactiveFormsModule, MatButtonModule],
+  imports: [MatFormFieldModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatInputModule],
 })
 export class ResetPasswordComponent implements OnInit {
   form!: FormGroup;

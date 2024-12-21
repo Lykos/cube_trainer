@@ -8,13 +8,14 @@ import { PartType } from '../part-type.model';
 import { selectLetterScheme, selectInitialLoadLoading } from '@store/letter-scheme.selectors';
 import { initialLoad } from '@store/letter-scheme.actions';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatInputModule } from '@angular/material/input';
 import { EditLetterSchemeFormComponent } from '../edit-letter-scheme-form/edit-letter-scheme-form.component';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'cube-trainer-edit-letter-scheme',
   templateUrl: './edit-letter-scheme.component.html',
-  imports: [EditLetterSchemeFormComponent, AsyncPipe, MatProgressSpinnerModule],
+  imports: [EditLetterSchemeFormComponent, AsyncPipe, MatProgressSpinnerModule, MatInputModule],
 })
 export class EditLetterSchemeComponent implements OnInit {
   existingLetterScheme$: Observable<Optional<LetterScheme>>;

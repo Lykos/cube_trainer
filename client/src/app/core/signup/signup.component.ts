@@ -11,11 +11,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'cube-trainer-signup',
   templateUrl: './signup.component.html',
-  imports: [FormsModule, ReactiveFormsModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule],
+  imports: [FormsModule, ReactiveFormsModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule],
 })
 export class SignupComponent implements OnInit {
   signupForm!: FormGroup;

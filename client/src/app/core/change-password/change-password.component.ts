@@ -7,6 +7,7 @@ import { PasswordChange } from '../password-change.model';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 
 // Component for changing the user password.
 // The user needs their old password to change the password.
@@ -16,7 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'cube-trainer-change-password',
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css'],
-  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatCardModule, MatButtonModule],
+  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatCardModule, MatButtonModule, MatInputModule],
 })
 export class ChangePasswordComponent {
   form: FormGroup;

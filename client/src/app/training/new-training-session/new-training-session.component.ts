@@ -22,6 +22,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'cube-trainer-new-training-session',
@@ -43,6 +44,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatProgressSpinnerModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatInputModule,
   ],
 })
 export class NewTrainingSessionComponent {

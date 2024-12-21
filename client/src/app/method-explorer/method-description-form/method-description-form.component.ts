@@ -11,7 +11,6 @@ import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -111,12 +110,12 @@ class HierarchicalAlgSetLevelImpl implements HierarchicalAlgSetLevel {
     ReactiveFormsModule,
     MatCheckboxModule,
     MatSnackBarModule,
-    MatInputModule,
     MatButtonModule,
     MatFormFieldModule,
     MatSelectModule,
     MatCardModule,
     HierarchicalAlgSetSelectComponent,
+    MatInputModule,
   ],
 })
 export class MethodDescriptionFormComponent {
