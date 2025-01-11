@@ -14,7 +14,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 group :development, :test, :production do
   # For authentication
   gem 'devise', '~>4.9.4'
-  gem 'devise_token_auth', '~>1.2.4'
+  gem 'devise_token_auth', '~>1.2.5'
   gem 'omniauth-apple'
   gem 'omniauth-facebook'
   gem 'omniauth-github'
