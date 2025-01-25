@@ -84,7 +84,7 @@ class LetterSchemesController < ApplicationController
     params.expect(
       letter_scheme: [
         :wing_lettering_mode, :xcenters_like_corners, :tcenters_like_edges,
-        :invert_wing_letter, :midges_like_edges, :invert_twists, mappings: [[:letter, { part: :key }]]
+        :invert_wing_letter, :midges_like_edges, :invert_twists, { mappings: [[:letter, { part: :key }]] }
       ]
     )
   end
