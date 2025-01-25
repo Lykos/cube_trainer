@@ -81,12 +81,16 @@ class LetterSchemesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def letter_scheme_params
-    fixed_params = params
-                   .require(:letter_scheme)
-                   .permit(:wing_lettering_mode, :xcenters_like_corners, :tcenters_like_edges,
-                           :invert_wing_letter, :midges_like_edges, :invert_twists, mappings: [
-                             :letter, { part: :key }
-                           ])
+    fixed_params = params.expect(
+      letter_scheme: [
+        :wing_lettering_mode, :xcenters_like_corners, :tcenters_like_edges,
+        :invert_wing_letter, :midges_like_edges, :invert_twists, {
+          mappings: [
+            :letter, { part: :key }
+          ]
+        }
+      ]
+    )
     fixed_params[:mappings].each { |m| m[:part] = m[:part][:key] if m[:part] }
     fixed_params[:letter_scheme_mappings_attributes] = fixed_params[:mappings]
     fixed_params.delete(:mappings)
