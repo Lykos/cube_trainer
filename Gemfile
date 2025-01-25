@@ -14,7 +14,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 group :development, :test, :production do
   # For authentication
   gem 'devise', '~>4.9.4'
-  gem 'devise_token_auth', '~>1.2.4'
+  gem 'devise_token_auth', '~>1.2.5'
   gem 'omniauth-apple'
   gem 'omniauth-facebook'
   gem 'omniauth-github'
@@ -24,13 +24,13 @@ group :development, :test, :production do
   gem 'rack-cors', '~> 2.0.2', require: 'rack/cors'
 
   # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-  gem 'rails', '~> 7.2.2'
+  gem 'rails', '~> 8.0.1'
 
   # Core cubing related functionality.
   gem 'twisty_puzzles', '>= 0.0.44'
 
   # Database access. TODO: figure out whether this is still needed now that this project uses rails.
-  gem 'activerecord', '~> 7.2.2'
+  gem 'activerecord', '~> 8.0.1'
 
   # Postgresql support.
   gem 'pg', '~> 1.5.8'
@@ -65,7 +65,7 @@ group :development, :production do
   gem 'google-api-client'
   gem 'googleauth'
 
-  gem 'csv', '~> 3.3.1'
+  gem 'csv', '~> 3.3.2'
 end
 
 group :production do
@@ -92,7 +92,7 @@ group :rubocop do
   gem 'rubocop-capybara', require: false
   gem 'rubocop-factory_bot', require: false
   gem 'rubocop-performance', require: false
-  gem 'rubocop-rails', '~> 2.27.0', require: false
+  gem 'rubocop-rails', '~> 2.29.0', require: false
   gem 'rubocop-rake', require: false
   gem 'rubocop-rspec', '~> 3.3.0', require: false
   gem 'rubocop-rspec_rails', require: false
