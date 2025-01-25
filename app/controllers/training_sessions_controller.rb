@@ -66,11 +66,13 @@ class TrainingSessionsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def training_session_params
+    # The strong parameters stuff doesn't seem to support our advanced case here
     params
-      .require(:training_session)
-      .permit(:name, :known, :show_input_mode, :goal_badness, :cube_size,
-              :memo_time_s, :training_session_type, :buffer, :alg_set_id,
-              :exclude_alg_holes, :exclude_algless_parts,
-              stat_types: [], buffer: [:key], alg_set: [:id])
+      .expect(training_session: [
+                :name, :known, :show_input_mode, :goal_badness, :cube_size,
+                :memo_time_s, :training_session_type, :buffer, :alg_set_id,
+                :exclude_alg_holes, :exclude_algless_parts,
+                { stat_types: [], buffer_attributes: [:key], alg_set_attributes: [:id] }
+              ])
   end
 end
