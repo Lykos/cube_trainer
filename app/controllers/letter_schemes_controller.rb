@@ -81,14 +81,12 @@ class LetterSchemesController < ApplicationController
 
   # Incomplete parameters that still need some fixing
   def incomplete_letter_scheme_params
-    # rubocop:disable Rails/StrongParametersExpect
-    params
-      .require(:letter_scheme)
-      .permit(:wing_lettering_mode, :xcenters_like_corners, :tcenters_like_edges,
-              :invert_wing_letter, :midges_like_edges, :invert_twists, mappings: [
-                :letter, { part: :key }
-              ])
-    # rubocop:enable Rails/StrongParametersExpect
+    params.expect(
+      letter_scheme: [
+        :wing_lettering_mode, :xcenters_like_corners, :tcenters_like_edges,
+        :invert_wing_letter, :midges_like_edges, :invert_twists, mappings: [[:letter, { part: :key }]]
+      ]
+    )
   end
 
   # Only allow a list of trusted parameters through.
