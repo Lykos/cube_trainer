@@ -62,8 +62,6 @@ class ColorSchemesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def color_scheme_params
-    params
-      .require(:color_scheme)
-      .permit(:color_u, :color_f)
+    params.expect(color_scheme: %i[color_u color_f])
   end
 end

@@ -403,7 +403,7 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.1)
-    rubocop (1.69.2)
+    rubocop (1.71.0)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -429,7 +429,7 @@ GEM
       rubocop-ast (>= 1.31.1, < 2.0)
     rubocop-rake (0.6.0)
       rubocop (~> 1.0)
-    rubocop-rspec (3.3.0)
+    rubocop-rspec (3.4.0)
       rubocop (~> 1.61)
     rubocop-rspec_rails (2.30.0)
       rubocop (~> 1.61)
@@ -536,13 +536,13 @@ DEPENDENCIES
   rspec
   rspec-prof
   rspec-rails (~> 7.1.0)
-  rubocop (~> 1.69.2)
+  rubocop (~> 1.71.0)
   rubocop-capybara
   rubocop-factory_bot
   rubocop-performance
   rubocop-rails (~> 2.29.0)
   rubocop-rake
-  rubocop-rspec (~> 3.3.0)
+  rubocop-rspec (~> 3.4.0)
   rubocop-rspec_rails
   ruby-filemagic
   ruby-progressbar

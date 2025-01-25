@@ -608,8 +608,6 @@ Style/RedundantInterpolationUnfreeze: # new in 1.66
   Enabled: true
 Lint/DuplicateSetElement: # new in 1.67
   Enabled: true
-RSpec/StringAsInstanceDoubleConstant: # new in 3.1
-  Enabled: true
 Lint/UnescapedBracketInRegexp: # new in 1.68
   Enabled: true
 Style/AmbiguousEndlessMethodDefinition: # new in 1.68
@@ -635,4 +633,18 @@ Style/DigChain: # new in 1.69
 Style/FileNull: # new in 1.69
   Enabled: true
 Style/FileTouch: # new in 1.69
+  Enabled: true
+Lint/ArrayLiteralInRegexp: # new in 1.71
+  Enabled: true
+Lint/ConstantReassignment: # new in 1.70
+  Enabled: true
+Lint/SharedMutableDefault: # new in 1.70
+  Enabled: true
+Style/HashSlice: # new in 1.71
+  Enabled: true
+Style/ItAssignment: # new in 1.70
+  Enabled: true
+Rails/MultipleRoutePaths: # new in 2.29
+  Enabled: true
+Rails/StrongParametersExpect: # new in 2.29
   Enabled: true
