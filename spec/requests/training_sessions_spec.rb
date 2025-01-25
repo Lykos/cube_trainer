@@ -7,6 +7,7 @@ RSpec.describe 'TrainingSessions' do
   include_context 'with user abc'
   include_context 'with user eve'
   include_context 'with training session'
+  include_context 'with alg set'
   include_context 'with headers'
   include_context 'with user auth headers'
   include_context 'with eve auth headers'
@@ -86,6 +87,29 @@ RSpec.describe 'TrainingSessions' do
       parsed_body = response.parsed_body
       expect(parsed_body['id']).not_to eq(training_session.id)
       expect(TrainingSession.find(parsed_body['id']).name).to eq('test_training_session2')
+    end
+
+    it 'returns http success with extra stuff' do
+      post '/api/training_sessions', headers: user_headers, params: {
+        training_session: {
+          name: 'test_training_session3',
+          show_input_mode: :name,
+          training_session_type: :edge_commutators,
+          buffer: 'Edge:UF',
+          goal_badness: 1,
+          cube_size: 3,
+          stat_types: ['mo3'],
+          alg_set_id: alg_set.id,
+        }
+      }
+      expect(response).to have_http_status(:success)
+      parsed_body = response.parsed_body
+      expect(parsed_body['id']).not_to eq(training_session.id)
+      saved_training_session = TrainingSession.find(parsed_body['id'])
+      expect(saved_training_session.name).to eq('test_training_session3')
+      expect(saved_training_session.stats.map(&:stat_type)).to eq(['mo3'])
+      expect(saved_training_session.buffer).to eq(TwistyPuzzles::Edge.for_face_symbols(%i[U F]))
+      expect(saved_training_session.alg_set.id).to eq(alg_set.id)
     end
 
     it 'returns bad request for invalid training_sessions' do
