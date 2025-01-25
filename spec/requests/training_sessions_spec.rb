@@ -99,7 +99,7 @@ RSpec.describe 'TrainingSessions' do
           goal_badness: 1,
           cube_size: 3,
           stat_types: ['mo3'],
-          alg_set_id: alg_set.id,
+          alg_set_id: alg_set.id
         }
       }
       expect(response).to have_http_status(:success)
