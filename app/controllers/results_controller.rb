@@ -67,9 +67,11 @@ class ResultsController < ApplicationController
   end
 
   def result_params
-    fixed_params = params.require(:result).permit(
-      :case_key, :time_s, :failed_attempts, :word, :success,
-      :num_hints
+    fixed_params = params.expect(
+      result: %i[
+        case_key time_s failed_attempts word success
+        num_hints
+      ]
     )
     if fixed_params[:case_key]
       fixed_params[:casee] =

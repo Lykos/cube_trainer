@@ -40,6 +40,6 @@ class MessagesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def message_params
-    params.require(:message).permit(:read)
+    params.expect(message: [:read])
   end
 end

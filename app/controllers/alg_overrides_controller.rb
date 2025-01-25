@@ -68,9 +68,7 @@ class AlgOverridesController < ApplicationController
   end
 
   def alg_override_params
-    fixed_params = params.require(:alg_override).permit(
-      :case_key, :alg
-    )
+    fixed_params = params.expect(alg_override: %i[case_key alg])
     if fixed_params[:case_key]
       fixed_params[:casee] =
         CubeTrainer::Types::CaseType.new.cast(fixed_params[:case_key])

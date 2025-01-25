@@ -5,7 +5,7 @@ module CubeTrainer
     F2lCase =
       Struct.new(:name, :has_auf, :has_corner_direction, :orientation_mode) do
         def orientation?
-          orientation_mode == :default_is_oriented || orientation_mode == :default_is_misoriented
+          %i[default_is_oriented default_is_misoriented].include?(orientation_mode)
         end
 
         def oriented_index
