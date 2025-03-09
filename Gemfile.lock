@@ -433,8 +433,9 @@ GEM
     rubocop-rake (0.7.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1)
-    rubocop-rspec (3.4.0)
-      rubocop (~> 1.61)
+    rubocop-rspec (3.5.0)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
     rubocop-rspec_rails (2.30.0)
       rubocop (~> 1.61)
       rubocop-rspec (~> 3, >= 3.0.1)
@@ -546,7 +547,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails (~> 2.29.1)
   rubocop-rake
-  rubocop-rspec (~> 3.4.0)
+  rubocop-rspec (~> 3.5.0)
   rubocop-rspec_rails
   ruby-filemagic
   ruby-progressbar
