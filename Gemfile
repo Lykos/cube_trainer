@@ -65,7 +65,7 @@ group :development, :production do
   gem 'google-api-client'
   gem 'googleauth'
 
-  gem 'csv', '~> 3.3.2'
+  gem 'csv', '~> 3.3.3'
 end
 
 group :production do
