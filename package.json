@@ -40,7 +40,7 @@
     "@ngrx/operators": "^19.0.1",
     "@ngrx/router-store": "^19.0.0",
     "@ngrx/store": "^19.0.0",
-    "@ngrx/store-devtools": "^19.0.0",
+    "@ngrx/store-devtools": "^19.0.1",
     "@rxweb/reactive-form-validators": "^13.0.0",
     "@rails/actioncable": "^8.0.0",
     "angular-csv-ext": "^1.0.5",
