@@ -428,11 +428,12 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1, < 2.0)
       rubocop-ast (>= 1.38.0, < 2.0)
-    rubocop-rails (2.29.1)
+    rubocop-rails (2.30.3)
       activesupport (>= 4.2.0)
+      lint_roller (~> 1.1)
       rack (>= 1.1)
-      rubocop (>= 1.52.0, < 2.0)
-      rubocop-ast (>= 1.31.1, < 2.0)
+      rubocop (>= 1.72.1, < 2.0)
+      rubocop-ast (>= 1.38.0, < 2.0)
     rubocop-rake (0.7.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1)
@@ -549,7 +550,7 @@ DEPENDENCIES
   rubocop-capybara
   rubocop-factory_bot
   rubocop-performance
-  rubocop-rails (~> 2.29.1)
+  rubocop-rails (~> 2.30.3)
   rubocop-rake
   rubocop-rspec (~> 3.5.0)
   rubocop-rspec_rails
